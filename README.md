@@ -1,11 +1,18 @@
 # Bits to Banking — Open Book Project
 Learn computing from **bits → operating systems → programming → databases → networking → security → finance** and into **Calypso/TMS & real projects**.  
-We write in small, printable volumes so beginners (including kids/teens) and adults can follow step by step.
+We publish in small, printable **volumes** so beginners (kids/teens) and adults can follow step by step.
 
 Script-driven, contributor-friendly book series: **bits → banking → Calypso**.
 ---
 
 ## Quick Start (Windows)
+
+## 0) What you’ll get (first run)
+- A tiny **Volume 0** Word file you can open locally.
+- Two short chapters you can edit in Markdown.
+- A super simple “contribute → pull request” flow.
+
+---
 
 ### 1) Install tools (one time)
 - **Python 3.11+** — https://python.org  
@@ -28,4 +35,4 @@ In PowerShell:
 ```powershell
 python --version
 git --version
-
+```
