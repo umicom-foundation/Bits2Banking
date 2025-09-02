@@ -1,5 +1,5 @@
 # Bits to Banking — Open Book Project
-
+[![Release](https://img.shields.io/github/v/release/umicom-foundation/Bits2Banking?display_name=tag&sort=semver)](https://github.com/umicom-foundation/Bits2Banking/releases/latest)
 [![Build](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/build-volume0.yml/badge.svg)](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/build-volume0.yml)
 [![Lint](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/lint.yml/badge.svg)](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/lint.yml)
 [![Docs](https://img.shields.io/badge/docs-online-blue)](https://umicom-foundation.github.io/Bits2Banking)
