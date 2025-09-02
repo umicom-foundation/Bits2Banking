@@ -5,11 +5,13 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# REQUIRED for Pages deploy
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Avoid overlapping deployments
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -28,14 +30,17 @@ jobs:
           pip install mkdocs mkdocs-material
       - name: Build site
         run: mkdocs build --strict
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: site
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
+      name: github-pages   # <- keep this exact
     steps:
-      - id: deployment
+      - name: Deploy to Pages
+        id: deployment
         uses: actions/deploy-pages@v4
