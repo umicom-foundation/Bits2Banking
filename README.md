@@ -78,7 +78,7 @@ cd C:\Bits2Banking
 ### 1) (Optional) Create a virtual environment
 ```powershell
 python -m venv .venv
-.\.venv\Scriptsctivate
+.\.venv\Scriptsactivate
 python -m pip install --upgrade pip
 ```
 
@@ -92,15 +92,15 @@ equirements.txt) { pip install -r requirements.txt } else { pip install python-d
 ### 3) Build using the helper script
 ```powershell
 # Uses scripts\make_volume0_from_md.py under the hood
-.uild.ps1 build
+.Build.ps1 build
 ```
 
 ### 4) Open the result
 ```powershell
-start .olumes\Volume_00_Source_Control.docx
+start .volumes\Volume_00_Source_Control.docx
 ```
 
-> Other handy commands: `.uild.ps1 install` • `.uild.ps1 docs` • `.uild.ps1 lint` • `.uild.ps1 clean`
+> Other handy commands: `.Build.ps1 install` • `.Build.ps1 docs` • `.Build.ps1 lint` • `.Build.ps1 clean`
 
 ---
 
@@ -147,7 +147,7 @@ open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || xdg-open ./volumes/V
    ```
 3. Build locally (pick one):  
    ```powershell
-   .uild.ps1 build
+   .Build.ps1 build
    ```
    ```bash
    make build
