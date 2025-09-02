@@ -3,6 +3,21 @@
 [![Build](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/build-volume0.yml/badge.svg)](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/build-volume0.yml)
 [![Lint](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/lint.yml/badge.svg)](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/lint.yml)
 [![Docs](https://img.shields.io/badge/docs-online-blue)](https://umicom-foundation.github.io/Bits2Banking)
+---
+
+## 📚 Project Docs
+
+- [About](ABOUT.md) — Why this project exists and how it links education with humanitarian aid  
+- [Roadmap](ROADMAP.md) — Planned volumes and future direction  
+- [Support](SUPPORT.md) — Donation details (GBP, USD, EUR, AUD, CAD)  
+- [Acknowledgements](ACKNOWLEDGEMENTS.md) — Families, volunteers, and supporters  
+- [Contributing](.github/CONTRIBUTING.md) — Step-by-step guide for new contributors  
+- [Code of Conduct](.github/CODE_OF_CONDUCT.md) — Community rules and expectations  
+- [Governance](GOVERNANCE.md) — How decisions are made  
+- [Security Policy](.github/SECURITY.md) — How to report vulnerabilities  
+
+---
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Learn computing from **bits → operating systems → programming → databases → networking → security → finance**, then into **Calypso/TMS** and real projects.  
@@ -15,7 +30,7 @@ We publish in small, printable **volumes** so beginners and adults can follow st
 This project is part of the **Umicom Foundation**’s mission: **open education with real-world impact**.  
 
 At the same time, we are committed to supporting **civilians in Gaza** who are suffering siege, starvation, and genocide.  
-Through this project we aim to:  
+Through this project, we aim to:  
 
 - Provide **free educational resources** worldwide.  
 - Channel project proceeds and donations into **relief and education** for those in crisis.  
@@ -31,7 +46,7 @@ Through this project we aim to:
 - Background in energy, fintech, and open-source advocacy (RISC-V, Linux, free software).  
 - Founder of the Umicom Foundation, which promotes **education, relief, and technology** projects.  
 
-I started Bits to Banking to make computing and finance approachable for all learners, and to channel learning into **real help for people under siege and suffering**.
+I started Bits to Banking to make computing and finance accessible to all learners, and to channel learning into **real help for people in need**.
 
 ---
 
