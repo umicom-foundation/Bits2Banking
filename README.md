@@ -11,6 +11,26 @@ We publish in small, printable **volumes** so beginners and adults can follow st
 
 ---
 
+## 🚀 Copy–Paste Cheatsheet
+
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/umicom-foundation/Bits2Banking.git C:\Bits2Banking
+cd C:\Bits2Banking
+.uild.ps1 install
+.uild.ps1 build
+start .olumes\Volume_00_Source_Control.docx
+```
+
+**macOS / Linux (Makefile):**
+```bash
+git clone https://github.com/umicom-foundation/Bits2Banking.git
+cd Bits2Banking && make install && make build
+xdg-open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || open ./volumes/Volume_00_Source_Control.docx
+```
+
+---
+
 ## 📚 Project Docs
 
 - [About](ABOUT.md) — Why this project exists and how it links education with humanitarian aid  
@@ -28,8 +48,7 @@ We publish in small, printable **volumes** so beginners and adults can follow st
 ## Our Cause
 
 This project is part of the **Umicom Foundation**’s mission: **open education with real-world impact**.  
-
-We are committed to supporting **civilians in Gaza** who are suffering siege, starvation, and genocide. Through this project, we aim to:  
+We are committed to supporting **civilians in Gaza** who are suffering siege, starvation, and mass displacement. Through this project we aim to:  
 
 - Provide **free educational resources** worldwide.  
 - Channel project proceeds and donations into **relief and education** for those in crisis.  
@@ -45,14 +64,13 @@ We are committed to supporting **civilians in Gaza** who are suffering siege, st
 - Background in energy, fintech, and open-source advocacy (**RISC‑V**, **Linux**, free software).  
 - Founder of the Umicom Foundation, which promotes **education, relief, and technology** projects.  
 
-I started Bits to Banking to make computing and finance accessible to all learners, and to channel learning into **real help for people in need**.
+I started *Bits to Banking* to make computing and finance approachable for all learners, and to channel learning into **real help for people under siege and suffering**.
 
 ---
 
 ## Support & Donations
 
-We have a dedicated **[SUPPORT.md](SUPPORT.md)** page with full details (GBP, USD, EUR, AUD, CAD accounts).  
-Your support helps us fund both **education** and **relief for Gaza**.  
+See **[SUPPORT.md](SUPPORT.md)** (GBP, USD, EUR, AUD, CAD). Your support funds **education** and **relief for Gaza**.
 
 ---
 
@@ -78,7 +96,7 @@ cd C:\Bits2Banking
 ### 1) (Optional) Create a virtual environment
 ```powershell
 python -m venv .venv
-.\.venv\Scriptsactivate
+.\.venv\Scriptsctivate
 python -m pip install --upgrade pip
 ```
 
@@ -92,15 +110,15 @@ equirements.txt) { pip install -r requirements.txt } else { pip install python-d
 ### 3) Build using the helper script
 ```powershell
 # Uses scripts\make_volume0_from_md.py under the hood
-.Build.ps1 build
+.uild.ps1 build
 ```
 
 ### 4) Open the result
 ```powershell
-start .volumes\Volume_00_Source_Control.docx
+start .olumes\Volume_00_Source_Control.docx
 ```
 
-> Other handy commands: `.Build.ps1 install` • `.Build.ps1 docs` • `.Build.ps1 lint` • `.Build.ps1 clean`
+> Other handy commands: `.uild.ps1 install` • `.uild.ps1 docs` • `.uild.ps1 lint` • `.uild.ps1 clean`
 
 ---
 
@@ -147,7 +165,7 @@ open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || xdg-open ./volumes/V
    ```
 3. Build locally (pick one):  
    ```powershell
-   .Build.ps1 build
+   .uild.ps1 build
    ```
    ```bash
    make build
@@ -161,11 +179,11 @@ open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || xdg-open ./volumes/V
 ## Troubleshooting
 
 - **Markdown linter errors (MD040, MD024, etc.)**  
-  Use code fences **with a language** (e.g., \`\`\`text, \`\`\`powershell). Duplicate headings are allowed across dates in the changelog.  
+  Use code fences **with a language** (e.g., ```text, ```powershell). Duplicate headings are allowed across dates in the changelog.  
 - **Typos check fails on brand names**  
   We whitelist proper nouns in `.typos.toml`. Open a PR to add new ones.  
-- **UTF‑8 BOM error/line endings**  
-  We ship `.editorconfig` and `.gitattributes` to keep files UTF‑8 (no BOM) and LF. Ensure your editor follows them.  
+- **UTF‑8 BOM error / line endings**  
+  We ship `.editorconfig` and `.gitattributes` to keep files UTF‑8 (no BOM) and LF (CRLF for `.ps1`). Ensure your editor follows them.  
 - **Pages deployment 404**  
   Repo Settings → Pages → Source = **GitHub Actions**; ensure workflow has `pages: write`, `id-token: write` permissions.
 
@@ -174,7 +192,7 @@ open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || xdg-open ./volumes/V
 ## Acknowledgements
 
 ### Founding contributors
-- Sammy Hegab (project lead, author, builder)  
+- **Sammy Hegab** (project lead, author, builder)  
 
 ### Supporters & community
 - Families, friends, and volunteers of Umicom Foundation  
@@ -186,8 +204,6 @@ open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || xdg-open ./volumes/V
 
 ## License
 
-MIT — see [LICENSE](LICENSE).  
-
----
+MIT — see [LICENSE](LICENSE).
 
 **Project website:** <https://umicom-foundation.github.io/Bits2Banking>
