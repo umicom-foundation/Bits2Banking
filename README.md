@@ -15,7 +15,7 @@ We publish in small, printable **volumes** so beginners and adults can follow st
 This project is part of the **Umicom Foundation**’s mission: **open education with real-world impact**.  
 
 At the same time, we are committed to supporting **civilians in Gaza** who are suffering siege, starvation, and genocide.  
-Through this project we aim to:  
+Through this project, we aim to:  
 
 - Provide **free educational resources** worldwide.  
 - Channel project proceeds and donations into **relief and education** for those in crisis.  
@@ -31,7 +31,7 @@ Through this project we aim to:
 - Background in energy, fintech, and open-source advocacy (RISC-V, Linux, free software).  
 - Founder of the Umicom Foundation, which promotes **education, relief, and technology** projects.  
 
-I started Bits to Banking to make computing and finance approachable for all learners, and to channel learning into **real help for people under siege and suffering**.
+I started Bits to Banking to make computing and finance accessible to all learners, and to channel learning into **real help for people in need**.
 
 ---
 
@@ -41,7 +41,7 @@ If you’d like to support **Bits to Banking** and our humanitarian work, you ca
 We publish regular transparency reports to ensure **100% of donations go to the cause**.
 
 ### GBP (UK)
-```
+```text
 Name: Umicom Foundation
 Account number: 37131884
 Sort code: 23-08-01
@@ -51,7 +51,7 @@ Bank: Wise Payments Limited, 1st Floor, Worship Square, 65 Clifton Street, Londo
 ```
 
 ### USD (US)
-```
+```text
 Name: Umicom Foundation
 Account Number: 8314463525
 Account Type: Checking
@@ -60,7 +60,7 @@ SWIFT/BIC: CMFGUS33
 ```
 
 ### EUR (SEPA/International)
-```
+```text
 Name: Umicom Foundation
 IBAN: BE10 9670 9734 3304
 SWIFT/BIC: TRWIBEB1XXX
@@ -68,7 +68,7 @@ Bank: Wise, Rue du Trône 100, 3rd floor, Brussels, 1050, Belgium
 ```
 
 ### AUD (Australia)
-```
+```text
 Name: Umicom Foundation
 Account Number: 219034134
 BSB Code: 774001
@@ -77,7 +77,7 @@ Bank: Wise Australia Pty Ltd, Suite 1, Level 11, 66 Goulburn Street, Sydney, NSW
 ```
 
 ### CAD (Canada)
-```
+```text
 Name: Umicom Foundation
 Account Number: 200116215179
 Institution Number: 621
@@ -147,11 +147,11 @@ start .olumes\Volume_00_Source_Control.docx
 
 ## Acknowledgements
 
-**Founding contributors**
-- Sammy Hegab (project lead, author, builder)  
+### Founding contributors
+- Sammy Hegab (project lead, author, builder)
 
-**Supporters & community**
-- Families, friends, and volunteers of Umicom Foundation  
+### Supporters & community
+- Families, friends, and volunteers of Umicom Foundation
 - All who stand with civilians in Gaza and support relief & education  
 
 (If you’d like to be acknowledged as a supporter or partner, please open a PR or contact us.)  
