@@ -18,7 +18,7 @@ from docx.oxml.ns import qn
 # Use repo-relative paths so it works on GitHub runners and your PC.
 ROOT = Path(__file__).resolve().parents[1]  # repo root = parent of /scripts
 CH0 = ROOT / "chapters" / "v00" / "ch00_prelude.md"
-CH1 = ROOT / "chapters" / "v00" / "ch01_git_github_basics.md"
+CH1 = ROOT / "chapters" / "v00" / "ch01_git_GitHub_basics.md"
 OUT = ROOT / "volumes" / "Volume_00_Source_Control.docx"
 
 IMG_RE = re.compile(r'!\[(.*?)\]\((.*?)\)')  # (images ignored for now)
