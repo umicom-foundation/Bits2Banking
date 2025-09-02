@@ -1,14 +1,8 @@
-\# Bits2Banking Docs
+# Bits2Banking Docs
 
+Welcome! This site will link to chapter content and previews as the project grows.
 
-
-Welcome! Start with Volume 0 (Source Control) in the repo.  
-
-This site will grow to include chapter previews and links.
-
-
-
-\- Repository: https://github.com/umicom-foundation/Bits2Banking
-
+- **Repository:** https://github.com/umicom-foundation/Bits2Banking  
+- **Volume 0 (Source Control):** chapters live in `chapters/v00/` in the repo.
 
 

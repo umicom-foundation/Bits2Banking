@@ -1,9 +1,9 @@
 name: Build Volume 0
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
   workflow_dispatch:
 
@@ -11,8 +11,15 @@ jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 15
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Show repo tree (debug)
+        shell: pwsh
+        run: |
+          Get-Location
+          Get-ChildItem -Recurse | Select-Object FullName
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -46,10 +53,16 @@ jobs:
           } elseif (Test-Path 'scripts/make_volume0_min.py') {
             python scripts/make_volume0_min.py
           } else {
-            Write-Error "No build script found."
+            Write-Error "No build script found in scripts/."
           }
-          if (!(Test-Path 'volumes/Volume_00_Source_Control.docx')) {
-            Write-Error "Expected output not found: volumes/Volume_00_Source_Control.docx"
+
+      - name: Verify output (hard fail if missing)
+        shell: pwsh
+        run: |
+          if (Test-Path 'volumes/Volume_00_Source_Control.docx') {
+            Write-Host "✅ Found volumes/Volume_00_Source_Control.docx"
+          } else {
+            Write-Error "❌ Expected output not found: volumes/Volume_00_Source_Control.docx"
           }
 
       - name: Upload docx artifact
