@@ -78,7 +78,7 @@ cd C:\Bits2Banking
 
 # 1) Set up a virtual environment and install dependencies
 python -m venv .venv
-.\.venv\Scriptsctivate
+.\.venv\Scripts\activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt   # if requirements.txt is missing, run:  pip install python-docx
 
@@ -86,7 +86,7 @@ pip install -r requirements.txt   # if requirements.txt is missing, run:  pip in
 python scripts\make_volume0_from_md.py
 
 # 3) Open the output
-start .olumes\Volume_00_Source_Control.docx
+start .\volumes\Volume_00_Source_Control.docx
 ```
 
 ---
