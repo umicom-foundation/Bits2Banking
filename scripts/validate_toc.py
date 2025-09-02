@@ -9,13 +9,14 @@ if not toc_file.exists():
     sys.exit(0)
 
 try:
-    toc = json.loads(toc_file.read_text(encoding="utf-8"))
+    # 'utf-8-sig' tolerates BOM; plain 'utf-8' fails if BOM exists
+    raw = toc_file.read_text(encoding="utf-8-sig")
+    toc = json.loads(raw)
 except Exception as e:
     print("Invalid toc.json:", e)
     sys.exit(1)
 
 missing = []
-# Expect structure like: {"volume0": [{"path":"chapters/v00/001-introduction.md"}]}
 for item in toc.get("volume0", []):
     p = ROOT / item["path"]
     if not p.exists():
