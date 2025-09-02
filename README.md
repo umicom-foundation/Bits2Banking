@@ -1,3 +1,8 @@
+![Build](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/build-volume0.yml/badge.svg)
+![Lint](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/lint.yml/badge.svg)
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://umicom-foundation.github.io/Bits2Banking)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 # Bits to Banking — Open Book Project
 Learn computing from **bits → operating systems → programming → databases → networking → security → finance** and into **Calypso/TMS & real projects**.  
 We publish in small, printable **volumes** so beginners (kids/teens) and adults can follow step by step.
