@@ -113,7 +113,7 @@ def build_master_guide() -> Document:
         "Vol. 4 — Networking & Protocols: TCP/UDP, HTTP/REST, TLS; FIX, SWIFT ISO 20022, FpML; queues and messaging.",
         "Vol. 5 — Cybersecurity for Builders: threats, OWASP, memory bugs, secrets/KMS, secure deployment, audit/compliance.",
         "Vol. 6 — Programming Deep Dives: C/C++, Java (JVM, concurrency), Python, Rust, Zig, PHP; patterns, testing, packaging, web & mobile overviews.",
-        "Vol. 7 — Finance & Treasury Primer: markets 101, asset classes, front/middle/back office, PnL, risk, settlement, clearing; history of money → digital.",
+        "Vol. 7 — Finance & Treasury Primer: markets 101, asset classes, front/middle/back office, P&L, risk, settlement, clearing; history of money → digital.",
         "Vols. 8–12 — Calypso Series (multiple slim books): Fast-Track; Architecture & Core; Risk Compute; Position/Liquidity/KPI; Market Data/Quotes; Integration/Messaging.",
         "Vol. 13 — Customization & Extensions: SPIs, adapters, scheduled tasks, UI add-ons, reports; multi-language examples.",
         "Vol. 14 — Testing, Deployment & Ops: CATT, perf/load, observability, HA/DR, upgrades, blue/green, rollback.",
