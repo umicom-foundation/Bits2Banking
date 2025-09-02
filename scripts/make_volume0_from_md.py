@@ -12,10 +12,14 @@ from docx.enum.style import WD_STYLE_TYPE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-# where we read and write
-CH0 = Path(r"C:\Bits2Banking\chapters\v00\ch00_prelude.md")
-CH1 = Path(r"C:\Bits2Banking\chapters\v00\ch01_git_github_basics.md")
-OUT = Path(r"C:\Bits2Banking\volumes\Volume_00_Source_Control.docx")
+# --------------------------
+# IMPORTANT CHANGE: paths
+# --------------------------
+# Use repo-relative paths so it works on GitHub runners and your PC.
+ROOT = Path(__file__).resolve().parents[1]  # repo root = parent of /scripts
+CH0 = ROOT / "chapters" / "v00" / "ch00_prelude.md"
+CH1 = ROOT / "chapters" / "v00" / "ch01_git_github_basics.md"
+OUT = ROOT / "volumes" / "Volume_00_Source_Control.docx"
 
 IMG_RE = re.compile(r'!\[(.*?)\]\((.*?)\)')  # (images ignored for now)
 
@@ -130,3 +134,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+# End of make_volume0_from_md.py
