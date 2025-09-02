@@ -5,13 +5,11 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# REQUIRED for Pages deploy
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Avoid overlapping deployments
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -39,7 +37,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages   # <- keep this exact
+      name: github-pages
     steps:
       - name: Deploy to Pages
         id: deployment
