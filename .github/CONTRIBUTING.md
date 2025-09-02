@@ -12,8 +12,11 @@
 - Keep PRs small and focused
 - Prefer Markdown in `chapters/`
 - For scripts, include a header:
-  - Created by: Sammy Hegab
-  - Date: YYYY-MM-DD
+    - Created by: Sammy Hegab
+    - Date: YYYY-MM-DD
+- Section
+    - Keep PRs small and focused
+    - Use clear commit messages
 
 ## Local quick build
 ```powershell
