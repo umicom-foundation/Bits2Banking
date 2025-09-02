@@ -1,28 +1,23 @@
-@"
-name: Feature request
-description: Suggest a new chapter, example, or improvement
-labels: [enhancement]
-body:
-  - type: textarea
-    id: summary
-    attributes:
-      label: What would you like to add or improve?
-      placeholder: Short description…
-    validations:
-      required: true
-  - type: textarea
-    id: details
-    attributes:
-      label: Any details, links, or examples?
-  - type: dropdown
-    id: area
-    attributes:
-      label: Area
-      options:
-        - Chapters
-        - Scripts / Build
-        - Diagrams
-        - CI / Automation
-        - Other
-"@ | Set-Content -Encoding utf8 "C:\Bits2Banking\.github\ISSUE_TEMPLATE\feature_request.md"
+# Feature Request
 
+Thanks for helping improve the project!
+
+---
+
+## What is your idea?
+
+<!-- Clearly describe your proposal -->
+
+## Why is this useful?
+
+<!-- Explain how it benefits contributors/learners -->
+
+## Suggested implementation
+
+<!-- If you have thoughts on how to implement it, add them -->
+
+---
+
+## Additional context
+
+<!-- Add any other details, mockups, or examples -->

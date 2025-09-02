@@ -1,22 +1,35 @@
----
+# Bug Report
 
-name: Bug report
-
-about: Something broke in build or content
+Thanks for taking the time to report a problem!
 
 ---
 
+## What happened?
 
+<!-- Describe the issue clearly. -->
 
-\*\*What happened?\*\*
+## Steps to Reproduce
 
-\*\*Steps to reproduce\*\*
+1. Go to '...'
+2. Run '...'
+3. See error
 
-\*\*Expected\*\*
+## Expected behavior
 
-\*\*Screenshots / build logs\*\*
+<!-- What you thought should happen -->
 
-\*\*Environment:\*\* (Windows version, Python version)
+## Screenshots / Logs
 
+<!-- Add screenshots, terminal output, or error logs if available -->
 
+## Environment
 
+- OS: [e.g. Windows 11, Ubuntu 22.04]
+- Python version: [e.g. 3.11]
+- Git version: [e.g. 2.42]
+
+---
+
+## Additional context
+
+<!-- Add any other context here -->
