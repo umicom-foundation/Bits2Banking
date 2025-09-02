@@ -15,6 +15,7 @@
 - [Code of Conduct](.github/CODE_OF_CONDUCT.md) — Community rules and expectations  
 - [Governance](GOVERNANCE.md) — How decisions are made  
 - [Security Policy](.github/SECURITY.md) — How to report vulnerabilities  
+- [Changelog](CHANGELOG.md) — Project history and notable changes
 
 ---
 
