@@ -1,8 +1,14 @@
 # Bits to Banking — Open Book Project
-[![Release](https://img.shields.io/github/v/release/umicom-foundation/Bits2Banking?display_name=tag&sort=semver)](https://github.com/umicom-foundation/Bits2Banking/releases/latest)
+
 [![Build](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/build-volume0.yml/badge.svg)](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/build-volume0.yml)
 [![Lint](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/lint.yml/badge.svg)](https://github.com/umicom-foundation/Bits2Banking/actions/workflows/lint.yml)
+[![Release](https://img.shields.io/github/v/release/umicom-foundation/Bits2Banking?display_name=tag&sort=semver)](https://github.com/umicom-foundation/Bits2Banking/releases/latest)
 [![Docs](https://img.shields.io/badge/docs-online-blue)](https://umicom-foundation.github.io/Bits2Banking)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Learn computing from **bits → operating systems → programming → databases → networking → security → finance**, then into **Calypso/TMS** and real projects.  
+We publish in small, printable **volumes** so beginners and adults can follow step by step.
+
 ---
 
 ## 📚 Project Docs
@@ -19,19 +25,11 @@
 
 ---
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-Learn computing from **bits → operating systems → programming → databases → networking → security → finance**, then into **Calypso/TMS** and real projects.  
-We publish in small, printable **volumes** so beginners and adults can follow step by step.
-
----
-
 ## Our Cause
 
 This project is part of the **Umicom Foundation**’s mission: **open education with real-world impact**.  
 
-At the same time, we are committed to supporting **civilians in Gaza** who are suffering siege, starvation, and genocide.  
-Through this project, we aim to:  
+We are committed to supporting **civilians in Gaza** who are suffering siege, starvation, and genocide. Through this project, we aim to:  
 
 - Provide **free educational resources** worldwide.  
 - Channel project proceeds and donations into **relief and education** for those in crisis.  
@@ -43,8 +41,8 @@ Through this project, we aim to:
 
 **Sammy Hegab** — software engineer, educator, and humanitarian.  
 
-- 10+ years in the financial sector, working on Treasury Management Systems (Calypso, Summit, Murex).  
-- Background in energy, fintech, and open-source advocacy (RISC-V, Linux, free software).  
+- 10+ years in the financial sector, working on Treasury Management Systems (**Calypso**, **Summit**, **Murex**).  
+- Background in energy, fintech, and open-source advocacy (**RISC‑V**, **Linux**, free software).  
 - Founder of the Umicom Foundation, which promotes **education, relief, and technology** projects.  
 
 I started Bits to Banking to make computing and finance accessible to all learners, and to channel learning into **real help for people in need**.
@@ -53,8 +51,7 @@ I started Bits to Banking to make computing and finance accessible to all learne
 
 ## Support & Donations
 
-We have a dedicated [SUPPORT.md](SUPPORT.md) page with full details (GBP, USD, EUR, AUD, CAD accounts).  
-
+We have a dedicated **[SUPPORT.md](SUPPORT.md)** page with full details (GBP, USD, EUR, AUD, CAD accounts).  
 Your support helps us fund both **education** and **relief for Gaza**.  
 
 ---
@@ -63,32 +60,70 @@ Your support helps us fund both **education** and **relief for Gaza**.
 
 - A small **Volume 0** Word file you can open locally.  
 - Two short chapters you can edit in Markdown.  
-- A simple “edit → build → pull request” flow.  
+- A simple **“edit → build → pull request”** flow.  
 
 ---
 
-## Quick Start (Windows)
+## Quick Start — Windows (PowerShell)
 
 > Requirements: **Python 3.11+** and **Git**  
 > Download: <https://python.org> • <https://git-scm.com> • (Optional: [VS Code](https://code.visualstudio.com))
 
+### 0) Get the project
 ```powershell
-# 0) Get the source
 git clone https://github.com/umicom-foundation/Bits2Banking.git C:\Bits2Banking
 cd C:\Bits2Banking
-
-# 1) Set up a virtual environment and install dependencies
-python -m venv .venv
-.\.venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt   # if requirements.txt is missing, run:  pip install python-docx
-
-# 2) Build Volume 0 locally
-python scripts\make_volume0_from_md.py
-
-# 3) Open the output
-start .\volumes\Volume_00_Source_Control.docx
 ```
+
+### 1) (Optional) Create a virtual environment
+```powershell
+python -m venv .venv
+.\.venv\Scriptsctivate
+python -m pip install --upgrade pip
+```
+
+### 2) Install dependencies
+```powershell
+# If requirements.txt exists, use it. Otherwise install python-docx only.
+if (Test-Path .
+equirements.txt) { pip install -r requirements.txt } else { pip install python-docx }
+```
+
+### 3) Build using the helper script
+```powershell
+# Uses scripts\make_volume0_from_md.py under the hood
+.uild.ps1 build
+```
+
+### 4) Open the result
+```powershell
+start .olumes\Volume_00_Source_Control.docx
+```
+
+> Other handy commands: `.uild.ps1 install` • `.uild.ps1 docs` • `.uild.ps1 lint` • `.uild.ps1 clean`
+
+---
+
+## Quick Start — Any OS (Makefile)
+
+> Requirements: **Python 3.11+**, **Git**, and **make** (Linux/macOS; on Windows use Git Bash/MSYS2).
+
+```bash
+# 0) Get the project
+git clone https://github.com/umicom-foundation/Bits2Banking.git
+cd Bits2Banking
+
+# 1) Install deps (uses requirements.txt if present)
+make install
+
+# 2) Build Volume 0
+make build
+
+# 3) Open the output (macOS or Linux)
+open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || xdg-open ./volumes/Volume_00_Source_Control.docx
+```
+
+> Other handy commands: `make docs` • `make lint` • `make clean`
 
 ---
 
@@ -105,14 +140,34 @@ start .\volumes\Volume_00_Source_Control.docx
 ## Contributing (Step-by-Step)
 
 1. **Fork** the repo and create a branch (e.g., `feat/my-chapter`).  
-2. Add/edit a file in `chapters/v00/` (start with `# Title` as the first line).  
-3. Build locally:  
-   ```powershell
-   python scripts\make_volume0_from_md.py
+2. Add/edit a file in `chapters/v00/` — start with a top-level heading:
+   ```markdown
+   # My Chapter Title
+   A short introduction...
    ```
-4. Open `volumes/Volume_00_Source_Control.docx` and check your changes.  
+3. Build locally (pick one):  
+   ```powershell
+   .uild.ps1 build
+   ```
+   ```bash
+   make build
+   ```
+4. Open and review `volumes/Volume_00_Source_Control.docx`.  
 5. Commit, push, and open a Pull Request.  
 6. ✅ **CI will attach the built `.docx`** to your PR.  
+
+---
+
+## Troubleshooting
+
+- **Markdown linter errors (MD040, MD024, etc.)**  
+  Use code fences **with a language** (e.g., \`\`\`text, \`\`\`powershell). Duplicate headings are allowed across dates in the changelog.  
+- **Typos check fails on brand names**  
+  We whitelist proper nouns in `.typos.toml`. Open a PR to add new ones.  
+- **UTF‑8 BOM error/line endings**  
+  We ship `.editorconfig` and `.gitattributes` to keep files UTF‑8 (no BOM) and LF. Ensure your editor follows them.  
+- **Pages deployment 404**  
+  Repo Settings → Pages → Source = **GitHub Actions**; ensure workflow has `pages: write`, `id-token: write` permissions.
 
 ---
 
