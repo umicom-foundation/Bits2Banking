@@ -34,7 +34,7 @@ Our goal: teach computing from the ground up — **bits → banking** — while 
 ### 📅 Volume 5 — Finance & Banking Primer
 - Markets 101
 - Asset classes
-- Risk, PnL, settlement, clearing
+- Risk, P&L, settlement, clearing
 
 ### 📅 Volume 6+ — Treasury Management Systems (Calypso/TMS)
 - Architecture & workflows
