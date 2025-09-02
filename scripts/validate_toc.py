@@ -9,18 +9,23 @@ if not toc_file.exists():
     sys.exit(0)
 
 try:
-    # 'utf-8-sig' tolerates BOM; plain 'utf-8' fails if BOM exists
-    raw = toc_file.read_text(encoding="utf-8-sig")
+    raw = toc_file.read_text(encoding="utf-8-sig")  # tolerate BOM
     toc = json.loads(raw)
 except Exception as e:
     print("Invalid toc.json:", e)
     sys.exit(1)
 
 missing = []
-for item in toc.get("volume0", []):
-    p = ROOT / item["path"]
-    if not p.exists():
-        missing.append(str(p))
+
+# Prefer the simple "volume0" list if present
+if "volume0" in toc and isinstance(toc["volume0"], list):
+    for item in toc["volume0"]:
+        p = ROOT / item["path"]
+        if not p.exists():
+            missing.append(str(p))
+else:
+    # Otherwise, accept your "volumes" schema and just pass (no chapter list provided)
+    print("No 'volume0' list in toc.json; skipping strict chapter checks.")
 
 if missing:
     print("Missing files referenced by toc.json:")
