@@ -3,25 +3,53 @@ name: Build Volume 0
 on:
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install python-docx
-      - shell: pwsh
+          cache: 'pip'
+
+      - name: Install deps
         run: |
-          if (Test-Path 'scripts\make_volume0_from_md.py') {
-            python scripts\make_volume0_from_md.py
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || pip install python-docx
+
+      - name: Validate TOC
+        shell: pwsh
+        run: |
+          if (Test-Path 'scripts/validate_toc.py') {
+            python scripts/validate_toc.py
           } else {
-            python scripts\make_volume0_min.py
+            Write-Host "No validate_toc.py yet (skipping)."
           }
-      - uses: actions/upload-artifact@v4
+
+      - name: Build Volume 0
+        shell: pwsh
+        run: |
+          if (Test-Path 'scripts/make_volume0_from_md.py') {
+            python scripts/make_volume0_from_md.py --volume 0
+          } elseif (Test-Path 'scripts/make_volume0_min.py') {
+            python scripts/make_volume0_min.py
+          } else {
+            Write-Error "No build script found (scripts/make_volume0_from_md.py or scripts/make_volume0_min.py)."
+          }
+          if (!(Test-Path 'volumes/Volume_00_Source_Control.docx')) {
+            Write-Error "Expected output not found: volumes/Volume_00_Source_Control.docx"
+          }
+
+      - name: Upload docx artifact
+        uses: actions/upload-artifact@v4
         with:
           name: volume0-docx
-          path: "volumes\\Volume_00_Source_Control.docx"
-
+          path: volumes/Volume_00_Source_Control.docx
+          if-no-files-found: error
+          retention-days: 7
