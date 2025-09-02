@@ -1,0 +1,27 @@
+name: Build Volume 0
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install python-docx
+      - shell: pwsh
+        run: |
+          if (Test-Path 'scripts\make_volume0_from_md.py') {
+            python scripts\make_volume0_from_md.py
+          } else {
+            python scripts\make_volume0_min.py
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: volume0-docx
+          path: volumes\Volume_00_Source_Control.docx
+
