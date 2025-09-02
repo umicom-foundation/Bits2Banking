@@ -1,4 +1,4 @@
-# CHAPTER TEMPLATE — Start writing here
+## CHAPTER TEMPLATE — Start writing here
 
 > Copy this into a new file or paste into an existing chapter.
 
