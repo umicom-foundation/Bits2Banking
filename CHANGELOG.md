@@ -17,7 +17,7 @@ This project follows a simple changelog format (date + description).
 - FUNDING.yml (GitHub Sponsor link)
 
 ### Fixed — 2025-09-02
-- Typos check failure for `P&L` (previously `PnL`)
+- Typos check failure for **P&L** wording
 - Control characters in README PowerShell commands
 
 ---
@@ -26,4 +26,4 @@ This project follows a simple changelog format (date + description).
 ### Added — 2025-09-01
 - `make_volume0_from_md.py` — build Volume 0 from Markdown to DOCX
 - Initial GitHub Actions workflows for build, lint, deploy
-- Chapters `ch00_prelude.md` and `ch01_git_github_basics.md`
+- Chapters `ch00_prelude.md` and `ch01_git_GitHub_basics.md`
