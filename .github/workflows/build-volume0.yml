@@ -13,12 +13,13 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Show repo tree (debug)
         shell: pwsh
         run: |
-          Get-Location
+          Write-Host "PWD:" (Get-Location)
           Get-ChildItem -Recurse | Select-Object FullName
 
       - name: Setup Python
@@ -28,13 +29,14 @@ jobs:
           cache: 'pip'
 
       - name: Install deps
+        shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          if exist requirements.txt (
+          if (Test-Path "requirements.txt") {
             pip install -r requirements.txt
-          ) else (
+          } else {
             pip install python-docx
-          )
+          }
 
       - name: Validate TOC (optional)
         shell: pwsh
@@ -56,7 +58,7 @@ jobs:
             Write-Error "No build script found in scripts/."
           }
 
-      - name: Verify output (hard fail if missing)
+      - name: Verify output
         shell: pwsh
         run: |
           if (Test-Path 'volumes/Volume_00_Source_Control.docx') {
@@ -65,7 +67,7 @@ jobs:
             Write-Error "❌ Expected output not found: volumes/Volume_00_Source_Control.docx"
           }
 
-      - name: Upload docx artifact
+      - name: Upload DOCX artifact
         uses: actions/upload-artifact@v4
         with:
           name: volume0-docx
