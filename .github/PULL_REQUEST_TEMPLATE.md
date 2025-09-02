@@ -1,15 +1,24 @@
-@"
-## Summary
-(1–3 lines about what changed)
+\## What’s in this PR
 
-## Why
-(brief reason)
+\- \[ ] New/updated chapter(s)
 
-## How to test
-- [ ] Built locally (script ran OK)
-- [ ] Opened the DOCX and can see my change
+\- \[ ] Build script change
 
-## Notes for reviewers
-(optional context or screenshots)
-"@ | Set-Content -Encoding utf8 "C:\Bits2Banking\.github\PULL_REQUEST_TEMPLATE.md"
+\- \[ ] Docs only
+
+
+
+\## Checklist
+
+\- \[ ] I ran the build locally
+
+\- \[ ] Output created in `volumes/`
+
+\- \[ ] Paths use forward slashes
+
+
+
+\## Notes for reviewers
+
+
 
