@@ -76,7 +76,11 @@ If your text is bigger, you can add a new section file and we’ll place it in t
    ```text
    (Put any commands or tiny example here)
    ```
+   ```markdown
+   ## Try it yourself
+   Write one small step people can try themselves here.
    ```
+
 5) Press **“Propose new file”** → create the Pull Request  
 6) We’ll help move it under the right chapter and include it in the volume build.
 
