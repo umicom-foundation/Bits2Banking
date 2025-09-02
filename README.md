@@ -179,7 +179,7 @@ open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || xdg-open ./volumes/V
 ## Troubleshooting
 
 - **Markdown linter errors (MD040, MD024, etc.)**  
-  Use code fences **with a language** (e.g., ```text, ```powershell). Duplicate headings are allowed across dates in the changelog.  
+  Use code fences **with a language** (e.g., `text`, `powershell`). Duplicate headings are allowed across dates in the changelog.
 - **Typos check fails on brand names**  
   We whitelist proper nouns in `.typos.toml`. Open a PR to add new ones.  
 - **UTF‑8 BOM error / line endings**  
