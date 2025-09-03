@@ -73,7 +73,7 @@ This principle later informs our critique of **fiat** and **unbacked crypto**.
 - **Trust + contracts** power markets better than brute force.
 - **Cheating in measures** (including by currency manipulation) destroys blessing.
 
-### Reflection (18+)
+### Reflection
 Compare two systems: Rome’s debasement → collapse, versus Islam’s insistence on fair weights → flourishing trade. Which resembles today’s world more?
 
 ### Supplication (Duʿā’)
