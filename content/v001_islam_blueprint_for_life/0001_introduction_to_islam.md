@@ -124,3 +124,7 @@ With belief, justice, and unity established, we next examine the forces that div
 **English:**  
 O Allah, show us truth as truth and enable us to follow it; show us falsehood as falsehood and enable us to avoid it. Make us keys to goodness and locks against harm, and use us to serve people and help the oppressed. Āmīn.
 
+---
+
+**← [Home / Volume index](../index.md)**  
+**Next:** [Corruption, Ideologies & Betrayal →](v001_islam_blueprint_for_life/0002_corruption_ideologies_and_betrayal.md)
