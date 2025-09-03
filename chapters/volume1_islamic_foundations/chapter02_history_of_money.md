@@ -1,11 +1,10 @@
-# Chapter 2 — The History of Money and Trade in Islam
+﻿# Chapter 2 — The History of Money and Trade in Islam
 
 ## 2.1 Why study money?
 Money is a social agreement. When it is honest, society flourishes; when it is corrupted, the weak are exploited. Islam came to protect people from injustice in measures, weights, and contracts.
 
 > **“And establish weight in justice and do not make deficient the balance.”**  
 > **وَأَقِيمُوا الْوَزْنَ بِالْقِسْطِ وَلَا تُخْسِرُوا الْمِيزَانَ** *(Ar-Raḥmān 55:9)*
-
 > **“Woe to those who give less than due…”**  
 > **وَيْلٌ لِّلْمُطَفِّفِينَ** *(Al-Muṭaffifīn 83:1–3)*
 

@@ -1,4 +1,4 @@
-# Chapter 1 — An Easy Introduction to Islam
+﻿# Chapter 1 — An Easy Introduction to Islam
 
 > **Bismillah (In the Name of Allah, the Most Merciful, the Most Compassionate)**
 
@@ -17,7 +17,6 @@ Human beings forget. We chase short-term pleasures and lose sight of why we’re
 > **“And We certainly sent into every nation a messenger, [saying], ‘Worship Allah and avoid false gods.’”**  
 > **وَلَقَدْ بَعَثْنَا فِي كُلِّ أُمَّةٍ رَّسُولًا أَنِ اعْبُدُوا اللَّهَ وَاجْتَنِبُوا الطَّاغُوتَ**  
 > *(An-Naḥl 16:36)*
-
 > **“And I did not create jinn and mankind except to worship Me.”**  
 > **وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ**  
 > *(Adh-Dhāriyāt 51:56)*
@@ -58,7 +57,6 @@ Rituals (prayer, fasting, pilgrimage) are the **foundation**. But Islam is also 
 > **“Do not consume one another’s wealth unjustly, but only [in lawful] trade by mutual consent.”**  
 > **وَلَا تَأْكُلُوا أَمْوَالَكُمْ بَيْنَكُمْ بِالْبَاطِلِ إِلَّا أَنْ تَكُونَ تِجَارَةً عَنْ تَرَاضٍ**  
 > *(An-Nisā’ 4:29)*
-
 > **“Woe to those who give less [than due]… who, when they measure for themselves, take in full; but when they measure or weigh for others, they cause loss.”**  
 > **وَيْلٌ لِّلْمُطَفِّفِينَ…**  
 > *(Al-Muṭaffifīn 83:1–3)*
