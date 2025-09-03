@@ -11,4 +11,4 @@
 **اللَّهُمَّ اجْعَلْنَا مِنْ أَهْلِ الصِّدْقِ وَالْعَدْلِ، وَوَفِّقْنَا لِخِدْمَةِ خَلْقِكَ.**  
 *O Allah, make us people of truth and justice, and grant us success in serving Your creation.*
 
-[← Chapter 7](chapter07_umicom_abs_coin.md)
+[← Chapter 7](umicom_abs_coin.md)
