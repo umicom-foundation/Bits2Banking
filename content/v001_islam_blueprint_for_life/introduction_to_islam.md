@@ -1,6 +1,6 @@
 # Introduction to Islam — A Complete Way of Life
 
-Islam begins with a clear truth: **Allah is One**, the Creator of the heavens and the earth, and He created humanity with purpose, wisdom, and dignity. In the Qur’an, Allah tells us He placed humankind on earth as **khalīfah**—stewards who cultivate goodness, restrain harm, and build just communities. Islam is therefore **dīn**: not only private worship, but a complete way of life—belief, prayer, character, family, markets and contracts, governance, mercy to people and to every living thing.
+Islam begins with a clear truth: **Allah is One**, the Creator of the heavens and the earth, and He created humanity with purpose, wisdom, and dignity. In the Qur’an, Allah tells us He placed humankind on earth as **khalīfah**—stewards who cultivate goodness, restrain harm, and build just communities. Islam is therefore **Way of Life (DEEN)**: not only private worship, but a complete way of life—belief, prayer, character, family, markets and contracts, governance, mercy to people and to every living thing.
 
 > **Q 2:30 (Arabic):** وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً  
 > **Meaning:** “When your Lord said to the angels, ‘I am placing upon the earth a khalīfah (successive authority).’”
