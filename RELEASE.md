@@ -6,7 +6,7 @@ This guide explains how to cut a release and publish the latest book artifacts.
 
 ## Versioning
 - Use **calendar tags** for early drafts, then semantic once stable.
-    - Examples: `v2025.09.02`, `v0.1.0`, `v0.2.0`
+  - Examples: `v2025.09.02`, `v0.1.0`, `v0.2.0`
 - Keep **CHANGELOG.md** up to date.
 
 ---
