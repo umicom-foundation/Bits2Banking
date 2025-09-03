@@ -1,8 +1,8 @@
-# Bits2Banking Docs
+# Bits to Banking — Open Book
 
-Welcome! This site will link to chapter content and previews as the project grows.
+Welcome! This site assembles our open, living manuscript.
 
-- **Repository:** https://github.com/umicom-foundation/Bits2Banking  
-- **Volume 0 (Source Control):** chapters live in `chapters/v00/` in the repo.
+- **Volume v001 — Islam: A Complete Blueprint for Life**  
+  Foundations of belief, justice, ethics, markets, money, and society from an Islamic lens.
 
-
+Use the left navigation to read chapters in order.
