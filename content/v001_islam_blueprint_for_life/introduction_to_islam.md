@@ -126,8 +126,11 @@ Islam trains us to be **givers** who lift others. **Zakāt** purifies wealth; vo
 > **Meaning:** “You will never attain righteousness until you spend from what you love.”
 
 Our project—**education** plus **ethical finance**—aims to **serve people** so families, students, and small businesses can breathe and build.
-# Where to next?
+
+## Where to next?
+
 With belief, justice, and unity established, we next examine the forces that divide the human family: supremacist ideologies and political hypocrisy that weaponize race, fear, and propaganda. See **0002_corruption_ideologies_and_betrayal.md**.
+
 ## Summary (Refresher)
 
 - Allah created us with **purpose**: to know Him and do right.  
@@ -151,8 +154,6 @@ With belief, justice, and unity established, we next examine the forces that div
 
 **English:**  
 O Allah, show us truth as truth and enable us to follow it; show us falsehood as falsehood and enable us to avoid it. Make us keys to goodness and locks against harm, and use us to serve people and help the oppressed. Āmīn.
-
-
 
 **For courage and unity**  
 **Arabic:** اللَّهُمَّ ثَبِّتْ قُلُوبَنَا عِنْدَ الْفِتَنِ، وَاجْمَعْ كَلِمَتَنَا عَلَى الْحَقِّ، وَانْصُرِ الْمُسْتَضْعَفِينَ.  
