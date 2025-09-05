@@ -9,6 +9,11 @@ on:
 permissions:
   contents: write
 
+# prevent overlapping runs on the same branch
+concurrency:
+  group: ingest-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ingest:
     runs-on: ubuntu-latest
@@ -33,6 +38,28 @@ jobs:
         shell: bash
         run: |
           git diff --name-only "${{ steps.diff.outputs.before }}" "${{ steps.diff.outputs.sha }}" | grep '^raw_docs/' || echo "None"
+
+      # Warn-only checks for filename hygiene
+      - name: Filename hygiene (warn only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.diff.outputs.before }}"
+          HEAD="${{ steps.diff.outputs.sha }}"
+          FILES=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**' | tr -d '\r' || true)
+          if [ -z "$FILES" ]; then
+            echo "No files touched under raw_docs."
+            exit 0
+          fi
+          for f in $FILES; do
+            bn="$(basename "$f")"
+            if echo "$bn" | grep -q '[A-Z]'; then
+              echo "::warning file=$f,title=Uppercase in filename::Prefer lowercase-hyphenated names (e.g., my-chapter.md)."
+            fi
+            if echo "$bn" | grep -q ' '; then
+              echo "::warning file=$f,title=Spaces in filename::Use hyphens instead of spaces (e.g., my-chapter.md)."
+            fi
+          done
 
       # --- Markdown passthrough (no conversion) ---
       - name: Passthrough Markdown files (.md)
@@ -156,9 +183,7 @@ jobs:
               [ "$vol" = "$rel" ] && vol="misc"
               outdir="content/volumes/$vol/images"
               mkdir -p "$outdir"
-              # Standardize filename to cover.png (preserve original extension by converting to png if needed later)
               cp -f "$f" "$outdir/cover.${BASH_REMATCH[1]}"
-              # prefer PNG name
               if [ "${BASH_REMATCH[1],,}" != "png" ]; then
                 mv "$outdir/cover.${BASH_REMATCH[1]}" "$outdir/cover.png" || true
               fi
@@ -215,7 +240,6 @@ jobs:
               n = next_chapter_number(vol_dir)
               prefix = f"ch{n:02d}"
 
-              # keep existing stem as slug
               stem = md.stem
               slug = slugify(stem)
               new_name = f"{prefix}-{slug}.md"
