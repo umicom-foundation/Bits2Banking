@@ -1,0 +1,97 @@
+name: "Contribute a Chapter"
+description: "Guided checklist to add a new chapter/section via raw_docs/"
+title: "[chapter] <short-title>"
+labels:
+  - "chapter:submission"
+  - "type:content"
+  - "needs:review"
+assignees:
+  - sammyhegab
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing! You can **upload `.md`, `.docx`, or `.pdf`** under `raw_docs/<volume-slug>/`.
+        The bot will convert/copy into `content/volumes/<slug>/`, auto-number new files, and normalize Markdown.
+
+        **Quick guide:** See [docs/CONTRIBUTING_RAW_DOCS.md](../../docs/CONTRIBUTING_RAW_DOCS.md)
+
+  - type: dropdown
+    id: volume
+    attributes:
+      label: Target volume (slug)
+      description: Pick an existing volume or choose "New volume (propose)" and set a slug below.
+      options:
+        - volume-0
+        - introduction-to-islam
+        - bits-to-banking
+        - New volume (propose) — I’ll add a slug below
+    validations:
+      required: true
+
+  - type: input
+    id: new_volume_slug
+    attributes:
+      label: New volume slug (only if proposing a new one)
+      description: lowercase-with-hyphens, e.g. `generalist-ai`
+      placeholder: generalist-ai
+
+  - type: input
+    id: chapter_title
+    attributes:
+      label: Chapter title (H1)
+      description: This will be the top-level `#` heading in Markdown.
+      placeholder: Bits & Binary — A Gentle Start
+    validations:
+      required: true
+
+  - type: dropdown
+    id: filetype
+    attributes:
+      label: Source file type you'll upload
+      options:
+        - Markdown (.md)
+        - Word (.docx)
+        - PDF (.pdf)
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 2–3 sentence summary
+      description: What the reader will learn; key terms or examples.
+      placeholder: This chapter introduces bits, bytes, and how text is encoded…
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: I will put files in `raw_docs/<slug>/` (and optional `bookcover_<Title>.png`)
+          required: true
+        - label: My Markdown has a single `# Title` at the top (if using `.md`)
+        - label: Code blocks use a language (e.g., ```python or ```text)
+        - label: Filenames are lowercase-with-hyphens (no spaces)
+        - label: Files are under size limits (MD ≤ 2MB, DOCX ≤ 20MB, PDF ≤ 40MB, images ≤ 10MB)
+        - label: I’ve read the Quick Upload guide
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / links (optional)
+      description: Anything reviewers should know (draft scope, sources, diagrams).
+      placeholder: e.g., I’ll add diagrams in a follow-up PR.
+
+  - type: markdown
+    attributes:
+      value: |
+        **How to upload:**
+        1) Create folder `raw_docs/<slug>/`  
+        2) Add your `.md` / `.docx` / `.pdf` (optional `bookcover_<Title>.png`)  
+        3) Commit to **main** (or open a PR). The **Ingest** workflow will handle the rest.
+
+        Output appears under `content/volumes/<slug>/` with auto-numbering and normalization.
+
