@@ -18,8 +18,13 @@ jobs:
   ingest:
     runs-on: ubuntu-latest
     env:
-      # Files matching this regex will be ignored (not processed)
+      # Skip junk/temp files
       IGNORE_RE: '(^|/)(~\$|\.#|#.*#|Thumbs\.db|\.DS_Store|\.AppleDouble|\.LSOverride|desktop\.ini|\.swp$|\.tmp$|\.bak$|\.partial$|\.crdownload$)'
+      # Size limits (bytes)
+      MD_MAX:   '2097152'    # 2 MB
+      DOCX_MAX: '20971520'   # 20 MB
+      PDF_MAX:  '41943040'   # 40 MB
+      IMG_MAX:  '10485760'   # 10 MB
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,7 +61,8 @@ jobs:
             echo "No files touched under raw_docs."
             exit 0
           fi
-          for f in $FILES; do
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
             bn="$(basename "$f")"
             if echo "$bn" | grep -q '[A-Z]'; then
               echo "::warning file=$f,title=Uppercase in filename::Prefer lowercase-hyphenated names (e.g., my-chapter.md)."
@@ -64,7 +70,7 @@ jobs:
             if echo "$bn" | grep -q ' '; then
               echo "::warning file=$f,title=Spaces in filename::Use hyphens instead of spaces (e.g., my-chapter.md)."
             fi
-          done
+          done <<< "$FILES"
 
       # --- Markdown passthrough (no conversion) ---
       - name: Passthrough Markdown files (.md)
@@ -80,7 +86,13 @@ jobs:
             echo "No .md files changed."
             exit 0
           fi
-          for f in $CHANGED; do
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            size=$(stat -c%s "$f" 2>/dev/null || echo 0)
+            if [ "$size" -gt "${MD_MAX}" ]; then
+              echo "::warning file=$f,title=File too large::Skipping Markdown > $((MD_MAX/1024/1024))MB ($size bytes)."
+              continue
+            fi
             rel="${f#raw_docs/}"
             vol="${rel%%/*}"
             [ "$vol" = "$rel" ] && vol="misc"
@@ -90,7 +102,7 @@ jobs:
             cp -f "$f" "$target"
             echo "$target" >> "$GITHUB_WORKSPACE/ingested.txt"
             echo "Copied $f -> $target"
-          done
+          done <<< "$CHANGED"
 
       # --- DOCX → Markdown (extracts embedded images) ---
       - name: Install pandoc and LibreOffice
@@ -110,7 +122,13 @@ jobs:
             echo "No .docx files changed."
             exit 0
           fi
-          for f in $CHANGED; do
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            size=$(stat -c%s "$f" 2>/dev/null || echo 0)
+            if [ "$size" -gt "${DOCX_MAX}" ]; then
+              echo "::warning file=$f,title=File too large::Skipping DOCX > $((DOCX_MAX/1024/1024))MB ($size bytes)."
+              continue
+            fi
             rel="${f#raw_docs/}"
             vol="${rel%%/*}"
             [ "$vol" = "$rel" ] && vol="misc"
@@ -123,7 +141,7 @@ jobs:
               -o "$outdir/${base}.md"
             echo "$outdir/${base}.md" >> "$GITHUB_WORKSPACE/ingested.txt"
             echo "Converted $f -> $outdir/${base}.md"
-          done
+          done <<< "$CHANGED"
 
       # --- PDF → DOCX → Markdown (best-effort; scanned PDFs become images) ---
       - name: Convert PDF to Markdown via LibreOffice + Pandoc
@@ -142,7 +160,14 @@ jobs:
           TMP="/tmp/pdf2docx"
           mkdir -p "$TMP"
 
-          for f in $CHANGED; do
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            size=$(stat -c%s "$f" 2>/dev/null || echo 0)
+            if [ "$size" -gt "${PDF_MAX}" ]; then
+              echo "::warning file=$f,title=File too large::Skipping PDF > $((PDF_MAX/1024/1024))MB ($size bytes)."
+              continue
+            fi
+
             rel="${f#raw_docs/}"
             vol="${rel%%/*}"
             [ "$vol" = "$rel" ] && vol="misc"
@@ -154,7 +179,7 @@ jobs:
             soffice --headless --infilter="writer_pdf_import" --convert-to docx "$f" --outdir "$TMP" || true
             DOCX="$TMP/${base}.docx"
             if [ ! -f "$DOCX" ]; then
-              echo "LibreOffice could not convert $f (maybe encrypted?). Skipping."
+              echo "LibreOffice could not convert $f (maybe image-only/encrypted). Skipping."
               continue
             fi
 
@@ -165,7 +190,7 @@ jobs:
               -o "$outdir/${base}.md"
             echo "$outdir/${base}.md" >> "$GITHUB_WORKSPACE/ingested.txt"
             echo "Converted $f -> $outdir/${base}.md"
-          done
+          done <<< "$CHANGED"
 
       # --- Copy/standardize book covers: bookcover_*.png|jpg|jpeg -> images/cover.png ---
       - name: Normalize book cover images
@@ -184,9 +209,15 @@ jobs:
           fi
           did=""
           shopt -s nocasematch
-          for f in $COVERS; do
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
             base="$(basename "$f")"
             if [[ "$base" =~ ^bookcover_.*\.(png|jpg|jpeg)$ ]]; then
+              size=$(stat -c%s "$f" 2>/dev/null || echo 0)
+              if [ "$size" -gt "${IMG_MAX}" ]; then
+                echo "::warning file=$f,title=Cover too large::Skipping image > $((IMG_MAX/1024/1024))MB ($size bytes)."
+                continue
+              fi
               rel="${f#raw_docs/}"
               vol="${rel%%/*}"
               [ "$vol" = "$rel" ] && vol="misc"
@@ -199,7 +230,7 @@ jobs:
               echo "Copied $f -> $outdir/cover.png"
               did="yes"
             fi
-          done
+          done <<< "$COVERS"
           if [ -z "$did" ]; then
             echo "No files matched bookcover_* pattern."
           fi
@@ -350,5 +381,5 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "ingest: import from raw_docs (md/docx/pdf + covers + auto-number + normalize)"
+          git commit -m "ingest: import from raw_docs (md/docx/pdf + covers + size-guards + auto-number + normalize)"
           git push
