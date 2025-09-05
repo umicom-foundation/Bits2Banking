@@ -31,7 +31,7 @@
 - **Environment** — stewardship (khilāfah), no waste/corruption.
 
 ### Supplication
-**اللَّهُمَّ طَهِّرْ أَمْوَالَنَا، وَبَارِكْ فِي مَعَاشِنَا، وَاجْعَلْنَا مِفْتَاحًا لِلْخَيْرِ.**
-*O Allah, purify our wealth, bless our livelihoods, and make us keys to goodness.*
+### اللَّهُمَّ طَهِّرْ أَمْوَالَنَا، وَبَارِكْ فِي مَعَاشِنَا، وَاجْعَلْنَا مِفْتَاحًا لِلْخَيْرِ.
+### O Allah, purify our wealth, bless our livelihoods, and make us keys to goodness.
 
 [← Chapter 5](technology_and_banking.md) | [Next → Chapter 7](umicom_abs_coin.md)

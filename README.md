@@ -14,7 +14,7 @@ We publish in small, printable **volumes** so beginners and adults can follow st
 
 ## 🚀 Copy–Paste Cheatsheet
 
-**Windows (PowerShell):**
+### Windows (PowerShell):
 ```powershell
 git clone https://github.com/umicom-foundation/Bits2Banking.git C:\Bits2Banking
 cd C:\Bits2Banking
@@ -24,7 +24,7 @@ start .
 olumes\Volume_00_Source_Control.docx
 ```
 
-**macOS / Linux (Makefile):**
+### macOS / Linux (Makefile):
 ```bash
 git clone https://github.com/umicom-foundation/Bits2Banking.git
 cd Bits2Banking && make install && make build

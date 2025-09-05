@@ -39,4 +39,4 @@ We use Discussions for brainstorming, humanitarian updates, and general collabor
 
 ---
 
-*Thank you for contributing to both **knowledge** and **humanity** with your ideas!*
+### Thank you for contributing to both **knowledge** and **humanity** with your ideas!

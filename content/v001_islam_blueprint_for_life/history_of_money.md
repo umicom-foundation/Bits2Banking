@@ -79,11 +79,11 @@ This is the road toward our **Umicom Asset-Backed Security Coin**: a Shariah-ali
 
 ## Supplication (Duʿāʾ)
 
-**Arabic:**
+### Arabic:
 اللَّهُمَّ بَارِكْ لَنَا فِي رِزْقِنَا، وَاجْعَلْ مَالَنَا قُوَّةً لِلطَّاعَةِ، وَحِصْنًا مِنَ الظُّلْمِ، وَنَجِّنَا مِنَ الرِّبَا وَمِنْ نُظُمِ الظُّلْمِ، وَارْزُقْنَا صِدْقًا فِي الْبَيْعِ وَالشِّرَاءِ وَالْعُقُودِ.
 
-**English:**
-*O Allah, bless our provision; make our wealth a strength for obedience and a shield against injustice; save us from riba and oppressive systems; and grant us truthfulness in buying, selling, and contracts.*
+### English:
+### O Allah, bless our provision; make our wealth a strength for obedience and a shield against injustice; save us from riba and oppressive systems; and grant us truthfulness in buying, selling, and contracts.
 
 ## Chapter Summary (Refresher)
 

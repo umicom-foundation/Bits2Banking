@@ -27,7 +27,7 @@ Risky mortgages were bundled and sold as safe. When borrowers defaulted, the sys
 - Sound money and just contracts are **moral necessities**, not nostalgia.
 
 ### Supplication
-**اللَّهُمَّ نَجِّنَا مِنْ ظُلْمِ الرِّبَا، وَاهْدِنَا لِبِنَاءِ نِظَامٍ عَادِلٍ قَائِمٍ عَلَى شَرِيعَتِكَ.**
-*O Allah, save us from the oppression of riba and guide us to build a just system based on Your Sharīʿah.*
+### اللَّهُمَّ نَجِّنَا مِنْ ظُلْمِ الرِّبَا، وَاهْدِنَا لِبِنَاءِ نِظَامٍ عَادِلٍ قَائِمٍ عَلَى شَرِيعَتِكَ.
+### O Allah, save us from the oppression of riba and guide us to build a just system based on Your Sharīʿah.
 
 [← Chapter 2](history_of_money.md) | [Next → Chapter 4](modern_banking_and_finance.md)

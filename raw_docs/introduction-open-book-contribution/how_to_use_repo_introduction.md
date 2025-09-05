@@ -42,7 +42,7 @@ tools/                    # Helper scripts for scaffolding volumes
 3. **Commit to `main`** (or open a PR).  
 4. Bot converts/copies into `content/volumes/<slug>/` and auto-numbers new chapters: `ch01-…`, `ch02-…`
 
-**Examples**
+### Examples
 ```text
 raw_docs/volume-0/intro.md
 raw_docs/introduction-to-islam/history.docx
@@ -66,7 +66,7 @@ raw_docs/bits-to-banking/bookcover_Bits_to_Banking.png
 6. **Normalization**  
    Adds YAML front-matter if missing (title, volume, status, dates), ensures a top-level `# Title`, and fixes bare code fences to `text`.
 
-**Guards & hygiene**
+### Guards & hygiene
 - Skips junk/temp files (e.g., `~$docx`, `.tmp`, `.DS_Store`, `Thumbs.db`).
 - Warns (does not fail) on uppercase or spaces in filenames—use **lowercase-hyphenated** names.
 - Skips very large files with a **warning** (Markdown >2MB, DOCX >20MB, PDF >40MB, images >10MB).
@@ -90,14 +90,14 @@ raw_docs/bits-to-banking/bookcover_Bits_to_Banking.png
 
 ## Start a new volume (optional helpers)
 
-**Windows (PowerShell)**
+### Windows (PowerShell)
 ```powershell
 # From the repo root
 .	ools
 ew-volume.ps1 introduction-to-islam
 ```
 
-**macOS/Linux (Bash)**
+### macOS/Linux (Bash)
 ```bash
 # From the repo root
 bash tools/new-volume.sh introduction-to-islam

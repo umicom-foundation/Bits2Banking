@@ -2,18 +2,33 @@
 """
 fix_md_lint.py
 
-Repairs two markdownlint issues across the repo:
+Auto-fixes common markdownlint issues across the repo:
 
 - MD028: no-blanks-blockquote
-  Converts a blank line that sits *inside* a blockquote into a quoted blank line,
-  preserving the same '>' nesting prefix (e.g., '>' or '>> ').
+  Turns a blank line *between two quoted lines* into a quoted blank line,
+  preserving the quote nesting depth where possible.
 
 - MD009: no-trailing-spaces
-  Removes trailing spaces if exactly 1; normalizes 2+ trailing spaces to exactly 2
-  (to keep intentional soft line breaks).
+  Removes a single trailing space; normalizes 2+ trailing spaces to exactly 2
+  (to preserve intentional soft line breaks).
+
+- MD010: no-hard-tabs
+  Replaces tab characters with 4 spaces (outside code fences by default).
+
+- MD036: no-emphasis-as-heading
+  If a line consists solely of emphasized text like "*Examples*" or "_Windows (PowerShell)_",
+  convert it to a real heading "### Examples" (outside code fences).
+
+- MD025: single-title/single-h1
+  Keeps the first top-level "# " heading; demotes any later "# " headings to "## ".
 
 Skips: volumes/**, book/**, site/**, .github/ISSUE_TEMPLATE/**, and PULL_REQUEST_TEMPLATE.md
-Avoids touching lines inside fenced code blocks (``` or ~~~, any length >= 3).
+Avoids touching lines inside fenced code blocks for MD028/MD036/MD025 and MD009.
+MD010 (tabs) is applied outside fences; change APPLY_TABS_IN_FENCES to True if you want everywhere.
+
+Run:
+  python3 scripts/fix_md_lint.py   (Linux/macOS)
+  py scripts\\fix_md_lint.py       (Windows)
 """
 
 from pathlib import Path
@@ -21,6 +36,10 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# --- Configuration ---
+APPLY_TABS_IN_FENCES = False     # Set True to replace tabs even inside fenced code blocks
+TAB_REPLACEMENT = " " * 4        # 4 spaces per tab
 
 def should_skip(p: Path) -> bool:
     rel = p.relative_to(ROOT).as_posix()
@@ -31,37 +50,43 @@ def should_skip(p: Path) -> bool:
     if p.name == "PULL_REQUEST_TEMPLATE.md": return True
     return False
 
-# Fence: start/end of fenced code blocks (```... or ~~~...), any length >=3
-fence_re = re.compile(r"^\s*(`{3,}|~{3,})")
-# A line that begins with one or more '>' (with optional spaces after) is a blockquote
-blockquote_line_re = re.compile(r"^\s*(>+\s?)")
-# Any trailing spaces/tabs
-trail_spaces_re = re.compile(r"[ \t]+$")
+# Fenced code blocks: ``` or ~~~ with 3+ markers
+FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
+# Blockquote line: one or more '>' possibly with a trailing space
+BQ_LINE_RE = re.compile(r"^\s*(>+\s?)")
+# Trailing spaces/tabs
+TRAIL_SPACES_RE = re.compile(r"[ \t]+$")
+
+# Heading patterns
+H1_RE = re.compile(r"^(#)\s+(.*?)(\s#+\s*)?$")  # "# Title" (ignore trailing hashes)
+# Emphasis-only line: *Text*, **Text**, _Text_, __Text__ (standalone line)
+EMPH_AS_HEADING_RE = re.compile(
+    r"""^\s*                # leading space
+        (?:
+          \*{1,3}([^\*\_].*?)\*{1,3}   # *text* or **text** or ***text***
+          |
+          _{1,3}([^_\*].*?)_{1,3}       # _text_ or __text__ or ___text___
+        )\s*$""",
+    re.VERBOSE
+)
+
+def is_fence(line: str) -> bool:
+    return FENCE_RE.match(line) is not None
 
 def is_blockquote(line: str) -> bool:
-    return blockquote_line_re.match(line) is not None
+    return BQ_LINE_RE.match(line) is not None
 
-def quote_prefix(line: str) -> str:
-    """
-    Return the exact leading quote prefix ('>', '>>', '   > ' etc.) from a blockquote line.
-    If not a blockquote, returns empty string.
-    """
-    m = blockquote_line_re.match(line)
+def bq_prefix(line: str) -> str:
+    m = BQ_LINE_RE.match(line)
     return m.group(1) if m else ""
 
-def fix_file(p: Path) -> bool:
-    # Read as strict UTF-8 (no 'ignore') to avoid silently losing non-ascii content
-    text = p.read_text(encoding="utf-8")
-    lines = text.splitlines(keepends=False)
-
-    changed = False
-    in_fence = False
-
-    # --- Pass 1: MD028 (blank lines inside blockquotes)
+def fix_md028(lines):
+    """Fix blank lines *inside* blockquotes by inserting a quoted blank line."""
     out = []
+    in_fence = False
+    changed = False
     for i, line in enumerate(lines):
-        # Toggle fence state when a fence line is seen
-        if fence_re.match(line):
+        if is_fence(line):
             in_fence = not in_fence
             out.append(line)
             continue
@@ -70,57 +95,129 @@ def fix_file(p: Path) -> bool:
             prev = out[-1] if out else ""
             nxt  = lines[i+1] if i+1 < len(lines) else ""
             if is_blockquote(prev) and is_blockquote(nxt):
-                # Insert a quoted blank line with *the same prefix depth* as prev
-                pref = quote_prefix(prev)
-                # Normalize to just the quote markers and a single space (if any space was there)
-                # e.g., "> " or ">> "
-                pref = pref.rstrip() + (" " if pref.strip() else "")
-                out.append(pref.rstrip("> ").replace(" ", "") + ("" if pref.strip() == ">" else pref))
-                # The above line ensures at least '>' and preserves multiple '>' if present.
-                # Simpler (and usually sufficient) alternative:
-                # out.append(pref.strip() if pref.strip() else ">")
-                # But we’ll use a cleaner approach below instead:
-                out.pop()  # remove the experimental append
-                pref_clean = quote_prefix(prev)
-                if not pref_clean:
-                    pref_clean = ">"
-                # If prev was '>> ' then we want '>>' (with optional space); both are valid.
-                out.append(pref_clean.strip())
+                # choose a prefix (prefer previous); fallback to next; else single '>'
+                pref_prev = bq_prefix(prev).strip()
+                pref_next = bq_prefix(nxt).strip()
+                pref = pref_prev or pref_next or ">"
+                # Normalize to just '>' repeated (strip spaces), e.g., ">>"
+                pref = ">" * pref.count(">")
+                if not pref:
+                    pref = ">"
+                out.append(pref)
                 changed = True
                 continue
 
         out.append(line)
+    return out, changed
 
-    lines = out
+def fix_md009(lines):
+    """Normalize trailing spaces."""
     out = []
     in_fence = False
-
-    # --- Pass 2: MD009 (trailing spaces)
+    changed = False
     for line in lines:
-        if fence_re.match(line):
+        if is_fence(line):
+            in_fence = not in_fence
+            out.append(line)
+            continue
+        m = TRAIL_SPACES_RE.search(line)
+        if not in_fence and m:
+            trail = m.group(0)
+            if len(trail) == 1:
+                line = line[:m.start()]
+                changed = True
+            elif len(trail) >= 2:
+                line = line[:m.start()] + "  "
+                changed = True
+        out.append(line)
+    return out, changed
+
+def fix_md010_tabs(lines):
+    """Replace tabs with spaces (optionally skip fenced blocks)."""
+    out = []
+    in_fence = False
+    changed = False
+    for line in lines:
+        if is_fence(line):
+            in_fence = not in_fence
+            out.append(line)
+            continue
+        if ("\t" in line) and (APPLY_TABS_IN_FENCES or not in_fence):
+            out.append(line.replace("\t", TAB_REPLACEMENT))
+            changed = True
+        else:
+            out.append(line)
+    return out, changed
+
+def fix_md036_emphasis_as_heading(lines):
+    """Convert lines that are only emphasis into '### Heading'."""
+    out = []
+    in_fence = False
+    changed = False
+    for line in lines:
+        if is_fence(line):
             in_fence = not in_fence
             out.append(line)
             continue
 
         if not in_fence:
-            m = trail_spaces_re.search(line)
-            if m:
-                trail = m.group(0)
-                if len(trail) == 1:
-                    # remove single trailing space
-                    line = line[:m.start()]
-                    changed = True
-                elif len(trail) >= 2:
-                    # normalize to exactly two spaces (intentional soft break)
-                    line = line[:m.start()] + "  "
-                    changed = True
-
+            # Avoid list markers or quotes acting as headings
+            if not line.lstrip().startswith(("-", "* ", "+", ">", "1.", "2.", "3.", "`")):
+                m = EMPH_AS_HEADING_RE.match(line)
+                if m:
+                    inner = m.group(1) or m.group(2) or ""
+                    inner = inner.strip()
+                    if inner:
+                        out.append(f"### {inner}")
+                        changed = True
+                        continue
         out.append(line)
+    return out, changed
 
-    if changed:
-        # Write back with a single trailing newline, UTF-8
-        Path(p).write_text("\n".join(out) + "\n", encoding="utf-8")
-    return changed
+def fix_md025_single_h1(lines):
+    """Demote any additional '# ' headings to '## ' after the first one."""
+    out = []
+    in_fence = False
+    changed = False
+    seen_h1 = False
+    for line in lines:
+        if is_fence(line):
+            in_fence = not in_fence
+            out.append(line)
+            continue
+
+        if not in_fence:
+            m = H1_RE.match(line)
+            if m:
+                if not seen_h1:
+                    seen_h1 = True
+                    out.append(line)  # keep the first H1
+                    continue
+                # Demote subsequent H1 to H2
+                title = m.group(2).strip()
+                out.append(f"## {title}")
+                changed = True
+                continue
+        out.append(line)
+    return out, changed
+
+def fix_file(p: Path) -> bool:
+    # Read strict UTF-8 to preserve Arabic and avoid silent data loss
+    txt = p.read_text(encoding="utf-8")
+    lines = txt.splitlines(keepends=False)
+
+    changed_any = False
+
+    # Order matters a bit; do blockquote and tabs/spacing before headings
+    lines, ch = fix_md028(lines);               changed_any |= ch
+    lines, ch = fix_md009(lines);               changed_any |= ch
+    lines, ch = fix_md010_tabs(lines);          changed_any |= ch
+    lines, ch = fix_md036_emphasis_as_heading(lines); changed_any |= ch
+    lines, ch = fix_md025_single_h1(lines);     changed_any |= ch
+
+    if changed_any:
+        p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return changed_any
 
 def main() -> int:
     md_files = [p for p in ROOT.rglob("*.md") if not should_skip(p)]

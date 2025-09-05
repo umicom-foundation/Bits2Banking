@@ -355,22 +355,22 @@ With belief, revelation, justice, unity, the Five Pillars, and the ethics of jih
 
 ## Supplications (Duʿā’)
 
-**For seeing truth and acting on it**
+### For seeing truth and acting on it
 **Arabic:** اللَّهُمَّ أَرِنَا الْحَقَّ حَقًّا وَارْزُقْنَا اتِّبَاعَهُ، وَأَرِنَا الْبَاطِلَ بَاطِلًا وَارْزُقْنَا اجْتِنَابَهُ.
 **Meaning:** O Allah, show us truth as truth and grant us to follow it; show us falsehood as falsehood and grant us to avoid it.
 
-**For justice and mercy in dealings**
+### For justice and mercy in dealings
 **Arabic:** اللَّهُمَّ بَارِكْ لَنَا فِي أَرْزَاقِنَا، وَارْزُقْنَا الصِّدْقَ فِي الْبَيْعِ وَالشِّرَاءِ، وَنَجِّنَا مِنَ الرِّبَا وَالظُّلْمِ.
 **Meaning:** O Allah, bless our provision, grant us honesty in trade, and save us from riba and oppression.
 
-**English:**
+### English:
 O Allah, show us truth as truth and enable us to follow it; show us falsehood as falsehood and enable us to avoid it. Make us keys to goodness and locks against harm, and use us to serve people and help the oppressed. Āmīn.
 
-**For courage and unity**
+### For courage and unity
 **Arabic:** اللَّهُمَّ ثَبِّتْ قُلُوبَنَا عِنْدَ الْفِتَنِ، وَاجْمَعْ كَلِمَتَنَا عَلَى الْحَقِّ، وَانْصُرِ الْمُسْتَضْعَفِينَ.
 **Meaning:** O Allah, keep our hearts firm in trials, unite us upon truth, and aid the oppressed.
 
 ---
 
-**← [Volume index](../index.md)**
+### ← [Volume index](../index.md)
 **Next:** [History of Money →](history_of_money.md)
