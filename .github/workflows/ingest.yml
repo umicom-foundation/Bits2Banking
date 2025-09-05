@@ -4,8 +4,10 @@ on:
   push:
     paths:
       - "raw_docs/**"
+      
   workflow_dispatch: {}
-
+permissions:
+  contents: write
 jobs:
   detect:
     runs-on: ubuntu-latest
@@ -43,6 +45,50 @@ jobs:
           The workflow has exited without further action."
       - name: End of Workflow
         run: echo "End of the ingest detection workflow." 
+      - name: Passthrough .md files from raw_docs to content/volumes
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.before }}"
+          HEAD="${{ github.sha }}"
+
+          # List changed Markdown files under raw_docs/
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.md' 'raw_docs/*.md' | tr -d '\r')
+          if [ -z "$CHANGED" ]; then
+            echo "No Markdown files changed under raw_docs/. Nothing to do."
+            exit 0
+          fi
+
+          echo "Markdown files to ingest:"
+          echo "$CHANGED"
+
+          # Copy each file into content/volumes/<volume>/
+          for f in $CHANGED; do
+            # volume is the first folder after raw_docs/
+            rel="${f#raw_docs/}"
+            vol="${rel%%/*}"
+            file="${f##*/}"
+
+            # if file is directly in raw_docs/ (no subfolder), default to 'misc'
+            if [ "$vol" = "$rel" ]; then vol="misc"; fi
+
+            outdir="content/volumes/$vol"
+            mkdir -p "$outdir"
+            cp -f "$f" "$outdir/$file"
+            echo "Copied $f -> $outdir/$file"
+          done
+
+          # Commit and push the mirrored files
+          git config user.name  "umicom-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add content/volumes
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "ingest: copy Markdown from raw_docs to content/volumes"
+          git push
+  
 
 
 
