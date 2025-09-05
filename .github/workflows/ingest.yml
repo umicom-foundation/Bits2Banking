@@ -1,7 +1,7 @@
-﻿name: Ingest (detector only)
+﻿name: Ingest (detector)
 
 on:
-  pull_request:
+  push:
     paths:
       - "raw_docs/**"
   workflow_dispatch: {}
@@ -11,10 +11,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: List changed files under raw_docs
+        with:
+          fetch-depth: 2
+      - name: List files changed under raw_docs in this push
         run: |
-          echo "Changed files under raw_docs:"
-          git diff --name-only origin/${{ github.base_ref }}... | grep '^raw_docs/' || echo "None"
-      - name: Quick guidance
+          echo "Changed files under raw_docs in this push:"
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^raw_docs/' || echo "None"
+      - name: Guidance
         run: |
-          echo "::notice title=Ingest Detected::Files in raw_docs were detected. Next step will convert DOCX/PDF->MD in a follow-up PR."
+          echo "::notice title=Ingest Detected::Files were pushed to raw_docs/. In the next step, we'll add conversion (DOCX/PDF → Markdown) and open a structured PR into content/."
+      - name: No changes detected
+        if: ${{ github.event.before == github.sha }}
+        run: echo "No changes detected under raw_docs/. Exiting."
+      - name: Changes detected
+        if: ${{ github.event.before != github.sha }}
+        run: echo "Changes detected under raw_docs/. Proceeding to next steps."
+      - name: Next Steps
+        if: ${{ github.event.before != github.sha }}
+        run: |
+          echo "Next steps would include converting files from raw_docs/ to Markdown and creating a PR
+          into the content/ directory. This part is not yet implemented." 
+          echo "Please implement the conversion and PR creation logic here."
+      - name: Final Notice
+        if: ${{ github.event.before != github.sha }}
+        run: |
+          echo "::notice title=Ingest Process Complete::The ingest process has detected changes and is ready for the next steps. Please implement the conversion and PR creation logic."      
+      - name: No changes final notice
+        if: ${{ github.event.before == github.sha }}
+        run: |
+          echo "::notice title=No Changes Detected::No changes were detected under raw_docs/.
+          The workflow has exited without further action."
+      - name: End of Workflow
+        run: echo "End of the ingest detection workflow." 
+
+
+
