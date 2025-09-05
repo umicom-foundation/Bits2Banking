@@ -59,7 +59,7 @@ jobs:
             echo "Copied $f -> $target"
           done
 
-      # --- DOCX → Markdown conversion (extracts embedded images) ---
+      # --- DOCX → Markdown (extracts embedded images) ---
       - name: Install pandoc and LibreOffice
         run: |
           sudo apt-get update
@@ -132,7 +132,45 @@ jobs:
             echo "Converted $f -> $outdir/${base}.md"
           done
 
-      # --- Auto-number newly ingested files: chNN-<slug>.md (only the files from this run) ---
+      # --- Copy/standardize book covers: bookcover_*.png|jpg|jpeg -> images/cover.png ---
+      - name: Normalize book cover images
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.diff.outputs.before }}"
+          HEAD="${{ steps.diff.outputs.sha }}"
+          COVERS=$(git diff --name-only "$BASE" "$HEAD" -- \
+            'raw_docs/**/*.png' 'raw_docs/**/*.jpg' 'raw_docs/**/*.jpeg' \
+            'raw_docs/*.png' 'raw_docs/*.jpg' 'raw_docs/*.jpeg' | tr -d '\r' || true)
+          if [ -z "$COVERS" ]; then
+            echo "No image files changed."
+            exit 0
+          fi
+          did=""
+          shopt -s nocasematch
+          for f in $COVERS; do
+            base="$(basename "$f")"
+            if [[ "$base" =~ ^bookcover_.*\.(png|jpg|jpeg)$ ]]; then
+              rel="${f#raw_docs/}"
+              vol="${rel%%/*}"
+              [ "$vol" = "$rel" ] && vol="misc"
+              outdir="content/volumes/$vol/images"
+              mkdir -p "$outdir"
+              # Standardize filename to cover.png (preserve original extension by converting to png if needed later)
+              cp -f "$f" "$outdir/cover.${BASH_REMATCH[1]}"
+              # prefer PNG name
+              if [ "${BASH_REMATCH[1],,}" != "png" ]; then
+                mv "$outdir/cover.${BASH_REMATCH[1]}" "$outdir/cover.png" || true
+              fi
+              echo "Copied $f -> $outdir/cover.png"
+              did="yes"
+            fi
+          done
+          if [ -z "$did" ]; then
+            echo "No files matched bookcover_* pattern."
+          fi
+
+      # --- Auto-number only the files ingested in this run ---
       - name: Auto-number new chapters
         shell: bash
         run: |
@@ -144,7 +182,6 @@ jobs:
           if not ingested_file.exists():
               sys.exit(0)
 
-          # Load list of files to consider (only from this run)
           targets = [pathlib.Path(line.strip()) for line in ingested_file.read_text(encoding="utf-8").splitlines() if line.strip()]
           if not targets:
               sys.exit(0)
@@ -171,7 +208,6 @@ jobs:
           for md in targets:
               if not md.exists():
                   continue
-              # Skip if already numbered
               if re.match(r"^ch\d+-", md.name):
                   continue
 
@@ -179,11 +215,12 @@ jobs:
               n = next_chapter_number(vol_dir)
               prefix = f"ch{n:02d}"
 
-              slug = slugify(md.stem)
+              # keep existing stem as slug
+              stem = md.stem
+              slug = slugify(stem)
               new_name = f"{prefix}-{slug}.md"
               new_path = vol_dir / new_name
 
-              # Ensure uniqueness if needed
               i = 1
               while new_path.exists():
                   new_path = vol_dir / f"{prefix}-{slug}-{i}.md"
@@ -213,7 +250,7 @@ jobs:
           def ensure_fm(text, title, volume, source):
             t = text.lstrip()
             if t.startswith('---'):
-              return text  # keep existing front-matter
+              return text
             fm = (
               f"---\n"
               f'title: "{title}"\n'
@@ -257,7 +294,6 @@ jobs:
             new_text = ensure_fm(raw, title, volume, f"{md}")
             new_text = fix_fences(new_text)
 
-            # Ensure an H1 exists
             if not re.search(r'^\s*#\s+', new_text, flags=re.M):
               if new_text.lstrip().startswith('---'):
                 new_text = re.sub(r'^(---.*?---\s*)', r'\1# ' + title + "\n\n", new_text, flags=re.S)
@@ -281,5 +317,5 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "ingest: import from raw_docs (md passthrough + docx/pdf + auto-number + normalize)"
+          git commit -m "ingest: import from raw_docs (md/docx/pdf + covers + auto-number + normalize)"
           git push
