@@ -1,4 +1,4 @@
-
+﻿
 # Chapter 7 — Umicom ABS Coin (Asset‑Backed, Sharīʿah‑Compliant)
 
 ## 7.1 The need
@@ -34,4 +34,4 @@ A **digital coin backed by real assets** (gold, silver, food, energy, commoditie
 **اللَّهُمَّ بَارِكْ فِي مَشْرُوعِ Umicom، وَاجْعَلْهُ سَبِيلًا لِلْعَدْلِ وَالْمَنْفَعَةِ لِلنَّاسِ.**  
 *O Allah, bless the Umicom project and make it a path to justice and benefit for people.*
 
-[← Chapter 6](chapter06_islamic_finance_and_future.md) | [Next → Recap](chapter07_recap.md)
+[← Chapter 6](islamic_finance_and_future.md) | [Next → Recap](recap.md)

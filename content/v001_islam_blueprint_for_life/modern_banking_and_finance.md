@@ -1,4 +1,4 @@
-
+﻿
 # Chapter 4 — Modern Banking and Finance
 
 ## 4.1 How banks create money
@@ -30,4 +30,4 @@ Debt must grow to service past interest. Eventually, defaults rise; the state pr
 **اللَّهُمَّ عَلِّمْنَا مَا يَنْفَعُنَا، وَانْفَعْنَا بِمَا عَلَّمْتَنَا، وَارْزُقْنَا مَالًا حَلَالًا طَيِّبًا.**  
 *O Allah, teach us what benefits us, benefit us through what You have taught us, and grant us pure halal wealth.*
 
-[← Chapter 3](chapter03_decline_of_sound_money.md) | [Next → Chapter 5](chapter05_technology_and_banking.md)
+[← Chapter 3](decline_of_sound_money.md) | [Next → Chapter 5](technology_and_banking.md)

@@ -1,4 +1,4 @@
-
+﻿
 # Chapter 3 — The Decline of Sound Money
 
 ## 3.1 Colonialism and currency control
@@ -30,4 +30,4 @@ Risky mortgages were bundled and sold as safe. When borrowers defaulted, the sys
 **اللَّهُمَّ نَجِّنَا مِنْ ظُلْمِ الرِّبَا، وَاهْدِنَا لِبِنَاءِ نِظَامٍ عَادِلٍ قَائِمٍ عَلَى شَرِيعَتِكَ.**  
 *O Allah, save us from the oppression of riba and guide us to build a just system based on Your Sharīʿah.*
 
-[← Chapter 2](chapter02_history_of_money.md) | [Next → Chapter 4](chapter04_modern_banking_and_finance.md)
+[← Chapter 2](history_of_money.md) | [Next → Chapter 4](modern_banking_and_finance.md)
