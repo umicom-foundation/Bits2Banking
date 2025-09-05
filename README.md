@@ -100,7 +100,7 @@ cd C:\Bits2Banking
 ### 1) (Optional) Create a virtual environment
 ```powershell
 python -m venv .venv
-.\.venv\Scriptsctivate
+.\.venv\Scripts\Activate
 python -m pip install --upgrade pip
 ```
 
@@ -119,8 +119,7 @@ equirements.txt) { pip install -r requirements.txt } else { pip install python-d
 
 ### 4) Open the result
 ```powershell
-start .
-olumes\Volume_00_Source_Control.docx
+start .\volumes\Volume_00_Source_Control.docx
 ```
 
 > Other handy commands: `.build.ps1 install` • `.build.ps1 docs` • `.build.ps1 lint` • `.build.ps1 clean`
