@@ -17,6 +17,9 @@ concurrency:
 jobs:
   ingest:
     runs-on: ubuntu-latest
+    env:
+      # Files matching this regex will be ignored (not processed)
+      IGNORE_RE: '(^|/)(~\$|\.#|#.*#|Thumbs\.db|\.DS_Store|\.AppleDouble|\.LSOverride|desktop\.ini|\.swp$|\.tmp$|\.bak$|\.partial$|\.crdownload$)'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,7 +40,9 @@ jobs:
       - name: Show changed files under raw_docs
         shell: bash
         run: |
-          git diff --name-only "${{ steps.diff.outputs.before }}" "${{ steps.diff.outputs.sha }}" | grep '^raw_docs/' || echo "None"
+          git diff --name-only "${{ steps.diff.outputs.before }}" "${{ steps.diff.outputs.sha }}" \
+            | grep '^raw_docs/' \
+            | grep -Ev "${{ env.IGNORE_RE }}" || echo "None"
 
       # Warn-only checks for filename hygiene
       - name: Filename hygiene (warn only)
@@ -46,7 +51,7 @@ jobs:
           set -euo pipefail
           BASE="${{ steps.diff.outputs.before }}"
           HEAD="${{ steps.diff.outputs.sha }}"
-          FILES=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**' | tr -d '\r' || true)
+          FILES=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**' | tr -d '\r' | grep -Ev "${{ env.IGNORE_RE }}" || true)
           if [ -z "$FILES" ]; then
             echo "No files touched under raw_docs."
             exit 0
@@ -69,7 +74,8 @@ jobs:
           : > "$GITHUB_WORKSPACE/ingested.txt"  # reset the list for this run
           BASE="${{ steps.diff.outputs.before }}"
           HEAD="${{ steps.diff.outputs.sha }}"
-          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.md' 'raw_docs/*.md' | tr -d '\r' || true)
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.md' 'raw_docs/*.md' \
+            | tr -d '\r' | grep -Ev "${{ env.IGNORE_RE }}" || true)
           if [ -z "$CHANGED" ]; then
             echo "No .md files changed."
             exit 0
@@ -98,7 +104,8 @@ jobs:
           set -euo pipefail
           BASE="${{ steps.diff.outputs.before }}"
           HEAD="${{ steps.diff.outputs.sha }}"
-          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.docx' 'raw_docs/*.docx' | tr -d '\r' || true)
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.docx' 'raw_docs/*.docx' \
+            | tr -d '\r' | grep -Ev "${{ env.IGNORE_RE }}" || true)
           if [ -z "$CHANGED" ]; then
             echo "No .docx files changed."
             exit 0
@@ -125,7 +132,8 @@ jobs:
           set -euo pipefail
           BASE="${{ steps.diff.outputs.before }}"
           HEAD="${{ steps.diff.outputs.sha }}"
-          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.pdf' 'raw_docs/*.pdf' | tr -d '\r' || true)
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.pdf' 'raw_docs/*.pdf' \
+            | tr -d '\r' | grep -Ev "${{ env.IGNORE_RE }}" || true)
           if [ -z "$CHANGED" ]; then
             echo "No .pdf files changed."
             exit 0
@@ -168,7 +176,8 @@ jobs:
           HEAD="${{ steps.diff.outputs.sha }}"
           COVERS=$(git diff --name-only "$BASE" "$HEAD" -- \
             'raw_docs/**/*.png' 'raw_docs/**/*.jpg' 'raw_docs/**/*.jpeg' \
-            'raw_docs/*.png' 'raw_docs/*.jpg' 'raw_docs/*.jpeg' | tr -d '\r' || true)
+            'raw_docs/*.png' 'raw_docs/*.jpg' 'raw_docs/*.jpeg' \
+            | tr -d '\r' | grep -Ev "${{ env.IGNORE_RE }}" || true)
           if [ -z "$COVERS" ]; then
             echo "No image files changed."
             exit 0
@@ -280,7 +289,7 @@ jobs:
               f'title: "{title}"\n'
               f'volume: "{volume}"\n'
               f"status: draft\n"
-              f'source: "{source}"\n'
+              f'source: "{source}"\n"
               f"created: {TODAY}\n"
               f"updated: {TODAY}\n"
               f"tags: []\n"
