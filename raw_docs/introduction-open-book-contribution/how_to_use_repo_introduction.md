@@ -3,8 +3,7 @@ title: "Introduction — How This Open Book Works"
 volume: "volume-0"
 status: draft
 source: "raw_docs/volume-0/volume0-introduction.md"
-tags: ["contributing", "guide"]
----
+## tags: ["contributing", "guide"]
 
 # Introduction — How This Open Book Works
 

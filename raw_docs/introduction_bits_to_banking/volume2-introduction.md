@@ -3,8 +3,7 @@ title: "Bits to Banking — What You Will Learn"
 volume: "bits-to-banking"
 status: draft
 source: "raw_docs/bits-to-banking/volume2-introduction.md"
-tags: ["overview", "computing", "finance"]
----
+## tags: ["overview", "computing", "finance"]
 
 # Bits to Banking — What You Will Learn
 
