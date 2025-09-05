@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Determine a safe diff range (handles first-push edge cases)
+      # Determine a safe diff range (covers first-push edge cases)
       - name: Determine diff range
         id: diff
         shell: bash
@@ -127,6 +127,85 @@ jobs:
             echo "Converted $f -> $outdir/${base}.md"
           done
 
+      # --- Normalize Markdown front-matter + code fences ---
+      - name: Normalize Markdown files (front-matter, fences)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - << 'PY'
+          import os, re, sys, time, pathlib
+
+          TODAY = time.strftime("%Y-%m-%d")
+
+          def title_from_text(text, fallback):
+            m = re.search(r'^\s*#\s+(.+?)\s*$', text, flags=re.M)
+            if m:
+              return m.group(1).strip()
+            # fallback from filename
+            t = fallback.replace('_',' ').replace('-',' ').strip()
+            # Title Case-ish
+            return ' '.join(w.capitalize() for w in re.split(r'\s+', t) if w)
+
+          def ensure_fm(text, title, volume, source):
+            t = text.lstrip()
+            if t.startswith('---'):
+              return text  # front-matter exists; keep as-is
+            fm = (
+              f"---\n"
+              f'title: "{title}"\n'
+              f'volume: "{volume}"\n'
+              f"status: draft\n"
+              f'source: "{source}"\n'
+              f"created: {TODAY}\n"
+              f"updated: {TODAY}\n"
+              f"tags: []\n"
+              f"---\n\n"
+            )
+            return fm + text
+
+          def fix_fences(text):
+            # Replace bare ``` lines (no language) with ```text
+            out_lines = []
+            for line in text.splitlines(True):
+              if line.startswith("```"):
+                # if exactly ``` or ``` + whitespace + EOL
+                if re.match(r"^```(\s*)\r?\n?$", line):
+                  line = "```text\n"
+              out_lines.append(line)
+            return ''.join(out_lines)
+
+          root = pathlib.Path("content/volumes")
+          if not root.exists():
+            sys.exit(0)
+
+          for md in root.rglob("*.md"):
+            try:
+              raw = md.read_text(encoding="utf-8", errors="ignore")
+            except Exception:
+              continue
+            # derive volume from path
+            parts = md.parts
+            # .../content/volumes/<volume>/<file>.md
+            try:
+              vol_idx = parts.index("volumes") + 1
+              volume = parts[vol_idx]
+            except Exception:
+              volume = "unknown"
+
+            title = title_from_text(raw, md.stem)
+            new_text = ensure_fm(raw, title, volume, f"{md}")
+            new_text = fix_fences(new_text)
+
+            # Ensure there is a top-level H1 if missing
+            if not re.search(r'^\s*#\s+', new_text, flags=re.M):
+              new_text = re.sub(r'^(---.*?---\s*)', r'\\1# ' + title + "\\n\\n", new_text, flags=re.S) \
+                         if new_text.lstrip().startswith('---') else ("# " + title + "\n\n" + new_text)
+
+            if new_text != raw:
+              md.write_text(new_text, encoding="utf-8")
+              print(f"Normalized {md}")
+          PY
+
       # --- Commit & push any ingested files ---
       - name: Commit and push ingested files
         shell: bash
@@ -139,5 +218,5 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "ingest: import from raw_docs (md passthrough + docx/pdf conversion)"
+          git commit -m "ingest: import from raw_docs (md passthrough + docx/pdf + normalize)"
           git push
