@@ -17,8 +17,8 @@ We publish in small, printable **volumes** so beginners and adults can follow st
 ```powershell
 git clone https://github.com/umicom-foundation/Bits2Banking.git C:\Bits2Banking
 cd C:\Bits2Banking
-.uild.ps1 install
-.uild.ps1 build
+.build.ps1 install
+.build.ps1 build
 start .
 olumes\Volume_00_Source_Control.docx
 ```
@@ -112,7 +112,7 @@ equirements.txt) { pip install -r requirements.txt } else { pip install python-d
 ### 3) Build using the helper script
 ```powershell
 # Uses scripts\make_volume0_from_md.py under the hood
-.uild.ps1 build
+.build.ps1 build
 ```
 
 ### 4) Open the result
@@ -121,7 +121,7 @@ start .
 olumes\Volume_00_Source_Control.docx
 ```
 
-> Other handy commands: `.uild.ps1 install` • `.uild.ps1 docs` • `.uild.ps1 lint` • `.uild.ps1 clean`
+> Other handy commands: `.build.ps1 install` • `.build.ps1 docs` • `.build.ps1 lint` • `.build.ps1 clean`
 
 ---
 
@@ -168,7 +168,7 @@ open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || xdg-open ./volumes/V
    ```
 3. Build locally (pick one):  
    ```powershell
-   .uild.ps1 build
+   .build.ps1 build
    ```
    ```bash
    make build
