@@ -1,92 +1,93 @@
-name: "Propose a New Volume"
-description: "Suggest a new volume with a clear slug, audience, and starter outline"
-title: "[volume] <proposed-title>"
-labels:
-  - "volume:proposal"
-  - "type:content"
-  - "needs:review"
-assignees:
-  - sammyhegab
-body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for proposing a new volume!  
-        Please read the quick guides first:
-        - **Volumes index:** docs/VOLUMES.md
-        - **Quick upload via `raw_docs/`:** docs/CONTRIBUTING_RAW_DOCS.md
+Param(
+  [Parameter(Mandatory = $true)]
+  [string]$Slug
+)
 
-  - type: input
-    id: volume_title
-    attributes:
-      label: Proposed volume title
-      placeholder: Generalist AI — From First Principles
-    validations:
-      required: true
+# --- Normalize slug first (lowercase, spaces/underscores -> hyphens, strip invalid) ---
+$normalized = ($Slug -replace '[ _]+','-').ToLower() -replace '[^a-z0-9\-]',''
+if ($normalized -ne $Slug) {
+  Write-Host "Normalized slug: '$Slug' -> '$normalized'" -ForegroundColor Yellow
+}
+$Slug = $normalized
 
-  - type: input
-    id: slug
-    attributes:
-      label: Volume slug (lowercase-with-hyphens)
-      description: This becomes the folder name under raw_docs/ and content/volumes/
-      placeholder: generalist-ai
-    validations:
-      required: true
+# Validate final slug
+if ($Slug -notmatch '^[a-z0-9]+(-[a-z0-9]+)*$') {
+  Write-Error "Invalid slug '$Slug'. Use lowercase-with-hyphens (e.g., introduction-to-islam)."
+  exit 1
+}
 
-  - type: textarea
-    id: audience
-    attributes:
-      label: Who is this for?
-      description: Primary readers (e.g., beginners, engineers switching fields, educators)
-      placeholder: Beginners with light programming experience; teachers who need short units.
-    validations:
-      required: true
+# --- Ensure we're at the repo root (simplest check) ---
+if (-not (Test-Path ".git")) {
+  Write-Host "Please run from the repository root (folder containing .git)" -ForegroundColor Yellow
+  exit 1
+}
 
-  - type: textarea
-    id: purpose
-    attributes:
-      label: Why this volume?
-      description: Problem/need it solves and how it complements existing volumes
-      placeholder: Learners keep asking for an end-to-end AI overview; this fills the gap...
-    validations:
-      required: true
+# --- Target paths ---
+$rawDir = Join-Path -Path "raw_docs" -ChildPath $Slug
+$dstDir = Join-Path -Path "content\volumes" -ChildPath $Slug
+$imgDir = Join-Path -Path $dstDir -ChildPath "images"
 
-  - type: textarea
-    id: outline
-    attributes:
-      label: Initial outline (5–10 bullets)
-      description: Draft chapter list; we’ll refine together
-      placeholder: |
-        ch01 — Orientation
-        ch02 — Foundations…
-        ch03 — …
-    validations:
-      required: true
+# --- Create folders (ok if they already exist) ---
+New-Item -ItemType Directory -Force -Path $rawDir  | Out-Null
+New-Item -ItemType Directory -Force -Path $dstDir  | Out-Null
+New-Item -ItemType Directory -Force -Path $imgDir  | Out-Null
 
-  - type: checkboxes
-    id: files_plan
-    attributes:
-      label: Initial files you plan to add
-      options:
-        - label: I will create `raw_docs/<slug>/` and place `.md`/`.docx`/`.pdf` there
-          required: true
-        - label: I may include a cover image `bookcover_<Title>.png`
-        - label: I will keep filenames lowercase-with-hyphens (no spaces)
-        - label: I will keep files under size limits (MD ≤ 2MB, DOCX ≤ 20MB, PDF ≤ 40MB, images ≤ 10MB)
+# Track images/ even if empty (optional; avoids "missing folder" confusion)
+$gitkeep = Join-Path -Path $imgDir -ChildPath ".gitkeep"
+if (-not (Test-Path $gitkeep)) {
+  "" | Set-Content -Encoding Ascii $gitkeep
+}
 
-  - type: textarea
-    id: notes
-    attributes:
-      label: Notes / links (optional)
-      placeholder: Refs, diagrams, datasets, related projects
+# --- Seed a small README inside raw_docs/<slug>/ (only if missing) ---
+$rawReadme = Join-Path -Path $rawDir -ChildPath "README.md"
+if (-not (Test-Path $rawReadme)) {
+  @"
+# Upload into `raw_docs/$Slug/`
 
-  - type: markdown
-    attributes:
-      value: |
-        **Next steps after approval:**
-        1) Create `raw_docs/<slug>/`  
-        2) Add your chapter files (and optional `bookcover_<Title>.png`)  
-        3) Commit to **main** (or open a PR)
+Accepted: **.md**, **.docx**, **.pdf**  
+Optional cover: **bookcover_<Title>.png** (or .jpg)
 
-        The **Ingest** workflow will copy/convert into `content/volumes/<slug>/`, auto-number new chapters, and normalize Markdown.
+When you push to **main**:
+1) \`.md\` is copied into \`content/volumes/$Slug/\`
+2) \`.docx\` and text-based \`.pdf\` are converted to Markdown
+3) New files are auto-numbered (\`ch01-…\`) and normalized (front matter, title, code fences)
+4) \`bookcover_*\` becomes \`content/volumes/$Slug/images/cover.png\`
 
+**Tips**
+- Use lowercase-hyphenated filenames (no spaces)
+- Keep size under: MD ≤ 2MB, DOCX ≤ 20MB, PDF ≤ 40MB, images ≤ 10MB
+"@ | Set-Content -Encoding UTF8 $rawReadme
+}
+
+# --- Add placeholder chapter in content if none exist yet (keeps volume visible) ---
+$placeholder = Join-Path -Path $dstDir -ChildPath "ch00-$Slug.md"
+if (-not (Test-Path $placeholder)) {
+  @"
+---
+title: "$Slug — placeholder"
+volume: "$Slug"
+status: draft
+source: "scaffold"
+created: $(Get-Date -Format 'yyyy-MM-dd')
+updated: $(Get-Date -Format 'yyyy-MM-dd')
+tags: []
+---
+
+# $Slug (placeholder)
+
+This file was created by \`tools/new-volume.ps1\`.
+
+Put your chapters in **raw_docs/$Slug/** as \`.md\`, \`.docx\`, or \`.pdf\`.  
+The ingest workflow will mirror/convert them into this folder and auto-number new chapters.
+"@ | Set-Content -Encoding UTF8 $placeholder
+}
+
+Write-Host ""
+Write-Host "Scaffolded:" -ForegroundColor Green
+Write-Host "  $rawDir" -ForegroundColor Green
+Write-Host "  $dstDir" -ForegroundColor Green
+Write-Host "  $imgDir" -ForegroundColor Green
+Write-Host ""
+Write-Host "Next:" -ForegroundColor Cyan
+Write-Host "  - Upload files to raw_docs/$Slug/" -ForegroundColor Cyan
+Write-Host "  - git add . ; git commit -m 'scaffold: $Slug' ; git push" -ForegroundColor Cyan
