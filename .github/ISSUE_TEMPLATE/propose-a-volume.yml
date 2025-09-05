@@ -1,0 +1,92 @@
+name: "Propose a New Volume"
+description: "Suggest a new volume with a clear slug, audience, and starter outline"
+title: "[volume] <proposed-title>"
+labels:
+  - "volume:proposal"
+  - "type:content"
+  - "needs:review"
+assignees:
+  - sammyhegab
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a new volume!  
+        Please read the quick guides first:
+        - **Volumes index:** docs/VOLUMES.md
+        - **Quick upload via `raw_docs/`:** docs/CONTRIBUTING_RAW_DOCS.md
+
+  - type: input
+    id: volume_title
+    attributes:
+      label: Proposed volume title
+      placeholder: Generalist AI — From First Principles
+    validations:
+      required: true
+
+  - type: input
+    id: slug
+    attributes:
+      label: Volume slug (lowercase-with-hyphens)
+      description: This becomes the folder name under raw_docs/ and content/volumes/
+      placeholder: generalist-ai
+    validations:
+      required: true
+
+  - type: textarea
+    id: audience
+    attributes:
+      label: Who is this for?
+      description: Primary readers (e.g., beginners, engineers switching fields, educators)
+      placeholder: Beginners with light programming experience; teachers who need short units.
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Why this volume?
+      description: Problem/need it solves and how it complements existing volumes
+      placeholder: Learners keep asking for an end-to-end AI overview; this fills the gap...
+    validations:
+      required: true
+
+  - type: textarea
+    id: outline
+    attributes:
+      label: Initial outline (5–10 bullets)
+      description: Draft chapter list; we’ll refine together
+      placeholder: |
+        ch01 — Orientation
+        ch02 — Foundations…
+        ch03 — …
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: files_plan
+    attributes:
+      label: Initial files you plan to add
+      options:
+        - label: I will create `raw_docs/<slug>/` and place `.md`/`.docx`/`.pdf` there
+          required: true
+        - label: I may include a cover image `bookcover_<Title>.png`
+        - label: I will keep filenames lowercase-with-hyphens (no spaces)
+        - label: I will keep files under size limits (MD ≤ 2MB, DOCX ≤ 20MB, PDF ≤ 40MB, images ≤ 10MB)
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / links (optional)
+      placeholder: Refs, diagrams, datasets, related projects
+
+  - type: markdown
+    attributes:
+      value: |
+        **Next steps after approval:**
+        1) Create `raw_docs/<slug>/`  
+        2) Add your chapter files (and optional `bookcover_<Title>.png`)  
+        3) Commit to **main** (or open a PR)
+
+        The **Ingest** workflow will copy/convert into `content/volumes/<slug>/`, auto-number new chapters, and normalize Markdown.
+
