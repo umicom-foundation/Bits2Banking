@@ -1,1 +1,285 @@
-﻿
+﻿name: Ingest (raw_docs → content)
+
+on:
+  push:
+    paths:
+      - "raw_docs/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Determine a safe diff range (covers first-push edge cases)
+      - name: Determine diff range
+        id: diff
+        shell: bash
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE=$(git rev-parse HEAD~1 2>/dev/null || echo "")
+          fi
+          echo "before=$BEFORE" >> "$GITHUB_OUTPUT"
+          echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Show changed files under raw_docs
+        shell: bash
+        run: |
+          git diff --name-only "${{ steps.diff.outputs.before }}" "${{ steps.diff.outputs.sha }}" | grep '^raw_docs/' || echo "None"
+
+      # --- Markdown passthrough (no conversion) ---
+      - name: Passthrough Markdown files (.md)
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > "$GITHUB_WORKSPACE/ingested.txt"  # reset the list for this run
+          BASE="${{ steps.diff.outputs.before }}"
+          HEAD="${{ steps.diff.outputs.sha }}"
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.md' 'raw_docs/*.md' | tr -d '\r' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "No .md files changed."
+            exit 0
+          fi
+          for f in $CHANGED; do
+            rel="${f#raw_docs/}"
+            vol="${rel%%/*}"
+            [ "$vol" = "$rel" ] && vol="misc"
+            outdir="content/volumes/$vol"
+            mkdir -p "$outdir"
+            target="$outdir/$(basename "$f")"
+            cp -f "$f" "$target"
+            echo "$target" >> "$GITHUB_WORKSPACE/ingested.txt"
+            echo "Copied $f -> $target"
+          done
+
+      # --- DOCX → Markdown conversion (extracts embedded images) ---
+      - name: Install pandoc and LibreOffice
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc libreoffice
+
+      - name: Convert DOCX to Markdown
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.diff.outputs.before }}"
+          HEAD="${{ steps.diff.outputs.sha }}"
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.docx' 'raw_docs/*.docx' | tr -d '\r' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "No .docx files changed."
+            exit 0
+          fi
+          for f in $CHANGED; do
+            rel="${f#raw_docs/}"
+            vol="${rel%%/*}"
+            [ "$vol" = "$rel" ] && vol="misc"
+            base="$(basename "$f" .docx)"
+            outdir="content/volumes/$vol"
+            mkdir -p "$outdir/images/$base"
+            pandoc "$f" \
+              --extract-media="$outdir/images/$base" \
+              -t gfm --wrap=none \
+              -o "$outdir/${base}.md"
+            echo "$outdir/${base}.md" >> "$GITHUB_WORKSPACE/ingested.txt"
+            echo "Converted $f -> $outdir/${base}.md"
+          done
+
+      # --- PDF → DOCX → Markdown (best-effort; scanned PDFs become images) ---
+      - name: Convert PDF to Markdown via LibreOffice + Pandoc
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.diff.outputs.before }}"
+          HEAD="${{ steps.diff.outputs.sha }}"
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'raw_docs/**/*.pdf' 'raw_docs/*.pdf' | tr -d '\r' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "No .pdf files changed."
+            exit 0
+          fi
+
+          TMP="/tmp/pdf2docx"
+          mkdir -p "$TMP"
+
+          for f in $CHANGED; do
+            rel="${f#raw_docs/}"
+            vol="${rel%%/*}"
+            [ "$vol" = "$rel" ] && vol="misc"
+            base="$(basename "$f" .pdf)"
+            outdir="content/volumes/$vol"
+            mkdir -p "$outdir/images/$base"
+
+            # Convert PDF -> DOCX into /tmp
+            soffice --headless --infilter="writer_pdf_import" --convert-to docx "$f" --outdir "$TMP" || true
+            DOCX="$TMP/${base}.docx"
+            if [ ! -f "$DOCX" ]; then
+              echo "LibreOffice could not convert $f (maybe encrypted?). Skipping."
+              continue
+            fi
+
+            # DOCX -> Markdown
+            pandoc "$DOCX" \
+              --extract-media="$outdir/images/$base" \
+              -t gfm --wrap=none \
+              -o "$outdir/${base}.md"
+            echo "$outdir/${base}.md" >> "$GITHUB_WORKSPACE/ingested.txt"
+            echo "Converted $f -> $outdir/${base}.md"
+          done
+
+      # --- Auto-number newly ingested files: chNN-<slug>.md (only the files from this run) ---
+      - name: Auto-number new chapters
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - << 'PY'
+          import re, sys, pathlib, unicodedata
+
+          ingested_file = pathlib.Path("/github/workspace/ingested.txt")
+          if not ingested_file.exists():
+              sys.exit(0)
+
+          # Load list of files to consider (only from this run)
+          targets = [pathlib.Path(line.strip()) for line in ingested_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+          if not targets:
+              sys.exit(0)
+
+          def slugify(s:str)->str:
+              s = unicodedata.normalize("NFKD", s).encode("ascii","ignore").decode("ascii")
+              s = re.sub(r"[^A-Za-z0-9]+", "-", s.lower())
+              s = re.sub(r"-{2,}", "-", s).strip("-")
+              return s or "chapter"
+
+          def next_chapter_number(dirpath: pathlib.Path)->int:
+              max_n = 0
+              for p in dirpath.glob("ch*-*.md"):
+                  m = re.match(r"^ch(\d+)-", p.name)
+                  if m:
+                      try:
+                          n = int(m.group(1))
+                          if n > max_n:
+                              max_n = n
+                      except:
+                          pass
+              return max_n + 1
+
+          for md in targets:
+              if not md.exists():
+                  continue
+              # Skip if already numbered
+              if re.match(r"^ch\d+-", md.name):
+                  continue
+
+              vol_dir = md.parent
+              n = next_chapter_number(vol_dir)
+              prefix = f"ch{n:02d}"
+
+              slug = slugify(md.stem)
+              new_name = f"{prefix}-{slug}.md"
+              new_path = vol_dir / new_name
+
+              # Ensure uniqueness if needed
+              i = 1
+              while new_path.exists():
+                  new_path = vol_dir / f"{prefix}-{slug}-{i}.md"
+                  i += 1
+
+              md.rename(new_path)
+              print(f"Renamed {md} -> {new_path}")
+          PY
+
+      # --- Normalize Markdown front-matter + code fences ---
+      - name: Normalize Markdown files (front-matter, fences)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - << 'PY'
+          import os, re, sys, time, pathlib
+
+          TODAY = time.strftime("%Y-%m-%d")
+
+          def title_from_text(text, fallback):
+            m = re.search(r'^\s*#\s+(.+?)\s*$', text, flags=re.M)
+            if m:
+              return m.group(1).strip()
+            t = fallback.replace('_',' ').replace('-',' ').strip()
+            return ' '.join(w.capitalize() for w in re.split(r'\s+', t) if w)
+
+          def ensure_fm(text, title, volume, source):
+            t = text.lstrip()
+            if t.startswith('---'):
+              return text  # keep existing front-matter
+            fm = (
+              f"---\n"
+              f'title: "{title}"\n'
+              f'volume: "{volume}"\n'
+              f"status: draft\n"
+              f'source: "{source}"\n'
+              f"created: {TODAY}\n"
+              f"updated: {TODAY}\n"
+              f"tags: []\n"
+              f"---\n\n"
+            )
+            return fm + text
+
+          def fix_fences(text):
+            out_lines = []
+            for line in text.splitlines(True):
+              if line.startswith("```"):
+                if re.match(r"^```(\s*)\r?\n?$", line):
+                  line = "```text\n"
+              out_lines.append(line)
+            return ''.join(out_lines)
+
+          root = pathlib.Path("content/volumes")
+          if not root.exists():
+            sys.exit(0)
+
+          for md in root.rglob("*.md"):
+            try:
+              raw = md.read_text(encoding="utf-8", errors="ignore")
+            except Exception:
+              continue
+
+            parts = md.parts
+            try:
+              vol_idx = parts.index("volumes") + 1
+              volume = parts[vol_idx]
+            except Exception:
+              volume = "unknown"
+
+            title = title_from_text(raw, md.stem)
+            new_text = ensure_fm(raw, title, volume, f"{md}")
+            new_text = fix_fences(new_text)
+
+            # Ensure an H1 exists
+            if not re.search(r'^\s*#\s+', new_text, flags=re.M):
+              if new_text.lstrip().startswith('---'):
+                new_text = re.sub(r'^(---.*?---\s*)', r'\1# ' + title + "\n\n", new_text, flags=re.S)
+              else:
+                new_text = "# " + title + "\n\n" + new_text
+
+            if new_text != raw:
+              md.write_text(new_text, encoding="utf-8")
+              print(f"Normalized {md}")
+          PY
+
+      # --- Commit & push any ingested files ---
+      - name: Commit and push ingested files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/volumes || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "ingest: import from raw_docs (md passthrough + docx/pdf + auto-number + normalize)"
+          git push
