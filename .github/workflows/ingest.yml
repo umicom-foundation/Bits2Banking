@@ -1,0 +1,20 @@
+﻿name: Ingest (detector only)
+
+on:
+  pull_request:
+    paths:
+      - "raw_docs/**"
+  workflow_dispatch: {}
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List changed files under raw_docs
+        run: |
+          echo "Changed files under raw_docs:"
+          git diff --name-only origin/${{ github.base_ref }}... | grep '^raw_docs/' || echo "None"
+      - name: Quick guidance
+        run: |
+          echo "::notice title=Ingest Detected::Files in raw_docs were detected. Next step will convert DOCX/PDF->MD in a follow-up PR."
