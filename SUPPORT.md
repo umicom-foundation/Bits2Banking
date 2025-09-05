@@ -11,7 +11,7 @@ We publish periodic transparency notes so supporters can see how funds are used.
 
 ## Donation Accounts
 
-> You can donate from the UK (domestic) or internationally (via SWIFT/SEPA).  
+> You can donate from the UK (domestic) or internationally (via SWIFT/SEPA).
 > Accounts are held with Wise for the **Umicom Foundation**.
 
 ### 🇬🇧 GBP (United Kingdom)

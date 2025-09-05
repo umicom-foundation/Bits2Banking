@@ -1,6 +1,6 @@
 # Roadmap — Bits to Banking
 
-This roadmap outlines where the project is heading.  
+This roadmap outlines where the project is heading.
 Our goal: teach computing from the ground up — **bits → banking** — while supporting humanitarian causes through the Umicom Foundation.
 
 ---
@@ -45,10 +45,10 @@ Our goal: teach computing from the ground up — **bits → banking** — while 
 
 ## 🌍 Humanitarian Impact
 
-Every contribution also supports **Umicom Foundation’s humanitarian mission**:  
-- Aid for civilians suffering under siege in Gaza  
-- Educational projects for vulnerable communities  
-- Relief efforts where needed most  
+Every contribution also supports **Umicom Foundation’s humanitarian mission**:
+- Aid for civilians suffering under siege in Gaza
+- Educational projects for vulnerable communities
+- Relief efforts where needed most
 
 Our more than **100% donation model**: all admin costs are covered by trustees, so every penny donated goes directly to the cause.
 
@@ -56,23 +56,23 @@ Our more than **100% donation model**: all admin costs are covered by trustees, 
 
 ## 🚀 Future Goals
 
-- Publish each volume in `.docx` and web formats (MkDocs site).  
-- Translate volumes into Arabic and other languages.  
-- Build a community of contributors worldwide.  
-- Expand to video lectures, coding labs, and real-world projects.  
+- Publish each volume in `.docx` and web formats (MkDocs site).
+- Translate volumes into Arabic and other languages.
+- Build a community of contributors worldwide.
+- Expand to video lectures, coding labs, and real-world projects.
 
 ---
 
 ## 🤝 How You Can Help
 
-- Write or edit chapters  
-- Suggest improvements or corrections  
-- Translate content  
-- Share the project to reach more learners  
-- Support financially (see [SUPPORT.md](SUPPORT.md))  
+- Write or edit chapters
+- Suggest improvements or corrections
+- Translate content
+- Share the project to reach more learners
+- Support financially (see [SUPPORT.md](SUPPORT.md))
 
 ---
 
-Together we will build:  
-- A free, comprehensive path from **Bits → Banking**  
+Together we will build:
+- A free, comprehensive path from **Bits → Banking**
 - A sustainable source of education and relief funding for those in need
