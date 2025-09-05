@@ -31,7 +31,7 @@ A **digital coin backed by real assets** (gold, silver, food, energy, commoditie
 > **“And establish weight in justice and do not make deficient the balance.”** *(Ar‑Raḥmān 55:9)*
 
 ### Supplication
-### اللَّهُمَّ بَارِكْ فِي مَشْرُوعِ Umicom، وَاجْعَلْهُ سَبِيلًا لِلْعَدْلِ وَالْمَنْفَعَةِ لِلنَّاسِ.
-### O Allah, bless the Umicom project and make it a path to justice and benefit for people.
+### اللَّهُمَّ بَارِكْ فِي مَشْرُوعِ Umicom، وَاجْعَلْهُ سَبِيلًا لِلْعَدْلِ وَالْمَنْفَعَةِ لِلنَّاسِ
+### O Allah, bless the Umicom project and make it a path to justice and benefit for people
 
 [← Chapter 6](islamic_finance_and_future.md) | [Next → Recap](recap.md)

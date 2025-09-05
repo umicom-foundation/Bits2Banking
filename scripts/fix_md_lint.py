@@ -5,30 +5,16 @@ fix_md_lint.py
 Auto-fixes common markdownlint issues across the repo:
 
 - MD028: no-blanks-blockquote
-  Turns a blank line *between two quoted lines* into a quoted blank line,
-  preserving the quote nesting depth where possible.
-
 - MD009: no-trailing-spaces
-  Removes a single trailing space; normalizes 2+ trailing spaces to exactly 2
-  (to preserve intentional soft line breaks).
-
-- MD010: no-hard-tabs
-  Replaces tab characters with 4 spaces (outside code fences by default).
-
-- MD036: no-emphasis-as-heading
-  If a line consists solely of emphasized text like "*Examples*" or "_Windows (PowerShell)_",
-  convert it to a real heading "### Examples" (outside code fences).
-
-- MD025: single-title/single-h1
-  Keeps the first top-level "# " heading; demotes any later "# " headings to "## ".
+- MD010: no-hard-tabs (tabs -> 4 spaces, even inside code fences)
+- MD036: no-emphasis-as-heading  (*Text* -> ### Text)
+- MD025: single H1 (handles both ATX '# ' and Setext '===='/'----')
+- MD026: no-trailing-punctuation in headings
+- MD001: heading-increment (avoid H2 -> H4 jumps)
 
 Skips: volumes/**, book/**, site/**, .github/ISSUE_TEMPLATE/**, and PULL_REQUEST_TEMPLATE.md
-Avoids touching lines inside fenced code blocks for MD028/MD036/MD025 and MD009.
-MD010 (tabs) is applied outside fences; change APPLY_TABS_IN_FENCES to True if you want everywhere.
 
-Run:
-  python3 scripts/fix_md_lint.py   (Linux/macOS)
-  py scripts\\fix_md_lint.py       (Windows)
+UTF-8 in/out to preserve Arabic/diacritics.
 """
 
 from pathlib import Path
@@ -36,10 +22,6 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-
-# --- Configuration ---
-APPLY_TABS_IN_FENCES = False     # Set True to replace tabs even inside fenced code blocks
-TAB_REPLACEMENT = " " * 4        # 4 spaces per tab
 
 def should_skip(p: Path) -> bool:
     rel = p.relative_to(ROOT).as_posix()
@@ -50,25 +32,16 @@ def should_skip(p: Path) -> bool:
     if p.name == "PULL_REQUEST_TEMPLATE.md": return True
     return False
 
-# Fenced code blocks: ``` or ~~~ with 3+ markers
 FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
-# Blockquote line: one or more '>' possibly with a trailing space
 BQ_LINE_RE = re.compile(r"^\s*(>+\s?)")
-# Trailing spaces/tabs
 TRAIL_SPACES_RE = re.compile(r"[ \t]+$")
-
-# Heading patterns
-H1_RE = re.compile(r"^(#)\s+(.*?)(\s#+\s*)?$")  # "# Title" (ignore trailing hashes)
-# Emphasis-only line: *Text*, **Text**, _Text_, __Text__ (standalone line)
+HEAD_RE = re.compile(r"^(\s{0,3}#{1,6})(\s+)(.*?)(\s*)(#+\s*)?$")
 EMPH_AS_HEADING_RE = re.compile(
-    r"""^\s*                # leading space
-        (?:
-          \*{1,3}([^\*\_].*?)\*{1,3}   # *text* or **text** or ***text***
-          |
-          _{1,3}([^_\*].*?)_{1,3}       # _text_ or __text__ or ___text___
-        )\s*$""",
+    r"""^\s*(?:\*{1,3}([^\*\_].*?)\*{1,3}|_{1,3}([^_\*].*?)_{1,3})\s*$""",
     re.VERBOSE
 )
+
+TAB_REPLACEMENT = " " * 4
 
 def is_fence(line: str) -> bool:
     return FENCE_RE.match(line) is not None
@@ -81,142 +54,180 @@ def bq_prefix(line: str) -> str:
     return m.group(1) if m else ""
 
 def fix_md028(lines):
-    """Fix blank lines *inside* blockquotes by inserting a quoted blank line."""
-    out = []
-    in_fence = False
-    changed = False
+    out, in_fence, changed = [], False, False
     for i, line in enumerate(lines):
         if is_fence(line):
             in_fence = not in_fence
-            out.append(line)
-            continue
-
+            out.append(line); continue
         if not in_fence and line.strip() == "":
             prev = out[-1] if out else ""
             nxt  = lines[i+1] if i+1 < len(lines) else ""
             if is_blockquote(prev) and is_blockquote(nxt):
-                # choose a prefix (prefer previous); fallback to next; else single '>'
                 pref_prev = bq_prefix(prev).strip()
                 pref_next = bq_prefix(nxt).strip()
                 pref = pref_prev or pref_next or ">"
-                # Normalize to just '>' repeated (strip spaces), e.g., ">>"
-                pref = ">" * pref.count(">")
-                if not pref:
-                    pref = ">"
-                out.append(pref)
-                changed = True
-                continue
-
+                pref = ">" * max(1, pref.count(">"))
+                out.append(pref); changed = True; continue
         out.append(line)
     return out, changed
 
 def fix_md009(lines):
-    """Normalize trailing spaces."""
-    out = []
-    in_fence = False
-    changed = False
+    out, in_fence, changed = [], False, False
     for line in lines:
         if is_fence(line):
             in_fence = not in_fence
-            out.append(line)
-            continue
+            out.append(line); continue
         m = TRAIL_SPACES_RE.search(line)
         if not in_fence and m:
             trail = m.group(0)
-            if len(trail) == 1:
-                line = line[:m.start()]
-                changed = True
-            elif len(trail) >= 2:
-                line = line[:m.start()] + "  "
-                changed = True
+            line = line[:m.start()] + ("  " if len(trail) >= 2 else "")
+            changed = True
         out.append(line)
     return out, changed
 
 def fix_md010_tabs(lines):
-    """Replace tabs with spaces (optionally skip fenced blocks)."""
-    out = []
-    in_fence = False
-    changed = False
+    out, changed = [], False
     for line in lines:
-        if is_fence(line):
-            in_fence = not in_fence
-            out.append(line)
-            continue
-        if ("\t" in line) and (APPLY_TABS_IN_FENCES or not in_fence):
-            out.append(line.replace("\t", TAB_REPLACEMENT))
-            changed = True
+        if "\t" in line:
+            out.append(line.replace("\t", TAB_REPLACEMENT)); changed = True
         else:
             out.append(line)
     return out, changed
 
 def fix_md036_emphasis_as_heading(lines):
-    """Convert lines that are only emphasis into '### Heading'."""
-    out = []
-    in_fence = False
-    changed = False
+    out, in_fence, changed = [], False, False
     for line in lines:
         if is_fence(line):
             in_fence = not in_fence
-            out.append(line)
-            continue
-
+            out.append(line); continue
         if not in_fence:
-            # Avoid list markers or quotes acting as headings
-            if not line.lstrip().startswith(("-", "* ", "+", ">", "1.", "2.", "3.", "`")):
-                m = EMPH_AS_HEADING_RE.match(line)
-                if m:
-                    inner = m.group(1) or m.group(2) or ""
-                    inner = inner.strip()
-                    if inner:
-                        out.append(f"### {inner}")
-                        changed = True
-                        continue
+            m = EMPH_AS_HEADING_RE.match(line)
+            if m:
+                inner = (m.group(1) or m.group(2) or "").strip()
+                if inner:
+                    out.append(f"### {inner}"); changed = True; continue
+        out.append(line)
+    return out, changed
+
+def strip_heading_trailing_punct(title: str):
+    anchor = ""
+    m = re.match(r"^(.*?)(\s*\{[^}]+\})\s*$", title)
+    if m:
+        core, anchor = m.group(1).rstrip(), m.group(2)
+    else:
+        core = title.rstrip()
+    new_core = re.sub(r"[ \t]*[.:;!?]+$", "", core)
+    return (new_core + (f" {anchor}" if anchor else "")).strip(), (new_core != core)
+
+def fix_md026_heading_punct(lines):
+    out, in_fence, changed = [], False, False
+    for line in lines:
+        if is_fence(line):
+            in_fence = not in_fence
+            out.append(line); continue
+        m = HEAD_RE.match(line) if not in_fence else None
+        if m:
+            hashes, sp, title, sp2, trailing = m.groups()
+            new_title, ch = strip_heading_trailing_punct(title)
+            if ch:
+                out.append(f"{hashes}{sp}{new_title}"); changed = True; continue
         out.append(line)
     return out, changed
 
 def fix_md025_single_h1(lines):
-    """Demote any additional '# ' headings to '## ' after the first one."""
-    out = []
-    in_fence = False
-    changed = False
-    seen_h1 = False
+    """
+    Ensure only first H1 remains H1.
+    - Converts Setext H1/H2 (====/----) to ATX (#/##).
+    - Demotes additional H1s (ATX or Setext) to H2.
+    """
+    out, in_fence, changed, seen_h1 = [], False, False, False
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        if is_fence(line):
+            in_fence = not in_fence
+            out.append(line); i += 1; continue
+
+        if not in_fence:
+            # ATX headings
+            m = HEAD_RE.match(line)
+            if m:
+                hashes, sp, title, _, _ = m.groups()
+                level = len(hashes.strip())
+                title = title.strip()
+                if level == 1:
+                    if seen_h1:
+                        out.append(f"## {title}"); changed = True
+                    else:
+                        out.append(f"# {title}"); seen_h1 = True
+                else:
+                    out.append(f"{'#'*level} {title}")
+                i += 1
+                continue
+
+            # Setext detection: current line text + next line all '=' or '-'
+            if i + 1 < len(lines):
+                title_line = line.rstrip()
+                underline = lines[i+1].strip()
+                if title_line and re.fullmatch(r"=+", underline):  # Setext H1
+                    if seen_h1:
+                        out.append(f"## {title_line.strip()}")  # demote to H2
+                    else:
+                        out.append(f"# {title_line.strip()}"); seen_h1 = True
+                    changed = True
+                    i += 2
+                    continue
+                if title_line and re.fullmatch(r"-+", underline):  # Setext H2
+                    out.append(f"## {title_line.strip()}"); changed = True
+                    i += 2
+                    continue
+
+        # default
+        out.append(line); i += 1
+
+    return out, changed
+
+def fix_md001_heading_increment(lines):
+    out, in_fence, changed = [], False, False
+    last_level = None
     for line in lines:
         if is_fence(line):
             in_fence = not in_fence
-            out.append(line)
+            out.append(line); continue
+        m = HEAD_RE.match(line) if not in_fence else None
+        if m:
+            hashes, sp, title, _, _ = m.groups()
+            level = len(hashes.strip())
+            title = title.strip()
+            if last_level is None:
+                last_level = level
+                out.append(f"{'#'*level} {title}")
+            else:
+                if level > last_level + 1:
+                    level = last_level + 1
+                    changed = True
+                out.append(f"{'#'*level} {title}")
+                last_level = level
             continue
-
-        if not in_fence:
-            m = H1_RE.match(line)
-            if m:
-                if not seen_h1:
-                    seen_h1 = True
-                    out.append(line)  # keep the first H1
-                    continue
-                # Demote subsequent H1 to H2
-                title = m.group(2).strip()
-                out.append(f"## {title}")
-                changed = True
-                continue
         out.append(line)
     return out, changed
 
 def fix_file(p: Path) -> bool:
-    # Read strict UTF-8 to preserve Arabic and avoid silent data loss
     txt = p.read_text(encoding="utf-8")
     lines = txt.splitlines(keepends=False)
-
     changed_any = False
 
-    # Order matters a bit; do blockquote and tabs/spacing before headings
-    lines, ch = fix_md028(lines);               changed_any |= ch
-    lines, ch = fix_md009(lines);               changed_any |= ch
-    lines, ch = fix_md010_tabs(lines);          changed_any |= ch
-    lines, ch = fix_md036_emphasis_as_heading(lines); changed_any |= ch
-    lines, ch = fix_md025_single_h1(lines);     changed_any |= ch
+    lines, ch = fix_md028(lines);                      changed_any |= ch
+    lines, ch = fix_md009(lines);                      changed_any |= ch
+    lines, ch = fix_md010_tabs(lines);                 changed_any |= ch
+    lines, ch = fix_md036_emphasis_as_heading(lines);  changed_any |= ch
+    lines, ch = fix_md025_single_h1(lines);            changed_any |= ch
+    lines, ch = fix_md026_heading_punct(lines);        changed_any |= ch
+    lines, ch = fix_md001_heading_increment(lines);    changed_any |= ch
 
     if changed_any:
-        p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        Path(p).write_text("\n".join(lines) + "\n", encoding="utf-8")
     return changed_any
 
 def main() -> int:
@@ -224,8 +235,7 @@ def main() -> int:
     touched = 0
     for p in md_files:
         if fix_file(p):
-            print(f"Fixed: {p.relative_to(ROOT)}")
-            touched += 1
+            print(f"Fixed: {p.relative_to(ROOT)}"); touched += 1
     print(f"Done. Files modified: {touched}")
     return 0
 

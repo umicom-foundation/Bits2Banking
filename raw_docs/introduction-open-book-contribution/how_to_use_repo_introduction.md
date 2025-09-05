@@ -3,8 +3,7 @@ title: "Introduction — How This Open Book Works"
 volume: "volume-0"
 status: draft
 source: "raw_docs/volume-0/volume0-introduction.md"
-tags: ["contributing", "guide"]
----
+## tags: ["contributing", "guide"]
 
 # Introduction — How This Open Book Works
 
@@ -93,7 +92,7 @@ raw_docs/bits-to-banking/bookcover_Bits_to_Banking.png
 ### Windows (PowerShell)
 ```powershell
 # From the repo root
-.	ools
+.    ools
 ew-volume.ps1 introduction-to-islam
 ```
 

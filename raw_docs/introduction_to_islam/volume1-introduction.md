@@ -3,8 +3,7 @@ title: "Introduction to Islam — Purpose, Sources, and Scope"
 volume: "introduction-to-islam"
 status: draft
 source: "raw_docs/introduction-to-islam/volume1-introduction.md"
-tags: ["introduction", "history", "glossary"]
----
+## tags: ["introduction", "history", "glossary"]
 
 # Introduction to Islam — Purpose, Sources, and Scope
 

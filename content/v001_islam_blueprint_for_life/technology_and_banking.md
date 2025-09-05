@@ -21,7 +21,7 @@ Computers store and move **bits (0/1)**. Your bank balance is a number in a **da
 Tech is a tool. Without Sharīʿah principles (no riba/gharar/maysir; real assets; transparency), technology can **amplify injustice**.
 
 ### Supplication
-### اللَّهُمَّ وَفِّقْنَا لِتَسْخِيرِ التِّقْنِيَةِ فِي الْخَيْرِ وَالْعَدْلِ.
-### O Allah, enable us to harness technology for good and justice.
+### اللَّهُمَّ وَفِّقْنَا لِتَسْخِيرِ التِّقْنِيَةِ فِي الْخَيْرِ وَالْعَدْلِ
+### O Allah, enable us to harness technology for good and justice
 
 [← Chapter 4](modern_banking_and_finance.md) | [Next → Chapter 6](islamic_finance_and_future.md)
