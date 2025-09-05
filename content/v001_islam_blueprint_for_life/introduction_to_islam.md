@@ -4,7 +4,7 @@ Islam begins with a clear truth: **Allah is One**, the Creator of the heavens an
 
 > **Q 2:30 (Arabic):** وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً  
 > **Meaning:** “When your Lord said to the angels, ‘I am placing upon the earth a khalīfah (successive authority).’”
-
+>
 > **Q 51:56 (Arabic):** وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ  
 > **Meaning:** “I did not create jinn and humans except that they worship (serve) Me.”
 
@@ -38,7 +38,7 @@ Five daily prayers carve the day into **sacred appointments** with Allah, traini
 
 > **Q 20:14 (Arabic):** إِنَّنِيٓ أَنَا ٱللَّهُ لَآ إِلَٰهَ إِلَّآ أَنَا فَٱعْبُدْنِي وَأَقِمِ ٱلصَّلَاةَ لِذِكْرِي  
 > **Meaning:** “Indeed, I am Allah; there is no deity except Me, so worship Me and establish prayer for My remembrance.”
-
+>
 > **Q 29:45 (Arabic):** إِنَّ ٱلصَّلَاةَ تَنْهَىٰ عَنِ ٱلْفَحْشَاءِ وَٱلْمُنكَرِ  
 > **Meaning:** “Indeed, prayer restrains from immorality and wrongdoing.”
 
@@ -50,7 +50,7 @@ Zakāh is a **due** on wealth for those eligible; it **purifies** the giver and 
 
 > **Q 9:103 (Arabic):** خُذْ مِنْ أَمْوَالِهِمْ صَدَقَةً تُطَهِّرُهُمْ وَتُزَكِّيهِمْ بِهَا  
 > **Meaning:** “Take from their wealth charity by which you purify and grow them.”
-
+>
 > **Q 9:60 (Arabic):** إِنَّمَا ٱلصَّدَقَاتُ لِلْفُقَرَاءِ وَٱلْمَسَاكِينِ...  
 > **Meaning:** “Charities are for the poor, the needy…” (lists categories)
 
@@ -71,7 +71,7 @@ Ramadān trains **self-mastery**: hunger without complaint, restraint without re
 
 > **Q 3:97 (Arabic):** وَلِلَّهِ عَلَى ٱلنَّاسِ حِجُّ ٱلْبَيْتِ مَنِ ٱسْتَطَاعَ إِلَيْهِ سَبِيلًا  
 > **Meaning:** “Pilgrimage to the House is a duty owed to Allah by people who are able to find a way.”
-
+>
 > **Q 22:27 (Arabic):** وَأَذِّنْ فِي ٱلنَّاسِ بِٱلْحَجِّ يَأْتُوكَ رِجَالًا...  
 > **Meaning:** “Proclaim the pilgrimage to the people; they will come to you on foot and on every lean camel…”
 
@@ -108,13 +108,13 @@ Islam teaches that Allah sent **revelation** and **messengers** across ages to c
 
 > **Q 21:25 (Arabic):** وَمَا أَرْسَلْنَا مِن قَبْلِكَ مِن رَّسُولٍ إِلَّا نُوحِي إِلَيْهِ أَنَّهُ لَآ إِلَٰهَ إِلَّآ أَنَا فَاعْبُدُونِ  
 > **Meaning:** “We sent no messenger before you except that We revealed to him: ‘There is no deity but Me, so worship Me.’”
-
+>
 > **Q 16:36 (Arabic):** وَلَقَدْ بَعَثْنَا فِي كُلِّ أُمَّةٍ رَّسُولًا أَنِ ٱعْبُدُوا ٱللَّهَ وَٱجْتَنِبُوا ٱلطَّاغُوتَ  
 > **Meaning:** “We certainly sent into every nation a messenger: ‘Worship Allah and avoid false gods.’”
-
+>
 > **Q 42:13 (Arabic):** شَرَعَ لَكُم مِّنَ ٱلدِّينِ مَا وَصَّىٰ بِهِ نُوحًا… وَٱلَّذِيٓ أَوْحَيْنَآ إِلَيْكَ…  
 > **Meaning:** “He has ordained for you of religion what He enjoined upon Noah and what We have revealed to you…”
-
+>
 > **Q 3:19 (Arabic):** إِنَّ الدِّينَ عِندَ ٱللَّهِ ٱلْإِسْلَامُ  
 > **Meaning:** “Indeed, the religion with Allah is Islam.”
 
@@ -122,7 +122,7 @@ Muslims affirm the **original** revelations; the Qur’ān also warns that some 
 
 > **Q 2:75 (Arabic):** قَدْ كَانَ فَرِيقٌ مِّنْهُمْ يَسْمَعُونَ كَلَـٰمَ ٱللَّهِ ثُمَّ يُحَرِّفُونَهُ مِنۢ بَعْدِ مَا عَقَلُوهُ  
 > **Meaning:** “A group among them would hear the words of Allah, then alter it after understanding it.”
-
+>
 > **Q 3:78 (Arabic):** وَإِنَّ مِنْهُمْ لَفَرِيقًا يَلْوُونَ أَلْسِنَتَهُم بِٱلْكِتَـٰبِ لِتَحْسَبُوهُ مِنَ ٱلْكِتَـٰبِ  
 > **Meaning:** “Among them is a group who distort their tongues with the Book so you think it is from the Book.”
 
@@ -208,7 +208,7 @@ Islam permits **defense** against aggression, expulsion, and persecution—**nev
 
 > **Q 22:39–40 (Arabic):** أُذِنَ لِلَّذِينَ يُقَاتَلُونَ بِأَنَّهُمْ ظُلِمُوا... وَلَوْلَا دَفْعُ ٱللَّهِ ٱلنَّاسَ بَعْضَهُم بِبَعْضٍ لَّهُدِّمَتْ صَوَامِعُ وَبِيَعٌ...  
 > **Meaning:** “Permission [to fight] is given to those who are fought because they were wronged… Had Allah not checked one people by means of another, monasteries, churches, synagogues, and mosques would have been demolished.”
-
+>
 > **Q 2:190 (Arabic):** وَقَاتِلُوا فِي سَبِيلِ ٱللَّهِ ٱلَّذِينَ يُقَاتِلُونَكُمْ وَلَا تَعْتَدُوا  
 > **Meaning:** “Fight in the way of Allah those who fight you, **but do not transgress**.”
 
@@ -222,10 +222,10 @@ Islam demands justice at both the **market** and **governance** levels. Cheating
 
 > **Q 83:1–3 (Arabic):** وَيْلٌ لِّلْمُطَفِّفِينَ • الَّذِينَ إِذَا اكْتَالُوا عَلَى النَّاسِ يَسْتَوْفُونَ • وَإِذَا كَالُوهُمْ أَو وَّزَنُوهُمْ يُخْسِرُونَ  
 > **Meaning:** “Woe to those who give less in measure… when they take, they take in full; when they measure for others, they give less.”
-
+>
 > **Q 2:275 (Arabic):** أَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا  
 > **Meaning:** “Allah has permitted **trade** and forbidden **riba**.”
-
+>
 > **Q 5:44–47 (Arabic):** وَمَن لَّمْ يَحْكُم بِمَا أَنزَلَ ٱللَّهُ…  
 > **Meaning:** “Whoever does not judge by what Allah has revealed—then they are the disbelievers… the wrongdoers… the defiantly disobedient.”
 
@@ -280,15 +280,15 @@ From the first sin of **arrogance** (Q 7:12), Shayṭān’s method is to plant 
 ## Short Quotes from Notable Non-Muslim Voices
 
 > “The lies which well-meaning zeal has heaped round this man are disgraceful to ourselves only.” — Thomas Carlyle, *On Heroes* (1841)
-
+>
 > “His readiness to undergo persecution for his beliefs… argue his sincerity.” — W. Montgomery Watt, *Muhammad at Mecca* (1953)
-
+>
 > “The only man in history who was supremely successful on both the religious and secular levels.” — Michael H. Hart, *The 100* (1978)
-
+>
 > “Islam is a democratic spirit… in the mosques, monarch and peasant kneel side by side.” — Sarojini Naidu, speech excerpts (early 20th c.)
-
+>
 > “If this be Islam, do we not all live in Islam?” — Johann Wolfgang von Goethe, *West-östlicher Divan* (1819)
-
+>
 > “It was not the sword that won a place for Islam… it was the rigid simplicity, the scrupulous regard for pledges.” — M. K. Gandhi, *Young India* (1928)
 
 ## Author’s Note — Why I Refused Freemasonry
@@ -311,7 +311,7 @@ For me, Islam’s clarity, public ethics, and accountability make such secretive
 ## Building Character: From Intention to Institutions
 
 - **Intention (niyyah):** “Actions are by intentions.” (Bukhārī, Muslim)  
-  Start with **ikhlāṣ** (sincerity), then seek excellence (**iḥsān**) in craft, trade, and service. 
+  Start with **ikhlāṣ** (sincerity), then seek excellence (**iḥsān**) in craft, trade, and service.
   > **Q 67:2 (Arabic):** لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًا — “…that He may test you [to see] which of you is **best** in deed.”
 - **Truthfulness (ṣidq):** Truth sets contracts and communities at ease.  
   > **Q 9:119 (Arabic):** يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا ٱللَّهَ وَكُونُوا مَعَ ٱلصَّادِقِينَ
@@ -326,7 +326,7 @@ Islam trains us to be **givers** who lift others. **Zakāt** purifies wealth; vo
 
 > **Hadith (Bukhārī, Muslim):** «الْيَدُ الْعُلْيَا خَيْرٌ مِنَ الْيَدِ السُّفْلَى»  
 > **Meaning:** “The upper hand is better than the lower hand.”
-
+>
 > **Q 3:92 (Arabic):** لَن تَنَالُوا الْبِرَّ حَتَّىٰ تُنفِقُوا مِمَّا تُحِبُّونَ  
 > **Meaning:** “You will never attain righteousness until you spend from what you love.”
 
@@ -347,7 +347,7 @@ With belief, revelation, justice, unity, the Five Pillars, and the ethics of jih
 - **Jihād** is comprehensive striving: self-reform, knowledge, service, environmental care, and ethical defense against aggression—**without transgression**.  
 - **One human family**; racism and supremacism are satanic diseases.  
 - **No compulsion**: guidance is clear; choice is free; judgment is Allah’s.  
-- **Prophets** called to tawḥīd and justice (ISLAM - The Complete Way of Life/The Perfect Blueprint to a successful life); **Qur’an’s signs** invite reflection, **knowledge** strengthens faith. 
+- **Prophets** called to tawḥīd and justice (ISLAM - The Complete Way of Life/The Perfect Blueprint to a successful life); **Qur’an’s signs** invite reflection, **knowledge** strengthens faith.
 - **Trade permitted, riba forbidden**; fairness in exchange is worship.  
 - **Money** should track **real value** and **share risk**; we’ll propose **Umicom Financial Markets and Interensic Based Money** later.  
 - **Stand firm in justice**; verify news; stop oppression—including by those “on our side”.  

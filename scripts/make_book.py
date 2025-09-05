@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-import argparse, os, sys, yaml, subprocess, pathlib, datetime
-ROOT = pathlib.Path(__file__).resolve().parent.parent
-CONTENT = ROOT / "content"
-BOOKDIR = ROOT / "book"
-COVER = ROOT / "images" / "islam_bookcover.png"
-#!/usr/bin/env python3
 """
 make_book.py
 
@@ -166,15 +160,6 @@ def main() -> None:
         str(combined_md),
         "-o", str(epub_out),
         "--toc",
-        "--epub-cover-image", args.cover,
-        "--standalone"
-    ])
-
-    # Build PDF (wkhtmltopdf engine keeps it lightweight)
-    run([
-        "pandoc", str(combined),
-        "-o", str(pdf_out),
-        "--toc",
         "--standalone",
     ]
     if cover_path and cover_path.exists():
@@ -190,29 +175,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-        "--epub-cover-image", str(cover_path)])
-    try:
-        run(pandoc_cmd)
-        print(f"EPUB created: {epub_out}")
-    except subprocess.CalledProcessError as e:
-        print("ERROR: Pandoc failed to build the EPUB.", file=sys.stderr)
-        sys.exit(e.returncode)      
-    # Build PDF (wkhtmltopdf engine keeps it lightweight)
-    pdf_out = book_dir / f"{args.volume}.pdf"
-    pdf_cmd = [
-        "pandoc",
-        str(combined_md),
-        "-o", str(pdf_out),
-        "--toc",
-        "--standalone",
-    ]
-    try:
-        run(pdf_cmd)
-        print(f"PDF created: {pdf_out}")
-    except subprocess.CalledProcessError as e:
-        print("ERROR: Pandoc failed to build the PDF.", file=sys.stderr)
-        sys.exit(e.returncode)
-
-    if __name__ == "__main__":
-        main()
-        

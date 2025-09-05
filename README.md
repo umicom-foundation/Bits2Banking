@@ -19,7 +19,8 @@ git clone https://github.com/umicom-foundation/Bits2Banking.git C:\Bits2Banking
 cd C:\Bits2Banking
 .uild.ps1 install
 .uild.ps1 build
-start .olumes\Volume_00_Source_Control.docx
+start .
+olumes\Volume_00_Source_Control.docx
 ```
 
 **macOS / Linux (Makefile):**
@@ -115,7 +116,8 @@ equirements.txt) { pip install -r requirements.txt } else { pip install python-d
 
 ### 4) Open the result
 ```powershell
-start .olumes\Volume_00_Source_Control.docx
+start .
+olumes\Volume_00_Source_Control.docx
 ```
 
 > Other handy commands: `.uild.ps1 install` • `.uild.ps1 docs` • `.uild.ps1 lint` • `.uild.ps1 clean`

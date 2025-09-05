@@ -8,7 +8,7 @@ Because money shapes **daily life**: wages, food prices, savings, charity, and p
 
 > وَأَقِيمُوا الْوَزْنَ بِالْقِسْطِ وَلَا تُخْسِرُوا الْمِيزَانَ (الرحمن 9)  
 > *“Establish weight in justice and do not fall short in the balance.”* (Q 55:9)
-
+>
 > وَيْلٌ لِّلْمُطَفِّفِينَ الَّذِينَ إِذَا اكْتَالُوا عَلَى النَّاسِ يَسْتَوْفُونَ وَإِذَا كَالُوهُمْ أَوْ وَّزَنُوهُمْ يُخْسِرُونَ (المطففين 1–3)  
 > *“Woe to those who give less in measure—who, when they receive by measure from people, take in full; but when they measure or weigh for them, give less.”* (Q 83:1–3)
 
@@ -64,7 +64,7 @@ History shows that **supremacist ideologies** weaponize money. Empires imposed c
 
 >… مَن قَتَلَ نَفْسًا بِغَيْرِ نَفْسٍ أَوْ فَسَادٍ فِي ٱلْأَرْضِ فَكَأَنَّمَا قَتَلَ ٱلنَّاسَ جَمِيعًا (المائدة 32)  
 > *“…whoever kills a soul—unless [in retribution] or for (grave) corruption in the land—it is as if he had slain all mankind.”* (Q 5:32)
-
+>
 > يَا أَيُّهَا الَّذِينَ آمَنُوا كُونُوا قَوَّامِينَ لِلَّهِ شُهَدَاءَ بِالْقِسْطِ (المائدة 8)  
 > *“O you who believe! Be steadfast for Allah, witnesses in justice.”* (Q 5:8)
 
