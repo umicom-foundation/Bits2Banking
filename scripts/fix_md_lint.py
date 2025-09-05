@@ -3,11 +3,17 @@
 fix_md_lint.py
 
 Repairs two markdownlint issues across the repo:
-- MD028: no-blanks-blockquote  -> converts a blank line between two quoted lines into a '>' line
-- MD009: no-trailing-spaces    -> removes trailing spaces (keeps exactly 2 if already 2+)
 
-Skips: volumes/**, book/**, site/**, .github/ISSUE_TEMPLATE/** and PULL_REQUEST_TEMPLATE.md
-Avoids touching lines inside fenced code blocks (``` or ~~~).
+- MD028: no-blanks-blockquote
+  Converts a blank line that sits *inside* a blockquote into a quoted blank line,
+  preserving the same '>' nesting prefix (e.g., '>' or '>> ').
+
+- MD009: no-trailing-spaces
+  Removes trailing spaces if exactly 1; normalizes 2+ trailing spaces to exactly 2
+  (to keep intentional soft line breaks).
+
+Skips: volumes/**, book/**, site/**, .github/ISSUE_TEMPLATE/**, and PULL_REQUEST_TEMPLATE.md
+Avoids touching lines inside fenced code blocks (``` or ~~~, any length >= 3).
 """
 
 from pathlib import Path
@@ -25,21 +31,36 @@ def should_skip(p: Path) -> bool:
     if p.name == "PULL_REQUEST_TEMPLATE.md": return True
     return False
 
-fence_re = re.compile(r"^\s*(```|~~~)")
-blockquote_re = re.compile(r"^\s*>")
+# Fence: start/end of fenced code blocks (```... or ~~~...), any length >=3
+fence_re = re.compile(r"^\s*(`{3,}|~{3,})")
+# A line that begins with one or more '>' (with optional spaces after) is a blockquote
+blockquote_line_re = re.compile(r"^\s*(>+\s?)")
+# Any trailing spaces/tabs
 trail_spaces_re = re.compile(r"[ \t]+$")
 
+def is_blockquote(line: str) -> bool:
+    return blockquote_line_re.match(line) is not None
+
+def quote_prefix(line: str) -> str:
+    """
+    Return the exact leading quote prefix ('>', '>>', '   > ' etc.) from a blockquote line.
+    If not a blockquote, returns empty string.
+    """
+    m = blockquote_line_re.match(line)
+    return m.group(1) if m else ""
+
 def fix_file(p: Path) -> bool:
-    text = p.read_text(encoding="utf-8", errors="ignore")
+    # Read as strict UTF-8 (no 'ignore') to avoid silently losing non-ascii content
+    text = p.read_text(encoding="utf-8")
     lines = text.splitlines(keepends=False)
 
     changed = False
     in_fence = False
 
-    # First pass: fix MD028 (blank lines between two blockquote lines)
+    # --- Pass 1: MD028 (blank lines inside blockquotes)
     out = []
     for i, line in enumerate(lines):
-        # Toggle code fence state on lines that begin with ``` or ~~~
+        # Toggle fence state when a fence line is seen
         if fence_re.match(line):
             in_fence = not in_fence
             out.append(line)
@@ -47,10 +68,24 @@ def fix_file(p: Path) -> bool:
 
         if not in_fence and line.strip() == "":
             prev = out[-1] if out else ""
-            nxt = lines[i+1] if i+1 < len(lines) else ""
-            if blockquote_re.match(prev or "") and blockquote_re.match(nxt or ""):
-                # Turn blank line into a quoted blank line to satisfy MD028
-                out.append(">")
+            nxt  = lines[i+1] if i+1 < len(lines) else ""
+            if is_blockquote(prev) and is_blockquote(nxt):
+                # Insert a quoted blank line with *the same prefix depth* as prev
+                pref = quote_prefix(prev)
+                # Normalize to just the quote markers and a single space (if any space was there)
+                # e.g., "> " or ">> "
+                pref = pref.rstrip() + (" " if pref.strip() else "")
+                out.append(pref.rstrip("> ").replace(" ", "") + ("" if pref.strip() == ">" else pref))
+                # The above line ensures at least '>' and preserves multiple '>' if present.
+                # Simpler (and usually sufficient) alternative:
+                # out.append(pref.strip() if pref.strip() else ">")
+                # But we’ll use a cleaner approach below instead:
+                out.pop()  # remove the experimental append
+                pref_clean = quote_prefix(prev)
+                if not pref_clean:
+                    pref_clean = ">"
+                # If prev was '>> ' then we want '>>' (with optional space); both are valid.
+                out.append(pref_clean.strip())
                 changed = True
                 continue
 
@@ -60,7 +95,7 @@ def fix_file(p: Path) -> bool:
     out = []
     in_fence = False
 
-    # Second pass: fix MD009 (trailing spaces)
+    # --- Pass 2: MD009 (trailing spaces)
     for line in lines:
         if fence_re.match(line):
             in_fence = not in_fence
@@ -70,21 +105,21 @@ def fix_file(p: Path) -> bool:
         if not in_fence:
             m = trail_spaces_re.search(line)
             if m:
-                # count trailing spaces/tabs
                 trail = m.group(0)
                 if len(trail) == 1:
-                    # drop single trailing space
+                    # remove single trailing space
                     line = line[:m.start()]
                     changed = True
                 elif len(trail) >= 2:
-                    # normalize 2+ trailing spaces to exactly 2 (or, if you prefer, strip all)
+                    # normalize to exactly two spaces (intentional soft break)
                     line = line[:m.start()] + "  "
                     changed = True
 
         out.append(line)
 
     if changed:
-        p.write_text("\n".join(out) + "\n", encoding="utf-8")
+        # Write back with a single trailing newline, UTF-8
+        Path(p).write_text("\n".join(out) + "\n", encoding="utf-8")
     return changed
 
 def main() -> int:
@@ -99,4 +134,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
