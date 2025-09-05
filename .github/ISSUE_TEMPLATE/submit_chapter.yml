@@ -1,0 +1,70 @@
+name: "Submit a Chapter"
+description: "Upload a chapter/section and point to your files in raw_docs/<volume>/"
+title: "Chapter: <short title>"
+labels:
+  - "chapter:submission"
+assignees:
+  - "sammyhegab"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## How this works
+        1) In the repo, upload your files to **raw_docs/<volume-slug>/**.
+           - Accepted: **.md**, **.docx**, **.pdf**
+           - Optional cover: **bookcover_<book_title>.png**
+        2) Submit this issue so the maintainer can review.
+        3) Our ingest workflow will mirror/convert into **content/volumes/<volume-slug>/**.
+
+  - type: input
+    id: volume
+    attributes:
+      label: Volume slug (folder name under raw_docs)
+      placeholder: "generalist-ai"
+    validations:
+      required: true
+
+  - type: input
+    id: chapter_title
+    attributes:
+      label: Chapter/section title
+      placeholder: "Introduction to Generalist AI"
+    validations:
+      required: true
+
+  - type: textarea
+    id: abstract
+    attributes:
+      label: Short abstract
+      description: "1–3 sentences about what this chapter covers."
+      placeholder: "This chapter introduces goals, scope, and key examples..."
+    validations:
+      required: true
+
+  - type: input
+    id: upload_paths
+    attributes:
+      label: Uploaded file paths
+      description: "List the files you added under raw_docs/<volume-slug>/"
+      placeholder: "raw_docs/generalist-ai/intro.docx; raw_docs/generalist-ai/bookcover_Generalist_AI.png"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: "Files are in **raw_docs/<volume-slug>/** (not content/)"
+          required: true
+        - label: "For code fences in Markdown, I added a language (use `text` if unsure)."
+          required: false
+        - label: "Images are embedded in the DOCX or placed alongside the MD/PDF."
+          required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for the maintainer
+      placeholder: "Anything to watch for (formatting, images, licensing, etc.)"
+
