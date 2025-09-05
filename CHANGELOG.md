@@ -1,6 +1,6 @@
 # Changelog — Bits to Banking
 
-All notable changes to this project will be documented here.  
+All notable changes to this project will be documented here.
 This project follows a simple changelog format (date + description).
 
 ---
