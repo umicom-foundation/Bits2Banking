@@ -1,0 +1,70 @@
+name: "Propose a New Volume"
+description: "Start a new book/volume and point to your uploads in raw_docs/<volume>/"
+title: "Volume Proposal: <title>"
+labels:
+  - "volume:proposal"
+assignees:
+  - "sammyhegab"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## How this works
+        1) Create a folder under **raw_docs/<volume-slug>/**.
+        2) Upload any initial content there:
+           - Chapters/sections as **.md**, **.docx**, or **.pdf**
+           - Optional cover as **bookcover_<book_title>.png**
+        3) Submit this proposal so the maintainer can approve and guide structure.
+        4) Our ingest workflow mirrors/converts into **content/volumes/<volume-slug>/**.
+
+  - type: input
+    id: volume_title
+    attributes:
+      label: Volume title
+      placeholder: "Starting Your Own Business"
+    validations:
+      required: true
+
+  - type: input
+    id: volume_slug
+    attributes:
+      label: Suggested slug (folder name)
+      placeholder: "starting-a-business"
+      description: "Lowercase, hyphen-separated. This becomes raw_docs/<slug> and content/volumes/<slug>."
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope & outline
+      description: "High-level purpose + proposed chapter list (bullets are fine)."
+      placeholder: |
+        - ch01: Why start a business?
+        - ch02: Validating the idea
+        - ch03: Legal forms, taxes, banking
+    validations:
+      required: true
+
+  - type: input
+    id: maintainer
+    attributes:
+      label: Proposed maintainer(s) (GitHub usernames)
+      placeholder: "@your-handle, @co-maintainer"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: "I created **raw_docs/<slug>/** and uploaded at least one file there."
+          required: true
+        - label: "I confirm all content respects licensing and community rules."
+          required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for the maintainer
+      placeholder: "Anything else (assets, deadlines, prior work, references, etc.)"
+
