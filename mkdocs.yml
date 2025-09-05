@@ -3,6 +3,7 @@ site_description: "Open, practical education: from first principles to ethical f
 site_author: "Umicom Foundation"
 repo_url: "https://github.com/umicom-foundation/Bits2Banking"
 repo_name: "umicom-foundation/Bits2Banking"
+edit_uri: "edit/main/content/"
 
 docs_dir: content
 site_dir: site
@@ -10,10 +11,20 @@ site_dir: site
 theme:
   name: material
   language: en
+  features:
+    # Nice UX
+    - navigation.instant           # fast page transitions
+    - navigation.tabs              # top-level nav tabs
+    - navigation.sections          # show section groupings
+    - navigation.footer            # auto Previous/Next links
+    - toc.integrate                # ToC in the right sidebar integrated
+    - content.code.copy            # copy button on code blocks
+    - content.action.edit          # "Edit this page" button
 
 nav:
   - Quick Upload via raw_docs: CONTRIBUTING_RAW_DOCS.md
   - Home: index.md
+
   - "Volume 1 — Islam: Blueprint for Life":
       - "Introduction to Islam — A Complete Way of Life": v001_islam_blueprint_for_life/introduction_to_islam.md
       - "History of Money": v001_islam_blueprint_for_life/history_of_money.md
@@ -25,18 +36,29 @@ nav:
       - "Governance Firewalls": v001_islam_blueprint_for_life/governance_firewalls.md
       - "Hall of Shame — Collaboration and Betrayal": v001_islam_blueprint_for_life/hall_of_shame_collaboration_and_betrayal.md
       - "Recap": v001_islam_blueprint_for_life/recap.md
-  - Volumes: 
-    - Index: VOLUMES.md
+
+  - Volumes:
+      - Index: VOLUMES.md
 
 plugins:
   - search
 
 markdown_extensions:
+  # Structure & links
   - toc:
       permalink: true
   - tables
+  - def_list
   - footnotes
   - admonition
   - attr_list
   - md_in_html
-  - def_list
+
+  # Pymdown extensions (already bundled with Material)
+  - pymdownx.details          # collapsible details blocks
+  - pymdownx.superfences      # fenced blocks inside other blocks
+  - pymdownx.emoji            # emoji shortcodes
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.highlight:
+      anchor_linenums: true
