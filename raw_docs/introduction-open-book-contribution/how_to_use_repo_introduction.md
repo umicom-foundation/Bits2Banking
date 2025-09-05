@@ -93,7 +93,7 @@ raw_docs/bits-to-banking/bookcover_Bits_to_Banking.png
 ### Windows (PowerShell)
 ```powershell
 # From the repo root
-.	ools
+.    ools
 ew-volume.ps1 introduction-to-islam
 ```
 

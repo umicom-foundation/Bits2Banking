@@ -54,7 +54,7 @@ When you push to `main`:
    - Ensures a top-level `# Title`.
    - Fixes blank code fences to use `text` (satisfies markdownlint MD040).
 
-### Output lives in:
+### Output lives in
 ```text
 content/volumes/<volume-slug>/
 ```
@@ -79,14 +79,14 @@ print("hello")
 
 ## Quick scaffolding (optional helpers)
 
-### Windows (PowerShell):
+### Windows (PowerShell)
 ```powershell
 # From the repo root
-.	ools
+.    ools
 ew-volume.ps1 generalist-ai
 ```
 
-### macOS/Linux (Bash):
+### macOS/Linux (Bash)
 ```bash
 # From the repo root
 bash tools/new-volume.sh generalist-ai

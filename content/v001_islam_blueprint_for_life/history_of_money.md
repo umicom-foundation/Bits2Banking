@@ -2,7 +2,7 @@
 
 Money is a tool. In righteous hands and just systems, it enables exchange, investment, and prosperity. In corrupt systems, it becomes an engine of exploitation. Islam enters this story with a **moral compass**: honest weights, fair contracts, real assets, shared risk, and a strict prohibition of **riba** (interest/usury). This chapter surveys money’s long arc—from barter to bullion to banknotes to today’s fiat—then shows how Islam corrected abuse and built trust.
 
-## 2.1 Why Study Money?
+## 2.1 Why Study Money
 
 Because money shapes **daily life**: wages, food prices, savings, charity, and public services. If money can be created at will by a few or chained to interest, it will quietly transfer wealth from the many to the few. Islam commands **justice** and **measure**:
 
@@ -79,11 +79,11 @@ This is the road toward our **Umicom Asset-Backed Security Coin**: a Shariah-ali
 
 ## Supplication (Duʿāʾ)
 
-### Arabic:
+### Arabic
 اللَّهُمَّ بَارِكْ لَنَا فِي رِزْقِنَا، وَاجْعَلْ مَالَنَا قُوَّةً لِلطَّاعَةِ، وَحِصْنًا مِنَ الظُّلْمِ، وَنَجِّنَا مِنَ الرِّبَا وَمِنْ نُظُمِ الظُّلْمِ، وَارْزُقْنَا صِدْقًا فِي الْبَيْعِ وَالشِّرَاءِ وَالْعُقُودِ.
 
-### English:
-### O Allah, bless our provision; make our wealth a strength for obedience and a shield against injustice; save us from riba and oppressive systems; and grant us truthfulness in buying, selling, and contracts.
+### English
+### O Allah, bless our provision; make our wealth a strength for obedience and a shield against injustice; save us from riba and oppressive systems; and grant us truthfulness in buying, selling, and contracts
 
 ## Chapter Summary (Refresher)
 

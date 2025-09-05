@@ -332,7 +332,7 @@ Islam trains us to be **givers** who lift others. **Zakāt** purifies wealth; vo
 
 Our project—**education** plus **ethical finance**—aims to **serve people** so families, students, and small businesses can breathe and build.
 
-## Where to next?
+## Where to next
 
 With belief, revelation, justice, unity, the Five Pillars, and the ethics of jihād clarified—we next examine how money and markets can enable or destroy justice. Continue to **History of Money** to see how just exchange and sound money kept communities stable, and how manipulation corrupted markets and states.
 
@@ -363,7 +363,7 @@ With belief, revelation, justice, unity, the Five Pillars, and the ethics of jih
 **Arabic:** اللَّهُمَّ بَارِكْ لَنَا فِي أَرْزَاقِنَا، وَارْزُقْنَا الصِّدْقَ فِي الْبَيْعِ وَالشِّرَاءِ، وَنَجِّنَا مِنَ الرِّبَا وَالظُّلْمِ.
 **Meaning:** O Allah, bless our provision, grant us honesty in trade, and save us from riba and oppression.
 
-### English:
+### English
 O Allah, show us truth as truth and enable us to follow it; show us falsehood as falsehood and enable us to avoid it. Make us keys to goodness and locks against harm, and use us to serve people and help the oppressed. Āmīn.
 
 ### For courage and unity

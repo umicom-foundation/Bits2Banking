@@ -67,5 +67,5 @@ Reference: Bits2Banking
 
 ---
 
-## Need a receipt or partner letter?
+## Need a receipt or partner letter
 Open an issue or email the maintainers and we’ll help.
