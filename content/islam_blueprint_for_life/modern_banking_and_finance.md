@@ -7,7 +7,7 @@ When a bank issues a loan, it **credits** the borrower’s account with new depo
 ## 4.2 Central banks and governments
 Governments sell bonds; central banks buy them with newly created reserves. Taxpayers carry the **interest burden**.
 
-> **“Allah destroys riba and gives increase for charities.”**  
+> **“Allah destroys riba and gives increase for charities.”**
 > **يَمْحَقُ ٱللَّهُ ٱلرِّبَا وَيُرْبِى ٱلصَّدَقَـٰتِ** *(Al‑Baqarah 2:276)*
 
 ## 4.3 Why it collapses
@@ -27,7 +27,7 @@ Debt must grow to service past interest. Eventually, defaults rise; the state pr
 - **Zakat/Waqf** — social safety and productive endowments.
 
 ### Supplication
-**اللَّهُمَّ عَلِّمْنَا مَا يَنْفَعُنَا، وَانْفَعْنَا بِمَا عَلَّمْتَنَا، وَارْزُقْنَا مَالًا حَلَالًا طَيِّبًا.**  
-*O Allah, teach us what benefits us, benefit us through what You have taught us, and grant us pure halal wealth.*
+### اللَّهُمَّ عَلِّمْنَا مَا يَنْفَعُنَا، وَانْفَعْنَا بِمَا عَلَّمْتَنَا، وَارْزُقْنَا مَالًا حَلَالًا طَيِّبًا
+### O Allah, teach us what benefits us, benefit us through what You have taught us, and grant us pure halal wealth
 
 [← Chapter 3](decline_of_sound_money.md) | [Next → Chapter 5](technology_and_banking.md)

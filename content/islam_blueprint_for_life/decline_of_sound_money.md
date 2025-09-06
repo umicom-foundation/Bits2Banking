@@ -15,7 +15,7 @@ The dollar was pegged to gold at $35/oz; the world pegged to the dollar. In **19
 ## 3.4 Riba and the debt engine
 Loans are created with **interest**; money to pay the interest does not exist unless new debt is issued. Nations and families become permanent debtors.
 
-> **“…If you do not desist, then be informed of a war from Allah and His Messenger.”**  
+> **“…If you do not desist, then be informed of a war from Allah and His Messenger.”**
 > **فَإِن لَّمْ تَفْعَلُوا فَأْذَنُوا بِحَرْبٍ مِّنَ ٱللَّهِ وَرَسُولِهِ** *(Al‑Baqarah 2:279)*
 
 ## 3.5 The 2008 lesson
@@ -27,7 +27,7 @@ Risky mortgages were bundled and sold as safe. When borrowers defaulted, the sys
 - Sound money and just contracts are **moral necessities**, not nostalgia.
 
 ### Supplication
-**اللَّهُمَّ نَجِّنَا مِنْ ظُلْمِ الرِّبَا، وَاهْدِنَا لِبِنَاءِ نِظَامٍ عَادِلٍ قَائِمٍ عَلَى شَرِيعَتِكَ.**  
-*O Allah, save us from the oppression of riba and guide us to build a just system based on Your Sharīʿah.*
+### اللَّهُمَّ نَجِّنَا مِنْ ظُلْمِ الرِّبَا، وَاهْدِنَا لِبِنَاءِ نِظَامٍ عَادِلٍ قَائِمٍ عَلَى شَرِيعَتِكَ
+### O Allah, save us from the oppression of riba and guide us to build a just system based on Your Sharīʿah
 
 [← Chapter 2](history_of_money.md) | [Next → Chapter 4](modern_banking_and_finance.md)
