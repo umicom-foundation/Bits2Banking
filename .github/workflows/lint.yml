@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - name: Markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v20
         with:
           fetch-depth: 0
 
@@ -19,8 +21,13 @@ jobs:
         with:
           globs: "**/*.md !volumes/** !book/** !site/** !.github/ISSUE_TEMPLATE/** !.github/PULL_REQUEST_TEMPLATE.md"
 
+  typos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Use the stable major tag to avoid pinning a non-existent version
+      - name: Typos (spell check)
       # Typos (spell-check)
-      - name: typos
         uses: crate-ci/typos@v1
 
       # Run pytest only if tests exist
