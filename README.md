@@ -40,7 +40,7 @@ xdg-open ./volumes/Volume_00_Source_Control.docx 2>/dev/null || open ./volumes/V
 - [Support](SUPPORT.md) — Donation details (GBP, USD, EUR, AUD, CAD)
 - [Acknowledgements](ACKNOWLEDGEMENTS.md) — Families, volunteers, and supporters
 - [Contributing](.github/CONTRIBUTING.md) — Step-by-step guide for new contributors
-- [Quick Upload via `raw_docs/`](docs/CONTRIBUTING_RAW_DOCS.md) — easiest path: upload `.md`/`.docx`/`.pdf` and let CI convert.
+- [Quick Upload via `raw_docs/`](content/CONTRIBUTING_RAW_DOCS.md) — easiest path: upload `.md`/`.docx`/`.pdf` and let CI convert.
 - [Code of Conduct](.github/CODE_OF_CONDUCT.md) — Community rules and expectations
 - [Governance](GOVERNANCE.md) — How decisions are made
 - [Security Policy](.github/SECURITY.md) — How to report vulnerabilities
