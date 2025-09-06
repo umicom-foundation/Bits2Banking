@@ -1,0 +1,124 @@
+---
+title: "Python Primer for Contributors"
+author: "Umicom Foundation"
+date: "06 September 2025"
+description: "Minimal Python you need to understand our scripts: reading files, paths, simple parsing, and safe ordering."
+version: "1.0"
+---
+
+# Python Primer for Contributors
+
+This is a **practical crash course**: just enough Python to read, tweak, and trust our scripts.
+
+## 1) Running Python
+
+```bash
+python --version
+python scripts/ingest.py
+```
+
+(If a virtual environment is used, we’ll document it in the script header.)
+
+## 2) Paths with `pathlib`
+
+```python
+from pathlib import Path
+
+repo = Path(__file__).resolve().parents[1]
+raw = repo / "raw_docs"
+content = repo / "content"
+for p in raw.glob("**/*"):
+    print(p)
+```
+
+## 3) Reading and writing text files
+
+```python
+from pathlib import Path
+
+text = Path("example.md").read_text(encoding="utf-8")
+Path("out.md").write_text(text, encoding="utf-8")
+```
+
+## 4) Recognising chapters by filename
+
+We keep human‑friendly names with spaces. To detect chapters reliably, match patterns like `chapter<number>_Title.ext` (case‑insensitive).
+
+```python
+import re
+from pathlib import Path
+
+chapter_re = re.compile(r"chapter\s*(\d+)", re.IGNORECASE)
+
+def chapter_num(path: Path) -> int | None:
+    m = chapter_re.search(path.stem)
+    return int(m.group(1)) if m else None
+```
+
+## 5) Ordering chapters safely (idempotent)
+
+```python
+def order_chapters(paths):
+    with_numbers = [(chapter_num(p), p) for p in paths]
+    # Sort: numbered first (by number), then the rest by name
+    with_numbers.sort(key=lambda t: (t[0] is None, t[0] if t[0] is not None else 10**9, str(t[1]).lower()))
+    return [p for _, p in with_numbers]
+```
+
+Gaps (e.g., chapter 1, 2, 4) won’t break ordering; chapter 4 just comes after 2.
+
+## 6) Inferring metadata from filenames
+
+When metadata is missing, we infer from the filename: title and (if present) author/date tokens.
+
+```python
+def infer_title(path: Path) -> str:
+    # Strip 'chapterN_' prefix if present and use remaining words
+    name = chapter_re.sub("", path.stem).strip(" _-")
+    return name.replace("_", " ").strip() or path.stem
+```
+
+## 7) Combining chapters into one Markdown
+
+```python
+def combine_markdown(chapter_files, title):
+    parts = [f"# {title}\n\n"]
+    for f in chapter_files:
+        parts.append(Path(f).read_text(encoding="utf-8").strip() + "\n\n")
+    return "\n".join(parts)
+```
+
+## 8) Clear, human error messages
+
+Whenever something goes wrong, print messages that explain **what** and **how to fix**:
+
+```python
+def error(msg: str):
+    raise SystemExit(f"[ERROR] {msg}\nPlease check the filename or content and try again.")
+```
+
+Examples:
+- Missing cover image → “Cover not found. Place an image named ‘cover.*’ alongside the manuscript.”
+- Bad image path in a chapter → “Image ‘assets/fig1.png’ not found. Ensure it exists and the path is correct.”
+
+## 9) Converting Markdown → DOCX/PDF (overview)
+
+Tools we may use (documented elsewhere in the repo):
+- `pandoc` for `.md` → `.docx`/`.pdf`
+- Python wrappers or shell commands to drive Pandoc
+
+Example shell (conceptual):
+
+```bash
+pandoc book.md -o book.docx --resource-path=.:assets
+pandoc book.md -o book.pdf  --resource-path=.:assets
+```
+
+## 10) Tiny exercise (optional)
+
+- Create two files: `chapter1_Intro.md` and `chapter5_Advanced.md` with one heading each.
+- Use the `order_chapters` function to verify ordering is 1 then 5.
+- Infer titles with `infer_title` and print them.
+- Combine the two into one Markdown string.
+
+That’s the practical Python you’ll see in our scripts.

@@ -1,6 +1,6 @@
 # Discussion Template — Bits to Banking
 
-Thanks for starting a community discussion!  
+Thanks for starting a community discussion!
 We use Discussions for brainstorming, humanitarian updates, and general collaboration.
 
 ---
@@ -15,9 +15,9 @@ We use Discussions for brainstorming, humanitarian updates, and general collabor
 
 <!-- List the main questions or points you’d like feedback on -->
 
-1.  
-2.  
-3.  
+1.
+2.
+3.
 
 ---
 
@@ -39,4 +39,4 @@ We use Discussions for brainstorming, humanitarian updates, and general collabor
 
 ---
 
-*Thank you for contributing to both **knowledge** and **humanity** with your ideas!*  
+### Thank you for contributing to both **knowledge** and **humanity** with your ideas

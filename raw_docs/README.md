@@ -1,6 +1,6 @@
 ﻿# raw_docs (drop zone)
 
-Put uploads here. Accepted formats (for now): **.md**, **.docx**, **.pdf**  
+Put uploads here. Accepted formats (for now): **.md**, **.docx**, **.pdf**
 Optional cover image: `bookcover_<book_title>.png`
 
 Recommended structure (we’ll wire automation next step):
