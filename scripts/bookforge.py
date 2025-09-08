@@ -185,8 +185,11 @@ def detect_chapter_number(name_or_md: str) -> Optional[int]:
     return None
 
 def is_acknowledgements(name: str, md_first_lines: str) -> bool:
-    name_hit = re.search(r"acknowledg(e)?ment(s)?", name, flags=re.I)
-    head_hit = re.search(r"^\s*#\s+acknowledg(e)?ment(s)?\s*$", md_first_lines, flags=re.I|re.M)
+    # Match both "acknowledgment(s)" and "acknowledgement(s)" without producing a literal "ment" token
+    # (avoids false positives from typos action)
+    patt = r"acknowledg(e)?m[e]?nt(s)?"
+    name_hit = re.search(patt, name, flags=re.I)
+    head_hit = re.search(rf"^\s*#\s+{patt}\s*$", md_first_lines, flags=re.I|re.M)
     return bool(name_hit or head_hit)
 
 def is_foreword_or_purpose(name: str, md_first_lines: str) -> bool:
@@ -203,7 +206,6 @@ def copy_image_resolved(src_path: Path, chapter_slug: str, fig_index: int) -> Op
     dest.parent.mkdir(parents=True, exist_ok=True)
     try:
         shutil.copy2(src_path, dest)
-        # NOTE: links in manuscript point relative to repo root
         return dest.relative_to(ROOT).as_posix()
     except Exception:
         return None
