@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-BookForge v3.1 — single-book builder for the Open Book project
+BookForge v3.2 — single-book builder for the Open Book project
 - Created by: Umicom Foundation (https://umicom.foundation/)
-- Date: 08-09-2025
+- Date: 09-09-2025
 - Description:
     Build exactly one book from a per-book drop-zone:
       dropzone/<book-slug>/{documents,images}
@@ -11,20 +11,13 @@ BookForge v3.1 — single-book builder for the Open Book project
       output/<book-slug>/manuscript/*.md (incl. book.md)
       output/<book-slug>/books/*.docx (and .pdf if engine present)
       output/<book-slug>/site/index.html (self-contained site)
-    If --book-dir is omitted and exactly one book is present under dropzone/,
-    it will auto-select that one. If multiple exist, it prints a list and exits.
+    If --book-dir is omitted and exactly one book exists under dropzone/,
+    it auto-selects that one. If multiple, it lists them and exits.
 
-CLI:
-  python scripts/bookforge.py [--book-dir dropzone/<book-slug>]
-  [--title "Display Title"] [--author "Name"] [--volume 0]
-  [--no-docx] [--no-html] [--no-pdf] [--no-site-assets]
-  [--dry-run] [--quiet]
-
-Optional config (dropzone/<book-slug>/bookforge.json):
-  { "title": "Title", "author": "Name", "volume": 0 }
-
-Env:
-  PANDOC_EXE, WKHTMLTOPDF_EXE, PANDOC_PDF_ENGINE
+Conventions:
+  - Frontmatter files → 00-01_*, 00-02_* ...
+  - Chapters        → 10-001_*, 10-002_* ...
+  - Acknowledgements→ 99-01_*
 """
 
 import os, re, sys, json, shutil, argparse, subprocess
@@ -34,7 +27,6 @@ from typing import Optional, Tuple, List
 ROOT = Path(__file__).resolve().parents[1]
 DROP = ROOT / "dropzone"
 
-# Junk we ignore
 IGNORE_RE = re.compile(
     r'(^|/)(~\$|\.#|#.*#|Thumbs\.db|\.DS_Store|\.AppleDouble|\.LSOverride|desktop\.ini|\.swp$|\.tmp$|\.bak$|\.partial$|\.crdownload$)',
     flags=re.I
@@ -81,16 +73,24 @@ def find_pdf_engine() -> Optional[str]:
     return None
 
 def docx_to_md(p: Path) -> str:
+    """
+    Prefer Pandoc (best fidelity). Fallback to python-docx if Pandoc missing.
+    """
+    pan = find_pandoc()
+    if pan:
+        return subprocess.check_output([pan, "-f", "docx", "-t", "gfm", str(p)], text=True)
     try:
         from docx import Document  # type: ignore
         doc = Document(str(p))
-        lines = [(para.text or "").rstrip() for para in doc.paragraphs]
-        return "\n".join(lines) + "\n"
+        lines = []
+        for para in doc.paragraphs:
+            t = (para.text or "").rstrip()
+            lines.append(t)
+            if t != "":
+                lines.append("")  # blank line between paragraphs
+        return "\n".join(lines).strip() + "\n"
     except Exception:
-        pan = find_pandoc()
-        if not pan:
-            raise RuntimeError("DOCX support requires python-docx or Pandoc installed.")
-        return subprocess.check_output([pan,"-f","docx","-t","gfm",str(p)], text=True)
+        raise RuntimeError("DOCX support requires Pandoc or python-docx installed.")
 
 def to_markdown(p: Path) -> str:
     ext = p.suffix.lower()
@@ -122,7 +122,6 @@ def detect_ch_num(text: str) -> Optional[int]:
     return None
 
 def is_acks(name: str, first_lines: str) -> bool:
-    # Match both US & UK spellings for the "acknowledg…nt(s)" section, avoiding a standalone token that the linter dislikes.
     patt = r"acknowledg(?:e)?m(?:e)?nt(?:s)?"
     return bool(
         re.search(patt, name, flags=re.I) or
@@ -155,7 +154,7 @@ def rewrite_images(md: str, doc_path: Path, out_imgs: Path, chapter_slug: str, r
         if re.match(r"^(https?://|data:)", url, flags=re.I): return m.group(0)
         src = (doc_path.parent / url).resolve()
         if not src.exists():
-            inbox = (doc_path.parent.parent / "images" / url).resolve()  # try book images/
+            inbox = (doc_path.parent.parent / "images" / url).resolve()
             if inbox.exists(): src = inbox
         dst = copy_image(src, out_imgs, chapter_slug, n)
         if dst:
@@ -211,7 +210,7 @@ def detect_books_under_dropzone() -> List[Path]:
     return books
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="BookForge v3.1 — build one book (auto-detect single)")
+    ap = argparse.ArgumentParser(description="BookForge v3.2 — build one book (auto-detect single)")
     ap.add_argument("--book-dir", help="Path to the book drop-zone (dropzone/<book-slug>)")
     ap.add_argument("--title", help="Override display title")
     ap.add_argument("--author", help="Author name")
@@ -340,21 +339,19 @@ def main() -> int:
         try: old.unlink()
         except: pass
 
-    # write parts
+    # write parts (friendlier numbering)  << FIXED f-strings >>
     for i,(_, s, md) in enumerate(fronts, start=1):
-        (out_manu / f"00.{i:02d}_{s}.md").write_text(md, encoding="utf-8")
+        (out_manu / f"00-{i:02d}_{s}.md").write_text(md, encoding="utf-8")
     for idx,(_, s, md) in enumerate(chapters, start=1):
-        (out_manu / f"10.{idx*10:02d}_{s}.md").write_text(md, encoding="utf-8")
+        (out_manu / f"10-{idx:03d}_{s}.md").write_text(md, encoding="utf-8")
     for i,(_, s, md) in enumerate(acks, start=1):
-        (out_manu / f"99.{i:02d}_{s}.md").write_text(md, encoding="utf-8")
+        (out_manu / f"99-{i:02d}_{s}.md").write_text(md, encoding="utf-8")
 
     # assemble book.md
     parts = []
     if rel_cover: parts.append(f"![Cover]({rel_cover})\n")
     parts.append(f"# {title}\n")
-    if (args.author or (book_dir/"bookforge.json").exists()):
-        author = (args.author or json.loads((book_dir/"bookforge.json").read_text(encoding="utf-8")).get("author"))
-        if author: parts.append(f"\n**{author}**\n")
+    if author: parts.append(f"\n**{author}**\n")
     parts.append("\n## Contents\n")
     for _,s,_ in fronts:   parts.append(f"- Foreword: {s.replace('-',' ')}")
     for _,s,_ in chapters: parts.append(f"- {s.replace('-',' ')}")
@@ -366,9 +363,9 @@ def main() -> int:
     book_md = "\n".join(parts).strip() + "\n"
     (out_manu / "book.md").write_text(book_md, encoding="utf-8")
 
-    # toc.json (per book)
+    # per-book toc
     toc = {
-        "slug": book_slug, "title": title, "volume": volume,
+        "slug": book_slug, "title": title, "author": author, "volume": volume,
         "front": [s for _,s,_ in fronts],
         "chapters": [s for _,s,_ in chapters],
         "acknowledgements": [s for _,s,_ in acks],
@@ -389,7 +386,6 @@ def main() -> int:
         ref_docx = ROOT / "tools" / "pandoc" / "reference.docx"
         ref_args = ["--reference-doc", str(ref_docx)] if ref_docx.exists() else []
 
-        # DOCX
         if not args.no_docx:
             subprocess.check_call([
                 pan, "-f","gfm", str(out_manu/"book.md"),
@@ -398,7 +394,6 @@ def main() -> int:
                 *ref_args
             ])
 
-        # HTML site
         if not args.no_html:
             css = out_site / "style.css"
             if not css.exists():
@@ -417,12 +412,10 @@ def main() -> int:
                 "--resource-path", rpath,
                 "--toc","--toc-depth=3"
             ])
-            if not args.no_site_assets:
-                dest = out_site / "assets"
-                if dest.exists(): shutil.rmtree(dest, ignore_errors=True)
-                if out_assets.exists(): shutil.copytree(out_assets, dest)
+            dest = out_site / "assets"
+            if dest.exists(): shutil.rmtree(dest, ignore_errors=True)
+            if out_assets.exists(): shutil.copytree(out_assets, dest)
 
-        # PDF
         if not args.no_pdf:
             engine = find_pdf_engine()
             if engine:
