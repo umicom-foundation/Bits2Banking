@@ -13,7 +13,6 @@ permissions:
   pages: write
   id-token: write
 
-# prevent concurrent Pages deployments fighting each other
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -34,30 +33,30 @@ jobs:
           python -m pip install --upgrade pip
           pip install python-docx Pillow
 
-      - name: Install pandoc & wkhtmltopdf (for DOCX/HTML/PDF)
+      - name: Install pandoc & wkhtmltopdf
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc wkhtmltopdf
 
-      - name: Build with BookForge
+      - name: Build with BookForge (to output/)
         run: |
           python scripts/bookforge.py
 
-      - name: Upload book artifacts (DOCX/PDF/MD)
+      - name: Upload book artifacts
         uses: actions/upload-artifact@v4
         with:
           name: bookforge-outputs
           path: |
-            manuscript/book.md
-            volumes/*.docx
-            volumes/*.pdf
+            output/manuscript/book.md
+            output/books/*.docx
+            output/books/*.pdf
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Upload Pages artifact (BookForge site/)
+      - name: Upload Pages artifact (output/site)
         uses: actions/upload-pages-artifact@v4
         with:
-          path: site
+          path: output/site
 
   deploy:
     needs: build
