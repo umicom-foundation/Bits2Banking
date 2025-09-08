@@ -37,7 +37,7 @@ chapters/                 # (Legacy/authoring) Existing Volume 0 authoring
 docs/                     # Website pages (MkDocs)
 .github/                  # CI workflows, issue templates, policies
 tools/                    # Helper scripts for scaffolding volumes
-```
+```text
 
 ---
 
@@ -54,7 +54,7 @@ tools/                    # Helper scripts for scaffolding volumes
 raw_docs/volume-0/intro.md
 raw_docs/introduction-to-islam/history.docx
 raw_docs/bits-to-banking/bookcover_Bits_to_Banking.png
-```
+```text
 
 ---
 
@@ -102,20 +102,20 @@ raw_docs/bits-to-banking/bookcover_Bits_to_Banking.png
 # From the repo root
 .    ools
 ew-volume.ps1 introduction-to-islam
-```
+```text
 
 ### macOS/Linux (Bash)
 ```bash
 # From the repo root
 bash tools/new-volume.sh introduction-to-islam
-```
+```text
 
 This creates:
 ```text
 raw_docs/<slug>/
 content/volumes/<slug>/images/
 content/volumes/<slug>/ch00-<slug>.md (placeholder)
-```
+```text
 
 ---
 

@@ -1,90 +1,32 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-BookForge v1.2 — one-dropzone builder for Bits2Banking
-- Created by Sammy Hegab - Umicom Foundation 2025 
-https://umicom.foundation/
-Date: 08-09-2025 
+BookForge v1.3 — one-dropzone builder for Bits2Banking
+- Created by: Sammy Hegab — Umicom Foundation (https://umicom.foundation/)
+- Date: 08-09-2025
+- Description: Scans a single human “dropzone” for documents/images, normalises content,
+  detects cover + special sections, orders chapters, and builds:
+    - manuscript/*.md + manuscript/book.md
+    - volumes/Volume_XX_<slug>.docx (and .pdf if engine present)
+    - site/index.html (+ site/assets/*) for a simple static site
+  Safe defaults: tolerant of mixed inputs, missing cover, missing PDF engine, YAML front matter, CRLFs,
+  and unlabeled code fences. UTF-8 throughout to preserve Arabic/diacritics.
 
 What it does (idempotent):
 - Scans dropzone/documents (and dropzone/images) for user content
-- Converts .md/.txt/.docx to normalised Markdown (YAML front matter stripped)
+- Converts .md/.txt/.docx to normalised Markdown (YAML front matter stripped; CRLF→LF)
 - Detects cover image by filename (e.g., "*book cover*.png", "*-cover.png", "*_cover.png")
+  • If multiple matches, prefers the highest-resolution (via Pillow if installed) else largest file size
 - Detects foreword/purpose/preface and acknowledgements
 - Orders chapters by explicit number in filename/heading or auto-assigns (00,10,20…)
 - Normalises image links and copies local images to assets/images
-- Writes normalised manuscript/*.md and a combined manuscript/book.md
+- Writes manuscript/*.md and a combined manuscript/book.md
 - Builds DOCX and HTML site (and PDF if wkhtmltopdf or LaTeX engine present)
+- Mirrors assets/ into site/assets/ so the site is self-contained (can be disabled)
 - Emits toc.json
 
-Safe defaults:
-- If Pandoc is missing, writes only manuscript/book.md and tells you what to install.
-- Input format to Pandoc is forced to 'gfm' (no YAML metadata parsing), and we strip any
-  front matter from individual docs to avoid YAML parse errors.
-- If no cover image found, continues without error (cover is optional).
-- If no foreword/purpose/preface or acknowledgements found, continues without error.
-- If no chapter numbers found, auto-assigns in 10s (10,20,30…) order of discovery.
-- Skips non-.md/.txt/.docx files in dropzone/documents.
-- Leaves remote (http/https) and data: image URLs untouched.
-- If local image file not found, leaves original link intact.
-- If image copy fails, leaves original link intact.
-- If PDF engine (wkhtmltopdf or LaTeX) not found, builds DOCX and HTML only.
-- If dropzone/documents is empty or missing, does nothing.
-- UTF-8 in/out to preserve Arabic/diacritics.
-Requirements:
-- Python 3.7+   
-- pip install python-docx  (for .docx support; or install Pandoc)
-- Pandoc installed (for DOCX/HTML/PDF output; optional, see above)
-- wkhtmltopdf installed (for PDF output; optional, see above)
-Usage:
-  python scripts/bookforge.py
-Environment variables:
-    PANDOC_EXE: path to pandoc executable (overrides auto-detect)
-    (optional)
-    PANDOC_PDF_ENGINE: specify PDF engine for Pandoc (overrides auto-detect)    
-    (e.g., "wkhtmltopdf", "xelatex", "lualatex", "pdflatex", "tectonic")
-    (if unset, tries to find wkhtmltopdf; if not found, Pandoc will fall back to LaTeX if present)
-    (if none found, PDF output is skipped)
-    (note: MiKTeX/TeX Live can be used implicitly by Pandoc if installed; no need to set this variable)
-Notes:
-- Designed for simplicity and minimal user setup.
-- Input files are not modified.
-- Existing files in manuscript/, assets/images/, assets/covers/, volumes/, and site/ are overwritten.
-- Run from repo root (where this script lives in scripts/).
-- See README.md for more details.   
-
-Changelog:
-v1.2 (08-09-2025)
-- Single contributor entry: dropzone/documents (text) + dropzone/images (images)
-- Converts .md/.txt/.docx to Markdown (strips YAML front matter; normalises CRLF→LF)
-- Detects cover image by filename (contains "book cover" or ends with -cover/_cover)
-- Detects foreword/purpose/preface + acknowledgements
-- Orders chapters by explicit number or auto-assigns (00,10,20…)
-- Normalises image links (copies to assets/images)
-- Writes manuscript/*.md and manuscript/book.md
-- Builds DOCX, HTML site, and PDF if engines available
-- Auto-detects wkhtmltopdf; LaTeX engines as fallback
-- Emits toc.json
-
-Config (optional): dropzone/bookforge.json
-{
-  "title": "Introduction to Islam",
-  "volume": 0
-}
-
-CLI flags:
-  --no-docx --no-html --no-pdf --dry-run --quiet
-  --title "My Title" --volume 1
-
-Env:
-  PANDOC_EXE         : path to pandoc executable (overrides auto-detect)
-  WKHTMLTOPDF_EXE    : path to wkhtmltopdf (overrides auto-detect)
-  PANDOC_PDF_ENGINE  : engine name or path ("wkhtmltopdf", "xelatex", ...)
-
-Requirements:
-  - Python 3.9+
-  - pip install python-docx (for .docx import) OR install Pandoc
-  - Pandoc (for DOCX/HTML/PDF)
-  - wkhtmltopdf OR LaTeX engine (for PDF)
+Safe defaults / requirements / CLI / env:
+- See bottom of this docstring in v1.2 notes; v1.3 adds --no-site-assets and smarter cover pick.
 """
 
 import os
@@ -112,6 +54,12 @@ AIMGS = ASSETS / "images"
 VOLS = ROOT / "volumes"
 SITE = ROOT / "site"
 
+# Junk file ignore (OS/temp/editor artifacts)
+IGNORE_RE = re.compile(
+    r'(^|/)(~\$|\.#|#.*#|Thumbs\.db|\.DS_Store|\.AppleDouble|\.LSOverride|desktop\.ini|\.swp$|\.tmp$|\.bak$|\.partial$|\.crdownload$)',
+    flags=re.I
+)
+
 # --- helpers ---------------------------------------------------------------
 
 def info(msg: str, quiet: bool = False):
@@ -125,7 +73,7 @@ def ensure_dirs():
 def slugify(title: str) -> str:
     t = re.sub(r"[^\w\s-]", "", title, flags=re.UNICODE)
     t = re.sub(r"\s+", "_", t.strip())
-    return re.sub(r"_+", "_", t)
+    return re.sub(r"_+", "_", t).strip("_")
 
 def read_text_file(p: Path) -> str:
     try:
@@ -138,7 +86,6 @@ def normalise_line_endings(s: str) -> str:
 
 def add_lang_to_fences(md: str, default_lang: str = "text") -> str:
     # Add language to ``` fences missing one (fixes MD040)
-    # Matches ``` <only spaces> \n
     return re.sub(r"(?m)^```[ \t]*\n", f"```{default_lang}\n", md)
 
 def find_pandoc() -> Optional[str]:
@@ -220,6 +167,8 @@ def detect_chapter_number(name_or_md: str) -> Optional[int]:
     # "Chapter 5", "ch-05", "05_", "05 Title"
     m = re.search(r"(?:^|[^a-z])chapter\s*(\d+)", name_or_md, flags=re.I)
     if m: return int(m.group(1))
+    m = re.search(r"^\s*(\d{1,2})[._-]", name_or_md)  # strong prefix match
+    if m: return int(m.group(1))
     m = re.search(r"(?:^|[\s_-])(\d{1,2})(?:[\s_-]|$)", name_or_md)
     if m: return int(m.group(1))
     return None
@@ -267,41 +216,74 @@ def normalise_images_in_md(md: str, doc_path: Path, chapter_slug: str) -> str:
     return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", repl, md)
 
 def collect_documents() -> list[Path]:
-    docs = []
+    docs: list[Path] = []
     if DOCS.exists():
         for p in sorted(DOCS.rglob("*")):
-            if p.is_file() and p.suffix.lower() in [".md",".markdown",".txt",".docx"]:
+            if not p.is_file():
+                continue
+            rel = p.relative_to(DOCS).as_posix()
+            if IGNORE_RE.search(rel) or p.name.startswith("."):
+                continue
+            if p.suffix.lower() in [".md",".markdown",".txt",".docx"]:
                 docs.append(p)
     return docs
 
-def find_cover_image() -> Optional[Path]:
-    cands = []
+# --- cover selection --------------------------------------------------------
+
+def _image_resolution_score(path: Path) -> int:
+    # Prefer true resolution if Pillow is available; else file size as heuristic
+    try:
+        from PIL import Image  # type: ignore
+        with Image.open(str(path)) as im:
+            w, h = im.size
+            return int(w) * int(h)
+    except Exception:
+        try:
+            return path.stat().st_size
+        except Exception:
+            return 0
+
+def find_cover_candidates() -> list[Path]:
+    cands: list[Path] = []
     for folder in [IMGS_INBOX, DOCS]:
-        if not folder.exists(): continue
+        if not folder.exists(): 
+            continue
         for p in folder.rglob("*"):
-            if p.is_file() and p.suffix.lower() in [".png",".jpg",".jpeg",".webp",".tif",".tiff"]:
-                if re.search(r"(book\s*cover|[_-]cover(\.|$))", p.name, flags=re.I):
-                    cands.append(p)
-    return sorted(cands)[0] if cands else None
+            if not p.is_file():
+                continue
+            if p.suffix.lower() not in [".png",".jpg",".jpeg",".webp",".tif",".tiff"]:
+                continue
+            if re.search(r"(book\s*cover|[_-]cover(\.|$))", p.name, flags=re.I):
+                cands.append(p)
+    return cands
+
+def select_best_cover(cands: list[Path]) -> Optional[Path]:
+    if not cands:
+        return None
+    # Pick highest resolution (or largest file) deterministically
+    scored = sorted((( _image_resolution_score(p), p) for p in cands ), key=lambda t: (t[0], t[1].as_posix()))
+    return scored[-1][1] if scored else None
 
 def copy_and_rename_cover(title_slug: str, vol_num: int = 0) -> Optional[str]:
-    c = find_cover_image()
-    if not c:
+    cands = find_cover_candidates()
+    best = select_best_cover(cands)
+    if not best:
         return None
-    dest = COVERS / f"Volume_{vol_num:02d}_{title_slug}_Cover{c.suffix.lower()}"
+    dest = COVERS / f"Volume_{vol_num:02d}_{title_slug}_Cover{best.suffix.lower()}"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(c, dest)
+    shutil.copy2(best, dest)
     return dest.relative_to(ROOT).as_posix()
 
-def load_config():
-    cfg = {}
-    cfg_path = DROP / "bookforge.json"
-    if cfg_path.exists():
-        try:
-            cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
-        except Exception as e:
-            print(f"[BookForge:WARN] Could not parse {cfg_path}: {e}", file=sys.stderr)
-    return cfg
+# --- site asset mirroring ---------------------------------------------------
+
+def mirror_assets_to_site(quiet: bool = False):
+    """Make site self-contained by mirroring assets/ → site/assets/."""
+    dest = SITE / "assets"
+    if dest.exists():
+        shutil.rmtree(dest, ignore_errors=True)
+    if ASSETS.exists():
+        shutil.copytree(ASSETS, dest)
+        info("Mirrored assets/ → site/assets/.", quiet)
 
 # --- main -------------------------------------------------------------------
 
@@ -312,14 +294,22 @@ def main() -> int:
     ap.add_argument("--no-docx", action="store_true", help="Skip DOCX output")
     ap.add_argument("--no-html", action="store_true", help="Skip HTML site output")
     ap.add_argument("--no-pdf",  action="store_true", help="Skip PDF output")
+    ap.add_argument("--no-site-assets", action="store_true", help="Do not mirror assets/ into site/assets/")
     ap.add_argument("--dry-run", action="store_true", help="Parse & plan only; do not write outputs")
     ap.add_argument("--quiet",   action="store_true", help="Reduce console output")
     args = ap.parse_args()
 
     ensure_dirs()
 
-    # Load config (optional)
-    cfg = load_config()
+    # Load optional config
+    cfg = {}
+    cfg_path = DROP / "bookforge.json"
+    if cfg_path.exists():
+        try:
+            cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            print(f"[BookForge:WARN] Could not parse {cfg_path}: {e}", file=sys.stderr)
+
     cfg_title = cfg.get("title")
     cfg_volume = cfg.get("volume", 0)
 
@@ -455,6 +445,7 @@ def main() -> int:
         str(ASSETS),
         str(AIMGS),
         str(COVERS),
+        str(SITE)  # allow site/assets if already mirrored
     ])
 
     # Optional reference DOCX template
@@ -491,13 +482,15 @@ def main() -> int:
             "--resource-path", resource_path,
             "--toc", "--toc-depth=3"
         ])
+        # Make site self-contained
+        if not args.no_site_assets:
+            mirror_assets_to_site(args.quiet)
 
     # PDF
     if not args.no_pdf:
         engine = find_pdf_engine()
         if engine:
             engine_arg = engine
-            # If engine looks like a path, pass it as-is
             subprocess.check_call([
                 pandoc, "-f", "gfm",
                 str(MANU/"book.md"),
@@ -522,3 +515,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"[BookForge:ERROR] {e}", file=sys.stderr)
         sys.exit(1)
+# --- EOF --------------------------------------------------------------------#!/usr/bin/env python3
+# -*- coding: utf-8 -*- 

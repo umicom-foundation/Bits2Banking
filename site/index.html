@@ -93,6 +93,60 @@
 <header id="title-block-header">
 <h1 class="title">hello</h1>
 </header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#hello" id="toc-hello">hello</a>
+<ul>
+<li><a href="#contents" id="toc-contents">Contents</a></li>
+<li><a href="#foreword-my-chapter-title"
+id="toc-foreword-my-chapter-title">Foreword: My Chapter Title</a></li>
+<li><a href="#big-picture" id="toc-big-picture">Big picture</a></li>
+<li><a href="#folder-layout" id="toc-folder-layout">Folder
+layout</a></li>
+<li><a href="#start-a-new-volume-optional-helpers"
+id="toc-start-a-new-volume-optional-helpers">Start a new volume
+(optional helpers)</a>
+<ul>
+<li><a href="#windows-powershell" id="toc-windows-powershell">Windows
+(PowerShell)</a></li>
+</ul></li>
+<li><a href="#getting-hands-on-starter-tasks"
+id="toc-getting-hands-on-starter-tasks">Getting hands-on (starter
+tasks)</a></li>
+<li><a href="#next-steps" id="toc-next-steps">Next steps</a></li>
+<li><a href="#foreword-volume1-introduction"
+id="toc-foreword-volume1-introduction">Foreword:
+volume1-introduction</a></li>
+<li><a href="#who-this-is-for" id="toc-who-this-is-for">Who this is
+for</a></li>
+<li><a href="#what-this-volume-covers"
+id="toc-what-this-volume-covers">What this volume covers</a></li>
+<li><a href="#how-to-use-this-volume"
+id="toc-how-to-use-this-volume">How to use this volume</a></li>
+<li><a href="#sources-and-methodology-at-a-glance"
+id="toc-sources-and-methodology-at-a-glance">Sources and methodology (at
+a glance)</a></li>
+<li><a href="#key-terms-at-a-glance" id="toc-key-terms-at-a-glance">Key
+terms at a glance</a></li>
+<li><a href="#suggested-outline-for-this-volume"
+id="toc-suggested-outline-for-this-volume">Suggested outline for this
+volume</a></li>
+<li><a href="#contributing-for-this-volume"
+id="toc-contributing-for-this-volume">Contributing (for this
+volume)</a></li>
+<li><a href="#a-short-glossary-starter"
+id="toc-a-short-glossary-starter">A short glossary (starter)</a>
+<ul>
+<li><a href="#next" id="toc-next">Next</a></li>
+</ul></li>
+<li><a href="#hello-1" id="toc-hello-1">hello</a></li>
+<li><a href="#readme" id="toc-readme">README</a></li>
+<li><a href="#ch00-prelude" id="toc-ch00-prelude">ch00 prelude</a></li>
+<li><a href="#ch01-git-github-basics"
+id="toc-ch01-git-github-basics">ch01 git GitHub basics</a></li>
+</ul></li>
+</ul>
+</nav>
 <p><img src="assets/covers/Volume_00_hello_Cover.png" alt="Cover" /></p>
 <h1 id="hello">hello</h1>
 <h2 id="contents">Contents</h2>
@@ -124,188 +178,161 @@ content/volumes/          # Bot-populated Markdown output (auto-numbered chapter
 chapters/                 # (Legacy/authoring) Existing Volume 0 authoring
 docs/                     # Website pages (MkDocs)
 .github/                  # CI workflows, issue templates, policies
-tools/                    # Helper scripts for scaffolding volumes</code></pre>
-<hr />
-<h2 id="contribute-in-3-minutes">Contribute in 3 minutes</h2>
-<ol type="1">
-<li><strong>Pick a volume slug</strong> (lowercase, hyphens): e.g.,
-<code>volume-0</code>, <code>introduction-to-islam</code>,
-<code>bits-to-banking</code></li>
-<li><strong>Upload your file(s)</strong> into
-<code>raw_docs/&lt;slug&gt;/</code> as
-<strong><code>.md</code></strong>, <strong><code>.docx</code></strong>,
-or <strong><code>.pdf</code></strong>.
-<ul>
-<li>Optional cover image:
-<strong><code>bookcover_&lt;book_title&gt;.png</code></strong> (or
-<code>.jpg</code>)</li>
-</ul></li>
-<li><strong>Commit to <code>main</code></strong> (or open a PR).</li>
-<li>Bot converts/copies into <code>content/volumes/&lt;slug&gt;/</code>
-and auto-numbers new chapters: <code>ch01-…</code>,
-<code>ch02-…</code></li>
-</ol>
-<h3 id="examples">Examples</h3>
-<pre class="text"><code>raw_docs/volume-0/intro.md
+tools/                    # Helper scripts for scaffolding volumes
+```text
+
+---
+
+## Contribute in 3 minutes
+
+1. **Pick a volume slug** (lowercase, hyphens): e.g., `volume-0`, `introduction-to-islam`, `bits-to-banking`  
+2. **Upload your file(s)** into `raw_docs/&lt;slug&gt;/` as **`.md`**, **`.docx`**, or **`.pdf`**.  
+   - Optional cover image: **`bookcover_&lt;book_title&gt;.png`** (or `.jpg`)  
+3. **Commit to `main`** (or open a PR).  
+4. Bot converts/copies into `content/volumes/&lt;slug&gt;/` and auto-numbers new chapters: `ch01-…`, `ch02-…`
+
+### Examples
+```text
+raw_docs/volume-0/intro.md
 raw_docs/introduction-to-islam/history.docx
-raw_docs/bits-to-banking/bookcover_Bits_to_Banking.png</code></pre>
-<hr />
-<h2 id="what-the-bot-does-exactly">What the bot does (exactly)</h2>
-<ol type="1">
-<li><strong>Markdown passthrough</strong><br />
-Copies <code>.md</code> to <code>content/volumes/&lt;slug&gt;/</code>
-(and lists them for auto-numbering).</li>
-<li><strong>DOCX → Markdown</strong><br />
-Uses Pandoc to produce GitHub-Flavored Markdown; extracts embedded
-images to
-<code>content/volumes/&lt;slug&gt;/images/&lt;basename&gt;/</code>.</li>
-<li><strong>PDF → DOCX → Markdown (best-effort)</strong><br />
-Converts text-based PDFs via LibreOffice → DOCX → Markdown.
-Scanned/image-only PDFs become images and may need manual edits.</li>
-<li><strong>Book cover standardization</strong><br />
-Files named <code>bookcover_&lt;book_title&gt;.(png|jpg|jpeg)</code> are
-saved as
-<code>content/volumes/&lt;slug&gt;/images/cover.png</code>.</li>
-<li><strong>Auto-numbering (new files only)</strong><br />
-Fresh files from this run are renamed to
-<code>chNN-&lt;slug&gt;.md</code> to keep chapters ordered. Existing
-files are not renamed.</li>
-<li><strong>Normalization</strong><br />
-Adds YAML front-matter if missing (title, volume, status, dates),
-ensures a top-level <code># Title</code>, and fixes bare code fences to
-<code>text</code>.</li>
-</ol>
-<h3 id="guards--hygiene">Guards &amp; hygiene</h3>
+raw_docs/bits-to-banking/bookcover_Bits_to_Banking.png
+```text
+
+---
+
+## What the bot does (exactly)
+
+1. **Markdown passthrough**  
+   Copies `.md` to `content/volumes/&lt;slug&gt;/` (and lists them for auto-numbering).
+2. **DOCX → Markdown**  
+   Uses Pandoc to produce GitHub-Flavored Markdown; extracts embedded images to `content/volumes/&lt;slug&gt;/images/&lt;basename&gt;/`.
+3. **PDF → DOCX → Markdown (best-effort)**  
+   Converts text-based PDFs via LibreOffice → DOCX → Markdown. Scanned/image-only PDFs become images and may need manual edits.
+4. **Book cover standardization**  
+   Files named `bookcover_&lt;book_title&gt;.(png|jpg|jpeg)` are saved as `content/volumes/&lt;slug&gt;/images/cover.png`.
+5. **Auto-numbering (new files only)**  
+   Fresh files from this run are renamed to `chNN-&lt;slug&gt;.md` to keep chapters ordered. Existing files are not renamed.
+6. **Normalization**  
+   Adds YAML front-matter if missing (title, volume, status, dates), ensures a top-level `# Title`, and fixes bare code fences to `text`.
+
+### Guards &amp; hygiene
+- Skips junk/temp files (e.g., `~$docx`, `.tmp`, `.DS_Store`, `Thumbs.db`).
+- Warns (does not fail) on uppercase or spaces in filenames—use **lowercase-hyphenated** names.
+- Skips very large files with a **warning** (Markdown &gt;2MB, DOCX &gt;20MB, PDF &gt;40MB, images &gt;10MB).
+
+---
+
+## File conventions (quick rules)
+
+- **Filenames:** `lowercase-hyphenated.md` (e.g., `risk-management.md`)  
+- **One H1 per chapter:**  
+  ```markdown
+  # My Chapter Title</code></pre>
 <ul>
-<li>Skips junk/temp files (e.g., <code>~$docx</code>, <code>.tmp</code>,
-<code>.DS_Store</code>, <code>Thumbs.db</code>).</li>
-<li>Warns (does not fail) on uppercase or spaces in filenames—use
-<strong>lowercase-hyphenated</strong> names.</li>
-<li>Skips very large files with a <strong>warning</strong> (Markdown
-&gt;2MB, DOCX &gt;20MB, PDF &gt;40MB, images &gt;10MB).</li>
-</ul>
-<hr />
-<h2 id="file-conventions-quick-rules">File conventions (quick
-rules)</h2>
-<ul>
-<li><strong>Filenames:</strong> <code>lowercase-hyphenated.md</code>
-(e.g., <code>risk-management.md</code>)</li>
-<li><strong>One H1 per chapter:</strong>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># My Chapter Title</span></span></code></pre></div></li>
 <li><strong>Code fences</strong> specify a language:
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;hello&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;hello&quot;</span>)</span></code></pre></div>
 Use <code>text</code> if unsure.</li>
 </ul>
 <hr />
 <h2 id="start-a-new-volume-optional-helpers">Start a new volume
 (optional helpers)</h2>
 <h3 id="windows-powershell">Windows (PowerShell)</h3>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From the repo root</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>    ools</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>ew-volume<span class="op">.</span><span class="fu">ps1</span> introduction-to-islam</span></code></pre></div>
-<h3 id="macoslinux-bash">macOS/Linux (Bash)</h3>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From the repo root</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> tools/new-volume.sh introduction-to-islam</span></code></pre></div>
-<p>This creates:</p>
-<pre class="text"><code>raw_docs/&lt;slug&gt;/
-content/volumes/&lt;slug&gt;/images/
-content/volumes/&lt;slug&gt;/ch00-&lt;slug&gt;.md (placeholder)</code></pre>
-<hr />
-<h2 id="maintainer-review-flow-what-happens-after-the-bot">Maintainer
-review flow (what happens after the bot)</h2>
-<ol type="1">
-<li>You push to <code>main</code> (or open a PR).</li>
-<li>The bot writes normalized Markdown into
-<code>content/volumes/&lt;slug&gt;/</code>.</li>
-<li>Maintainer reviews and curates the chapters.</li>
-<li>Docs site/build pipelines pick up the content for publishing.</li>
-</ol>
-<hr />
-<h2 id="troubleshooting">Troubleshooting</h2>
-<ul>
-<li><strong>Nothing happened</strong>: Make sure you committed into
-<code>raw_docs/&lt;slug&gt;/</code> and the file isn’t too large. Check
-Actions → <em>Ingest</em> logs.</li>
-<li><strong>Weird formatting</strong>: For DOCX/PDF conversions, open
-the produced <code>.md</code> in
-<code>content/volumes/&lt;slug&gt;/</code> and adjust manually.</li>
-<li><strong>Filename warnings</strong>: Rename to lowercase-hyphenated;
-commit again.</li>
-<li><strong>Cover image not found</strong>: Ensure filename starts with
-<code>bookcover_</code> and is <code>.png</code>/<code>.jpg</code> in
-the same <code>raw_docs/&lt;slug&gt;/</code> folder.</li>
-</ul>
-<hr />
-<h2 id="suggested-volumes">Suggested volumes</h2>
-<ul>
-<li><strong>Volume 0:</strong> <code>volume-0</code> — project
-introduction (this file).</li>
-<li><strong>Volume 1:</strong> <code>introduction-to-islam</code> —
-foundations, history, core concepts.</li>
-<li><strong>Volume 2:</strong> <code>bits-to-banking</code> — computing
-→ OS → programming → security → finance.</li>
-</ul>
-<p>Happy writing! ✨</p>
-<h2 id="foreword-volume2-introduction">Foreword:
-volume2-introduction</h2>
-<h2 id="who-this-is-for">Who this is for</h2>
-<ul>
-<li>Beginners who want a clear, practical route from zero to building
-useful things.</li>
-<li>Engineers from other fields who want a <strong>finance-tech</strong>
-overview.</li>
-<li>Contributors who can add examples, diagrams, labs, or case
-studies.</li>
-</ul>
-<hr />
-<h2 id="learning-outcomes">Learning outcomes</h2>
-<p>By the end you will be able to:</p>
-<ul>
-<li>Explain how data becomes meaning: <strong>bits → bytes → files →
-processes</strong>.</li>
-<li>Use the command line and write small programs to automate
-tasks.</li>
-<li>Model and query data in <strong>relational databases</strong>.</li>
-<li>Understand core <strong>networking</strong> and
-<strong>security</strong> ideas.</li>
-<li>Read and discuss <strong>banking/treasury</strong> workflows with
-the right vocabulary.</li>
-</ul>
-<hr />
-<h2 id="suggested-outline">Suggested outline</h2>
-<ul>
-<li><strong>ch01 — Bits &amp; Binary:</strong> Representation, integers,
-text, endianness.</li>
-<li><strong>ch02 — Operating Systems primer:</strong> Processes, memory,
-filesystems, permissions.</li>
-<li><strong>ch03 — Programming basics:</strong> Variables, control flow,
-functions, modules, tests.</li>
-<li><strong>ch04 — Data modeling &amp; SQL:</strong> Tables, keys,
-normalization, joins, transactions.</li>
-<li><strong>ch05 — Networking:</strong> TCP/IP, HTTP, tools,
-client–server mini-labs.</li>
-<li><strong>ch06 — Security essentials:</strong> Hashing, crypto at a
-high level, auth, threat basics.</li>
-<li><strong>ch07 — Finance foundations:</strong> Money flows, accounts,
-ledgers, payments rails.</li>
-<li><strong>ch08 — Market data &amp; pricing:</strong> Instruments,
-quotes, risk-at-a-glance.</li>
-<li><strong>ch09 — Treasury systems overview:</strong> Positions, cash,
-risk, settlement; where <strong>Calypso/TMS</strong> fits.</li>
-<li><strong>ch10 — Mini projects:</strong> ETL a CSV into a DB; simple
-pricing/reporting script; mock “ops” day.</li>
-</ul>
-<p>This outline will evolve with contributions and reviewer
-feedback.</p>
-<hr />
-<h2 id="contributing-to-this-volume">Contributing to this volume</h2>
-<ol type="1">
-<li>Create or use the folder:
-<pre class="text"><code>raw_docs/bits-to-banking/</code></pre></li>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From the repo root</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>    ools</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ew-volume<span class="op">.</span><span class="fu">ps1</span> introduction-to-islam</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ch">```t</span>ext</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">### macOS/Linux (Bash)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ch">```b</span>ash</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># From the repo root</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>bash tools<span class="op">/</span>new-volume<span class="op">.</span><span class="fu">sh</span> introduction-to-islam</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ch">```t</span>ext</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>This creates<span class="op">:</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ch">```t</span>ext</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>raw_docs<span class="op">/&lt;</span>slug<span class="op">&gt;/</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>content<span class="op">/</span>volumes<span class="op">/&lt;</span>slug<span class="op">&gt;/</span>images<span class="op">/</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>content<span class="op">/</span>volumes<span class="op">/&lt;</span>slug<span class="op">&gt;/</span>ch00-<span class="op">&lt;</span>slug<span class="op">&gt;.</span><span class="fu">md</span> <span class="op">(</span>placeholder<span class="op">)</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ch">```t</span>ext</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="op">---</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">## Maintainer review flow (what happens after the bot)</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="op">.</span> You push to <span class="ch">`m</span>ain<span class="ch">` </span><span class="op">(</span>or open a PR<span class="op">).</span>  </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="op">.</span> The bot writes normalized Markdown into <span class="ch">`c</span>ontent<span class="op">/</span>volumes<span class="op">/&lt;</span>slug<span class="op">&gt;/</span><span class="ch">`.</span>  </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span><span class="op">.</span> Maintainer reviews and curates the chapters<span class="op">.</span>  </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span><span class="op">.</span> Docs site<span class="op">/</span>build pipelines pick up the content <span class="cf">for</span> publishing<span class="op">.</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="op">---</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">## Troubleshooting</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>Nothing happened<span class="op">**:</span> Make sure you committed into <span class="ch">`r</span>aw_docs<span class="op">/&lt;</span>slug<span class="op">&gt;/</span><span class="ch">` </span>and the file isn’t too large<span class="op">.</span> Check Actions → <span class="op">*</span>Ingest<span class="op">*</span> logs<span class="op">.</span>  </span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>Weird formatting<span class="op">**:</span> <span class="cf">For</span> DOCX<span class="op">/</span>PDF conversions<span class="op">,</span> open the produced <span class="ch">`.</span>md<span class="ch">` </span><span class="kw">in</span> <span class="ch">`c</span>ontent<span class="op">/</span>volumes<span class="op">/&lt;</span>slug<span class="op">&gt;/</span><span class="ch">` </span>and adjust manually<span class="op">.</span>  </span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>Filename warnings<span class="op">**:</span> Rename to lowercase-hyphenated<span class="op">;</span> commit again<span class="op">.</span>  </span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>Cover image not found<span class="op">**:</span> Ensure filename starts with <span class="ch">`b</span>ookcover_<span class="ch">` </span>and is <span class="ch">`.</span>png<span class="ch">`/`.</span>jpg<span class="ch">` </span><span class="kw">in</span> the same <span class="ch">`r</span>aw_docs<span class="op">/&lt;</span>slug<span class="op">&gt;/</span><span class="ch">` </span>folder<span class="op">.</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="op">---</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">## Suggested volumes</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>Volume <span class="dv">0</span><span class="op">:**</span> <span class="ch">`v</span>olume-0<span class="ch">` </span>— project introduction <span class="op">(</span>this file<span class="op">).</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>Volume <span class="dv">1</span><span class="op">:**</span> <span class="ch">`i</span>ntroduction-to-islam<span class="ch">` </span>— foundations<span class="op">,</span> <span class="fu">history</span><span class="op">,</span> core concepts<span class="op">.</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>Volume <span class="dv">2</span><span class="op">:**</span> <span class="ch">`b</span>its-to-banking<span class="ch">` </span>— computing → OS → programming → security → finance<span class="op">.</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>Happy writing<span class="op">!</span> ✨</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="co">## Foreword: volume2-introduction</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="co">## Who this is for</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> Beginners who want a <span class="fu">clear</span><span class="op">,</span> practical route <span class="kw">from</span> zero to building useful things<span class="op">.</span>  </span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> Engineers <span class="kw">from</span> other fields who want a <span class="op">**</span>finance-tech<span class="op">**</span> overview<span class="op">.</span>  </span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> Contributors who can add examples<span class="op">,</span> diagrams<span class="op">,</span> labs<span class="op">,</span> or case studies<span class="op">.</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="op">---</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="co">## Learning outcomes</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>By the <span class="kw">end</span> you will be able to<span class="op">:</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> Explain how <span class="kw">data</span> becomes meaning<span class="op">:</span> <span class="op">**</span>bits → bytes → files → processes<span class="op">**.</span>  </span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> Use the command line and <span class="fu">write</span> small programs to automate tasks<span class="op">.</span>  </span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> Model and query <span class="kw">data</span> <span class="kw">in</span> <span class="op">**</span>relational databases<span class="op">**.</span>  </span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> Understand core <span class="op">**</span>networking<span class="op">**</span> and <span class="op">**</span>security<span class="op">**</span> ideas<span class="op">.</span>  </span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> Read and discuss <span class="op">**</span>banking<span class="op">/</span>treasury<span class="op">**</span> workflows with the right vocabulary<span class="op">.</span>  </span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="op">---</span></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a><span class="co">## Suggested outline</span></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch01 — Bits <span class="op">&amp;</span> Binary<span class="op">:**</span> Representation<span class="op">,</span> integers<span class="op">,</span> text<span class="op">,</span> endianness<span class="op">.</span>  </span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch02 — Operating Systems primer<span class="op">:**</span> Processes<span class="op">,</span> memory<span class="op">,</span> filesystems<span class="op">,</span> permissions<span class="op">.</span>  </span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch03 — Programming basics<span class="op">:**</span> Variables<span class="op">,</span> control flow<span class="op">,</span> functions<span class="op">,</span> modules<span class="op">,</span> tests<span class="op">.</span>  </span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch04 — <span class="kw">Data</span> modeling <span class="op">&amp;</span> SQL<span class="op">:**</span> Tables<span class="op">,</span> keys<span class="op">,</span> normalization<span class="op">,</span> joins<span class="op">,</span> transactions<span class="op">.</span>  </span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch05 — Networking<span class="op">:**</span> TCP<span class="op">/</span>IP<span class="op">,</span> HTTP<span class="op">,</span> tools<span class="op">,</span> client–server mini-labs<span class="op">.</span>  </span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch06 — Security essentials<span class="op">:**</span> Hashing<span class="op">,</span> crypto at a high level<span class="op">,</span> auth<span class="op">,</span> threat basics<span class="op">.</span>  </span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch07 — Finance foundations<span class="op">:**</span> Money flows<span class="op">,</span> accounts<span class="op">,</span> ledgers<span class="op">,</span> payments rails<span class="op">.</span>  </span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch08 — Market <span class="kw">data</span> <span class="op">&amp;</span> pricing<span class="op">:**</span> Instruments<span class="op">,</span> quotes<span class="op">,</span> risk-at-a-glance<span class="op">.</span>  </span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch09 — Treasury systems overview<span class="op">:**</span> Positions<span class="op">,</span> cash<span class="op">,</span> risk<span class="op">,</span> settlement<span class="op">;</span> <span class="fu">where</span> <span class="op">**</span>Calypso<span class="op">/</span>TMS<span class="op">**</span> fits<span class="op">.</span>  </span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="op">**</span>ch10 — Mini projects<span class="op">:**</span> ETL a CSV into a DB<span class="op">;</span> simple pricing<span class="op">/</span>reporting script<span class="op">;</span> mock “ops” day<span class="op">.</span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>This outline will evolve with contributions and reviewer feedback<span class="op">.</span></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="op">---</span></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="co">## Contributing to this volume</span></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="op">.</span> Create or use the folder<span class="op">:</span></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>   <span class="ch">```t</span>ext</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>   raw_docs<span class="op">/</span>bits-to-banking<span class="op">/</span></span></code></pre></div>
+<ol start="2" type="1">
 <li>Add chapters as <strong>.md</strong>, <strong>.docx</strong>, or
 <strong>.pdf</strong>.
 <ul>
@@ -341,7 +368,7 @@ drafting under <code>raw_docs/bits-to-banking/</code>.<br />
 Include small, runnable examples and short exercises.</p>
 <h2 id="foreword-volume1-introduction">Foreword:
 volume1-introduction</h2>
-<h2 id="who-this-is-for-1">Who this is for</h2>
+<h2 id="who-this-is-for">Who this is for</h2>
 <ul>
 <li>Curious readers with <strong>no prior background</strong>.</li>
 <li>Educators, parents, and learners looking for <strong>clear
