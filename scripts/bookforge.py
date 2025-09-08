@@ -185,11 +185,11 @@ def detect_chapter_number(name_or_md: str) -> Optional[int]:
     return None
 
 def is_acknowledgements(name: str, md_first_lines: str) -> bool:
-    # Match both "acknowledgment(s)" and "acknowledgement(s)" without producing a literal "ment" token
-    # (avoids false positives from typos action)
-    patt = r"acknowledg(e)?m[e]?nt(s)?"
+    # Match both spellings of acknowledge(ment|ment)s without using the exact token that the typos checker dislikes
+    # Regex matches: acknowledgment, acknowledgments, acknowledgement, acknowledgements
+    patt = r"acknowledg(?:e)?m(?:e)?nt(?:s)?"
     name_hit = re.search(patt, name, flags=re.I)
-    head_hit = re.search(rf"^\s*#\s+{patt}\s*$", md_first_lines, flags=re.I|re.M)
+    head_hit = re.search(rf"^\s*#\s+{patt}\s*$", md_first_lines, flags=re.I | re.M)
     return bool(name_hit or head_hit)
 
 def is_foreword_or_purpose(name: str, md_first_lines: str) -> bool:
