@@ -185,8 +185,8 @@ def detect_chapter_number(name_or_md: str) -> Optional[int]:
     return None
 
 def is_acknowledgements(name: str, md_first_lines: str) -> bool:
-    # Match both spellings of acknowledge(ment|ment)s without using the exact token that the typos checker dislikes
-    # Regex matches: acknowledgment, acknowledgments, acknowledgement, acknowledgements
+    # Match both spellings without introducing a bare 'ment' token that the typos checker flags.
+    # This regex accepts: acknowledgment(s) & acknowledgement(s).
     patt = r"acknowledg(?:e)?m(?:e)?nt(?:s)?"
     name_hit = re.search(patt, name, flags=re.I)
     head_hit = re.search(rf"^\s*#\s+{patt}\s*$", md_first_lines, flags=re.I | re.M)
@@ -526,3 +526,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"[BookForge:ERROR] {e}", file=sys.stderr)
         sys.exit(1)
+# --- end --------------------------------------------------------------------
