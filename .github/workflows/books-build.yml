@@ -1,0 +1,85 @@
+name: Books — Build & Publish
+
+on:
+  push:
+    paths:
+      - "dropzone/**"
+      - "scripts/**"
+      - ".github/workflows/books-build.yml"
+      - ".typos.toml"
+  pull_request:
+    paths:
+      - "dropzone/**"
+      - "scripts/**"
+      - ".github/workflows/books-build.yml"
+      - ".typos.toml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install OS deps (pandoc + wkhtmltopdf)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc wkhtmltopdf
+
+      - name: Install Python deps (if provided)
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install python-docx; fi
+
+      - name: Determine base SHA for changed-only builds
+        id: base
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "base_sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "base_sha=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
+          else
+            echo "base_sha=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build books (changed only if possible)
+        run: |
+          python scripts/forge_all.py --changed-only "${{ steps.base.outputs.base_sha }}"
+
+      - name: Upload book artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: books-all
+          path: |
+            output/*/books/*.docx
+            output/*/books/*.pdf
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload catalog site (for Pages)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: output/site
+
+  deploy:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        

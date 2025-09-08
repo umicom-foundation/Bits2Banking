@@ -1,292 +1,199 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-BookForge v2.0 — one-dropzone builder for Bits2Banking
-- Created by: Sammy Hegab — Umicom Foundation (https://umicom.foundation/)
+BookForge v3.0 — single-book builder for the Open Book project
+- Created by: Umicom Foundation (https://umicom.foundation/)
 - Date: 08-09-2025
 - Description:
-    One entry point (dropzone/) in, one output root (output/) out.
-    Scans dropzone/documents + dropzone/images, normalises content, detects cover + special
-    sections, orders chapters, and produces:
-      - output/manuscript/*.md + output/manuscript/book.md
-      - output/books/Volume_XX_<slug>.docx (and .pdf if engine present)
-      - output/site/index.html (+ output/site/assets/*) as a self-contained site
-    Safe defaults: tolerant of YAML front matter, CRLFs, unlabeled code fences, missing cover,
-    missing PDF engine, and mixed inputs. UTF-8 throughout.
-
-What it does:
-- Converts .md/.txt/.docx → Markdown (strips YAML front matter; CRLF→LF; adds code-fence language)
-- Detects cover by filename (“book cover”, “-cover”, “_cover”); picks best image
-- Detects foreword/purpose/preface and acknowledgements
-- Orders chapters (explicit numbers if present else 00,10,20…)
-- Normalises image links and copies images to output/assets/images
-- Writes output/manuscript/*.md and output/manuscript/book.md
-- Builds DOCX, HTML site, and PDF if wkhtmltopdf or LaTeX engine present
-- Mirrors output/assets → output/site/assets (so site is standalone)
-- Emits toc.json at repo root
-
-Optional config (dropzone/bookforge.json):
-{
-  "title": "Your Book Title",
-  "volume": 0
-}
+    Build exactly one book from a per-book drop-zone:
+      dropzone/<book-slug>/{documents,images}
+    Outputs:
+      output/<book-slug>/manuscript/*.md (incl. book.md)
+      output/<book-slug>/books/*.docx (and .pdf if engine present)
+      output/<book-slug>/site/index.html (self-contained site)
+    UTF-8 throughout; tolerant of YAML front matter, CRLFs, unlabeled fences,
+    missing cover, and missing PDF engine.
 
 CLI:
-  --title "My Title"  --volume 1
-  --no-docx --no-html --no-pdf --no-site-assets
-  --dry-run --quiet
+  python scripts/bookforge.py --book-dir dropzone/<book-slug>
+  [--title "Display Title"] [--author "Name"] [--volume 0]
+  [--no-docx] [--no-html] [--no-pdf] [--no-site-assets]
+  [--dry-run] [--quiet]
+
+Optional config (dropzone/<book-slug>/bookforge.json):
+  { "title": "Title", "author": "Name", "volume": 0 }
 
 Env:
-  PANDOC_EXE         : path to pandoc executable
-  WKHTMLTOPDF_EXE    : path to wkhtmltopdf
-  PANDOC_PDF_ENGINE  : engine name/path (wkhtmltopdf, xelatex, ...)
-
-Requirements:
-  - Python 3.9+
-  - pip install python-docx (for .docx import) OR install Pandoc
-  - Pandoc (for DOCX/HTML/PDF)
-  - wkhtmltopdf OR LaTeX engine (for PDF)
+  PANDOC_EXE, WKHTMLTOPDF_EXE, PANDOC_PDF_ENGINE
 """
 
-import os
-import re
-import sys
-import json
-import shutil
-import argparse
-import subprocess
+import os, re, sys, json, shutil, argparse, subprocess
 from pathlib import Path
-from typing import Optional
-
-# --- repo paths (single output root) ---------------------------------------
+from typing import Optional, Tuple, List
 
 ROOT = Path(__file__).resolve().parents[1]
-DROP = ROOT / "dropzone"
-DOCS = DROP / "documents"
-IMGS_INBOX = DROP / "images"
 
-OUTPUT = ROOT / "output"
-OUT_MANU = OUTPUT / "manuscript"
-OUT_ASSETS = OUTPUT / "assets"
-OUT_COVERS = OUT_ASSETS / "covers"
-OUT_AIMGS = OUT_ASSETS / "images"
-OUT_BOOKS = OUTPUT / "books"
-OUT_SITE = OUTPUT / "site"
-
-# Ignore junk files (OS/editor/temp)
+# Junk we ignore
 IGNORE_RE = re.compile(
     r'(^|/)(~\$|\.#|#.*#|Thumbs\.db|\.DS_Store|\.AppleDouble|\.LSOverride|desktop\.ini|\.swp$|\.tmp$|\.bak$|\.partial$|\.crdownload$)',
     flags=re.I
 )
 
-# --- helpers ---------------------------------------------------------------
-
 def info(msg: str, quiet: bool = False):
     if not quiet:
         print(f"[BookForge] {msg}")
 
-def ensure_dirs():
-    for d in [DROP, DOCS, IMGS_INBOX, OUTPUT, OUT_MANU, OUT_ASSETS, OUT_COVERS, OUT_AIMGS, OUT_BOOKS, OUT_SITE]:
-        d.mkdir(parents=True, exist_ok=True)
+def slugify(s: str) -> str:
+    s = re.sub(r"[^\w\s-]", "", s, flags=re.UNICODE)
+    s = re.sub(r"\s+", "-", s.strip())
+    return re.sub(r"-+", "-", s).strip("-").lower()
 
-def slugify(title: str) -> str:
-    t = re.sub(r"[^\w\s-]", "", title, flags=re.UNICODE)
-    t = re.sub(r"\s+", "_", t.strip())
-    return re.sub(r"_+", "_", t).strip("_")
+def read(p: Path) -> str:
+    try:    return p.read_text(encoding="utf-8")
+    except: return p.read_text(encoding="utf-8", errors="ignore")
 
-def read_text_file(p: Path) -> str:
-    try:
-        return p.read_text(encoding="utf-8")
-    except UnicodeDecodeError:
-        return p.read_text(encoding="utf-8", errors="ignore")
+def norm_eol(s: str) -> str:
+    return s.replace("\r\n","\n").replace("\r","\n")
 
-def normalise_line_endings(s: str) -> str:
-    return s.replace("\r\n", "\n").replace("\r", "\n")
-
-def add_lang_to_fences(md: str, default_lang: str = "text") -> str:
-    return re.sub(r"(?m)^```[ \t]*\n", f"```{default_lang}\n", md)
+def add_lang_fences(md: str, default="text") -> str:
+    return re.sub(r"(?m)^```[ \t]*\n", f"```{default}\n", md)
 
 def find_pandoc() -> Optional[str]:
-    p_env = os.environ.get("PANDOC_EXE")
-    if p_env and Path(p_env).exists():
-        return p_env
-    local = ROOT / "tools" / "pandoc" / ("pandoc.exe" if os.name == "nt" else "pandoc")
-    if local.exists():
-        return str(local)
+    p = os.environ.get("PANDOC_EXE")
+    if p and Path(p).exists(): return p
+    local = ROOT / "tools" / "pandoc" / ("pandoc.exe" if os.name=="nt" else "pandoc")
+    if local.exists(): return str(local)
     return shutil.which("pandoc")
 
 def find_pdf_engine() -> Optional[str]:
-    env_engine = os.environ.get("PANDOC_PDF_ENGINE")
-    if env_engine:
-        return env_engine
-    env_wk = os.environ.get("WKHTMLTOPDF_EXE")
-    if env_wk and Path(env_wk).exists():
-        return env_wk
+    env = os.environ.get("PANDOC_PDF_ENGINE")
+    if env: return env
+    wk = os.environ.get("WKHTMLTOPDF_EXE")
+    if wk and Path(wk).exists(): return wk
     which = shutil.which("wkhtmltopdf")
-    if which:
-        return which
-    for c in [
-        Path(r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"),
-        Path(r"C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe"),
-    ]:
-        if c.exists():
-            return str(c)
-    for latex in ("xelatex", "pdflatex", "lualatex"):
-        if shutil.which(latex):
-            return latex
+    if which: return which
+    for c in [Path(r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"),
+              Path(r"C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe")]:
+        if c.exists(): return str(c)
+    for latex in ("xelatex","pdflatex","lualatex"):
+        if shutil.which(latex): return latex
     return None
 
 def docx_to_md(p: Path) -> str:
     try:
         from docx import Document  # type: ignore
+        doc = Document(str(p))
+        lines = [(para.text or "").rstrip() for para in doc.paragraphs]
+        return "\n".join(lines) + "\n"
     except Exception:
-        pandoc = find_pandoc()
-        if pandoc:
-            md = subprocess.check_output([pandoc, "-f", "docx", "-t", "gfm", str(p)], text=True)
-            return md
-        raise RuntimeError("DOCX support requires `python-docx` or Pandoc.")
-    doc = Document(str(p))
-    lines = [(para.text or "").rstrip() for para in doc.paragraphs]
-    return "\n".join(lines) + "\n"
+        pan = find_pandoc()
+        if not pan:
+            raise RuntimeError("DOCX support requires python-docx or Pandoc installed.")
+        return subprocess.check_output([pan,"-f","docx","-t","gfm",str(p)], text=True)
 
 def to_markdown(p: Path) -> str:
     ext = p.suffix.lower()
-    if ext in [".md", ".markdown", ".txt"]:
-        return read_text_file(p)
-    if ext == ".docx":
-        return docx_to_md(p)
+    if ext in (".md",".markdown",".txt"): return read(p)
+    if ext == ".docx":                    return docx_to_md(p)
     raise RuntimeError(f"Unsupported file type: {p.name}")
 
-def strip_yaml_front_matter(md: str) -> str:
+def strip_yaml(md: str) -> str:
     s = md.lstrip()
     if s.startswith("---"):
         lines = s.splitlines(True)
-        if lines and lines[0].strip() == "---":
-            end_idx = None
-            for i in range(1, len(lines)):
-                if lines[i].strip() in ("---", "..."):
-                    end_idx = i
-                    break
-            if end_idx is not None:
-                return "".join(lines[end_idx+1:])
+        if lines and lines[0].strip()=="---":
+            for i in range(1,len(lines)):
+                if lines[i].strip() in ("---","..."):
+                    return "".join(lines[i+1:])
     return md
 
 def detect_title(md: str, fallback: str) -> str:
     m = re.search(r"^\s*#\s+(.+)$", md, flags=re.M)
     return m.group(1).strip() if m else fallback
 
-def detect_chapter_number(name_or_md: str) -> Optional[int]:
-    m = re.search(r"(?:^|[^a-z])chapter\s*(\d+)", name_or_md, flags=re.I)
+def detect_ch_num(text: str) -> Optional[int]:
+    m = re.search(r"(?:^|[^a-z])chapter\s*(\d+)", text, flags=re.I)
     if m: return int(m.group(1))
-    m = re.search(r"^\s*(\d{1,2})[._-]", name_or_md)
+    m = re.search(r"^\s*(\d{1,2})[._-]", text)
     if m: return int(m.group(1))
-    m = re.search(r"(?:^|[\s_-])(\d{1,2})(?:[\s_-]|$)", name_or_md)
+    m = re.search(r"(?:^|[\s_-])(\d{1,2})(?:[\s_-]|$)", text)
     if m: return int(m.group(1))
     return None
 
-def is_acknowledgements(name: str, md_first_lines: str) -> bool:
-    # Match both US & UK spellings for the "acknowledg…nt(s)" section, avoiding a standalone token that the linter dislikes.
+def is_acks(name: str, first_lines: str) -> bool:
+    # Accept both US & UK spellings without using a bare token the linter dislikes.
     patt = r"acknowledg(?:e)?m(?:e)?nt(?:s)?"
-    name_hit = re.search(patt, name, flags=re.I)
-    head_hit = re.search(rf"^\s*#\s+{patt}\s*$", md_first_lines, flags=re.I | re.M)
-    return bool(name_hit or head_hit)
+    return bool(
+        re.search(patt, name, flags=re.I) or
+        re.search(rf"^\s*#\s+{patt}\s*$", first_lines, flags=re.I|re.M)
+    )
 
-def is_foreword_or_purpose(name: str, md_first_lines: str) -> bool:
+def is_frontmatter(name: str, first_lines: str) -> bool:
     key = r"(foreword|preface|purpose|introduction)"
-    name_hit = re.search(key, name, flags=re.I)
-    head_hit = re.search(rf"^\s*#\s+{key}\s*$", md_first_lines, flags=re.I|re.M)
-    return bool(name_hit or head_hit)
+    return bool(
+        re.search(key, name, flags=re.I) or
+        re.search(rf"^\s*#\s+{key}\s*$", first_lines, flags=re.I|re.M)
+    )
 
-def copy_image_resolved(src_path: Path, chapter_slug: str, fig_index: int) -> Optional[str]:
-    if not src_path.exists():
-        return None
-    ext = src_path.suffix if src_path.suffix else ".png"
-    dest = OUT_AIMGS / f"{chapter_slug}_fig{fig_index:02d}{ext.lower()}"
-    dest.parent.mkdir(parents=True, exist_ok=True)
+def copy_image(src: Path, out_imgs: Path, chapter_slug: str, idx: int) -> Optional[str]:
+    if not src.exists(): return None
+    ext = (src.suffix or ".png").lower()
+    dst = out_imgs / f"{chapter_slug}_fig{idx:02d}{ext}"
+    dst.parent.mkdir(parents=True, exist_ok=True)
     try:
-        shutil.copy2(src_path, dest)
-        return dest.relative_to(ROOT).as_posix()
+        shutil.copy2(src, dst)
+        return dst
     except Exception:
         return None
 
-def normalise_images_in_md(md: str, doc_path: Path, chapter_slug: str) -> str:
-    fig = 1
+def rewrite_images(md: str, doc_path: Path, out_imgs: Path, chapter_slug: str, repo_root: Path) -> str:
+    n = 1
     def repl(m: re.Match) -> str:
-        nonlocal fig
+        nonlocal n
         alt, url = m.group(1), m.group(2).strip()
-        if re.match(r"^(https?://|data:)", url, flags=re.I):
-            return m.group(0)
+        if re.match(r"^(https?://|data:)", url, flags=re.I): return m.group(0)
         src = (doc_path.parent / url).resolve()
         if not src.exists():
-            alt_try = (IMGS_INBOX / url).resolve()
-            if alt_try.exists():
-                src = alt_try
-        rel = copy_image_resolved(src, chapter_slug, fig)
-        if rel:
-            fig += 1
+            inbox = (doc_path.parent.parent / "images" / url).resolve()  # try book images/
+            if inbox.exists(): src = inbox
+        dst = copy_image(src, out_imgs, chapter_slug, n)
+        if dst:
+            n += 1
+            rel = dst.relative_to(repo_root).as_posix()
             return f"![{alt}]({rel})"
         return m.group(0)
     return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", repl, md)
 
-# --- cover selection --------------------------------------------------------
-
-def _image_resolution_score(path: Path) -> int:
-    try:
-        from PIL import Image  # type: ignore
-        with Image.open(str(path)) as im:
-            w, h = im.size
-            return int(w) * int(h)
-    except Exception:
-        try:
-            return path.stat().st_size
-        except Exception:
-            return 0
-
-def find_cover_candidates() -> list[Path]:
-    cands: list[Path] = []
-    for folder in [IMGS_INBOX, DOCS]:
-        if not folder.exists(): 
-            continue
+def find_cover(images_dir: Path, docs_dir: Path) -> Optional[Path]:
+    cands: List[Path] = []
+    for folder in (images_dir, docs_dir):
+        if not folder.exists(): continue
         for p in folder.rglob("*"):
-            if not p.is_file():
-                continue
-            if p.suffix.lower() not in [".png",".jpg",".jpeg",".webp",".tif",".tiff"]:
-                continue
+            if not p.is_file(): continue
+            if p.suffix.lower() not in (".png",".jpg",".jpeg",".webp",".tif",".tiff"): continue
             if re.search(r"(book\s*cover|[_-]cover(\.|$))", p.name, flags=re.I):
                 cands.append(p)
-    return cands
+    if not cands: return None
+    # pick largest by resolution/size
+    try:
+        from PIL import Image  # type: ignore
+        scored = []
+        for p in cands:
+            try:
+                with Image.open(str(p)) as im:
+                    w,h = im.size
+                    scored.append((w*h, p))
+            except Exception:
+                scored.append((p.stat().st_size, p))
+        scored.sort(key=lambda t: (t[0], t[1].as_posix()))
+        return scored[-1][1]
+    except Exception:
+        cands.sort(key=lambda p: (p.stat().st_size, p.as_posix()))
+        return cands[-1]
 
-def select_best_cover(cands: list[Path]) -> Optional[Path]:
-    if not cands:
-        return None
-    scored = sorted((( _image_resolution_score(p), p) for p in cands ), key=lambda t: (t[0], t[1].as_posix()))
-    return scored[-1][1] if scored else None
-
-def copy_and_rename_cover(title_slug: str, vol_num: int = 0) -> Optional[str]:
-    best = select_best_cover(find_cover_candidates())
-    if not best:
-        return None
-    dest = OUT_COVERS / f"Volume_{vol_num:02d}_{title_slug}_Cover{best.suffix.lower()}"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(best, dest)
-    return dest.relative_to(ROOT).as_posix()
-
-# --- site asset mirroring ---------------------------------------------------
-
-def mirror_assets_to_site(quiet: bool = False):
-    """Make site self-contained by mirroring output/assets/ → output/site/assets/."""
-    dest = OUT_SITE / "assets"
-    if dest.exists():
-        shutil.rmtree(dest, ignore_errors=True)
-    if OUT_ASSETS.exists():
-        shutil.copytree(OUT_ASSETS, dest)
-        info("Mirrored output/assets → output/site/assets.", quiet)
-
-# --- load config ------------------------------------------------------------
-
-def load_config():
+def load_cfg(book_dir: Path) -> dict:
     cfg = {}
-    cfg_path = DROP / "bookforge.json"
+    cfg_path = book_dir / "bookforge.json"
     if cfg_path.exists():
         try:
             cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
@@ -294,227 +201,218 @@ def load_config():
             print(f"[BookForge:WARN] Could not parse {cfg_path}: {e}", file=sys.stderr)
     return cfg
 
-# --- main -------------------------------------------------------------------
-
 def main() -> int:
-    ap = argparse.ArgumentParser(description="BookForge — one-dropzone → one-output builder")
-    ap.add_argument("--title", help="Override book title")
+    ap = argparse.ArgumentParser(description="BookForge v3 — build one book")
+    ap.add_argument("--book-dir", required=True, help="Path to the book drop-zone (dropzone/<book-slug>)")
+    ap.add_argument("--title", help="Override display title")
+    ap.add_argument("--author", help="Author name")
     ap.add_argument("--volume", type=int, default=None, help="Volume number (default 0)")
-    ap.add_argument("--no-docx", action="store_true", help="Skip DOCX output")
-    ap.add_argument("--no-html", action="store_true", help="Skip HTML site output")
-    ap.add_argument("--no-pdf",  action="store_true", help="Skip PDF output")
-    ap.add_argument("--no-site-assets", action="store_true", help="Do not mirror output/assets into output/site/assets")
-    ap.add_argument("--dry-run", action="store_true", help="Parse & plan only; do not write outputs")
-    ap.add_argument("--quiet",   action="store_true", help="Reduce console output")
+    ap.add_argument("--no-docx", action="store_true")
+    ap.add_argument("--no-html", action="store_true")
+    ap.add_argument("--no-pdf",  action="store_true")
+    ap.add_argument("--no-site-assets", action="store_true")
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--quiet",   action="store_true")
     args = ap.parse_args()
 
-    ensure_dirs()
-
-    cfg = load_config()
-    cfg_title = cfg.get("title")
-    cfg_volume = cfg.get("volume", 0)
-
-    info("Scanning dropzone/documents ...", args.quiet)
-    raw_docs: list[Path] = []
-    if DOCS.exists():
-        for p in sorted(DOCS.rglob("*")):
-            if not p.is_file():
-                continue
-            rel = p.relative_to(DOCS).as_posix()
-            if IGNORE_RE.search(rel) or p.name.startswith("."):
-                continue
-            if p.suffix.lower() in [".md",".markdown",".txt",".docx"]:
-                raw_docs.append(p)
-
-    if not raw_docs:
-        info("No documents found in dropzone/documents/. Nothing to do.", args.quiet)
+    book_dir = Path(args.book_dir).resolve()
+    docs_dir = book_dir / "documents"
+    imgs_dir = book_dir / "images"
+    if not docs_dir.exists():
+        info(f"Missing {docs_dir}; nothing to do.", args.quiet)
         return 0
 
-    # Convert → Markdown; strip YAML; normalise; fix fences
-    converted: list[tuple[Path, str]] = []
-    for p in raw_docs:
-        try:
-            md = to_markdown(p)
+    # derive slug from folder name
+    book_slug = book_dir.name
+    cfg = load_cfg(book_dir)
+    title = args.title or cfg.get("title")
+    author = args.author or cfg.get("author")
+    volume = cfg.get("volume", 0) if args.volume is None else args.volume
+
+    # collect inputs
+    inputs: List[Path] = []
+    for p in sorted(docs_dir.rglob("*")):
+        if not p.is_file(): continue
+        if IGNORE_RE.search(p.as_posix()) or p.name.startswith("."): continue
+        if p.suffix.lower() in (".md",".markdown",".txt",".docx"):
+            inputs.append(p)
+    if not inputs:
+        info("No documents found; nothing to do.", args.quiet)
+        return 0
+
+    # convert + normalise
+    converted: List[Tuple[Path,str]] = []
+    for p in inputs:
+        try: md = to_markdown(p)
         except Exception as e:
-            info(f"Skipping {p.name}: {e}", args.quiet)
-            continue
-        md = strip_yaml_front_matter(md)
-        md = normalise_line_endings(md)
-        md = add_lang_to_fences(md, default_lang="text")
+            info(f"Skipping {p.name}: {e}", args.quiet); continue
+        md = strip_yaml(md)
+        md = norm_eol(md)
+        md = add_lang_fences(md)
         converted.append((p, md))
 
-    # Title & volume
-    book_title = args.title or cfg_title
-    if not book_title:
-        for p, md in converted:
-            book_title = detect_title(md, p.stem)
-            if book_title:
+    # title fallback from first heading
+    if not title:
+        for p,md in converted:
+            t = detect_title(md, p.stem)
+            if t:
+                title = t
                 break
-    book_title = book_title or "Untitled Book"
-    volume = cfg_volume if args.volume is None else args.volume
-    book_slug = slugify(book_title)
+    title = title or "Untitled Book"
 
-    # Cover
-    rel_cover = copy_and_rename_cover(book_slug, vol_num=volume)
-    if rel_cover:
-        info(f"Cover detected → {rel_cover}", args.quiet)
+    # outputs
+    out_root = ROOT / "output" / book_slug
+    out_manu = out_root / "manuscript"
+    out_assets = out_root / "assets"
+    out_covers = out_assets / "covers"
+    out_imgs = out_assets / "images"
+    out_books = out_root / "books"
+    out_site  = out_root / "site"
+    for d in (out_manu,out_assets,out_covers,out_imgs,out_books,out_site):
+        d.mkdir(parents=True, exist_ok=True)
+
+    # cover
+    rel_cover = None
+    cover = find_cover(imgs_dir, docs_dir)
+    if cover:
+        dst = out_covers / f"Volume_{volume:02d}_{slugify(title)}_cover{cover.suffix.lower()}"
+        shutil.copy2(cover, dst)
+        rel_cover = dst.relative_to(ROOT).as_posix()
+        info(f"Cover → {rel_cover}", args.quiet)
     else:
         info("No cover detected (optional).", args.quiet)
 
-    # Categorise
-    chapters = []
-    forewords = []
-    acks = []
-    auto_index = 0
+    # categorise
+    chapters = []; fronts = []; acks = []
+    auto = 0
     for p, md in converted:
-        first_lines = "\n".join(md.splitlines()[:5])
-        title = detect_title(md, p.stem)
-        slug = slugify(title)
-        md2 = normalise_images_in_md(md, p, slug)
-        if is_acknowledgements(p.name, first_lines):
-            acks.append((999, slug, md2));  continue
-        if is_foreword_or_purpose(p.name, first_lines):
-            forewords.append((0, slug, md2));  continue
-        cnum = detect_chapter_number(p.name + "\n" + md2)
-        if cnum is None:
-            cnum = auto_index;  auto_index += 10
-        chapters.append((cnum, slug, md2))
+        first = "\n".join(md.splitlines()[:5])
+        ch_title = detect_title(md, p.stem)
+        ch_slug  = slugify(ch_title)
+        md2 = rewrite_images(md, p, out_imgs, ch_slug, ROOT)
+        if is_acks(p.name, first):
+            acks.append((999, ch_slug, md2));  continue
+        if is_frontmatter(p.name, first):
+            fronts.append((0, ch_slug, md2));  continue
+        n = detect_ch_num(p.name + "\n" + md2)
+        if n is None: n, auto = auto, auto+10
+        chapters.append((n, ch_slug, md2))
 
     chapters.sort(key=lambda x: x[0])
-    forewords.sort(key=lambda x: x[0])
+    fronts.sort(key=lambda x: x[0])
 
-    # Dry-run preview
+    # dry-run
     if args.dry_run:
-        info(f"DRY RUN — Title: '{book_title}', Volume: {volume}", args.quiet)
-        if rel_cover:
-            info(f"DRY RUN — Cover: {rel_cover}", args.quiet)
-        def names(lst): return [s for _, s, _ in lst]
-        info(f"DRY RUN — Forewords: {names(forewords)}", args.quiet)
-        info(f"DRY RUN — Chapters: {names(chapters)}", args.quiet)
-        info(f"DRY RUN — Acknowledgements: {names(acks)}", args.quiet)
+        info(f"DRY RUN — {book_slug}: '{title}' (vol {volume})", args.quiet)
+        def names(xs): return [s for _,s,_ in xs]
+        if rel_cover: info(f"Cover: {rel_cover}", args.quiet)
+        info(f"Front: {names(fronts)}", args.quiet)
+        info(f"Chapters: {names(chapters)}", args.quiet)
+        info(f"Acks: {names(acks)}", args.quiet)
         return 0
 
-    # Clear and write output/manuscript parts
-    info("Writing normalised output/manuscript/*.md ...", args.quiet)
-    for old in OUT_MANU.glob("*.md"):
+    # clear old manuscript
+    for old in out_manu.glob("*.md"):
         try: old.unlink()
-        except Exception: pass
+        except: pass
 
-    for i, (_, slug, md) in enumerate(forewords, start=1):
-        (OUT_MANU / f"00.{i:02d}_{slug}.md").write_text(md, encoding="utf-8")
-    for idx, (_, slug, md) in enumerate(chapters, start=1):
-        (OUT_MANU / f"10.{idx*10:02d}_{slug}.md").write_text(md, encoding="utf-8")
-    for i, (_, slug, md) in enumerate(acks, start=1):
-        (OUT_MANU / f"99.{i:02d}_{slug}.md").write_text(md, encoding="utf-8")
+    # write parts
+    for i,(_, s, md) in enumerate(fronts, start=1):
+        (out_manu / f"00.{i:02d}_{s}.md").write_text(md, encoding="utf-8")
+    for idx,(_, s, md) in enumerate(chapters, start=1):
+        (out_manu / f"10.{idx*10:02d}_{s}.md").write_text(md, encoding="utf-8")
+    for i,(_, s, md) in enumerate(acks, start=1):
+        (out_manu / f"99.{i:02d}_{s}.md").write_text(md, encoding="utf-8")
 
-    # Assemble book.md (avoid '---', use '***')
+    # assemble book.md
     parts = []
-    if rel_cover:
-        parts.append(f"![Cover]({rel_cover})\n")
-    parts.append(f"# {book_title}\n")
+    if rel_cover: parts.append(f"![Cover]({rel_cover})\n")
+    parts.append(f"# {title}\n")
+    if author: parts.append(f"\n**{author}**\n")
     parts.append("\n## Contents\n")
-    for _, slug, _ in forewords:
-        parts.append(f"- Foreword: {slug.replace('_',' ')}")
-    for _, slug, _ in chapters:
-        parts.append(f"- {slug.replace('_',' ')}")
-    for _, slug, _ in acks:
-        parts.append(f"- Acknowledgements: {slug.replace('_',' ')}")
+    for _,s,_ in fronts:   parts.append(f"- Foreword: {s.replace('-',' ')}")
+    for _,s,_ in chapters: parts.append(f"- {s.replace('-',' ')}")
+    for _,s,_ in acks:     parts.append(f"- Acknowledgements: {s.replace('-',' ')}")
     parts.append("\n***\n")
-    for _, slug, md in forewords:
-        parts.append(f"\n\n## Foreword: {slug.replace('_',' ')}\n");  parts.append(md)
-    for _, slug, md in chapters:
-        parts.append(f"\n\n## {slug.replace('_',' ')}\n");           parts.append(md)
-    for _, slug, md in acks:
-        parts.append(f"\n\n## Acknowledgements: {slug.replace('_',' ')}\n");  parts.append(md)
+    for _,s,md in fronts:   parts.append(f"\n\n## Foreword: {s.replace('-',' ')}\n"); parts.append(md)
+    for _,s,md in chapters: parts.append(f"\n\n## {s.replace('-',' ')}\n");           parts.append(md)
+    for _,s,md in acks:     parts.append(f"\n\n## Acknowledgements: {s.replace('-',' ')}\n"); parts.append(md)
     book_md = "\n".join(parts).strip() + "\n"
-    (OUT_MANU / "book.md").write_text(book_md, encoding="utf-8")
+    (out_manu / "book.md").write_text(book_md, encoding="utf-8")
 
-    # Emit toc.json at repo root
+    # toc.json (per book)
     toc = {
-        "title": book_title,
-        "volume": volume,
-        "foreword": [s for _, s, _ in forewords],
-        "chapters": [s for _, s, _ in chapters],
-        "acknowledgements": [s for _, s, _ in acks],
-        "output": "output/"
+        "slug": book_slug, "title": title, "author": author, "volume": volume,
+        "front": [s for _,s,_ in fronts],
+        "chapters": [s for _,s,_ in chapters],
+        "acknowledgements": [s for _,s,_ in acks],
+        "output": f"output/{book_slug}/"
     }
-    (ROOT / "toc.json").write_text(json.dumps(toc, indent=2), encoding="utf-8")
+    (out_root / "toc.json").write_text(json.dumps(toc, indent=2), encoding="utf-8")
 
-    # Build with Pandoc (if available)
-    pandoc = find_pandoc()
-    vol_base = OUT_BOOKS / f"Volume_{volume:02d}_{book_slug}"
-    if not pandoc:
-        info("Pandoc not found; wrote markdown only. Install Pandoc to produce DOCX/HTML/PDF.", args.quiet)
-        info(f"Output: {(OUT_MANU/'book.md').relative_to(ROOT).as_posix()}", args.quiet)
-        return 0
-
-    # resource-path so images resolve
-    resource_path = os.pathsep.join([
-        str(ROOT),
-        str(DROP),
-        str(DOCS),
-        str(OUT_ASSETS),
-        str(OUT_AIMGS),
-        str(OUT_COVERS),
-        str(OUT_SITE)
-    ])
-
-    # Optional reference DOCX template
-    ref_docx = ROOT / "tools" / "pandoc" / "reference.docx"
-    ref_args = ["--reference-doc", str(ref_docx)] if ref_docx.exists() else []
-
-    info("Building outputs ...", args.quiet)
-
-    # DOCX
-    if not args.no_docx:
-        subprocess.check_call([
-            pandoc, "-f", "gfm", str(OUT_MANU/"book.md"),
-            "-o", str(vol_base.with_suffix(".docx")),
-            "--resource-path", resource_path,
-            *ref_args
+    # build with Pandoc
+    pan = find_pandoc()
+    base = out_books / f"Volume_{volume:02d}_{slugify(title)}"
+    if not pan:
+        info("Pandoc not found; wrote markdown only.", args.quiet)
+    else:
+        rpath = os.pathsep.join([
+            str(ROOT), str(book_dir), str(docs_dir),
+            str(out_root), str(out_manu), str(out_assets)
         ])
+        ref_docx = ROOT / "tools" / "pandoc" / "reference.docx"
+        ref_args = ["--reference-doc", str(ref_docx)] if ref_docx.exists() else []
 
-    # HTML site → output/site/index.html
-    if not args.no_html:
-        css = OUT_SITE / "style.css"
-        if not css.exists():
-            css.write_text(
-                "body{max-width:900px;margin:3rem auto;font-family:system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;padding:0 1rem}"
-                "img{max-width:100%;} h1,h2,h3{scroll-margin-top:80px}"
-                ".toc,.contents{background:#f6f6f6;padding:1rem;border-radius:8px}\n",
-                encoding="utf-8"
-            )
-        subprocess.check_call([
-            pandoc, "-f", "gfm", "-s",
-            str(OUT_MANU/"book.md"),
-            "-o", str(OUT_SITE/"index.html"),
-            "--metadata", f"title={book_title}",
-            "--css", str(css),
-            "--resource-path", resource_path,
-            "--toc", "--toc-depth=3"
-        ])
-        # Make site self-contained
-        if not args.no_site_assets:
-            mirror_assets_to_site(args.quiet)
-
-    # PDF → output/books/*.pdf
-    if not args.no_pdf:
-        engine = find_pdf_engine()
-        if engine:
+        # DOCX
+        if not args.no_docx:
             subprocess.check_call([
-                pandoc, "-f", "gfm",
-                str(OUT_MANU/"book.md"),
-                "-o", str(vol_base.with_suffix(".pdf")),
-                "--pdf-engine", engine,
-                "--resource-path", resource_path
+                pan, "-f","gfm", str(out_manu/"book.md"),
+                "-o", str(base.with_suffix(".docx")),
+                "--resource-path", rpath,
+                *ref_args
             ])
-        else:
-            info("Skipping PDF (wkhtmltopdf or LaTeX engine not found).", args.quiet)
 
-    info(f"Built in output/: books/, site/, manuscript/ (plus HTML/PDF if enabled).", args.quiet)
+        # HTML site
+        if not args.no_html:
+            css = out_site / "style.css"
+            if not css.exists():
+                css.write_text(
+                    "body{max-width:900px;margin:3rem auto;font-family:system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;padding:0 1rem}"
+                    "img{max-width:100%;} h1,h2,h3{scroll-margin-top:80px}"
+                    ".toc,.contents{background:#f6f6f6;padding:1rem;border-radius:8px}\n",
+                    encoding="utf-8"
+                )
+            subprocess.check_call([
+                pan, "-f","gfm","-s",
+                str(out_manu/"book.md"),
+                "-o", str(out_site/"index.html"),
+                "--metadata", f"title={title}",
+                "--css", str(css),
+                "--resource-path", rpath,
+                "--toc","--toc-depth=3"
+            ])
+            if not args.no_site_assets:
+                # mirror assets so book site is self-contained
+                dest = out_site / "assets"
+                if dest.exists(): shutil.rmtree(dest, ignore_errors=True)
+                if out_assets.exists(): shutil.copytree(out_assets, dest)
+
+        # PDF
+        if not args.no_pdf:
+            engine = find_pdf_engine()
+            if engine:
+                subprocess.check_call([
+                    pan, "-f","gfm",
+                    str(out_manu/"book.md"),
+                    "-o", str(base.with_suffix(".pdf")),
+                    "--pdf-engine", engine,
+                    "--resource-path", rpath
+                ])
+            else:
+                info("Skipping PDF (no wkhtmltopdf/LaTeX engine).", args.quiet)
+
+    info(f"Built: output/{book_slug}/ (manuscript/books/site)", args.quiet)
     return 0
-
-# --- entry ------------------------------------------------------------------
 
 if __name__ == "__main__":
     try:
