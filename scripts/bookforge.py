@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
-BookForge — one-dropzone builder for Bits2Banking
+BookForge v1.2 — one-dropzone builder for Bits2Banking
+- Created by Sammy Hegab - Umicom Foundation 2025 
+https://umicom.foundation/
+Date: 08-09-2025 
 
 What it does (idempotent):
 - Scans dropzone/documents (and dropzone/images) for user content
@@ -47,10 +50,41 @@ Notes:
 - Input files are not modified.
 - Existing files in manuscript/, assets/images/, assets/covers/, volumes/, and site/ are overwritten.
 - Run from repo root (where this script lives in scripts/).
-- See README.md for more details.
-- Created by Sammy Hegab - Umicom Foundation 2025 
-    https://umicom.foundation/
-Date: 08-09-2025    
+- See README.md for more details.   
+
+Changelog:
+v1.2 (08-09-2025)
+- Single contributor entry: dropzone/documents (text) + dropzone/images (images)
+- Converts .md/.txt/.docx to Markdown (strips YAML front matter; normalises CRLF→LF)
+- Detects cover image by filename (contains "book cover" or ends with -cover/_cover)
+- Detects foreword/purpose/preface + acknowledgements
+- Orders chapters by explicit number or auto-assigns (00,10,20…)
+- Normalises image links (copies to assets/images)
+- Writes manuscript/*.md and manuscript/book.md
+- Builds DOCX, HTML site, and PDF if engines available
+- Auto-detects wkhtmltopdf; LaTeX engines as fallback
+- Emits toc.json
+
+Config (optional): dropzone/bookforge.json
+{
+  "title": "Introduction to Islam",
+  "volume": 0
+}
+
+CLI flags:
+  --no-docx --no-html --no-pdf --dry-run --quiet
+  --title "My Title" --volume 1
+
+Env:
+  PANDOC_EXE         : path to pandoc executable (overrides auto-detect)
+  WKHTMLTOPDF_EXE    : path to wkhtmltopdf (overrides auto-detect)
+  PANDOC_PDF_ENGINE  : engine name or path ("wkhtmltopdf", "xelatex", ...)
+
+Requirements:
+  - Python 3.9+
+  - pip install python-docx (for .docx import) OR install Pandoc
+  - Pandoc (for DOCX/HTML/PDF)
+  - wkhtmltopdf OR LaTeX engine (for PDF)
 """
 
 import os
@@ -58,8 +92,10 @@ import re
 import sys
 import json
 import shutil
+import argparse
 import subprocess
 from pathlib import Path
+from typing import Optional
 
 # --- repo paths -------------------------------------------------------------
 
@@ -78,15 +114,16 @@ SITE = ROOT / "site"
 
 # --- helpers ---------------------------------------------------------------
 
-def info(msg: str):
-    print(f"[BookForge] {msg}")
+def info(msg: str, quiet: bool = False):
+    if not quiet:
+        print(f"[BookForge] {msg}")
 
 def ensure_dirs():
     for d in [DROP, DOCS, IMGS_INBOX, MANU, ASSETS, COVERS, AIMGS, VOLS, SITE]:
         d.mkdir(parents=True, exist_ok=True)
 
 def slugify(title: str) -> str:
-    t = re.sub(r"[^\w\s-]", "", title, flags=re.UNICODE)  # remove punctuation
+    t = re.sub(r"[^\w\s-]", "", title, flags=re.UNICODE)
     t = re.sub(r"\s+", "_", t.strip())
     return re.sub(r"_+", "_", t)
 
@@ -96,8 +133,51 @@ def read_text_file(p: Path) -> str:
     except UnicodeDecodeError:
         return p.read_text(encoding="utf-8", errors="ignore")
 
+def normalise_line_endings(s: str) -> str:
+    return s.replace("\r\n", "\n").replace("\r", "\n")
+
+def add_lang_to_fences(md: str, default_lang: str = "text") -> str:
+    # Add language to ``` fences missing one (fixes MD040)
+    # Matches ``` <only spaces> \n
+    return re.sub(r"(?m)^```[ \t]*\n", f"```{default_lang}\n", md)
+
+def find_pandoc() -> Optional[str]:
+    p_env = os.environ.get("PANDOC_EXE")
+    if p_env and Path(p_env).exists():
+        return p_env
+    local = ROOT / "tools" / "pandoc" / ("pandoc.exe" if os.name == "nt" else "pandoc")
+    if local.exists():
+        return str(local)
+    return shutil.which("pandoc")
+
+def find_pdf_engine() -> Optional[str]:
+    # explicit env var has priority
+    env_engine = os.environ.get("PANDOC_PDF_ENGINE")
+    if env_engine:
+        return env_engine
+
+    # prefer wkhtmltopdf (lightweight)
+    env_wk = os.environ.get("WKHTMLTOPDF_EXE")
+    if env_wk and Path(env_wk).exists():
+        return env_wk
+    which = shutil.which("wkhtmltopdf")
+    if which:
+        return which
+    # Common Windows install locations
+    for c in [
+        Path(r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"),
+        Path(r"C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe"),
+    ]:
+        if c.exists():
+            return str(c)
+    # LaTeX engines (fallback)
+    for latex in ("xelatex", "pdflatex", "lualatex"):
+        if shutil.which(latex):
+            return latex  # name is fine for pandoc
+    return None
+
 def docx_to_md(p: Path) -> str:
-    # Prefer python-docx if installed, otherwise try pandoc
+    # Prefer python-docx; else try pandoc
     try:
         from docx import Document  # type: ignore
     except Exception:
@@ -105,12 +185,9 @@ def docx_to_md(p: Path) -> str:
         if pandoc:
             md = subprocess.check_output([pandoc, "-f", "docx", "-t", "gfm", str(p)], text=True)
             return md
-        raise RuntimeError("DOCX support requires `python-docx` (pip install python-docx) or Pandoc installed.")
+        raise RuntimeError("DOCX support requires `python-docx` or Pandoc.")
     doc = Document(str(p))
-    lines = []
-    for para in doc.paragraphs:
-        txt = para.text.rstrip()
-        lines.append(txt)
+    lines = [(para.text or "").rstrip() for para in doc.paragraphs]
     return "\n".join(lines) + "\n"
 
 def to_markdown(p: Path) -> str:
@@ -122,7 +199,6 @@ def to_markdown(p: Path) -> str:
     raise RuntimeError(f"Unsupported file type: {p.name}")
 
 def strip_yaml_front_matter(md: str) -> str:
-    """Remove a leading YAML front-matter block (--- ... --- or ...) if present."""
     s = md.lstrip()
     if s.startswith("---"):
         lines = s.splitlines(True)
@@ -140,7 +216,7 @@ def detect_title(md: str, fallback: str) -> str:
     m = re.search(r"^\s*#\s+(.+)$", md, flags=re.M)
     return m.group(1).strip() if m else fallback
 
-def detect_chapter_number(name_or_md: str) -> int | None:
+def detect_chapter_number(name_or_md: str) -> Optional[int]:
     # "Chapter 5", "ch-05", "05_", "05 Title"
     m = re.search(r"(?:^|[^a-z])chapter\s*(\d+)", name_or_md, flags=re.I)
     if m: return int(m.group(1))
@@ -159,28 +235,7 @@ def is_foreword_or_purpose(name: str, md_first_lines: str) -> bool:
     head_hit = re.search(rf"^\s*#\s+{key}\s*$", md_first_lines, flags=re.I|re.M)
     return bool(name_hit or head_hit)
 
-def find_pandoc() -> str | None:
-    # 1) Env override
-    p_env = os.environ.get("PANDOC_EXE")
-    if p_env and Path(p_env).exists():
-        return p_env
-    # 2) Local tools folder
-    local = ROOT / "tools" / "pandoc" / ("pandoc.exe" if os.name == "nt" else "pandoc")
-    if local.exists():
-        return str(local)
-    # 3) PATH
-    return shutil.which("pandoc")
-
-def find_pdf_engine() -> str | None:
-    # Prefer wkhtmltopdf for minimal install, else none (Pandoc will fall back to LaTeX if present)
-    wk = shutil.which("wkhtmltopdf")
-    if wk:
-        return "wkhtmltopdf"
-    # If MiKTeX/TeX Live present, Pandoc can use them implicitly; we return None here.
-    return None
-
-def copy_image_resolved(src_path: Path, chapter_slug: str, fig_index: int) -> str | None:
-    """Copy image file to assets/images with normalised name. Return relative destination or None."""
+def copy_image_resolved(src_path: Path, chapter_slug: str, fig_index: int) -> Optional[str]:
     if not src_path.exists():
         return None
     ext = src_path.suffix if src_path.suffix else ".png"
@@ -193,40 +248,23 @@ def copy_image_resolved(src_path: Path, chapter_slug: str, fig_index: int) -> st
         return None
 
 def normalise_images_in_md(md: str, doc_path: Path, chapter_slug: str) -> str:
-    """
-    Rewrite local image links to assets/images/{chapter_slug}_figXX.ext and copy the files.
-    Leave http(s) and data: URLs untouched.
-    """
     fig = 1
-
-    def replacer(match: re.Match) -> str:
+    def repl(m: re.Match) -> str:
         nonlocal fig
-        alt = match.group(1)
-        url = match.group(2).strip()
-
-        # Leave remote or data URLs intact
+        alt, url = m.group(1), m.group(2).strip()
         if re.match(r"^(https?://|data:)", url, flags=re.I):
-            return match.group(0)
-
-        # Resolve local path relative to the document
+            return m.group(0)
         src = (doc_path.parent / url).resolve()
         if not src.exists():
-            # Try resolving against dropzone/images inbox as a fallback
             alt_try = (IMGS_INBOX / url).resolve()
             if alt_try.exists():
                 src = alt_try
-
         rel = copy_image_resolved(src, chapter_slug, fig)
         if rel:
-            new_link = f"![{alt}]({rel})"
             fig += 1
-            return new_link
-
-        # If copy failed, keep original link
-        return match.group(0)
-
-    # ![alt](url)
-    return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", replacer, md)
+            return f"![{alt}]({rel})"
+        return m.group(0)
+    return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", repl, md)
 
 def collect_documents() -> list[Path]:
     docs = []
@@ -236,18 +274,17 @@ def collect_documents() -> list[Path]:
                 docs.append(p)
     return docs
 
-def find_cover_image() -> Path | None:
+def find_cover_image() -> Optional[Path]:
     cands = []
     for folder in [IMGS_INBOX, DOCS]:
-        if not folder.exists():
-            continue
+        if not folder.exists(): continue
         for p in folder.rglob("*"):
             if p.is_file() and p.suffix.lower() in [".png",".jpg",".jpeg",".webp",".tif",".tiff"]:
                 if re.search(r"(book\s*cover|[_-]cover(\.|$))", p.name, flags=re.I):
                     cands.append(p)
     return sorted(cands)[0] if cands else None
 
-def copy_and_rename_cover(title_slug: str, vol_num: int = 0) -> str | None:
+def copy_and_rename_cover(title_slug: str, vol_num: int = 0) -> Optional[str]:
     c = find_cover_image()
     if not c:
         return None
@@ -256,176 +293,225 @@ def copy_and_rename_cover(title_slug: str, vol_num: int = 0) -> str | None:
     shutil.copy2(c, dest)
     return dest.relative_to(ROOT).as_posix()
 
+def load_config():
+    cfg = {}
+    cfg_path = DROP / "bookforge.json"
+    if cfg_path.exists():
+        try:
+            cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            print(f"[BookForge:WARN] Could not parse {cfg_path}: {e}", file=sys.stderr)
+    return cfg
+
 # --- main -------------------------------------------------------------------
 
 def main() -> int:
+    ap = argparse.ArgumentParser(description="BookForge — one-dropzone builder")
+    ap.add_argument("--title", help="Override book title")
+    ap.add_argument("--volume", type=int, default=None, help="Volume number (default 0)")
+    ap.add_argument("--no-docx", action="store_true", help="Skip DOCX output")
+    ap.add_argument("--no-html", action="store_true", help="Skip HTML site output")
+    ap.add_argument("--no-pdf",  action="store_true", help="Skip PDF output")
+    ap.add_argument("--dry-run", action="store_true", help="Parse & plan only; do not write outputs")
+    ap.add_argument("--quiet",   action="store_true", help="Reduce console output")
+    args = ap.parse_args()
+
     ensure_dirs()
-    info("Scanning dropzone/documents ...")
+
+    # Load config (optional)
+    cfg = load_config()
+    cfg_title = cfg.get("title")
+    cfg_volume = cfg.get("volume", 0)
+
+    # Gather documents
+    info("Scanning dropzone/documents ...", args.quiet)
     raw_docs = collect_documents()
     if not raw_docs:
-        info("No documents found in dropzone/documents/. Nothing to do.")
+        info("No documents found in dropzone/documents/. Nothing to do.", args.quiet)
         return 0
 
-    # 1) Convert to Markdown, strip YAML front matter
+    # Convert → Markdown; strip YAML; normalise; fix fences
     converted: list[tuple[Path, str]] = []
     for p in raw_docs:
         try:
             md = to_markdown(p)
         except Exception as e:
-            info(f"Skipping {p.name}: {e}")
+            info(f"Skipping {p.name}: {e}", args.quiet)
             continue
         md = strip_yaml_front_matter(md)
+        md = normalise_line_endings(md)
+        md = add_lang_to_fences(md, default_lang="text")
         converted.append((p, md))
 
-    # 2) Guess book title
-    book_title = None
-    for p, md in converted:
-        book_title = detect_title(md, p.stem)
-        if book_title:
-            break
+    # Title and volume
+    book_title = args.title or cfg_title
+    if not book_title:
+        for p, md in converted:
+            book_title = detect_title(md, p.stem)
+            if book_title:
+                break
     if not book_title:
         book_title = "Untitled Book"
+    volume = cfg_volume if args.volume is None else args.volume
     book_slug = slugify(book_title)
 
-    # 3) Cover
-    rel_cover = copy_and_rename_cover(book_slug, vol_num=0)
+    # Cover
+    rel_cover = copy_and_rename_cover(book_slug, vol_num=volume)
     if rel_cover:
-        info(f"Cover detected → {rel_cover}")
+        info(f"Cover detected → {rel_cover}", args.quiet)
     else:
-        info("No cover detected (optional).")
+        info("No cover detected (optional).", args.quiet)
 
-    # 4) Categorise documents
+    # Categorise
     chapters = []
     forewords = []
     acks = []
-
     auto_index = 0
     for p, md in converted:
         first_lines = "\n".join(md.splitlines()[:5])
         title = detect_title(md, p.stem)
         slug = slugify(title)
-
-        # rewrite and copy images
         md2 = normalise_images_in_md(md, p, slug)
-
         if is_acknowledgements(p.name, first_lines):
-            acks.append((999, slug, md2))
-            continue
+            acks.append((999, slug, md2));  continue
         if is_foreword_or_purpose(p.name, first_lines):
-            forewords.append((0, slug, md2))
-            continue
-
+            forewords.append((0, slug, md2));  continue
         cnum = detect_chapter_number(p.name + "\n" + md2)
         if cnum is None:
-            cnum = auto_index
-            auto_index += 10
+            cnum = auto_index;  auto_index += 10
         chapters.append((cnum, slug, md2))
 
     chapters.sort(key=lambda x: x[0])
     forewords.sort(key=lambda x: x[0])
 
-    # 5) Write normalised manuscript parts
-    info("Writing normalised manuscript/*.md ...")
-    # clear old files (safe: only *.md in MANU)
-    for old in MANU.glob("*.md"):
-        try:
-            old.unlink()
-        except Exception:
-            pass
+    # Dry-run preview
+    if args.dry_run:
+        info(f"DRY RUN — Title: '{book_title}', Volume: {volume}", args.quiet)
+        if rel_cover:
+            info(f"DRY RUN — Cover: {rel_cover}", args.quiet)
+        def names(lst): return [s for _, s, _ in lst]
+        info(f"DRY RUN — Forewords: {names(forewords)}", args.quiet)
+        info(f"DRY RUN — Chapters: {names(chapters)}", args.quiet)
+        info(f"DRY RUN — Acknowledgements: {names(acks)}", args.quiet)
+        return 0
 
-    # forewords
+    # Write manuscript parts (clear old .md)
+    info("Writing normalised manuscript/*.md ...", args.quiet)
+    for old in MANU.glob("*.md"):
+        try: old.unlink()
+        except Exception: pass
+
     for i, (_, slug, md) in enumerate(forewords, start=1):
         (MANU / f"00.{i:02d}_{slug}.md").write_text(md, encoding="utf-8")
-
-    # chapters
     for idx, (_, slug, md) in enumerate(chapters, start=1):
         (MANU / f"10.{idx*10:02d}_{slug}.md").write_text(md, encoding="utf-8")
-
-    # acks
     for i, (_, slug, md) in enumerate(acks, start=1):
         (MANU / f"99.{i:02d}_{slug}.md").write_text(md, encoding="utf-8")
 
-    # 6) Assemble book.md (avoid '---' rule; use '***')
+    # Assemble book.md (avoid '---', use '***')
     parts = []
     if rel_cover:
         parts.append(f"![Cover]({rel_cover})\n")
     parts.append(f"# {book_title}\n")
-
-    # ToC
     parts.append("\n## Contents\n")
-    if forewords:
-        for _, slug, _ in forewords:
-            parts.append(f"- Foreword: {slug.replace('_',' ')}")
-    if chapters:
-        for _, slug, _ in chapters:
-            parts.append(f"- {slug.replace('_',' ')}")
-    if acks:
-        for _, slug, _ in acks:
-            parts.append(f"- Acknowledgements: {slug.replace('_',' ')}")
+    for _, slug, _ in forewords:
+        parts.append(f"- Foreword: {slug.replace('_',' ')}")
+    for _, slug, _ in chapters:
+        parts.append(f"- {slug.replace('_',' ')}")
+    for _, slug, _ in acks:
+        parts.append(f"- Acknowledgements: {slug.replace('_',' ')}")
     parts.append("\n***\n")
-
-    # Sections
     for _, slug, md in forewords:
-        parts.append(f"\n\n## Foreword: {slug.replace('_',' ')}\n")
-        parts.append(md)
+        parts.append(f"\n\n## Foreword: {slug.replace('_',' ')}\n");  parts.append(md)
     for _, slug, md in chapters:
-        parts.append(f"\n\n## {slug.replace('_',' ')}\n")
-        parts.append(md)
+        parts.append(f"\n\n## {slug.replace('_',' ')}\n");           parts.append(md)
     for _, slug, md in acks:
-        parts.append(f"\n\n## Acknowledgements: {slug.replace('_',' ')}\n")
-        parts.append(md)
-
+        parts.append(f"\n\n## Acknowledgements: {slug.replace('_',' ')}\n");  parts.append(md)
     book_md = "\n".join(parts).strip() + "\n"
     (MANU / "book.md").write_text(book_md, encoding="utf-8")
 
-    # 7) Build outputs with Pandoc (if available)
-    vol_base = VOLS / f"Volume_00_{book_slug}"
+    # Emit toc.json
+    toc = {
+        "title": book_title,
+        "volume": volume,
+        "foreword": [s for _, s, _ in forewords],
+        "chapters": [s for _, s, _ in chapters],
+        "acknowledgements": [s for _, s, _ in acks],
+    }
+    (ROOT / "toc.json").write_text(json.dumps(toc, indent=2), encoding="utf-8")
+
+    # Build with Pandoc (if available)
     pandoc = find_pandoc()
+    vol_base = VOLS / f"Volume_{volume:02d}_{book_slug}"
     if not pandoc:
-        info("Pandoc not found; wrote markdown only. Install Pandoc to produce DOCX/HTML/PDF.")
-        info(f"Output: { (MANU / 'book.md').relative_to(ROOT).as_posix() }")
+        info("Pandoc not found; wrote markdown only. Install Pandoc to produce DOCX/HTML/PDF.", args.quiet)
+        info(f"Output: {(MANU/'book.md').relative_to(ROOT).as_posix()}", args.quiet)
         return 0
 
-    info("Building DOCX and site (and PDF if engine available) ...")
-    # DOCX
-    subprocess.check_call([
-        pandoc, "-f", "gfm",
-        str(MANU/"book.md"),
-        "-o", str(vol_base.with_suffix(".docx"))
+    # Pandoc resource path (so relative images/refs resolve)
+    resource_path = os.pathsep.join([
+        str(ROOT),
+        str(DOCS),
+        str(ASSETS),
+        str(AIMGS),
+        str(COVERS),
     ])
+
+    # Optional reference DOCX template
+    ref_docx = ROOT / "tools" / "pandoc" / "reference.docx"
+    ref_args = ["--reference-doc", str(ref_docx)] if ref_docx.exists() else []
+
+    info("Building outputs ...", args.quiet)
+
+    # DOCX
+    if not args.no_docx:
+        subprocess.check_call([
+            pandoc, "-f", "gfm", str(MANU/"book.md"),
+            "-o", str(vol_base.with_suffix(".docx")),
+            "--resource-path", resource_path,
+            *ref_args
+        ])
 
     # HTML site
-    css = SITE / "style.css"
-    if not css.exists():
-        css.write_text(
-            "body{max-width:900px;margin:3rem auto;font-family:system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;padding:0 1rem}"
-            "img{max-width:100%;} h1,h2,h3{scroll-margin-top:80px}"
-            ".toc, .contents{background:#f6f6f6;padding:1rem;border-radius:8px}\n",
-            encoding="utf-8"
-        )
-    subprocess.check_call([
-        pandoc, "-f", "gfm", "-s",
-        str(MANU/"book.md"),
-        "-o", str(SITE/"index.html"),
-        "--metadata", f"title={book_title}",
-        "--css", str(css)
-    ])
-
-    # PDF (if engine available)
-    pdf_engine = find_pdf_engine()
-    if pdf_engine:
+    if not args.no_html:
+        css = SITE / "style.css"
+        if not css.exists():
+            css.write_text(
+                "body{max-width:900px;margin:3rem auto;font-family:system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;padding:0 1rem}"
+                "img{max-width:100%;} h1,h2,h3{scroll-margin-top:80px}"
+                ".toc,.contents{background:#f6f6f6;padding:1rem;border-radius:8px}\n",
+                encoding="utf-8"
+            )
         subprocess.check_call([
-            pandoc, "-f", "gfm",
+            pandoc, "-f", "gfm", "-s",
             str(MANU/"book.md"),
-            "-o", str(vol_base.with_suffix(".pdf")),
-            f"--pdf-engine={pdf_engine}"
+            "-o", str(SITE/"index.html"),
+            "--metadata", f"title={book_title}",
+            "--css", str(css),
+            "--resource-path", resource_path,
+            "--toc", "--toc-depth=3"
         ])
-    else:
-        info("Skipping PDF (wkhtmltopdf not found; install it or a LaTeX engine to enable PDF).")
 
-    info(f"Built: {vol_base.with_suffix('.docx').name} (and site/index.html).")
+    # PDF
+    if not args.no_pdf:
+        engine = find_pdf_engine()
+        if engine:
+            engine_arg = engine
+            # If engine looks like a path, pass it as-is
+            subprocess.check_call([
+                pandoc, "-f", "gfm",
+                str(MANU/"book.md"),
+                "-o", str(vol_base.with_suffix(".pdf")),
+                "--pdf-engine", engine_arg,
+                "--resource-path", resource_path
+            ])
+        else:
+            info("Skipping PDF (wkhtmltopdf or LaTeX engine not found).", args.quiet)
+
+    info(f"Built: {vol_base.with_suffix('.docx').name} (plus HTML/PDF if enabled).", args.quiet)
     return 0
 
+# --- entry ------------------------------------------------------------------
 
 if __name__ == "__main__":
     try:
