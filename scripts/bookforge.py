@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-BookForge v3.0 — single-book builder for the Open Book project
+BookForge v3.1 — single-book builder for the Open Book project
 - Created by: Umicom Foundation (https://umicom.foundation/)
 - Date: 08-09-2025
 - Description:
@@ -11,11 +11,11 @@ BookForge v3.0 — single-book builder for the Open Book project
       output/<book-slug>/manuscript/*.md (incl. book.md)
       output/<book-slug>/books/*.docx (and .pdf if engine present)
       output/<book-slug>/site/index.html (self-contained site)
-    UTF-8 throughout; tolerant of YAML front matter, CRLFs, unlabeled fences,
-    missing cover, and missing PDF engine.
+    If --book-dir is omitted and exactly one book is present under dropzone/,
+    it will auto-select that one. If multiple exist, it prints a list and exits.
 
 CLI:
-  python scripts/bookforge.py --book-dir dropzone/<book-slug>
+  python scripts/bookforge.py [--book-dir dropzone/<book-slug>]
   [--title "Display Title"] [--author "Name"] [--volume 0]
   [--no-docx] [--no-html] [--no-pdf] [--no-site-assets]
   [--dry-run] [--quiet]
@@ -32,6 +32,7 @@ from pathlib import Path
 from typing import Optional, Tuple, List
 
 ROOT = Path(__file__).resolve().parents[1]
+DROP = ROOT / "dropzone"
 
 # Junk we ignore
 IGNORE_RE = re.compile(
@@ -121,7 +122,7 @@ def detect_ch_num(text: str) -> Optional[int]:
     return None
 
 def is_acks(name: str, first_lines: str) -> bool:
-    # Accept both US & UK spellings without using a bare token the linter dislikes.
+    # Match both US & UK spellings for the "acknowledg…nt(s)" section, avoiding a standalone token that the linter dislikes.
     patt = r"acknowledg(?:e)?m(?:e)?nt(?:s)?"
     return bool(
         re.search(patt, name, flags=re.I) or
@@ -174,7 +175,6 @@ def find_cover(images_dir: Path, docs_dir: Path) -> Optional[Path]:
             if re.search(r"(book\s*cover|[_-]cover(\.|$))", p.name, flags=re.I):
                 cands.append(p)
     if not cands: return None
-    # pick largest by resolution/size
     try:
         from PIL import Image  # type: ignore
         scored = []
@@ -201,9 +201,18 @@ def load_cfg(book_dir: Path) -> dict:
             print(f"[BookForge:WARN] Could not parse {cfg_path}: {e}", file=sys.stderr)
     return cfg
 
+def detect_books_under_dropzone() -> List[Path]:
+    books: List[Path] = []
+    if not DROP.exists(): return books
+    for sub in sorted(DROP.iterdir()):
+        if not sub.is_dir(): continue
+        if (sub / "documents").exists():
+            books.append(sub.resolve())
+    return books
+
 def main() -> int:
-    ap = argparse.ArgumentParser(description="BookForge v3 — build one book")
-    ap.add_argument("--book-dir", required=True, help="Path to the book drop-zone (dropzone/<book-slug>)")
+    ap = argparse.ArgumentParser(description="BookForge v3.1 — build one book (auto-detect single)")
+    ap.add_argument("--book-dir", help="Path to the book drop-zone (dropzone/<book-slug>)")
     ap.add_argument("--title", help="Override display title")
     ap.add_argument("--author", help="Author name")
     ap.add_argument("--volume", type=int, default=None, help="Volume number (default 0)")
@@ -215,7 +224,22 @@ def main() -> int:
     ap.add_argument("--quiet",   action="store_true")
     args = ap.parse_args()
 
-    book_dir = Path(args.book_dir).resolve()
+    # Resolve book directory (allow auto-detect if omitted)
+    if args.book_dir:
+        book_dir = Path(args.book_dir).resolve()
+    else:
+        candidates = detect_books_under_dropzone()
+        if len(candidates) == 0:
+            print("[BookForge] No books found under dropzone/. Create dropzone/<book>/documents first.", file=sys.stderr)
+            return 2
+        if len(candidates) > 1:
+            print("[BookForge] Multiple books detected. Please specify one with --book-dir:", file=sys.stderr)
+            for c in candidates:
+                print(f"  - {c.relative_to(ROOT)}", file=sys.stderr)
+            return 2
+        book_dir = candidates[0]
+        info(f"Auto-selected book: {book_dir.relative_to(ROOT)}", args.quiet)
+
     docs_dir = book_dir / "documents"
     imgs_dir = book_dir / "images"
     if not docs_dir.exists():
@@ -328,7 +352,9 @@ def main() -> int:
     parts = []
     if rel_cover: parts.append(f"![Cover]({rel_cover})\n")
     parts.append(f"# {title}\n")
-    if author: parts.append(f"\n**{author}**\n")
+    if (args.author or (book_dir/"bookforge.json").exists()):
+        author = (args.author or json.loads((book_dir/"bookforge.json").read_text(encoding="utf-8")).get("author"))
+        if author: parts.append(f"\n**{author}**\n")
     parts.append("\n## Contents\n")
     for _,s,_ in fronts:   parts.append(f"- Foreword: {s.replace('-',' ')}")
     for _,s,_ in chapters: parts.append(f"- {s.replace('-',' ')}")
@@ -342,7 +368,7 @@ def main() -> int:
 
     # toc.json (per book)
     toc = {
-        "slug": book_slug, "title": title, "author": author, "volume": volume,
+        "slug": book_slug, "title": title, "volume": volume,
         "front": [s for _,s,_ in fronts],
         "chapters": [s for _,s,_ in chapters],
         "acknowledgements": [s for _,s,_ in acks],
@@ -392,7 +418,6 @@ def main() -> int:
                 "--toc","--toc-depth=3"
             ])
             if not args.no_site_assets:
-                # mirror assets so book site is self-contained
                 dest = out_site / "assets"
                 if dest.exists(): shutil.rmtree(dest, ignore_errors=True)
                 if out_assets.exists(): shutil.copytree(out_assets, dest)
