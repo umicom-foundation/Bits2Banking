@@ -1,0 +1,71 @@
+name: Dropzone Build & Publish
+
+on:
+  push:
+    paths:
+      - "dropzone/**"
+      - "scripts/bookforge.py"
+      - ".github/workflows/dropzone-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# prevent concurrent Pages deployments fighting each other
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install python-docx Pillow
+
+      - name: Install pandoc & wkhtmltopdf (for DOCX/HTML/PDF)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc wkhtmltopdf
+
+      - name: Build with BookForge
+        run: |
+          python scripts/bookforge.py
+
+      - name: Upload book artifacts (DOCX/PDF/MD)
+        uses: actions/upload-artifact@v4
+        with:
+          name: bookforge-outputs
+          path: |
+            manuscript/book.md
+            volumes/*.docx
+            volumes/*.pdf
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload Pages artifact (BookForge site/)
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
