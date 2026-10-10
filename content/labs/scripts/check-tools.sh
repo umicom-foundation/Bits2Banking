@@ -1,0 +1,1 @@
+bash ./check-tools.sh
