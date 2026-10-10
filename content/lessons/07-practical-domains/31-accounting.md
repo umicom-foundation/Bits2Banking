@@ -82,3 +82,7 @@ The result should be `Balanced journal`. Change one credit to 4,900 pence and re
 The Umicom accounting learning material develops these ideas into journals, ledgers, accounting rules and control services reusable by Bank, Open TMS, Trader and other applications.
 
 **Next:** [Understand Treasury Management Systems](32-treasury.md).
+
+## Ethics and transparent financial records
+
+Accounting is also about keeping trustworthy records. The [Islam: Blueprint for Life](../../v001_islam_blueprint_for_life/index.md) book examines financial responsibility and the ethics of trade. Its [faith, service and technology chapter](../../v001_islam_blueprint_for_life/faith-service-and-technology.md) links those principles to transparent software, financial controls and reviewable decisions. The accounting examples here remain secular technical exercises using simulated records.

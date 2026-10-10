@@ -60,3 +60,7 @@ These fictional forecasts must not be combined across currencies without an expl
 Why must risk and settlement use the same authorised trade terms? What should happen if a trade is amended after confirmation? Why are balances in different currencies reported separately unless a conversion rule has been applied?
 
 **Next:** [Learn how trading platforms work](33-trading-platforms.md).
+
+## Explore ethical finance
+
+For another perspective on financial contracts and the purpose of economic activity, read [Islamic Finance and the Future](../../v001_islam_blueprint_for_life/islamic_finance_and_future.md) and [Technology and Banking](../../v001_islam_blueprint_for_life/technology_and_banking.md) in Volume 1. The TMS lesson above explains the technical lifecycle independently of a particular financial philosophy.

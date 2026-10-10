@@ -10,3 +10,7 @@ Explore Umicom Framework, the Kernel, Umicom OS and real application source.
 - [28. Umicom Applications: reuse one foundation in many products](28-umicom-applications.md)
 
 [Explore the practical source files](../../labs/index.md)
+
+## Visit the project repositories
+
+Read the [Umicom project repository guide](../../umicom/repositories.md) to find the Framework, Kernel, OS, Applications and Studio repositories, their source files and their own build instructions. The educational examples reference these real implementations.

@@ -19,3 +19,7 @@ When you are familiar with files and commands, study [Git and software engineeri
 The [business and financial lessons](../lessons/07-practical-domains/index.md) explain project management, accounts, accounting, treasury and trading. No financial account or live trade is needed; the examples use simulated data.
 
 A chapter is complete when you can explain the main idea and carry out its exercise, including understanding the result when something does not work.
+
+## Explore purpose, faith and ethics
+
+You can also read [Islam: Blueprint for Life](../v001_islam_blueprint_for_life/index.md). It connects the Islamic understanding of purpose, responsibility and fairness with trade, modern banking and the use of technology for society. The chapters are available as a separate book, so you may begin there or with the computing lessons.

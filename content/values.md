@@ -15,3 +15,9 @@ A first contribution might be a better explanation, a corrected command, a trans
 The Umicom Foundation connects open education and practical technology with a commitment to serve others. Our aim is to make it easier for people to learn, build and share useful software.
 
 [Make a first contribution](contributing/index.md) · [Read the lessons](start/index.md)
+
+## Faith and the purpose of learning
+
+Islam is central to the Umicom Foundation's understanding of service: seeking beneficial knowledge, respecting the dignity of others, fulfilling trusts, dealing honestly and sharing what we have learned. These values guide why we teach and why we build software that people can understand and use.
+
+The [Islam: Blueprint for Life](v001_islam_blueprint_for_life/index.md) book discusses faith, purpose, trade and financial ethics. [Faith, service and technology](v001_islam_blueprint_for_life/faith-service-and-technology.md) explains how those ideas connect to learning programming and building reliable systems.

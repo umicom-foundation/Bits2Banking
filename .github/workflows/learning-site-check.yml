@@ -7,7 +7,12 @@ on:
       - "mkdocs.yml"
       - "requirements-docs.txt"
       - "tools/validate_learning.py"
+      - "tools/prepare_learning_site.py"
+      - "scripts/Prepare-UmicomLearningSite.ps1"
+      - "dropzone/documents/islam_blueprint_for_life/**"
+      - "dropzone/images/**"
       - "tests/test_learning_site.py"
+      - "tests/test_islam_volume_and_brand.py"
       - ".github/workflows/learning-site-check.yml"
   pull_request:
     paths:
@@ -15,7 +20,12 @@ on:
       - "mkdocs.yml"
       - "requirements-docs.txt"
       - "tools/validate_learning.py"
+      - "tools/prepare_learning_site.py"
+      - "scripts/Prepare-UmicomLearningSite.ps1"
+      - "dropzone/documents/islam_blueprint_for_life/**"
+      - "dropzone/images/**"
       - "tests/test_learning_site.py"
+      - "tests/test_islam_volume_and_brand.py"
       - ".github/workflows/learning-site-check.yml"
   workflow_dispatch:
 
@@ -30,14 +40,24 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+      - name: Check out canonical Framework branding
+        uses: actions/checkout@v4
+        with:
+          repository: umicom-foundation/umicom-framework
+          path: .site-brand-framework
+          sparse-checkout: |
+            resources/brand
+          sparse-checkout-cone-mode: false
       - name: Install site dependencies
         run: |
           python -m pip install -r requirements-docs.txt
           python -m pip install pytest
+      - name: Prepare preserved book chapters and Umicom brand
+        run: python tools/prepare_learning_site.py --brand-source .site-brand-framework/resources/brand
       - name: Check course and repository links
         run: python tools/validate_learning.py
       - name: Validate learning tests
-        run: python -m pytest -q -p no:cacheprovider tests/test_learning_site.py
+        run: python -m pytest -q -p no:cacheprovider tests/test_learning_site.py tests/test_islam_volume_and_brand.py
       - name: Build the complete MkDocs website
         run: python -m mkdocs build --strict
       - name: Upload website preview

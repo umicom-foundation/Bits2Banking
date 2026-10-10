@@ -1,5 +1,7 @@
 # Bits to Banking
 
+![Umicom Foundation logo](assets/branding/umicom-logo.png){: .umicom-wordmark }
+
 Learn how computers work, how software is built, and how technology can serve people.
 
 Start with computer hardware and binary numbers. Progress to programming, operating systems, building real applications and contributing to open-source projects. Continue into accounting, banking, treasury management and trading systems when you are ready.
@@ -14,13 +16,17 @@ You can follow the chapters in order, return to any topic for revision, or use t
 4. [Turn an idea into a program](lessons/02-programming/04-problems-and-algorithms.md)
 5. [Try your first PowerShell commands](lessons/02-programming/05-powershell.md)
 
+## Explore Islam, purpose and service
+
+[Volume 1 — Islam: Blueprint for Life](v001_islam_blueprint_for_life/index.md) introduces faith, purpose, ethical trade, money, banking and the responsibility to use knowledge for good. The original chapters and artwork remain available beside the computing and technology courses. [Faith, service and technology](v001_islam_blueprint_for_life/faith-service-and-technology.md) connects these values to practical engineering.
+
 ## Build something useful
 
 The [practical source-code exercises](labs/index.md) include a notes application, a web task board, an example accounting journal, and other projects. Each exercise shows the instructions and files needed to try it yourself.
 
 ## Explore Umicom
 
-[Umicom development](lessons/06-umicom/index.md) connects these skills to Umicom Framework, Umicom Kernel, Umicom OS and applications. The lessons link to the project repositories so you can inspect the actual implementations.
+[Umicom development](lessons/06-umicom/index.md) connects these skills to Umicom Framework, Umicom Kernel, Umicom OS and applications. The lessons link to the [Umicom repositories and source documentation](umicom/repositories.md) so you can inspect actual implementations.
 
 ## Join the community
 
