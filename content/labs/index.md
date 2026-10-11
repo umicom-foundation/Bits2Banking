@@ -39,3 +39,8 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Arena Allocator laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/arena-allocator) — construct a temporary Notes report with checked alignment and checkpoints. [Lesson 68](../lessons/03-native-code/68-arenas-and-checkpoints.md).
 - [Bounded ledger-line laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/bounded-ledger-line) — decode exact bytes, detect integer overflow and fuzz malformed fictional records. [Lesson 69](../lessons/03-native-code/69-bounded-byte-slices.md).
+
+## Object files and reusable libraries
+
+- [Course catalogue static-library laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/course-catalogue-library) — build a C23 static library, link it into an application and test, inspect its symbols, and diagnose an intentionally missing library. [Lessons 72–73](../lessons/05-engineering/72-source-to-machine-code.md).
+- [Native ELF/PE/COFF inspection](../lessons/05-engineering/74-read-elf-pe-coff-with-c23.md) — run the Framework-owned `umicom-education binary --file` command against an executable, object file or Umicom Kernel image.

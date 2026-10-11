@@ -82,3 +82,13 @@ The Framework-owned Umicom Education tool gains a read-only `audit --repo` navig
 The educational track adds chapters 67–71, two C23-only laboratories for arena allocation and bounded fictional ledger messages, and two narrated video scripts. The laboratories use CMake as build metadata, and the website retains Markdown and YAML because these are required by the existing publishing system. No new Python, PowerShell, C++, PHP or JavaScript application source is introduced.
 
 **Release gate:** standalone Framework education tests including `framework.education.navigation_audit`, both new C23 laboratory suites, complete original-book navigation, and a strict MkDocs site build on Windows. A native audit pass does not by itself qualify the published website.
+
+## Delivery checkpoint — Major Update 09: native file formats and linking
+
+Umicom Framework adds a reusable, read-only C23 header inspector for ELF32/ELF64, PE32/PE32+ and ordinary COFF objects. Its public API checks byte ranges, declared section tables and unchanged-on-failure outputs; the standalone `umicom-education binary --file PATH` command displays the resulting report without invoking a shell, loader or Python. The inspector deliberately does not parse archive files, symbol tables, relocations or full executable contents; those remain later topics. Framework tests cover fixed-header fixtures, malformed offsets, actual compiler-produced images, spaced paths and the CLI.
+
+The Bits2Banking track adds Lessons 72–76, a C23 course-catalogue static-library laboratory (separate client and tests), three SVG diagrams and Episodes 20–21. The Kernel tutorial links directly to the actual RISC-V64 bootstrap and QEMU build documentation. No existing Islam volume, historical manuscripts, source applications or site publication logic are removed. New implementation code uses C23; Assembly remains in the existing architecture-specific training files. CMake, Markdown, YAML and SVG are retained as necessary build and publication formats.
+
+**Acceptance gate:** Framework's 10 focused tests, course-catalogue laboratory's two tests, strict MkDocs rendering, and Windows UCRT64 validation of both PE image and COFF object inspection. Linux GCC and Clang tests cannot replace Windows qualification. Check that the live repository contains the update 08 sources before applying this additive batch.
+
+**Next:** extend binary inspection with explicitly bounded section summaries and test fixture corpora, then teach cross-compilation, linker scripts, symbol visibility and native packaging using existing Framework and Kernel contracts. Do not replace production services with teaching copies.

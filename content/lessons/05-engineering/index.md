@@ -50,3 +50,10 @@ Learn Git, testing, databases, networking, modular design and system administrat
 
 - [70. Check website navigation in C23](70-check-website-navigation-in-c23.md) — run read-only validation before rendering.
 - [71. Compiler diagnostics and static analysis](71-compiler-diagnostics-and-static-analysis.md) — use GCC and Clang to review C23 source.
+
+## Compilers, object files and binary interfaces
+
+- [72. From C23 source to machine code](72-source-to-machine-code.md) — observe preprocessing, Assembly, object compilation and linking.
+- [73. Build and link a reusable C23 library](73-link-one-c-library.md) — use one implementation from an application and independent tests.
+- [74. Read ELF, PE and COFF headers](74-read-elf-pe-coff-with-c23.md) — inspect binaries without executing them.
+- [75. Understand calling conventions and the stack](75-abi-stack-and-calling-conventions.md) — connect C function declarations to real processor registers.

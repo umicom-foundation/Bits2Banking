@@ -39,3 +39,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 18 — Who owns the memory? Pointers and arenas](scripts/18-where-does-the-memory-go.md)
 - [Episode 19 — Review a learning website with C23](scripts/19-review-a-c23-navigation-audit.md)
+
+## Compiler and kernel episodes
+
+- [Episode 20 — From C23 source to a linked application](scripts/20-from-c-source-to-linked-application.md) — 15–19 minutes with the course catalogue library.
+- [Episode 21 — Inside ELF, PE and Umicom Kernel](scripts/21-inside-elf-pe-and-umicom-kernel.md) — 17–22 minutes from binary headers to RISC-V first boot.
