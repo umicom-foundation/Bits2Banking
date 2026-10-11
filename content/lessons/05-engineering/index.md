@@ -22,3 +22,6 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [43. Prepare a reliable website build environment](43-prepare-a-website-build-environment.md)
 - [44. Assemble a book from Markdown using C23](44-native-book-manuscripts.md)
 - [45. How a C program starts another program](45-run-external-build-tools-safely.md)
+- [46. Diagnose a failing build tool](46-diagnose-a-failing-build-tool.md)
+- [47. Test child processes with CTest](47-test-child-processes-with-ctest.md)
+- [48. Validate a book before publishing](48-validate-a-book-before-publishing.md)

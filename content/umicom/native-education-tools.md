@@ -70,12 +70,30 @@ review manuscript. The original chapters remain untouched:
 
 ```powershell
 & $Education book list --repo $Books
+& $Education book check --repo $Books --volume islam_blueprint_for_life
 & $Education book assemble --repo $Books --volume islam_blueprint_for_life
 ```
+
+`book check` reads the original title and chapter list and verifies that
+all named source files are present. It does not create a manuscript or modify
+published content. The check accepts the existing bounded manifest subset,
+not arbitrary YAML.
 
 The generated result is `output/native-books/islam_blueprint_for_life.md`.
 A different existing result is preserved unless a deliberate `--refresh` is
 requested. Final PDF/DOCX production remains with the established book tools.
+
+On MSYS2 Windows, a child probe must reach Python as one complete command-line
+argument. The renderer now uses the whitespace-free expression
+`__import__('mkdocs');__import__('material')`. If a previous binary reported
+`SyntaxError: Expected one or more names after 'import'`, rebuild
+`umicom-education` before retrying. The old probe is preserved in a disabled
+review block in `site_renderer.c`.
+
+The [build-tool diagnostic lesson](../lessons/05-engineering/46-diagnose-a-failing-build-tool.md)
+shows how to test the project-local interpreter directly, and the
+[CTest process lesson](../lessons/05-engineering/47-test-child-processes-with-ctest.md)
+explains the regression that catches split arguments and abrupt fixture failures.
 
 Read [Prepare a reliable website build environment](../lessons/05-engineering/43-prepare-a-website-build-environment.md)
 and [Assemble a book from Markdown using C23](../lessons/05-engineering/44-native-book-manuscripts.md)

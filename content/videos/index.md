@@ -20,3 +20,4 @@ The video pages can also be read as transcripts. Published video links can be ad
 - [HTTP byte scanning in C and Assembly](scripts/07-http-scanner-assembly.md) — a 9–12 minute source walkthrough with tests.
 - [From Markdown to a working website](scripts/08-building-and-previewing-the-website.md) — a 12–16 minute build and preview demonstration.
 - [Building a book manuscript in C23](scripts/09-assembling-a-markdown-book-in-c.md) — a 15–20 minute introduction to manifest-led publishing.
+- [Find and fix a failing build boundary](scripts/10-find-and-fix-a-build-boundary.md) — a 12–15 minute demonstration of environment selection, child-process tests and local website preview.
