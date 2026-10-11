@@ -71,8 +71,12 @@ jobs:
         with:
           path: output/site
 
+  # The former deployment owner is retained for engineering review rather
+  # than removed. The same BookForge output is now included under archive/books
+  # by learning-pages.yml, which is the single GitHub Pages deployment owner.
+  # This job must not deploy independently or race with the learning website.
   deploy:
-    if: github.event_name == 'push'
+    if: false
     needs: build
     runs-on: ubuntu-latest
     environment:

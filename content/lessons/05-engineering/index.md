@@ -25,3 +25,9 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [46. Diagnose a failing build tool](46-diagnose-a-failing-build-tool.md)
 - [47. Test child processes with CTest](47-test-child-processes-with-ctest.md)
 - [48. Validate a book before publishing](48-validate-a-book-before-publishing.md)
+
+## Publish and verify the educational website
+
+- [50. Publish learning and books together](50-publish-learning-and-books-together.md)
+- [51. Verify publication in C23](51-verify-publication-in-c23.md)
+- [52. One GitHub Pages deployment](52-one-github-pages-deployment.md)

@@ -1,0 +1,120 @@
+name: Umicom Learning — Website and Book Archive
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+      - "dropzone/**"
+      - "scripts/**"
+      - "tools/**"
+      - "tests/**"
+      - "mkdocs.yml"
+      - "requirements*.txt"
+      - ".github/workflows/learning-pages.yml"
+      - ".github/workflows/books-build.yml"
+      - ".github/workflows/dropzone-build.yml"
+  pull_request:
+    paths:
+      - "content/**"
+      - "dropzone/**"
+      - "scripts/**"
+      - "tools/**"
+      - "tests/**"
+      - "mkdocs.yml"
+      - "requirements*.txt"
+      - ".github/workflows/learning-pages.yml"
+      - ".github/workflows/books-build.yml"
+      - ".github/workflows/dropzone-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only this workflow deploys GitHub Pages. Legacy BookForge workflows still
+# produce downloadable build artifacts but no longer publish separate sites.
+concurrency:
+  group: umicom-learning-github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout educational repository
+        uses: actions/checkout@v4
+
+      - name: Checkout official Umicom branding
+        uses: actions/checkout@v4
+        with:
+          repository: umicom-foundation/umicom-framework
+          path: .framework-source
+          sparse-checkout: |
+            resources/brand
+          sparse-checkout-cone-mode: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-docs.txt
+
+      - name: Install documentation dependencies
+        run: |
+          python -m pip install -r requirements.txt -r requirements-docs.txt
+          python -m pip install pytest Pillow
+          sudo apt-get update
+          sudo apt-get install -y pandoc wkhtmltopdf
+
+      - name: Prepare historical books and Framework brand
+        run: |
+          python tools/prepare_learning_site.py \
+            --brand-source .framework-source/resources/brand --refresh
+
+      - name: Validate educational files
+        run: |
+          python tools/validate_learning.py
+          python -m unittest discover -s tests -p 'test_learning_portal.py' -v
+          python -m unittest discover -s tests -p 'test_update04_structure.py' -v
+
+      - name: Build existing BookForge catalogue
+        run: python scripts/forge_all.py
+
+      - name: Build MkDocs learning website
+        run: python -m mkdocs build --strict
+
+      - name: Combine both generated sites without replacing either source
+        run: |
+          python scripts/publish_learning_portal.py assemble
+          python scripts/publish_learning_portal.py verify
+
+      - name: Upload site for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-website-preview
+          path: site/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload unified Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish the validated learning website and books
+        id: deployment
+        uses: actions/deploy-pages@v4

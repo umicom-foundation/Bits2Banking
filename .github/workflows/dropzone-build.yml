@@ -57,7 +57,11 @@ jobs:
         with:
           path: output/site
 
+  # Preserve the original legacy deployment job for review, but prevent it
+  # from racing with the complete learning website. learning-pages.yml now
+  # publishes both MkDocs and the existing BookForge output together.
   deploy:
+    if: false
     needs: build
     runs-on: ubuntu-latest
     environment:
