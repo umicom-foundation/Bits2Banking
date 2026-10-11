@@ -14,3 +14,8 @@ Explore Umicom Framework, the Kernel, Umicom OS and real application source.
 ## Visit the project repositories
 
 Read the [Umicom project repository guide](../../umicom/repositories.md) to find the Framework, Kernel, OS, Applications and Studio repositories, their source files and their own build instructions. The educational examples reference these real implementations.
+
+## Inspect real system and Framework source
+
+- [40. Boot and inspect the Umicom Kernel](40-boot-umicom-kernel.md) — freestanding RISC-V Assembly and C23 under QEMU.
+- [Prepare and run the native Umicom learning tools](../../umicom/native-education-tools.md) — inspect, build and preview the website.

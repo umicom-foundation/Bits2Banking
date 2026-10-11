@@ -1,6 +1,6 @@
 # Bits to Banking
 
-![Umicom Foundation logo](assets/branding/umicom-logo.png){: .umicom-wordmark }
+![Umicom Foundation logo](assets/branding/umicom-logo.png)
 
 Learn how computers work, how software is built, and how technology can serve people.
 
@@ -35,3 +35,7 @@ Learn [how to contribute](contributing/index.md), from a small documentation cor
 > **We Value Each Other and Together Everyone Achieves More.**
 >
 > **Service to Many Leads to Greatness.**
+
+## More technical workshops
+
+Continue through the [complete learning roadmap](roadmap.md), which links hands-on Assembly, safer C23, CMake, package management, native web servers and Umicom Kernel boot experiments. The [native Umicom education command](umicom/native-education-tools.md) can prepare and serve the published website without running a Python HTTP server.

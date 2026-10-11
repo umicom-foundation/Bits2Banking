@@ -19,7 +19,8 @@ def test_lesson_links_and_navigation():
 
 def test_all_lesson_numbers_exist():
     numbers = sorted(int(p.stem[:2]) for p in (ROOT / 'content' / 'lessons').glob('*/[0-9][0-9]-*.md'))
-    assert numbers == list(range(1, 35))
+    assert len(numbers) >= 34
+    assert numbers == list(range(1, len(numbers) + 1))
 
 
 def test_no_precompiled_java_in_labs():

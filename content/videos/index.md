@@ -8,6 +8,13 @@ The video series follows the same subjects as the written lessons. Each script i
 - [How Git keeps track of your work](scripts/02-git-and-your-first-change.md) — about 8 minutes. [Written lesson](../lessons/05-engineering/16-git.md).
 - [Understanding Umicom Framework](scripts/03-understanding-umicom-framework.md) — about 9 minutes. [Written lesson](../lessons/06-umicom/23-introducing-umicom.md).
 
-- [Service through knowledge and technology](scripts/04-service-through-technology.md) — approximately 5–7 minutes. [Faith and technology reading](../v001_islam_blueprint_for_life/faith-service-and-technology.md).
+- [Service through knowledge and technology](scripts/04-service-through-technology.md) — approximately 8–10 minutes. [Faith and technology reading](../v001_islam_blueprint_for_life/faith-service-and-technology.md).
 
 The video pages can also be read as transcripts. Published video links can be added alongside the scripts as each recording becomes available.
+
+## Build and boot episodes
+
+- [Build a web server in C](scripts/05-build-a-web-server-in-c.md) — an illustrated 18–22 minute demonstration from HTTP to local browser preview.
+- [From Assembly to Umicom Kernel](scripts/06-from-assembly-to-umicom-kernel.md) — a 20–25 minute walk through the RISC-V entry path and QEMU console.
+
+- [HTTP byte scanning in C and Assembly](scripts/07-http-scanner-assembly.md) — a 9–12 minute source walkthrough with tests.

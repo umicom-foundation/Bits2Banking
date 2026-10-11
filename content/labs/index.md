@@ -14,3 +14,9 @@ Each project below contains the editable source files used by the programming ch
 | CMake task count | [`main.c`](task-count/main.c), [`CMakeLists.txt`](task-count/CMakeLists.txt) | [Build and test](../lessons/05-engineering/18-build-and-tests.md) |
 
 The repository contains source files rather than compiled programs. Build outputs and personal data files should remain outside version control.
+
+## Native C23 laboratories
+
+The [safer C notes laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/safe-notes) introduces a bounded Notes model, separate header and implementation, CMake targets and CTest. Its source files are in the repository's `labs/native/safe-notes` directory.
+
+The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-header-scanner) compares a C23 implementation with x86-64 or RISC-V Assembly using the same test cases.

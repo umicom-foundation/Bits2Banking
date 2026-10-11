@@ -12,10 +12,13 @@ def collect_errors():
     errors = []
     chapters = sorted((CONTENT / 'lessons').glob('*/[0-9][0-9]-*.md'))
     diagrams = sorted((CONTENT / 'assets' / 'diagrams').glob('*.svg'))
-    if len(chapters) != 34:
-        errors.append(f'Expected 34 numbered lessons; found {len(chapters)}')
-    if len(diagrams) != 17:
-        errors.append(f'Expected 17 diagrams; found {len(diagrams)}')
+    if len(chapters) < 34:
+        errors.append(f'Expected at least 34 numbered lessons; found {len(chapters)}')
+    numbers = sorted(int(page.stem[:2]) for page in chapters)
+    if numbers and numbers != list(range(1, len(numbers) + 1)):
+        errors.append('Lesson numbers must be unique and continuous from 1')
+    if len(diagrams) < 17:
+        errors.append(f'Expected at least 17 diagrams; found {len(diagrams)}')
     if list(CONTENT.rglob('*.class')):
         errors.append('Compiled Java class files should not be committed as lesson source')
     for page in CONTENT.rglob('*.md'):
@@ -50,7 +53,7 @@ def main():
         for err in errors:
             print('ERROR:', err)
         return 1
-    print('Learning content validated: 34 lessons, 17 diagrams, local links and MkDocs navigation.')
+    print('Learning content validated: numbered lessons, 17 diagrams, local links and MkDocs navigation.')
     return 0
 
 

@@ -1,0 +1,79 @@
+# Build and use the Umicom native education tools
+
+Umicom Framework includes a small C23 command-line program named `umicom-education`. It prepares original Bits to Banking chapters for the website, checks required assets, builds the website with the currently supported publishing engine and serves the generated pages over local HTTP.
+
+The source belongs to Umicom Framework. It runs against the Bits2Banking repository without modifying the Framework repository or needing to copy the source into the book project.
+
+## Build on Windows
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+
+cmake -S ".\framework\tools\umicom-education" `
+      -B ".\build\umicom-education" `
+      -G Ninja `
+      -DCMAKE_C_COMPILER="C:\msys64\ucrt64\bin\gcc.exe" `
+      -DBUILD_TESTING=ON
+
+cmake --build ".\build\umicom-education" --parallel 2
+ctest --test-dir ".\build\umicom-education" --output-on-failure
+```
+
+The binary appears at `C:\umicom\Umicom-Applications\build\umicom-education\bin\umicom-education.exe`. The isolated build does not require rebuilding all Umicom applications.
+
+## Check and prepare the learning website
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
+
+$Education = ".\build\umicom-education\bin\umicom-education.exe"
+$Books = "C:\umicom\Umicom-Bits2Banking"
+
+& $Education doctor --repo $Books
+& $Education prepare --repo $Books
+& $Education verify --repo $Books
+```
+
+`prepare` publishes approved copies of ten historic Islam manuscript chapters, thirteen existing illustrations and seven official Umicom branding resources. It does not change the originals. If a published page differs from the manuscript, it prints `DIFFERENT (preserved)` instead of overwriting it. The `--refresh` option permits a deliberate replacement after the difference has been reviewed.
+
+For branding in a separate location, specify `--brand "C:\path\to\framework\resources\brand"`.
+
+## Generate and preview HTML
+
+```powershell
+& $Education build --repo $Books
+& $Education serve --repo $Books --port 8765
+```
+
+Open `http://127.0.0.1:8765/` in a web browser. Stop the preview with Ctrl+C.
+
+`build` invokes the existing MkDocs renderer and still requires Python and the packages in `requirements-docs.txt`. By contrast, `serve`, `verify` and `prepare` run as native C code without launching Python. The native preview reads the existing generated site, not Markdown source files.
+
+## Build on Linux
+
+Assuming you have checked out both projects under `~/umicom`:
+
+```bash
+cd "$HOME/umicom/Umicom-Applications"
+cmake -S framework/tools/umicom-education -B build/umicom-education -G Ninja -DBUILD_TESTING=ON
+cmake --build build/umicom-education --parallel 2
+ctest --test-dir build/umicom-education --output-on-failure
+
+./build/umicom-education/bin/umicom-education doctor --repo "$HOME/umicom/Umicom-Bits2Banking" --brand "$HOME/umicom/Umicom-Applications/framework/resources/brand"
+./build/umicom-education/bin/umicom-education prepare --repo "$HOME/umicom/Umicom-Bits2Banking" --brand "$HOME/umicom/Umicom-Applications/framework/resources/brand"
+./build/umicom-education/bin/umicom-education build --repo "$HOME/umicom/Umicom-Bits2Banking"
+./build/umicom-education/bin/umicom-education serve --repo "$HOME/umicom/Umicom-Bits2Banking" --port 8765
+```
+
+The server binds only to local IPv4 loopback. It is a development preview, not a general-purpose web host. It supports GET and HEAD, streams normal files, refuses directory listings and does not provide TLS, authentication, CGI or application APIs.
+
+## What remains in the existing toolchain
+
+The original Python BookForge, publishing scripts, PowerShell helpers, MkDocs configuration and historical manuscripts remain available. Native C does not yet create PDF/DOCX books, replace Pandoc or perform GitHub Pages deployment. Those improvements have separate acceptance milestones in the [major roadmap](../roadmap.md).
+
+## Explore the source
+
+Start with [`site.h`](https://github.com/umicom-foundation/umicom-framework/tree/main/include/umicom/education), then inspect `site_content.c` and `site_preview.c`. A website request begins in the socket listener, passes through URL and Host validation, opens one permitted file and streams its bytes. The CLI in `tools/umicom-education/main.c` only chooses which Framework service should perform the work.
+
+Next: [Build and inspect the server](../lessons/05-engineering/39-build-a-c-web-server.md).

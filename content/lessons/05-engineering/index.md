@@ -11,3 +11,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [22. Modules, interfaces and software design patterns](22-modules-and-patterns.md)
 
 [Explore the practical source files](../../labs/index.md)
+
+## Deeper build and runtime workshops
+
+- [37. CMake, compilers and build systems](37-cmake-and-build-systems.md)
+- [38. Package managers and useful C libraries](38-package-managers-and-c-libraries.md)
+- [39. Build a lightweight web server in C](39-build-a-c-web-server.md)
+- [41. Other compiled languages and interoperability](41-other-compiled-languages.md)
+- [42. HTTP byte scanning in C and Assembly](42-http-and-assembly.md)

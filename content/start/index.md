@@ -23,3 +23,7 @@ A chapter is complete when you can explain the main idea and carry out its exerc
 ## Explore purpose, faith and ethics
 
 You can also read [Islam: Blueprint for Life](../v001_islam_blueprint_for_life/index.md). It connects the Islamic understanding of purpose, responsibility and fairness with trade, modern banking and the use of technology for society. The chapters are available as a separate book, so you may begin there or with the computing lessons.
+
+## Follow the full learning roadmap
+
+The [learning roadmap](../roadmap.md) links the practical Assembly, C23, build-engineering, web-server, Kernel and cross-language workshops. Begin with the computer chapters if machine instructions or memory are unfamiliar.
