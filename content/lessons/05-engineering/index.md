@@ -104,3 +104,10 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [104. Protect task handles and service lifetimes](104-task-handles-and-service-lifetimes.md) — refuse stale handles and cancel a wait without erasing accepted work.
 - [105. Inspect a scheduling trace with C23](105-inspect-a-scheduler-trace-with-c23.md) — validate bounded binary transitions with the Framework-owned inspector.
 
+
+## Monotonic time, events and Kernel scheduling
+
+- [107. Understand monotonic clocks and checked deadlines](107-monotonic-clocks-and-checked-deadlines.md) — distinguish wall time from elapsed time, reject deadline overflow and run a deterministic C23 timer.
+- [108. Understand event signals, waits and recovery](108-event-signals-waits-and-recovery.md) — manual/auto-reset events, coalescing, lost wake-ups and cancellation.
+- [109. Build a timed Notes service in C23](109-compose-a-timed-service-wait.md) — compose the existing scheduler and logical clock without duplicating their implementations.
+- [110. Inspect a timer trace using native C23](110-inspect-a-timer-trace-in-c23.md) — read a versioned binary trace, check event keys and deadlines, and examine malformed records.

@@ -38,3 +38,7 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 
 - [106. Follow Umicom Kernel scheduling and blocked IPC](106-follow-umicom-kernel-scheduler-and-ipc.md) — read the authoritative C23 Kernel scheduler, message-channel, memory and pending-call sources.
 
+
+## Kernel timer interrupts and event ownership
+
+- [111. Follow Umicom Kernel timers and events](111-follow-umicom-kernel-timers-and-events.md) — read the real RISC-V trap Assembly, C23 user scheduler, event owner and blocking IPC source, then compare the responsibilities with the hosted learning laboratories.

@@ -80,3 +80,9 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 - [Blocking IPC service](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/blocking-ipc-lifetimes) — compose the existing message queue and scheduler, then check delivery and cancellation separately. [Lesson 103](../lessons/05-engineering/103-wait-and-wake-without-spinning.md).
 - [Native scheduling trace inspector](../lessons/05-engineering/105-inspect-a-scheduler-trace-with-c23.md) — observe a synthetic little-endian trace without running privileged tasks or claiming Kernel audit evidence.
 
+
+## Monotonic clocks, event outcomes and timed services
+
+- [Monotonic deadline model](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/monotonic-deadlines) — checked unsigned deadlines, clock ordering, due/cancel precedence and failure-atomic state. [Lesson 107](../lessons/05-engineering/107-monotonic-clocks-and-checked-deadlines.md).
+- [Timed Notes service](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/timed-service-waits) — compose the existing round-robin scheduler and logical timer; check early signal, tied timeout, cancellation and overflow. [Lesson 109](../lessons/05-engineering/109-compose-a-timed-service-wait.md).
+- [Native timer-trace inspector](../lessons/05-engineering/110-inspect-a-timer-trace-in-c23.md) — inspect synthetic event records with C23 using `umicom-education timer-trace --file`, without controlling Kernel interrupts or processes.

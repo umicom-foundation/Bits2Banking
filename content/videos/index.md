@@ -77,3 +77,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 - [Episode 32 — How the scheduler gives each task a turn](scripts/32-how-the-scheduler-gives-each-task-a-turn.md) (11–14 minutes): work through the Ready/Running/Waiting queue and generation-tagged handles.
 - [Episode 33 — Waiting for messages and closing services](scripts/33-blocking-ipc-cancellation-and-kernel-ownership.md) (12–16 minutes): build a Notes service, test a blocked receive, and read Umicom Kernel ownership contracts.
 
+
+## Timers, events and recovery episodes
+
+- [Episode 34 — Why deadlines use monotonic clocks](scripts/34-why-deadlines-use-monotonic-clocks.md) (11–14 minutes): checked arithmetic, a reproducible C23 timer and the difference between wall time and elapsed progress.
+- [Episode 35 — Event signals, timeouts and Umicom Kernel](scripts/35-event-wakeup-and-umicom-kernel.md) (15–19 minutes): service composition, cancellation, a native trace inspector and the actual RISC-V Kernel trap/scheduler source.

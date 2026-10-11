@@ -189,3 +189,37 @@ MkDocs publication and live GitHub Pages remain separate maintainer checks.
 monotonic clocks, finite timeouts, event multiplexing, cancellation ownership,
 privileged interrupt delivery and the real Umicom Kernel timer-service source.
 
+
+## Update 16 — Monotonic deadlines, event outcomes and interrupt boundaries
+
+**Framework:** Add `umicom-education timer-trace --file` with a native C23
+read-only inspector for `UMITMR1` classroom records. A strict 16-byte header
+and 32-byte records carry WAIT, SIGNAL, CANCEL and ADVANCE events. Each wait
+has a unique identity/key, optional finite deadline and checked addition.
+Monotonic ADVANCE settles due waits before subsequent signals, making the
+exact-deadline tie deterministic. Input is bounded to 4,096 records and 32
+identities. Parsing preserves caller reports on failure. The CTest pair
+includes spaced paths, malicious record cases and 20,000 deterministic
+single-byte mutations. This is neither real Kernel event evidence nor a timer
+interrupt source.
+
+**Curriculum:** Chapters 107–111 connect wall clocks versus monotonic counters,
+deadline overflow, manual/auto-reset remembered events, lost-wake hazards,
+single-owner timed service coordination, event-trace inspection and the real
+Umicom Kernel RISC-V trap/scheduler/event source. The two laboratories are
+(1) a standalone checked C23 logical timer and (2) a timed Notes service which
+*reuses* the previously delivered scheduler/timer sources. Two complete video
+narrations and three SVG diagrams support the material.
+
+**Acceptance:** 24 Framework Education CTest cases; one monotonic deadline
+laboratory case; three timed-service laboratory cases; GCC/Clang and sanitizer
+qualification; zero removed navigation targets; original Islam book chapter
+order preserved; valid SVG/XML; strict MkDocs build on the maintainer Windows
+checkout and real GitHub Pages delivery remain separate qualification steps.
+No new Python/C++/JavaScript program implementation is introduced in this
+batch. Legacy tools, book manuscripts and existing public contracts remain.
+
+**Next: Update 17 — Interrupt ownership, cancellation under failure and
+safe service recovery.** Distinguish IRQ-level mechanism from serialised C23
+policy, teach fault-safe cancellation and deterministic restoration of retained
+state, and continue checking against the authoritative Umicom Kernel source.
