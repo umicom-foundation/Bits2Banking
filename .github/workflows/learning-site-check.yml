@@ -7,6 +7,8 @@ on:
       - "mkdocs.yml"
       - "requirements-docs.txt"
       - "tools/validate_learning.py"
+      - "tools/check_mkdocs_config.py"
+      - "tests/test_mkdocs_config07.py"
       - "tools/prepare_learning_site.py"
       - "scripts/Prepare-UmicomLearningSite.ps1"
       - "dropzone/documents/islam_blueprint_for_life/**"
@@ -20,6 +22,8 @@ on:
       - "mkdocs.yml"
       - "requirements-docs.txt"
       - "tools/validate_learning.py"
+      - "tools/check_mkdocs_config.py"
+      - "tests/test_mkdocs_config07.py"
       - "tools/prepare_learning_site.py"
       - "scripts/Prepare-UmicomLearningSite.ps1"
       - "dropzone/documents/islam_blueprint_for_life/**"
@@ -54,6 +58,10 @@ jobs:
           python -m pip install pytest
       - name: Prepare preserved book chapters and Umicom brand
         run: python tools/prepare_learning_site.py --brand-source .site-brand-framework/resources/brand
+      - name: Validate MkDocs YAML and complete navigation before rendering
+        run: |
+          python tools/check_mkdocs_config.py
+          python -m pytest -q -p no:cacheprovider tests/test_mkdocs_config07.py
       - name: Check course and repository links
         run: python tools/validate_learning.py
       - name: Validate learning tests

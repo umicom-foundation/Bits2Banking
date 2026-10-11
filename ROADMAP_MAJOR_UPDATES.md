@@ -67,3 +67,10 @@ The previous Windows report confirms that `framework.education.renderer` now pas
 The final `serve` refusal in that report is a missing generated website, not a failed server test. Users must build the site first. The new native `serve --build` option explicitly builds using the same Framework renderer and then starts the read-only localhost server, with no fallback if an explicitly selected Python executable fails. A seventh native preflight test checks the missing-page diagnostic and non-launch on build failures.
 
 New source laboratories teach deep ownership, failure-atomic document edits, bounded dynamic arrays, exact minor currency units, checked arithmetic and source-linked CMake projects. The next increment should add documented allocator-injection tests, fuzzing, static analysis and cross-platform build qualification before introducing new native publishing formats.
+
+
+## Update 07 checkpoint — YAML navigation, failure injection and bounded input
+
+The previous Windows report confirmed 7/7 native education tests passed, and the owned-notes and checked-money laboratories each passed 1/1. The remaining failed website build reported a YAML configuration parse error at lines 65 and 78; the C web server correctly refused to start because no `site/index.html` had been generated. This update supplies the complete, syntax-verified MkDocs configuration; a structural checker with line-level diagnostics; and a website workflow gate that checks the configuration before expensive publishing steps. The ten original *Islam: Blueprint for Life* chapters remain in their established order.
+
+The next two C23 laboratories teach deterministic allocation failures, retained edits, bounded byte-oriented parsing and seeded adversarial tests. The laboratories are independent teaching examples; shared production memory and web services continue to belong to Umicom Framework. The next milestone is verifying the complete native website and unified GitHub Pages build against the real historical manuscripts.

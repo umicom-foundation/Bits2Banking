@@ -30,3 +30,7 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Owned Notes laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/owned-notes): C23 opaque handles, deep copies, dynamic allocations and failure-atomic edits. [Lesson 58](../lessons/03-native-code/58-memory-ownership-in-c23.md).
 - [Checked fictional accounts laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/checked-money): exact minor currency units, checked integer arithmetic, revision validation and two-record rollback-on-failure behaviour. [Lesson 59](../lessons/03-native-code/59-checked-arithmetic-and-money.md).
+## Testing failures, not only successful runs
+
+- [Allocator failure injection](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/fault-injection) — C23 deep-copy ownership and an allocator which can fail at a chosen call. [Lesson 64](../lessons/03-native-code/64-test-allocation-failures.md).
+- [Bounded HTTP request-line parsing](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-byte-parser) — parse exact byte spans, reject incomplete requests, and run deterministic malformed-input tests. [Lesson 65](../lessons/03-native-code/65-parse-bounded-http-bytes.md).

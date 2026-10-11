@@ -30,3 +30,7 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Who owns this memory? Build a Notes model in C23](scripts/14-why-memory-ownership-matters.md) — 15–18 minutes; [Lesson 58](../lessons/03-native-code/58-memory-ownership-in-c23.md).
 - [Checked arithmetic and safe website previews](scripts/15-checked-arithmetic-and-safe-preview.md) — 17–22 minutes; [Lesson 59](../lessons/03-native-code/59-checked-arithmetic-and-money.md) and [Lesson 62](../lessons/05-engineering/62-build-and-preview-the-education-site.md).
+## Website repair and reliable native programs
+
+- [Fix a broken website configuration](scripts/16-fix-the-website-configuration.md) — 11–14 minutes.
+- [Test failures before they reach users](scripts/17-test-memory-and-network-input.md) — 18–22 minutes.

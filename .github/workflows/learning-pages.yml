@@ -76,6 +76,12 @@ jobs:
           python tools/prepare_learning_site.py \
             --brand-source .framework-source/resources/brand --refresh
 
+      # Refuse malformed YAML before book tools or the deploy stages run.
+      - name: Check MkDocs configuration and chapter links
+        run: |
+          python tools/check_mkdocs_config.py
+          python -m pytest -q -p no:cacheprovider tests/test_mkdocs_config07.py
+
       - name: Validate educational files
         run: |
           python tools/validate_learning.py

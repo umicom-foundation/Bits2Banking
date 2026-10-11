@@ -22,3 +22,7 @@ Understand the relationship between source code, machine instructions and runtim
 - [58. Who owns this memory?](58-memory-ownership-in-c23.md) — build an owned Notes store, copy input text and release allocations safely.
 - [59. Checked arithmetic and fictional accounts](59-checked-arithmetic-and-money.md) — use exact pence and reject overflow before changing two training account balances.
 - [60. Find defects with tests and sanitizers](60-debugging-undefined-behaviour.md) — use compiler warnings, CTest, ASan and UBSan on supported toolchains.
+## Testing C23 programs under failure
+
+- [64. Make allocations fail on purpose](64-test-allocation-failures.md)
+- [65. Parse incoming bytes without assuming a string](65-parse-bounded-http-bytes.md)

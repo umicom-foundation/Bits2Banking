@@ -41,3 +41,7 @@ Learn Git, testing, databases, networking, modular design and system administrat
 
 - [61. Organise a C library with CMake](61-build-a-c-library-with-cmake.md) — compile an owned Notes model once and link it to a demonstration and tests.
 - [62. Build the educational website before serving it](62-build-and-preview-the-education-site.md) — generate `site/index.html`, then preview using the native C server.
+## Website configuration and adversarial testing
+
+- [63. Fix a YAML website configuration](63-repair-a-mkdocs-configuration.md)
+- [66. Reproduce parser failures with deterministic tests](66-fuzz-bytes-and-check-contracts.md)
