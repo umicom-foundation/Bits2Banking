@@ -86,3 +86,9 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 - [Monotonic deadline model](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/monotonic-deadlines) — checked unsigned deadlines, clock ordering, due/cancel precedence and failure-atomic state. [Lesson 107](../lessons/05-engineering/107-monotonic-clocks-and-checked-deadlines.md).
 - [Timed Notes service](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/timed-service-waits) — compose the existing round-robin scheduler and logical timer; check early signal, tied timeout, cancellation and overflow. [Lesson 109](../lessons/05-engineering/109-compose-a-timed-service-wait.md).
 - [Native timer-trace inspector](../lessons/05-engineering/110-inspect-a-timer-trace-in-c23.md) — inspect synthetic event records with C23 using `umicom-education timer-trace --file`, without controlling Kernel interrupts or processes.
+
+## Interrupt ownership and failure recovery
+
+- [Interrupt-ownership laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/interrupt-ownership) — a small C23 source-lease model with checked owner/generation tokens; no privileged instructions.
+- [Service-recovery laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/service-recovery) — reuse the same ownership library, retain an accepted Notes revision and explicitly retry only unfinished work.
+- [Framework C23 interrupt trace inspector](../lessons/05-engineering/115-inspect-interrupt-ownership-traces.md) — examine 20 fictional events using `umicom-education interrupt-trace --file`.

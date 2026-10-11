@@ -1,0 +1,28 @@
+# Bits2Banking | Umicom Foundation | C23 service recovery composition | MIT
+cmake_minimum_required(VERSION 3.24)
+project(Bits2BankingServiceRecovery LANGUAGES C)
+include(CTest)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../interrupt-ownership"
+    "${CMAKE_CURRENT_BINARY_DIR}/interrupt-ownership")
+add_library(btb_service_recovery STATIC recovery.c)
+target_include_directories(btb_service_recovery PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(btb_service_recovery PUBLIC btb_interrupt_owner)
+set_target_properties(btb_service_recovery PROPERTIES
+    C_STANDARD 23 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+if(MSVC)
+    target_compile_options(btb_service_recovery PRIVATE /W4)
+else()
+    target_compile_options(btb_service_recovery PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+endif()
+add_executable(btb-service-recovery main.c)
+add_executable(btb-service-recovery-test test_recovery.c)
+foreach(target IN ITEMS btb-service-recovery btb-service-recovery-test)
+    target_link_libraries(${target} PRIVATE btb_service_recovery)
+    set_target_properties(${target} PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+endforeach()
+if(BUILD_TESTING)
+    add_test(NAME bits2banking.service_recovery.demo COMMAND btb-service-recovery)
+    add_test(NAME bits2banking.service_recovery.contracts COMMAND btb-service-recovery-test)
+    set_tests_properties(bits2banking.service_recovery.demo bits2banking.service_recovery.contracts
+        PROPERTIES LABELS "education;service;recovery;c23")
+endif()

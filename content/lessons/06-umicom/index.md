@@ -42,3 +42,7 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## Kernel timer interrupts and event ownership
 
 - [111. Follow Umicom Kernel timers and events](111-follow-umicom-kernel-timers-and-events.md) — read the real RISC-V trap Assembly, C23 user scheduler, event owner and blocking IPC source, then compare the responsibilities with the hosted learning laboratories.
+
+## Interrupt ownership and service recovery
+
+- [116. Read Umicom Kernel interrupt ownership and recovery](116-read-umicom-kernel-interrupt-and-recovery.md) — follow `kernel/interrupts.c`, the RISC-V trap boundary, fault policy and cancellation ownership. Keep the classroom source-trace format separate from a real Kernel event log.

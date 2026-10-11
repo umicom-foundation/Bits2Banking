@@ -223,3 +223,13 @@ batch. Legacy tools, book manuscripts and existing public contracts remain.
 safe service recovery.** Distinguish IRQ-level mechanism from serialised C23
 policy, teach fault-safe cancellation and deterministic restoration of retained
 state, and continue checking against the authoritative Umicom Kernel source.
+
+## Update 17 — Interrupt ownership, cancellation and reviewed recovery
+
+**Framework:** Introduce `umicom-education interrupt-trace --file`, a read-only native C23 validator for the fictional `UMIIRQ1` source-ownership record format. The 16-byte header and 32-byte records describe CLAIM, ARM, ENTER, ACK, RETURN, CANCEL, FAULT, RECOVER and RELEASE. The parser bounds source identities, records and file size, checks a nondecreasing logical clock, refuses owner or generation mismatch and preserves the caller's report after a malformed record. Fault review is a simulation, not machine-state restoration. Two CTest cases cover an authentic fixed fixture path with spaces, strict byte validation, refused state transitions and 20,000 deterministic single-byte mutations. No real Kernel CSR or source is touched.
+
+**Curriculum:** Chapters 112–116 explain hardware interrupts, critical-section nesting, source lease ownership, acknowledgement versus cancellation, explicit service recovery, native binary trace validation and the actual `kernel/interrupts.c`, `kernel/trap_guard.c` and `arch/riscv64/trap.S` source. Two C23 laboratories model source-lease contracts and compose them into a fictional Notes service with an in-memory checkpoint. The second laboratory reuses the same source implementation without copying it. Video episodes 36–37 and three editable SVG diagrams accompany the lessons.
+
+**Acceptance:** 26 Framework Education CTest cases, two CTest cases per new laboratory, GCC C23 and Clang ASan/UBSan qualification, preserved existing navigation and Islam volume manuscripts, validated SVG diagrams and local reviewer build of the complete MkDocs website. Linux acceptance does not imply Windows UCRT64 or QEMU acceptance. No Python/C++/JavaScript implementation code is added by this update; existing publishing infrastructure and other-language educational material remain intact.
+
+**Next: Update 18 — Interrupt diagnostics, driver lifetimes and retained evidence.** Extend learning into reviewable stop/restart diagnostics, bounded service snapshots and safely published device events. The native educational models must stay distinct from the authoritative Kernel and Framework services.

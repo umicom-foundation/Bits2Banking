@@ -242,3 +242,17 @@ For the format, full build steps and interpretive examples, see
 [Lesson 110](../lessons/05-engineering/110-inspect-a-timer-trace-in-c23.md).
 Use the [Umicom Kernel timer and events guides](https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/TIMER_DRIVEN_USER_SCHEDULING.md)
 for real privileged execution and event ownership.
+
+## Inspect interrupt-source ownership (Update 17)
+
+The new `interrupt-trace` command checks one explicitly versioned classroom trace. It rejects a wrong owner, stale generation, impossible acknowledgement, cancellation after ENTER, release during a fault and malformed or oversized records. All parsing is native C23, read-only and separate from real Umicom Kernel privileged interrupt control.
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
+$Education = ".\build\umicom-education\bin\umicom-education.exe"
+ctest --test-dir ".\build\umicom-education" -R "framework\.education\.interrupt_trace" --output-on-failure
+& $Education interrupt-trace --file `
+    ".\build\umicom-education\education-interrupt-trace-test\fixture with spaces\owned interrupt.irq"
+```
+
+CTest produces the fictional file before the CLI consumer through a fixture dependency. See [Lesson 115](../lessons/05-engineering/115-inspect-interrupt-ownership-traces.md) and the actual [Umicom Kernel interrupt ownership guide](https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/INTERRUPT_OWNERSHIP.md).

@@ -82,3 +82,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 34 — Why deadlines use monotonic clocks](scripts/34-why-deadlines-use-monotonic-clocks.md) (11–14 minutes): checked arithmetic, a reproducible C23 timer and the difference between wall time and elapsed progress.
 - [Episode 35 — Event signals, timeouts and Umicom Kernel](scripts/35-event-wakeup-and-umicom-kernel.md) (15–19 minutes): service composition, cancellation, a native trace inspector and the actual RISC-V Kernel trap/scheduler source.
+
+## Interrupt ownership and recovery videos
+
+- [Episode 36 — Who owns a hardware interrupt?](scripts/36-who-owns-a-hardware-interrupt.md) (13–17 minutes): source leases, masking, critical sections and actual Umicom Kernel contracts.
+- [Episode 37 — Recover a service and inspect interrupt traces](scripts/37-recover-a-service-and-inspect-interrupt-traces.md) (14–18 minutes): accepted Notes revisions, explicitly reviewed retry, safe byte parsing and Kernel source boundaries.

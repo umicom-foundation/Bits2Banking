@@ -111,3 +111,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [108. Understand event signals, waits and recovery](108-event-signals-waits-and-recovery.md) — manual/auto-reset events, coalescing, lost wake-ups and cancellation.
 - [109. Build a timed Notes service in C23](109-compose-a-timed-service-wait.md) — compose the existing scheduler and logical clock without duplicating their implementations.
 - [110. Inspect a timer trace using native C23](110-inspect-a-timer-trace-in-c23.md) — read a versioned binary trace, check event keys and deadlines, and examine malformed records.
+
+## Interrupt ownership and safe recovery
+
+- [112. Who owns an interrupt? Critical sections and leases](112-interrupt-ownership-and-critical-sections.md) — discover how a privileged source can have one owner and a checked lifetime.
+- [113. Cancellation is not acknowledgement](113-cancellation-is-not-acknowledgement.md) — distinguish cancelling future work from completing accepted events.
+- [114. Restore a service after a failure](114-restore-a-service-after-failure.md) — compose one reusable C23 ownership model with an explicit in-memory revision checkpoint.
+- [115. Inspect interrupt ownership traces](115-inspect-interrupt-ownership-traces.md) — decode a bounded binary source trace with a Framework-owned read-only C23 command.
+- [116. Follow the real Umicom Kernel interrupt source](../06-umicom/116-read-umicom-kernel-interrupt-and-recovery.md) — read the actual RISC-V Assembly and C23 authority checks.
