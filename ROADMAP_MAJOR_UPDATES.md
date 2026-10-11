@@ -137,3 +137,13 @@ Bits2Banking adds Lessons 82–86, the C23/Assembly `linker-relocations` laborat
 **Acceptance:** 18 standalone Umicom Education CTest cases, two tests in each new laboratory, no lost MkDocs navigation targets or original Islam chapters, valid SVG source and strict MkDocs website generation on the maintainer's Windows checkout. GCC and Clang ASan/UBSan are development checks; the native Windows build, final hosted site and GitHub Pages must be separately qualified.
 
 **Next: Update 14 — System calls, IPC and message ownership.** Explain protected user/kernel service boundaries and supervised communication with C23 models, then connect those lessons to actual Umicom Kernel channels, user services and Framework messaging. Preserve legacy publishing and all established public interfaces.
+
+## Update 14 — System calls, IPC and message ownership
+
+**Framework:** Add a read-only C23 `umicom-education ipc-trace --file` inspector for the explicit `UMIIPC1` teaching format. The inspector validates little-endian headers, one-based record ordinals, bounded payload lengths, sender/recipient identities, FIFO receive order and a 64-message pending limit. It rejects malformed input and leaves its report unchanged on failure. It does not use kernel IPC, map memory, grant rights or execute a syscall. No existing Framework message service is replaced.
+
+**Curriculum:** Lessons 97–101 connect ordinary C function calls, RISC-V environment calls, protected user/kernel boundaries, copied payload ownership, service request checks, trace inspection and actual Umicom Kernel IPC source. A bounded-channel laboratory and service-dispatch laboratory remain single-threaded, hosted C23 simulations. RISC-V `ecall` Assembly is source-reading material, not a runnable Kernel ABI wrapper. Videos 30–31 and three source-editable diagrams accompany the lessons.
+
+**Acceptance:** 20 native Framework CTest cases, two cases per new laboratory, no loss of any of the previous 158 navigation entries, preserved original *Islam: Blueprint for Life* volume, valid diagrams and a strict MkDocs build. Linux GCC/Clang and sanitizer tests do not replace Windows UCRT64 acceptance. The synthetic trace report does not constitute evidence of actual RISC-V Kernel execution or GitHub deployment.
+
+**Next: Update 15 — Process scheduling, wake-ups and bounded service lifetimes.** Teach why a blocked task is not runnable, how a service avoids lost notifications, and how message handles remain valid or become stale. Link to the existing Kernel scheduler and blocking IPC rather than inventing another production queue.
