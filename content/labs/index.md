@@ -44,3 +44,8 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Course catalogue static-library laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/course-catalogue-library) — build a C23 static library, link it into an application and test, inspect its symbols, and diagnose an intentionally missing library. [Lessons 72–73](../lessons/05-engineering/72-source-to-machine-code.md).
 - [Native ELF/PE/COFF inspection](../lessons/05-engineering/74-read-elf-pe-coff-with-c23.md) — run the Framework-owned `umicom-education binary --file` command against an executable, object file or Umicom Kernel image.
+
+## Native archives, linker maps and target architectures
+
+- [Static library and linker map](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/static-library-map) — compile a fictional C23 ledger library, test exact pence arithmetic, read the archive with `umicom-education archive`, follow a linker map and install privately. [Lessons 77–79](../lessons/05-engineering/77-understand-static-archives.md).
+- [Cross-target object compilation](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/cross-target-object) — compare host objects with RISC-V64 ELF objects and inspect one privileged Assembly instruction without running it. [Lesson 80](../lessons/05-engineering/80-cross-compile-c23-riscv64.md).

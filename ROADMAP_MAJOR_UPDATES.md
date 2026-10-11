@@ -92,3 +92,11 @@ The Bits2Banking track adds Lessons 72–76, a C23 course-catalogue static-libra
 **Acceptance gate:** Framework's 10 focused tests, course-catalogue laboratory's two tests, strict MkDocs rendering, and Windows UCRT64 validation of both PE image and COFF object inspection. Linux GCC and Clang tests cannot replace Windows qualification. Check that the live repository contains the update 08 sources before applying this additive batch.
 
 **Next:** extend binary inspection with explicitly bounded section summaries and test fixture corpora, then teach cross-compilation, linker scripts, symbol visibility and native packaging using existing Framework and Kernel contracts. Do not replace production services with teaching copies.
+
+## Update 10 checkpoint — native archive inspection and cross-target build laboratories
+
+This update adds a standalone Framework-owned C23 `umicom-education archive --file` command for reading ordinary GNU/BSD `ar` static-library members without extraction or execution. It recognises short names, GNU string-table references and BSD embedded names; refuses thin archives and malformed sizes; preserves the report on failure; and uses only bounded standard-C file I/O. The education tool has two additional CTest cases: the native parser and a real compiler-generated archive.
+
+The educational track now includes Lessons 77–81, a static-library and linker-map laboratory, a compile-only Clang RISC-V64 laboratory, editable diagrams and Videos 22–23. The new build teaching material uses C23 and target-specific Assembly; CMake, Markdown and SVG serve their necessary build/documentation roles. No additional interpreted application is introduced.
+
+Windows UCRT64 and complete MkDocs acceptance remain host checks, not claimed results of Linux testing. The existing original books, Volume 1 Islam chapters and publishing workflows remain intact. The next milestone should add deeper C23 linker and target-ABI introspection only where reusable, and strengthen site/build release qualification before claiming production status. Native PDF/DOCX rendering has not been replaced.

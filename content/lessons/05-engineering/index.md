@@ -57,3 +57,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [73. Build and link a reusable C23 library](73-link-one-c-library.md) — use one implementation from an application and independent tests.
 - [74. Read ELF, PE and COFF headers](74-read-elf-pe-coff-with-c23.md) — inspect binaries without executing them.
 - [75. Understand calling conventions and the stack](75-abi-stack-and-calling-conventions.md) — connect C function declarations to real processor registers.
+
+## Native linking, archives and cross-compilation
+
+- [77. Understand static libraries and archive files](77-understand-static-archives.md) — inspect real `.a` files without executing them.
+- [78. Understand public symbols and linker maps](78-symbol-visibility-and-linker-map.md) — trace a function from a C header to a selected object.
+- [79. Relocations, sections and position-independent code](79-relocations-and-position-independent-code.md) — understand unresolved addresses and native section layout.
+- [80. Cross-compile C23 and Assembly for RISC-V64](80-cross-compile-c23-riscv64.md) — compile objects without running foreign instructions.
+- [81. Install and package a native C23 programme](81-install-and-package-a-native-c-program.md) — install a library, header and executable into a private location.

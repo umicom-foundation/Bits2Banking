@@ -44,3 +44,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 20 — From C23 source to a linked application](scripts/20-from-c-source-to-linked-application.md) — 15–19 minutes with the course catalogue library.
 - [Episode 21 — Inside ELF, PE and Umicom Kernel](scripts/21-inside-elf-pe-and-umicom-kernel.md) — 17–22 minutes from binary headers to RISC-V first boot.
+
+## Native build and cross-compilation episodes
+
+- [Episode 22 — Build a C23 library and read the linker map](scripts/22-build-a-static-library-and-read-the-linker-map.md) — approximately 12–16 minutes; [Lessons 77–78](../lessons/05-engineering/77-understand-static-archives.md).
+- [Episode 23 — Cross-compile C23 and RISC-V64 Assembly](scripts/23-cross-compile-c23-and-riscv64-assembly.md) — approximately 11–15 minutes; [Lesson 80](../lessons/05-engineering/80-cross-compile-c23-riscv64.md).
