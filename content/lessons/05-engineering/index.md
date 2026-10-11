@@ -96,3 +96,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [98. Build a copied-message channel](98-build-a-copied-message-channel.md) develops a bounded FIFO queue in C23 with explicit ownership and no partial delivery.
 - [99. Inspect an IPC trace](99-inspect-an-ipc-trace-with-c23.md) reads a versioned byte format and tests record order, capacity and truncation through a Framework-owned C23 inspector.
 - [100. Design checked service requests](100-design-checked-service-requests.md) implements a hosted service dispatcher with permissions, revision checks and failure-atomic updates.
+
+## Scheduling and blocking service requests
+
+- [102. How the scheduler gives each task a turn](102-understand-round-robin-scheduling.md) — distinguish Ready, Running and Waiting using one C23 queue.
+- [103. Wait and wake without busy-spinning](103-wait-and-wake-without-spinning.md) — build a Notes service that waits for copied messages.
+- [104. Protect task handles and service lifetimes](104-task-handles-and-service-lifetimes.md) — refuse stale handles and cancel a wait without erasing accepted work.
+- [105. Inspect a scheduling trace with C23](105-inspect-a-scheduler-trace-with-c23.md) — validate bounded binary transitions with the Framework-owned inspector.
+

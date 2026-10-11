@@ -71,3 +71,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 30 — From a Notes event to a copied IPC message](scripts/30-from-a-notes-event-to-a-copied-ipc-message.md) (9–12 minutes): copy ownership, recipient refusal and a bounded C23 channel.
 - [Episode 31 — System calls, IPC traces and Kernel ownership](scripts/31-system-calls-ipc-traces-and-kernel-ownership.md) (10–13 minutes): request validation, read-only traces, and actual Umicom Kernel source.
+
+## Scheduling, blocking IPC and kernel ownership episodes
+
+- [Episode 32 — How the scheduler gives each task a turn](scripts/32-how-the-scheduler-gives-each-task-a-turn.md) (11–14 minutes): work through the Ready/Running/Waiting queue and generation-tagged handles.
+- [Episode 33 — Waiting for messages and closing services](scripts/33-blocking-ipc-cancellation-and-kernel-ownership.md) (12–16 minutes): build a Notes service, test a blocked receive, and read Umicom Kernel ownership contracts.
+

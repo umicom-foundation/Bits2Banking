@@ -33,3 +33,8 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## IPC and system-service ownership
 
 - [101. Follow IPC ownership through Umicom Kernel](101-follow-umicom-kernel-ipc-ownership.md) connects the classroom channel and dispatcher to the actual Kernel message domain, syscall service, user-memory checking and blocked IPC tasks.
+
+## Scheduler, blocking IPC and user-memory contracts
+
+- [106. Follow Umicom Kernel scheduling and blocked IPC](106-follow-umicom-kernel-scheduler-and-ipc.md) — read the authoritative C23 Kernel scheduler, message-channel, memory and pending-call sources.
+

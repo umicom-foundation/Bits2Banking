@@ -73,3 +73,10 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 - [Copied-message channel](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/bounded-channel) — a bounded C23 FIFO with recipient checks, complete copied payloads and deterministic capacity failures. [Lesson 98](../lessons/05-engineering/98-build-a-copied-message-channel.md).
 - [Checked service-request dispatcher](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/syscall-dispatch) — read a training clock, validate publishing rights and refuse stale versions before changing state. [Lesson 100](../lessons/05-engineering/100-design-checked-service-requests.md).
 - [Framework IPC trace inspector](../lessons/05-engineering/99-inspect-an-ipc-trace-with-c23.md) — examine synthetic SEND/RECEIVE records using `umicom-education ipc-trace --file`, without real IPC.
+
+## Scheduling, blocking IPC and service lifetimes
+
+- [Round-robin scheduler](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/round-robin-scheduler) — a FIFO ready ring with waiting, waking, task generations and two automated tests. [Lesson 102](../lessons/05-engineering/102-understand-round-robin-scheduling.md).
+- [Blocking IPC service](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/blocking-ipc-lifetimes) — compose the existing message queue and scheduler, then check delivery and cancellation separately. [Lesson 103](../lessons/05-engineering/103-wait-and-wake-without-spinning.md).
+- [Native scheduling trace inspector](../lessons/05-engineering/105-inspect-a-scheduler-trace-with-c23.md) — observe a synthetic little-endian trace without running privileged tasks or claiming Kernel audit evidence.
+

@@ -27,6 +27,11 @@ A completed major update must provide learner-facing material, a reproducible pr
 | 17 | Video and learning media | 5–30 minute scripts, demonstrations, diagrams, transcripts, subtitles, accessible downloads | Every published video references a stable lesson and executable lab; scripts are version-controlled |
 | 18 | Interactive learning, localisation and contributor path | Quizzes, feedback, exercises, mentor guidance, localisation, publishing QA, linked source revision | Clear first contribution from fork to reviewed PR; progress evidence and updated translations |
 
+The numbered rows above are the original thematic programme plan. The later
+"Update XX" checkpoints record actual integration batches as they are delivered;
+the two sequences are not necessarily one-to-one. An integration batch can
+advance several subjects while earlier programme stages remain open.
+
 ## Native migration: what is and is not replaced
 
 The C23 utility provides native `doctor`, `prepare`, `verify`, `book list`, `book assemble` and read-only `serve`. `build` chooses an interpreter with MkDocs and Material (preferring the repository's `.venv`) before invoking MkDocs as a child, so Python and MkDocs remain required for generating the website. Existing Python, PowerShell, BookForge, Pandoc and book-output scripts are preserved for comparison. PDF/DOCX creation is not yet implemented in C. No command publishes a website or pushes to Git automatically.
@@ -147,3 +152,40 @@ Bits2Banking adds Lessons 82–86, the C23/Assembly `linker-relocations` laborat
 **Acceptance:** 20 native Framework CTest cases, two cases per new laboratory, no loss of any of the previous 158 navigation entries, preserved original *Islam: Blueprint for Life* volume, valid diagrams and a strict MkDocs build. Linux GCC/Clang and sanitizer tests do not replace Windows UCRT64 acceptance. The synthetic trace report does not constitute evidence of actual RISC-V Kernel execution or GitHub deployment.
 
 **Next: Update 15 — Process scheduling, wake-ups and bounded service lifetimes.** Teach why a blocked task is not runnable, how a service avoids lost notifications, and how message handles remain valid or become stale. Link to the existing Kernel scheduler and blocking IPC rather than inventing another production queue.
+
+## Update 15 — Process scheduling, blocked IPC and service lifetimes
+
+**Framework:** Introduce a native read-only `umicom-education schedule-trace --file`
+inspector for an explicitly versioned `UMISCH1` classroom format. The C23 parser
+accepts at most 4,096 fixed-size records and 32 distinct task identities,
+validates monotonic logical ticks, FIFO ready order, Running/Waiting transitions,
+matching wait/wake/cancellation keys, and preserves the report after failed
+validation. Two regression tests cover synthetic spaced paths, corrupt headers,
+invalid state transitions and 20,000 deterministic one-byte mutations. This
+teaching trace is not a real kernel trace, and it does not schedule threads.
+
+**Curriculum:** Lessons 102–106 cover cooperative round-robin selection, blocked
+receivers, lost-wake races, generation-tagged task handles, resource lifetime,
+a bounded scheduler trace and the actual Umicom Kernel user scheduler/IPC source.
+Two C23 laboratories demonstrate (1) a ready/waiting state machine and (2) a
+service that composes the already-existing bounded-channel and scheduling labs.
+Videos 32–33 and three editable technical diagrams accompany the lessons.
+
+**Compatibility:** This update adds one Framework inspector and CLI command,
+without replacing any existing Framework service or Umicom Kernel code. It
+preserves previous educational chapters, video scripts and all ten original
+*Islam: Blueprint for Life* navigation entries and manuscripts. Other-language
+publishing infrastructure remains intact; the newly delivered programming
+implementations use C23 only. CMake, MkDocs YAML, Markdown and SVG are retained
+as necessary build and documentation formats.
+
+**Acceptance:** 22 CTest cases in the standalone native Umicom Education project;
+two cases each in the round-robin and blocking-IPC laboratories; strict C23
+warnings and Clang sanitizer qualification; parseable MkDocs YAML, cumulative
+navigation and diagram validation. Windows UCRT64, the complete historical
+MkDocs publication and live GitHub Pages remain separate maintainer checks.
+
+**Next: Update 16 — Timer-driven scheduling, bounded events and recovery.** Study
+monotonic clocks, finite timeouts, event multiplexing, cancellation ownership,
+privileged interrupt delivery and the real Umicom Kernel timer-service source.
+
