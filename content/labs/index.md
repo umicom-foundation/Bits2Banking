@@ -53,3 +53,10 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 ## Linker symbols and C23/Assembly ABI
 
 - [C23 and Assembly linker-relocations laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/linker-relocations) — build one public C23 API and an ABI-specific Assembly leaf function; test overflow contracts and inspect native object symbols. [Lessons 82–86](../lessons/05-engineering/82-inspect-elf-symbols-in-c23.md).
+
+
+## Kernel memory foundations (C23, without privileged execution)
+
+- [Physical frame pool](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/physical-frame-pool): protect boot-reserved frames, allocate the lowest free frame and refuse invalid releases. [Chapter 88](../lessons/05-engineering/88-physical-pages-and-frame-ownership.md).
+- [Sv39 virtual-address translation](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/sv39-address-translation): walk three 512-entry tables, preserve the 12-bit offset and enforce R/W/X permissions. [Chapter 89](../lessons/05-engineering/89-sv39-virtual-address-translation.md).
+- [ELF PT_LOAD inspection](../lessons/05-engineering/87-read-elf-program-headers-and-load-plan.md): use Framework's read-only C23 `umicom-education load-plan` command and portable synthetic RISC-V64 fixture.

@@ -54,3 +54,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 24 — Where does the linker find a function?](scripts/24-where-does-the-linker-find-a-function.md) — approximately 16–20 minutes, showing C23/Assembly compilation, symbols, relocations and linker failures.
 - [Episode 25 — Inspect ELF symbols and understand a kernel memory layout](scripts/25-elf-symbols-and-umicom-kernel-memory.md) — approximately 17–22 minutes, connecting defensive ELF parsing to Umicom Kernel bootstrap and sections.
+
+
+## Memory management and kernel development
+
+- [Episode 26 — From an ELF File to a Memory Layout](scripts/26-from-elf-file-to-running-address-space.md) (11–14 minutes): programme headers, zero fill and physical frame ownership.
+- [Episode 27 — Virtual Memory, Sv39 and Umicom Kernel](scripts/27-sv39-virtual-memory-and-umicom-kernel.md) (14–18 minutes): page tables, permissions, kernel source and hardware qualification.

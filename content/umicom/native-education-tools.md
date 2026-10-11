@@ -143,3 +143,34 @@ $Python = "$Books\.venv\Scripts\python.exe"
 `--build` invokes the existing MkDocs adapter before opening the native preview server. It is an opt-in operation: an ordinary `serve` command stays read-only. If MkDocs fails, the HTTP server does not start. The `--directory` option is reserved for an existing export and cannot be combined with `--build`.
 
 Read [Build the website before serving it](../lessons/05-engineering/62-build-and-preview-the-education-site.md) for the full guided exercise.
+
+## Inspect ELF programme headers without loading a programme
+
+After rebuilding Framework Education for Update 12, you can inspect an
+ELF executable or Umicom Kernel image using a read-only command:
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
+$Education = ".\build\umicom-education\bin\umicom-education.exe"
+
+ctest --test-dir ".\build\umicom-education" `
+  -R "^framework\.education\.(elf_load_plan|load_plan\.cli)$" -V
+
+& $Education load-plan --file `
+  ".\build\umicom-education\education-load-plan-test\fixture with spaces\umicom kernel.elf"
+```
+
+The report identifies ELF programme headers of type `PT_LOAD`, their file
+ranges, their virtual-memory ranges, permissions and the number of bytes that
+would need zero-initialisation. It checks the entry point, rejects overlapping
+regions and refuses malformed offsets. It does not execute the inspected file,
+create processes or activate an MMU. The fixture is a synthetic example, not a
+bootable kernel.
+
+The parser is implemented in the shared Framework files
+`include/umicom/education/elf_load_plan.h` and
+`src/education/elf_load_plan.c`. Its tests are in
+`tests/education/test_elf_load_plan.c`.
+
+Continue with [Chapter 87: ELF load plans](../lessons/05-engineering/87-read-elf-program-headers-and-load-plan.md)
+and [Chapter 91: Follow the Umicom Kernel](../lessons/06-umicom/91-follow-umicom-kernel-memory-source.md).

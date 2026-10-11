@@ -112,3 +112,18 @@ Bits2Banking adds Lessons 82–86, the C23/Assembly `linker-relocations` laborat
 **Qualification boundary:** Linux GCC and Clang sanitizer validation is development evidence. Windows UCRT64 compilation, complete strict MkDocs rendering with historical book assets, and the live GitHub Pages workflow still need explicit user-host acceptance. Do not infer their success from portable C tests.
 
 **Next proposed checkpoint:** inspect relocation entries beyond aggregate counts, explore symbol-version and dynamic-linker boundaries, build a C23 linker-map reader where justified, and teach the first Umicom Kernel memory-translation mechanisms from their actual RISC-V source. Preserve the original application services and books.
+
+
+## Update 12 — ELF Load Plans, Frame Ownership and Sv39
+
+**Status:** Source delivery for host qualification (October 2026). This update does not assert that the Umicom Kernel or OS can launch arbitrary ELF user programmes.
+
+- Extend Framework Education's read-only native ELF inspection with validated ELF32/ELF64 PT_LOAD programme headers, file-backed byte ranges, memory byte ranges, file/memory alignment, R/W/X flags and entry-point containment.
+- Preserve the existing `binary`, `archive` and `symbols` commands. Add independent `load-plan` tests that construct a synthetic RISC-V64 ELF image in a path containing spaces. Exercise malformed values and 12,000 deterministic header mutations.
+- Build a C23 physical-frame-ownership laboratory covering reservations, exhaustion, double-release protection and failure atomicity.
+- Build a separate C23 Sv39 software page-walk laboratory covering canonical addresses, 4 KiB pages, VPN[2:0] and R/W/X. This is a learning simulation, not the actual kernel or a replacement for Umicom Framework.
+- Publish Chapters 87–91, diagrams and Videos 26–27. Refer to the authoritative `umicom-kernel` sources and original *Islam: Blueprint for Life* without changing historical manuscripts.
+
+**Acceptance gates:** 16 Framework Education CTest cases; two tests per new laboratory; strict YAML parsing; no lost MkDocs navigation entries; same test results under GCC and Clang with sanitizers where supported; Windows UCRT64 and the complete MkDocs site must be verified by the maintainer. Do not mark QEMU or GitHub Pages deployed without separate evidence.
+
+**Next: Update 13 — Process creation, page faults and executable-memory protections.** Study loader policy, guarded process address spaces and RISC-V privilege transitions through small C23/Assembly exercises and actual Umicom Kernel code. Continue keeping live-kernel responsibilities in the Kernel repository and reusable hosted functionality in Framework.

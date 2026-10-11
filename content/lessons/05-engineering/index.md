@@ -73,3 +73,12 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [84. Understand sections and linker scripts](84-read-sections-and-linker-scripts.md) — examine `.text`, `.rodata`, `.data`, `.bss` and the actual Umicom Kernel boot path.
 - [85. Check cross-compilation and the ABI](85-cross-compilation-and-abi-checks.md) — distinguish host and target, ELF and COFF, and calling conventions.
 - [86. Test native binary-file readers](86-test-native-binary-boundaries.md) — reject malformed offsets, preserve reports after failure and use adversarial tests.
+
+
+## ELF loading, physical memory and virtual addresses
+
+- [87. From an ELF file to a memory-loading plan](87-read-elf-program-headers-and-load-plan.md) — read loadable segments without executing the file.
+- [88. Allocate and protect physical memory pages](88-physical-pages-and-frame-ownership.md) — track free, reserved and allocated 4 KiB frames.
+- [89. Translate a virtual address with RISC-V Sv39](89-sv39-virtual-address-translation.md) — follow three page-table indices to a physical frame.
+- [90. Page permissions, privilege and faults](90-memory-permissions-traps-and-privilege.md) — understand R/W/X and why invalid accesses are refused.
+- [91. Follow actual Umicom Kernel memory source](../06-umicom/91-follow-umicom-kernel-memory-source.md) — compare the classroom exercises with the original RISC-V Kernel.
