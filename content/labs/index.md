@@ -34,3 +34,8 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Allocator failure injection](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/fault-injection) — C23 deep-copy ownership and an allocator which can fail at a chosen call. [Lesson 64](../lessons/03-native-code/64-test-allocation-failures.md).
 - [Bounded HTTP request-line parsing](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-byte-parser) — parse exact byte spans, reject incomplete requests, and run deterministic malformed-input tests. [Lesson 65](../lessons/03-native-code/65-parse-bounded-http-bytes.md).
+
+## Pointers, arenas and defensive parsing
+
+- [Arena Allocator laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/arena-allocator) — construct a temporary Notes report with checked alignment and checkpoints. [Lesson 68](../lessons/03-native-code/68-arenas-and-checkpoints.md).
+- [Bounded ledger-line laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/bounded-ledger-line) — decode exact bytes, detect integer overflow and fuzz malformed fictional records. [Lesson 69](../lessons/03-native-code/69-bounded-byte-slices.md).

@@ -74,3 +74,11 @@ New source laboratories teach deep ownership, failure-atomic document edits, bou
 The previous Windows report confirmed 7/7 native education tests passed, and the owned-notes and checked-money laboratories each passed 1/1. The remaining failed website build reported a YAML configuration parse error at lines 65 and 78; the C web server correctly refused to start because no `site/index.html` had been generated. This update supplies the complete, syntax-verified MkDocs configuration; a structural checker with line-level diagnostics; and a website workflow gate that checks the configuration before expensive publishing steps. The ten original *Islam: Blueprint for Life* chapters remain in their established order.
 
 The next two C23 laboratories teach deterministic allocation failures, retained edits, bounded byte-oriented parsing and seeded adversarial tests. The laboratories are independent teaching examples; shared production memory and web services continue to belong to Umicom Framework. The next milestone is verifying the complete native website and unified GitHub Pages build against the real historical manuscripts.
+
+## Delivery checkpoint — Major Update 08: native checks and low-level C23
+
+The Framework-owned Umicom Education tool gains a read-only `audit --repo` navigation-target checker written in C23. It checks missing, repeated and unsafe local `.md` references; it is not a replacement for complete YAML validation in MkDocs. The existing `build` and `serve --build` commands remain unchanged.
+
+The educational track adds chapters 67–71, two C23-only laboratories for arena allocation and bounded fictional ledger messages, and two narrated video scripts. The laboratories use CMake as build metadata, and the website retains Markdown and YAML because these are required by the existing publishing system. No new Python, PowerShell, C++, PHP or JavaScript application source is introduced.
+
+**Release gate:** standalone Framework education tests including `framework.education.navigation_audit`, both new C23 laboratory suites, complete original-book navigation, and a strict MkDocs site build on Windows. A native audit pass does not by itself qualify the published website.

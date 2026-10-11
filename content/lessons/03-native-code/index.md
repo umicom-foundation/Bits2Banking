@@ -26,3 +26,9 @@ Understand the relationship between source code, machine instructions and runtim
 
 - [64. Make allocations fail on purpose](64-test-allocation-failures.md)
 - [65. Parse incoming bytes without assuming a string](65-parse-bounded-http-bytes.md)
+
+## Continue learning: pointers, arenas and bounded bytes
+
+- [67. Pointers and borrowed memory](67-pointers-and-borrowed-memory.md) — understand addresses, owners, borrowers and lifetimes.
+- [68. Arenas and checkpoints](68-arenas-and-checkpoints.md) — build temporary Notes reports in a bounded workspace.
+- [69. Bounded byte slices](69-bounded-byte-slices.md) — parse a fictional ledger update without trusting a C string.

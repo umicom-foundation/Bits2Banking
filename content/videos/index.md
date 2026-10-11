@@ -34,3 +34,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Fix a broken website configuration](scripts/16-fix-the-website-configuration.md) — 11–14 minutes.
 - [Test failures before they reach users](scripts/17-test-memory-and-network-input.md) — 18–22 minutes.
+
+## New low-level programming episodes
+
+- [Episode 18 — Who owns the memory? Pointers and arenas](scripts/18-where-does-the-memory-go.md)
+- [Episode 19 — Review a learning website with C23](scripts/19-review-a-c23-navigation-audit.md)

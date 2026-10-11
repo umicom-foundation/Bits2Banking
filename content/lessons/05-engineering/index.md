@@ -45,3 +45,8 @@ Learn Git, testing, databases, networking, modular design and system administrat
 
 - [63. Fix a YAML website configuration](63-repair-a-mkdocs-configuration.md)
 - [66. Reproduce parser failures with deterministic tests](66-fuzz-bytes-and-check-contracts.md)
+
+## Verify learning content with native C23
+
+- [70. Check website navigation in C23](70-check-website-navigation-in-c23.md) — run read-only validation before rendering.
+- [71. Compiler diagnostics and static analysis](71-compiler-diagnostics-and-static-analysis.md) — use GCC and Clang to review C23 source.
