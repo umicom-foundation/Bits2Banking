@@ -19,3 +19,6 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [39. Build a lightweight web server in C](39-build-a-c-web-server.md)
 - [41. Other compiled languages and interoperability](41-other-compiled-languages.md)
 - [42. HTTP byte scanning in C and Assembly](42-http-and-assembly.md)
+- [43. Prepare a reliable website build environment](43-prepare-a-website-build-environment.md)
+- [44. Assemble a book from Markdown using C23](44-native-book-manuscripts.md)
+- [45. How a C program starts another program](45-run-external-build-tools-safely.md)

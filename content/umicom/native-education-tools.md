@@ -41,14 +41,45 @@ For branding in a separate location, specify `--brand "C:\path\to\framework\reso
 
 ## Generate and preview HTML
 
+First, install the website dependencies into a project-local environment:
+
 ```powershell
+Set-Location "C:\umicom\Umicom-Bits2Banking"
+py -3 -m venv .venv
+& ".\.venv\Scripts\python.exe" -m pip install -r ".\requirements-docs.txt"
+```
+
+With the updated native command, the repository's `.venv` is selected before
+MSYS2's `python.exe` on `PATH`. You can select it explicitly with `--python`.
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
 & $Education build --repo $Books
+if ($LASTEXITCODE -ne 0) { throw "The website build failed." }
 & $Education serve --repo $Books --port 8765
 ```
 
 Open `http://127.0.0.1:8765/` in a web browser. Stop the preview with Ctrl+C.
 
-`build` invokes the existing MkDocs renderer and still requires Python and the packages in `requirements-docs.txt`. By contrast, `serve`, `verify` and `prepare` run as native C code without launching Python. The native preview reads the existing generated site, not Markdown source files.
+`build` invokes the existing MkDocs renderer and still requires Python and the packages in `requirements-docs.txt`. It verifies that the selected interpreter can load MkDocs and Material, then checks for `site/index.html` after the child process returns successfully. By contrast, `serve`, `verify` and `prepare` run as native C code without launching Python. The native preview reads the existing generated site, not Markdown source files.
+
+## Assemble the original Markdown book in C23
+
+No Python interpreter is needed to inspect volume manifests or assemble the
+review manuscript. The original chapters remain untouched:
+
+```powershell
+& $Education book list --repo $Books
+& $Education book assemble --repo $Books --volume islam_blueprint_for_life
+```
+
+The generated result is `output/native-books/islam_blueprint_for_life.md`.
+A different existing result is preserved unless a deliberate `--refresh` is
+requested. Final PDF/DOCX production remains with the established book tools.
+
+Read [Prepare a reliable website build environment](../lessons/05-engineering/43-prepare-a-website-build-environment.md)
+and [Assemble a book from Markdown using C23](../lessons/05-engineering/44-native-book-manuscripts.md)
+for complete exercises.
 
 ## Build on Linux
 

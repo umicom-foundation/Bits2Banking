@@ -9,7 +9,7 @@ A completed major update must provide learner-facing material, a reproducible pr
 | Update | Subject | Major deliverables | Acceptance criteria |
 |---|---|---|---|
 | 01 | Native learning-site foundation **(this batch)** | New Framework-owned `umicom-education` C23 tool, native site preview, original-book and brand preparation, verification, MkDocs build adapter, first native lab, roadmap | GCC and Clang compiles; CTest; loopback HTTP GET/HEAD; large file; forbidden traversal/symlink; preserves original book material |
-| 02 | Native book pipeline | C23 cataloguing of volume manifests; explicit Pandoc/HTML/PDF/DOCX tool adapters; output manifests; checksum/provenance; migration parity tests | Same approved inputs yield valid outputs; historical editions remain reproducible; external converters remain clearly declared |
+| 02 | Native book pipeline **(first increment delivered)** | C23 `book list` and safe Markdown assembly now available; next: format adapters, output manifests, checksums and parity tests | Native book CTest checks safe names, ordered chapters, BOM handling and refused overwrites. PDF/DOCX generation is not yet implemented. |
 | 03 | Single publication pipeline | Coordinate existing BookForge site with MkDocs; keep original books and Volume 1; one GitHub Pages artifact/deployment owner; preview checks | Historical links work or redirect; no content disappears; deployment gate proves chapters, branding and books exist |
 | 04 | Computer architecture course | Motherboard, CPU, RAM, storage, buses, cache, binary, gates, fetch/decode/execute, RISC-V/x86-64 comparisons | Practical binary/CPU labs, diagrams, exercises and answer guides |
 | 05 | Assembly and low-level C | x86-64 Windows/System V ABI, RISC-V ABI, ELF/PE, symbols, instructions, registers, stack, debugging/disassembly, and an optional Assembly CRLF-scanning laboratory | GCC/Clang sample and conditional native Assembly code compared against equivalent C |
@@ -29,7 +29,7 @@ A completed major update must provide learner-facing material, a reproducible pr
 
 ## Native migration: what is and is not replaced
 
-The first C23 utility provides native `doctor`, `prepare`, `verify` and read-only `serve`. `build` invokes MkDocs as a child, so Python and MkDocs remain required for generating the website. Existing Python, PowerShell, BookForge, Pandoc and book-output scripts are preserved for comparison. PDF/DOCX creation is not yet implemented in C. No command publishes a website or pushes to Git automatically.
+The C23 utility provides native `doctor`, `prepare`, `verify`, `book list`, `book assemble` and read-only `serve`. `build` chooses an interpreter with MkDocs and Material (preferring the repository's `.venv`) before invoking MkDocs as a child, so Python and MkDocs remain required for generating the website. Existing Python, PowerShell, BookForge, Pandoc and book-output scripts are preserved for comparison. PDF/DOCX creation is not yet implemented in C. No command publishes a website or pushes to Git automatically.
 
 The current Framework Web Server has a bounded 16 KiB response body for static files. The new standalone Framework-owned preview uses streaming file reads so real generated pages and artwork can be served without that restriction. It remains loopback-only and is **not** a production-facing HTTP/TLS host. Integration with the established Framework web contracts follows in Update 10 after source and test review.
 
