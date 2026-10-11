@@ -25,3 +25,8 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Assembly functions laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/assembly-functions) compares Windows x64, System V x86-64 and RISC-V64 argument registers. [Lesson 53](../lessons/03-native-code/53-call-assembly-from-c.md).
 - [Binary payment records laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/binary-payment-records) demonstrates explicit widths, big-endian representation and rejection without partial writes. [Lesson 55](../lessons/03-native-code/55-write-a-safe-binary-record-in-c.md).
+
+## Safer C23 and memory management
+
+- [Owned Notes laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/owned-notes): C23 opaque handles, deep copies, dynamic allocations and failure-atomic edits. [Lesson 58](../lessons/03-native-code/58-memory-ownership-in-c23.md).
+- [Checked fictional accounts laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/checked-money): exact minor currency units, checked integer arithmetic, revision validation and two-record rollback-on-failure behaviour. [Lesson 59](../lessons/03-native-code/59-checked-arithmetic-and-money.md).

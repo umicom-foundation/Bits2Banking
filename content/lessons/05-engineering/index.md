@@ -36,3 +36,8 @@ Learn Git, testing, databases, networking, modular design and system administrat
 
 - [56. Diagnose a Windows programme path containing spaces](56-test-windows-process-paths.md)
 - [57. Read object files and follow the linker](57-examine-object-files-and-linkers.md)
+
+## Build and publication exercises
+
+- [61. Organise a C library with CMake](61-build-a-c-library-with-cmake.md) — compile an owned Notes model once and link it to a demonstration and tests.
+- [62. Build the educational website before serving it](62-build-and-preview-the-education-site.md) — generate `site/index.html`, then preview using the native C server.

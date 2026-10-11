@@ -126,3 +126,20 @@ The original Python BookForge, publishing scripts, PowerShell helpers, MkDocs co
 Start with [`site.h`](https://github.com/umicom-foundation/umicom-framework/tree/main/include/umicom/education), then inspect `site_content.c` and `site_preview.c`. A website request begins in the socket listener, passes through URL and Host validation, opens one permitted file and streams its bytes. The CLI in `tools/umicom-education/main.c` only chooses which Framework service should perform the work.
 
 Next: [Build and inspect the server](../lessons/05-engineering/39-build-a-c-web-server.md).
+
+## Build and preview in one explicit command
+
+A successful `doctor` check proves that the required input and renderer are available. It does not generate `site/index.html`. If `serve` reports that the home page is missing, build the website first. After rebuilding the native Education tool, you can use:
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
+$Education = ".\build\umicom-education\bin\umicom-education.exe"
+$Books = "C:\umicom\Umicom-Bits2Banking"
+$Python = "$Books\.venv\Scripts\python.exe"
+
+& $Education serve --repo $Books --build --python $Python --port 8765
+```
+
+`--build` invokes the existing MkDocs adapter before opening the native preview server. It is an opt-in operation: an ordinary `serve` command stays read-only. If MkDocs fails, the HTTP server does not start. The `--directory` option is reserved for an existing export and cannot be combined with `--build`.
+
+Read [Build the website before serving it](../lessons/05-engineering/62-build-and-preview-the-education-site.md) for the full guided exercise.

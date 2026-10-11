@@ -16,3 +16,9 @@ Understand the relationship between source code, machine instructions and runtim
 
 - [53. Call an Assembly function from C23](53-call-assembly-from-c.md) — use a real machine-level calling convention and test 100 boundary pairs.
 - [55. Write a safe binary record in C23](55-write-a-safe-binary-record-in-c.md) — implement a checked, fixed-width wire format without structure casts.
+
+## Memory ownership and checked numbers
+
+- [58. Who owns this memory?](58-memory-ownership-in-c23.md) — build an owned Notes store, copy input text and release allocations safely.
+- [59. Checked arithmetic and fictional accounts](59-checked-arithmetic-and-money.md) — use exact pence and reject overflow before changing two training account balances.
+- [60. Find defects with tests and sanitizers](60-debugging-undefined-behaviour.md) — use compiler warnings, CTest, ASan and UBSan on supported toolchains.

@@ -27,3 +27,6 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [How C calls Assembly functions](scripts/12-calling-c-from-assembly.md) — 16–20 minutes; [written lesson](../lessons/03-native-code/53-call-assembly-from-c.md).
 - [Turn values into safe bytes with C23](scripts/13-binary-records-and-safer-c.md) — 14–18 minutes; [written lesson](../lessons/03-native-code/55-write-a-safe-binary-record-in-c.md).
+
+- [Who owns this memory? Build a Notes model in C23](scripts/14-why-memory-ownership-matters.md) — 15–18 minutes; [Lesson 58](../lessons/03-native-code/58-memory-ownership-in-c23.md).
+- [Checked arithmetic and safe website previews](scripts/15-checked-arithmetic-and-safe-preview.md) — 17–22 minutes; [Lesson 59](../lessons/03-native-code/59-checked-arithmetic-and-money.md) and [Lesson 62](../lessons/05-engineering/62-build-and-preview-the-education-site.md).
