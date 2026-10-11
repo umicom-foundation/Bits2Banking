@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 485" role="img" aria-labelledby="title desc">
+<title id="title">Where the first two integer arguments go in three processor calling conventions</title>
+<desc id="desc">Three columns compare Windows x64 registers ECX and EDX, Linux System V registers EDI and ESI, and RISC-V64 registers a0 and a1. Each returns a 32-bit sum in EAX or a0.</desc>
+<style>
+text{font-family:'Segoe UI',Arial,sans-serif;fill:#152a3b}.title{font-size:26px;font-weight:750}.subtitle{font-size:15px;fill:#456173}.box{fill:#fff;stroke:#aec8d1;stroke-width:2}.code{fill:#e9f6f4;stroke:#178577;stroke-width:2}.label{font-size:19px;font-weight:700}.small{font-size:16px}.arrow{stroke:#178577;stroke-width:3;marker-end:url(#arrow)}
+</style><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#178577"/></marker></defs>
+<rect width="1100" height="485" rx="18" fill="#f4f8fb"/>
+<text x="34" y="43" class="title">One C function, three calling conventions</text>
+<text x="34" y="72" class="subtitle">uint32_t AddTwoAssembly(uint32_t left, uint32_t right)</text>
+<g transform="translate(26 100)">
+<rect class="box" width="331" height="345" rx="13"/>
+<text x="22" y="39" class="label">Windows x64</text><text x="22" y="64" class="small">First arguments:</text>
+<rect class="code" x="22" y="79" width="286" height="68" rx="9"/><text x="44" y="107" class="label">ECX = left</text><text x="44" y="133" class="label">EDX = right</text>
+<path class="arrow" d="M166 154 V 186"/><rect class="code" x="22" y="192" width="286" height="62" rx="9"/>
+<text x="44" y="219" class="small">movl %ecx, %eax</text><text x="44" y="244" class="small">addl %edx, %eax</text>
+<path class="arrow" d="M166 258 V 285"/><text x="22" y="313" class="label">Result in EAX</text>
+</g>
+<g transform="translate(384 100)"><rect class="box" width="331" height="345" rx="13"/>
+<text x="22" y="39" class="label">Linux x86-64 (System V)</text><text x="22" y="64" class="small">First arguments:</text>
+<rect class="code" x="22" y="79" width="286" height="68" rx="9"/><text x="44" y="107" class="label">EDI = left</text><text x="44" y="133" class="label">ESI = right</text>
+<path class="arrow" d="M166 154 V 186"/><rect class="code" x="22" y="192" width="286" height="62" rx="9"/>
+<text x="44" y="219" class="small">movl %edi, %eax</text><text x="44" y="244" class="small">addl %esi, %eax</text>
+<path class="arrow" d="M166 258 V 285"/><text x="22" y="313" class="label">Result in EAX</text>
+</g>
+<g transform="translate(742 100)"><rect class="box" width="331" height="345" rx="13"/>
+<text x="22" y="39" class="label">RISC-V64 (ELF ABI)</text><text x="22" y="64" class="small">First arguments:</text>
+<rect class="code" x="22" y="79" width="286" height="68" rx="9"/><text x="44" y="107" class="label">a0 = left</text><text x="44" y="133" class="label">a1 = right</text>
+<path class="arrow" d="M166 154 V 186"/><rect class="code" x="22" y="192" width="286" height="62" rx="9"/>
+<text x="44" y="218" class="small">addw a0, a0, a1</text><text x="44" y="245" class="small">ret</text>
+<path class="arrow" d="M166 258 V 285"/><text x="22" y="313" class="label">Result in a0</text>
+</g>
+</svg>

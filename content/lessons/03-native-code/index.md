@@ -13,3 +13,6 @@ Understand the relationship between source code, machine instructions and runtim
 
 - [35. Assembly and processor calling conventions](35-assembly-and-processor-contracts.md) — trace registers and call a native Assembly function from C.
 - [36. Writing safer C23](36-safer-c-programming.md) — use explicit memory ownership, bounds, error checking and small tests.
+
+- [53. Call an Assembly function from C23](53-call-assembly-from-c.md) — use a real machine-level calling convention and test 100 boundary pairs.
+- [55. Write a safe binary record in C23](55-write-a-safe-binary-record-in-c.md) — implement a checked, fixed-width wire format without structure casts.

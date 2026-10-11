@@ -31,3 +31,8 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [50. Publish learning and books together](50-publish-learning-and-books-together.md)
 - [51. Verify publication in C23](51-verify-publication-in-c23.md)
 - [52. One GitHub Pages deployment](52-one-github-pages-deployment.md)
+
+## Native process and linker troubleshooting
+
+- [56. Diagnose a Windows programme path containing spaces](56-test-windows-process-paths.md)
+- [57. Read object files and follow the linker](57-examine-object-files-and-linkers.md)

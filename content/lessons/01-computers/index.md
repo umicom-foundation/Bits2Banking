@@ -9,3 +9,5 @@ Learn how computers represent information, execute instructions and store files.
 - [49. How memory access reaches the CPU](49-how-memory-access-reaches-the-cpu.md)
 
 [Explore the practical source files](../../labs/index.md)
+
+- [54. From the first instruction to Umicom Kernel](54-from-first-instruction-to-kernel.md)

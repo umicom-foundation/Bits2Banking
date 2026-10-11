@@ -22,3 +22,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 - [Building a book manuscript in C23](scripts/09-assembling-a-markdown-book-in-c.md) — a 15–20 minute introduction to manifest-led publishing.
 - [Find and fix a failing build boundary](scripts/10-find-and-fix-a-build-boundary.md) — a 12–15 minute demonstration of environment selection, child-process tests and local website preview.
 - [Build, verify and publish one learning site](scripts/11-publish-and-verify-the-learning-site.md) — a 12–16 minute lesson connecting BookForge, MkDocs, native integrity checks and GitHub Actions.
+
+## Processor and memory-safety episodes
+
+- [How C calls Assembly functions](scripts/12-calling-c-from-assembly.md) — 16–20 minutes; [written lesson](../lessons/03-native-code/53-call-assembly-from-c.md).
+- [Turn values into safe bytes with C23](scripts/13-binary-records-and-safer-c.md) — 14–18 minutes; [written lesson](../lessons/03-native-code/55-write-a-safe-binary-record-in-c.md).

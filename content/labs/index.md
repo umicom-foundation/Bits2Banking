@@ -20,3 +20,8 @@ The repository contains source files rather than compiled programs. Build output
 The [safer C notes laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/safe-notes) introduces a bounded Notes model, separate header and implementation, CMake targets and CTest. Its source files are in the repository's `labs/native/safe-notes` directory.
 
 The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-header-scanner) compares a C23 implementation with x86-64 or RISC-V Assembly using the same test cases.
+
+## Processor and binary-data exercises
+
+- [Assembly functions laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/assembly-functions) compares Windows x64, System V x86-64 and RISC-V64 argument registers. [Lesson 53](../lessons/03-native-code/53-call-assembly-from-c.md).
+- [Binary payment records laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/binary-payment-records) demonstrates explicit widths, big-endian representation and rejection without partial writes. [Lesson 55](../lessons/03-native-code/55-write-a-safe-binary-record-in-c.md).
