@@ -174,3 +174,19 @@ The parser is implemented in the shared Framework files
 
 Continue with [Chapter 87: ELF load plans](../lessons/05-engineering/87-read-elf-program-headers-and-load-plan.md)
 and [Chapter 91: Follow the Umicom Kernel](../lessons/06-umicom/91-follow-umicom-kernel-memory-source.md).
+
+
+## Inspect executable page permissions (Update 13)
+
+Build the native tool using the existing CMake instructions above, then inspect a verified ELF fixture or a separate executable file:
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
+$Education = ".\build\umicom-education\bin\umicom-education.exe"
+$Fixture = ".\build\umicom-education\education-load-plan-test\fixture with spaces\umicom kernel.elf"
+& $Education memory-audit --file $Fixture
+```
+
+The result describes the number of virtual pages covered by ELF `PT_LOAD` segments, how many of those pages are writable and executable, and whether multiple segments share a page. No executable code is launched and no memory protections are changed. A review finding returns a nonzero status; this is a conservative page-level analysis, **not** a production loader's approval decision.
+
+Learn how this works in [Lesson 94](../lessons/05-engineering/94-review-executable-memory-protection.md), and use the [page-fault model](../lessons/05-engineering/93-understand-page-faults-in-c23.md) for an independent C23 simulation.

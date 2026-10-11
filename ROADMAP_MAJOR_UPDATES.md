@@ -127,3 +127,13 @@ Bits2Banking adds Lessons 82–86, the C23/Assembly `linker-relocations` laborat
 **Acceptance gates:** 16 Framework Education CTest cases; two tests per new laboratory; strict YAML parsing; no lost MkDocs navigation entries; same test results under GCC and Clang with sanitizers where supported; Windows UCRT64 and the complete MkDocs site must be verified by the maintainer. Do not mark QEMU or GitHub Pages deployed without separate evidence.
 
 **Next: Update 13 — Process creation, page faults and executable-memory protections.** Study loader policy, guarded process address spaces and RISC-V privilege transitions through small C23/Assembly exercises and actual Umicom Kernel code. Continue keeping live-kernel responsibilities in the Kernel repository and reusable hosted functionality in Framework.
+
+## Update 13 — Process memory, page faults and W^X review
+
+**Scope:** Add a read-only ELF page-permission audit to the Framework-owned education tool, using the existing ELF load-plan parser rather than a second ELF reader. It reports conservative 4 KiB permission unions, segment sharing, unknown flag bits and pages that would require both write and execute. Nothing is loaded or executed; there is no kernel memory change.
+
+**Curriculum:** Lessons 92–96 introduce process address spaces, unmapped and protection faults, page-rounded ELF permission collisions, C23 process lifecycle state machines and RISC-V privilege boundaries. Two independent hosted C23 laboratories model page access and process state. Two video scripts and three SVG diagrams accompany the lessons. The authoritative Umicom Kernel source is linked, not copied.
+
+**Acceptance:** 18 standalone Umicom Education CTest cases, two tests in each new laboratory, no lost MkDocs navigation targets or original Islam chapters, valid SVG source and strict MkDocs website generation on the maintainer's Windows checkout. GCC and Clang ASan/UBSan are development checks; the native Windows build, final hosted site and GitHub Pages must be separately qualified.
+
+**Next: Update 14 — System calls, IPC and message ownership.** Explain protected user/kernel service boundaries and supervised communication with C23 models, then connect those lessons to actual Umicom Kernel channels, user services and Framework messaging. Preserve legacy publishing and all established public interfaces.

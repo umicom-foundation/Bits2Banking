@@ -60,3 +60,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 26 — From an ELF File to a Memory Layout](scripts/26-from-elf-file-to-running-address-space.md) (11–14 minutes): programme headers, zero fill and physical frame ownership.
 - [Episode 27 — Virtual Memory, Sv39 and Umicom Kernel](scripts/27-sv39-virtual-memory-and-umicom-kernel.md) (14–18 minutes): page tables, permissions, kernel source and hardware qualification.
+
+
+## Processes and memory protection
+
+- [Episode 28 — A Program, Its Address Space and a Page Fault](scripts/28-process-address-spaces-and-page-faults.md) — 15–19 minutes with a C23 mapping exercise.
+- [Episode 29 — Protect Executable Memory and Model a Process Lifecycle](scripts/29-wx-memory-policy-and-process-lifecycle.md) — 17–21 minutes, Framework W^X inspection and kernel-process state transitions.

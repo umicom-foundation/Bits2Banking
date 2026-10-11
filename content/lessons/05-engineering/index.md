@@ -82,3 +82,10 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [89. Translate a virtual address with RISC-V Sv39](89-sv39-virtual-address-translation.md) — follow three page-table indices to a physical frame.
 - [90. Page permissions, privilege and faults](90-memory-permissions-traps-and-privilege.md) — understand R/W/X and why invalid accesses are refused.
 - [91. Follow actual Umicom Kernel memory source](../06-umicom/91-follow-umicom-kernel-memory-source.md) — compare the classroom exercises with the original RISC-V Kernel.
+
+## Processes, page faults and executable protection
+
+- [92. Understand a process address space](92-understand-a-process-address-space.md) — follow executable regions into a fictional process address space.
+- [93. Understand page faults in C23](93-understand-page-faults-in-c23.md) — distinguish unmapped access from permission refusal and preserve output on failure.
+- [94. Review executable-memory protection](94-review-executable-memory-protection.md) — inspect ELF byte ranges and page-rounded W^X conflicts through the Framework's C23 audit.
+- [95. Model a process lifecycle](95-model-a-process-lifecycle-in-c23.md) — run a small state machine with explicit transitions and revision checks.

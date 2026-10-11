@@ -60,3 +60,10 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 - [Physical frame pool](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/physical-frame-pool): protect boot-reserved frames, allocate the lowest free frame and refuse invalid releases. [Chapter 88](../lessons/05-engineering/88-physical-pages-and-frame-ownership.md).
 - [Sv39 virtual-address translation](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/sv39-address-translation): walk three 512-entry tables, preserve the 12-bit offset and enforce R/W/X permissions. [Chapter 89](../lessons/05-engineering/89-sv39-virtual-address-translation.md).
 - [ELF PT_LOAD inspection](../lessons/05-engineering/87-read-elf-program-headers-and-load-plan.md): use Framework's read-only C23 `umicom-education load-plan` command and portable synthetic RISC-V64 fixture.
+
+
+## Process address spaces, faults and state transitions
+
+- [Page-fault model](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/page-fault-model): mapped and unmapped pages, R/W/X access rights, canonical Sv39 addresses and failure-atomic outputs. [Lessons 92–93](../lessons/05-engineering/92-understand-a-process-address-space.md).
+- [Process lifecycle](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/process-lifecycle): admit, dispatch, yield, wait, wake and exit with explicit revision checks. [Lesson 95](../lessons/05-engineering/95-model-a-process-lifecycle-in-c23.md).
+- [ELF W^X audit](../lessons/05-engineering/94-review-executable-memory-protection.md): inspect safe and suspicious segment layouts using Framework's `umicom-education memory-audit --file`.

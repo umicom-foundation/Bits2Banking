@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 540" role="img" aria-labelledby="title desc">
+<title id="title">Why ELF permissions need page-level checks</title><desc id="desc">Two separate byte intervals can occupy the same 4 KiB page after address rounding.</desc>
+<rect width="1100" height="540" fill="#f5f9fc"/><style>
+ .title{font:bold 27px 'Segoe UI',Arial,sans-serif;fill:#1c3650}.subtitle{font:15px 'Segoe UI',Arial,sans-serif;fill:#425c6e}
+ .label{font:bold 17px 'Segoe UI',Arial,sans-serif;fill:#182c3d}.light{font:bold 17px 'Segoe UI',Arial,sans-serif;fill:#fff}
+ .small{font:14px 'Segoe UI',Arial,sans-serif;fill:#31475b}.darksmall{font:14px 'Segoe UI',Arial,sans-serif;fill:#f3fafc}
+ .note{font:13px 'Segoe UI',Arial,sans-serif;fill:#4b6072}.stroke{stroke:#9eb8c4;stroke-width:2}
+ </style>
+<text x="46" y="52" class="title">Why ELF permissions need page-level checks</text>
+<text x="46" y="80" class="subtitle">Two separate byte intervals can occupy the same 4 KiB page after address rounding.</text>
+<defs><marker id="arrow" markerWidth="11" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#087a87"/></marker></defs>
+<rect x="45" y="135" width="1010" height="115" rx="12" fill="#fff" stroke="#bed0d9" stroke-width="2"/>
+<text x="65" y="169" class="label">ELF PT_LOAD byte ranges</text>
+<rect x="75" y="190" width="520" height="45" rx="12" fill="#d2f1ee" stroke="#bed0d9" stroke-width="2"/>
+<rect x="595" y="190" width="422" height="45" rx="12" fill="#dce7f9" stroke="#bed0d9" stroke-width="2"/>
+<text x="92" y="220" class="small">0x1000–0x15ff  read + execute</text>
+<text x="616" y="220" class="small">0x1600–0x18ff  read + write</text>
+<path d="M545,250 L545,312" fill="none" stroke="#087a87" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="60" y="335" width="980" height="118" rx="12" fill="#ffe7c7" stroke="#e2ac5f" stroke-width="2"/>
+<text x="82" y="372" class="label">One shared 4 KiB virtual page: 0x1000–0x1fff</text>
+<text x="82" y="405" class="label">Combined page requirements: W + X  →  review required</text>
+<text x="80" y="487" class="note">Byte ranges do not overlap; page protections still conflict.</text>
+<text x="46" y="520" class="note">Bits2Banking · Umicom Foundation · Editable technical illustration (teaching model; not actual hardware state)</text>
+</svg>
