@@ -65,3 +65,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [79. Relocations, sections and position-independent code](79-relocations-and-position-independent-code.md) — understand unresolved addresses and native section layout.
 - [80. Cross-compile C23 and Assembly for RISC-V64](80-cross-compile-c23-riscv64.md) — compile objects without running foreign instructions.
 - [81. Install and package a native C23 programme](81-install-and-package-a-native-c-program.md) — install a library, header and executable into a private location.
+
+## Native ELF symbols, relocations and kernel linking
+
+- [82. Read ELF symbols from a C23 build](82-inspect-elf-symbols-in-c23.md) — identify public definitions, private helpers and unresolved references without executing an object.
+- [83. Follow relocations through linking](83-follow-relocations-and-linker-decisions.md) — connect a C23 caller to Assembly and explain the linker's address adjustments.
+- [84. Understand sections and linker scripts](84-read-sections-and-linker-scripts.md) — examine `.text`, `.rodata`, `.data`, `.bss` and the actual Umicom Kernel boot path.
+- [85. Check cross-compilation and the ABI](85-cross-compilation-and-abi-checks.md) — distinguish host and target, ELF and COFF, and calling conventions.
+- [86. Test native binary-file readers](86-test-native-binary-boundaries.md) — reject malformed offsets, preserve reports after failure and use adversarial tests.

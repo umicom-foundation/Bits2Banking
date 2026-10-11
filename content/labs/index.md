@@ -49,3 +49,7 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Static library and linker map](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/static-library-map) — compile a fictional C23 ledger library, test exact pence arithmetic, read the archive with `umicom-education archive`, follow a linker map and install privately. [Lessons 77–79](../lessons/05-engineering/77-understand-static-archives.md).
 - [Cross-target object compilation](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/cross-target-object) — compare host objects with RISC-V64 ELF objects and inspect one privileged Assembly instruction without running it. [Lesson 80](../lessons/05-engineering/80-cross-compile-c23-riscv64.md).
+
+## Linker symbols and C23/Assembly ABI
+
+- [C23 and Assembly linker-relocations laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/linker-relocations) — build one public C23 API and an ABI-specific Assembly leaf function; test overflow contracts and inspect native object symbols. [Lessons 82–86](../lessons/05-engineering/82-inspect-elf-symbols-in-c23.md).

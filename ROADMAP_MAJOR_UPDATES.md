@@ -100,3 +100,15 @@ This update adds a standalone Framework-owned C23 `umicom-education archive --fi
 The educational track now includes Lessons 77–81, a static-library and linker-map laboratory, a compile-only Clang RISC-V64 laboratory, editable diagrams and Videos 22–23. The new build teaching material uses C23 and target-specific Assembly; CMake, Markdown and SVG serve their necessary build/documentation roles. No additional interpreted application is introduced.
 
 Windows UCRT64 and complete MkDocs acceptance remain host checks, not claimed results of Linux testing. The existing original books, Volume 1 Islam chapters and publishing workflows remain intact. The next milestone should add deeper C23 linker and target-ABI introspection only where reusable, and strengthen site/build release qualification before claiming production status. Native PDF/DOCX rendering has not been replaced.
+
+## Update 11 checkpoint — native ELF symbols, relocation metadata and kernel linker lessons
+
+This batch adds a read-only native C23 ELF symbol and relocation **metadata** inspector to Umicom Framework. The `umicom-education symbols --file ELF_PATH` command accepts ELF32/ELF64 and either encoded byte order, validates section and string-table bounds, counts defined and undefined symbols and `REL`/`RELA` entries, and displays a bounded sample of names. It explicitly refuses non-ELF files and inputs above 32 MiB. It is not an ELF loader, a linker, a kernel debugger or a replacement for established binary-analysis tools.
+
+Cumulative standalone Framework acceptance now includes 14 tests. The two additional cases validate synthetic ELF32/64, malformed offsets, a deterministic mutation corpus, a path with spaces and CLI formatting. The test suite runs on Windows without requiring the native host compiler to emit ELF objects.
+
+Bits2Banking adds Lessons 82–86, the C23/Assembly `linker-relocations` laboratory with two CTest cases, three editable diagrams and Episodes 24–25. Source explanations link to the real Umicom Kernel RISC-V64 bootstrap rather than copying Kernel code into the educational repository. The website navigation preserves *Islam: Blueprint for Life* and its ten original manuscripts. All previously configured chapter navigation remains active.
+
+**Qualification boundary:** Linux GCC and Clang sanitizer validation is development evidence. Windows UCRT64 compilation, complete strict MkDocs rendering with historical book assets, and the live GitHub Pages workflow still need explicit user-host acceptance. Do not infer their success from portable C tests.
+
+**Next proposed checkpoint:** inspect relocation entries beyond aggregate counts, explore symbol-version and dynamic-linker boundaries, build a C23 linker-map reader where justified, and teach the first Umicom Kernel memory-translation mechanisms from their actual RISC-V source. Preserve the original application services and books.

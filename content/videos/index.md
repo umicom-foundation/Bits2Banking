@@ -49,3 +49,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 22 — Build a C23 library and read the linker map](scripts/22-build-a-static-library-and-read-the-linker-map.md) — approximately 12–16 minutes; [Lessons 77–78](../lessons/05-engineering/77-understand-static-archives.md).
 - [Episode 23 — Cross-compile C23 and RISC-V64 Assembly](scripts/23-cross-compile-c23-and-riscv64-assembly.md) — approximately 11–15 minutes; [Lesson 80](../lessons/05-engineering/80-cross-compile-c23-riscv64.md).
+
+## Linker and ELF inspection episodes
+
+- [Episode 24 — Where does the linker find a function?](scripts/24-where-does-the-linker-find-a-function.md) — approximately 16–20 minutes, showing C23/Assembly compilation, symbols, relocations and linker failures.
+- [Episode 25 — Inspect ELF symbols and understand a kernel memory layout](scripts/25-elf-symbols-and-umicom-kernel-memory.md) — approximately 17–22 minutes, connecting defensive ELF parsing to Umicom Kernel bootstrap and sections.
