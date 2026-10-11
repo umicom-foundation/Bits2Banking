@@ -29,3 +29,7 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## RISC-V privilege and process boundaries
 
 - [96. Privilege, traps and Umicom Kernel](96-riscv-privilege-and-trap-boundaries.md) — understand machine, supervisor and user modes; examine the actual RISC-V Assembly bootstrap and Kernel C23 source.
+
+## IPC and system-service ownership
+
+- [101. Follow IPC ownership through Umicom Kernel](101-follow-umicom-kernel-ipc-ownership.md) connects the classroom channel and dispatcher to the actual Kernel message domain, syscall service, user-memory checking and blocked IPC tasks.

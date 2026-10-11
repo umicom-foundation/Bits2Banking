@@ -190,3 +190,16 @@ $Fixture = ".\build\umicom-education\education-load-plan-test\fixture with space
 The result describes the number of virtual pages covered by ELF `PT_LOAD` segments, how many of those pages are writable and executable, and whether multiple segments share a page. No executable code is launched and no memory protections are changed. A review finding returns a nonzero status; this is a conservative page-level analysis, **not** a production loader's approval decision.
 
 Learn how this works in [Lesson 94](../lessons/05-engineering/94-review-executable-memory-protection.md), and use the [page-fault model](../lessons/05-engineering/93-understand-page-faults-in-c23.md) for an independent C23 simulation.
+
+## Inspect a teaching IPC trace without sending messages
+
+A new native C23 command accepts the bounded versioned **teaching format** `UMIIPC1`. It checks record order and payload lengths and models SEND/RECEIVE ownership. This is not the Umicom Kernel IPC ABI and does not execute any system call.
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
+$Education = ".\build\umicom-education\bin\umicom-education.exe"
+$Trace = ".\build\umicom-education\education-ipc-trace-test\fixture with spaces\owned messages.ipc"
+& $Education ipc-trace --file $Trace
+```
+
+The fixture is written by `framework.education.ipc_trace` during CTest. See [Lesson 99](../lessons/05-engineering/99-inspect-an-ipc-trace-with-c23.md) and [Umicom Kernel message channels](https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/message_channel.c).

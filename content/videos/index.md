@@ -66,3 +66,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 28 — A Program, Its Address Space and a Page Fault](scripts/28-process-address-spaces-and-page-faults.md) — 15–19 minutes with a C23 mapping exercise.
 - [Episode 29 — Protect Executable Memory and Model a Process Lifecycle](scripts/29-wx-memory-policy-and-process-lifecycle.md) — 17–21 minutes, Framework W^X inspection and kernel-process state transitions.
+
+## Kernel services and IPC episodes
+
+- [Episode 30 — From a Notes event to a copied IPC message](scripts/30-from-a-notes-event-to-a-copied-ipc-message.md) (9–12 minutes): copy ownership, recipient refusal and a bounded C23 channel.
+- [Episode 31 — System calls, IPC traces and Kernel ownership](scripts/31-system-calls-ipc-traces-and-kernel-ownership.md) (10–13 minutes): request validation, read-only traces, and actual Umicom Kernel source.

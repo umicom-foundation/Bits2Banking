@@ -67,3 +67,9 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 - [Page-fault model](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/page-fault-model): mapped and unmapped pages, R/W/X access rights, canonical Sv39 addresses and failure-atomic outputs. [Lessons 92–93](../lessons/05-engineering/92-understand-a-process-address-space.md).
 - [Process lifecycle](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/process-lifecycle): admit, dispatch, yield, wait, wake and exit with explicit revision checks. [Lesson 95](../lessons/05-engineering/95-model-a-process-lifecycle-in-c23.md).
 - [ELF W^X audit](../lessons/05-engineering/94-review-executable-memory-protection.md): inspect safe and suspicious segment layouts using Framework's `umicom-education memory-audit --file`.
+
+## Kernel services and copied IPC messages
+
+- [Copied-message channel](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/bounded-channel) — a bounded C23 FIFO with recipient checks, complete copied payloads and deterministic capacity failures. [Lesson 98](../lessons/05-engineering/98-build-a-copied-message-channel.md).
+- [Checked service-request dispatcher](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/syscall-dispatch) — read a training clock, validate publishing rights and refuse stale versions before changing state. [Lesson 100](../lessons/05-engineering/100-design-checked-service-requests.md).
+- [Framework IPC trace inspector](../lessons/05-engineering/99-inspect-an-ipc-trace-with-c23.md) — examine synthetic SEND/RECEIVE records using `umicom-education ipc-trace --file`, without real IPC.

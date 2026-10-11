@@ -89,3 +89,10 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [93. Understand page faults in C23](93-understand-page-faults-in-c23.md) — distinguish unmapped access from permission refusal and preserve output on failure.
 - [94. Review executable-memory protection](94-review-executable-memory-protection.md) — inspect ELF byte ranges and page-rounded W^X conflicts through the Framework's C23 audit.
 - [95. Model a process lifecycle](95-model-a-process-lifecycle-in-c23.md) — run a small state machine with explicit transitions and revision checks.
+
+## System calls, IPC and message ownership
+
+- [97. How a programme requests a kernel service](97-how-programmes-request-kernel-services.md) explains user mode, kernel mode, system-call checks and the RISC-V `ecall` instruction.
+- [98. Build a copied-message channel](98-build-a-copied-message-channel.md) develops a bounded FIFO queue in C23 with explicit ownership and no partial delivery.
+- [99. Inspect an IPC trace](99-inspect-an-ipc-trace-with-c23.md) reads a versioned byte format and tests record order, capacity and truncation through a Framework-owned C23 inspector.
+- [100. Design checked service requests](100-design-checked-service-requests.md) implements a hosted service dispatcher with permissions, revision checks and failure-atomic updates.
