@@ -111,3 +111,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 44 — What happens when you press Save?](scripts/44-sectors-flush-and-recovery.md) (12–16 minutes): stage sector writes, flush and simulate a restart using C23.
 - [Episode 45 — Recover an interrupted Notes save](scripts/45-journal-replay-and-kernel-storage.md) (14–18 minutes): write-ahead logging, checksums, recovery and Umicom Kernel storage ownership.
+
+
+## FAT16 and filesystem recovery
+
+- [Episode 46: Read a FAT16 disk image](scripts/46-read-a-fat16-disk-image.md)
+- [Episode 47: Storage recovery and Umicom Kernel](scripts/47-storage-recovery-and-kernel.md)

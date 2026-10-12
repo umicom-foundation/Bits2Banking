@@ -324,3 +324,12 @@ Five new chapters (132–136) connect the preceding device I/O course to block s
 **Acceptance gates:** Both CMake projects configure with C23, build with GCC and Clang, pass their registered CTests, and pass a sanitizer build where the toolchain supports it. The Markdown links and SVG syntax are checked, and no previous MkDocs navigation item is removed. Validate the complete site using the repository's existing MkDocs installation before publication. This batch neither claims real power-failure durability nor changes a Kernel production storage service.
 
 **Next planned milestone — Update 22:** Continue into FAT16 structures, sector allocation, safe directory lookup, storage format integrity and read-only filesystem inspection, with a standalone C23 image-reader laboratory before any mutation facility. The Kernel's VFS and FAT16 source remain references, not modification targets.
+
+
+### Update 22 — FAT16 storage inspection and source-level learning
+
+Read-only C23 FAT16 inspector, structural tests, volume and chain lessons, storage-recovery discussion and Umicom Kernel source references.
+
+### Update 23 — VFS and file descriptor ownership (planned)
+
+Teach virtual filesystem dispatch, path validation, open-file descriptions, descriptor rights, and a small standalone C23 VFS model.

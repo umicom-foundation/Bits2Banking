@@ -151,3 +151,12 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [134. Write-ahead journalling and recovery in C23](134-write-ahead-journalling-and-recovery.md) — commit a Notes revision in the correct order and replay after a controlled interruption.
 - [135. Filesystem paths, directories and metadata](135-filesystem-paths-and-metadata.md) — validate path authority and understand how file contents and directory metadata relate.
 - [136. Follow the actual Kernel storage stack](../06-umicom/136-follow-kernel-filesystems-and-storage.md) — compare classroom models with VFS, RAMFS, FAT16 and VirtIO ownership.
+
+
+## FAT16 and native filesystem inspection
+
+- [137. FAT16 boot sector and volume layout](137-understand-fat16-boot-sector-and-volume-layout.md)
+- [138. Build a read-only FAT16 inspector in C23](138-build-a-read-only-fat16-inspector.md)
+- [139. Follow a FAT cluster chain](139-fat-cluster-chains-and-file-content.md)
+- [140. Write ordering, flush and recovery](140-write-ordering-and-filesystem-recovery.md)
+- [141. Read the Umicom Kernel filesystem implementation](141-read-umicom-kernel-fat16-source.md)
