@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="465" viewBox="0 0 1120 465" role="img" aria-labelledby="title desc">
+  <title id="title">Lifecycle of a connection slot in the C23 event loop</title>
+  <desc id="desc">The slot starts free, transitions to reading and writing, then completes. Malformed traffic, disconnects and expired deadlines lead to failure. The slot is reused only after descriptor and file owners have been released.</desc>
+  <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 Z" fill="#236c85"/></marker>
+    <style>text{font-family:Segoe UI,Arial,sans-serif;fill:#152e3f}.title{font-size:27px;font-weight:bold}.box{fill:#fff;stroke:#397e97;stroke-width:2}.active{fill:#e3f6ef;stroke:#18846f;stroke-width:2}.fail{fill:#fff1ec;stroke:#b55f4e;stroke-width:2}.label{font-size:21px;font-weight:bold;text-anchor:middle}.small{font-size:14px;text-anchor:middle;fill:#536979}.line{fill:none;stroke:#236c85;stroke-width:3;marker-end:url(#arrow)}.error{stroke:#b55f4e;stroke-dasharray:8 6}</style></defs>
+  <rect width="1120" height="465" rx="22" fill="#f2f7fb"/>
+  <text class="title" x="38" y="52">Connection ownership — every slot has one release path</text>
+  <rect class="box" x="40" y="126" width="190" height="100" rx="13"/><text class="label" x="135" y="168">FREE</text><text class="small" x="135" y="192">No descriptor</text>
+  <rect class="active" x="313" y="126" width="190" height="100" rx="13"/><text class="label" x="408" y="168">READING</text><text class="small" x="408" y="192">Header ≤ 4096 bytes</text>
+  <rect class="active" x="587" y="126" width="190" height="100" rx="13"/><text class="label" x="682" y="168">WRITING</text><text class="small" x="682" y="192">Short sends retried</text>
+  <rect class="box" x="860" y="126" width="218" height="100" rx="13"/><text class="label" x="969" y="168">COMPLETE</text><text class="small" x="969" y="192">Wire bytes accounted</text>
+  <path class="line" d="M230 176 H313"/><path class="line" d="M503 176 H587"/><path class="line" d="M777 176 H860"/>
+  <rect class="fail" x="428" y="303" width="250" height="101" rx="13"/><text class="label" x="553" y="341">FAILED</text><text class="small" x="553" y="369">Disconnect / timeout / I/O</text>
+  <path class="line error" d="M408 226 V280 H489 V303"/><path class="line error" d="M682 226 V280 H619 V303"/>
+  <path class="line" d="M553 404 V426 H135 V226"/>
+  <path class="line" d="M969 226 V425 H700"/>
+  <text class="small" x="750" y="443">Close the file, close the socket, clear the slot, then reuse.</text>
+</svg>

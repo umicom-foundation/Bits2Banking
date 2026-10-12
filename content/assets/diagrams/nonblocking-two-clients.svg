@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="470" viewBox="0 0 1120 470" role="img" aria-labelledby="title desc">
+  <title id="title">A slow TCP client does not block another ready client</title>
+  <desc id="desc">Client A sends a partial header and waits. Client B sends a complete HTTP request. One select reactor can answer B while A is waiting. The original blocking adapter is shown for contrast.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 Z" fill="#176f78"/></marker>
+    <style>text{font-family:Segoe UI,Arial,sans-serif;fill:#142d3c}.title{font-size:27px;font-weight:bold}.subtitle{font-size:16px;fill:#4d6272}.box{fill:#fff;stroke:#2e738e;stroke-width:2}.highlight{fill:#e5f8f4;stroke:#15856f;stroke-width:2}.wait{fill:#fff4da;stroke:#c38722;stroke-width:2}.label{font-size:19px;font-weight:bold}.small{font-size:15px}.line{fill:none;stroke:#176f78;stroke-width:3;marker-end:url(#arrow)}.dotted{stroke-dasharray:8 6}</style>
+  </defs>
+  <rect width="1120" height="470" rx="22" fill="#f3f8fc"/>
+  <text class="title" x="42" y="48">One thread, multiple connection lifetimes</text>
+  <text class="subtitle" x="42" y="80">The reactor responds to readiness, not to the order that clients arrived.</text>
+  <rect class="wait" x="40" y="122" width="256" height="94" rx="12"/>
+  <text class="label" x="62" y="154">Client A — incomplete</text><text class="small" x="62" y="180">Header fragment; waiting for</text><text class="small" x="62" y="199">final CRLF sequence</text>
+  <rect class="highlight" x="40" y="275" width="256" height="94" rx="12"/>
+  <text class="label" x="62" y="309">Client B — complete</text><text class="small" x="62" y="334">GET /health; ready for</text><text class="small" x="62" y="353">immediate parsing</text>
+  <rect class="box" x="430" y="160" width="292" height="170" rx="15"/>
+  <text class="label" x="456" y="192">C23 select() reactor</text>
+  <text class="small" x="456" y="224">READING: A and B</text><text class="small" x="456" y="252">WRITING: B (on readiness)</text><text class="small" x="456" y="281">8 bounded socket slots</text><text class="small" x="456" y="305">No worker threads</text>
+  <rect class="highlight" x="860" y="275" width="219" height="94" rx="12"/>
+  <text class="label" x="881" y="309">HTTP 200</text><text class="small" x="881" y="337">Client B progresses</text>
+  <path class="line dotted" d="M296 169 L430 205"/><path class="line" d="M296 322 L430 281"/><path class="line" d="M722 281 L860 321"/>
+  <text class="subtitle" x="45" y="424">Blocking adapter: A must finish or time out first. Optional reactor: B can finish while A waits.</text>
+</svg>

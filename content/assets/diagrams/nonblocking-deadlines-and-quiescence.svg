@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="490" viewBox="0 0 1120 490" role="img" aria-labelledby="title desc">
+  <title id="title">Separate idle, total and shutdown deadlines</title>
+  <desc id="desc">A connection begins with an overall ten-second budget. Successful progress renews a separate three-second idle budget, but does not reset total age. SIGINT stops admission and provides an eleven-second grace for already accepted connections.</desc>
+  <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 Z" fill="#237387"/></marker>
+    <style>text{font-family:Segoe UI,Arial,sans-serif;fill:#142f41}.title{font-size:27px;font-weight:bold}.label{font-size:18px;font-weight:bold}.small{font-size:15px;fill:#526b7e}.line{fill:none;stroke:#237387;stroke-width:3;marker-end:url(#arrow)}</style></defs>
+  <rect width="1120" height="490" rx="22" fill="#f2f8fb"/>
+  <text class="title" x="42" y="52">Connection deadlines and server quiescence</text>
+  <text class="small" x="42" y="84">Monotonic time prevents wall-clock changes from extending a connection lifetime.</text>
+  <text class="label" x="40" y="132">Connection lifetime</text>
+  <rect x="40" y="155" width="1018" height="56" rx="8" fill="#e3f3ff" stroke="#5284b0" stroke-width="2"/>
+  <rect x="40" y="155" width="310" height="56" rx="8" fill="#e4f5e9" stroke="#278269" stroke-width="2"/>
+  <text x="56" y="189" class="label">0 s: accepted</text><text x="370" y="189" class="small">Last successful read/write renews idle only</text>
+  <text x="906" y="189" class="label">10 s: total expiry</text>
+  <path d="M350 155 V136" stroke="#278269" stroke-width="3"/><text class="small" x="356" y="134">3 s idle boundary</text>
+  <text class="label" x="40" y="278">Graceful shutdown (independent)</text>
+  <rect x="40" y="300" width="272" height="72" rx="10" fill="#fff2dc" stroke="#b87c24" stroke-width="2"/>
+  <text class="label" x="57" y="331">Signal: stop admission</text><text class="small" x="57" y="354">No new clients</text>
+  <rect x="416" y="300" width="280" height="72" rx="10" fill="#e4f5e9" stroke="#278269" stroke-width="2"/>
+  <text class="label" x="430" y="331">Drain admitted clients</text><text class="small" x="430" y="354">Continue readiness + deadlines</text>
+  <rect x="790" y="300" width="284" height="72" rx="10" fill="#e3f3ff" stroke="#5284b0" stroke-width="2"/>
+  <text class="label" x="808" y="331">Release resources</text><text class="small" x="808" y="354">Max grace: 11 seconds</text>
+  <path class="line" d="M312 335 H416"/><path class="line" d="M696 335 H790"/>
+  <text class="small" x="42" y="430">Cancelled ≠ completed. The reactor closes each opened file and socket before returning.</text>
+  <text class="small" x="42" y="458">This is a local C23 teaching backend, not a public TLS server or financial transaction authority.</text>
+</svg>
