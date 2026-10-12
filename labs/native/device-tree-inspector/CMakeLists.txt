@@ -1,0 +1,23 @@
+# Bits2Banking — Device Tree Inspector
+# Sammy Hegab | Umicom Foundation | MIT
+cmake_minimum_required(VERSION 3.24)
+project(BtbFdtInspector LANGUAGES C)
+include(CTest)
+add_library(btb_fdt STATIC fdt.c fixture.c)
+target_include_directories(btb_fdt PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+set_target_properties(btb_fdt PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED ON C_EXTENSIONS OFF)
+add_executable(btb-fdt-demo main.c)
+add_executable(btb-fdt-test test_fdt.c)
+target_link_libraries(btb-fdt-demo PRIVATE btb_fdt)
+target_link_libraries(btb-fdt-test PRIVATE btb_fdt)
+if(MSVC)
+  target_compile_options(btb_fdt PRIVATE /W4)
+else()
+  target_compile_options(btb_fdt PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+endif()
+if(BUILD_TESTING)
+  add_test(NAME bits2banking.fdt.inspector COMMAND btb-fdt-test)
+  add_test(NAME bits2banking.fdt.demo COMMAND btb-fdt-demo)
+  set_tests_properties(bits2banking.fdt.demo PROPERTIES
+    PASS_REGULAR_EXPRESSION "VirtIO MMIO candidates: 1")
+endif()

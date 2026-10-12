@@ -1,0 +1,23 @@
+# Bits2Banking — Virtqueue Lifetime Laboratory
+# Sammy Hegab | Umicom Foundation | MIT
+cmake_minimum_required(VERSION 3.24)
+project(BtbVirtqueueLifetime LANGUAGES C)
+include(CTest)
+add_library(btb_virtqueue_lifetime STATIC queue.c)
+target_include_directories(btb_virtqueue_lifetime PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+set_target_properties(btb_virtqueue_lifetime PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED ON C_EXTENSIONS OFF)
+add_executable(btb-vq-demo main.c)
+add_executable(btb-vq-test test_queue.c)
+target_link_libraries(btb-vq-demo PRIVATE btb_virtqueue_lifetime)
+target_link_libraries(btb-vq-test PRIVATE btb_virtqueue_lifetime)
+if(MSVC)
+  target_compile_options(btb_virtqueue_lifetime PRIVATE /W4)
+else()
+  target_compile_options(btb_virtqueue_lifetime PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+endif()
+if(BUILD_TESTING)
+  add_test(NAME bits2banking.virtqueue.lifetime COMMAND btb-vq-test)
+  add_test(NAME bits2banking.virtqueue.demo COMMAND btb-vq-demo)
+  set_tests_properties(bits2banking.virtqueue.demo PROPERTIES
+      PASS_REGULAR_EXPRESSION "device completion was still observed")
+endif()

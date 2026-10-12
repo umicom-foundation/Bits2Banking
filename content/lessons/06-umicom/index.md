@@ -56,3 +56,8 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## Read Umicom Kernel block-device ownership
 
 - [126. Follow device requests through Umicom Kernel](126-follow-umicom-kernel-device-requests.md) — compare classroom completions with the real VirtIO request, timeout, reset and FLUSH contracts.
+
+
+## Device discovery and VirtIO in the actual Kernel
+
+- [131. Follow device discovery and VirtIO ownership in Umicom Kernel](131-read-umicom-kernel-device-discovery.md) — read the real hardware catalogue, bus translation, transport qualification, device queue and reset contracts without changing the Kernel repository.

@@ -99,3 +99,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 40 — Follow a device request through C23](scripts/40-follow-a-device-request-through-c23.md) (approximately 10–13 minutes): from a Notes Save request to a collected completion.
 - [Episode 41 — Cancellation, completion queues and Kernel drivers](scripts/41-cancellation-completions-and-kernel-drivers.md) (approximately 11–15 minutes): cancellation races, read-only traces, VirtIO reset ownership and durability boundaries.
+
+
+## Hardware discovery and DMA ownership
+
+- [Episode 42 — How does a kernel find a storage device?](scripts/42-understand-device-trees-and-mmio.md) (12–15 minutes): FDT bytes, MMIO admission and a C23 parser demonstration.
+- [Episode 43 — DMA ownership, VirtIO queues and safe completion](scripts/43-dma-ownership-and-virtio-queues.md) (13–16 minutes): copied buffers, cancellation and reset with the native C23 lab.

@@ -134,3 +134,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [123. Build a bounded completion queue](123-build-a-bounded-completion-queue.md) — implement a copied FIFO ring that does not overwrite accepted results.
 - [124. Cancel, quiesce and release device work](124-cancel-quiesce-and-release-device-work.md) — distinguish cancellation intent, terminal completion and safe resource release.
 - [125. Inspect a device I/O trace in native C23](125-inspect-device-io-traces-in-c23.md) — use a bounded read-only state-machine validator.
+
+
+## Device discovery, memory-mapped I/O and VirtIO
+
+- [127. Discover hardware by reading a device tree in C23](127-inspect-device-tree-in-c23.md) — inspect a bounded FDT blob without touching hardware.
+- [128. MMIO and transport feature negotiation](128-mmio-and-transport-negotiation.md) — understand register addresses, permissions and supported device features.
+- [129. DMA buffer ownership](129-dma-buffer-ownership.md) — keep shared buffers alive after publication, cancellation and timeout.
+- [130. VirtIO split queues in C23](130-understand-virtio-split-queues.md) — build a safe classroom queue and check completion ownership.

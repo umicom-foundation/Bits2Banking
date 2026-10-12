@@ -300,3 +300,16 @@ is not an MMIO capability, how drivers negotiate safe transport features, and
 when a DMA-capable device may still own a buffer. Reference the actual
 Umicom Kernel hardware catalogue and VirtIO implementation without copying
 privileged production mechanisms into the classroom laboratories.
+
+
+## Update 20 — Device discovery, MMIO and VirtIO (Bits2Banking only)
+
+**Curriculum:** Chapters 127–131 cover FDT firmware descriptions, checked big-endian structure parsing, memory-mapped I/O and feature negotiation, DMA-buffer ownership, VirtIO split queues and the corresponding authoritative Umicom Kernel source. Episodes 42–43 provide complete demonstrations. Three editable SVG diagrams connect firmware description to driver admission and copied-buffer lifetimes.
+
+**Native practice:** The `device-tree-inspector` standalone C23 laboratory inspects an explicitly bounded synthetic FDT image and rejects malformed header, reservations and structure input. The `virtqueue-lifetime` standalone C23 laboratory simulates descriptor submission, FIFO completion, generation-tagged tokens, cancellation, reset and buffer retention. Both use CMake and CTest and contain no privileged device access.
+
+**Repository boundary:** This update changes **only Umicom-Bits2Banking**. Umicom Framework, Umicom Applications, Umicom OS and Umicom Kernel remain read-only educational references. No new commands, APIs, modules or build targets are added to any of those repositories.
+
+**Acceptance:** The four new CTest checks must pass on the contributor's Windows UCRT64 toolchain. Compiler warnings, malformed input and negative cases are part of the curriculum. Existing chapters 1–126 and the Islam: Blueprint for Life volume remain navigable. The complete MkDocs build is a separate acceptance step.
+
+**Next: Update 21 — Persistent storage, filesystem structures and durable publication.** Examine sectors, filesystem metadata, ordered writes, flush, journal concepts, retention and recovery, using the current Umicom Kernel filesystem/storage documentation as a source. Continue with C23 and Assembly where appropriate; make no changes outside Bits2Banking unless explicitly authorised.

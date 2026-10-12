@@ -105,3 +105,9 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 - [Completion Queue](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/completion-queue) — four-slot C23 FIFO with copied results, full/empty checks and wraparound tests; [Lesson 123](../lessons/05-engineering/123-build-a-bounded-completion-queue.md).
 - [I/O Request Lifecycle](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/io-request-lifecycle) — reuse the same queue for admission, cancellation, terminal completion and quiescent release; [Lessons 122–124](../lessons/05-engineering/122-device-io-from-submit-to-completion.md).
 - [Native device trace inspector](../lessons/05-engineering/125-inspect-device-io-traces-in-c23.md) — read deterministic teaching records without issuing real I/O.
+
+
+## Device discovery and VirtIO ownership
+
+- [Read a synthetic Flattened Device Tree in C23](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/device-tree-inspector) — build a bounded FDT reader with big-endian decoding and malformed-input tests. Begin with [Chapter 127](../lessons/05-engineering/127-inspect-device-tree-in-c23.md).
+- [Model a device queue and DMA-buffer lifetime](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/virtqueue-lifetime) — learn copied ownership, publication, completion, cancellation and reset acknowledgement. Begin with [Chapter 130](../lessons/05-engineering/130-understand-virtio-split-queues.md).
