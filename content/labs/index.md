@@ -92,3 +92,9 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 - [Interrupt-ownership laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/interrupt-ownership) — a small C23 source-lease model with checked owner/generation tokens; no privileged instructions.
 - [Service-recovery laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/service-recovery) — reuse the same ownership library, retain an accepted Notes revision and explicitly retry only unfinished work.
 - [Framework C23 interrupt trace inspector](../lessons/05-engineering/115-inspect-interrupt-ownership-traces.md) — examine 20 fictional events using `umicom-education interrupt-trace --file`.
+
+
+## Driver lifetimes and diagnostic retention
+
+- [Driver lifecycle laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/driver-lifecycle) — compose the existing C23 service recovery and interrupt owner libraries; test explicit retries and safe stop.
+- [Bounded diagnostic-ring laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/diagnostic-ring) — implement an eight-slot C23 ring with overwrite accounting and copied snapshots.

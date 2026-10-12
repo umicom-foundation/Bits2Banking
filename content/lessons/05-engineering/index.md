@@ -119,3 +119,10 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [114. Restore a service after a failure](114-restore-a-service-after-failure.md) — compose one reusable C23 ownership model with an explicit in-memory revision checkpoint.
 - [115. Inspect interrupt ownership traces](115-inspect-interrupt-ownership-traces.md) — decode a bounded binary source trace with a Framework-owned read-only C23 command.
 - [116. Follow the real Umicom Kernel interrupt source](../06-umicom/116-read-umicom-kernel-interrupt-and-recovery.md) — read the actual RISC-V Assembly and C23 authority checks.
+
+## Diagnostics, driver lifetimes and retained evidence
+
+- [117. Understand interrupt diagnostics and event order](117-interrupt-diagnostics-and-event-order.md) — reconstruct an incident from owner, generation and sequence values.
+- [118. Build a driver lifecycle from reusable C23 services](118-build-a-driver-lifecycle.md) — combine existing ownership and service-recovery contracts into one fictional driver.
+- [119. Keep diagnostic records in a bounded C23 ring](119-keep-diagnostics-in-a-bounded-ring.md) — bound memory usage, account for overwritten records and return owned snapshots.
+- [120. Inspect a chained evidence trace with SHA-256](120-inspect-a-chained-evidence-trace.md) — validate a versioned, read-only file with explicit hash-chain and state checks.

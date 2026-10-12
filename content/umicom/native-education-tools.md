@@ -256,3 +256,18 @@ ctest --test-dir ".\build\umicom-education" -R "framework\.education\.interrupt_
 ```
 
 CTest produces the fictional file before the CLI consumer through a fixture dependency. See [Lesson 115](../lessons/05-engineering/115-inspect-interrupt-ownership-traces.md) and the actual [Umicom Kernel interrupt ownership guide](https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/INTERRUPT_OWNERSHIP.md).
+
+
+## Inspect a fictional driver evidence file
+
+The native Framework command `umicom-education evidence-trace --file PATH` checks
+a bounded `UMIEVD1` teaching file without executing its contents. A fixed-size
+header, checked 80-byte records, strict driver-state transitions, owner and
+generation identity, a logical tick and a SHA-256 digest chain are validated
+before a complete report is published. The test suite generates an example
+file with spaces in its path. It does not read real interrupt state, prove
+that a trusted producer authored the file, persist documents or carry out a
+real driver recovery.
+
+Learn from [Chapter 120](../lessons/05-engineering/120-inspect-a-chained-evidence-trace.md)
+and the [native C23 header contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/education/evidence_trace.h).

@@ -46,3 +46,8 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## Interrupt ownership and service recovery
 
 - [116. Read Umicom Kernel interrupt ownership and recovery](116-read-umicom-kernel-interrupt-and-recovery.md) — follow `kernel/interrupts.c`, the RISC-V trap boundary, fault policy and cancellation ownership. Keep the classroom source-trace format separate from a real Kernel event log.
+
+
+## Driver and interrupt internals
+
+- [121. Follow real Umicom Kernel driver and interrupt boundaries](121-kernel-driver-and-interrupt-boundaries.md) — read the C23 and RISC-V Assembly implementation without replacing the authoritative Kernel services.

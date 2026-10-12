@@ -87,3 +87,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 36 — Who owns a hardware interrupt?](scripts/36-who-owns-a-hardware-interrupt.md) (13–17 minutes): source leases, masking, critical sections and actual Umicom Kernel contracts.
 - [Episode 37 — Recover a service and inspect interrupt traces](scripts/37-recover-a-service-and-inspect-interrupt-traces.md) (14–18 minutes): accepted Notes revisions, explicitly reviewed retry, safe byte parsing and Kernel source boundaries.
+
+
+## Interrupt diagnostics and driver lifetimes
+
+- [Episode 38 — Trace a device fault with C23](scripts/38-trace-a-device-fault-with-c23.md) — approximately 12–15 minutes, ordered observations and a SHA-256-linked classroom trace.
+- [Episode 39 — Driver lifetimes and retained evidence](scripts/39-driver-lifetimes-and-retained-evidence.md) — approximately 14–18 minutes, a reusable C23 driver model, bounded diagnostics and authoritative Kernel references.

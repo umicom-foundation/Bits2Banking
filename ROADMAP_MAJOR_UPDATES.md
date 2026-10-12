@@ -233,3 +233,36 @@ state, and continue checking against the authoritative Umicom Kernel source.
 **Acceptance:** 26 Framework Education CTest cases, two CTest cases per new laboratory, GCC C23 and Clang ASan/UBSan qualification, preserved existing navigation and Islam volume manuscripts, validated SVG diagrams and local reviewer build of the complete MkDocs website. Linux acceptance does not imply Windows UCRT64 or QEMU acceptance. No Python/C++/JavaScript implementation code is added by this update; existing publishing infrastructure and other-language educational material remain intact.
 
 **Next: Update 18 — Interrupt diagnostics, driver lifetimes and retained evidence.** Extend learning into reviewable stop/restart diagnostics, bounded service snapshots and safely published device events. The native educational models must stay distinct from the authoritative Kernel and Framework services.
+
+## Update 18 — Driver lifetimes, diagnostics and reviewed evidence
+
+**Framework:** Add `umicom-education evidence-trace --file PATH`, a read-only
+C23 inspector of a 24-byte `UMIEVD1` header and bounded 80-byte records.
+Each record's metadata is linked to the previous digest through Framework's
+existing SHA-256 implementation. Driver slots, owner identity, increasing
+generations, ordered observations, checkpoints and stop/release transitions
+are checked before a complete report is published. Hash chaining detects
+changed bytes but does not authenticate the producer, and a recovery record
+is not proof of physical repair. Two focused CTest cases check the parser
+and CLI fixture, with 10,000 repeatable damaged-input mutations.
+
+**Curriculum:** Chapters 117–121 teach ordered interrupt diagnostics,
+composing a driver lifetime from the earlier `service-recovery` and
+`interrupt-ownership` libraries, fixed-capacity diagnostic rings,
+SHA-256-linked classroom traces and the authoritative C23/Assembly source
+of Umicom Kernel. Videos 38–39 and three SVG diagrams accompany the new
+lessons. Existing books, historical manuscripts, Python-based MkDocs and
+other-language chapters remain untouched. All new executable implementation
+code is C23; CMake remains the build-system language.
+
+**Acceptance:** 28 standalone Framework Education tests, two new driver
+tests plus the two inherited service-recovery tests, two diagnostic-ring
+tests, GCC and Clang ASan/UBSan qualification, preserved prior site
+navigation and Islam chapters, valid SVGs, and Windows UCRT64/MkDocs
+qualification by the maintainer. No existing code or configuration lines
+are removed or disabled by this update.
+
+**Next: Update 19 — Device I/O, driver request lifetimes and bounded
+completion queues.** Connect checked device requests to cancellation,
+completion and explicit resource release without duplicating authoritative
+Umicom Kernel device services.

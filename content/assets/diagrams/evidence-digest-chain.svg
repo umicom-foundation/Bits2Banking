@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 395" role="img" aria-labelledby="title desc">
+  <title id="title">How a classroom evidence file chains record digests</title>
+  <desc id="desc">Each record's 48-byte metadata and the previous 32-byte digest are hashed to produce its stored 32-byte SHA-256 digest. It detects changed bytes but cannot authenticate the producer.</desc>
+  <defs><marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#59758b"/></marker></defs>
+  <rect width="1100" height="395" fill="#f5f8fa"/>
+  <text x="36" y="47" font-family="Segoe UI,Arial,sans-serif" font-size="28" font-weight="700" fill="#203247">A linked sequence of SHA-256 digests</text>
+  <text x="36" y="75" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#526575">A record has 48 bytes of metadata and 32 bytes of digest; all preceding bytes affect the later checks.</text>
+  <g font-family="Segoe UI,Arial,sans-serif" text-anchor="middle">
+   <rect x="30" y="110" width="312" height="160" rx="12" fill="#ffffff" stroke="#c0d2dc" stroke-width="2"/>
+   <rect x="394" y="110" width="312" height="160" rx="12" fill="#ffffff" stroke="#c0d2dc" stroke-width="2"/>
+   <rect x="758" y="110" width="312" height="160" rx="12" fill="#ffffff" stroke="#c0d2dc" stroke-width="2"/>
+   <text x="186" y="140" font-size="20" font-weight="700" fill="#203247">RECORD 1</text>
+   <text x="550" y="140" font-size="20" font-weight="700" fill="#203247">RECORD 2</text>
+   <text x="914" y="140" font-size="20" font-weight="700" fill="#203247">RECORD 3</text>
+   <g font-size="15" fill="#203247">
+     <rect x="55" y="155" width="262" height="36" rx="6" fill="#dcecf0"/><text x="186" y="178">48-byte metadata</text>
+     <rect x="419" y="155" width="262" height="36" rx="6" fill="#dcecf0"/><text x="550" y="178">48-byte metadata</text>
+     <rect x="783" y="155" width="262" height="36" rx="6" fill="#dcecf0"/><text x="914" y="178">48-byte metadata</text>
+     <rect x="55" y="206" width="262" height="44" rx="6" fill="#203247"/><text x="186" y="234" fill="#fff">digest 1</text>
+     <rect x="419" y="206" width="262" height="44" rx="6" fill="#203247"/><text x="550" y="234" fill="#fff">digest 2</text>
+     <rect x="783" y="206" width="262" height="44" rx="6" fill="#203247"/><text x="914" y="234" fill="#fff">digest 3</text>
+   </g>
+  </g>
+  <g stroke="#59758b" stroke-width="3" fill="none" marker-end="url(#ar)">
+    <path d="M318 227 H419"/><path d="M682 227 H782"/>
+  </g>
+  <g font-family="Consolas,monospace" font-size="13" text-anchor="middle" fill="#35495d">
+   <text x="186" y="294">SHA256(zeros || metadata1)</text>
+   <text x="550" y="294">SHA256(digest1 || metadata2)</text>
+   <text x="914" y="294">SHA256(digest2 || metadata3)</text>
+  </g>
+  <rect x="30" y="320" width="1040" height="55" rx="8" fill="#fff1d6"/>
+  <text x="50" y="341" font-family="Segoe UI,Arial,sans-serif" font-weight="700" font-size="15" fill="#765022">Important limitation</text>
+  <text x="50" y="362" font-family="Segoe UI,Arial,sans-serif" font-size="14" fill="#765022">Hashes detect changed bytes; a person able to rewrite all records can calculate a different valid chain.</text>
+</svg>
