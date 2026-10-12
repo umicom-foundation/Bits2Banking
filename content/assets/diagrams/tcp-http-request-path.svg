@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 480" role="img" aria-labelledby="title desc">
+<title id="title">A loopback TCP request passes through framing, HTTP validation and routing</title>
+<desc id="desc">Browser connects to a socket at 127.0.0.1, sends request bytes possibly in chunks, C code detects CRLFCRLF, validates Host and request line, selects a fixed route and returns a response then closes the connection.</desc>
+<defs><style>.bg{fill:#f4f8fb}.cell{fill:white;stroke:#95b4c9;stroke-width:2}.alt{fill:#e9f5f1;stroke:#29917c;stroke-width:2}.warn{fill:#fff3dd;stroke:#c18b29;stroke-width:2}.h{font:700 26px 'Segoe UI',Arial,sans-serif;fill:#15384f}.head{font:650 18px 'Segoe UI',Arial,sans-serif;fill:#173850}.detail{font:16px 'Segoe UI',Arial,sans-serif;fill:#35546b}.line{stroke:#3d778f;stroke-width:3;marker-end:url(#a);fill:none}</style><marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 0 9" fill="#3d778f"/></marker></defs>
+<rect class="bg" width="1160" height="480" rx="20"/>
+<text x="42" y="54" class="h">How a small C23 web server answers a request</text>
+<rect x="40" y="100" width="196" height="165" rx="14" class="cell"/><text x="58" y="134" class="head">Browser / client</text><text x="58" y="169" class="detail">GET /health</text><text x="58" y="195" class="detail">Host: localhost</text><text x="58" y="227" class="detail">TCP byte stream</text>
+<rect x="274" y="100" width="196" height="165" rx="14" class="alt"/><text x="292" y="134" class="head">Native socket</text><text x="292" y="169" class="detail">127.0.0.1 only</text><text x="292" y="195" class="detail">Receive ≤ 4096 B</text><text x="292" y="227" class="detail">3-second timeout</text>
+<rect x="509" y="100" width="196" height="165" rx="14" class="warn"/><text x="527" y="134" class="head">HTTP validator</text><text x="527" y="169" class="detail">Complete headers?</text><text x="527" y="195" class="detail">Exact Host?</text><text x="527" y="227" class="detail">GET or HEAD?</text>
+<rect x="745" y="100" width="176" height="165" rx="14" class="cell"/><text x="762" y="134" class="head">Fixed router</text><text x="762" y="169" class="detail">/ → HTML</text><text x="762" y="195" class="detail">/health → JSON</text><text x="762" y="227" class="detail">Other → 404</text>
+<rect x="960" y="100" width="158" height="165" rx="14" class="alt"/><text x="975" y="134" class="head">Response</text><text x="975" y="169" class="detail">HTTP status</text><text x="975" y="195" class="detail">Length + type</text><text x="975" y="227" class="detail">Close socket</text>
+<path d="M236 182 H270" class="line"/><path d="M470 182 H505" class="line"/><path d="M705 182 H741" class="line"/><path d="M921 182 H956" class="line"/>
+<rect x="43" y="310" width="1072" height="103" rx="13" class="warn"/>
+<text x="62" y="348" class="head">Why framing matters</text>
+<text x="62" y="377" class="detail">TCP can deliver one HTTP request in several reads. The server waits for CRLF CRLF before parsing.</text>
+<text x="62" y="401" class="detail">An unknown body length, duplicate Host or oversized header is refused before routing.</text>
+<text x="45" y="455" class="detail">Local learning server only · no HTTPS, uploads, file serving or exposure to a public network</text>
+</svg>

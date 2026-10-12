@@ -128,3 +128,8 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [VFS descriptors and RAM-backed Notes](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/vfs-descriptors) — build a C23 VFS, duplicate descriptors, share offsets and safely unlink a file that remains open.
 - [Two VFS providers and safe release](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/vfs-provider-composition) — reuse that VFS with an independent read-only provider and test recovery from a refused final release.
+
+## Process file services and local networking
+
+- [Process-owned file service in C23](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/process-file-services) — reuse the previous VFS library to check process byte ranges, copied pathnames, file descriptors and lifetime cleanup. Start with [Chapter 147](../lessons/05-engineering/147-process-owned-file-services.md).
+- [Native loopback HTTP server in C23](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-loopback-server) — bind `127.0.0.1`, parse limited HTTP/1.1 GET/HEAD requests and answer fixed routes. Start with [Chapter 149](../lessons/05-engineering/149-tcp-ip-and-native-c23-sockets.md).

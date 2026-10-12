@@ -123,3 +123,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 48 — How a programme opens a file](scripts/48-virtual-filesystems-paths-and-descriptors.md) (12–16 minutes): from a pathname to a mount and a client-owned descriptor.
 - [Episode 49 — File providers, unlink and Umicom Kernel](scripts/49-file-providers-unlink-and-kernel-vfs.md) (14–19 minutes): reusable C23 providers, read-only rights, release failures and Kernel source.
+
+## Native file services and C23 networking
+
+- [Episode 50 — How a process opens a file safely](scripts/50-process-owned-files-and-safe-copies.md) (15–19 minutes): bound process byte ranges, copied requests and VFS descriptor lifetime.
+- [Episode 51 — Build a local HTTP server in C23](scripts/51-build-a-local-http-server-in-c23.md) (18–23 minutes): loopback sockets, strict request framing, fixed routes and actual responses.

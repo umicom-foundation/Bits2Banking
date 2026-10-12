@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 540" role="img" aria-labelledby="title desc">
+<title id="title">From a process file request to a mounted Notes provider</title>
+<desc id="desc">A fictional process sends byte offsets. The checked adapter copies the full request and binds a trusted identity before the VFS chooses a provider. Result bytes are copied back after a successful read.</desc>
+<defs><style>
+  .bg{fill:#f3f7fa}.panel{fill:#fff;stroke:#b9cad7;stroke-width:2}.blue{fill:#e3f2f9;stroke:#337a9b;stroke-width:2}.teal{fill:#e8f7f2;stroke:#249076;stroke-width:2}.amber{fill:#fff5de;stroke:#bc8524;stroke-width:2}
+  .h{font:700 24px 'Segoe UI',Arial,sans-serif;fill:#18344c}.m{font:600 20px 'Segoe UI',Arial,sans-serif;fill:#18344c}.s{font:17px 'Segoe UI',Arial,sans-serif;fill:#344f65}.arrow{stroke:#49748e;stroke-width:3;fill:none;marker-end:url(#tip)}
+</style><marker id="tip" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 0 9" fill="#49748e"/></marker></defs>
+<rect class="bg" width="1100" height="540" rx="18"/>
+<text x="45" y="52" class="h">A process file request has three ownership boundaries</text>
+<rect x="42" y="95" width="275" height="260" rx="15" class="blue"/>
+<text x="64" y="134" class="m">Fictional user process</text>
+<text x="64" y="169" class="s">User byte array (512 bytes)</text>
+<text x="64" y="203" class="s">offset: 128</text><text x="64" y="231" class="s">length: 24</text>
+<text x="64" y="277" class="s">No host pointer passes</text><text x="64" y="302" class="s">through the request.</text>
+<rect x="409" y="95" width="284" height="260" rx="15" class="amber"/>
+<text x="430" y="134" class="m">Checked file adapter</text>
+<text x="430" y="170" class="s">1. Check range by subtraction</text>
+<text x="430" y="203" class="s">2. Copy into local staging</text>
+<text x="430" y="236" class="s">3. Use trusted identity 11</text>
+<text x="430" y="269" class="s">4. Preserve output on failure</text>
+<rect x="781" y="95" width="278" height="260" rx="15" class="teal"/>
+<text x="803" y="134" class="m">VFS and Notes provider</text>
+<text x="803" y="171" class="s">Mount: /notes</text>
+<text x="803" y="204" class="s">Descriptor: generation + slot</text>
+<text x="803" y="237" class="s">Provider: copied Notes bytes</text>
+<text x="803" y="270" class="s">Position belongs to</text><text x="803" y="295" class="s">the open description.</text>
+<path class="arrow" d="M317 207 H404"/><path class="arrow" d="M693 207 H776"/>
+<path class="arrow" d="M781 332 H693"/><path class="arrow" d="M409 332 H317"/>
+<text x="42" y="409" class="m">Accepted call:</text><text x="208" y="409" class="s">result bytes are copied into the validated user range.</text>
+<text x="42" y="451" class="m">Refused call:</text><text x="205" y="451" class="s">no partial reply is published; an invalid range is never dereferenced.</text>
+<text x="42" y="496" class="s">Training model: no real syscall, virtual-memory mapping or concurrent kernel execution.</text>
+</svg>

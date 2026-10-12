@@ -169,3 +169,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [144. Build a Notes filesystem provider](144-build-a-notes-filesystem-provider.md) — copy bytes, preserve an unlinked open file and reject oversized writes.
 - [145. Connect two storage providers](145-compose-two-filesystem-providers.md) — reuse one VFS with editable Notes and a read-only reference library.
 - [146. Follow the Umicom Kernel VFS](146-follow-the-umicom-kernel-vfs.md) — examine the actual Kernel VFS, RAMFS, FAT16 and user-file ownership source.
+
+## Process-owned files and networking in C23
+
+- [147. How a process reads a file safely](147-process-owned-file-services.md) — trust boundaries, checked byte offsets and an actual VFS file read.
+- [148. Checked copies and file lifetimes](148-checked-file-copies-and-descriptor-lifetimes.md) — accepted results, generation-tagged handles, cleanup and preserved output on refusal.
+- [149. TCP/IP and native sockets](149-tcp-ip-and-native-c23-sockets.md) — IP addresses, ports, byte streams and an IPv4 loopback listener.
+- [150. Parse HTTP/1.1 bytes safely](150-parse-http11-request-bytes-safely.md) — exact CRLF framing, counted buffers, Host checks, GET/HEAD and error responses.
+- [151. Read the Umicom Kernel and Framework sources](151-connect-vfs-and-networking-to-umicom-source.md) — compare education-sized interfaces with the authoritative system components.
