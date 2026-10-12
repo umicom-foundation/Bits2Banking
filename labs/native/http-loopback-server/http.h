@@ -9,7 +9,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #define BTB_HTTP_MAX_HEADER 4096U
-#define BTB_HTTP_MAX_PATH 128U
+#define BTB_HTTP_FIXED_PATH_LIMIT 128U
+#define BTB_HTTP_MAX_PATH 1024U
 
 typedef enum BtbHttpResult {
     BTB_HTTP_OK = 0,
@@ -35,6 +36,16 @@ typedef struct BtbHttpRequest {
  * out is unchanged, so a partial parser cannot publish an accepted request. */
 BtbHttpResult BtbHttpParse(const unsigned char *bytes, size_t byteCount,
                            BtbHttpRequest *out);
+/* Extend the same parser for static-site paths with dot filenames and escaped
+ * path bytes. This does not change the legacy fixed-route parser's acceptance
+ * rules. The query is not part of the selected filesystem path. */
+BtbHttpResult BtbHttpParseForFiles(const unsigned char *bytes, size_t byteCount,
+                                   BtbHttpRequest *out);
+/* Build static-file response headers only. The socket owner streams body bytes
+ * separately; HEAD advertises the complete length but transmits no body. */
+int BtbHttpStaticHeaders(unsigned code, const char *mediaType, uint64_t bodyBytes,
+                         char *buffer, size_t capacity, size_t *outBytes);
+
 /* Generates headers plus the body in a single caller buffer; HEAD has the same
  * Content-Length as GET but sends no body. Refusals leave outputs unchanged. */
 int BtbHttpRespond(const BtbHttpRequest *request, BtbHttpResult parseResult,

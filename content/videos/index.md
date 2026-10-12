@@ -128,3 +128,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 50 — How a process opens a file safely](scripts/50-process-owned-files-and-safe-copies.md) (15–19 minutes): bound process byte ranges, copied requests and VFS descriptor lifetime.
 - [Episode 51 — Build a local HTTP server in C23](scripts/51-build-a-local-http-server-in-c23.md) (18–23 minutes): loopback sockets, strict request framing, fixed routes and actual responses.
+
+## Native HTTP static-file serving
+
+- [Episode 52 — From a website file to a C23 server](scripts/52-from-a-website-file-to-a-c23-server.md) (approximately 10–14 minutes with demonstrations): retain the original C23 HTTP routes, select an absolute site directory, serve HTML/CSS and refuse traversal paths.
+- [Episode 53 — Stream files and compare Umicom web services](scripts/53-stream-files-and-compare-umicom-web-services.md) (approximately 11–15 minutes with demonstrations): byte counts, GET/HEAD, disconnections, Kernel VFS and Framework HTTP source references.

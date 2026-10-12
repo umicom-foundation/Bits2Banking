@@ -133,3 +133,9 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Process-owned file service in C23](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/process-file-services) — reuse the previous VFS library to check process byte ranges, copied pathnames, file descriptors and lifetime cleanup. Start with [Chapter 147](../lessons/05-engineering/147-process-owned-file-services.md).
 - [Native loopback HTTP server in C23](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-loopback-server) — bind `127.0.0.1`, parse limited HTTP/1.1 GET/HEAD requests and answer fixed routes. Start with [Chapter 149](../lessons/05-engineering/149-tcp-ip-and-native-c23-sockets.md).
+
+## Static website preview using the existing C23 HTTP server
+
+The [native loopback HTTP server](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-loopback-server) now accepts an **optional read-only static document root**. Without `--root`, all earlier fixed routes and tests remain unchanged. With it, the same C23 listener uses checked URL paths, no-follow file handles, explicit MIME types, GET/HEAD semantics and 8 KiB streaming buffers.
+
+Start with [Chapter 152](../lessons/05-engineering/152-serve-a-static-website-in-c23.md). The `sample_site/` folder contains a complete small HTML/CSS demonstration. Six CTests include two tests for the new static-file facilities, and the website preview can also serve the generated `site/` directory after MkDocs has completed successfully.

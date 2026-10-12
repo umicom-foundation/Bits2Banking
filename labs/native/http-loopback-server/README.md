@@ -46,3 +46,67 @@ Invoke-WebRequest -Uri "http://127.0.0.1:8765/health" | Select-Object StatusCode
 The server accepts only GET/HEAD with one Host header naming `localhost` or `127.0.0.1`. Header bytes are limited to 4 KiB and request bodies, HTTP pipelining, query parameters and URL decoding are deliberately unsupported. Connections use a bounded receive/send timeout and are closed after one response. It supports IPv4 only, processes clients serially and deliberately provides **no live reloading, file serving, dynamic routes or HTTPS**.
 
 For production web services, use a mature supported HTTP stack or the vetted Umicom Framework web services; this educational implementation is not a substitute.
+
+## 5. Serve a static website (Update 25)
+
+The original two fixed routes remain the default. To serve files instead,
+provide the **absolute** path of a directory containing `index.html`. An
+included sample website is in `sample_site/`. No site generation is required.
+
+```powershell
+Set-Location "C:\umicom\Umicom-Bits2Banking"
+$Root = (Resolve-Path ".\labs\native\http-loopback-server\sample_site").Path
+& ".\output\learning-build\http-loopback-server\btb-http-server.exe" `
+    --port 8765 --root $Root
+```
+
+Open `http://127.0.0.1:8765/`, then `http://127.0.0.1:8765/assets/site.css`.
+The established `/health` route also remains available.
+
+To preview a generated MkDocs website, first build it with the existing MkDocs
+installation, then select that **generated** folder rather than the repository
+root. This example does not invoke Python or modify the generated website.
+
+```powershell
+Set-Location "C:\umicom\Umicom-Bits2Banking"
+& ".\.venv\Scripts\python.exe" -m mkdocs build --strict
+if ($LASTEXITCODE -ne 0) { throw "MkDocs build failed." }
+$Root = (Resolve-Path ".\site").Path
+& ".\output\learning-build\http-loopback-server\btb-http-server.exe" `
+    --port 8765 --root $Root
+```
+
+The static mode deliberately limits URLs to portable ASCII path characters,
+one percent-decode pass, and 1023 bytes of path storage. The current lesson does
+not serve Unicode filenames, URLs containing spaces or their escaped forms,
+directory listings, symbolic links, `.git` files, uploads, dynamic PHP or CGI.
+Encoded dot characters may be used within legitimate filenames; dot segments
+such as `..`, including `%2e%2e`, are refused. The browser may use query
+parameters; they are ignored when selecting a file.
+
+Regular files are streamed in 8 KiB blocks, with a 64 MiB per-file cap and a
+10-second overall client deadline. HTTP HEAD sends headers with the same
+`Content-Length` as GET and no body. Short sends are retried; a disconnected
+client ends that response and closes the file handle. These limits suit a local
+exercise, not public hosting or adversarial multi-user workloads.
+
+The generated website must contain its own HTML, styles and scripts. Its files
+remain under the selected folder, and the native server never runs those files
+as programs. Strict local Content Security Policy may also block remote fonts
+or services used by a third-party theme.
+
+## 6. Verify static-file safety
+
+```powershell
+ctest --test-dir ".\output\learning-build\http-loopback-server" `
+    --output-on-failure
+```
+
+Two additional CTests cover static-target parsing and rooted-file access.
+Inspect `test_static.c` for a 151,241-byte streamed file, percent-encoded path
+refusals, MIME responses and, where available, symlink rejection. Windows tests
+should be run on your UCRT64 machine before relying on its platform-specific
+reparse-point and resolved-handle checks.
+
+Continue with [Chapter 152](../../../content/lessons/05-engineering/152-serve-a-static-website-in-c23.md)
+from the Bits2Banking website.

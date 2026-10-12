@@ -177,3 +177,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [149. TCP/IP and native sockets](149-tcp-ip-and-native-c23-sockets.md) — IP addresses, ports, byte streams and an IPv4 loopback listener.
 - [150. Parse HTTP/1.1 bytes safely](150-parse-http11-request-bytes-safely.md) — exact CRLF framing, counted buffers, Host checks, GET/HEAD and error responses.
 - [151. Read the Umicom Kernel and Framework sources](151-connect-vfs-and-networking-to-umicom-source.md) — compare education-sized interfaces with the authoritative system components.
+
+## Static websites and safe native HTTP file serving
+
+- [152. Serve an ordinary website in C23](152-serve-a-static-website-in-c23.md) — build the existing server with a read-only document root and serve HTML and CSS.
+- [153. HTTP paths, MIME and safe file selection](153-safe-http-paths-and-mime-types.md) — decode paths once, reject traversal and explain file content types.
+- [154. Stream static files and support HEAD](154-stream-static-files-and-head.md) — transfer binary files in bounded chunks, track the exact Content-Length and handle disconnection.
+- [155. Test a local web server safely](155-test-a-local-web-server-safely.md) — reproduce permitted and rejected requests and distinguish parser, file and network failures.
+- [156. Follow static files through Umicom](156-follow-static-files-through-umicom.md) — compare the teaching lab with established Framework HTTP services and Kernel VFS contracts.

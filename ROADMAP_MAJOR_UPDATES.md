@@ -356,3 +356,15 @@ Teach virtual filesystem dispatch, path validation, open-file descriptions, desc
 **Acceptance gates:** Both projects must configure and compile under UCRT64 GCC and pass their registered CTests. Validate under Clang/ASan/UBSan when available; inspect compiler warnings; smoke-test `GET /health` on an unused loopback port; validate MkDocs YAML and the complete real website in the contributor's checkout. Preserve all prior navigation and the Islam: Blueprint for Life volume. Framework, Applications, Kernel and OS remain read-only source references.
 
 **Next planned milestone — Update 25:** Native C23 static-file routing and streaming on loopback. Explain MIME types, safe path selection, no-follow file access, size and time bounds, response completion, and controlled client disconnection. Prefer reusing previously developed C23 networking and file-service modules instead of creating a competing web stack; no implementation changes outside Bits2Banking.
+
+### Update 25 — Native static-file serving and HTTP response completion
+
+**Repository:** Bits2Banking only. Umicom Framework, Applications, Kernel and OS remain read-only references.
+
+**Educational scope:** Chapters 152–156, episodes 52–53 and three editable SVG figures. Teach how a browser selects a document root, why paths must be decoded and checked, how MIME types describe file bytes, why GET and HEAD have different bodies, and how to stream files larger than a temporary memory buffer. Explain short writes, bounded client work and how to distinguish a security refusal from a missing file.
+
+**Native practice:** Extend the original `http-loopback-server` C23 library rather than adding another TCP stack. The server's fixed route behaviour remains the default; `--root ABSOLUTE_PATH` enables read-only static files. It uses an 8 KiB buffer and a 64 MiB file limit; accepts loopback requests only; rejects path traversal, hidden metadata and redirection outside the root. A short sample HTML/CSS page is included because those formats are required for a website, not as new application implementation languages. Source files and tests remain C23.
+
+**Acceptance:** Original four HTTP CTests and both new static-file CTests pass with GCC and, where available, Clang with address/undefined-behaviour sanitizers. A live local socket check covers GET, HEAD, the existing `/health` route, 404, 403 and a large streamed file. Website navigation and all previous chapters are preserved. A real MkDocs build and UCRT64 Windows-specific reparse-path checks remain host qualification gates.
+
+**Next planned milestone — Update 26:** HTTP response completion, path/path-query limits, safe routing, additional native networking laboratories and protocol testing. Later lessons can introduce nonblocking network I/O and a service lifecycle, but those expansions must not modify Framework while the user is developing it independently.
