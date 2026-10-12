@@ -93,3 +93,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 38 — Trace a device fault with C23](scripts/38-trace-a-device-fault-with-c23.md) — approximately 12–15 minutes, ordered observations and a SHA-256-linked classroom trace.
 - [Episode 39 — Driver lifetimes and retained evidence](scripts/39-driver-lifetimes-and-retained-evidence.md) — approximately 14–18 minutes, a reusable C23 driver model, bounded diagnostics and authoritative Kernel references.
+
+
+## Device I/O and completion ownership
+
+- [Episode 40 — Follow a device request through C23](scripts/40-follow-a-device-request-through-c23.md) (approximately 10–13 minutes): from a Notes Save request to a collected completion.
+- [Episode 41 — Cancellation, completion queues and Kernel drivers](scripts/41-cancellation-completions-and-kernel-drivers.md) (approximately 11–15 minutes): cancellation races, read-only traces, VirtIO reset ownership and durability boundaries.

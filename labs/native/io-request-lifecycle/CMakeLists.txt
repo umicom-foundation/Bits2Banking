@@ -1,0 +1,25 @@
+# Bits2Banking — compose the existing completion queue, not a second queue
+# Sammy Hegab | Umicom Foundation | MIT
+cmake_minimum_required(VERSION 3.24)
+project(BtbIoRequestLifecycle LANGUAGES C)
+include(CTest)
+# The neighbouring learning library is owned by its original folder.
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../completion-queue"
+                 "${CMAKE_CURRENT_BINARY_DIR}/completion-queue")
+add_library(btb_io_request STATIC device.c)
+target_link_libraries(btb_io_request PUBLIC btb_completion_queue)
+target_include_directories(btb_io_request PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+set_target_properties(btb_io_request PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED ON C_EXTENSIONS OFF)
+add_executable(btb-io-request-demo main.c)
+add_executable(btb-io-request-test test_device.c)
+target_link_libraries(btb-io-request-demo PRIVATE btb_io_request)
+target_link_libraries(btb-io-request-test PRIVATE btb_io_request)
+if(MSVC)
+    target_compile_options(btb_io_request PRIVATE /W4)
+else()
+    target_compile_options(btb_io_request PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+endif()
+if(BUILD_TESTING)
+    add_test(NAME bits2banking.io_request_lifecycle COMMAND btb-io-request-test)
+    add_test(NAME bits2banking.io_request_lifecycle.demo COMMAND btb-io-request-demo)
+endif()

@@ -271,3 +271,17 @@ real driver recovery.
 
 Learn from [Chapter 120](../lessons/05-engineering/120-inspect-a-chained-evidence-trace.md)
 and the [native C23 header contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/education/evidence_trace.h).
+
+
+## Inspect the device I/O request lifecycle (Update 19)
+
+The Framework-owned command `umicom-education device-io-trace --file PATH`
+reads a bounded `UMIDIO1` classroom format. It checks submission identities,
+device owner/generation lifetimes, recorded cancellation requests, terminal
+completion outcomes, FIFO collection and safe quiescent detach. It does not
+execute requests, access hardware, authorise user-space DMA or replace the
+Umicom Kernel VirtIO block driver.
+
+The focused CTest parser test prepares the exact 27-record file used by the
+independent CLI test, including a path with spaces. Learn from [Lesson 125](../lessons/05-engineering/125-inspect-device-io-traces-in-c23.md)
+and the [Framework C23 public contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/education/device_io_trace.h).

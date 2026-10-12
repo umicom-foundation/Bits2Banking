@@ -51,3 +51,8 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## Driver and interrupt internals
 
 - [121. Follow real Umicom Kernel driver and interrupt boundaries](121-kernel-driver-and-interrupt-boundaries.md) — read the C23 and RISC-V Assembly implementation without replacing the authoritative Kernel services.
+
+
+## Read Umicom Kernel block-device ownership
+
+- [126. Follow device requests through Umicom Kernel](126-follow-umicom-kernel-device-requests.md) — compare classroom completions with the real VirtIO request, timeout, reset and FLUSH contracts.

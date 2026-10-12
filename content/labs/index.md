@@ -98,3 +98,10 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Driver lifecycle laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/driver-lifecycle) — compose the existing C23 service recovery and interrupt owner libraries; test explicit retries and safe stop.
 - [Bounded diagnostic-ring laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/diagnostic-ring) — implement an eight-slot C23 ring with overwrite accounting and copied snapshots.
+
+
+## Device requests and bounded completions
+
+- [Completion Queue](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/completion-queue) — four-slot C23 FIFO with copied results, full/empty checks and wraparound tests; [Lesson 123](../lessons/05-engineering/123-build-a-bounded-completion-queue.md).
+- [I/O Request Lifecycle](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/io-request-lifecycle) — reuse the same queue for admission, cancellation, terminal completion and quiescent release; [Lessons 122–124](../lessons/05-engineering/122-device-io-from-submit-to-completion.md).
+- [Native device trace inspector](../lessons/05-engineering/125-inspect-device-io-traces-in-c23.md) — read deterministic teaching records without issuing real I/O.

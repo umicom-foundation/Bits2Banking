@@ -126,3 +126,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [118. Build a driver lifecycle from reusable C23 services](118-build-a-driver-lifecycle.md) — combine existing ownership and service-recovery contracts into one fictional driver.
 - [119. Keep diagnostic records in a bounded C23 ring](119-keep-diagnostics-in-a-bounded-ring.md) — bound memory usage, account for overwritten records and return owned snapshots.
 - [120. Inspect a chained evidence trace with SHA-256](120-inspect-a-chained-evidence-trace.md) — validate a versioned, read-only file with explicit hash-chain and state checks.
+
+
+## Device I/O requests and completion ownership
+
+- [122. Follow a device request from submission to completion](122-device-io-from-submit-to-completion.md) — understand why accepted work is not yet a completed result.
+- [123. Build a bounded completion queue](123-build-a-bounded-completion-queue.md) — implement a copied FIFO ring that does not overwrite accepted results.
+- [124. Cancel, quiesce and release device work](124-cancel-quiesce-and-release-device-work.md) — distinguish cancellation intent, terminal completion and safe resource release.
+- [125. Inspect a device I/O trace in native C23](125-inspect-device-io-traces-in-c23.md) — use a bounded read-only state-machine validator.

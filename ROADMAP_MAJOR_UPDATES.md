@@ -266,3 +266,37 @@ are removed or disabled by this update.
 completion queues.** Connect checked device requests to cancellation,
 completion and explicit resource release without duplicating authoritative
 Umicom Kernel device services.
+
+
+## Update 19 — Device I/O request lifetimes and bounded completions
+
+**Framework:** Extend the existing `umicom-education` command with
+`device-io-trace --file PATH`. The new standalone C23 inspector reads a bounded
+`UMIDIO1` binary teaching format (24-byte header and 40-byte records). It
+validates device slot generations, owner identities, increasing request IDs,
+accepted transfer lengths, requested versus acknowledged cancellation, FIFO
+completion collection and quiescent device release. It refuses completion
+queue overflow without reporting partial success. Two registered CTest cases
+produce a deterministic 27-record fixture and exercise the independent CLI.
+The parser test checks output preservation on refusal and 20,000 deterministic
+record mutations. This is not a privileged Kernel/device trace.
+
+**Curriculum:** Chapters 122–126 teach the request lifecycle, the copied FIFO
+completion queue, cancellation and completion races, controlled driver stop,
+native C23 trace inspection and real Umicom Kernel VirtIO block ownership.
+The two C23 laboratories are built from a single shared completion queue
+source: the request-lifecycle lab consumes the queue by CMake composition.
+Episodes 40–41 and three editable SVG diagrams accompany the lessons.
+
+**Acceptance:** Prior 28 Framework Education CTest cases remain registered,
+plus two new device-I/O cases. Each new C23 laboratory has two focused tests;
+they must pass under GCC and Clang sanitizers. Windows UCRT64 and the real
+MkDocs website still require maintainer qualification. No historical books,
+Islam volume manuscripts, public APIs or prior lesson navigation are removed.
+
+**Next: Update 20 — Device discovery, transport negotiation and DMA ownership.**
+Teach how the device tree describes available hardware, why an address alone
+is not an MMIO capability, how drivers negotiate safe transport features, and
+when a DMA-capable device may still own a buffer. Reference the actual
+Umicom Kernel hardware catalogue and VirtIO implementation without copying
+privileged production mechanisms into the classroom laboratories.
