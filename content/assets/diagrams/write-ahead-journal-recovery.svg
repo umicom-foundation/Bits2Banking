@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 550" role="img" aria-label="Write-ahead journal recovery"><title>Write-ahead journal recovery</title><desc>Journal first; apply the saved snapshot only after the redo record is stable.</desc>
+ <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto-start-reverse"><path d="M1,1 L8,4.5 L1,8" fill="none" stroke="#235a70" stroke-width="1.7" stroke-linecap="round"/></marker></defs>
+ <rect width="1200" height="550" fill="#f5f9fc"/>
+ <text x="38" y="48" font-family="Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#16354a">Write-ahead journal recovery</text>
+ <text x="38" y="78" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#4d6575">Journal first; apply the saved snapshot only after the redo record is stable.</text>
+<rect x="50" y="124" width="252" height="128" rx="16" fill="#fff5e1" stroke="#e2a146" stroke-width="2"/>
+<text x="69" y="157" font-family="Segoe UI,Arial,sans-serif" font-size="19" font-weight="700" fill="#173c50">1  Stage journal</text>
+<text x="69" y="183" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">New Notes revision</text>
+<text x="69" y="207" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Not yet durable</text>
+<rect x="350" y="124" width="252" height="128" rx="16" fill="#e6f7f1" stroke="#52a29c" stroke-width="2"/>
+<text x="369" y="157" font-family="Segoe UI,Arial,sans-serif" font-size="19" font-weight="700" fill="#173c50">2  Flush journal</text>
+<text x="369" y="183" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Redo record accepted</text>
+<text x="369" y="207" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">May survive restart</text>
+<rect x="650" y="124" width="252" height="128" rx="16" fill="#fff5e1" stroke="#e2a146" stroke-width="2"/>
+<text x="669" y="157" font-family="Segoe UI,Arial,sans-serif" font-size="19" font-weight="700" fill="#173c50">3  Stage snapshot</text>
+<text x="669" y="183" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Primary copy updated</text>
+<text x="669" y="207" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Not yet flushed</text>
+<rect x="950" y="124" width="210" height="128" rx="16" fill="#e6f7f1" stroke="#52a29c" stroke-width="2"/>
+<text x="969" y="157" font-family="Segoe UI,Arial,sans-serif" font-size="19" font-weight="700" fill="#173c50">4  Flush snapshot</text>
+<text x="969" y="183" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Applied record</text>
+<text x="969" y="207" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">And journal agree</text>
+<path d="M304 186 L348 186" fill="none" stroke="#235a70" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M605 186 L648 186" fill="none" stroke="#235a70" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M905 186 L948 186" fill="none" stroke="#235a70" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="50" y="325" width="340" height="145" rx="16" fill="#ffefef" stroke="#cc7772" stroke-width="2"/>
+<text x="69" y="358" font-family="Segoe UI,Arial,sans-serif" font-size="19" font-weight="700" fill="#173c50">Crash before step 2</text>
+<text x="69" y="384" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Journal is not stable.</text>
+<text x="69" y="408" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Recover OLD revision.</text>
+<rect x="431" y="325" width="350" height="145" rx="16" fill="#eaf5fb" stroke="#78aacc" stroke-width="2"/>
+<text x="450" y="358" font-family="Segoe UI,Arial,sans-serif" font-size="19" font-weight="700" fill="#173c50">Crash after step 2</text>
+<text x="450" y="384" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Journal is durable in model.</text>
+<text x="450" y="408" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Replay NEW revision.</text>
+<rect x="824" y="325" width="340" height="145" rx="16" fill="#e5f7f0" stroke="#5ba69c" stroke-width="2"/>
+<text x="843" y="358" font-family="Segoe UI,Arial,sans-serif" font-size="19" font-weight="700" fill="#173c50">Crash after step 4</text>
+<text x="843" y="384" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Journal equals snapshot.</text>
+<text x="843" y="408" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#334f60">Read NEW revision.</text>
+<path d="M175 258 L175 318" fill="none" stroke="#235a70" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M475 258 L607 318" fill="none" stroke="#235a70" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1055 258 L1000 318" fill="none" stroke="#235a70" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="40" y="516" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#506879">A real disk may tear or reorder writes. The lab assumes complete atomic 512-byte sectors.</text>
+</svg>

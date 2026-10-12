@@ -313,3 +313,14 @@ privileged production mechanisms into the classroom laboratories.
 **Acceptance:** The four new CTest checks must pass on the contributor's Windows UCRT64 toolchain. Compiler warnings, malformed input and negative cases are part of the curriculum. Existing chapters 1–126 and the Islam: Blueprint for Life volume remain navigable. The complete MkDocs build is a separate acceptance step.
 
 **Next: Update 21 — Persistent storage, filesystem structures and durable publication.** Examine sectors, filesystem metadata, ordered writes, flush, journal concepts, retention and recovery, using the current Umicom Kernel filesystem/storage documentation as a source. Continue with C23 and Assembly where appropriate; make no changes outside Bits2Banking unless explicitly authorised.
+
+
+## Update 21 — Filesystems, durable writes and C23 recovery laboratories
+
+**Delivery scope:** Bits2Banking educational repository only. No source changes to Umicom Framework, Umicom Applications, Umicom Kernel or Umicom OS.
+
+Five new chapters (132–136) connect the preceding device I/O course to block sectors, VFS path ownership, filesystem metadata, ordered writes, flush boundaries and Notes recovery. The two independently configurable C23 laboratories are `writeback-sector-store` and `journalled-notes`. The latter composes the former's `block_store.c` as a library, rather than duplicating an existing storage implementation. Four new editable SVG illustrations and video scripts 44–45 accompany the material.
+
+**Acceptance gates:** Both CMake projects configure with C23, build with GCC and Clang, pass their registered CTests, and pass a sanitizer build where the toolchain supports it. The Markdown links and SVG syntax are checked, and no previous MkDocs navigation item is removed. Validate the complete site using the repository's existing MkDocs installation before publication. This batch neither claims real power-failure durability nor changes a Kernel production storage service.
+
+**Next planned milestone — Update 22:** Continue into FAT16 structures, sector allocation, safe directory lookup, storage format integrity and read-only filesystem inspection, with a standalone C23 image-reader laboratory before any mutation facility. The Kernel's VFS and FAT16 source remain references, not modification targets.

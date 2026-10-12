@@ -142,3 +142,12 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [128. MMIO and transport feature negotiation](128-mmio-and-transport-negotiation.md) — understand register addresses, permissions and supported device features.
 - [129. DMA buffer ownership](129-dma-buffer-ownership.md) — keep shared buffers alive after publication, cancellation and timeout.
 - [130. VirtIO split queues in C23](130-understand-virtio-split-queues.md) — build a safe classroom queue and check completion ownership.
+
+
+## Block storage, filesystems and durable Notes data
+
+- [132. From device sectors to files and directories](132-from-device-sectors-to-filesystems.md) — follow a Notes Save operation through a filesystem, block driver and persistence boundary.
+- [133. Build a write-back sector store in C23](133-build-a-writeback-sector-store.md) — stage and flush 512-byte sectors, simulate interruptions and inspect exported images.
+- [134. Write-ahead journalling and recovery in C23](134-write-ahead-journalling-and-recovery.md) — commit a Notes revision in the correct order and replay after a controlled interruption.
+- [135. Filesystem paths, directories and metadata](135-filesystem-paths-and-metadata.md) — validate path authority and understand how file contents and directory metadata relate.
+- [136. Follow the actual Kernel storage stack](../06-umicom/136-follow-kernel-filesystems-and-storage.md) — compare classroom models with VFS, RAMFS, FAT16 and VirtIO ownership.

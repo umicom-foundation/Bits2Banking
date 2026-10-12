@@ -105,3 +105,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 42 — How does a kernel find a storage device?](scripts/42-understand-device-trees-and-mmio.md) (12–15 minutes): FDT bytes, MMIO admission and a C23 parser demonstration.
 - [Episode 43 — DMA ownership, VirtIO queues and safe completion](scripts/43-dma-ownership-and-virtio-queues.md) (13–16 minutes): copied buffers, cancellation and reset with the native C23 lab.
+
+
+## Filesystems and persistence episodes
+
+- [Episode 44 — What happens when you press Save?](scripts/44-sectors-flush-and-recovery.md) (12–16 minutes): stage sector writes, flush and simulate a restart using C23.
+- [Episode 45 — Recover an interrupted Notes save](scripts/45-journal-replay-and-kernel-storage.md) (14–18 minutes): write-ahead logging, checksums, recovery and Umicom Kernel storage ownership.

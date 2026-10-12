@@ -111,3 +111,9 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 - [Read a synthetic Flattened Device Tree in C23](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/device-tree-inspector) — build a bounded FDT reader with big-endian decoding and malformed-input tests. Begin with [Chapter 127](../lessons/05-engineering/127-inspect-device-tree-in-c23.md).
 - [Model a device queue and DMA-buffer lifetime](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/virtqueue-lifetime) — learn copied ownership, publication, completion, cancellation and reset acknowledgement. Begin with [Chapter 130](../lessons/05-engineering/130-understand-virtio-split-queues.md).
+
+
+## Block storage and crash-recovery laboratories
+
+- [Write-back sector store — complete C23 laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/writeback-sector-store) — understand staged writes, simulated durability, interrupted flush, exact image import/export and verified recovery. Read [Lesson 133](../lessons/05-engineering/133-build-a-writeback-sector-store.md).
+- [Journalled Notes — complete C23 laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/journalled-notes) — write ahead before applying a Notes snapshot, simulate interruptions and replay the newest accepted revision. Read [Lesson 134](../lessons/05-engineering/134-write-ahead-journalling-and-recovery.md).

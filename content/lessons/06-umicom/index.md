@@ -61,3 +61,8 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## Device discovery and VirtIO in the actual Kernel
 
 - [131. Follow device discovery and VirtIO ownership in Umicom Kernel](131-read-umicom-kernel-device-discovery.md) — read the real hardware catalogue, bus translation, transport qualification, device queue and reset contracts without changing the Kernel repository.
+
+
+## Storage and filesystem source tour
+
+- [136. Follow storage and file systems in Umicom Kernel](136-follow-kernel-filesystems-and-storage.md) — inspect real VFS path ownership, file services, RAMFS, FAT16 ordered updates and VirtIO flush boundaries.
