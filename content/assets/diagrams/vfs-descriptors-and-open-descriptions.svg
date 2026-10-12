@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bits2Banking | Umicom Foundation | Author: Sammy Hegab | MIT -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="830" viewBox="0 0 1500 830" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Descriptors and open-file descriptions</title><desc id="dsc">Two descriptor tokens share a position and a provider node; reopening the name produces another description.</desc>
+<defs><marker id="tip" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 0 L12 6 L0 12 z" fill="#0b7285"/></marker><marker id="tip2" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L12 6 L0 12 z" fill="#577486"/></marker></defs>
+<style>
+:root { color-scheme: light; }
+.title {font:700 38px 'Segoe UI',Arial,sans-serif;fill:#203247}
+.sub {font:21px 'Segoe UI',Arial,sans-serif;fill:#435a69}
+.boxhead {font:700 25px 'Segoe UI',Arial,sans-serif;fill:#153f59}
+.body {font:20px 'Segoe UI',Arial,sans-serif;fill:#213c51}
+.small {font:18px 'Segoe UI',Arial,sans-serif;fill:#486276}
+.label {font:700 20px 'Segoe UI',Arial,sans-serif;fill:#0a6376}
+.step {font:700 23px 'Segoe UI',Arial,sans-serif;fill:#ffffff}
+.arrow {stroke:#0b7285;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#tip)}
+.dash {stroke:#577486;stroke-width:3;stroke-dasharray:8,7;fill:none;marker-end:url(#tip2)}
+</style><rect width="1500" height="830" fill="#f4f8fa"/>
+<text class="title" x="55" y="68">Descriptors, shared positions and backing nodes</text>
+<text class="sub" x="55" y="108">A descriptor is a checked token, not a raw pointer into filesystem memory.</text>
+<rect x="80" y="186" rx="18" width="390" height="145" fill="#edf4fe" stroke="#a8c2e6" stroke-width="2"/><text class="boxhead" x="100" y="227">Descriptor A  •  client 11</text><text class="body" x="100" y="269">Generation 1  ·  READ + WRITE</text><text class="body" x="100" y="303">Token A</text>
+<rect x="80" y="372" rx="18" width="390" height="145" fill="#edf4fe" stroke="#a8c2e6" stroke-width="2"/><text class="boxhead" x="100" y="413">Descriptor B  •  client 11</text><text class="body" x="100" y="455">Generation 1  ·  READ only</text><text class="body" x="100" y="489">Duplicated token B</text>
+<rect x="600" y="245" rx="18" width="430" height="218" fill="#e9f6f6" stroke="#8bbbc2" stroke-width="2"/><text class="boxhead" x="620" y="286">Shared open-file description</text><text class="body" x="620" y="328">Node ID: 1  ·  position: 4</text><text class="body" x="620" y="362">References: 2</text><text class="body" x="620" y="396">One cursor shared by A and B</text>
+<polyline class="arrow" points="470,261 600,298"/>
+<polyline class="arrow" points="470,445 600,415"/>
+<rect x="1150" y="258" rx="18" width="294" height="186" fill="#f7f3e5" stroke="#d2bb7b" stroke-width="2"/><text class="boxhead" x="1170" y="299">RAM provider node</text><text class="body" x="1170" y="341">NOTES.TXT</text><text class="body" x="1170" y="375">Bytes: A B C D E</text>
+<polyline class="arrow" points="1030,347 1150,347"/>
+<text class="label" x="80" y="580">Opening the path again is different:</text>
+<rect x="80" y="602" rx="18" width="390" height="132" fill="#edf4fe" stroke="#a8c2e6" stroke-width="2"/><text class="boxhead" x="100" y="643">Independent descriptor C</text><text class="body" x="100" y="685">A new Open, not Duplicate</text>
+<rect x="600" y="602" rx="18" width="430" height="132" fill="#e9f6f6" stroke="#8bbbc2" stroke-width="2"/><text class="boxhead" x="620" y="643">New open-file description</text><text class="body" x="620" y="685">Position: 0  ·  References: 1</text>
+<polyline class="arrow" points="470,665 600,665"/>
+<polyline class="dash" points="1030,665 1132,665 1132,465 1190,465"/>
+<text class="small" x="84" y="798">Close B: A remains valid. Close A: provider release occurs. A stale token never reopens a new slot.</text>
+</svg>

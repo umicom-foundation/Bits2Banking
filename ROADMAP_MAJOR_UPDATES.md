@@ -333,3 +333,16 @@ Read-only C23 FAT16 inspector, structural tests, volume and chain lessons, stora
 ### Update 23 — VFS and file descriptor ownership (planned)
 
 Teach virtual filesystem dispatch, path validation, open-file descriptions, descriptor rights, and a small standalone C23 VFS model.
+
+
+### Update 23 — Virtual filesystems and file descriptor ownership
+
+**Educational scope:** Five sequential chapters (142–146), episodes 48–49 and three editable SVG diagrams explain VFS path dispatch, mounts, file descriptors, shared open-file descriptions, generation-tagged handles, read/write rights, unlinked open files and last-reference cleanup. Each lesson links to its C23 lab and, where relevant, to authoritative Umicom Kernel source.
+
+**Native practice:** `vfs-descriptors` is a standalone C23 library with a bounded RAM-backed Notes provider and executable CTest acceptance cases. `vfs-provider-composition` reuses that library through CMake and introduces a separate read-only reference provider; the regression exercises safe unmount and retained ownership after a simulated release failure. Neither lab requires Umicom Framework, changes Umicom Kernel, accesses physical disks or claims POSIX completeness.
+
+**Repository boundary:** Bits2Banking only. All Framework, Kernel, OS and application repositories are read-only source references. C23 is the implementation language; CMake configures the build, Markdown publishes human-readable lessons, and SVG provides editable illustrations. Historical books and Islam: Blueprint for Life remain intact.
+
+**Acceptance:** Configure, compile and run the CTest suites for both projects on Windows UCRT64. Run the test suites under Clang with AddressSanitizer and UndefinedBehaviorSanitizer where available; compare source names and headers with upstream Umicom Kernel; build MkDocs strictly on the author's complete checkout. This batch adds seven MkDocs navigation targets without removing any of the prior FAT16 or historical entries.
+
+**Next planned milestone — Update 24: Native file services, checked transfers and network readiness.** Follow process-owned file services, transfer buffers and error reporting before introducing a standalone C23 loopback TCP server with bounded HTTP parsing. Keep privileged Kernel routines in their own repository and do not add a second production server inside the educational labs.

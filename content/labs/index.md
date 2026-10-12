@@ -122,3 +122,9 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 ## FAT16 learning laboratory
 
 - [Read-only C23 FAT16 image inspector](../../labs/native/fat16-inspector/README.md)
+
+
+## Virtual filesystem laboratories
+
+- [VFS descriptors and RAM-backed Notes](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/vfs-descriptors) — build a C23 VFS, duplicate descriptors, share offsets and safely unlink a file that remains open.
+- [Two VFS providers and safe release](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/vfs-provider-composition) — reuse that VFS with an independent read-only provider and test recovery from a refused final release.

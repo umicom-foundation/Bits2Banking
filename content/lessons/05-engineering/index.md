@@ -160,3 +160,12 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [139. Follow a FAT cluster chain](139-fat-cluster-chains-and-file-content.md)
 - [140. Write ordering, flush and recovery](140-write-ordering-and-filesystem-recovery.md)
 - [141. Read the Umicom Kernel filesystem implementation](141-read-umicom-kernel-fat16-source.md)
+
+
+## Virtual filesystems, descriptors and providers
+
+- [142. How a VFS finds a file](142-how-a-virtual-filesystem-finds-a-file.md) — resolve a pathname, choose a mounted provider and open a Notes document.
+- [143. Descriptors and shared positions](143-file-descriptors-open-descriptions-and-offsets.md) — distinguish filenames, file objects, open descriptions and generation-tagged tokens.
+- [144. Build a Notes filesystem provider](144-build-a-notes-filesystem-provider.md) — copy bytes, preserve an unlinked open file and reject oversized writes.
+- [145. Connect two storage providers](145-compose-two-filesystem-providers.md) — reuse one VFS with editable Notes and a read-only reference library.
+- [146. Follow the Umicom Kernel VFS](146-follow-the-umicom-kernel-vfs.md) — examine the actual Kernel VFS, RAMFS, FAT16 and user-file ownership source.

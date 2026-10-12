@@ -117,3 +117,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 46: Read a FAT16 disk image](scripts/46-read-a-fat16-disk-image.md)
 - [Episode 47: Storage recovery and Umicom Kernel](scripts/47-storage-recovery-and-kernel.md)
+
+
+## Virtual filesystems and file ownership
+
+- [Episode 48 — How a programme opens a file](scripts/48-virtual-filesystems-paths-and-descriptors.md) (12–16 minutes): from a pathname to a mount and a client-owned descriptor.
+- [Episode 49 — File providers, unlink and Umicom Kernel](scripts/49-file-providers-unlink-and-kernel-vfs.md) (14–19 minutes): reusable C23 providers, read-only rights, release failures and Kernel source.

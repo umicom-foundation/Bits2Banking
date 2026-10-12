@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bits2Banking | Umicom Foundation | Author: Sammy Hegab | MIT -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="910" viewBox="0 0 1500 910" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Unlinking and open-file lifetimes</title><desc id="dsc">The pathname is removed while a previously opened description retains the old node, then a new node acquires the same pathname.</desc>
+<defs><marker id="tip" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 0 L12 6 L0 12 z" fill="#0b7285"/></marker><marker id="tip2" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L12 6 L0 12 z" fill="#577486"/></marker></defs>
+<style>
+:root { color-scheme: light; }
+.title {font:700 38px 'Segoe UI',Arial,sans-serif;fill:#203247}
+.sub {font:21px 'Segoe UI',Arial,sans-serif;fill:#435a69}
+.boxhead {font:700 25px 'Segoe UI',Arial,sans-serif;fill:#153f59}
+.body {font:20px 'Segoe UI',Arial,sans-serif;fill:#213c51}
+.small {font:18px 'Segoe UI',Arial,sans-serif;fill:#486276}
+.label {font:700 20px 'Segoe UI',Arial,sans-serif;fill:#0a6376}
+.step {font:700 23px 'Segoe UI',Arial,sans-serif;fill:#ffffff}
+.arrow {stroke:#0b7285;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#tip)}
+.dash {stroke:#577486;stroke-width:3;stroke-dasharray:8,7;fill:none;marker-end:url(#tip2)}
+</style><rect width="1500" height="910" fill="#f4f8fa"/>
+<text class="title" x="55" y="66">Removing a name is not the same as closing a file</text>
+<text class="sub" x="55" y="105">Follow an existing reader while the /notes/NOTES.TXT name is reused.</text>
+<circle cx="110" cy="212" r="33" fill="#0b7285"/><text class="step" x="102" y="220">1</text>
+<rect x="185" y="145" rx="18" width="1215" height="135" fill="#ffffff" stroke="#8bbbc2" stroke-width="2"/><text class="boxhead" x="205" y="186">Open old file</text><text class="body" x="205" y="228">Reader A → old node</text><text class="body" x="205" y="262">Bytes: A B C D E</text>
+<polyline class="arrow" points="110,251 110,316"/>
+<circle cx="110" cy="392" r="33" fill="#0b7285"/><text class="step" x="102" y="400">2</text>
+<rect x="185" y="325" rx="18" width="1215" height="135" fill="#e6f3f5" stroke="#8bbbc2" stroke-width="2"/><text class="boxhead" x="205" y="366">Unlink filename</text><text class="body" x="205" y="408">New open → NOT_FOUND</text><text class="body" x="205" y="442">Reader A still holds old node</text>
+<polyline class="arrow" points="110,431 110,496"/>
+<circle cx="110" cy="572" r="33" fill="#0b7285"/><text class="step" x="102" y="580">3</text>
+<rect x="185" y="505" rx="18" width="1215" height="135" fill="#ffffff" stroke="#8bbbc2" stroke-width="2"/><text class="boxhead" x="205" y="546">Create a new file</text><text class="body" x="205" y="588">Same filename → new node</text><text class="body" x="205" y="622">New reader B sees N E W</text>
+<polyline class="arrow" points="110,611 110,676"/>
+<circle cx="110" cy="752" r="33" fill="#0b7285"/><text class="step" x="102" y="760">4</text>
+<rect x="185" y="685" rx="18" width="1215" height="135" fill="#e6f3f5" stroke="#8bbbc2" stroke-width="2"/><text class="boxhead" x="205" y="726">Close old reader</text><text class="body" x="205" y="768">Old node has no references</text><text class="body" x="205" y="802">Old unlinked bytes reclaimed</text>
+<text class="small" x="64" y="889">The provider retains storage until the last open-file description releases its reference.</text>
+</svg>
