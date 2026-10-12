@@ -27,19 +27,54 @@ First build and install the current Umicom Applications SDK to
 `C:\umicom\installed\applications`. The library and headers must come from the
 same build. The owner chooses this visible installation folder.
 
+### Install the shared SDK first
+
+An SDK contains the headers, compiled libraries and CMake package files that
+another project needs. Building Applications creates those files in its build
+tree; installing copies the supported set into the folder chosen below.
+Adding a folder to `CMAKE_PREFIX_PATH` does not install anything.
+
+Run these steps from a current Applications checkout whose Framework submodule
+contains the statement API. Use the same UCRT64 toolchain for both projects.
+Each guard stops the sequence if the preceding command fails.
+
+```powershell
+Set-Location "C:\umicom\Umicom-Applications"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+cmake --preset windows-ucrt64-all-debug -DBUILD_TESTING=ON -DUMICOM_BUILD_NATIVE_TOOL=ON
+if ($LASTEXITCODE -ne 0) { throw "Applications configuration failed; stop here." }
+cmake --build --preset windows-ucrt64-all-debug --parallel 2
+if ($LASTEXITCODE -ne 0) { throw "Applications build failed; do not install an incomplete build." }
+cmake --install ".\build\windows-ucrt64-all-debug" --prefix "C:\umicom\installed\applications"
+if ($LASTEXITCODE -ne 0) { throw "SDK installation failed; stop here." }
+if (-not (Test-Path -LiteralPath "C:\umicom\installed\applications\lib\cmake\UmicomFramework\UmicomFrameworkConfig.cmake")) {
+    throw "The installed Framework package is missing from the selected prefix."
+}
+```
+
+Use the full installation command shown here. A component-only installation is
+insufficient because the package configuration and export files are also needed.
+The file check confirms that the package entry point was installed; successful
+example configuration and linking still need to confirm its dependencies.
+
+### Configure and run the example
+
 1. Open PowerShell and configure the example against that installation:
 
    ```powershell
    Set-Location "C:\umicom\Umicom-Bits2Banking"
    $env:Path = "C:\msys64\ucrt64\bin;$env:Path"
    cmake -S ".\labs\native\statement-reconciliation" -B ".\build\statement-reconciliation" -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/applications
+   if ($LASTEXITCODE -ne 0) { throw "Example configuration failed; do not build or test yet." }
    ```
 
 2. Build and run its regression checks:
 
    ```powershell
    cmake --build ".\build\statement-reconciliation" --parallel 2
+   if ($LASTEXITCODE -ne 0) { throw "Example build failed; do not run tests yet." }
    ctest --test-dir ".\build\statement-reconciliation" --output-on-failure --no-tests=error
+   if ($LASTEXITCODE -ne 0) { throw "Example tests failed; review their output before continuing." }
    ```
 
 3. Run the two comparisons:
@@ -54,8 +89,29 @@ The first comparison should print `Difference: 0.00`; the second should print
 
 If CMake cannot find `UmicomFramework`, check the installation prefix and confirm
 that `lib\cmake\UmicomFramework\UmicomFrameworkConfig.cmake` exists beneath it.
+<!-- The earlier diagnosis is retained for review. It assumed an older SDK;
+the explanation below also covers incomplete installations and disabled features.
 A missing `bank_feed` component means the installed SDK predates this feature.
+-->
+A missing `bank_feed` component can mean an older SDK or an incomplete
+installation. Check that the Framework build exports the component, then install
+the complete matching build.
 Do not copy individual headers over an older library.
+
+If you chose another installation folder, change `CMAKE_PREFIX_PATH` to that
+folder. For a custom library directory, you can instead pass
+`-DUmicomFramework_DIR=C:/your-install/lib64/cmake/UmicomFramework`, using the
+directory that actually contains the **installed** package configuration.
+Do not point it at the generated configuration file inside the Framework build
+tree: that file alone does not supply the installed target definitions.
+
+After a configuration failure, fix its first error and rerun configuration in
+the same example build directory. Do not continue to Ninja or CTest yet:
+`build.ninja` is created only after successful generation, and tests are
+registered by configuration. This example registers three checks:
+`education.statement.match`, `education.statement.difference` and
+`education.statement.invalid`. A run with no tests is not successful
+qualification.
 
 ## Trace the shared implementation
 
