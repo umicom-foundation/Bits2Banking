@@ -378,3 +378,13 @@ The response-progress component checks partial send accounting and distinguishes
 **Acceptance:** Existing six web-server CTests remain active; five focused tests check routing, service lifetime, invalid-route mutations, response completion and failed sends. Configure and run on Windows UCRT64 before publishing. Build the complete existing MkDocs website in the contributor's real checkout, preserving the Islam volume and previous navigation. No implementation changes are authorised outside `Umicom-Bits2Banking`.
 
 **Next milestone — Update 27:** Explain HTTP caching, conditional requests and safe request concurrency as educational concepts before introducing a bounded local work queue. Keep C23/Assembly as the implementation languages and retain the current loopback-only threat boundary. Do not replace the established Framework HTTP services.
+
+### Update 27 — Conditional HTTP caching and bounded admission (Bits2Banking only)
+
+Extend the existing `http-loopback-server` C23 laboratory in place, retaining all established fixed, static and application-route modes. Add bounded `If-None-Match` parsing for static requests, weak metadata validators observed from admitted file handles, correct `304 Not Modified` framing, and conservative `Cache-Control: private, no-cache` revalidation. The metadata validator does not guarantee exact content identity; no support is claimed for Range requests, Last-Modified, compression negotiation or a persistent cache store.
+
+Add a **serial bounded-admission model** that teaches queue capacity, a configurable count of simulated active operations, immutable tickets, FIFO choice, backpressure and the difference between cancellation intent and completion. This model is deliberately not a threadsafe executor or integrated socket worker pool. The existing listener remains single-threaded and loopback only.
+
+Chapters 162–166, episodes 56–57 and three editable SVG diagrams teach and illustrate both concepts, with references to Umicom Framework and Kernel as read-only authorities. The cumulative HTTP CTest suite increases from 11 to 16 tests. Verify GCC, Clang ASan/UBSan, real loopback responses and the full MkDocs website in the contributor's environment. Preserve historical books and all previous navigation.
+
+**Next milestone — Update 28:** Introduce nonblocking socket I/O, bounded timers and graceful connection admission; only after the single-owner and shutdown contracts are qualified should the educational server be extended to real concurrent worker execution. Keep code C23 first; do not modify Framework, Applications, Kernel or OS.

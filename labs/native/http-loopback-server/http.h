@@ -8,6 +8,7 @@
 #define BTB_HTTP_H
 #include <stddef.h>
 #include <stdint.h>
+#include "cache_validator.h"
 #define BTB_HTTP_MAX_HEADER 4096U
 #define BTB_HTTP_FIXED_PATH_LIMIT 128U
 #define BTB_HTTP_MAX_PATH 1024U
@@ -29,6 +30,10 @@ typedef struct BtbHttpRequest {
     BtbHttpMethod method;
     char path[BTB_HTTP_MAX_PATH];
     unsigned hostPort; /* 0 means no port was written in Host. */
+    /* Optional cache validator for static-file requests only. Legacy fixed
+     * handlers still answer without evaluating this field. */
+    unsigned ifNoneMatchPresent;
+    char ifNoneMatch[BTB_CACHE_CONDITION_CAPACITY];
 } BtbHttpRequest;
 
 /* Parses length-delimited network bytes, never a guessed C string. An

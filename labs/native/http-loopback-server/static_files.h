@@ -8,6 +8,7 @@
 #define BTB_STATIC_FILES_H
 #include <stddef.h>
 #include <stdint.h>
+#include "cache_validator.h"
 
 /* Teaching limits. Each file is streamed; it is never allocated as one buffer.
  * An explicit absolute directory is required. No directory listing, uploads,
@@ -31,6 +32,7 @@ typedef struct BtbStaticFile {
     void *owner; /* Private stable file handle, closed by StaticFileClose. */
     uint64_t bytes;
     const char *mediaType; /* Static constant borrowed for the file lifetime. */
+    char cacheTag[BTB_CACHE_TAG_CAPACITY]; /* Weak metadata validator for GET/HEAD. */
 } BtbStaticFile;
 
 /* On success, the object must eventually be closed once. A refusal leaves the

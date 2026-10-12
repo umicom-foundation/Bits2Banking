@@ -162,3 +162,42 @@ hosting service or a concurrent request router. Public production services
 should continue using established, reviewed Framework capabilities.
 
 Continue with [Chapter 157](../../../content/lessons/05-engineering/157-route-http-requests-to-c23-handlers.md).
+
+
+## Update 27 — Conditional requests and bounded admission
+
+This extends the **existing** C23 HTTP server and preserves the fixed routes, optional static root, optional C23 application routes and existing socket loop. No additional listener or scripting runtime is introduced.
+
+### Revalidate a static file
+
+After configuring and building as described above, run the server with the sample root:
+
+```powershell
+Set-Location "C:\umicom\Umicom-Bits2Banking"
+$Root = (Resolve-Path ".\labs\native\http-loopback-server\sample_site").Path
+& ".\output\learning-build\http-loopback-server\btb-http-server.exe" `
+  --port 8765 --root $Root --routes
+```
+
+In a second PowerShell window:
+
+```powershell
+curl.exe -i http://127.0.0.1:8765/index.html
+```
+
+Copy the actual `ETag` value into an `If-None-Match` header; a matching validator yields `304 Not Modified` with no body, while an unmatched validator yields `200 OK` with the current bytes. `HEAD` retains the existing bodyless semantics. The server uses `Cache-Control: private, no-cache` to require revalidation.
+
+The entity tag is **weak** (`W/`): it combines the size and timestamp of the file opened under the existing rooted-file authority. It does not provide a cryptographic proof of byte identity and cannot guarantee detection of edits that preserve both metadata fields. The opened handle and path guards remain unchanged. This is a loopback-only learning server, without TLS, Range support, public-network binding or a persistent server-side cache.
+
+### Work queue model
+
+`admission_queue.c` models four admission records and a configurable maximum number of *simulated active* operations. It is intentionally **single-threaded**; it is not yet wired into the socket accept loop and does not implement a parallel worker pool. Queued cancellation can release a pending slot. Active cancellation records intent only, and the active operation must still complete before its slot is reclaimed. Monotonic tickets prevent stale completion of a reused slot.
+
+```powershell
+& ".\output\learning-build\http-loopback-server\btb-admission-demo.exe"
+ctest --test-dir ".\output\learning-build\http-loopback-server" --output-on-failure
+```
+
+Expected tests: **16/16**, including the eleven existing cases. Cache tests check conditional header grammar, opened-file tags and `304` framing. Admission tests check capacity, FIFO, cancellation, stale tickets and 20,000 deterministic invariant checks. The actual Windows UCRT64 build and real-site MkDocs build remain separate verification steps.
+
+Read [Chapter 162](https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/162-http-caching-and-revalidation.md) to begin.

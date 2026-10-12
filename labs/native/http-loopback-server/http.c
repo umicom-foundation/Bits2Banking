@@ -266,6 +266,20 @@ static BtbHttpResult BtbHttpParseInternal(const unsigned char *bytes, size_t byt
         if (BtbEqualCase(bytes + offset, separator - offset, "host")) {
             if (hostSeen++ != 0U || !BtbHost(bytes + start, valueEnd - start,
                                               &candidate.hostPort)) return BTB_HTTP_INVALID;
+        } else if (staticFiles && BtbEqualCase(bytes + offset, separator - offset,
+                                                  "if-none-match")) {
+            const size_t valueBytes = valueEnd - start;
+            if (candidate.ifNoneMatchPresent != 0U || valueBytes == 0U ||
+                valueBytes >= sizeof candidate.ifNoneMatch)
+                return BTB_HTTP_INVALID;
+            memcpy(candidate.ifNoneMatch, bytes + start, valueBytes);
+            candidate.ifNoneMatch[valueBytes] = '\0';
+            /* The header is untrusted input. Validate the entire bounded list
+             * before publishing a request or opening any filesystem object. */
+            if (BtbCacheCompareIfNoneMatch(candidate.ifNoneMatch,
+                                            "W/\"00000000\"") == BTB_CACHE_INVALID)
+                return BTB_HTTP_INVALID;
+            candidate.ifNoneMatchPresent = 1U;
         } else if (BtbEqualCase(bytes + offset, separator - offset, "content-length") ||
                    BtbEqualCase(bytes + offset, separator - offset, "transfer-encoding")) {
             /* This lab has no request-body decoder; rejecting both avoids an

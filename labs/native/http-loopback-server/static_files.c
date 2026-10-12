@@ -287,6 +287,7 @@ BtbStaticResult BtbStaticFileOpen(const BtbStaticRoot *root, const char *urlPath
     BtbFileOwner *owner = calloc(1U, sizeof(*owner));
     if (owner == NULL) return BTB_STATIC_IO_ERROR;
     uint64_t length = 0U;
+    uint64_t changedStamp = 0U;
 #ifdef _WIN32
     wchar_t name[BTB_STATIC_NATIVE_PATH];
     wchar_t full[BTB_STATIC_NATIVE_PATH];
@@ -322,6 +323,8 @@ BtbStaticResult BtbStaticFileOpen(const BtbStaticRoot *root, const char *urlPath
         return BTB_STATIC_FORBIDDEN;
     }
     length = (uint64_t)size.QuadPart;
+    changedStamp = ((uint64_t)info.ftLastWriteTime.dwHighDateTime << 32U) |
+                    (uint64_t)info.ftLastWriteTime.dwLowDateTime;
 #else
     int previous = dup(parent->descriptor);
     if (previous < 0) { free(owner); return BTB_STATIC_IO_ERROR; }
@@ -352,6 +355,10 @@ BtbStaticResult BtbStaticFileOpen(const BtbStaticRoot *root, const char *urlPath
         return BTB_STATIC_FORBIDDEN;
     }
     length = (uint64_t)info.st_size;
+    /* Keep nanoseconds distinct where the host filesystem reports them.
+     * The result is a metadata stamp, not a cryptographic content hash. */
+    changedStamp = ((uint64_t)info.st_mtim.tv_sec << 32U) ^
+                    (uint64_t)(uint32_t)info.st_mtim.tv_nsec;
     owner->descriptor = finalDescriptor;
 #endif
     if (length > BTB_STATIC_MAX_FILE_BYTES) {
@@ -363,8 +370,20 @@ BtbStaticResult BtbStaticFileOpen(const BtbStaticRoot *root, const char *urlPath
         free(owner);
         return BTB_STATIC_TOO_LARGE;
     }
+    char tag[BTB_CACHE_TAG_CAPACITY];
+    if (!BtbCacheTagFromMetadata(length, changedStamp, tag)) {
+#ifdef _WIN32
+        CloseHandle(owner->handle);
+#else
+        (void)close(owner->descriptor);
+#endif
+        free(owner);
+        return BTB_STATIC_IO_ERROR;
+    }
     outFile->owner = owner;
     outFile->bytes = length;
+    memset(outFile->cacheTag, 0, sizeof outFile->cacheTag);
+    memcpy(outFile->cacheTag, tag, strlen(tag) + 1U);
     outFile->mediaType = BtbStaticMediaType(relative);
     return BTB_STATIC_OK;
 }

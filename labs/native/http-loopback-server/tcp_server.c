@@ -196,17 +196,45 @@ static void BtbHandleClient(BtbSocket client, unsigned port, const BtbStaticRoot
     else if (opened == BTB_STATIC_FORBIDDEN) { code = 403U; message = "Forbidden\n"; }
     else if (opened == BTB_STATIC_TOO_LARGE) { code = 413U; message = "File exceeds preview limit\n"; }
     else if (opened != BTB_STATIC_OK) { code = 500U; message = "Internal Server Error\n"; }
+    /* Evaluate the validator only after the rooted file owner has admitted the
+     * resource. A matching conditional GET/HEAD emits 304 with no body. */
+    if (opened == BTB_STATIC_OK && request.ifNoneMatchPresent != 0U &&
+        BtbCacheCompareIfNoneMatch(request.ifNoneMatch, file.cacheTag) == BTB_CACHE_MATCH)
+        code = 304U;
+    /* The Update 25 unconditional response implementation remains below for
+     * source review. The new branch extends it with cache revalidation. */
+#if 0
     const uint64_t bytes = code == 200U ? file.bytes : (uint64_t)strlen(message);
     const char *mediaType = code == 200U ? file.mediaType : "text/plain; charset=utf-8";
     const int headers = BtbHttpStaticHeaders(code, mediaType, bytes,
                                               response, sizeof response, &responseBytes);
+#endif
+    const uint64_t bytes = code == 200U ? file.bytes :
+                           code == 304U ? 0U : (uint64_t)strlen(message);
+    const char *mediaType = (code == 200U || code == 304U) ? file.mediaType :
+                            "text/plain; charset=utf-8";
+    const int headers = (code == 200U || code == 304U) ?
+        BtbCacheStaticHeaders(code, mediaType, bytes, file.cacheTag,
+                              response, sizeof response, &responseBytes) :
+        BtbHttpStaticHeaders(code, mediaType, bytes,
+                             response, sizeof response, &responseBytes);
     BtbResponseProgress progress = {0};
     const uint64_t wireBody = request.method == BTB_HTTP_HEAD ? 0U : bytes;
     int delivered = headers && BtbResponseProgressBegin(&progress,
                                     (uint64_t)responseBytes, wireBody) &&
                     BtbSendAll(client, response, responseBytes, began,
                                &progress, BTB_RESPONSE_HEADER_PART);
+    /* Superseded Update 25 body selection. It would transmit a body for 304,
+     * which has no message body. Retained here for engineering review. */
+#if 0
     if (delivered && request.method != BTB_HTTP_HEAD) {
+        if (code == 200U) delivered = BtbSendStaticFile(client, &file, began, &progress);
+        else delivered = BtbSendAll(client, message, (size_t)bytes, began,
+                                    &progress, BTB_RESPONSE_BODY_PART);
+    }
+#endif
+    /* No body is sent for HEAD or 304, even if an opened file has bytes. */
+    if (delivered && request.method != BTB_HTTP_HEAD && code != 304U) {
         if (code == 200U) delivered = BtbSendStaticFile(client, &file, began, &progress);
         else delivered = BtbSendAll(client, message, (size_t)bytes, began,
                                     &progress, BTB_RESPONSE_BODY_PART);

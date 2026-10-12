@@ -138,3 +138,9 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 54 — HTTP routing: from a browser address to a C23 handler](scripts/54-http-routes-and-c23-handlers.md) (12–16 minutes): configure the established server, register exact routes and compose JSON handlers with static files.
 - [Episode 55 — Complete HTTP responses and stop C23 services safely](scripts/55-response-completion-and-service-lifetimes.md) (13–17 minutes): send counts, HEAD, disconnects, handler-context ownership and service shutdown.
+
+
+## Conditional HTTP caching and request ownership
+
+- [Episode 56 — Why the Browser Can Reuse a Page](scripts/56-browser-cache-validation-in-c23.md), approximately 13–17 minutes: serve a file, compare entity tags, observe `304 Not Modified` and read the C23 parser.
+- [Episode 57 — When Too Many Requests Arrive](scripts/57-bounded-admission-and-service-ownership.md), approximately 14–18 minutes: bounded work, backpressure, ticket lifetimes, cancellation and how these contracts relate to Umicom services.

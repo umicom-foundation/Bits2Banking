@@ -149,3 +149,13 @@ Extend the [existing C23 HTTP server](https://github.com/umicom-foundation/Bits2
 - [159. Handle disconnected clients and incomplete replies](../lessons/05-engineering/159-handle-http-disconnects-and-response-completion.md)
 - [160. Control C23 service lifetimes](../lessons/05-engineering/160-control-c23-web-service-lifetimes.md)
 - [161. Follow the same concerns through Umicom](../lessons/05-engineering/161-follow-c23-routes-into-umicom-services.md)
+
+
+## HTTP conditional caching and bounded admission (Update 27)
+
+The [existing C23 HTTP web-server laboratory](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-loopback-server) now illustrates **conditional GET and HEAD** through a weak metadata `ETag`, revalidation with `If-None-Match`, `304 Not Modified` without a response body, and a fixed-capacity *serial admission model*. The latter teaches backpressure, active cancellation and ticket ownership; it does not create worker threads or make the socket server concurrent.
+
+- [162. Browser caching and revalidation](../lessons/05-engineering/162-http-caching-and-revalidation.md)
+- [163. Add conditional GET in C23](../lessons/05-engineering/163-build-conditional-get-in-c23.md)
+- [164. Bounded request admission and backpressure](../lessons/05-engineering/164-bounded-request-admission-and-backpressure.md)
+- [165. Run the new HTTP and admission tests](../lessons/05-engineering/165-test-conditional-http-and-admission.md)
