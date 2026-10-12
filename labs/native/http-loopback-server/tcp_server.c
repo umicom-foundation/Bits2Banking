@@ -10,6 +10,8 @@
 #include "tcp_server.h"
 #include "http.h"
 #include "static_files.h"
+#include "route_service.h"
+#include "response_progress.h"
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -62,7 +64,8 @@ static void BtbStop(int sig)
     gStopRequested = 1;
 }
 static int BtbSendAll(BtbSocket socket, const char *buffer, size_t bytes,
-                      uint64_t began)
+                      uint64_t began, BtbResponseProgress *progress,
+                      BtbResponsePart part)
 {
     for (size_t used = 0U; used < bytes;) {
         if (BtbTimeExpired(began)) return 0;
@@ -78,6 +81,10 @@ static int BtbSendAll(BtbSocket socket, const char *buffer, size_t bytes,
 #endif
 #endif
         if (written <= 0) return 0;
+        /* Count only bytes accepted by the native socket API. This is not a
+         * claim that the peer has already consumed or persisted those bytes. */
+        if (progress != NULL &&
+            !BtbResponseProgressAdvance(progress, part, (size_t)written)) return 0;
         used += (size_t)written;
     }
     return 1;
@@ -86,7 +93,7 @@ static int BtbSendAll(BtbSocket socket, const char *buffer, size_t bytes,
  * Short writes are retried, premature file EOF is not presented as success,
  * and a closed client cannot lead to an unbounded retry loop. */
 static int BtbSendStaticFile(BtbSocket client, BtbStaticFile *file,
-                             uint64_t began)
+                             uint64_t began, BtbResponseProgress *progress)
 {
     unsigned char chunk[BTB_STATIC_STREAM_BYTES];
     uint64_t remaining = file->bytes;
@@ -96,12 +103,14 @@ static int BtbSendStaticFile(BtbSocket client, BtbStaticFile *file,
         size_t received = 0U;
         if (BtbStaticFileRead(file, chunk, amount, &received) != BTB_STATIC_OK ||
             received == 0U || received > amount) return 0;
-        if (!BtbSendAll(client, (const char *)chunk, received, began)) return 0;
+        if (!BtbSendAll(client, (const char *)chunk, received, began,
+                        progress, BTB_RESPONSE_BODY_PART)) return 0;
         remaining -= (uint64_t)received;
     }
     return 1;
 }
-static void BtbHandleClient(BtbSocket client, unsigned port, const BtbStaticRoot *root)
+static void BtbHandleClient(BtbSocket client, unsigned port, const BtbStaticRoot *root,
+                            BtbRouteService *routes)
 {
 #ifdef _WIN32
     DWORD timeout = 3000U;
@@ -135,8 +144,39 @@ static void BtbHandleClient(BtbSocket client, unsigned port, const BtbStaticRoot
     }
     if (result == BTB_HTTP_INCOMPLETE)
         result = used >= sizeof data ? BTB_HTTP_TOO_LARGE : BTB_HTTP_INVALID;
-    char response[2048];
+    char response[4096];
     size_t responseBytes = 0U;
+    /* Optional application routes reuse the listener and the already checked
+     * Host/port admission. An absent route is not an error: the existing
+     * fixed response or static-file path retains ownership of the request. */
+    if (routes != NULL && result == BTB_HTTP_OK &&
+        (request.hostPort == 0U || request.hostPort == port)) {
+        BtbRouteResponse routed = {0};
+        BtbRouteResult routeResult = BtbRouteServiceDispatch(routes, &request, &routed);
+        if (routeResult != BTB_ROUTE_NOT_FOUND) {
+            if (routeResult != BTB_ROUTE_OK) {
+                static const char error[] = "Route unavailable\n";
+                (void)BtbRouteResponseSet(&routed, 503U, BTB_ROUTE_PLAIN_TEXT,
+                                          error, sizeof error - 1U);
+            }
+            size_t headerBytes = 0U;
+            if (BtbRouteEncode(&request, &routed, response, sizeof response,
+                               &responseBytes, &headerBytes) != BTB_ROUTE_OK) return;
+            BtbResponseProgress progress = {0};
+            if (!BtbResponseProgressBegin(&progress, (uint64_t)headerBytes,
+                                           (uint64_t)(responseBytes - headerBytes))) return;
+            const int headerSent = BtbSendAll(client, response, headerBytes, began,
+                                               &progress, BTB_RESPONSE_HEADER_PART);
+            const int bodySent = headerSent && BtbSendAll(client, response + headerBytes,
+                                                           responseBytes - headerBytes, began,
+                                                           &progress, BTB_RESPONSE_BODY_PART);
+            if (!bodySent || !BtbResponseProgressComplete(&progress)) {
+                BtbResponseProgressFail(&progress);
+                fputs("Route response incomplete or client disconnected.\n", stderr);
+            }
+            return;
+        }
+    }
     /* Preserve original two-route behaviour when no static root is provided.
      * /health is deliberately retained in static mode as a diagnostic route. */
     if (root == NULL || result != BTB_HTTP_OK ||
@@ -144,7 +184,8 @@ static void BtbHandleClient(BtbSocket client, unsigned port, const BtbStaticRoot
         (request.hostPort != 0U && request.hostPort != port)) {
         if (BtbHttpRespond(result == BTB_HTTP_OK ? &request : NULL, result,
                            port, response, sizeof response, &responseBytes))
-            (void)BtbSendAll(client, response, responseBytes, began);
+            (void)BtbSendAll(client, response, responseBytes, began, NULL,
+                             BTB_RESPONSE_HEADER_PART);
         return;
     }
     BtbStaticFile file = {0};
@@ -159,18 +200,30 @@ static void BtbHandleClient(BtbSocket client, unsigned port, const BtbStaticRoot
     const char *mediaType = code == 200U ? file.mediaType : "text/plain; charset=utf-8";
     const int headers = BtbHttpStaticHeaders(code, mediaType, bytes,
                                               response, sizeof response, &responseBytes);
-    int delivered = headers && BtbSendAll(client, response, responseBytes, began);
+    BtbResponseProgress progress = {0};
+    const uint64_t wireBody = request.method == BTB_HTTP_HEAD ? 0U : bytes;
+    int delivered = headers && BtbResponseProgressBegin(&progress,
+                                    (uint64_t)responseBytes, wireBody) &&
+                    BtbSendAll(client, response, responseBytes, began,
+                               &progress, BTB_RESPONSE_HEADER_PART);
     if (delivered && request.method != BTB_HTTP_HEAD) {
-        if (code == 200U) delivered = BtbSendStaticFile(client, &file, began);
-        else delivered = BtbSendAll(client, message, (size_t)bytes, began);
+        if (code == 200U) delivered = BtbSendStaticFile(client, &file, began, &progress);
+        else delivered = BtbSendAll(client, message, (size_t)bytes, began,
+                                    &progress, BTB_RESPONSE_BODY_PART);
     }
-    if (!delivered) fprintf(stderr, "Static response incomplete or client disconnected.\n");
+    if (!delivered || !BtbResponseProgressComplete(&progress)) {
+        BtbResponseProgressFail(&progress);
+        fprintf(stderr, "Static response incomplete or client disconnected.\n");
+    }
     BtbStaticFileClose(&file);
 }
-int BtbHttpServeLoopbackWithRoot(uint16_t port, unsigned maximumClients,
-                                 const BtbStaticRoot *root)
+int BtbHttpServeLoopbackWithRootAndRoutes(uint16_t port, unsigned maximumClients,
+                                         const BtbStaticRoot *root,
+                                         BtbRouteService *routes)
 {
     if (root != NULL && root->owner == NULL) return 2;
+    if (routes != NULL && (routes->self != routes ||
+        routes->state != BTB_ROUTE_READY)) return 2;
     if (port < 1024U) return 2;
 #ifdef _WIN32
     WSADATA startup;
@@ -211,6 +264,8 @@ int BtbHttpServeLoopbackWithRoot(uint16_t port, unsigned maximumClients,
         puts("Routes: GET / and GET /health. HEAD is supported. Stop with Ctrl+C.");
     else
         puts("Read-only static root enabled. GET/HEAD files and /health. Stop with Ctrl+C.");
+    if (routes != NULL)
+        puts("Additional C23 routes: /api/courses, /api/status, /workshop.");
     fflush(stdout);
     unsigned handled = 0U;
     int outcome = 0;
@@ -237,7 +292,7 @@ int BtbHttpServeLoopbackWithRoot(uint16_t port, unsigned maximumClients,
             if (gStopRequested) break;
             outcome = 1; break;
         }
-        BtbHandleClient(client, (unsigned)port, root);
+        BtbHandleClient(client, (unsigned)port, root, routes);
         (void)BtbCloseSocket(client);
         ++handled;
     }
@@ -250,6 +305,11 @@ int BtbHttpServeLoopbackWithRoot(uint16_t port, unsigned maximumClients,
 
 /* Keep the established API and its fixed routes available to previous lessons.
  * Static serving is an explicitly selected extension, not a replacement. */
+int BtbHttpServeLoopbackWithRoot(uint16_t port, unsigned maximumClients,
+                                 const BtbStaticRoot *root)
+{
+    return BtbHttpServeLoopbackWithRootAndRoutes(port, maximumClients, root, NULL);
+}
 int BtbHttpServeLoopback(uint16_t port, unsigned maximumClients)
 {
     return BtbHttpServeLoopbackWithRoot(port, maximumClients, NULL);

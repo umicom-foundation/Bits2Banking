@@ -43,6 +43,8 @@ Invoke-WebRequest -Uri "http://127.0.0.1:8765/health" | Select-Object StatusCode
 
 ## 4. Limits
 
+This section describes the original fixed-route server. Later optional extensions are introduced below; they do not change its default behaviour.
+
 The server accepts only GET/HEAD with one Host header naming `localhost` or `127.0.0.1`. Header bytes are limited to 4 KiB and request bodies, HTTP pipelining, query parameters and URL decoding are deliberately unsupported. Connections use a bounded receive/send timeout and are closed after one response. It supports IPv4 only, processes clients serially and deliberately provides **no live reloading, file serving, dynamic routes or HTTPS**.
 
 For production web services, use a mature supported HTTP stack or the vetted Umicom Framework web services; this educational implementation is not a substitute.
@@ -110,3 +112,53 @@ reparse-point and resolved-handle checks.
 
 Continue with [Chapter 152](../../../content/lessons/05-engineering/152-serve-a-static-website-in-c23.md)
 from the Bits2Banking website.
+
+## 7. Register C23 routes and track response completion (Update 26)
+
+The fixed routes and static-file modes above are unchanged by default.
+Update 26 adds an **optional** `--routes` mode that composes three C23 request
+handlers with the same existing listener. In this mode, GET and HEAD requests
+to `/api/courses`, `/api/status` and `/workshop` use registered functions.
+
+```powershell
+Set-Location "C:\umicom\Umicom-Bits2Banking"
+& ".\output\learning-build\http-loopback-server\btb-http-server.exe" `
+    --port 8765 --routes
+```
+
+To serve both API responses and files, select the bundled sample root:
+
+```powershell
+$Root = (Resolve-Path ".\labs\native\http-loopback-server\sample_site").Path
+& ".\output\learning-build\http-loopback-server\btb-http-server.exe" `
+    --port 8765 --root $Root --routes
+```
+
+Open `/routing-guide.html` to compare a static HTML page with the JSON returned
+by `/api/courses`. Exact registered paths win; unmatched URLs go to the original
+static-file owner when a root is configured. With `--routes` omitted, no API
+routes have been added and existing fixed/static behaviour remains in force.
+
+The routing service in `route_service.c` has one stable caller-owned lifetime,
+up to eight exact routes, borrowed handler contexts, and failure-atomic output.
+Registration ends when the service starts. Handlers do not own sockets; a
+handler that tries to stop the service while it is being called receives BUSY.
+
+The response-progress owner in `response_progress.c` tracks **wire bytes**
+accepted by `send()`. Header bytes must finish before body bytes are counted.
+HEAD declares the GET body length but sends no wire-body bytes. If the peer
+closes early, the response is incomplete; even a successful local `send()` is
+not an application-level acknowledgement from the peer.
+
+```powershell
+ctest --test-dir ".\output\learning-build\http-loopback-server" `
+    --output-on-failure
+```
+
+There are now eleven CTests: the original six plus routing, service lifetime,
+route rejection mutations, response completion and disconnect semantics.
+These are local teaching interfaces, **not** an authenticated API, an Internet
+hosting service or a concurrent request router. Public production services
+should continue using established, reviewed Framework capabilities.
+
+Continue with [Chapter 157](../../../content/lessons/05-engineering/157-route-http-requests-to-c23-handlers.md).

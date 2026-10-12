@@ -139,3 +139,13 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 The [native loopback HTTP server](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-loopback-server) now accepts an **optional read-only static document root**. Without `--root`, all earlier fixed routes and tests remain unchanged. With it, the same C23 listener uses checked URL paths, no-follow file handles, explicit MIME types, GET/HEAD semantics and 8 KiB streaming buffers.
 
 Start with [Chapter 152](../lessons/05-engineering/152-serve-a-static-website-in-c23.md). The `sample_site/` folder contains a complete small HTML/CSS demonstration. Six CTests include two tests for the new static-file facilities, and the website preview can also serve the generated `site/` directory after MkDocs has completed successfully.
+
+## Update 26 — Routing, HTTP responses and service lifetimes
+
+Extend the [existing C23 HTTP server](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/http-loopback-server) rather than creating a competing socket implementation. Register application handlers for `/api/courses`, `/api/status` and `/workshop`; combine them with the original static-file owner when appropriate. Practise response byte accounting and disconnect reporting.
+
+- [157. Route HTTP requests to C23 handlers](../lessons/05-engineering/157-route-http-requests-to-c23-handlers.md)
+- [158. Build response headers and support HEAD](../lessons/05-engineering/158-build-http-response-headers-and-head.md)
+- [159. Handle disconnected clients and incomplete replies](../lessons/05-engineering/159-handle-http-disconnects-and-response-completion.md)
+- [160. Control C23 service lifetimes](../lessons/05-engineering/160-control-c23-web-service-lifetimes.md)
+- [161. Follow the same concerns through Umicom](../lessons/05-engineering/161-follow-c23-routes-into-umicom-services.md)

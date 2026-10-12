@@ -5,6 +5,7 @@
  * AUTHOR: Sammy Hegab | LICENCE: MIT
  *---------------------------------------------------------------------------*/
 #include "tcp_server.h"
+#include "learning_routes.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -47,10 +48,11 @@ int main(int argc, char **argv)
 int main(int argc, char **argv)
 {
     if (argc == 2 && strcmp(argv[1], "--help") == 0) {
-        puts("Usage: btb-http-server --port 8765 [--root ABSOLUTE_SITE_DIRECTORY] [--once]\n"
+        puts("Usage: btb-http-server --port 8765 [--root ABSOLUTE_SITE_DIRECTORY] [--routes] [--once]\n"
              "Loopback-only C23 teaching web server at 127.0.0.1, GET/HEAD and /health.\n"
              "Without --root the original fixed routes are preserved.\n"
              "With --root, serve read-only regular files beneath that directory.\n"
+             "With --routes, enable GET/HEAD /api/courses, /api/status and /workshop.\n"
              "No upload, directory listing, PHP execution, TLS or public binding.\n"
              "Files are limited to 64 MiB, with an overall 10-second client deadline.\n"
              "Press Ctrl+C to stop the server.");
@@ -59,13 +61,16 @@ int main(int argc, char **argv)
     uint16_t port = 0U;
     unsigned once = 0U;
     const char *rootPath = NULL;
+    unsigned enableRoutes = 0U;
     if (argc < 3 || strcmp(argv[1], "--port") != 0 ||
         !BtbPort(argv[2], &port)) {
-        fputs("Usage: btb-http-server --port <1024..65535> [--root ABSOLUTE_PATH] [--once]\n", stderr);
+        fputs("Usage: btb-http-server --port <1024..65535> [--root ABSOLUTE_PATH] [--routes] [--once]\n", stderr);
         return 2;
     }
     for (int i = 3; i < argc; ++i) {
         if (strcmp(argv[i], "--once") == 0 && once == 0U) once = 1U;
+        else if (strcmp(argv[i], "--routes") == 0 && enableRoutes == 0U)
+            enableRoutes = 1U;
         else if (strcmp(argv[i], "--root") == 0 && rootPath == NULL && i + 1 < argc)
             rootPath = argv[++i];
         else {
@@ -73,6 +78,9 @@ int main(int argc, char **argv)
             return 2;
         }
     }
+    /* The former Update 25 CLI tail is retained for source review. Its two
+     * observable modes are composed below with optional route ownership. */
+#if 0
     if (rootPath == NULL) return BtbHttpServeLoopback(port, once);
     BtbStaticRoot root = {0};
     const BtbStaticResult opened = BtbStaticRootOpen(rootPath, &root);
@@ -82,6 +90,38 @@ int main(int argc, char **argv)
         return 2;
     }
     const int exitCode = BtbHttpServeLoopbackWithRoot(port, once, &root);
+    BtbStaticRootClose(&root);
+    return exitCode;
+#endif
+    /* Preserve the original two-route and static-root modes unless the new
+     * route composition is explicitly requested. */
+    if (rootPath == NULL && enableRoutes == 0U)
+        return BtbHttpServeLoopback(port, once);
+    BtbStaticRoot root = {0};
+    if (rootPath != NULL) {
+        const BtbStaticResult opened = BtbStaticRootOpen(rootPath, &root);
+        if (opened != BTB_STATIC_OK) {
+            fprintf(stderr, "Cannot open read-only static root (%s): %s\n",
+                    rootPath, BtbStaticResultText(opened));
+            return 2;
+        }
+    }
+    BtbRouteService routes = {0};
+    BtbRouteService *routeOwner = NULL;
+    if (enableRoutes != 0U) {
+        if (BtbRouteServiceInit(&routes) != BTB_ROUTE_OK ||
+            BtbLearningRoutesInstall(&routes) != BTB_ROUTE_OK ||
+            BtbRouteServiceStart(&routes) != BTB_ROUTE_OK) {
+            fputs("Cannot initialise C23 educational routes.\n", stderr);
+            BtbStaticRootClose(&root);
+            return 1;
+        }
+        routeOwner = &routes;
+    }
+    const int exitCode = BtbHttpServeLoopbackWithRootAndRoutes(
+        port, once, rootPath == NULL ? NULL : &root, routeOwner);
+    if (routeOwner != NULL && BtbRouteServiceStop(routeOwner) != BTB_ROUTE_OK)
+        fputs("Route owner did not stop cleanly.\n", stderr);
     BtbStaticRootClose(&root);
     return exitCode;
 }

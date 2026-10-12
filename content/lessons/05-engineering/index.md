@@ -185,3 +185,11 @@ Learn Git, testing, databases, networking, modular design and system administrat
 - [154. Stream static files and support HEAD](154-stream-static-files-and-head.md) — transfer binary files in bounded chunks, track the exact Content-Length and handle disconnection.
 - [155. Test a local web server safely](155-test-a-local-web-server-safely.md) — reproduce permitted and rejected requests and distinguish parser, file and network failures.
 - [156. Follow static files through Umicom](156-follow-static-files-through-umicom.md) — compare the teaching lab with established Framework HTTP services and Kernel VFS contracts.
+
+## Native HTTP routing and response completion
+
+- [157. Route HTTP requests to C23 functions](157-route-http-requests-to-c23-handlers.md) — select application callbacks without replacing the socket or static-file owner.
+- [158. Build HTTP response headers and support HEAD](158-build-http-response-headers-and-head.md) — produce bounded response bytes with an exact header/body boundary.
+- [159. Handle disconnections and response completion](159-handle-http-disconnects-and-response-completion.md) — account for short sends and reject false success.
+- [160. Start and stop a C23 route service](160-control-c23-web-service-lifetimes.md) — lifecycle, borrowed contexts and busy handlers.
+- [161. Follow the responsibilities through Umicom](161-follow-c23-routes-into-umicom-services.md) — compare the classroom example with Framework HTTP and Kernel VFS contracts.

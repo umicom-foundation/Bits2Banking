@@ -368,3 +368,13 @@ Teach virtual filesystem dispatch, path validation, open-file descriptions, desc
 **Acceptance:** Original four HTTP CTests and both new static-file CTests pass with GCC and, where available, Clang with address/undefined-behaviour sanitizers. A live local socket check covers GET, HEAD, the existing `/health` route, 404, 403 and a large streamed file. Website navigation and all previous chapters are preserved. A real MkDocs build and UCRT64 Windows-specific reparse-path checks remain host qualification gates.
 
 **Next planned milestone — Update 26:** HTTP response completion, path/path-query limits, safe routing, additional native networking laboratories and protocol testing. Later lessons can introduce nonblocking network I/O and a service lifecycle, but those expansions must not modify Framework while the user is developing it independently.
+
+### Update 26 — Native HTTP routing, response completion and lifecycle (Bits2Banking only)
+
+The existing `http-loopback-server` C23 and Winsock/POSIX project is extended in place. Its original fixed-route and read-only static modes remain the defaults. New `--routes` composition registers three exact-path C handlers; handlers do not own sockets, arbitrary headers, external authentication or public network binding. A miss remains a normal fallback, not a failed route-service operation. The same listener is shared in both modes.
+
+The response-progress component checks partial send accounting and distinguishes complete local transmission from an end-to-end acknowledgement. The route service uses one owned configuring/ready/stopped lifecycle, rejects route mutation after Start, refuses shutdown during callbacks, and leaves caller outputs untouched when dispatch fails. Five new C23-focused chapters (157–161), videos 54–55 and three SVG illustrations explain the code from first principles, including a comparative reading of established Umicom Framework web and Kernel VFS source.
+
+**Acceptance:** Existing six web-server CTests remain active; five focused tests check routing, service lifetime, invalid-route mutations, response completion and failed sends. Configure and run on Windows UCRT64 before publishing. Build the complete existing MkDocs website in the contributor's real checkout, preserving the Islam volume and previous navigation. No implementation changes are authorised outside `Umicom-Bits2Banking`.
+
+**Next milestone — Update 27:** Explain HTTP caching, conditional requests and safe request concurrency as educational concepts before introducing a bounded local work queue. Keep C23/Assembly as the implementation languages and retain the current loopback-only threat boundary. Do not replace the established Framework HTTP services.

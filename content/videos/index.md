@@ -133,3 +133,8 @@ The video pages can also be read as transcripts. Published video links can be ad
 
 - [Episode 52 — From a website file to a C23 server](scripts/52-from-a-website-file-to-a-c23-server.md) (approximately 10–14 minutes with demonstrations): retain the original C23 HTTP routes, select an absolute site directory, serve HTML/CSS and refuse traversal paths.
 - [Episode 53 — Stream files and compare Umicom web services](scripts/53-stream-files-and-compare-umicom-web-services.md) (approximately 11–15 minutes with demonstrations): byte counts, GET/HEAD, disconnections, Kernel VFS and Framework HTTP source references.
+
+## C23 HTTP routing and service lifetimes
+
+- [Episode 54 — HTTP routing: from a browser address to a C23 handler](scripts/54-http-routes-and-c23-handlers.md) (12–16 minutes): configure the established server, register exact routes and compose JSON handlers with static files.
+- [Episode 55 — Complete HTTP responses and stop C23 services safely](scripts/55-response-completion-and-service-lifetimes.md) (13–17 minutes): send counts, HEAD, disconnects, handler-context ownership and service shutdown.
