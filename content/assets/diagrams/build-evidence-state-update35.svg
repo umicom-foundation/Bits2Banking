@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1180 515">
+  <title id="title">C23 evidence snapshot lifecycle and failure-atomic boundaries</title>
+  <desc id="desc">A caller initialises a snapshot, copies diagnostics, records the build result, optionally records test results, then seals the observation for immutable assessment and comparison. Invalid writes are rejected without changing the snapshot.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#082437"/><stop offset="1" stop-color="#145264"/></linearGradient><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#9adce5"/></marker><style>.title{font:700 28px system-ui;fill:#f4feff}.heading{font:700 18px system-ui;fill:#efffff;text-anchor:middle}.text{font:14px system-ui;fill:#c5e6e9;text-anchor:middle}.note{font:16px system-ui;fill:#d0eff0}.node{fill:#153f55;stroke:#77b4c0;stroke-width:2}.special{fill:#135e54;stroke:#91e6be;stroke-width:3}.blocked{fill:#663b3d;stroke:#f2a29c;stroke-width:2}.line{fill:none;stroke:#9adce5;stroke-width:3;marker-end:url(#arrow)}.dashed{stroke-dasharray:6 6}</style></defs>
+  <rect width="1180" height="515" rx="20" fill="url(#bg)"/>
+  <text class="title" x="40" y="54">A sealed observation is finished — not necessarily successful</text>
+  <rect class="node" x="38" y="144" width="190" height="103" rx="12"/><text class="heading" x="133" y="182">Initialise</text><text class="text" x="133" y="207">SHA + profile + toolchain</text>
+  <path class="line" d="M228 195H266"/>
+  <rect class="node" x="275" y="144" width="190" height="103" rx="12"/><text class="heading" x="370" y="182">Copy diagnostics</text><text class="text" x="370" y="207">bounded owned records</text>
+  <path class="line" d="M465 195H503"/>
+  <rect class="node" x="512" y="144" width="190" height="103" rx="12"/><text class="heading" x="607" y="182">Record build</text><text class="text" x="607" y="207">exit + dropped count</text>
+  <path class="line" d="M702 195H740"/>
+  <rect class="node" x="749" y="144" width="190" height="103" rx="12"/><text class="heading" x="844" y="182">Record tests</text><text class="text" x="844" y="207">if executed</text>
+  <path class="line" d="M939 195H975"/>
+  <rect class="special" x="984" y="144" width="158" height="103" rx="12"/><text class="heading" x="1063" y="182">Seal</text><text class="text" x="1063" y="207">immutable</text>
+  <path class="line" d="M1063 247V307H754"/>
+  <rect class="special" x="555" y="307" width="380" height="86" rx="12"/><text class="heading" x="745" y="340">Assess and compare</text><text class="text" x="745" y="367">stale · missing tests · introduced / resolved</text>
+  <path class="line dashed" d="M607 247V288H348V325"/>
+  <rect class="blocked" x="118" y="325" width="295" height="86" rx="12"/><text class="heading" x="266" y="354">Invalid or over capacity</text><text class="text" x="266" y="380">reject with no partial mutation</text>
+  <text class="note" x="42" y="465">The Framework owns tool execution and diagnostic parsing. This model owns only its copied teaching facts.</text>
+</svg>
