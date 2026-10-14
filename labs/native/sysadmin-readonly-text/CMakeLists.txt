@@ -1,0 +1,30 @@
+# Bits2Banking | Umicom Foundation | C23-only read-only file inspection lab
+cmake_minimum_required(VERSION 3.24)
+project(Bits2BankingSysadminReadonlyText LANGUAGES C)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+include(CTest)
+
+add_library(btb-sysadmin-text-lib STATIC inspector.c)
+target_include_directories(btb-sysadmin-text-lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+add_executable(btb-sysadmin-text main.c)
+add_executable(btb-sysadmin-text-test test_inspector.c)
+target_link_libraries(btb-sysadmin-text PRIVATE btb-sysadmin-text-lib)
+target_link_libraries(btb-sysadmin-text-test PRIVATE btb-sysadmin-text-lib)
+# The test uses only checked-in, read-only fixture files, never temp scripts.
+target_compile_definitions(btb-sysadmin-text-test PRIVATE
+    BTB_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures")
+foreach(target IN ITEMS btb-sysadmin-text-lib btb-sysadmin-text btb-sysadmin-text-test)
+    if(MSVC)
+        target_compile_options(${target} PRIVATE /W4)
+    else()
+        target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+    endif()
+endforeach()
+if(BUILD_TESTING)
+    foreach(case_name IN ITEMS lf crlf noeol empty binary oversized missing invalid preserve repeat)
+        add_test(NAME "bits2banking.sysadmin.${case_name}"
+                 COMMAND btb-sysadmin-text-test "${case_name}")
+    endforeach()
+endif()
