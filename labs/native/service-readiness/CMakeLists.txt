@@ -1,0 +1,36 @@
+# Bits2Banking | Umicom Foundation | C23 service readiness composition laboratory.
+# This extends the Update 39 teaching API instead of copying its C implementation.
+cmake_minimum_required(VERSION 3.24)
+project(Bits2BankingServiceReadiness LANGUAGES C)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+include(CTest)
+if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../sysadmin-evidence/CMakeLists.txt")
+    message(FATAL_ERROR "Merge Major Update 39 first: labs/native/sysadmin-evidence is required.")
+endif()
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../sysadmin-evidence"
+                 "${CMAKE_CURRENT_BINARY_DIR}/previous-evidence")
+add_library(btb-service-readiness-lib STATIC service_readiness.c)
+target_include_directories(btb-service-readiness-lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(btb-service-readiness-lib PUBLIC btb-sysadmin-evidence-lib)
+add_executable(btb-service-readiness-demo main.c)
+add_executable(btb-service-readiness-test test_readiness.c)
+target_link_libraries(btb-service-readiness-demo PRIVATE btb-service-readiness-lib)
+target_link_libraries(btb-service-readiness-test PRIVATE btb-service-readiness-lib)
+foreach(target IN ITEMS btb-service-readiness-lib btb-service-readiness-demo btb-service-readiness-test)
+    if(MSVC)
+        target_compile_options(${target} PRIVATE /W4)
+    else()
+        target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror)
+    endif()
+endforeach()
+if(BUILD_TESTING)
+    foreach(case_name IN ITEMS ready missing optional-warning required-failure required-notrun
+            stale inherited-block inherited-review missing-dependency cycle duplicate
+            capacity invalid preserve mutation)
+        add_test(NAME "bits2banking.service-readiness.${case_name}"
+                 COMMAND btb-service-readiness-test "${case_name}")
+    endforeach()
+    add_test(NAME bits2banking.service-readiness.demo COMMAND btb-service-readiness-demo)
+endif()
