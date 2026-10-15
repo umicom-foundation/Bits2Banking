@@ -105,4 +105,8 @@ def test_existing_publication_workflows_not_replaced_by_this_update():
     # The reader-facing update should not change the ownership of production
     # publication jobs; those are separately qualified in the prior batch.
     assert (ROOT / "mkdocs.yml").is_file()
-    assert (ROOT / "ROADMAP_MAJOR_UPDATES.md").is_file()
+    # Public curriculum checks must not require a maintainer's private plan.
+    # Keep the former check here for source review; the learner roadmap is
+    # the published replacement and remains a required course resource.
+    # assert (ROOT / "ROADMAP_MAJOR_UPDATES.md").is_file()
+    assert (CONTENT / "roadmap.md").is_file()

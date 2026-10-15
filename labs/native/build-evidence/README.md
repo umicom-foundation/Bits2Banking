@@ -68,4 +68,4 @@ The optional executable's `--repo` mode calls the **real Framework** `UmiVcsWork
 - Different toolchains/profiles produce `INCOMPARABLE`, not a fabricated trend.
 - The SDK-linked example needs an ABI-compatible Framework SDK, build-and-launch validation and separate product release controls.
 
-See Chapters 240–251 and `UPDATE_35_TECHNICAL_OVERVIEW.md` for guided source walkthroughs.
+See Chapters 240–251 and the [build-evidence teaching guide](../../../content/teaching/build-evidence.md) for guided source walkthroughs.

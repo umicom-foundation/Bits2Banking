@@ -31,7 +31,11 @@ def test_native_learning_sections_have_source_and_navigation():
     for page in pages:
         assert page in nav
         assert (CONTENT / page).is_file()
-    assert (ROOT / "ROADMAP_MAJOR_UPDATES.md").is_file()
+    # Public curriculum checks must not require a maintainer's private plan.
+    # Keep the former check here for source review; the learner roadmap is
+    # the published replacement and remains a required course resource.
+    # assert (ROOT / "ROADMAP_MAJOR_UPDATES.md").is_file()
+    assert (CONTENT / "roadmap.md").is_file()
 
 
 def test_native_examples_are_source_only_and_bounded():

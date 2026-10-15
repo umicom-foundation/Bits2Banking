@@ -53,7 +53,7 @@ This is the same principle used in financial software: rejecting an invalid inst
 
 ## Guided debugger exercise
 
-Build the lab using the commands in the update's root `UPDATE_35_BUILD_TEST_AND_GIT.md`. Run `btb-build-evidence-test copied_problem_ownership`, then put a breakpoint inside `BtbEvidenceAddProblem`. Watch `run.problemCount` before and after the copy. Run `full_failure_atomic`, fill all 24 slots, and confirm that the 25th attempted insert returns `BTB_EVIDENCE_FULL` without changing the original memory.
+Build the lab using the commands in the [build-evidence README](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/build-evidence/README.md). Run `btb-build-evidence-test copied_problem_ownership`, then put a breakpoint inside `BtbEvidenceAddProblem`. Watch `run.problemCount` before and after the copy. Run `full_failure_atomic`, fill all 24 slots, and confirm that the 25th attempted insert returns `BTB_EVIDENCE_FULL` without changing the original memory.
 
 Next run `unterminated_message_atomic`. Explain why a fixed array without a terminating NUL cannot safely be passed to `strlen` or exposed as a path inside a GUI. Finally, inspect the comments above `BtbEvidenceRecordBuild`: they explain why no diagnostic can be appended after the recorded process outcome.
 

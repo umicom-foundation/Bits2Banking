@@ -1,7 +1,7 @@
 # Chapter 279 — Capstone: become a prepared Umicom contributor
 
 **Bits to Banking · Absolute Beginner Course · Unit 4: Assessment**  
-**Time:** 60–90 minutes, preferably split into two sessions. Instructor rubric in `UPDATE_37_INSTRUCTOR_GUIDE.md`.
+**Time:** 60–90 minutes, preferably split into two sessions. See the [instructor rubric](../../teaching/first-contribution.md).
 
 ## Capstone objective
 

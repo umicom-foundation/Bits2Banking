@@ -19,7 +19,7 @@ cmake --build ".\output\learning-build\git-three-way" --parallel 2
 ctest --test-dir ".\output\learning-build\git-three-way" --output-on-failure
 ```
 
-State that CTest proves the *teaching model* only. Separately inspect the MkDocs navigation additions in `UPDATE_34_NAVIGATION_AND_REVIEW.md`; preserve previous entries and the original Islam volume. The website build is a different gate and may require the already-installed MkDocs interpreter.
+State that CTest proves the *teaching model* only. Separately inspect the lesson entries in `mkdocs.yml` using the [website contribution guide](../../contributing/local-website.md); preserve previous entries and the original Islam volume. The website build is a different gate and may require the already-installed MkDocs interpreter.
 
 ## 03:10–05:40 — The requested main-only Git sequence
 

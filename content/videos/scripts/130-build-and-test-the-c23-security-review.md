@@ -34,6 +34,6 @@ Open `test_security.c`; find the 25,000 deterministic mutations that withhold on
 
 ### 08:50–10:50 — Review, commit and preserve
 
-Explain the sequence: inspect local Git status, verify `main`, build and test, `git add -A`, review `git diff --cached --check` and the staged diff, commit, and `git push origin main`. Do not force-push or remove old code. The exact PowerShell commands are recorded in `UPDATE_44_BUILD_TEST_AND_GIT.md`.
+Explain the sequence: inspect local Git status, verify `main`, build and test, `git add -A`, review `git diff --cached --check` and the staged diff, commit, and `git push origin main`. Do not force-push or remove old code. Use the [security-operations laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/security-operations-review/README.md) for build commands and the [daily Git workflow](../../lessons/05-engineering/183-daily-umicom-git-workflow.md) for staging and publication.
 
 **Closing challenge:** Ask the student what independent real-world evidence would be needed before a security owner could approve credential rotation. Suggested answer: authenticated provider audit, approved role, correctly scoped host, tested dependent services and recovery verification. The classroom result alone cannot provide those facts.

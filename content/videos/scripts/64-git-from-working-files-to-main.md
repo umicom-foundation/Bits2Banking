@@ -37,7 +37,7 @@ Add another line, inspect unstaged diff, stage, inspect staged diff, commit. Sho
 
 ### 06:00–08:15 — The Umicom maintainer checklist
 
-**Screen:** Show the relevant steps in `UPDATE_30_BUILD_TEST_AND_GIT.md` and the real repository naming convention. Do not run a production push during the recording unless this is an approved release demonstration.
+**Screen:** Show the [daily Git workflow](../../lessons/05-engineering/183-daily-umicom-git-workflow.md) and the real repository naming convention. Do not run a production push during the recording unless this is an approved release demonstration.
 
 **Narration:** “Confirm repository and branch, fetch, fast-forward when compatible, build, test, examine the staged patch, commit to main and push. If any step fails, stop and investigate. Git can record a deletion just as accurately as a feature; preservation still requires engineering review.”
 

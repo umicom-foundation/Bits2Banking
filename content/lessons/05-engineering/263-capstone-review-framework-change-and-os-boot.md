@@ -71,7 +71,7 @@ Each case must exit successfully **because** the unsafe conclusion is rejected. 
 
 If a real, reviewed change is necessary, modify the authoritative Framework checkout first (`C:\umicom\Umicom-Applications\framework`), build and test it, verify branch `main`, stage only intended work, inspect the staged diff, commit and push Framework. Then update the Applications parent's Framework gitlink, verify its integration, commit and push that parent. Separately synchronise Umicom OS's clean Framework checkout, build and test OS, verify the parent pointer and finally commit and push the OS parent. **Never copy the Framework source into each parent**, force an update over dirty files or commit a failed qualification as if it passed.
 
-For the learning-repository delivery itself, only `Umicom-Bits2Banking` should be committed, after its actual local tests and navigation review. The exact standard commands are in `UPDATE_36_BUILD_TEST_AND_GIT.md`.
+For the learning-repository delivery itself, only `Umicom-Bits2Banking` should be committed, after its actual local tests and navigation review. Use the [change-impact laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/change-impact/README.md), [website checks](../../contributing/local-website.md) and [daily Git workflow](183-daily-umicom-git-workflow.md).
 
 ## Required assessment artefact
 

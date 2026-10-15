@@ -54,6 +54,6 @@ Note that `fetch` updates remote-tracking information and object storage but doe
 
 ## Engineering completion checklist
 
-A release-quality learning batch requires correct files, build and test evidence, readable diagrams, navigable chapters, reproducible commands and exact limitations. Before publishing this Update 31 package, inspect every path named in its `UPDATE_31_NAVIGATION_AND_REVIEW.md`. Retain the existing navigation and historical *Islam: Blueprint for Life* chapters; do not replace `mkdocs.yml` with a shortened generated list. Run the existing publisher in strict mode where available; report the gate as not run rather than claiming success without evidence.
+A release-quality learning batch requires correct files, build and test evidence, readable diagrams, navigable chapters, reproducible commands and exact limitations. Before publishing a contribution, inspect its changed paths and review lesson navigation using the [website contribution guide](../../contributing/local-website.md). Retain the existing navigation and historical *Islam: Blueprint for Life* chapters; do not replace `mkdocs.yml` with a shortened generated list. Run the existing publisher in strict mode where available; report the gate as not run rather than claiming success without evidence.
 
 **Next:** revisit the earlier [Git fundamentals](16-git.md) and [Framework ownership principles](176-from-teaching-queue-to-umicom-framework.md), then practise a complete checked contribution in a disposable clone before applying new tools to production repositories.

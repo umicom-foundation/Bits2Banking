@@ -201,3 +201,7 @@ ctest --test-dir ".\output\learning-build\http-loopback-server" --output-on-fail
 Expected tests: **16/16**, including the eleven existing cases. Cache tests check conditional header grammar, opened-file tags and `304` framing. Admission tests check capacity, FIFO, cancellation, stale tickets and 20,000 deterministic invariant checks. The actual Windows UCRT64 build and real-site MkDocs build remain separate verification steps.
 
 Read [Chapter 162](https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/162-http-caching-and-revalidation.md) to begin.
+
+## Nonblocking exercise
+
+The [nonblocking reactor guide](nonblocking-guide.md) explains how to build, run and inspect the optional single-threaded server mode, including admission limits, timeouts and graceful shutdown. The original serial listener remains the default.

@@ -62,7 +62,7 @@ Only an authorised OS maintainer should commit that parent reference after the r
 
 ## Build and test *this* learning update
 
-The actual files delivered by this batch belong only under `C:\umicom\Umicom-Bits2Banking`. Build and verify `labs/native/maintenance-review` with the commands in `UPDATE_41_BUILD_TEST_AND_GIT.md`. Review the new Markdown links, preserved history and nav snippets before publishing the website. The existing MkDocs build is a separate publication gate; native C23 tests do not guarantee it succeeded.
+The classroom source belongs in Bits2Banking. Build and verify the [maintenance-review laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/maintenance-review/README.md). Review Markdown links, preserved history and the current `mkdocs.yml` navigation before publishing the website. The existing MkDocs build is a separate publication gate; native C23 tests do not guarantee it succeeded.
 
 ## Architecture capstone
 

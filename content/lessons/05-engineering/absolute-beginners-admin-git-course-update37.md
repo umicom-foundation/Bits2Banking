@@ -66,7 +66,7 @@ Missing Git or GitHub CLI is expected on some computers. It means “install fir
 - **One-page command sheet:** [Beginner PowerShell and Git quick reference](beginner-command-sheet-update37.md).
 - **C23 source and tests:** `labs/native/contributor-notes/` in the repository root; use [Chapter 277](277-build-and-test-first-c23-notes-program.md).
 - **Video companions:** Episodes [90](../../videos/scripts/90-open-the-correct-powershell.md), [91](../../videos/scripts/91-read-computer-information-safely.md), [92](../../videos/scripts/92-create-and-publish-first-git-repository.md), [93](../../videos/scripts/93-build-your-first-umicom-notes-program.md) and [94](../../videos/scripts/94-review-framework-build-and-gitlinks.md).
-- **Final assessment:** [Chapter 279](279-capstone-first-umicom-contributor.md); instructor rubric and answer keys are included in `UPDATE_37_INSTRUCTOR_GUIDE.md`.
+- **Final assessment:** [Chapter 279](279-capstone-first-umicom-contributor.md); [instructor rubric and answer keys](../../teaching/first-contribution.md) support the assessment.
 
 ## Primary references
 

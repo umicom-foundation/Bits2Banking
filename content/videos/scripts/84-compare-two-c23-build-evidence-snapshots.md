@@ -22,7 +22,7 @@ Open `BtbEvidenceRunInit` and `BtbEvidenceAddProblem`. Demonstrate that the cons
 
 ## 05:30–09:15 — Run the executable comparison
 
-Configure and build using the commands in `UPDATE_35_BUILD_TEST_AND_GIT.md`, then run:
+Configure and build using the commands in the [build-evidence laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/build-evidence/README.md), then run:
 
 ```powershell
 & ".\output\learning-build\build-evidence\btb-build-evidence-demo.exe"

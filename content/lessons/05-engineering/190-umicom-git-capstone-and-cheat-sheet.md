@@ -66,7 +66,7 @@ Only run this stage if the OS gitlink genuinely needs upgrading and the new Fram
 
 ## Checkpoint D — Build and commit the learning repository
 
-Use the native laboratory and website checks from `UPDATE_30_BUILD_TEST_AND_GIT.md`. Inspect the staged paths before creating the learning commit:
+Use the [work-dispatch laboratory instructions](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/work-dispatch/README.md) and the [website checks](../../contributing/local-website.md). Inspect the staged paths before creating the learning commit:
 
 ```powershell
 Set-Location "C:\umicom\Umicom-Bits2Banking"
