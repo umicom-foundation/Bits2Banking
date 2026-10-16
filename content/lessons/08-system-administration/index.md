@@ -75,3 +75,10 @@ Start with no assumed knowledge. Learn the tools, understand the environment, pr
 ### Assessment standard
 
 A learner completes the course by demonstrating each observed result, identifying when a step is **not verified**, and explaining how to avoid changing systems they do not own. Speed and memorisation are not the criteria.
+
+## More practice: troubleshooting without guessing
+
+After you have practised the introductory course, try two further investigations. They are read-only exercises suitable for your own computer and do not require administrative access:
+
+- [133. When did it fail? Understand time zones before comparing logs](133-understand-time-zones-before-comparing-logs.md)
+- [134. “The program cannot save”: find the cause before changing anything](134-when-a-program-cannot-save-a-file.md)

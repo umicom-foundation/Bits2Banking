@@ -21,6 +21,19 @@ We follow two connected stories. A community kitchen needs to pay its bills on t
 
 A chapter normally takes 15–30 minutes to read and practise. Read the story first. Then do the worked numbers on paper. Look at the suggested answers **after** making your own attempt. If you have never used PowerShell, you can still complete every Stage 1 financial exercise.
 
+## Stage 2: follow the money through real decisions
+
+Stage 1 introduced the main ideas. Stage 2 gives you more practice with dates, cashflows, funding and the actual processing that follows a trade. You can still complete everything with a notebook and calculator.
+
+13. [Can we pay Friday's bills? Build a seven-day cash forecast](13-build-your-first-seven-day-cash-forecast.md)
+14. [When money earns interest: deposits, loans and the calendar](14-when-money-earns-interest-deposits-and-loans.md)
+15. [Spot the funding gap before it becomes a crisis](15-spotting-a-funding-gap-before-it-becomes-a-crisis.md)
+16. [Two currencies, two dates: understand an FX swap](16-two-currencies-two-dates-understanding-fx-swaps.md)
+17. [Borrowing against securities: repos and collateral](17-borrowing-against-securities-repo-and-collateral.md)
+18. [Follow one trade from booking to settlement](18-follow-one-trade-from-booking-to-settlement.md)
+
+Try the [Stage 2 practice workbook](stage-2-workbook.md) after the lessons. For a spoken explanation, watch or read [Can the business pay Thursday's bill?](../../videos/scripts/147-can-the-business-pay-thursdays-bill.md) and [Why a saved trade is not a settled trade](../../videos/scripts/148-why-a-saved-trade-is-not-a-settled-trade.md).
+
 ## Useful extras
 
 The [Stage 1 glossary](stage-1-glossary.md) explains common terms. The [practice workbook](stage-1-workbook.md) brings the first stage together as a set of short activities. The [source guide](sources-and-licensing.md) explains how this independent course relates to the original Umicom training manuals and licensed Calypso software.
