@@ -220,3 +220,17 @@ length and eventually a multi-block decoder, AdamW and controlled sampling.
 but held-out loss increased. The sample shows how a model can memorise its
 training pairs without generalising to unseen combinations. Do not describe
 this model as a C23 or Calypso expert until independent benchmarks support it.
+
+
+## Batch 05 — Native byte tokenizer and corpus import
+
+The first complete decoder in Batch 04 used small fixed token sequences.
+Batch 05 introduces **read-only corpus ingestion** and a reversible byte-token
+baseline, with three additional native CTest checks. This is not yet large-corpus
+streaming or an end-to-end model trained from a source file.
+
+- [Supplement 15A — Reversible byte tokenisation](15a-byte-tokenisation-and-corpus-import.md)
+- [Supplement 15B — Native corpus import and next-token windows](15b-native-corpus-and-next-token-windows.md)
+
+These supplements prepare the data pipeline for planned Lesson 16 without
+renumbering or replacing the existing 24-lesson roadmap.
