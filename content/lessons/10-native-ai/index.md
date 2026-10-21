@@ -337,3 +337,20 @@ a decoder-only checkpoint cannot be used to continue AdamW exactly. Scheduled
 SGD continuation remains reproducible when its **original** training horizon,
 reviewed data, seeds and rates are preserved. The educational examples do not
 claim that our bounded decoder has become a capable source-code expert.
+
+## Continuing AdamW training across application restarts
+
+The earlier optimiser lesson described a process-local AdamW state. The
+Framework now has an additional, explicitly versioned combined checkpoint
+for the complete decoder **and** AdamW first/second moments. The established
+model-only checkpoint remains unchanged, while the combined checkpoint can
+restore the exact optimiser-step count and reproduce subsequent deterministic
+updates on identical reviewed training examples.
+
+- [Supplement 19J — Resume AdamW Training with a Portable Native Checkpoint](19j-resume-adamw-with-persistent-native-checkpoints.md)
+
+This new checkpoint is subject to strict size, shape and numerical checks.
+Its FNV checksum only detects accidental corruption, not malicious tampering.
+The external dataset, initial seed, optimiser hyperparameters and learning-rate
+schedule must be independently verified. Windows antivirus blocks must be
+investigated rather than bypassed merely to obtain a green CTest result.
