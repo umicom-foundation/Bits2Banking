@@ -320,3 +320,20 @@ training gradients and cached logits, and measure actual process CPU time.
 The benchmark does not assert a guaranteed speedup. The elementary decoder's
 model-size and context limits remain unchanged until additional memory and
 numerical qualifications are completed.
+
+
+## Train with AdamW and controlled learning rates
+
+Native training now includes an inspectable AdamW optimiser with transactional
+moment/weight updates, and opt-in, absolute-step learning-rate scheduling for
+existing direct and accumulated SGD experiments. The original training paths
+and model checkpoint format are retained unchanged.
+
+- [Supplement 19H — Build a Native AdamW Optimiser](19h-adamw-and-native-optimisation.md)
+- [Supplement 19I — Learning-Rate Schedules and Reproducible Resume](19i-learning-rate-schedules-and-reproducible-resume.md)
+
+The optimizer's first and second moments are not yet serialised. Consequently,
+a decoder-only checkpoint cannot be used to continue AdamW exactly. Scheduled
+SGD continuation remains reproducible when its **original** training horizon,
+reviewed data, seeds and rates are preserved. The educational examples do not
+claim that our bounded decoder has become a capable source-code expert.
