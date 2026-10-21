@@ -234,3 +234,20 @@ streaming or an end-to-end model trained from a source file.
 
 These supplements prepare the data pipeline for planned Lesson 16 without
 renumbering or replacing the existing 24-lesson roadmap.
+
+
+## Batch 06 — Native source-code training (21 October 2026)
+
+The training lesson now connects the existing byte tokenizer, immutable corpus
+snapshots and decoder-only Transformer through a reviewed, file-level dataset
+manifest. The Framework owns deterministic partition-specific minibatches and
+rejects obvious duplicate documents. This is a bounded experiment, **not yet a
+competent C23 coding assistant**.
+
+- [Lesson 16 — Train an Umicom Decoder on C23 Source Code](16-source-code-training-with-file-level-evaluation.md)
+- [Supplement 16A — Review Training Manifests and Provenance](16a-reviewing-training-manifests-and-provenance.md)
+
+The executable example lives in
+`framework/learning/native-llm/train_source.c` and reads the fixture manifest
+at `framework/learning/native-llm/fixtures/manifest.txt`. Nothing under the
+Bits2Banking repository reimplements Framework training functionality.
