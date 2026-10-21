@@ -270,3 +270,21 @@ and rendered safely by the small command-line laboratory. Training remains
 separate from inference: the model's saved weights and completed optimiser
 steps do not change during generation. The present model still lacks sufficient
 capacity and training data for reliable programming assistance.
+
+
+## Evidence-driven decoder evaluation and checkpoint identity
+
+We can now evaluate a previously trained native decoder on deterministic
+held-out source samples and tie the measurements to its exact checkpoint,
+reviewed source manifest and complete training configuration. This adds
+Top-1 and Top-5 next-token accuracy alongside the existing cross-entropy and
+perplexity metrics; all maths and provenance services remain Framework-owned.
+
+- [Lesson 18 — Evaluate Our Native Language Model and Preserve its Provenance](18-model-evaluation-and-provenance.md)
+- [Supplement 18A — Repeatable Checkpoint Comparisons and Evidence Boundaries](18a-checkpoint-identity-and-repeatable-comparisons.md)
+
+The thin `umicom-native-llm-audit` laboratory loads approved checkpoints but
+never writes data or executes generated code. Fingerprints are reproducible
+FNV-1a64 accidental-change indicators, **not** security signatures. Results
+come from sampled held-out next-token predictions and must not be described
+as evidence of general C23 or treasury-system competence.
