@@ -167,3 +167,31 @@ The accompanying source is in the existing Framework training tape and
 The remote Framework baseline is inspected in the Batch 02 merge guide; the
 standalone laboratory remains available even when the very large root CMake
 file has not yet registered the optional training module.
+
+
+## Native training laboratory — Batch 03: a trainable decoder Transformer Block
+
+Batch 03 extends the exact same C23 training tape (no parallel maths engine):
+
+- **Two or more attention heads:** configurable channel partitions with
+  independently scaled, causal and batch-separated softmax weighting;
+  Q/K/V derivatives and alias accumulation are verified numerically.
+- **Learned layer normalisation:** per-token channel statistics, trainable
+  gamma/beta, epsilon control and independently verified backward gradients.
+- **Pre-LN decoder block:** Q/K/V projections, multi-head attention, output
+  projection, residual connection, second normalisation, ReLU feed-forward
+  expansion/reduction and final residual connection.
+- **Tape graph transactions:** checkpoint and rollback prevent failed composed
+  operations from leaving partial nodes or publishing an output pointer.
+- **Trainable demonstration:** four tokens in two short sequences are used to
+  show decreasing cross-entropy. These data are memorisable and are NOT
+  held-out evaluation of a language model.
+
+[**Lesson 11 — Multi-Head Causal Attention**](11-multi-head-causal-attention.md)  
+[**Lesson 12 — Layer Normalisation, Residual Paths and Transformer Block**](12-layer-normalisation-residuals-and-transformer-block.md)
+
+The cumulative isolated native laboratory contains **21 CTest cases** (the
+12 earlier tests, eight new focused tests and one new demonstration test).
+The main Framework CMake target is unchanged; the optional root
+`CMakeLists.txt` include must be reviewed and added exactly once if you want
+these tests inside the complete Umicom Applications preset.
