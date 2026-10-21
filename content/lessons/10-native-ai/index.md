@@ -307,3 +307,16 @@ computed projection rows, complete-window rebuild counts and maximum deviation
 from the canonical decoder. It reports **work counters**, not speedup claims.
 Its implementation is written in C23 and uses the established model parameters;
 no second training engine or application-local model is introduced.
+
+## CPU matrix performance and measurable optimisation
+
+The transformer training tape and the incremental key/value cache now share a
+single Framework-owned C23 matrix kernel. Learners can compare the original
+reference operation with column-tiled multiplication, verify unchanged
+training gradients and cached logits, and measure actual process CPU time.
+
+- [Supplement 19A — Make Our Native Model's Mathematics Measurable](19a-native-cpu-matrix-optimisation-and-benchmarking.md)
+
+The benchmark does not assert a guaranteed speedup. The elementary decoder's
+model-size and context limits remain unchanged until additional memory and
+numerical qualifications are completed.
