@@ -134,9 +134,9 @@ For every expert, keep the training set separate from evaluation material. A cur
 
 The new course is a **practical continuation**, not a replacement for either volume.
 
-## Native training laboratory — Batch 01 (20 October 2026)
+## Native training laboratory — mathematical foundations (20 October 2026)
 
-The first implementation batch adds a Framework-owned, bounded CPU training tape with row-major float32 matrices, matrix multiplication, broadcast addition, ReLU, mean-squared-error loss, stable cross-entropy, reverse-mode autodifferentiation, SGD, and six CTest regression checks. The included C23 example trains a **three-token bigram model** from zero weights. It **does not** yet train a transformer or provide attention, checkpoint persistence, a production tokenizer or domain experts.
+The initial Framework training foundation adds a Framework-owned, bounded CPU training tape with row-major float32 matrices, matrix multiplication, broadcast addition, ReLU, mean-squared-error loss, stable cross-entropy, reverse-mode autodifferentiation, SGD, and six CTest regression checks. The included C23 example trains a **three-token bigram model** from zero weights. It **does not** yet train a transformer or provide attention, checkpoint persistence, a production tokenizer or domain experts.
 
 New course lessons accompanying this implementation:
 
@@ -148,30 +148,30 @@ New course lessons accompanying this implementation:
 - [07. Gradients and backpropagation](07-gradients-and-backpropagation.md)
 - [08. Optimisers and first training run](08-optimisers-and-first-training-run.md)
 
-The educational package retains the original [Lesson 01](01-from-source-text-to-learning.md). Every experiment compiles against existing `umicom/base/status.h` in the actual Framework checkout. See the batch merge guide for exact PowerShell build and Git commands.
+The educational package retains the original [Lesson 01](01-from-source-text-to-learning.md). Every experiment compiles against existing `umicom/base/status.h` in the actual Framework checkout. See the merge instructions for exact PowerShell build and Git commands.
 
-## Native training laboratory — Batch 02: learned embeddings and causal attention
+## Native training laboratory — learned embeddings and causal attention
 
-Batch 02 adds seeded C23 parameter initialisation, a bounded logical
+The attention implementation adds seeded C23 parameter initialisation, a bounded logical
 `[batch,time,channels]` sequence layout, differentiable embedding lookup with
 repeated-token scatter gradients, and trainable single-head scaled dot-product
 causal attention. It includes six new registered checks (five focused unit
 and gradient tests plus a tiny context-dependent training demonstration).
-The six Batch 01 tests are preserved. This is **not** yet a complete transformer.
+The original six regression tests are preserved. This is **not** yet a complete transformer.
 
 - [09. Seeded initialisation and token embeddings](09-seeded-initialisation-and-token-embeddings.md)
 - [10. Causal self-attention and context-sensitive training](10-causal-self-attention-and-context.md)
 
 The accompanying source is in the existing Framework training tape and
 `framework/learning/native-llm/train_attention.c`, not in a second AI engine.
-The remote Framework baseline is inspected in the Batch 02 merge guide; the
+The Framework baseline was documented in the accompanying merge instructions; the
 standalone laboratory remains available even when the very large root CMake
 file has not yet registered the optional training module.
 
 
-## Native training laboratory — Batch 03: a trainable decoder Transformer Block
+## Native training laboratory — trainable decoder Transformer Block
 
-Batch 03 extends the exact same C23 training tape (no parallel maths engine):
+The Transformer Block extends the exact same C23 training tape (no parallel maths engine):
 
 - **Two or more attention heads:** configurable channel partitions with
   independently scaled, causal and batch-separated softmax weighting;
@@ -198,9 +198,9 @@ these tests inside the complete Umicom Applications preset.
 
 ---
 
-## Batch 04 — Lessons 13–15: complete bounded decoder and checkpoints
+## Lessons 13–15 — complete bounded decoder and checkpoints
 
-Our previous 12 lessons remain unchanged. Batch 04 introduces a **learned
+Our previous 12 lessons remain unchanged. The decoder implementation introduces a **learned
 absolute-position table**, a reusable single-block decoder with vocabulary
 logits, a deterministic sequence-level train/evaluation partition, a portable
 `UMIDEC04` checkpoint and a multi-parameter SGD transaction.
@@ -211,7 +211,7 @@ logits, a deterministic sequence-level train/evaluation partition, a portable
 
 The executable `learning/native-llm/train_decoder.c` is a **thin consumer** of
 native Umicom Framework AI services. Model code and checkpoint encoding remain
-in Framework. Batch 04 runs **27 native CTest tests** in the isolated suite;
+in Framework. The isolated suite at this stage ran **27 native CTest tests**;
 this is not a claim that the large consolidated Umicom Applications suite
 has passed. The next step is a proper corpus loader, configurable sequence
 length and eventually a multi-block decoder, AdamW and controlled sampling.
@@ -222,10 +222,10 @@ training pairs without generalising to unseen combinations. Do not describe
 this model as a C23 or Calypso expert until independent benchmarks support it.
 
 
-## Batch 05 — Native byte tokenizer and corpus import
+## Native byte tokenizer and corpus import
 
-The first complete decoder in Batch 04 used small fixed token sequences.
-Batch 05 introduces **read-only corpus ingestion** and a reversible byte-token
+The original complete decoder used small fixed token sequences.
+The corpus implementation introduces **read-only corpus ingestion** and a reversible byte-token
 baseline, with three additional native CTest checks. This is not yet large-corpus
 streaming or an end-to-end model trained from a source file.
 
@@ -236,7 +236,7 @@ These supplements prepare the data pipeline for planned Lesson 16 without
 renumbering or replacing the existing 24-lesson roadmap.
 
 
-## Batch 06 — Native source-code training (21 October 2026)
+## Native source-code training (21 October 2026)
 
 The training lesson now connects the existing byte tokenizer, immutable corpus
 snapshots and decoder-only Transformer through a reviewed, file-level dataset
@@ -251,3 +251,22 @@ The executable example lives in
 `framework/learning/native-llm/train_source.c` and reads the fixture manifest
 at `framework/learning/native-llm/fixtures/manifest.txt`. Nothing under the
 Bits2Banking repository reimplements Framework training functionality.
+
+
+## Reproducible experiments, checkpoints and text generation
+
+The native experiment service now provides reproducible run plans, sampled
+held-out evaluation, cancellation and exact continuation from an approved
+checkpoint. These facilities are Framework-owned; learners can change a
+reviewed plan without introducing a secondary training implementation.
+
+- [Supplement 16B — Reproducible native training experiments](16b-reproducible-native-training-experiments.md)
+- [Supplement 16C — Resume checkpoints and training evidence](16c-resume-checkpoints-and-training-evidence.md)
+- [Lesson 17 — Generate Text with Our Own Native Transformer](17-autoregressive-generation-and-sampling.md)
+
+Lesson 17 adds rolling-context autoregressive inference and reproducible
+best-token or top-K sampling. Generated bytes are returned with their lengths
+and rendered safely by the small command-line laboratory. Training remains
+separate from inference: the model's saved weights and completed optimiser
+steps do not change during generation. The present model still lacks sufficient
+capacity and training data for reliable programming assistance.
