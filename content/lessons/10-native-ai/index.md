@@ -354,3 +354,18 @@ Its FNV checksum only detects accidental corruption, not malicious tampering.
 The external dataset, initial seed, optimiser hyperparameters and learning-rate
 schedule must be independently verified. Windows antivirus blocks must be
 investigated rather than bypassed merely to obtain a green CTest result.
+
+
+## Reproducible AdamW experiments and exact optimiser continuation
+
+The Framework now offers scheduled AdamW experiments with separate owned
+model and optimiser handles. A combined checkpoint retains both model weights
+and AdamW moment history so interrupted training can continue from the correct
+absolute step, provided that the reviewed source corpus, optimiser settings
+and original full learning-rate schedule have not changed.
+
+- [Supplement 19K — Reproducible AdamW Training Experiments and Verified Resume](19k-native-adamw-experiments-and-verifiable-resume.md)
+
+These experiments still use a bounded native training batch; existing SGD
+gradient accumulation is a separate capability. Exact checkpoint byte parity
+does not authenticate a source corpus or claim production-ready language ability.
