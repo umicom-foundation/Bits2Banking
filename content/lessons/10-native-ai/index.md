@@ -195,3 +195,28 @@ The cumulative isolated native laboratory contains **21 CTest cases** (the
 The main Framework CMake target is unchanged; the optional root
 `CMakeLists.txt` include must be reviewed and added exactly once if you want
 these tests inside the complete Umicom Applications preset.
+
+---
+
+## Batch 04 — Lessons 13–15: complete bounded decoder and checkpoints
+
+Our previous 12 lessons remain unchanged. Batch 04 introduces a **learned
+absolute-position table**, a reusable single-block decoder with vocabulary
+logits, a deterministic sequence-level train/evaluation partition, a portable
+`UMIDEC04` checkpoint and a multi-parameter SGD transaction.
+
+- [Lesson 13 — From a Transformer Block to a Trainable Decoder](13-from-transformer-block-to-decoder.md): token and position embeddings, logits, gradients, whole-model update and causal-sequence validation.
+- [Lesson 14 — Train/Evaluation Splits and Learning Discipline](14-held-out-evaluation-and-training-discipline.md): reproducible held-out groups, training/evaluation loss and an honest overfitting example.
+- [Lesson 15 — Portable Checkpoints and Exact Resume](15-portable-checkpoints-and-recovery.md): binary format, endian safety, no-clobber file publication and checkpoint restoration.
+
+The executable `learning/native-llm/train_decoder.c` is a **thin consumer** of
+native Umicom Framework AI services. Model code and checkpoint encoding remain
+in Framework. Batch 04 runs **27 native CTest tests** in the isolated suite;
+this is not a claim that the large consolidated Umicom Applications suite
+has passed. The next step is a proper corpus loader, configurable sequence
+length and eventually a multi-block decoder, AdamW and controlled sampling.
+
+**Scientific honesty:** On the small synthetic corpus, training loss decreased
+but held-out loss increased. The sample shows how a model can memorise its
+training pairs without generalising to unseen combinations. Do not describe
+this model as a C23 or Calypso expert until independent benchmarks support it.
