@@ -149,3 +149,21 @@ New course lessons accompanying this implementation:
 - [08. Optimisers and first training run](08-optimisers-and-first-training-run.md)
 
 The educational package retains the original [Lesson 01](01-from-source-text-to-learning.md). Every experiment compiles against existing `umicom/base/status.h` in the actual Framework checkout. See the batch merge guide for exact PowerShell build and Git commands.
+
+## Native training laboratory — Batch 02: learned embeddings and causal attention
+
+Batch 02 adds seeded C23 parameter initialisation, a bounded logical
+`[batch,time,channels]` sequence layout, differentiable embedding lookup with
+repeated-token scatter gradients, and trainable single-head scaled dot-product
+causal attention. It includes six new registered checks (five focused unit
+and gradient tests plus a tiny context-dependent training demonstration).
+The six Batch 01 tests are preserved. This is **not** yet a complete transformer.
+
+- [09. Seeded initialisation and token embeddings](09-seeded-initialisation-and-token-embeddings.md)
+- [10. Causal self-attention and context-sensitive training](10-causal-self-attention-and-context.md)
+
+The accompanying source is in the existing Framework training tape and
+`framework/learning/native-llm/train_attention.c`, not in a second AI engine.
+The remote Framework baseline is inspected in the Batch 02 merge guide; the
+standalone laboratory remains available even when the very large root CMake
+file has not yet registered the optional training module.
