@@ -288,3 +288,22 @@ never writes data or executes generated code. Fingerprints are reproducible
 FNV-1a64 accidental-change indicators, **not** security signatures. Results
 come from sampled held-out next-token predictions and must not be described
 as evidence of general C23 or treasury-system competence.
+
+
+## Incremental attention inference and key/value caching
+
+The decoder now has a Framework-owned, inspectable **key/value inference
+cache**. It reuses previously computed attention projections while a prompt
+prefix grows, and checks every cached prediction against the authoritative
+decoder. Because our first transformer uses **learned absolute position
+embeddings**, a full rolling context must invalidate and reconstruct cached
+keys and values when tokens shift to earlier positions. Incorrectly reusing
+these rows would change the model's predictions.
+
+- [Lesson 19 — Incremental Native Inference and Key/Value Caching](19-incremental-inference-and-kv-caching.md)
+
+The optional `umicom-native-llm-kv-inspect` command displays retained tokens,
+computed projection rows, complete-window rebuild counts and maximum deviation
+from the canonical decoder. It reports **work counters**, not speedup claims.
+Its implementation is written in C23 and uses the established model parameters;
+no second training engine or application-local model is introduced.
