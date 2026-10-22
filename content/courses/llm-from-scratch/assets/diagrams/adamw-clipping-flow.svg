@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
+<defs><style>
+text{font-family:'Segoe UI',Arial,sans-serif;fill:#203247} .head{font-size:25px;font-weight:700}.txt{font-size:21px;font-weight:600}.small{font-size:17px} .muted{fill:#566879}
+.box{fill:white;stroke:#a0b4c5;stroke-width:2}.teal{fill:#ddf4f4;stroke:#087784;stroke-width:2}.navy{fill:#203247}.line{stroke:#087784;stroke-width:4;fill:none;stroke-linecap:round}
+</style><marker id="arrow" markerWidth="11" markerHeight="11" refX="10" refY="4" orient="auto"><path d="M0,0 L0,8 L11,4 z" fill="#087784"/></marker></defs>
+<title id="title">Gradient clipping before AdamW</title><desc id="desc">Gradients are reduced across microbatches, then clipped once before the AdamW moment and weight transaction.</desc>
+<rect width="1200" height="390" rx="26" fill="#f0f6f8"/>
+<text x="60" y="65" class="head">One clipping decision per effective batch</text>
+<rect class="box" x="54" y="132" width="232" height="160" rx="18"/>
+<text x="81" y="175" class="txt">Microbatches</text><text x="79" y="213" class="small">Gradient A</text><text x="79" y="247" class="small">Gradient B</text>
+<rect class="box" x="350" y="132" width="232" height="160" rx="18"/>
+<text x="377" y="175" class="txt">Weighted mean</text><text x="377" y="214" class="small">Across all tokens</text>
+<rect class="teal" x="644" y="132" width="232" height="160" rx="18"/>
+<text x="672" y="175" class="txt">Clip once</text><text x="672" y="214" class="small">Limit global L2</text><text x="672" y="248" class="small">Preserve direction</text>
+<rect class="box" x="939" y="132" width="207" height="160" rx="18"/>
+<text x="971" y="174" class="txt">AdamW</text><text x="971" y="214" class="small">Update moments</text><text x="971" y="248" class="small">and weights</text>
+<path class="line" d="M289 214H335" marker-end="url(#arrow)"/><path class="line" d="M586 214H631" marker-end="url(#arrow)"/><path class="line" d="M879 214H925" marker-end="url(#arrow)"/>
+<text x="65" y="340" class="small muted">Clipping individual microbatches separately would generally produce a different result.</text>
+</svg>

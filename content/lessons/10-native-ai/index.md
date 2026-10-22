@@ -408,3 +408,10 @@ The native Framework owns digest creation, score counter validation and read-onl
 - [Lesson 31 — Sign Windows Releases Without Bypassing Security](31-sign-windows-releases-and-protect-trust.md)
 
 The illustrated HTML counterparts live under `content/courses/llm-from-scratch/lessons/`. Existing lessons and the original MkDocs navigation are preserved.
+
+
+## Stable training updates and model evidence
+
+- [Lesson 32 — Gradient Norms: Measuring the Size of a Learning Update](32-gradient-norms-and-stable-measurement.md)
+- [Lesson 33 — Clip Global Gradients Before an AdamW Update](33-global-gradient-clipping-before-adamw.md)
+- [Lesson 34 — Test Gradient Clipping and Interpret Training Stability](34-test-gradient-clipping-and-training-stability.md)
