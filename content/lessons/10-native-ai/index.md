@@ -415,3 +415,6 @@ The illustrated HTML counterparts live under `content/courses/llm-from-scratch/l
 - [Lesson 32 — Gradient Norms: Measuring the Size of a Learning Update](32-gradient-norms-and-stable-measurement.md)
 - [Lesson 33 — Clip Global Gradients Before an AdamW Update](33-global-gradient-clipping-before-adamw.md)
 - [Lesson 34 — Test Gradient Clipping and Interpret Training Stability](34-test-gradient-clipping-and-training-stability.md)
+
+- [Lesson 35 — Configure Gradient Clipping in a Reproducible Training Plan](35-configure-gradient-clipping-in-a-training-plan.md)
+- [Lesson 36 — Bind a Clipping Policy to a Checkpoint and Resume Safely](36-checkpoint-clipping-policy-and-safe-resume.md)
