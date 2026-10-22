@@ -69,6 +69,8 @@
 <a href="../lessons/36-checkpoint-clipping-policy-and-safe-resume.html">Bind a Clipping Policy to a Checkpoint and Resume Safely</a>
 <a href="../lessons/37-bind-dataset-and-schedule-to-an-adamw-run.html">Bind Your Dataset and Training Schedule to an AdamW Checkpoint</a>
 <a href="../lessons/38-test-on-disk-adamw-continuation.html" aria-current="page">Test On-Disk AdamW Continuation and Detect Invalid Resumes</a>
+<a href="../lessons/39-hash-immutable-training-data-with-sha256.html">Identify the Actual Training Bytes with SHA-256</a>
+<a href="../lessons/40-verify-source-locked-adamw-resume.html">Verify Source-Locked AdamW Checkpoint Continuation</a>
 </div></aside>
 <main id="main" class="reading"><div class="breadcrumbs"><a href="../index.html">Bits to Banking</a><span aria-hidden="true">/</span><a href="../course-map.html">All lessons</a><span aria-hidden="true">/</span><span>9. Stable optimisation</span></div>
 <header class="lesson-head"><span class="eyebrow" style="color:#087784">9. Stable optimisation</span><h1>Lesson 38 — Test On-Disk AdamW Continuation and Detect Invalid Resumes</h1><p class="lesson-intro">Test the real checkpoint file round-trip and verify that changed training evidence is rejected before continuing.</p><div class="badges"><span class="badge teal">Native C23</span><span class="badge">Free · no registration</span></div></header>
@@ -103,16 +105,14 @@ Route B: train steps 1, 2 → save to disk → reload →
 <pre><code class="language-c">/* After both training routes succeed and checkpoints are encoded: */
 if (completeSize != continuedSize ||
     memcmp(completeBytes, continuedBytes, completeSize) != 0) {
-    fputs(&quot;AdamW disk continuation differs from the full run
-&quot;, stderr);
+    fputs(&quot;AdamW disk continuation differs from the full run\n&quot;, stderr);
     return 1;
 }
 
 /* A changed reviewed schedule must be refused BEFORE resumed training: */
 if (UmiAiTrainingRunLockVerifyFile(
         lockPath, loadedBytes, loadedSize, &amp;reviewed) != UMI_STATUS_OK) {
-    fputs(&quot;run-lock identity mismatch: refusing resume
-&quot;, stderr);
+    fputs(&quot;run-lock identity mismatch: refusing resume\n&quot;, stderr);
     return 1;
 }
 </code></pre>
@@ -124,4 +124,4 @@ if (UmiAiTrainingRunLockVerifyFile(
 <p>Build the official Framework CTest targets for run-lock identity, run-lock file handling and disk resume. For a real training run, use the reviewed native executable with the trailing <code>--strict-run-lock</code> option. Do not bypass operating-system security warnings or launch previously quarantined binaries merely to complete an exercise.</p>
 <p>After tests pass, explain in your own words why (a) a matching SHA-256 of checkpoint bytes, (b) an unchanged optimisation schedule, (c) independent source approval and (d) a clean security review are <strong>four distinct checks</strong>. None automatically substitutes for another.</p>
 <p><strong>Further study:</strong> Expand the dataset service to expose a cryptographic digest of the immutable raw source snapshot rather than relying only on its existing FNV-1a64 catalogue fingerprints. A future signed experiment receipt would then establish a stronger provenance chain without putting signing credentials inside the source tree.</p>
-</article><nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="37-bind-dataset-and-schedule-to-an-adamw-run.html"><small>← Previous</small>Bind Your Dataset and Training Schedule to an AdamW Checkpoint</a><a class="next" href="../course-map.html"><small>Next →</small>View all lessons</a></nav></main></div><footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 models; not production financial systems.</div><div><a href="../course-map.html">Course map</a></div></div></footer></body></html>
+</article><nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="37-bind-dataset-and-schedule-to-an-adamw-run.html"><small>← Previous</small>Bind Your Dataset and Training Schedule to an AdamW Checkpoint</a><a class="next" href="39-hash-immutable-training-data-with-sha256.html"><small>Next →</small>Identify the Actual Training Bytes with SHA-256</a></nav></main></div><footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 models; not production financial systems.</div><div><a href="../course-map.html">Course map</a></div></div></footer></body></html>

@@ -421,3 +421,6 @@ The illustrated HTML counterparts live under `content/courses/llm-from-scratch/l
 
 - [Lesson 37 — Bind Your Dataset and Training Schedule to an AdamW Checkpoint](37-bind-dataset-and-schedule-to-an-adamw-run.md)
 - [Lesson 38 — Test On-Disk AdamW Continuation and Detect Invalid Resumes](38-test-on-disk-adamw-continuation.md)
+
+- [Lesson 39 — Identify the Actual Training Bytes with SHA-256](39-hash-immutable-training-data-with-sha256.md)
+- [Lesson 40 — Verify Source-Locked AdamW Checkpoint Continuation](40-verify-source-locked-adamw-resume.md)
