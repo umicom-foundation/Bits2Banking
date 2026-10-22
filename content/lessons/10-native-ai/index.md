@@ -424,3 +424,14 @@ The illustrated HTML counterparts live under `content/courses/llm-from-scratch/l
 
 - [Lesson 39 — Identify the Actual Training Bytes with SHA-256](39-hash-immutable-training-data-with-sha256.md)
 - [Lesson 40 — Verify Source-Locked AdamW Checkpoint Continuation](40-verify-source-locked-adamw-resume.md)
+
+
+## Published checkpoint bundles and read-only evidence verification
+
+- [Lesson 41 — Publish a Complete Native Training Bundle](41-publish-a-complete-training-bundle.md)
+- [Lesson 42 — Verify a Published AdamW Run Before Resume](42-verify-training-publication-before-resume.md)
+
+The native C23 Framework hashes the four completed file streams and writes an
+optional, no-clobber `.publication` marker last. The independent verifier checks
+that record without running a model. Unsigned byte-integrity evidence does not
+replace the existing source, optimiser, schedule or security reviews.
