@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Move beyond the first decoder: caches, workspaces, optimisation, checkpoint identity and memory-efficient effective batches."><meta name="theme-color" content="#203247"><title>Supplement 19D — How Much Memory Does Training Our Language Model Need? | Bits to Banking · Umicom</title><link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+    <a class="logo" href="../index.html" aria-label="Umicom — Bits to Banking course home"><span class="logo-identity"><svg class="logo-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 236 236" width="45" height="45" role="img" aria-label="Umicom Foundation official mark" focusable="false"><title>Umicom</title><path d="M0 0 C3.76721508 25.7933489 3.76721508 25.7933489 -1.95263672 33.69873047 C-7.45311532 38.45512101 -13.96776923 41.3998697 -20.55273438 44.37402344 C-26.1878665 47.03195403 -31.39560111 50.35018704 -36.6875 53.625 C-38.7507242 54.86121598 -40.81581846 56.09431645 -42.8828125 57.32421875 C-51.98764496 62.77576992 -60.99703531 68.38229934 -70 74 C-61.60584239 78.89166579 -53.11624599 83.58121313 -44.5625 88.1875 C-33.45848742 94.17036763 -22.46806793 100.33962904 -11.50830078 106.58203125 C-8.25253845 108.42254786 -4.97644289 110.2251373 -1.69506836 112.01953125 C0 113 0 113 1 114 C1.08783542 116.21855264 1.10694609 118.43988496 1.09765625 120.66015625 C1.0962413 121.32462265 1.09482635 121.98908905 1.09336853 122.6736908 C1.08775518 124.80333899 1.07520054 126.93288339 1.0625 129.0625 C1.05748671 130.50325369 1.05292351 131.94400903 1.04882812 133.38476562 C1.03778145 136.92321102 1.02050792 140.46159539 1 144 C-3.0948037 141.81949125 -7.18839727 139.63674229 -11.28076172 137.45166016 C-13.24311452 136.40406186 -15.20570976 135.35691764 -17.16845703 134.31005859 C-29.85510048 127.54131974 -42.53504742 120.76763164 -55.08203125 113.7421875 C-59.13087484 111.47721008 -63.1949618 109.24040803 -67.26171875 107.0078125 C-68.56975696 106.28900682 -69.87778094 105.57017524 -71.18579102 104.85131836 C-73.13464577 103.78033639 -75.08385215 102.71002816 -77.03439331 101.64212036 C-77.65073639 101.30461761 -78.26707947 100.96711487 -78.90209961 100.61938477 C-79.50463562 100.289702 -80.10717163 99.96001923 -80.72796631 99.62034607 C-82.4662216 98.65970385 -84.19169641 97.67604989 -85.91674805 96.69189453 C-88.86611641 94.99647575 -88.86611641 94.99647575 -91.59301758 93.94482422 C-94.03642117 92.85734986 -95.35320501 92.11874937 -97 90 C-98.372014 84.91145616 -98.51105498 79.97680465 -98.4375 74.75 C-98.43304871 74.03770233 -98.42859741 73.32540466 -98.42401123 72.59152222 C-98.20232389 59.28593852 -98.20232389 59.28593852 -94.54296875 55.51953125 C-91.26612666 53.64330509 -88.15854944 52.34442342 -84.61572266 51.08886719 C-79.15374639 48.8151679 -74.28721583 45.35820997 -69.3125 42.1875 C-67.05344462 40.78865837 -64.79173157 39.39409938 -62.52734375 38.00390625 C-60.87387939 36.98707764 -60.87387939 36.98707764 -59.18701172 35.94970703 C-54.60116762 33.1442412 -49.99104202 30.38040668 -45.375 27.625 C-35.08763038 21.47976321 -24.93481475 15.13596627 -14.8203125 8.7109375 C-13.50945679 7.87949219 -13.50945679 7.87949219 -12.17211914 7.03125 C-10.4563625 5.94230875 -8.74196434 4.85122355 -7.02905273 3.7578125 C-6.25762939 3.26796875 -5.48620605 2.778125 -4.69140625 2.2734375 C-4.00248291 1.83435059 -3.31355957 1.39526367 -2.60375977 0.94287109 C-1 0 -1 0 0 0 Z " fill="#a0b4c5" transform="translate(109,58)"/>
+<path d="M0 0 C4.5195121 1.44822408 8.47480686 3.23937215 12.5625 5.625 C13.98617234 6.44021274 15.41072699 7.25388565 16.8359375 8.06640625 C17.64256836 8.5267627 18.44919922 8.98711914 19.28027344 9.46142578 C24.72384053 12.54090153 30.20881021 15.54612036 35.6875 18.5625 C36.93672223 19.25091119 38.18590809 19.93938837 39.43505859 20.62792969 C41.99559749 22.03920986 44.55631716 23.45016119 47.1171875 24.86083984 C50.33796877 26.63512427 53.55850052 28.40985952 56.77828979 30.1859436 C58.04675279 30.88510777 59.31573186 31.58333648 60.5852356 32.28060913 C63.68062268 33.98240767 66.76530708 35.69927735 69.83154297 37.453125 C75.05072666 40.41990822 80.12767376 43.17548095 85.8203125 45.13671875 C95.1981443 48.58276826 95.1981443 48.58276826 98 53 C100.82769773 62.65415993 101.84052637 76.90022534 96.89990234 86.03369141 C93.87015989 89.21519996 89.70852629 90.44535998 85.67529297 91.88574219 C80.66967684 93.97057811 76.17334438 97.00920846 71.59365845 99.8868103 C68.58627717 101.76636563 65.54939384 103.59705907 62.515625 105.43359375 C61.26875194 106.19103237 60.02200791 106.94868346 58.77539062 107.70654297 C54.99193951 110.00531923 51.20702502 112.3016788 47.421875 114.59765625 C45.56504051 115.72418139 43.70822356 116.85073543 41.85140991 117.97729492 C40.1267562 119.02352031 38.40188331 120.06938434 36.67700195 121.11523438 C31.1334641 124.47922267 25.59587595 127.85267031 20.0703125 131.24609375 C19.05340332 131.87056396 18.03649414 132.49503418 16.98876953 133.13842773 C13.00412294 135.62028774 9.06968825 138.17537286 5.14453125 140.75 C3 142 3 142 1 142 C-2.27879846 116.93460661 -2.27879846 116.93460661 2.60986328 109.57714844 C7.2821499 105.38820182 12.99861539 103.03136572 18.70068359 100.54492188 C24.15338749 97.99166523 29.17856765 94.74919549 34.27096558 91.55535889 C37.22286938 89.71346746 40.20134319 87.91589531 43.1796875 86.1171875 C44.04372444 85.59404465 44.04372444 85.59404465 44.92521667 85.06033325 C48.67077036 82.79466303 52.42922919 80.55165891 56.1953125 78.3203125 C57.12980225 77.76545166 58.06429199 77.21059082 59.02709961 76.63891602 C60.75692967 75.61390797 62.48938488 74.59331286 64.22485352 73.57788086 C64.97951904 73.13065674 65.73418457 72.68343262 66.51171875 72.22265625 C67.16615967 71.83859619 67.82060059 71.45453613 68.49487305 71.05883789 C70.16764484 70.05989964 70.16764484 70.05989964 71 68 C70.29182129 67.73082764 69.58364258 67.46165527 68.85400391 67.18432617 C65.90586076 65.96093503 63.14913679 64.5582674 60.3359375 63.05078125 C59.22661865 62.4570874 58.1172998 61.86339355 56.97436523 61.25170898 C55.77447156 60.60550141 54.5746858 59.95909342 53.375 59.3125 C52.76439728 58.98452423 52.15379456 58.65654846 51.52468872 58.31863403 C38.93746234 51.55740071 26.35620367 44.74962754 13.98510742 37.59960938 C11.02450845 35.93277824 11.02450845 35.93277824 7.8059082 34.77539062 C4.62502723 33.46962787 2.4389972 32.43379493 0 30 C-1.35569846 24.82338157 -1.04396716 19.89680079 -0.6875 14.625 C-0.63227236 13.20722064 -0.58209079 11.78923517 -0.53710938 10.37109375 C-0.41635899 6.90975498 -0.22692154 3.45618967 0 0 Z " fill="#96a1ab" transform="translate(123,16)"/>
+<path d="M0 0 C3.13308503 26.36852563 3.13308503 26.36852563 -1.56005859 33.30615234 C-6.05382514 37.04169792 -11.52753326 38.81740092 -16.96728516 40.77539062 C-22.38304442 42.96227265 -27.18961016 46.15672516 -32.125 49.25 C-34.2485876 50.53963671 -36.37492933 51.82474848 -38.50390625 53.10546875 C-39.5727002 53.74919434 -40.64149414 54.39291992 -41.74267578 55.05615234 C-48.21287583 58.91732254 -54.7500304 62.66238393 -61.28564453 66.41137695 C-66.84085481 69.59860616 -72.38424614 72.80359444 -77.90234375 76.0546875 C-79.0102124 76.70622803 -80.11808105 77.35776855 -81.25952148 78.02905273 C-83.37959851 79.2776508 -85.49768631 80.52963422 -87.61352539 81.78540039 C-88.55574951 82.3396167 -89.49797363 82.89383301 -90.46875 83.46484375 C-91.29826172 83.955896 -92.12777344 84.44694824 -92.98242188 84.95288086 C-95 86 -95 86 -97 86 C-98.41172262 76.14627052 -99.75292562 65.71445568 -97 56 C-92.18881732 49.71101756 -84.36776508 47.18478599 -77.21582031 44.35986328 C-72.09253722 42.19339753 -67.47284515 39.29231222 -62.75 36.375 C-60.91492111 35.28022423 -59.0777044 34.1890233 -57.23828125 33.1015625 C-56.35479004 32.57723633 -55.47129883 32.05291016 -54.56103516 31.51269531 C-50.70123505 29.23287439 -46.82088462 26.98933943 -42.9375 24.75 C-35.10372475 20.2295236 -27.29158279 15.67265119 -19.48733521 11.10144043 C-18.16939082 10.32954813 -16.85125719 9.55797886 -15.53292847 8.78674316 C-13.67764697 7.70122146 -11.82309202 6.61446933 -9.96875 5.52734375 C-8.89044922 4.89562256 -7.81214844 4.26390137 -6.70117188 3.61303711 C-0.65082488 0 -0.65082488 0 0 0 Z " fill="#aba0a1" transform="translate(109,15)"/>
+<path d="M0 0 C1.619785 9.8768547 3.02305559 20.28869818 0 30 C-5.55313418 36.90327807 -14.32982195 39.96888577 -22.29150391 43.34472656 C-28.33860418 45.96170663 -33.91268425 49.44385801 -39.5625 52.8125 C-41.736506 54.07078054 -43.91223812 55.32608437 -46.08984375 56.578125 C-51.59644514 59.76169718 -57.0853997 62.97395751 -62.56347656 66.20629883 C-68.97052815 69.98677411 -75.38965647 73.74642114 -81.8125 77.5 C-82.85809082 78.11238525 -83.90368164 78.72477051 -84.98095703 79.35571289 C-85.96306152 79.92926514 -86.94516602 80.50281738 -87.95703125 81.09375 C-89.27151245 81.86235352 -89.27151245 81.86235352 -90.61254883 82.64648438 C-92.71322379 83.83741821 -94.82846175 84.94522588 -97 86 C-97.22359275 81.83773496 -97.38625784 77.67869784 -97.49438477 73.51220703 C-97.5394723 72.09752509 -97.60076961 70.68325869 -97.67895508 69.27001953 C-98.30596132 57.6396685 -98.30596132 57.6396685 -95.34326172 53.91992188 C-92.97468017 52.308843 -90.61712924 51.16162504 -88 50 C-86.22127479 48.98770121 -84.45060441 47.96114159 -82.6875 46.921875 C-80.79334795 45.86157424 -78.89745002 44.80438756 -77 43.75 C-68.13467384 38.78002314 -59.34105687 33.71194896 -50.59667969 28.53320312 C-47.43545235 26.66666423 -44.26893299 24.8092114 -41.1015625 22.953125 C-40.48532516 22.59200119 -39.86908783 22.23087738 -39.23417664 21.85881042 C-36.05703087 19.99732332 -32.87938088 18.13669965 -29.70141602 16.27661133 C-24.2667979 13.09463141 -18.83480768 9.90899471 -13.42578125 6.68359375 C-12.23275391 5.97396484 -12.23275391 5.97396484 -11.015625 5.25 C-9.59023831 4.40083346 -8.16691207 3.54819461 -6.74609375 2.69140625 C-2.22224069 0 -2.22224069 0 0 0 Z " fill="#b39496" transform="translate(221,116)"/></svg><span class="logo-wordmark">umicom</span></span><span class="brand-divider" aria-hidden="true"></span><span class="brand-course">BITS TO BANKING<br>BUILD AN LLM</span></a>
+    <nav class="site-nav" aria-label="Main navigation"><a href="../index.html" >Home</a><a href="../start-here.html" >Start here</a><a href="../course-map.html" >Lessons</a><a href="../glossary.html" >Glossary</a><a href="../labs.html" >Labs</a></nav>
+    </div></header><div class="reading-shell"><aside class="toc" aria-label="Lesson list"><div class="toc-head"><b>THE LEARNING PATH</b><br><small>43 linked lessons</small></div><div class="toc-links"><h3>1. Foundations</h3>
+<a href="../lessons/01-from-source-text-to-learning.html">From Source Text to Learned Predictions</a>
+<a href="../lessons/02-training-data-and-evaluation.html">Training Data, Provenance and Evaluation Splits</a>
+<a href="../lessons/03-tokens-vocabulary-and-encoding.html">Tokens, Vocabulary and Text Encoding</a>
+<a href="../lessons/04-logits-softmax-and-cross-entropy.html">Logits, Softmax and Cross-Entropy</a>
+<h3>2. C23 maths &amp; learning</h3>
+<a href="../lessons/05-tensor-shapes-and-ownership.html">Tensor Shapes, Memory and Ownership in C23</a>
+<a href="../lessons/06-matrix-operations-and-activations.html">Matrix Operations, Activations and Numerical Stability</a>
+<a href="../lessons/07-gradients-and-backpropagation.html">Gradients, the Chain Rule and Automatic Differentiation</a>
+<a href="../lessons/08-optimisers-and-first-training-run.html">Optimisers and Our First Native Training Run</a>
+<a href="../lessons/09-seeded-initialisation-and-token-embeddings.html">Seeded Initialisation and Token Embeddings in C23</a>
+<h3>3. Build the Transformer</h3>
+<a href="../lessons/10-causal-self-attention-and-context.html">Causal Self-Attention and Context-Sensitive Training</a>
+<a href="../lessons/11-multi-head-causal-attention.html">Multi-Head Causal Attention: Several Views of the Same Sequence</a>
+<a href="../lessons/12-layer-normalisation-residuals-and-transformer-block.html">Layer Normalisation, Residual Paths and a Complete Transformer Block</a>
+<a href="../lessons/13-from-transformer-block-to-decoder.html">From a Transformer Block to a Trainable Decoder</a>
+<h3>4. Data, training &amp; recovery</h3>
+<a href="../lessons/14-held-out-evaluation-and-training-discipline.html">Train/Evaluation Splits and What a Falling Loss Really Means</a>
+<a href="../lessons/15-portable-checkpoints-and-recovery.html">Portable Model Checkpoints and Exact Resume</a>
+<a href="../lessons/15a-byte-tokenisation-and-corpus-import.html">Reversible Byte Tokenisation in C23</a>
+<a href="../lessons/15b-native-corpus-and-next-token-windows.html">Native Corpus Import and Next-Token Windows</a>
+<a href="../lessons/16-source-code-training-with-file-level-evaluation.html">Train an Umicom Decoder on C23 Source Code</a>
+<a href="../lessons/16a-reviewing-training-manifests-and-provenance.html">Training Manifests, Corpus Provenance and Leakage</a>
+<a href="../lessons/16b-reproducible-native-training-experiments.html">Reproducible Native Training Experiments in C23</a>
+<a href="../lessons/16c-resume-checkpoints-and-training-evidence.html">Resume Native Training and Verify Its Evidence</a>
+<h3>5. Generation &amp; evaluation</h3>
+<a href="../lessons/17-autoregressive-generation-and-sampling.html">Generate Text with Our Own Native Transformer</a>
+<a href="../lessons/18-model-evaluation-and-provenance.html">Evaluate Our Native Language Model and Preserve its Provenance</a>
+<a href="../lessons/18a-checkpoint-identity-and-repeatable-comparisons.html">Repeatable Checkpoint Comparisons and Evidence Boundaries</a>
+<h3>6. Engineering a better model</h3>
+<a href="../lessons/19-incremental-inference-and-kv-caching.html">Incremental Native Inference and Key/Value Caching</a>
+<a href="../lessons/19a-native-cpu-matrix-optimisation-and-benchmarking.html">Make Our Native Model&#x27;s Mathematics Measurable</a>
+<a href="../lessons/19b-profile-whole-model-inference-and-memory.html">Profile Whole-Model Inference and Memory in C23</a>
+<a href="../lessons/19c-compact-inference-memory-and-ownership.html">Compact Inference Memory and Ownership in C23</a>
+<a href="../lessons/19d-training-memory-capacity-and-budgets.html" aria-current="page">How Much Memory Does Training Our Language Model Need?</a>
+<a href="../lessons/19e-expand-tensors-and-train-multiple-sequences.html">Train Multiple Source-Code Sequences with Wider Native Tensors</a>
+<a href="../lessons/19f-accumulate-gradients-across-microbatches.html">Accumulate Gradients Across Smaller Native Training Batches</a>
+<a href="../lessons/19g-reproducible-effective-batch-experiments.html">Reproducible Effective-Batch Training Experiments</a>
+<a href="../lessons/19h-adamw-and-native-optimisation.html">Build a Native AdamW Optimiser for Our Language Model</a>
+<a href="../lessons/19i-learning-rate-schedules-and-reproducible-resume.html">Learning-Rate Schedules and Reproducible Resume</a>
+<a href="../lessons/19j-resume-adamw-with-persistent-native-checkpoints.html">Resume AdamW Training with a Portable Native Checkpoint</a>
+<a href="../lessons/19k-native-adamw-experiments-and-verifiable-resume.html">Reproducible AdamW Training Experiments and Verified Resume</a>
+<a href="../lessons/19l-adamw-effective-batches-and-checkpoint-continuation.html">AdamW Effective Batches and Exact Checkpoint Continuation</a><h3>7. From decoder to specialist</h3>
+<a href="../lessons/20-from-banking-source-to-training-data.html">From a Banking Source File to Training Data</a>
+<a href="../lessons/21-build-next-token-windows.html">Construct and Check Next-Token Windows</a>
+<a href="../lessons/22-prevent-training-data-leakage.html">Separate Training Evidence from Evaluation Evidence</a>
+<a href="../lessons/23-plan-a-reproducible-training-run.html">Plan a Reproducible Native Training Experiment</a>
+<a href="../lessons/24-checkpoint-recovery-and-evidence.html">Understand Checkpoints, Recovery and Evidence</a>
+<a href="../lessons/25-design-a-trustworthy-c23-expert-benchmark.html">Design a Trustworthy C23 Expert Benchmark</a>
+</div></aside>
+<main id="main" class="reading"><div class="breadcrumbs"><a href="../index.html">Bits to Banking</a><span aria-hidden="true">/</span><a href="../course-map.html">All lessons</a><span aria-hidden="true">/</span><span>6. Engineering a better model</span></div>
+<header class="lesson-head"><span class="eyebrow" style="color:#087784">6. Engineering a better model</span><h1>Supplement 19D — How Much Memory Does Training Our Language Model Need?</h1><p class="lesson-intro">Move beyond the first decoder: caches, workspaces, optimisation, checkpoint identity and memory-efficient effective batches.</p><div class="badges"><span class="badge teal">Native C23</span><span class="badge">10 min read</span><span class="badge">Umicom Framework</span><span class="badge">No external dependencies</span></div></header>
+<div class="beginner-box"><strong>Start with the idea</strong><p>Efficient training and inference. Every technical section below builds on this central idea; return here whenever you need to reconnect the mathematics with the application.</p></div>
+<figure class="figure"><img src="../assets/diagrams/memory-profile.svg" alt="Efficient training and inference: illustrated learning diagram" loading="lazy"><figcaption>Umicom educational diagram — editable SVG asset included with the site.</figcaption></figure>
+<article class="article-content"><h1>Supplement 19D — How Much Memory Does Training Our Language Model Need?</h1>
+<p><strong>Bits to Banking · Build Your Own LLM from Scratch</strong><br/>
+<strong>Author:</strong> Sammy Hegab · <strong>Umicom Foundation</strong><br/>
+<strong>Languages:</strong> C23 for implementation, PowerShell for interactive build and tests</p>
+<h2>Learning objectives</h2>
+<p>By the end of this lesson, the learner should be able to explain the difference
+between the model's parameters, intermediate activations, parameter gradients
+and auxiliary training storage. You will inspect the actual native Umicom
+Framework training tape, calculate the space needed for a small decoder,
+configure a memory budget and observe how rejected work is handled without
+corrupting model state.</p>
+<p>This lesson builds on matrix multiplication, backpropagation, causal attention,
+checkpoints and the inference profiler. The goal is to understand the <em>real
+memory ownership rules of the application we are building</em>, not to copy a
+separate experimental neural-network implementation into the educational
+repository.</p>
+<h2>1. Where does training memory go?</h2>
+<p>A language model stores <em>parameters</em> such as its embedding vectors, attention
+projection matrices and feed-forward weights. During training, the model must
+also retain enough information to calculate derivatives of the loss with
+respect to those parameters. That creates several distinct categories of
+memory use.</p>
+<p>Consider a trainable C23 tensor containing a four-by-four matrix. It owns
+16 <code>float</code> values, which occupy 64 bytes when <code>float</code> is IEEE 754 binary32.
+It also owns 16 gradient values: another 64 bytes. The Framework additionally
+allocates metadata that records the matrix dimensions, its owning tape, its
+operation and any earlier tensors on which it depends.</p>
+<p>Suppose the matrix becomes the input to a <code>ReLU</code> activation. The resulting
+matrix is another tensor and owns another values array and gradients array.
+These derived tensors are <strong>activations</strong>: they belong to the computation used
+for the current training step. They are not permanent model parameters.</p>
+<p>A causal-attention operation can additionally preserve the probability
+weights used when backpropagating through attention. An embedding gather keeps
+an owned copy of the selected integer token IDs so gradients can be returned
+to the correct rows in the embedding table. An exact memory estimate must
+account for these buffers, not only the model's weights.</p>
+<p><strong>Key distinction:</strong> the memory reserved for a trained model is only part of
+what the same model may need during training.</p>
+<h2>2. Calculating our decoder's parameter storage</h2>
+<p>Our initial byte tokenizer provides 260 token IDs. Consider the native decoder
+configured for a context of eight tokens, eight channels, a sixteen-channel
+feed-forward hidden layer and two attention heads.</p>
+<p>The decoder's parameter shapes are not hard-coded in this lesson. The
+Framework already defines them in the native decoder schema, which the memory
+planner reuses. For this configuration there are 15 trainable parameter tensors
+with <strong>4,792 scalar parameters</strong>.</p>
+<p>At four bytes per scalar:</p>
+<p>[
+\text{parameter value bytes} = 4,792 \times 4 = 19,168
+]</p>
+<p>Training also retains corresponding gradient arrays:</p>
+<p>[
+\text{parameter gradient bytes} = 4,792 \times 4 = 19,168
+]</p>
+<p>Thus parameters and their gradients require <strong>38,336 bytes</strong>, before accounting
+for tape metadata, activations and attention probability storage. This value
+is an exact logical float32 payload count for the specified architecture,
+not a measurement of the operating system's resident memory.</p>
+<p>For one sequence of eight tokens, the decoder also constructs an output-logit
+matrix containing <code>8 × 260 = 2,080</code> values, consuming 8,320 bytes. Two
+attention heads over the same eight-token context retain up to
+<code>2 × 8 × 8 = 128</code> probabilities, occupying 512 bytes in this teaching
+implementation.</p>
+<p>These items are <strong>not the whole forward graph</strong>: there are additional layer
+normalisation, query/key/value, residual and feed-forward tensors. A careful
+engineer must distinguish a <em>lower-bound payload calculation</em> from a safe
+memory budget for the complete training operation.</p>
+<h2>3. Why a computer with plenty of RAM can still reject a model</h2>
+<p>The present Umicom learning tape deliberately limits each tensor to 4,096
+scalar elements. These limits make debugging and numerical verification
+manageable. They are not measurements of the available RAM.</p>
+<p>What happens if we double the minibatch from one eight-token sequence to two?
+The output logits would need:</p>
+<p>[
+2 \times 8 \times 260 = 4,160 \text{ elements}
+]</p>
+<p>That exceeds the existing 4,096-element tensor limit. Our Framework capacity
+planner therefore returns <code>UMI_STATUS_CAPACITY_EXCEEDED</code> before constructing
+the model. It also checks attention-probability storage and the exact parameter
+shapes, using the same rules enforced by the native decoder.</p>
+<p>You should never solve this kind of failure by silently discarding training
+examples, shrinking a parameter without the user's knowledge or changing the
+public tensor contract without reviewing the resulting tests and checkpoints.</p>
+<h2>4. Committed memory versus temporary work</h2>
+<p>The Framework exposes <code>UmiAiTrainingTapeMemoryInspect()</code> to inspect allocations
+that have successfully joined a training tape. Its response records current
+bytes, peak bytes, tensor count and separate value, gradient and auxiliary
+payloads. The high-water mark remains visible after temporary nodes have been
+released.</p>
+<p>A new budget can be selected using
+<code>UmiAiTrainingTapeSetMemoryBudget()</code>. A value of zero means that no explicit
+<em>committed-graph budget</em> is enforced. A positive budget below the current
+allocation is rejected without changing the tape. When a new computed tensor
+would exceed the limit, its candidate allocation is released rather than
+published. The existing graph and caller-provided output handles remain
+unchanged.</p>
+<p>The budget is <strong>not a hard process-memory limit</strong>. A C operator may create
+temporary scratch buffers and compute an unpublished candidate node before
+checking its committed cost. The memory inspector does not count those
+short-lived allocations, allocator metadata or C stack frames. Compare with a
+process-level profiler if total RAM use is the question.</p>
+<p>Applications access the same measurement without owning internal tape pointers
+through <code>UmiAiTrainingDecoderMemoryInspect()</code> and
+<code>UmiAiTrainingDecoderSetMemoryBudget()</code>. Reusable implementations belong to
+Umicom Framework; the user interface remains a thin consumer.</p>
+<h2>5. Build and inspect the real implementation</h2>
+<p>Open PowerShell and run the dedicated native laboratory. These instructions
+use the exact checkout under your local Umicom workspace.</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+
+cmake -S ".\framework\learning\native-llm" `
+    -B ".\build\windows-ucrt64-native-llm-debug" `
+    -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+
+cmake --build ".\build\windows-ucrt64-native-llm-debug" --parallel 2
+
+ctest --test-dir ".\build\windows-ucrt64-native-llm-debug" `
+    --output-on-failure --no-tests=error
+
+&amp; ".\build\windows-ucrt64-native-llm-debug\umicom-native-llm-training-memory.exe"
+</code></pre>
+<p>The console first reports the capacity plan. It then creates the decoder,
+records how much committed tape memory its parameters require, performs a
+single training step and inspects memory again. Although the temporary graph
+was released, the observed high-water mark remains above the current value.</p>
+<p>The demonstration reads no confidential Calypso documents, connects to no
+banking service and saves no checkpoint. It is a self-contained test of our
+own native numerical engine.</p>
+<h2>6. Verify failure behaviour, not just successful training</h2>
+<p>Consider a model whose parameter tensors already occupy 42,704 bytes of
+committed tape memory in one tested platform configuration. If you apply a
+budget of 42,705 bytes, the next nontrivial derived tensor cannot be admitted.
+The decoder returns a capacity error and discards temporary graph nodes.</p>
+<p>The related regression test verifies that the rejected training attempt did
+<strong>not</strong> change the model weights, completed step count, caller's reported loss
+or saved checkpoint representation. Removing the limit allows the same model
+to train normally.</p>
+<p>This is more valuable than only checking whether an allocation function
+returned <code>NULL</code>. It tests the consistency of the <em>whole training transaction</em>.</p>
+<p>The exact metadata byte count can differ between platforms and compiler
+ABIs. Always rely on the native inspector when reporting your own computer's
+memory usage; do not assume that a debug Linux figure equals Windows memory.</p>
+<h2>7. Exercises and questions</h2>
+<p><strong>Exercise A — Calculate a tensor budget.</strong> A training tensor has 50 rows and
+12 columns. Calculate how many float32 value bytes and gradient bytes its
+arrays require. Explain why the node also needs storage beyond those arrays.</p>
+<p><strong>Exercise B — Plan a minibatch.</strong> For a vocabulary of 260 token IDs and a
+context of eight tokens, calculate the number of output logits for one,
+two and three sequences. Which fit within 4,096 elements?</p>
+<p><strong>Exercise C — Inspect an actual training run.</strong> Run the native inspector,
+record its committed and high-water memory numbers and explain why they
+differ after training has finished.</p>
+<p><strong>Exercise D — Test failure isolation.</strong> Read
+<code>tests/ai_training/test_training_decoder_memory.c</code>. Identify where the test
+checks that an insufficient memory budget leaves the model's state unchanged.
+Why would changing the weights before returning a capacity error be dangerous?</p>
+<p><strong>Extension — Realistic scale.</strong> Research why larger transformer models require
+memory for more than parameter values and their gradients. In particular,
+consider optimiser state, attention probabilities, longer contexts and
+multi-layer activation storage. Explain why increasing one constant in the
+current teaching API cannot by itself create a production LLM trainer.</p>
+<h2>8. What this teaches us for specialist models</h2>
+<p>Our objective is a family of native specialised models, including C23,
+Umicom Framework and treasury-management experts. Those models will require
+larger corpora and eventually larger neural networks. Before growing the
+network, we need trustworthy evidence about whether the limitation is model
+quality, dataset preparation, compute time, tensor capacity or actual memory
+pressure.</p>
+<p>The new planner and memory inspector give us a reproducible way to start that
+work without inventing performance claims or compromising existing training
+behaviour. The present educational decoder remains small, CPU-based and not
+suitable for safety-critical production use.</p>
+<p><strong>Source of truth:</strong>
+<code>framework/include/umicom/ai/training/capacity_plan.h</code>,
+<code>framework/include/umicom/ai/training/tape.h</code>, and
+<code>framework/learning/native-llm/TRAINING_MEMORY.md</code>.</p>
+</article>
+<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="19c-compact-inference-memory-and-ownership.html"><small>← Previous</small>Supplement 19C — Compact Inference Memory and Ownership in C23</a><a class="next" href="19e-expand-tensors-and-train-multiple-sequences.html"><small>Next →</small>Supplement 19E — Train Multiple Source-Code Sequences with Wider Native Tensors</a></nav></main></div><footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 models; not production financial systems.</div><div>Official branding is reused from Umicom Framework.<br>No externally hosted fonts, scripts or trackers. · <a href="../course-map.html">Course map</a></div></div></footer></body></html>
