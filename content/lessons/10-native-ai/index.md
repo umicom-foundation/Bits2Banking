@@ -418,3 +418,6 @@ The illustrated HTML counterparts live under `content/courses/llm-from-scratch/l
 
 - [Lesson 35 — Configure Gradient Clipping in a Reproducible Training Plan](35-configure-gradient-clipping-in-a-training-plan.md)
 - [Lesson 36 — Bind a Clipping Policy to a Checkpoint and Resume Safely](36-checkpoint-clipping-policy-and-safe-resume.md)
+
+- [Lesson 37 — Bind Your Dataset and Training Schedule to an AdamW Checkpoint](37-bind-dataset-and-schedule-to-an-adamw-run.md)
+- [Lesson 38 — Test On-Disk AdamW Continuation and Detect Invalid Resumes](38-test-on-disk-adamw-continuation.md)
