@@ -369,3 +369,16 @@ and original full learning-rate schedule have not changed.
 These experiments still use a bounded native training batch; existing SGD
 gradient accumulation is a separate capability. Exact checkpoint byte parity
 does not authenticate a source corpus or claim production-ready language ability.
+
+
+## Illustrated HTML learning course
+
+The beginner-friendly [Umicom Native AI illustrated course](../../llm-course/index.html)
+connects the source-based lessons into a navigable collection of standalone HTML
+pages. The course uses the **existing** Umicom Foundation brand SVGs and font
+stack, custom explanatory diagrams, glossary, beginner orientation, responsive
+reading layout and previous/next navigation. Source Markdown remains here for
+editorial review and the native C23 Framework remains the sole implementation
+owner. No font binaries or scripting runtimes are redistributed.
+
+- [Supplement 19L — AdamW Effective Batches and Exact Checkpoint Continuation](19l-adamw-effective-batches-and-checkpoint-continuation.md)
