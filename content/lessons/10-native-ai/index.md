@@ -489,3 +489,19 @@ The aggregate SHA-256 identifies the ordered canonical observations; it is
 **not a digital signature**, a trusted signing timestamp, or an attestation
 of host integrity, training-data rights or model competence. The native
 regression tests prove focused contracts, not the complete Windows release.
+
+
+## Independent approval of an ordered model release
+
+- [Lesson 51 — Pin an Independently Approved Native LLM Release](51-pin-an-independently-approved-release-batch.md)
+- [Lesson 52 — Test Independent Release Approval and Rejection](52-test-independent-release-approval-and-rejection.md)
+
+A reviewer can pin the exact SHA-256 identity of a previously verified,
+ordered batch of signed training publications in a separate controlled
+approval record. The Framework C23 release gate verifies the publisher
+policy and publications again, rejects reordered or replaced evidence,
+and emits success JSON only when the approved selection matches.
+
+The approval file is **unsigned** and must be controlled independently.
+Neither this gate nor existing signatures prove trustworthy signing
+time, model quality, training-data rights or the security of the host.
