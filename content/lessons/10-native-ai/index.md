@@ -519,3 +519,16 @@ still needs a distinct C identifier in a shared translation unit.
 The Framework uses a compile-only platform-header regression target
 and an opt-in Windows UCRT64 cryptography workflow. No additional
 cryptographic algorithm is implemented in application code.
+
+
+## Independently signed model-release authorisation
+
+- [Lesson 55 — Sign an Independent Native LLM Release Approval](55-sign-an-independent-release-approval.md)
+- [Lesson 56 — Verify Signed Release Approval and Reject Tampering](56-verify-signed-release-approval-and-reject-tampering.md)
+
+The C23 signing service validates the existing independently approved ordered
+release record, then signs its **exact bytes** with an externally managed
+Ed25519 approval key. The verifier requires that key independently and
+re-checks publisher trust and every original checkpoint before issuing a
+receipt. Key custody, organisational authority, timestamping and model
+quality remain separate responsibilities.
