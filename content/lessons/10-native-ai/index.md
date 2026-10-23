@@ -435,3 +435,15 @@ The native C23 Framework hashes the four completed file streams and writes an
 optional, no-clobber `.publication` marker last. The independent verifier checks
 that record without running a model. Unsigned byte-integrity evidence does not
 replace the existing source, optimiser, schedule or security reviews.
+
+
+## Authenticate reviewed training publications with Ed25519
+
+- [Lesson 43 — Sign a Native Training Publication with Ed25519](43-sign-training-publications-with-ed25519.md)
+- [Lesson 44 — Verify an Ed25519 Publisher Signature and Reject Tampering](44-verify-publisher-keys-and-detect-tampering.md)
+
+The optional C23 Framework attestation layer uses OpenSSL 3's Ed25519 primitive
+to sign the exact existing `.publication` record. Verification requires a
+separately trusted public key **and** validates all four underlying file
+identities. Signed byte integrity does not replace security review, training
+permissions, benchmark evidence or independent model assessment.
