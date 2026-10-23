@@ -532,3 +532,11 @@ Ed25519 approval key. The verifier requires that key independently and
 re-checks publisher trust and every original checkpoint before issuing a
 receipt. Key custody, organisational authority, timestamping and model
 quality remain separate responsibilities.
+
+
+## Compare models against a common held-out evaluation
+
+- [Lesson 57 — Compare Two Native LLM Models on the Same Held-Out Data](57-compare-two-models-on-identical-held-out-windows.md)
+- [Lesson 58 — Test Native C23 Model Quality Gates and Reject Incomparable Evidence](58-test-model-quality-regressions-in-c23.md)
+
+These lessons use the canonical decoder evaluator to compare checkpoint quality on the same evaluation windows. This measured quality assessment does not replace independent source authorisation, publisher trust, cryptographic publication verification or formal release approval.
