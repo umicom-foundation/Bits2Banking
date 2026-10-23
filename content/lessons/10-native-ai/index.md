@@ -548,3 +548,16 @@ These lessons use the canonical decoder evaluator to compare checkpoint quality 
 - [Lesson 60 — Export Deterministic C23 Model-Quality Evidence](60-emit-deterministic-model-quality-evidence.md)
 
 The compiler is responsible for checking public ABI types before any quality test runs. The new evidence API reuses the canonical quality gate to format deterministic held-out observations as JSON. Binary64 score fields are exact hexadecimal bit strings, and FNV identifiers are not digital signatures. Signed provenance, independent release approval and real programming-task competence remain separate evaluations.
+
+
+## Top-p nucleus sampling and exact decoder compatibility
+
+- [Lesson 61 — Top-p Nucleus Sampling for Native C23 Language Models](61-top-p-nucleus-sampling.md)
+- [Lesson 62 — Test Native C23 Nucleus Sampling and Decoder Compatibility](62-test-nucleus-sampling-and-decoder-compatibility.md)
+
+The opt-in Framework nucleus policy keeps the smallest ranked set of candidates
+whose temperature-scaled mass reaches the requested `topP`. The established
+Top-K sampling, tokeniser, decoder and checkpoint format remain available.
+Setting `topP=1` produces the same seeded result and random-state transition
+as the original top-K path; the tests also cover failed requests and byte
+round trips. Sampled output does not by itself establish model correctness.

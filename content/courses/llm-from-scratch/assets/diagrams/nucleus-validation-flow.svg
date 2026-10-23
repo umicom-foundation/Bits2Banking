@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 380" role="img" aria-labelledby="title desc">
+  <title id="title">Native C23 top-p nucleus validation and compatibility flow</title>
+  <desc id="desc">Check finite logits and valid policy, sort the highest top-K candidates, compute stable softmax mass, retain the smallest prefix reaching top-p, and delegate the draw to the original top-K sampler. Rejected requests preserve state. At top-p one, the legacy sampler is used directly.</desc>
+  <rect width="1100" height="380" rx="24" fill="#f5f8fb"/>
+  <text x="40" y="50" font-family="system-ui,sans-serif" font-size="29" font-weight="700" fill="#203247">One inference engine · two optional selection rules</text>
+  <g font-family="system-ui,sans-serif" font-size="18" fill="#203247" text-anchor="middle">
+    <rect x="36" y="100" width="186" height="100" rx="14" fill="#e8eef4" stroke="#b4c5d2"/>
+    <text x="129" y="141" font-weight="700">Validate</text><text x="129" y="165" font-size="15">policy + all logits</text>
+    <rect x="260" y="100" width="184" height="100" rx="14" fill="#e8eef4" stroke="#b4c5d2"/>
+    <text x="352" y="141" font-weight="700">Rank top-K</text><text x="352" y="165" font-size="15">scores, then token ID</text>
+    <rect x="482" y="100" width="186" height="100" rx="14" fill="#e8eef4" stroke="#b4c5d2"/>
+    <text x="575" y="141" font-weight="700">Mass cutoff</text><text x="575" y="165" font-size="15">stable softmax + top-p</text>
+    <rect x="706" y="100" width="186" height="100" rx="14" fill="#ddf2ef" stroke="#168074"/>
+    <text x="799" y="141" font-weight="700">Canonical draw</text><text x="799" y="165" font-size="15">existing top-K sampler</text>
+    <rect x="930" y="100" width="134" height="100" rx="14" fill="#203247"/>
+    <text x="997" y="141" fill="white" font-weight="700">Commit</text><text x="997" y="165" fill="white" font-size="15">token + RNG</text>
+  </g>
+  <g stroke="#466075" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M224 150h32m-8 -7l8 7l-8 7"/><path d="M446 150h32m-8 -7l8 7l-8 7"/>
+    <path d="M670 150h32m-8 -7l8 7l-8 7"/><path d="M895 150h31m-8 -7l8 7l-8 7"/>
+  </g>
+  <g font-family="system-ui,sans-serif">
+    <path d="M130 205v82h445v-82" fill="none" stroke="#b86422" stroke-width="2.5" stroke-dasharray="8 6"/>
+    <rect x="205" y="265" width="300" height="42" rx="10" fill="#fff0e2" stroke="#d49a69"/>
+    <text x="355" y="292" font-size="17" font-weight="700" text-anchor="middle" fill="#8c4819">Invalid input? Do not mutate outputs</text>
+    <rect x="700" y="255" width="364" height="58" rx="10" fill="#e6f5f2" stroke="#168074"/>
+    <text x="882" y="278" font-size="18" font-weight="700" text-anchor="middle" fill="#146e64">top-p = 1: use top-K directly</text>
+    <text x="882" y="299" font-size="15" text-anchor="middle" fill="#466075">Identical seed → identical result</text>
+    <text x="45" y="355" font-size="15" fill="#466075">The model, tokenizer, training and checkpoint format are unchanged.</text>
+  </g>
+</svg>
