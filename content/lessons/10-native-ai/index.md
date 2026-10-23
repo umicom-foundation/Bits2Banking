@@ -460,3 +460,16 @@ and explicitly deny revoked keys before calling the established signature and
 publication verifiers. The policy is an independently reviewed local input;
 it is not a trustworthy signing timestamp, certificate authority or source
 authorisation.
+
+
+## Machine-readable trust receipts and native release validation
+
+- [Lesson 47 — Read a Machine-Readable Training Verification Receipt](47-read-a-machine-verifiable-training-receipt.md)
+- [Lesson 48 — Test Native LLM Verification Before a Release](48-test-native-llm-verification-before-release.md)
+
+A reusable Framework C23 service can now verify the signed publication against
+an independently approved offline policy and format the resulting file and
+publisher identities as a bounded, failure-atomic JSON receipt. The receipt is
+**not signed** and is not evidence of signing time, host integrity, dataset
+authorisation or model correctness. The native CTest lessons emphasise the
+difference between isolated component tests and a complete Windows build.
