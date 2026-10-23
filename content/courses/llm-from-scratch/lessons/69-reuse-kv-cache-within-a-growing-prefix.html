@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Learn when an absolute-position decoder can safely reuse cached keys and values before the context window rolls.">
+<meta name="theme-color" content="#203247">
+<title>Lesson 69 — Reuse KV Cache Within a Growing Prefix | Bits to Banking · Umicom</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span class="brand-divider" aria-hidden="true">·</span> BITS TO BANKING</a>
+<nav class="site-nav" aria-label="Course navigation"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside class="toc" aria-label="Recent lessons"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation and measurement</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html" aria-current="page">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test the real decoder</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main id="main" class="lesson"><header class="lesson-header"><p class="eyebrow">LESSON 69 · NATIVE C23 · INFERENCE</p>
+<h1>Reuse KV Cache Within a Growing Prefix</h1>
+<p class="lesson-lede">Learn exactly where a cache can save computation without changing the learned positions of any token.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>By the end, you should be able to distinguish a growing token prefix from a rolling context window, calculate the rows computed by each approach, explain why parity is possible here, and state what this experiment does <em>not</em> establish.</p>
+<h2>1. Recall why the previous experiment found no row saving</h2>
+<p>In Lesson 67, our eight-position decoder always received a <strong>full eight-token context</strong>. When its prompt was short, reserved beginning-of-sequence (BOS) tokens filled the unused positions on the left. Once a token was generated, the oldest position was discarded and the remaining seven tokens shifted left. With <strong>learned absolute positional embeddings</strong>, this shift changes the input representation of every retained token. Previously computed keys and values are then stale and must be rebuilt.</p>
+<p>That result remains true. We are not silently changing how Umicom's canonical generator works.</p>
+<h2>2. A different workload: observe a prefix as it grows</h2>
+<p>Now start with the tokens at positions 0, 1 and 2, without left padding. Inspect the prediction after the first token, after the second, then after the third. Continue until the available context is full. The original token in position 0 <strong>never moves</strong>; its embedding and its attention key/value remain valid as later tokens arrive. Because causal attention does not let an earlier token attend to a future token, the earlier keys and values need not be calculated again.</p>
+<figure><img src="../assets/diagrams/kv-growing-prefix-work.svg" alt="Six independently rebuilt prefixes compute 21 token rows. Reusing cached K/V across six prefixes computes six token rows; their logits are compared at every prefix."><figcaption>Each comparison uses identical token IDs, learned positions and decoder weights. The only difference is whether earlier keys and values are recomputed.</figcaption></figure>
+<h2>3. Work through the arithmetic</h2>
+<p>For six inspected prefixes, repeated independent computation needs <code>1 + 2 + 3 + 4 + 5 + 6 = 21</code> token rows. Keeping the same cache needs one row for each newly appended token: <code>6</code> rows. That avoids <code>15</code> rows, or approximately <code>71.4%</code> of the <em>row computation count</em>.</p>
+<p>For a prefix length <code>N</code>, provided <code>1 &lt;= N &lt;= contextLength</code>, the independent approach computes <code>N × (N + 1) / 2</code> rows. The incremental approach computes <code>N</code>. The difference is <code>N × (N - 1) / 2</code>.</p>
+<p>These are counts of model-token rows, not floating-point operations, bytes read, elapsed time, or a guaranteed speedup factor. Longer prefixes perform more attention operations per new row. A cache also occupies memory.</p>
+<h2>4. Reuse the existing Framework ownership model</h2>
+<p>We do not need a new Transformer implementation. The Framework already provides <code>UmiAiTrainingKvCachePrefill</code> and <code>UmiAiTrainingKvCacheAppend</code>. The first computes the initial prefix from position zero. As long as its context has room, Append computes only the new row and reuses existing keys and values. Once capacity is reached, the existing cache correctly rebuilds the window after eviction.</p>
+<pre><code>#include "umicom/ai/training/kv_prefix_reuse.h"
+
+/* decoderConfig is a valid model configuration already in use. */
+UmiAiTrainingKvPrefixWorkEstimate estimate = {0};
+UmiStatus status = UmiAiTrainingKvPrefixWorkEstimateBuild(
+    &amp;decoderConfig, 6U, &amp;estimate);
+if (status == UMI_STATUS_OK) {
+    /* 21 independent rows, 6 incremental rows, 15 avoided. */
+}</code></pre>
+<p>The function uses the existing shape-aware cache allocation planner. Invalid dimensions, excessive prefixes or missing output pointers are rejected without changing the caller's result.</p>
+<h2>5. What this does not change</h2>
+<p>The canonical text generator still uses full BOS-padded contexts and its original positional semantics. No token IDs, checkpoints, trained parameters or random sampling rules change. This is an <strong>opt-in prefix-logit laboratory</strong>, not a drop-in performance upgrade for existing text generation. It demonstrates exactly which future streaming inference workload can benefit from the current model.</p>
+<h2>Practice exercises</h2>
+<ol><li>Calculate both row totals for nine prefixes. What fraction of rows is avoided?</li>
+<li>Explain why a token at position 2 can keep its K/V values after a token is appended at position 5.</li>
+<li>Explain why you cannot simply carry that same cache forward when the position-0 token is evicted.</li>
+<li>Does “15 fewer token rows” mean “71.4% less wall-clock time”? Identify two other costs.</li></ol>
+<p><strong>Key lesson:</strong> Optimisations depend on precise invariants. Prefix reuse is valid while token positions remain fixed; a moving absolute-position window is a different problem.</p>
+</article>
+<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="68-qualify-native-generation-performance.html"><small>← Previous</small>Qualify Native Generation Performance</a><a class="next" href="70-test-prefix-reuse-with-real-decoder.html"><small>Next →</small>Test Prefix Reuse Against Real Decoder Logits</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

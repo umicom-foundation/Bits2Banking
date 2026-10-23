@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Build and test a native C23 growing-prefix KV cache against independent prefix inference on the same real decoder.">
+<meta name="theme-color" content="#203247">
+<title>Lesson 70 — Test Prefix Reuse Against Real Decoder Logits | Bits to Banking · Umicom</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span class="brand-divider" aria-hidden="true">·</span> BITS TO BANKING</a>
+<nav class="site-nav" aria-label="Course navigation"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside class="toc" aria-label="Recent lessons"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation and measurement</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html" aria-current="page">70 · Test the real decoder</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main id="main" class="lesson"><header class="lesson-header"><p class="eyebrow">LESSON 70 · NATIVE C23 · TESTING</p>
+<h1>Test Prefix Reuse Against Real Decoder Logits</h1>
+<p class="lesson-lede">Qualify a measured reduction in computed token rows without confusing it with changed generation semantics or a benchmark speed guarantee.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Run an independent native CMake/CTest project, compare every vocabulary logit for every prefix, verify actual cache-row counters, test input rejection, and interpret CPU-time measurements conservatively.</p>
+<h2>1. Define the proof you need</h2>
+<p>Work reduction is useful only if it preserves the numerical result. Our comparison creates one decoder, then two separate caches of its unchanged parameters. The <strong>reference cache</strong> runs Prefill independently for each prefix length, with positions restarting at zero. The <strong>incremental cache</strong> runs Prefill once for the first token, then Append for each new token. These procedures must calculate the same values because their positions, weights and attention masking remain identical.</p>
+<p><code>UmiAiTrainingKvPrefixPerformanceCompare</code> checks every logit at each prefix against an absolute difference limit of <code>0.00004</code>, aligned with the existing KV-cache context regression. It also rejects a report unless both caches' real work counters agree with the expected row totals and there are no rolling-window rebuilds.</p>
+<h2>2. Build the native laboratory in Windows PowerShell</h2>
+<p>First merge the new files into <code>Umicom-Framework</code>, preserving their repository-relative directories. Configure this opt-in CMake laboratory separately so it does not unexpectedly change the existing native generator or the consolidated applications build.</p>
+<pre><code>Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+
+cmake -S .\framework\learning\native-llm\prefix-work `
+  -B .\build\windows-ucrt64-native-llm-prefix-debug -G Ninja `
+  -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw 'Configure failed.' }
+
+cmake --build .\build\windows-ucrt64-native-llm-prefix-debug `
+  --target umicom-native-llm-prefix-work `
+           umicom-ai-training-kv-prefix-reuse-test `
+           umicom-ai-training-kv-prefix-rejections-test --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+
+ctest --test-dir .\build\windows-ucrt64-native-llm-prefix-debug `
+  -R '^framework\.ai\.training\.kv_prefix_' `
+  --output-on-failure --no-tests=error
+if ($LASTEXITCODE -ne 0) { throw 'Regression failed.' }</code></pre>
+<p>Three CTests are expected: one compares real decoder prefix logits and checkpoint bytes, one checks invalid inputs and failure-atomic reporting, and the last executes the teaching CLI. These are <strong>expected</strong> checks on your machine, not a claim that your Windows build has already passed.</p>
+<h2>3. Read the complete result</h2>
+<pre><code>#include "umicom/ai/training/kv_prefix_reuse.h"
+#include &lt;inttypes.h&gt;
+#include &lt;stdio.h&gt;
+
+/* model and tokenIds belong to the caller. */
+UmiAiTrainingKvPrefixPerformance report = {0};
+UmiStatus status = UmiAiTrainingKvPrefixPerformanceCompare(
+    model, tokenIds, 6U, &amp;report);
+if (status == UMI_STATUS_OK) {
+    printf("Prefixes compared: %zu\n", report.matchingPrefixes);
+    printf("Reference rows: %" PRIu64 "\n", report.observedReferenceRows);
+    printf("Incremental rows: %" PRIu64 "\n", report.observedIncrementalRows);
+}</code></pre>
+<p>The six-prefix fixture should report 21 independently rebuilt rows, six retained-cache rows and zero context rebuilds. It should report six matched prefix-logit comparisons. The test's decoder and cache both use the original Framework implementation, not a teaching replacement for the attention mathematics.</p>
+<h2>4. What CPU time does and does not show</h2>
+<p>Repeated Prefill and incremental Prefill/Append are measured separately using the process CPU clock. Cache construction is excluded from both timings; per-prefix cache inspection is included in both; the final logit comparisons are excluded. These details matter when interpreting a small measurement.</p>
+<p>If the clock is unavailable or too coarse, an apparently zero reading is not evidence of free inference. If a single run appears faster, do not generalise. To evaluate throughput, repeat the experiment many times, warm up the execution environment, document compiler options, inspect distribution and variance, and compare wall-clock latency under realistic load. <strong>Fewer computed rows is a verified unit-of-work saving; it is not the same as faster text generation.</strong></p>
+<h2>5. Where the cache stops helping</h2>
+<p>The moment an append must evict position zero, learned absolute positions are reassigned to the retained tokens. The existing Framework cache correctly rebuilds the rolling context. Making the original text-generation workload faster could require different positional-encoding rules, checkpoint semantics and re-training, or an altogether different mathematically qualified optimisation. Such a change deserves its own design and compatibility tests.</p>
+<h2>Exercises and review questions</h2>
+<ol>
+<li>Why do we compare all vocabulary logits instead of merely the highest-scoring token?</li>
+<li>For context length eight, what happens when you append the ninth token? Why is the original six-prefix experiment not a benchmark of this situation?</li>
+<li>Which errors must leave the result structure untouched? Give two invalid-input examples.</li>
+<li>What could cause two implementations to have equal token-row counts but different CPU times?</li>
+<li>Plan a reproducible benchmark report that includes machine, compiler, repetitions, variance and numerical parity.</li>
+</ol>
+<p><strong>Key lesson:</strong> A useful optimisation is a specific and falsifiable claim: identical inputs and positions, bounded numerical difference, measured work savings, and clearly declared limits.</p>
+</article>
+<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="69-reuse-kv-cache-within-a-growing-prefix.html"><small>← Previous</small>Reuse KV Cache Within a Growing Prefix</a><a class="next" href="../course-map.html"><small>Course map →</small>Review all lessons</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>
