@@ -561,3 +561,8 @@ Top-K sampling, tokeniser, decoder and checkpoint format remain available.
 Setting `topP=1` produces the same seeded result and random-state transition
 as the original top-K path; the tests also cover failed requests and byte
 round trips. Sampled output does not by itself establish model correctness.
+
+### Qualified native inference cache
+
+- [Lesson 63 — Qualify KV-Cached Nucleus Generation in Native C23](../../courses/llm-from-scratch/lessons/63-qualify-kv-cached-nucleus-generation.html)
+- [Lesson 64 — Test Cached Generation Parity and Bounded Memory](../../courses/llm-from-scratch/lessons/64-test-cached-generation-parity-and-memory.html)

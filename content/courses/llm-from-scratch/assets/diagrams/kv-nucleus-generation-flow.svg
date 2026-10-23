@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 380" role="img" aria-labelledby="title desc">
+  <title id="title">Native C23 decoder, full-context KV cache, and top-p sampler</title>
+  <desc id="desc">A canonical decoder provides immutable parameter snapshots. A full BOS-padded context is prefetched into the KV cache, producing logits for the canonical top-p sampler. Each next token extends the full window and triggers a complete key/value rebuild because learned absolute positions shift.</desc>
+  <rect width="1100" height="380" rx="24" fill="#f5f8fb"/>
+  <text x="42" y="51" font-size="29" font-weight="700" font-family="system-ui,sans-serif" fill="#203247">One decoder, two ways to evaluate the same context</text>
+  <g font-family="system-ui,sans-serif" text-anchor="middle" fill="#203247">
+    <rect x="38" y="99" width="195" height="123" rx="15" fill="#e8eef4" stroke="#a8bece" stroke-width="2"/>
+    <text x="135" y="140" font-size="19" font-weight="700">Reviewed decoder</text>
+    <text x="135" y="166" font-size="15">weights unchanged</text>
+    <text x="135" y="189" font-size="15">seed + model shape</text>
+    <rect x="286" y="99" width="206" height="123" rx="15" fill="#e8eef4" stroke="#a8bece" stroke-width="2"/>
+    <text x="389" y="140" font-size="19" font-weight="700">Full context</text>
+    <text x="389" y="166" font-size="15">BOS padding</text>
+    <text x="389" y="189" font-size="15">8 retained tokens</text>
+    <rect x="545" y="99" width="206" height="123" rx="15" fill="#ddf2ef" stroke="#168074" stroke-width="2"/>
+    <text x="648" y="140" font-size="19" font-weight="700">KV cache</text>
+    <text x="648" y="166" font-size="15">last-row logits</text>
+    <text x="648" y="189" font-size="15">rebuild on rollover</text>
+    <rect x="804" y="99" width="258" height="123" rx="15" fill="#203247"/>
+    <text x="933" y="140" font-size="19" font-weight="700" fill="white">Native top-p sampler</text>
+    <text x="933" y="166" font-size="15" fill="white">same seed + policy</text>
+    <text x="933" y="189" font-size="15" fill="white">published token IDs</text>
+  </g>
+  <g stroke="#38546c" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M234 160h47m-10 -7l10 7l-10 7"/>
+    <path d="M494 160h46m-10 -7l10 7l-10 7"/>
+    <path d="M753 160h46m-10 -7l10 7l-10 7"/>
+  </g>
+  <path d="M936 227v63H647v-63" fill="none" stroke="#b86422" stroke-width="3" stroke-dasharray="8 6"/>
+  <rect x="420" y="282" width="448" height="54" rx="13" fill="#fff0e2" stroke="#d49a69" stroke-width="2"/>
+  <text x="644" y="316" font-family="system-ui,sans-serif" font-size="17" font-weight="700" text-anchor="middle" fill="#8c4819">Full window rolls → recompute position-dependent K/V</text>
+  <text x="45" y="356" font-family="system-ui,sans-serif" font-size="15" fill="#476176">Correctness comes first. Retained cache rows do not establish an inference speedup.</text>
+</svg>
