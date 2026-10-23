@@ -577,3 +577,10 @@ one seeded nucleus-sampling state across successive token pulls. The new C23
 regressions compare intermittent token retrieval with the existing full-context
 and cached generators. A generation session does not keep a decoder alive, does
 not execute generated code, and does not establish a performance speedup.
+
+### Understanding generation workload and benchmark evidence
+
+- [Lesson 67 — Measure Native C23 Decoder and KV-Cache Work Honestly](../../courses/llm-from-scratch/lessons/67-measure-decoder-and-kv-cache-work.html)
+- [Lesson 68 — Benchmark Full-Context and Streaming Generation with Real Evidence](../../courses/llm-from-scratch/lessons/68-qualify-native-generation-performance.html)
+
+The optional Framework C23 workload estimator uses the existing KV-cache allocation planner and records the work implied by learned absolute positions. The paired execution comparison checks exact token parity and observed row counts before publishing CPU-time observations. A process CPU-time measurement is neither a wall-clock latency figure nor proof that the cache is faster. Training behaviour, checkpoint structure and existing inference interfaces are unchanged.

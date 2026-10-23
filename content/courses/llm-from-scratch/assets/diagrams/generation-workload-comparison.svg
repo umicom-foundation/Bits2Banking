@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="390" viewBox="0 0 1000 390" role="img" aria-labelledby="title description">
+<title id="title">Generation work with a full-context reference and a rolling KV cache</title>
+<desc id="description">A context length of eight and twelve generated tokens needs 96 reference token rows. Because learned absolute positions shift, the KV cache also calculates 96 rows: one prefill plus eleven full eight-token rebuilds.</desc>
+<rect width="1000" height="390" rx="18" fill="#f6fafc"/>
+<text x="38" y="48" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="#203247">Why this KV cache does not yet save token-row work</text>
+<text x="38" y="82" font-family="Arial,sans-serif" font-size="17" fill="#34556a">Context = 8 tokens · Output = 12 tokens · Learned absolute-position embeddings</text>
+<text x="40" y="132" font-family="Arial,sans-serif" font-size="21" font-weight="bold" fill="#203247">Reference</text>
+<rect x="220" y="108" width="624" height="53" rx="9" fill="#126c83"/>
+<text x="238" y="142" font-family="Arial,sans-serif" font-size="20" fill="white">12 complete decoder windows × 8 rows = 96 rows</text>
+<text x="40" y="220" font-family="Arial,sans-serif" font-size="21" font-weight="bold" fill="#203247">KV cache</text>
+<rect x="220" y="193" width="96" height="58" rx="9" fill="#2d8e77"/>
+<text x="232" y="228" font-family="Arial,sans-serif" font-size="17" fill="white">8 prefill</text>
+<rect x="326" y="193" width="518" height="58" rx="9" fill="#d48f37"/>
+<text x="351" y="228" font-family="Arial,sans-serif" font-size="18" fill="#1a2835">11 rolling rebuilds × 8 = 88 rows</text>
+<path d="M220 274h624" stroke="#476174" stroke-width="2"/>
+<text x="40" y="303" font-family="Arial,sans-serif" font-size="18" fill="#203247">Both paths compute <tspan font-weight="bold">96 token-rows</tspan>.</text>
+<text x="40" y="335" font-family="Arial,sans-serif" font-size="16" fill="#34556a">Key/value reuse is mathematically invalid when every retained token changes learned position.</text>
+<text x="40" y="360" font-family="Arial,sans-serif" font-size="15" fill="#34556a">Equal rows do not imply equal elapsed time; measure and verify the actual implementation.</text>
+</svg>
