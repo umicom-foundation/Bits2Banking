@@ -540,3 +540,11 @@ quality remain separate responsibilities.
 - [Lesson 58 — Test Native C23 Model Quality Gates and Reject Incomparable Evidence](58-test-model-quality-regressions-in-c23.md)
 
 These lessons use the canonical decoder evaluator to compare checkpoint quality on the same evaluation windows. This measured quality assessment does not replace independent source authorisation, publisher trust, cryptographic publication verification or formal release approval.
+
+
+## C23 build integrity and machine-readable quality evidence
+
+- [Lesson 59 — Diagnose a C23 Type Error Before Running Model-Quality Tests](59-repair-model-quality-build-and-test-abi.md)
+- [Lesson 60 — Export Deterministic C23 Model-Quality Evidence](60-emit-deterministic-model-quality-evidence.md)
+
+The compiler is responsible for checking public ABI types before any quality test runs. The new evidence API reuses the canonical quality gate to format deterministic held-out observations as JSON. Binary64 score fields are exact hexadecimal bit strings, and FNV identifiers are not digital signatures. Signed provenance, independent release approval and real programming-task competence remain separate evaluations.
