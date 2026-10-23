@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 500" role="img" aria-labelledby="title desc">
+<title id="title">Canonical decoder checks both growing-prefix reuse and rolling-context cache rebasing</title>
+<desc id="desc">The top row shows stable token positions within an eight-token context, where the cache incrementally computes eight rows and matches canonical decoder logits. The bottom row shows the ninth token evicting the first token. The cache must recompute eight positions, bringing total computed rows to sixteen; its last logits again match the canonical decoder.</desc>
+<rect width="1050" height="500" rx="20" fill="#f4f8fb"/>
+<text x="40" y="45" font-family="Segoe UI,Arial,sans-serif" font-size="24" font-weight="700" fill="#17354e">Learned absolute positions: where KV reuse remains valid</text>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#1b3a55">
+ <text x="40" y="91" font-weight="700">Before eviction · stable positions</text>
+ <text x="40" y="275" font-weight="700">After eviction · retained tokens change positions</text>
+</g>
+<g stroke="#4c799b" stroke-width="2">
+ <rect x="40" y="113" width="660" height="84" rx="12" fill="#e7f3ff"/>
+ <rect x="40" y="297" width="660" height="84" rx="12" fill="#fff0e3"/>
+</g>
+<g font-family="Consolas,monospace" font-size="16" fill="#23445a" text-anchor="middle">
+ <text x="93" y="134">P0</text><text x="174" y="134">P1</text><text x="255" y="134">P2</text><text x="336" y="134">P3</text><text x="417" y="134">P4</text><text x="498" y="134">P5</text><text x="579" y="134">P6</text><text x="660" y="134">P7</text>
+ <text x="93" y="318">P0</text><text x="174" y="318">P1</text><text x="255" y="318">P2</text><text x="336" y="318">P3</text><text x="417" y="318">P4</text><text x="498" y="318">P5</text><text x="579" y="318">P6</text><text x="660" y="318">P7</text>
+</g>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="24" fill="#143c5b" text-anchor="middle" font-weight="700">
+ <text x="93" y="170">A</text><text x="174" y="170">B</text><text x="255" y="170">C</text><text x="336" y="170">D</text><text x="417" y="170">E</text><text x="498" y="170">F</text><text x="579" y="170">G</text><text x="660" y="170">H</text>
+ <text x="93" y="354">B</text><text x="174" y="354">C</text><text x="255" y="354">D</text><text x="336" y="354">E</text><text x="417" y="354">F</text><text x="498" y="354">G</text><text x="579" y="354">H</text><text x="660" y="354">I</text>
+</g>
+<g stroke="#126e74" stroke-width="3" fill="none"><path d="M716 155 H761"/><path d="M716 339 H761"/></g>
+<g fill="#126e74"><path d="M760 148 L773 155 L760 162 Z"/><path d="M760 332 L773 339 L760 346 Z"/></g>
+<g font-family="Segoe UI,Arial,sans-serif" fill="#17354e">
+ <rect x="786" y="106" width="225" height="99" rx="12" fill="#d7f4eb" stroke="#238677" stroke-width="2"/>
+ <text x="898" y="138" font-size="18" font-weight="700" text-anchor="middle">8 computed rows</text>
+ <text x="898" y="164" font-size="15" text-anchor="middle">0 window rebuilds</text>
+ <text x="898" y="188" font-size="14" text-anchor="middle">Check all decoder logits</text>
+ <rect x="786" y="290" width="225" height="103" rx="12" fill="#fff1de" stroke="#a96a1b" stroke-width="2"/>
+ <text x="898" y="320" font-size="18" font-weight="700" text-anchor="middle">16 rows cumulative</text>
+ <text x="898" y="347" font-size="15" text-anchor="middle">1 full-window rebuild</text>
+ <text x="898" y="372" font-size="14" text-anchor="middle">Check all decoder logits</text>
+ <text x="41" y="229" font-size="15">Same token IDs in the same positions → reuse previously computed keys and values.</text>
+ <text x="41" y="417" font-size="15">Token B moved from P1 to P0: its position embedding changed → old K/V must be rebuilt.</text>
+ <text x="40" y="462" font-size="15" font-weight="700">The independent canonical decoder is the numerical reference at both full-context states.</text>
+</g>
+</svg>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Independently compare real native C23 decoder logits with growing-prefix KV-cache inference and verify checkpoint preservation.">
+<meta name="theme-color" content="#203247">
+<title>Lesson 71 — Qualify KV Reuse Against the Canonical Decoder | Bits to Banking · Umicom</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span class="brand-divider" aria-hidden="true">·</span> BITS TO BANKING</a>
+<nav class="site-nav" aria-label="Course navigation"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside class="toc" aria-label="Recent lessons"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html" aria-current="page">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main id="main" class="lesson"><header class="lesson-header"><p class="eyebrow">LESSON 71 · NATIVE C23 · NUMERICAL QUALIFICATION</p>
+<h1>Qualify KV Reuse Against the Canonical Decoder</h1><p class="lesson-lede">Compare the original decoder mathematics directly with cached inference, not just two schedules of the same cache kernel.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Distinguish two kinds of evidence: agreement between two execution schedules of the <em>same</em> KV kernel, and independent agreement with the original full-context decoder. Trace a sequence of tokens through learned positions, compare every vocabulary logit, and confirm that no parameter or checkpoint state changes during inference.</p>
+<h2>1. The missing independent reference</h2>
+<p>Lessons 69 and 70 established that a growing prefix can be evaluated by repeatedly rebuilding prefixes or by appending a single new row to a persistent KV cache. Those two paths produced the same results, and the incremental path computed fewer token rows. There was one important limitation: <strong>both calculations used the same KV-cache implementation</strong>. If that implementation made the same numerical mistake in both paths, their mutual agreement would not reveal it.</p>
+<p>For this lesson, our independent reference is the Framework's original <code>UmiAiTrainingDecoderLogits</code> function. It executes the authoritative decoder using its training-tape mathematics. The candidate is the existing cache using <code>UmiAiTrainingKvCachePrefill</code> followed by <code>UmiAiTrainingKvCacheAppend</code>. No second tokeniser, attention implementation, learned-position rule or model format is introduced.</p>
+<p>Why not compare only the predicted word or token? Suppose two implementations select token ID 42, but one returns logits <code>[4.1, 2.9, ...]</code> and the other <code>[4.1, 0.2, ...]</code>. Their choices happen to agree, but their probability distributions differ. Correct engineering compares the numerical outputs that determine behaviour, not just the final label.</p>
+<h2>2. One sequence, two independent calculations</h2>
+<p>Begin with the eight-token context <code>A B C D E F G H</code>. The cache starts with token A at position 0. Each append introduces one new token at positions 1, 2, and so on, without changing the position of a token already present. The cache therefore needs eight computed token rows to reach a full context. At this point, the canonical decoder computes the same eight-token context independently and provides the reference logits for position 7.</p>
+<figure><img src="../assets/diagrams/kv-position-rollover-qualification.svg" alt="Two full-context comparisons: a growing eight-token prefix uses eight cumulative cache rows; the first eviction makes the cache rebuild eight positions, producing sixteen cumulative rows."><figcaption>The qualification checks the original decoder at both sides of the rollover boundary.</figcaption></figure>
+<table><thead><tr><th>Operation</th><th>KV cache state</th><th>Canonical reference</th></tr></thead><tbody><tr><td>Build the context</td><td>Prefill A, then append B through H</td><td>All tokens A through H in one decoder logits call</td></tr><tr><td>Observe the final row</td><td>Cached logits from position 7</td><td>Canonical logits from position 7</td></tr><tr><td>Validate</td><td>Eight computed rows, no rollover</td><td>Every vocabulary logit finite and within tolerance</td></tr></tbody></table>
+<p>The comparison uses an absolute tolerance of <code>0.00004</code>. This value is not an arbitrary promise that every floating-point backend will agree bit-for-bit; it is the existing tolerance used in Umicom's KV-context regression. The qualification rejects non-finite values and any difference above the accepted bound.</p>
+<h2>3. The Framework API in C23</h2>
+<p>The public interface is kept small so that Umicom Studio, the AI research tools and later inference hosts can request the same evidence without knowing the cache's private structure:</p>
+<pre><code>#include "umicom/ai/training/kv_position_qualification.h"
+#include &lt;inttypes.h&gt;
+#include &lt;stdio.h&gt;
+
+/* A real decoder was created by the caller. Its contextLength is 8. */
+size_t contextIds[8] = {109U, 114U, 120U, 36U,
+                        112U, 118U, 121U, 45U};
+UmiAiTrainingKvPositionQualification evidence = {0};
+UmiStatus status = UmiAiTrainingKvPositionQualify(
+    decoder, contextIds, 8U, 37U, &amp;evidence);
+if (status == UMI_STATUS_OK) {
+    printf("Compared logits: %zu\n", evidence.comparedLogits);
+    printf("Rows before eviction: %" PRIu64 "\n",
+           evidence.computedRowsBeforeRollover);
+    printf("Maximum difference: %.8f\n",
+           (double)evidence.maximumAbsoluteDifferenceBeforeRollover);
+}</code></pre>
+<p>The call uses an <em>exactly full</em> context because the canonical decoder expects a complete sequence of length <code>contextLength</code>. It tests the growing-prefix state at the point where both the incremental and canonical algorithms represent precisely the same token positions. The final argument, token ID 37, is the token that will force the first context rollover in Lesson 72.</p>
+<p>Read the structure fields rather than guessing from success alone. <code>contextTokens</code> identifies the context size, <code>vocabularySize</code> identifies how many logits are compared in each full-context state, <code>cacheHeapBytes</code> describes the single cache reservation, and the counters record actual KV work. The total <code>comparedLogits</code> is twice the vocabulary size because this service also checks the first rollover state.</p>
+<h2>4. A robust qualification is failure-atomic</h2>
+<p>A certificate of parity must never be published after only half of its checks succeed. The service first validates the model, token count and vocabulary bounds. It allocates a temporary cache, performs both comparisons, inspects the completed optimiser step count and configuration, then publishes the staged result only after all checks pass. Any failure leaves the caller's report unchanged.</p>
+<p>The qualification is read-only. It does not modify parameters, write checkpoints or change training history. The dedicated regression test goes further by encoding a checkpoint before and after qualification and comparing the bytes. A match proves that the tested inference call has not altered this checkpoint representation; it does not mean a future positional-encoding variant could reuse the same checkpoint without migration.</p>
+<h2>5. Build the real decoder comparison</h2>
+<pre><code>Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+
+cmake -S .\framework\learning\native-llm\prefix-work `
+  -B .\build\windows-ucrt64-native-llm-prefix-debug -G Ninja `
+  -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw 'Configure failed.' }
+
+cmake --build .\build\windows-ucrt64-native-llm-prefix-debug `
+  --target umicom-ai-training-kv-position-qualification-test `
+           umicom-ai-training-kv-position-rejections-test `
+           umicom-native-llm-position-qualification --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+
+ctest --test-dir .\build\windows-ucrt64-native-llm-prefix-debug `
+  -R '^framework\.ai\.training\.kv_position_' `
+  --output-on-failure --no-tests=error
+if ($LASTEXITCODE -ne 0) { throw 'Regression failed.' }</code></pre>
+<p>These commands compile the original decoder and its original KV cache through the existing Framework CMake composition. The new target only orchestrates their calls. The three expected tests are <code>kv_position_qualification</code>, <code>kv_position_rejections</code> and <code>kv_position_demo</code>. A successful result on a specific machine should be recorded with its compiler and revision; a prepared package alone does not prove that machine has run the tests.</p>
+<h2>Review and exercises</h2>
+<ol><li>Why could two KV-cache execution schedules agree yet both disagree with the original decoder?</li><li>Explain what a logit is and why comparing the highest token ID alone is inadequate.</li><li>With vocabulary size 260, how many logits does the two-state service compare?</li><li>What information is preserved if an invalid token ID is supplied?</li><li>Which regression evidence demonstrates that a call is not updating model checkpoint bytes?</li></ol>
+<p><strong>Engineering conclusion:</strong> Prefix reuse is a legitimate reduction in token-row computation only when model positions remain stable, and independent canonical-decoder parity is the required numerical acceptance test.</p>
+
+</article>
+<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="70-test-prefix-reuse-with-real-decoder.html"><small>← Previous</small>Test Prefix Reuse Against Real Decoder Logits</a><a class="next" href="72-test-learned-position-rollover.html"><small>Next →</small>Bound Rollover and Checkpoint Compatibility</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

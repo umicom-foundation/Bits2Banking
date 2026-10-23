@@ -27,6 +27,7 @@
 <h2>1. Define the proof you need</h2>
 <p>Work reduction is useful only if it preserves the numerical result. Our comparison creates one decoder, then two separate caches of its unchanged parameters. The <strong>reference cache</strong> runs Prefill independently for each prefix length, with positions restarting at zero. The <strong>incremental cache</strong> runs Prefill once for the first token, then Append for each new token. These procedures must calculate the same values because their positions, weights and attention masking remain identical.</p>
 <p><code>UmiAiTrainingKvPrefixPerformanceCompare</code> checks every logit at each prefix against an absolute difference limit of <code>0.00004</code>, aligned with the existing KV-cache context regression. It also rejects a report unless both caches' real work counters agree with the expected row totals and there are no rolling-window rebuilds.</p>
+<p><strong>Independent-reference qualification follows in Lesson 71.</strong> The two methods in this lesson both invoke the existing KV-cache kernel. Their agreement checks scheduling and reuse, not an independent calculation by <code>UmiAiTrainingDecoderLogits</code>. Lesson 71 adds that separate canonical-decoder comparison before the first rollover.</p>
 <h2>2. Build the native laboratory in Windows PowerShell</h2>
 <p>First merge the new files into <code>Umicom-Framework</code>, preserving their repository-relative directories. Configure this opt-in CMake laboratory separately so it does not unexpectedly change the existing native generator or the consolidated applications build.</p>
 <pre><code>Set-Location 'C:\umicom\Umicom-Applications'
@@ -78,7 +79,7 @@ if (status == UMI_STATUS_OK) {
 </ol>
 <p><strong>Key lesson:</strong> A useful optimisation is a specific and falsifiable claim: identical inputs and positions, bounded numerical difference, measured work savings, and clearly declared limits.</p>
 </article>
-<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="69-reuse-kv-cache-within-a-growing-prefix.html"><small>← Previous</small>Reuse KV Cache Within a Growing Prefix</a><a class="next" href="../course-map.html"><small>Course map →</small>Review all lessons</a></nav>
+<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="69-reuse-kv-cache-within-a-growing-prefix.html"><small>← Previous</small>Reuse KV Cache Within a Growing Prefix</a><a class="next" href="71-qualify-canonical-decoder-kv-parity.html"><small>Next →</small>Qualify Against the Canonical Decoder</a></nav>
 </main></div>
 <footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
 </body></html>

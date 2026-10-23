@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Test the first rolling-context rebuild against canonical native decoder logits, and understand positional-model checkpoint compatibility.">
+<meta name="theme-color" content="#203247">
+<title>Lesson 72 — Bound Learned-Position Rollover and Checkpoint Compatibility | Bits to Banking · Umicom</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span class="brand-divider" aria-hidden="true">·</span> BITS TO BANKING</a>
+<nav class="site-nav" aria-label="Course navigation"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside class="toc" aria-label="Recent lessons"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html" aria-current="page">72 · Test rollover rebasing</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main id="main" class="lesson"><header class="lesson-header"><p class="eyebrow">LESSON 72 · NATIVE C23 · POSITIONAL EMBEDDINGS</p>
+<h1>Bound Learned-Position Rollover and Checkpoint Compatibility</h1><p class="lesson-lede">Prove that the current decoder must rebuild K/V after eviction and define the safeguards for future positional-encoding changes.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Describe why learned absolute positions prevent simple KV reuse after an eviction, calculate the work of the first rollover, test it against the canonical decoder, and identify the checkpoint-compatibility decisions required before adopting a different positional-encoding scheme.</p>
+<h2>1. Why the ninth token is different</h2>
+<p>Consider an eight-token decoder context. While A, B, C, D, E, F, G and H are entered, their positions are stable: A is at position 0 and H is at position 7. When I arrives, the context can no longer contain all nine tokens. It must retain B through I. Now B moves from position 1 to position 0, C moves from 2 to 1, and so on.</p>
+<p>The current decoder learned an independent vector for every absolute position. A key or value is calculated not from the token alone, but from the token embedding combined with the appropriate position embedding, followed by further attention-block operations. Therefore, the saved representation of B at position 1 is not generally the representation of B at position 0. Simply shifting a pointer or copying the old K/V row would silently change the model's mathematics.</p>
+<figure><img src="../assets/diagrams/kv-position-rollover-qualification.svg" alt="Token A is evicted from a full eight-token context. Tokens B through H move to new learned positions and the cache must rebuild; the result is compared against canonical decoder logits."><figcaption>Rollover changes positional meaning, not merely array indices.</figcaption></figure>
+<h2>2. What work the Framework performs</h2>
+<p>The existing cache owns the correct transition. First it computes eight rows while building a growing prefix. When I is appended to a full cache, it constructs the rolled sequence B through I and recalculates all eight rows with their new learned positions. The cumulative counter becomes sixteen and the full-window rebuild counter becomes one. This is not a memory leak or an incidental inefficiency introduced by the test: it is the necessary operation under the present absolute-position model.</p>
+<table><thead><tr><th>Observation</th><th>Before ninth token</th><th>After ninth token</th></tr></thead><tbody><tr><td>Retained tokens</td><td>A through H</td><td>B through I</td></tr><tr><td>Token rows computed since cache creation</td><td>8</td><td>16</td></tr><tr><td>Full-context rebuilds</td><td>0</td><td>1</td></tr><tr><td>Last-row reference</td><td>Canonical decoder on A–H</td><td>Canonical decoder on B–I</td></tr><tr><td>KV reuse from old positions</td><td>Safe before eviction</td><td>Not safe after rebasing</td></tr></tbody></table>
+<p>The qualification does not estimate future speed based on these counters. An implementation can use fewer rows but still be slower because of allocation, memory traffic and synchronisation. Conversely, a low-level matrix kernel can run faster without changing the number of rows. Measurement and correctness are related, but neither is a substitute for the other.</p>
+<h2>3. Numerical checks at the rollover boundary</h2>
+<p>Lesson 71 introduced <code>UmiAiTrainingKvPositionQualify</code>. Its second acceptance stage uses exactly the same model twice. The first path is the existing KV cache after <code>Append(I)</code>. The second path is a fresh canonical <code>UmiAiTrainingDecoderLogits</code> call on B through I. The service compares every final-position vocabulary logit and refuses a report if any difference exceeds <code>0.00004</code> or either side contains a non-finite value.</p>
+<pre><code>UmiAiTrainingKvPositionQualification report = {0};
+UmiStatus status = UmiAiTrainingKvPositionQualify(
+    decoder, contextIds, 8U, nextTokenId, &amp;report);
+if (status == UMI_STATUS_OK) {
+    /* Both stages matched the original decoder. */
+    printf("Rows after rollover: %" PRIu64 "\n",
+           report.computedRowsAfterRollover);
+    printf("Window rebuilds: %" PRIu64 "\n",
+           report.fullWindowRebuilds);
+    printf("Max rollover difference: %.8f\n",
+           (double)report.maximumAbsoluteDifferenceAfterRollover);
+}</code></pre>
+<p>This excerpt assumes the caller has included <code>&lt;inttypes.h&gt;</code> and <code>&lt;stdio.h&gt;</code>, owns an appropriately configured decoder and provides exactly eight valid context IDs. The function returns one report for both the last growing-prefix state and the first rolled state. Every error leaves that report unchanged.</p>
+<h2>4. Why changing the position system is a model migration</h2>
+<p>Many transformer architectures use relative-position strategies, rotary position embeddings (RoPE), or attention biases rather than the learned absolute-position vectors used here. Some of these schemes can support useful retained-key/value strategies, depending on how positions are assigned and how cache entries are transformed or evicted. But swapping position-handling rules in an already trained model is not an ordinary loop optimisation.</p>
+<p>The decoder's learned parameters, inference equations, position numbering and possibly checkpoint schema would change. To make such a change responsibly, Umicom needs a new explicit configuration contract and a versioned migration decision. Existing learned-absolute checkpoints must never be reinterpreted as if they belonged to a different architecture. An acceptable path would separately train and evaluate the new model variant, preserve access to existing checkpoints through their original decoder and prove numerical behaviour for that specific new variant.</p>
+<p>There is a useful distinction between <strong>backwards-compatible service interfaces</strong> and <strong>mathematically equivalent model outputs</strong>. A C function may keep the same name and ABI while being configured for a different model family. That does not mean the two model families produce identical logits. A compatibility table should record model type, checkpoint format, allowed inference backend and required evaluation gate independently.</p>
+<h2>5. A controlled development roadmap</h2>
+<p>The next improvement should not silently modify <code>UmiAiTrainingKvCacheAppend</code> or the canonical generation APIs. Start by collecting evidence across initialisation seeds, legal decoder shapes and trained checkpoints. Then propose one positional variant with an explicit schema and architecture ID. Validate the full training and inference graph, create a checkpoint conversion or retraining policy, benchmark realistic decoding windows, and promote the change only if both functional quality and performance gates pass.</p>
+<p>For applications such as Umicom Studio's teaching assistant, this matters because an answer must not change unpredictably after a model update. For any future AI assistance inside Umicom Trader or Bank, repeatable model identity, restricted actions and audit are even more important. The educational model is a laboratory; it is not authorised to initiate live trades or payments.</p>
+<h2>6. Run the qualification and interpret the result</h2>
+<pre><code>Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+
+cmake --build .\build\windows-ucrt64-native-llm-prefix-debug `
+  --target umicom-native-llm-position-qualification --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+
+&amp; '.\build\windows-ucrt64-native-llm-prefix-debug\umicom-native-llm-position-qualification.exe'
+if ($LASTEXITCODE -ne 0) { throw 'Qualification failed.' }</code></pre>
+<p>A fully qualified eight-token educational case reports 8 computed rows before rollover, 16 cumulative afterwards, one complete window rebuild and 520 checked logits when vocabulary size is 260. Heap memory depends on the model shape. This result demonstrates correctness at the transition; it does not claim faster rolling-context generation.</p>
+<h2>Review and exercises</h2>
+<ol><li>If token B moves from absolute position 1 to 0, why is its old K/V representation usually invalid?</li><li>For context length 16, what is the cumulative computed-row count immediately after the first full-window rebuild?</li><li>Why is a checkpoint-format compatibility decision separate from public C ABI compatibility?</li><li>What additional evidence would be required before promising a generation throughput improvement?</li><li>Design a regression table covering empty prompts, short prompts, first eviction, repeated evictions, invalid token IDs, training invalidation, trained checkpoints and model-quality comparison.</li></ol>
+<p><strong>Engineering conclusion:</strong> The safe boundary is now explicit: reuse when learned token positions are stable; rebuild when they change. A different positional model must be introduced only through an independently qualified, checkpoint-aware architecture decision.</p>
+
+</article>
+<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="71-qualify-canonical-decoder-kv-parity.html"><small>← Previous</small>Qualify KV Reuse Against the Canonical Decoder</a><a class="next" href="../course-map.html"><small>Next →</small>Review All Lessons</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>
