@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="360" viewBox="0 0 1120 360" role="img" aria-labelledby="title description">
+<title id="title">Native C23 token streaming session lifecycle</title>
+<desc id="description">A reviewed decoder creates a streaming session. The session prefills its BOS-padded context and preserves KV cache and random state while the caller repeatedly pulls one token. It rebuilds keys and values on context rollover, and destroy cancels generation.</desc>
+<rect width="1120" height="360" rx="22" fill="#eef5f7"/>
+<text x="36" y="45" fill="#152b3d" font-size="25" font-family="Arial,sans-serif" font-weight="700">One owned C23 session, one seeded sequence</text>
+<g font-family="Arial,sans-serif">
+<rect x="34" y="83" width="205" height="132" rx="14" fill="#19334c"/>
+<text x="55" y="115" font-size="18" font-weight="700" fill="#fff">Decoder + prompt</text>
+<text x="55" y="147" font-size="15" fill="#d9f6ff">Reviewed weights</text>
+<text x="55" y="170" font-size="15" fill="#d9f6ff">Token IDs + policy</text>
+<text x="55" y="193" font-size="15" fill="#d9f6ff">Seed (once)</text>
+<path d="M240 147 H288" stroke="#087784" stroke-width="4" fill="none"/>
+<path d="M278 139 L291 147 278 155" stroke="#087784" stroke-width="4" fill="none"/>
+<rect x="292" y="83" width="220" height="132" rx="14" fill="#e1fff3" stroke="#087784" stroke-width="2"/>
+<text x="310" y="115" font-size="18" font-weight="700" fill="#173d40">Create session</text>
+<text x="310" y="146" font-size="15" fill="#173d40">BOS-left prefill</text>
+<text x="310" y="170" font-size="15" fill="#173d40">KV cache snapshot</text>
+<text x="310" y="193" font-size="15" fill="#173d40">Persistent RNG state</text>
+<path d="M513 147 H560" stroke="#087784" stroke-width="4" fill="none"/>
+<path d="M550 139 L563 147 550 155" stroke="#087784" stroke-width="4" fill="none"/>
+<rect x="565" y="83" width="221" height="132" rx="14" fill="#fff" stroke="#087784" stroke-width="2"/>
+<text x="586" y="115" font-size="18" font-weight="700" fill="#152b3d">Next token</text>
+<text x="586" y="146" font-size="15" fill="#152b3d">Use current logits</text>
+<text x="586" y="170" font-size="15" fill="#152b3d">Sample once</text>
+<text x="586" y="193" font-size="15" fill="#152b3d">Return one ID</text>
+<path d="M787 147 H825" stroke="#087784" stroke-width="4" fill="none"/>
+<path d="M815 139 L829 147 815 155" stroke="#087784" stroke-width="4" fill="none"/>
+<rect x="831" y="83" width="254" height="132" rx="14" fill="#fff4e8" stroke="#b57437" stroke-width="2"/>
+<text x="851" y="115" font-size="18" font-weight="700" fill="#704215">Caller controls flow</text>
+<text x="851" y="146" font-size="15" fill="#704215">Display / pause / cancel</text>
+<text x="851" y="170" font-size="15" fill="#704215">Next pull appends ID</text>
+<text x="851" y="193" font-size="15" fill="#704215">Rollover rebuilds KV</text>
+<path d="M959 216 V260 H675 V216" stroke="#a4602d" stroke-width="3" stroke-dasharray="7,6" fill="none"/>
+<path d="M668 230 L675 215 683 230" stroke="#a4602d" stroke-width="3" fill="none"/>
+<text x="785" y="281" font-size="15" fill="#704215">Repeat only when requested</text>
+<rect x="39" y="270" width="603" height="49" rx="10" fill="#dce8f3"/>
+<text x="56" y="300" font-size="15" fill="#152b3d">No hidden background work; destroying the session discards the cursor.</text>
+</g>
+</svg>

@@ -566,3 +566,14 @@ round trips. Sampled output does not by itself establish model correctness.
 
 - [Lesson 63 — Qualify KV-Cached Nucleus Generation in Native C23](../../courses/llm-from-scratch/lessons/63-qualify-kv-cached-nucleus-generation.html)
 - [Lesson 64 — Test Cached Generation Parity and Bounded Memory](../../courses/llm-from-scratch/lessons/64-test-cached-generation-parity-and-memory.html)
+
+### Pull-based C23 generation sessions
+
+- [Lesson 65 — Pull Native LLM Tokens One at a Time with a C23 Session](../../courses/llm-from-scratch/lessons/65-stream-native-llm-tokens-one-at-a-time.html)
+- [Lesson 66 — Verify Chunked Generation, Cancellation and Decoder Invalidation](../../courses/llm-from-scratch/lessons/66-test-streamed-generation-parity-and-cancellation.html)
+
+The Framework-owned streaming session retains an inference-only KV cache and
+one seeded nucleus-sampling state across successive token pulls. The new C23
+regressions compare intermittent token retrieval with the existing full-context
+and cached generators. A generation session does not keep a decoder alive, does
+not execute generated code, and does not establish a performance speedup.
