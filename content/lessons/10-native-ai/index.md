@@ -447,3 +447,16 @@ to sign the exact existing `.publication` record. Verification requires a
 separately trusted public key **and** validates all four underlying file
 identities. Signed byte integrity does not replace security review, training
 permissions, benchmark evidence or independent model assessment.
+
+
+## Govern trusted publisher keys with offline policy
+
+- [Lesson 45 — Build an Offline Publisher Trust Policy](45-build-an-offline-publisher-trust-policy.md)
+- [Lesson 46 — Rotate and Revoke Training Signing Keys](46-rotate-and-revoke-training-signing-keys.md)
+
+A small Framework-owned C23 policy parser can now match approved Ed25519
+public-key fingerprints, check a caller-supplied UTC verification instant,
+and explicitly deny revoked keys before calling the established signature and
+publication verifiers. The policy is an independently reviewed local input;
+it is not a trustworthy signing timestamp, certificate authority or source
+authorisation.
