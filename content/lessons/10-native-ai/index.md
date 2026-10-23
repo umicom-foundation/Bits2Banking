@@ -505,3 +505,17 @@ and emits success JSON only when the approved selection matches.
 The approval file is **unsigned** and must be controlled independently.
 Neither this gate nor existing signatures prove trustworthy signing
 time, model quality, training-data rights or the security of the host.
+
+
+## Windows C23 portability and native signing verification
+
+- [Lesson 53 — Understand Windows API Name Collisions in Native C23](53-windows-api-names-and-native-c23-symbols.md)
+- [Lesson 54 — Validate C23 Signing and Release Approval on Windows](54-validate-windows-c23-crypto-builds.md)
+
+These lessons distinguish CMake configuration, actual C23 compilation,
+linking, regression testing and release approval. The Windows API
+`ReadFile` name collision illustrates why an internal `static` function
+still needs a distinct C identifier in a shared translation unit.
+The Framework uses a compile-only platform-header regression target
+and an opt-in Windows UCRT64 cryptography workflow. No additional
+cryptographic algorithm is implemented in application code.
