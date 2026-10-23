@@ -473,3 +473,19 @@ publisher identities as a bounded, failure-atomic JSON receipt. The receipt is
 **not signed** and is not evidence of signing time, host integrity, dataset
 authorisation or model correctness. The native CTest lessons emphasise the
 difference between isolated component tests and a complete Windows build.
+
+
+## Release-wide native training verification
+
+- [Lesson 49 — Verify an Ordered Group of Signed Training Checkpoints](49-verify-an-ordered-group-of-signed-training-checkpoints.md)
+- [Lesson 50 — Test Failure-Atomic Release Gates and Ordered SHA-256 Digests](50-test-atomic-release-gates-and-ordered-digests.md)
+
+A Framework-owned C23 batch verifier composes the established offline Ed25519
+publisher trust and JSON receipt services. It verifies up to eight ordered
+checkpoint publications at one explicitly supplied evaluation instant. Any
+rejected member prevents publication of a misleading partial-success receipt.
+
+The aggregate SHA-256 identifies the ordered canonical observations; it is
+**not a digital signature**, a trusted signing timestamp, or an attestation
+of host integrity, training-data rights or model competence. The native
+regression tests prove focused contracts, not the complete Windows release.
