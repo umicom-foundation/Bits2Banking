@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Stop incompatible model bytes before decoding and preserve native model ownership." name="description"/>
+<meta content="#203247" name="theme-color"/>
+<title>Lesson 79 — Admit Approved Native Model Checkpoints Before Inference | Bits to Banking · Umicom</title>
+<link href="../../assets/branding/umicom-icon-on-dark.svg" rel="icon" type="image/svg+xml"/>
+<link href="../../assets/umicom-learning.css" rel="stylesheet"/>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span aria-hidden="true" class="brand-divider">·</span> BITS TO BANKING</a>
+<nav aria-label="Course navigation" class="site-nav"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside aria-label="Recent lessons" class="toc"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html">76 · Qualify benchmark evidence</a>
+<a href="77-bind-positions-to-checkpoint-identity.html">77 · Bind checkpoint and position policy</a><a href="78-write-and-verify-position-sidecars.html">78 · Qualify positional sidecar</a><a aria-current="page" href="79-admit-model-checkpoints-before-inference.html">79 · Admit approved checkpoints</a>
+<a href="80-qualify-policy-bound-generation-and-benchmarks.html">80 · Bind generation and benchmarks</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 79 · NATIVE C23 · MODEL ADMISSION</p>
+<h1>Admit Approved Native Model Checkpoints Before Inference</h1><p class="lesson-lede">Stop incompatible model bytes before decoding and preserve native model ownership.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Turn a positional-encoding declaration into a practical checkpoint admission rule. You will see exactly when a decoder may be constructed, why original checkpoint bytes must be checked before decoding, how to preserve caller-owned output after a rejection, and why content hashes are not a replacement for verifying the software publisher.</p>
+<h2>1. The practical problem: a valid file is not necessarily the right file</h2>
+<p>Suppose an Umicom Studio project has a trained native C23 decoder. The developer has approved a checkpoint and a separate position sidecar recording the checkpoint identity, learned-absolute positional embeddings and its generation policy. Both files can be individually well formed yet belong to different training runs. They may have the same vocabulary size, eight-token context and number of attention heads but different weight values. If the application decodes first and checks later, it has constructed a model that should never have been admitted.</p>
+<p>In a bank application this resembles checking a transaction's account, currency and authorisation before posting it to the ledger. In the native model loader, we similarly require the correct bytes and declared semantics <em>before</em> the action. The Framework must own this rule because Studio, Umicom LLM and future applications should not each create their own incompatible loading policy.</p>
+<figure><img src="../assets/diagrams/position-admission-gate.svg" alt="Approved checkpoint bytes and positional sidecar pass independent format and digest checks before the native decoder is constructed, then the model identity is checked again."/><figcaption>A checkpoint is decoded only after the separate compatibility record has been validated.</figcaption></figure>
+<h2>2. A checkpoint and its 128-byte companion</h2>
+<p>The existing decoder checkpoint contains weights and other model state in the Framework's established portable binary format. The separate <code>UMIPOS01</code> position record contains the chosen inference context, the learned-absolute position strategy, the required rollover rebuild policy, a summary of decoder dimensions, the completed optimiser-step count, the checkpoint byte length and its SHA-256 digest.</p>
+<p>The sidecar is always <strong>128 bytes</strong>. Changing the checkpoint format would break older models. Keeping the declaration separate allows current checkpoints to remain byte-for-byte compatible, while applications can refuse mismatched model identities instead of trying to guess what the original author intended.</p>
+<table><thead><tr><th>What is checked</th><th>Why it is necessary</th><th>Failure decision</th></tr></thead><tbody>
+<tr><td>Sidecar format, length and digest</td><td>Refuse malformed metadata before allocating a decoder.</td><td>Reject parsing.</td></tr>
+<tr><td>Requested context policy</td><td>Left-padded and unpadded token positions are not interchangeable.</td><td>Reject wrong context.</td></tr>
+<tr><td>Checkpoint byte count and SHA-256</td><td>Detect an unrelated or altered model file even if its tensor dimensions match.</td><td>Reject identity mismatch.</td></tr>
+<tr><td>Decoded model, encoded again</td><td>Independently verify the actual decoder state matches the approved record.</td><td>Destroy temporary model and reject.</td></tr>
+</tbody></table>
+<h2>3. Use the native Framework admission API</h2>
+<p>The new public operation is <code>UmiAiTrainingPositionBoundCheckpointDecode</code>. It accepts already acquired byte buffers, not filenames. This makes the function independent of Windows paths, network drives or a user interface. The caller remains responsible for obtaining trusted files through the appropriate Framework security and storage services.</p>
+<pre><code class="language-c">#include "umicom/ai/training/position_admission.h"
+
+/* Input pointers refer to approved, caller-owned byte arrays. */
+UmiAiTrainingDecoder *decoder = NULL;
+UmiStatus status = UmiAiTrainingPositionBoundCheckpointDecode(
+    checkpointBytes,
+    checkpointLength,
+    sidecarBytes,
+    sidecarLength,
+    UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED,
+    &amp;decoder);
+
+if (status == UMI_STATUS_OK) {
+    /* The model has the exact declared checkpoint identity and policy. */
+    UmiAiTrainingDecoderDestroy(decoder);
+}</code></pre>
+<p>The key design feature is not the number of statements. It is their ordering. The function decodes and checks the sidecar, checks the exact original checkpoint bytes with <code>UmiSha256Init</code>, <code>UmiSha256Update</code> and <code>UmiSha256Final</code>, and only then invokes <code>UmiAiTrainingDecoderCheckpointDecode</code>. After decoding, <code>UmiAiTrainingPositionContractVerify</code> checks the actual model. All the mathematical work and checkpoint format remain in their original Framework owners.</p>
+<h2>4. Memory ownership and failure-atomic publication</h2>
+<p>In C23, returning a model pointer is an ownership transfer. The successful caller must eventually invoke <code>UmiAiTrainingDecoderDestroy</code>. A rejected operation must leave the output pointer exactly as it was. Otherwise the application could accidentally lose an existing model handle or treat an incomplete model as accepted.</p>
+<p>The implementation constructs a temporary pointer named <code>stagedModel</code>. It does not assign <code>*outModel</code> until all checks have succeeded. If the final verification fails, it destroys that temporary model and returns an error. The application can therefore keep its previously active model rather than replacing it with an inconsistent one.</p>
+<p>This design is an example of <em>failure atomicity</em>: either the entire action succeeds and the result becomes visible, or it fails and the caller's published state does not change. The same principle applies to Umicom Bank payment approval, a failed file save in Studio and the native LLM checkpoint decoder.</p>
+<h2>5. The security boundary: SHA-256 is not authentication</h2>
+<p>A SHA-256 digest identifies particular bytes; it does not prove who supplied them. Someone able to replace both checkpoint and sidecar can calculate new digests for both. A self-consistent but untrusted pair must therefore not be mistaken for a verified release. Applications must obtain trusted provenance or a verified signature and apply appropriate access controls before passing inputs to the admission service.</p>
+<p>The new API does not access the filesystem, call a remote AI provider or execute model-generated code. It is a narrow, reusable compatibility check. Maintaining these boundaries is important because treating a hash as a publisher signature would introduce a false security claim.</p>
+<h2>6. Build and test the real decoder on Windows</h2>
+<p>Merge the Framework files to their existing repository paths, then configure the opt-in native LLM laboratory. This is interactive PowerShell used for engineering operations, not a Python or PowerShell implementation of the Framework.</p>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+cmake -S '.\framework\learning\native-llm\prefix-work' `
+  -B '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw 'Configuration failed.' }
+cmake --build '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  --target umicom-ai-training-position-admission-roundtrip-test `
+           umicom-ai-training-position-admission-rejections-test `
+           umicom-native-llm-position-admission --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Compilation failed.' }
+ctest --test-dir '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -R '^framework\.ai\.training\.position_admission_' `
+  --output-on-failure --no-tests=error</code></pre>
+<p>The test must run against your actual Framework checkout. An isolated API-substitute test can check orchestration but cannot prove the numerical behaviour of the full training decoder or the Windows deployment toolchain.</p>
+<h2>7. Exercises and checks for understanding</h2>
+<ol><li>Explain why a file with the correct decoder dimensions can still be the wrong model.</li><li>What must the loader verify before calling the canonical checkpoint decoder?</li><li>Why does a rejection leave a previously owned <code>*outModel</code> unchanged?</li><li>Suppose both files are rehashed by an unknown third party. Are they automatically trustworthy? Explain.</li><li>Change one byte of a laboratory checkpoint and confirm that the bound loader refuses it while preserving the caller's output handle.</li></ol>
+<p><strong>Key lesson:</strong> selecting a model is a controlled state transition. Verify source authenticity independently, enforce checkpoint identity and positional semantics, then publish an owned decoder only after all checks pass.</p>
+</article><nav aria-label="Lesson pagination" class="lesson-next"><a class="prev" href="78-write-and-verify-position-sidecars.html"><small>← Previous</small>Encode and Verify Portable Position Sidecars</a><a class="next" href="80-qualify-policy-bound-generation-and-benchmarks.html"><small>Next →</small>Qualify Policy-Bound Generation and Benchmarks</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br/>Sammy Hegab · Service to Many Leads to Greatness.<br/>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

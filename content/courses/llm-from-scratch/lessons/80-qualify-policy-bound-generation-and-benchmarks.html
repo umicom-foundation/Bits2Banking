@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Bind native token generation and performance evidence to approved positional semantics." name="description"/>
+<meta content="#203247" name="theme-color"/>
+<title>Lesson 80 — Qualify Policy-Bound Generation and Benchmarks | Bits to Banking · Umicom</title>
+<link href="../../assets/branding/umicom-icon-on-dark.svg" rel="icon" type="image/svg+xml"/>
+<link href="../../assets/umicom-learning.css" rel="stylesheet"/>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span aria-hidden="true" class="brand-divider">·</span> BITS TO BANKING</a>
+<nav aria-label="Course navigation" class="site-nav"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside aria-label="Recent lessons" class="toc"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html">76 · Qualify benchmark evidence</a>
+<a href="77-bind-positions-to-checkpoint-identity.html">77 · Bind checkpoint and position policy</a><a href="78-write-and-verify-position-sidecars.html">78 · Qualify positional sidecar</a><a href="79-admit-model-checkpoints-before-inference.html">79 · Admit approved checkpoints</a>
+<a aria-current="page" href="80-qualify-policy-bound-generation-and-benchmarks.html">80 · Bind generation and benchmarks</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 80 · NATIVE C23 · GENERATION CONTROL</p>
+<h1>Qualify Policy-Bound Generation and Benchmarks</h1><p class="lesson-lede">Bind native token generation and performance evidence to approved positional semantics.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Apply the checkpoint declaration to real token generation and benchmarking, distinguish the historical BOS-left-padded policy from the newer unpadded-prefix policy, understand why a generated sequence must be staged, and inspect measured KV-cache work without inventing performance improvements.</p>
+<h2>1. One decoder, two explicitly different generation policies</h2>
+<p>After a checkpoint has been admitted, the application still has a crucial decision: what does token position zero mean? The original generator left-pads short prompts to the model's full context length using the Beginning-of-Sequence (BOS) token. The opt-in prefix generator begins directly at position zero with the first real prompt token. Because the existing model has <em>learned absolute positional embeddings</em>, the two policies need not produce the same tokens even when all model weights, nucleus settings and seeds are identical.</p>
+<p>This is not a defect in either generator. They implement different input conventions, just as a treasury application must distinguish an amount denominated in GBP from the same numeric amount denominated in USD. The mistake would be to conceal the distinction from the caller. The new C23 admission layer makes that choice explicit and checks it against the previously approved position sidecar.</p>
+<h2>2. Generate with a bound model identity</h2>
+<p>The new <code>UmiAiTrainingPositionBoundGenerate</code> method first checks the model's complete checkpoint SHA-256 and declared context. It then calls exactly one existing Framework generator: either <code>UmiAiTrainingDecoderGenerateNucleus</code> for the historical left-padded policy, or <code>UmiAiTrainingDecoderGeneratePrefixNucleus</code> for the unpadded prefix. Finally, it verifies checkpoint identity again before publishing tokens and evidence.</p>
+<pre><code class="language-c">#include "umicom/ai/training/position_admission.h"
+
+/* model and approved were obtained using reviewed checkpoint bytes. */
+const size_t prompt[] = {109U, 114U, 120U};  /* byte IDs: i n t */
+const UmiAiTrainingNucleusOptions policy = {1.0F, 1U, 1.0F};
+size_t generated[6] = {0};
+size_t written = 0U;
+UmiAiTrainingPositionGenerationEvidence evidence = {0};
+
+UmiStatus status = UmiAiTrainingPositionBoundGenerate(
+    model, &amp;approved,
+    UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED,
+    prompt, 3U, &amp;policy, 6U, UINT64_C(80),
+    generated, 6U, &amp;written, &amp;evidence);
+
+if (status == UMI_STATUS_OK) {
+    /* All six IDs have been published; the checkpoint still matches. */
+    /* evidence.cache is actual KV-cache work for the unpadded mode. */
+}</code></pre>
+<p>There is no replacement neural network in this wrapper. Sampling still belongs to the Framework's original nucleus sampler, and the unpadded KV session still uses the established native cache. Keeping mathematical ownership in one place prevents subtle differences between a UI, a benchmark and a production API consumer.</p>
+<h2>3. Failure atomicity applies to completed generation, not just file loading</h2>
+<p>A request for six tokens can fail after several internal operations. For example, a model may be modified by another caller in violation of the documented serialisation requirement, or sampling may encounter an invalid numerical state. If the service published tokens one by one, an application might treat a partial answer as complete.</p>
+<p>The bound generator therefore stages the returned token IDs in a private bounded array and stages its evidence separately. The approved checkpoint is verified both before and after generation. Only after all six requested tokens are available and the final verification succeeds are the caller's output array, count and evidence updated. A rejected call cannot silently overwrite those outputs.</p>
+<p>This does not make concurrent decoder access safe. The application must still serialise all training, inference and destruction of a shared decoder. It does prevent the wrapper from falsely reporting successful generation when an observed identity mismatch occurs.</p>
+<h2>4. Evidence availability must be represented accurately</h2>
+<p>The unpadded-prefix generator already exposes actual KV-cache statistics. The historical canonical generator does not return the same statistics. The new evidence type therefore includes <code>cacheWorkAvailable</code>. For the original policy it is zero, and the cache counters are set to zero rather than being presented as measured results. For growing-unpadded generation it is one and the existing KV statistics are copied.</p>
+<table><thead><tr><th>Policy</th><th>Generation owner</th><th>Position behaviour</th><th>KV work evidence</th></tr></thead><tbody>
+<tr><td>BOS-left-padded</td><td>Original canonical nucleus generator</td><td>Short prompts padded on the left to full context</td><td>Unavailable from this API; explicitly flagged</td></tr>
+<tr><td>Growing-unpadded</td><td>Existing prefix KV generator</td><td>Real prompt begins at token position zero</td><td>Actual computed rows, rebuilds, retained tokens</td></tr>
+</tbody></table>
+<p>Consider an eight-token context, a three-token prompt and twelve generated samples. The full-context independent reference calculates <strong>96 decoder token rows</strong>. The current growing-prefix cache calculates <strong>56 rows</strong>, avoiding 40 row computations (about 41.7%). That calculation describes the inspected workload, not a guarantee that elapsed time will improve by 41.7%. Cache allocation, memory access, matrix kernels and clock resolution also affect observed runtime.</p>
+<h2>5. Benchmark the same declared context</h2>
+<p>The existing paired benchmark uses a right-BOS-padded canonical reference and compares logits from the last real prefix token. This is appropriate for the growing-unpadded semantics. It would not be a fair comparison for the historical left-BOS-padded mode. <code>UmiAiTrainingPositionBoundBenchmark</code> therefore refuses all contexts except <code>UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED</code>.</p>
+<pre><code class="language-c">const UmiAiTrainingPrefixBenchmarkPlan plan = {
+    6U,    /* generatedTokens */
+    1U,    /* warmupPairs */
+    3U,    /* measuredPairs */
+    UINT64_C(80)  /* seeded sampling */
+};
+UmiAiTrainingPrefixBenchmarkResult report = {0};
+UmiStatus status = UmiAiTrainingPositionBoundBenchmark(
+    model, &amp;approved,
+    UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED,
+    prompt, 3U, &amp;policy, &amp;plan, &amp;report);
+
+if (status == UMI_STATUS_OK &amp;&amp; report.checkpointUnchanged) {
+    /* Report contains established parity, measured rows, and optional clocks. */
+}</code></pre>
+<p>The bound API checks approved model identity at both ends. It delegates token parity, measured workloads, alternating execution order, checkpoint preservation and all CPU/wall-clock calculations to the existing Framework benchmark. This avoids creating a competing performance implementation.</p>
+<h2>6. A future position strategy needs more than a new enum</h2>
+<p>It may be tempting to add a new position-policy identifier and stop rebuilding old keys/values after context eviction. That would be mathematically incorrect for the current learned-absolute-position decoder. Retained tokens move to different absolute positions, so their key/value projections generally change. Even when future architectures adopt relative or rotary positional information, retained hidden states in a multi-layer network may depend on tokens that have left a finite attention window. The attention-window definition and layer-history dependencies must also be qualified.</p>
+<p>A genuinely new positional architecture therefore requires separate training or an explicit weight migration, its own checkpoint compatibility identifier, a qualified independent reference, parity tests around eviction, and repeated benchmark evidence. This batch provides a safer admission boundary before that research begins; it does not pretend the optimization is already implemented.</p>
+<h2>7. Regression testing and engineering exercise</h2>
+<p>Compile and execute the tests using the commands from Lesson 79 or the private merge guide. The focused native tests cover approved checkpoint round trips, direct-generator parity for both policies, invalid input and output preservation, shape-identical foreign checkpoint rejection, an unsupported positional strategy and the benchmark context gate. The full Windows UCRT64 execution is the definitive integration check.</p>
+<ol><li>Why is it unsafe to compare a left-padded generator with a right-padded canonical prefix benchmark?</li><li>What does <code>cacheWorkAvailable == 0</code> communicate to the application?</li><li>Explain why a checkpoint is checked again after the generation call, even though it was checked before the call.</li><li>Given context length eight, prompt length three and twelve samples, reproduce the 96 and 56 computed-row totals using the Framework's pending-final-token convention.</li><li>Use Beyond Compare to verify that the new module did not replace or remove any pre-existing generator, checkpoint or KV-cache implementation.</li></ol>
+<p><strong>Key lesson:</strong> a fast inference path is only useful if the application can prove which model and context convention produced its output. Enforce that identity at the execution boundary, preserve failure-atomic results, and measure computation separately from timing.</p>
+</article><nav aria-label="Lesson pagination" class="lesson-next"><a class="prev" href="79-admit-model-checkpoints-before-inference.html"><small>← Previous</small>Admit Approved Native Model Checkpoints Before Inference</a><a class="next" href="../course-map.html"><small>Next →</small>Review All Lessons</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br/>Sammy Hegab · Service to Many Leads to Greatness.<br/>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>
