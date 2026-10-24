@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Implement a native incremental autoregressive session with explicit unpadded positions, persistent KV cache, and honest workload prediction.">
+<meta name="theme-color" content="#203247">
+<title>Lesson 73 — Stream an Unpadded Growing Prefix with Native C23 | Bits to Banking · Umicom</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span class="brand-divider" aria-hidden="true">·</span> BITS TO BANKING</a>
+<nav class="site-nav" aria-label="Course navigation"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside class="toc" aria-label="Recent lessons"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html" aria-current="page">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html" aria-current="page">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main id="main" class="lesson"><header class="lesson-header"><p class="eyebrow">LESSON 73 · NATIVE C23 · STREAMING GENERATION</p>
+<h1>Stream an Unpadded Growing Prefix with Native C23</h1><p class="lesson-lede">Create a Framework-owned, opt-in generation session that reuses K/V rows until the first learned-position rollover.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>By the end of this lesson you will be able to distinguish two different ways to place a short prompt inside a Transformer context, create a persistent growing-prefix generation session in native C23, calculate its actual KV-cache workload, and explain precisely when cache reuse stops being an optimisation.</p>
+<h2>1. Why two correct positional policies may generate different tokens</h2>
+<p>Imagine a small Umicom Studio assistant which receives three byte tokens representing the start of a C declaration, <code>int</code>. The educational decoder was trained with learned absolute positions: position zero has one embedding, position one another, and so on. The existing full-context generator places BOS before a short prompt. If the model has an eight-token context, <code>int</code> appears at positions five, six and seven. That generator always predicts from the last position.</p>
+<p>A different, equally well-defined policy begins immediately with <code>int</code> at positions zero, one and two. The next token is sampled using the logits from position two. This leaves room for five additional token rows before the first eviction. <strong>Different input positions mean different model inputs</strong>; therefore the two policies must not be expected to generate the same sequence. Changing the padding of the historical generator without an explicit opt-in would silently change existing applications, tests and checkpoint evaluations.</p>
+<p>The new <code>UmiAiTrainingPrefixGenerationSession</code> implements the second policy, without changing the first. The model is still the same native C23 decoder and the attention mathematics remain inside <code>UmiAiTrainingKvCache</code>. The sample decision still belongs to <code>UmiAiTrainingSampleLogitsNucleus</code>. Our addition is just controlled orchestration of these established services.</p>
+<figure><img src="../assets/diagrams/prefix-generation-rolling-work.svg" alt="A three-row prompt, five inexpensive growing appends and six full eight-row rebuilds produce 56 computed rows versus 96 for a canonical fixed-context reference."><figcaption>When the initial prefix is shorter than context capacity, there is a measurable opportunity to avoid repeated token-row computation.</figcaption></figure>
+<h2>2. The session lifecycle</h2>
+<p>The new session follows the same explicit ownership principles as other Umicom Framework modules. The caller creates and owns the decoder; the session borrows it, holds its own cache and RNG, then releases them on destruction. You may request one output token at a time, inspect the work performed, or stop at any point by destroying the session. Do not train or destroy the decoder while a session is alive.</p>
+<p>Each call to <code>Next</code> produces one token. The first call samples directly from logits calculated during prefix prefill. The returned token becomes <em>pending</em>. The second call appends that token to the cache before sampling the second output. This avoids an unnecessary final decoder call when the user requests exactly one token; it is why twelve generated tokens cause eleven append operations.</p>
+<h3>Native C23 example: stream into an Umicom source-code assistant</h3>
+<pre><code>#include "umicom/ai/training/prefix_generation.h"
+#include "umicom/ai/training/byte_tokenizer.h"
+#include &lt;inttypes.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+/* The application already owns a valid decoder named model. */
+const size_t sourcePrefix[] = {109U, 114U, 120U};  /* 'i', 'n', 't' */
+const UmiAiTrainingNucleusOptions policy = {1.0F, 1U, 1.0F};
+UmiAiTrainingPrefixGenerationSession *session = NULL;
+UmiStatus status = UmiAiTrainingPrefixGenerationSessionCreate(
+    model, sourcePrefix, 3U, &amp;policy, UINT64_C(7801), &amp;session);
+
+if (status == UMI_STATUS_OK) {
+    for (size_t tokenIndex = 0U; tokenIndex &lt; 6U; ++tokenIndex) {
+        size_t nextTokenId = 0U;
+        status = UmiAiTrainingPrefixGenerationSessionNext(
+            session, &amp;nextTokenId);
+        if (status != UMI_STATUS_OK) break;
+        /* An application may render this token; do not execute it. */
+        printf("sample %zu: %zu\n", tokenIndex, nextTokenId);
+    }
+    UmiAiTrainingPrefixGenerationSessionDestroy(session);
+}</code></pre>
+<p>This is an excerpt that assumes a model has already been created using <code>UmiAiTrainingDecoderCreate</code>. It deliberately does not execute generated code or pass model output to a compiler. Like the earlier educational laboratory, this tiny model is not qualified to generate trustworthy financial processing code. A production Umicom Bank or Treasury Management System must keep its financial calculations and security controls independent of model output.</p>
+<h2>3. Calculate precisely what is saved</h2>
+<p>Use three variables: <strong>C</strong> is the maximum context length, <strong>P</strong> is the number of initial prompt tokens, and <strong>G</strong> is the requested number of generated tokens. Because the final output is pending, the number of append operations is <code>A = G - 1</code>. While the prefix is shorter than C, each append costs one computed token row. When the prefix is full, each append costs C token rows because every surviving token moves to a different learned absolute position.</p>
+<pre><code>A = G - 1
+S = min(A, C - P)         /* Safe incremental appends. */
+R = A - S                 /* Full-window rebuild appends. */
+canonicalRows = C * G
+cachedRows = P + S + C * R
+rowsAvoided = canonicalRows - cachedRows</code></pre>
+<p>For an eight-token context, a three-token prompt and twelve generated tokens, A is eleven, S is five and R is six. The canonical fixed-context decoder evaluates <strong>8 × 12 = 96 rows</strong>. The growing-prefix session performs <strong>3 + 5 + 6 × 8 = 56 rows</strong>. The difference is <strong>40 avoided rows</strong>, representing 41.7% less computed token-row work for this specific sequence. These are decoder work counts. They do not measure CPU time, latency or user-visible throughput.</p>
+<p>If the prompt already contains eight tokens, S is zero. Every subsequent token forces a rollover. For twelve generated tokens, the cache performs 96 rows, exactly matching the canonical row count. The cache may still be useful for streaming or cancellation, but its row count does not support a speedup claim.</p>
+<h2>4. Ask the Framework to calculate the answer</h2>
+<pre><code>#include "umicom/ai/training/prefix_generation.h"
+#include &lt;inttypes.h&gt;
+#include &lt;stdio.h&gt;
+
+/* decoderConfig is an existing, valid decoder configuration. */
+UmiAiTrainingPrefixGenerationWorkEstimate work = {0};
+UmiStatus status = UmiAiTrainingPrefixGenerationWorkEstimateBuild(
+    &amp;decoderConfig, 3U, 12U, &amp;work);
+if (status == UMI_STATUS_OK) {
+    printf("Canonical rows: %" PRIu64 "\n", work.canonicalComputedRows);
+    printf("Cache rows: %" PRIu64 "\n", work.cachedComputedRows);
+    printf("Rebuilds: %" PRIu64 "\n", work.cachedWindowRebuilds);
+}</code></pre>
+<p>The estimator delegates decoder-shape validation and cache allocation sizing to the existing Framework service. The returned heap estimate is one cache-owner allocation, not the entire application memory footprint. The result remains unchanged if the input is invalid; this is a deliberate failure-atomic API contract.</p>
+<h2>5. Practical exercises</h2>
+<ol><li>For C = 8, P = 3 and G = 6, calculate the append count, cache rows and percentage saved. At which generated-token number will the next append cause the first rollover?</li><li>Repeat the calculation for C = 8, P = 8 and G = 6. Why does no saving remain?</li><li>Explain why the session copies the sampling policy and seed state, but borrows the decoder.</li><li>Describe the difference between cancelling a session and generating an EOS token. Does this laboratory stop automatically at EOS?</li><li>In an Umicom Studio code-assistance panel, identify which Framework component should own the model session and which component should own the graphical display.</li></ol>
+<p><strong>Engineering principle:</strong> introduce a new positional policy explicitly, preserve the old API, reuse established maths, and report saved computation without claiming an unmeasured speedup.</p>
+</article>
+<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="72-test-learned-position-rollover.html"><small>← Previous</small>Bound Learned-Position Rollover and Checkpoint Compatibility</a><a class="next" href="74-test-streaming-prefix-generation-parity.html"><small>Next →</small>Test Prefix-Generation Parity and Observed Workload</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

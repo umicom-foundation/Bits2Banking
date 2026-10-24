@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 650" role="img" aria-labelledby="title desc">
+  <title id="title">Unpadded growing-prefix generation and the first rolling-window rebuild</title>
+  <desc id="desc">A prompt of three tokens is prefetched in an eight-token context. Five subsequent appended tokens compute one row each. Six later appended tokens trigger full eight-row rebuilds. Producing twelve samples therefore costs 56 KV-cache rows instead of 96 full-context decoder rows.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10213a"/><stop offset="1" stop-color="#154c4f"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0L0,6L9,3Z" fill="#76cfbb"/></marker>
+  </defs>
+  <rect x="1" y="1" width="1178" height="648" rx="24" fill="url(#bg)" stroke="#548f91" stroke-width="2"/>
+  <text x="56" y="62" font-family="Arial,sans-serif" font-weight="700" font-size="30" fill="#eafff7">Native C23 prefix generation: count the actual decoder rows</text>
+  <text x="56" y="94" font-family="Arial,sans-serif" font-size="18" fill="#c7e7e5">Example: context C = 8, initial prompt P = 3, generated samples G = 12</text>
+  <g font-family="Arial,sans-serif" font-weight="700" fill="#eefcff" font-size="21">
+    <rect x="55" y="141" width="328" height="138" rx="15" fill="#245371" stroke="#82b0dd" stroke-width="2"/>
+    <text x="78" y="179">1. Initial prompt prefill</text>
+    <text x="78" y="218" font-size="28" fill="#ffd67a">3 rows</text>
+    <text x="78" y="251" font-size="17" font-weight="400">Positions 0, 1, 2</text>
+    <rect x="425" y="141" width="328" height="138" rx="15" fill="#226252" stroke="#81dcc2" stroke-width="2"/>
+    <text x="448" y="179">2. Prefix grows (five appends)</text>
+    <text x="448" y="218" font-size="28" fill="#a4ffce">5 × 1 = 5 rows</text>
+    <text x="448" y="251" font-size="17" font-weight="400">All prior K/V remain valid</text>
+    <rect x="795" y="141" width="328" height="138" rx="15" fill="#624331" stroke="#f2bf7b" stroke-width="2"/>
+    <text x="818" y="179">3. Window rolls (six appends)</text>
+    <text x="818" y="218" font-size="28" fill="#ffd67a">6 × 8 = 48 rows</text>
+    <text x="818" y="251" font-size="17" font-weight="400">Old absolute positions shift</text>
+  </g>
+  <g stroke="#76cfbb" stroke-width="4" fill="none" marker-end="url(#arrow)">
+    <path d="M384 210H422"/><path d="M755 210H792"/>
+  </g>
+  <g font-family="Arial,sans-serif">
+    <text x="57" y="351" font-size="21" fill="#dbeefa">Actual incremental workload:</text>
+    <text x="57" y="392" font-size="39" font-weight="700" fill="#acffda">3 + 5 + 48 = 56 rows</text>
+    <text x="57" y="451" font-size="21" fill="#dbeefa">Canonical reference (right-padded fixed context):</text>
+    <text x="57" y="492" font-size="39" font-weight="700" fill="#ffe7b2">8 × 12 = 96 rows</text>
+    <rect x="745" y="323" width="378" height="199" rx="18" fill="#14352f" stroke="#9bdbbc" stroke-width="2"/>
+    <text x="776" y="370" font-size="22" font-weight="700" fill="#d7fff0">Computed rows avoided</text>
+    <text x="776" y="435" font-size="60" font-weight="700" fill="#abfbd0">40</text>
+    <text x="776" y="479" font-size="19" fill="#cceadd">41.7% fewer computed rows</text>
+    <text x="57" y="571" font-size="18" fill="#d8e8e8">The last generated token remains pending, so G samples cause only G−1 cache appends.</text>
+    <text x="57" y="608" font-size="18" fill="#ffdca0">This does not prove faster wall-clock execution, or optimise the legacy BOS-left-padded generator.</text>
+  </g>
+</svg>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Qualify an opt-in native C23 generation mode against canonical right-padded decoder logits and actual cache counters.">
+<meta name="theme-color" content="#203247">
+<title>Lesson 74 — Test Prefix-Generation Parity and Observed Workload | Bits to Banking · Umicom</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span class="brand-divider" aria-hidden="true">·</span> BITS TO BANKING</a>
+<nav class="site-nav" aria-label="Course navigation"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside class="toc" aria-label="Recent lessons"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html" aria-current="page">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html" aria-current="page">74 · Qualify prefix generation</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main id="main" class="lesson"><header class="lesson-header"><p class="eyebrow">LESSON 74 · NATIVE C23 · INDEPENDENT QUALIFICATION</p>
+<h1>Test Prefix-Generation Parity and Observed Workload</h1><p class="lesson-lede">Use the original decoder and seeded sampler as the independent reference for streaming, one-shot and rollover behaviour.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Build an independent reference for the new prefix-streaming policy using the original decoder, reproduce sampling with the same random seed, check prediction parity before and after the first rollover, and understand why a workload estimate must be checked against actual cache counters before publication.</p>
+<h2>1. What does an independent reference actually mean?</h2>
+<p>Lesson 69 measured two schedules inside the same KV-cache implementation. That was useful evidence about cache reuse, but two executions of the same kernel can share the same mathematical mistake. Lesson 71 therefore introduced an independent comparator using <code>UmiAiTrainingDecoderLogits</code>, the existing training-tape decoder. This lesson extends that approach from a single fixed context into a complete autoregressive token stream.</p>
+<p>We have to compare like with like. The new prefix-session puts the first prompt token at learned absolute position zero. The historical generator places a short prompt on the right side of a BOS-filled context. Those are different models of the request, so comparing their generated text directly would be an invalid parity test. Instead, the canonical reference must preserve the new prefix session's actual positions while still obeying the canonical decoder's fixed-context input size.</p>
+<h2>2. Right padding and causal attention</h2>
+<p>Suppose the decoder expects eight input positions, but the growing prefix contains three real tokens. Place those three tokens at positions 0, 1 and 2, followed by five BOS tokens at positions 3 through 7. Call <code>UmiAiTrainingDecoderLogits</code> with the full eight positions, then read the vocabulary-logit row at index <strong>2</strong>. The model is causal: the third real token cannot attend to the five later positions. This is a canonical reference for the growing-prefix policy because it preserves the learned positions of every real token.</p>
+<pre><code>Original prefix:  [ A B C ]
+Right-padded:     [ A B C BOS BOS BOS BOS BOS ]
+Reference logits:          ^ read row at index 2
+Legacy left pad:  [ BOS BOS BOS BOS BOS A B C ]
+Legacy logits:                            ^ index 7
+</code></pre>
+<p>Do not read the final BOS logit from the right-padded reference. That would answer a different question. Also do not left-pad the new reference: changing positions changes the learned position embeddings that the decoder receives.</p>
+<h2>3. The native parity regression</h2>
+<p>The new <code>test_training_prefix_generation_parity.c</code> compares real outputs from three paths: a streaming growing-prefix session, a canonical full-context decoder with right padding and the same Framework sampler, and the one-shot wrapper around the new session. It covers short prefixes, prefixes filling the context, greedy and seeded sampling, and sequences long enough to cause repeated rollovers.</p>
+<pre><code>#include "umicom/ai/training/prefix_generation.h"
+#include "umicom/ai/training/byte_tokenizer.h"
+
+/* Setup has created a decoder, canonical context, and an RNG. */
+for (size_t step = 0U; step &lt; requestedTokens; ++step) {
+    for (size_t position = 0U; position &lt; contextLength; ++position)
+        canonicalContext[position] = position &lt; retained ?
+            history[position] : UMI_AI_BYTE_BOS;
+
+    UmiStatus status = UmiAiTrainingDecoderLogits(
+        model, canonicalContext, contextLength,
+        canonicalLogits, contextLength * vocabularySize);
+    if (status != UMI_STATUS_OK) break;
+
+    const float *lastRealRow =
+        &amp;canonicalLogits[(retained - 1U) * vocabularySize];
+    /* Pass lastRealRow to the original Framework nucleus sampler,
+       then compare its selected ID against PrefixGenerationSessionNext. */
+}</code></pre>
+<p>This is a focused excerpt, not a stand-alone program: <code>model</code>, <code>retained</code>, <code>history</code>, <code>canonicalContext</code>, <code>canonicalLogits</code> and <code>vocabularySize</code> belong to the surrounding test. The complete regression source in the development package includes the RNG setup, sampling call, result checks and history updates. Both paths use the same seed and sampler rather than creating an alternative pseudorandom algorithm for the test.</p>
+<h2>4. Workload accounting: forecast versus observation</h2>
+<p>A performance report should not be accepted merely because it contains plausible numbers. The predictor determines how many rows must be computed if the session follows its declared policy. The KV cache reports what it actually computed. The one-shot API refuses to publish the generated token array if those numbers disagree.</p>
+<table><thead><tr><th>Property</th><th>Predicted</th><th>Observed</th></tr></thead><tbody>
+<tr><td>Computed cache token rows</td><td>Prompt prefill + single-row appends + complete rebuild rows</td><td><code>computedRows</code> from <code>UmiAiTrainingKvCacheInspect</code></td></tr>
+<tr><td>Window rebuilds</td><td>One per append after context fills</td><td><code>windowRebuilds</code> from cache inspection</td></tr>
+<tr><td>Retained context</td><td><code>min(C, P + G - 1)</code></td><td><code>retainedTokens</code>, excluding the final pending sample</td></tr>
+<tr><td>Tokens generated</td><td><code>G</code></td><td>Number of successful <code>Next</code> pulls</td></tr>
+</tbody></table>
+<p>For C = 8, P = 3 and G = 12, the required observed values are 56 computed rows, six window rebuilds, eight retained tokens and twelve generated tokens. A mismatch is a correctness problem, not an optimisation opportunity. These counters are exact for the educational single-block decoder contract but are not a complete measure of FLOPs, memory bandwidth, latency or throughput.</p>
+<h2>5. Checkpoint and failure safety</h2>
+<p>The regression captures the decoder's portable checkpoint bytes before and after the test. They must be unchanged: inference is not a training step. The rejection regression verifies that invalid prompt lengths, invalid token IDs, malformed nucleus policies and insufficient output capacity do not change caller-owned outputs.</p>
+<p>Both streaming and one-shot APIs enforce a maximum of 256 output tokens. One-shot generation stages tokens privately and commits the final array, count and optional cache statistics only after successful generation and counter checks. A streaming session intentionally publishes one token at a time; if sampling fails after the cache advanced, the session becomes terminal and must be destroyed rather than blindly retried.</p>
+<h2>6. Build the real Framework implementation</h2>
+<pre><code>Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+
+cmake -S '.\framework\learning\native-llm\prefix-work' `
+  -B '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw 'Configuration failed.' }
+
+cmake --build '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  --target umicom-ai-training-prefix-generation-parity-test `
+           umicom-ai-training-prefix-generation-rejections-test `
+           umicom-native-llm-prefix-generation --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+
+ctest --test-dir '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -R '^framework\.ai\.training\.prefix_generation_' `
+  --output-on-failure --no-tests=error
+</code></pre>
+<p>Use the complete private merge and build guide for the full native LLM test suite and consolidated Umicom Applications build. Do not report a production-decoder pass until the actual UCRT64 test commands have succeeded. A local test-double run checks orchestration but does not prove the independent decoder's numerical behaviour.</p>
+<h2>7. Practical exercises</h2>
+<ol><li>With context C = 4 and prompt P = 2, calculate the cache rows for G = 1, G = 3 and G = 8. Which sample first requires a complete rebuild?</li><li>Why is the right-padded reference logit taken from <code>retained - 1</code> rather than <code>C - 1</code>?</li><li>Explain why exact generated-token parity can be a weaker test than comparing every vocabulary logit. Which earlier test checks all logits before and after rollover?</li><li>Design an Umicom Studio diagnostics panel that displays computed rows, rebuilds, context occupancy, model identity and the selected positional policy. Which values must be supplied by Framework services?</li><li>Propose a controlled experiment comparing observed CPU time and wall-clock throughput under 100 repeated, warmed runs. What configuration and checkpoint evidence should accompany the result?</li></ol>
+<p><strong>Qualification boundary:</strong> this batch offers a real new prefix-generation mode and a strict correctness target, but no claim that it accelerates the historical BOS-left-padded generator or that it replaces learned absolute positional embeddings. Preserve both facts in all documentation and user interfaces.</p>
+</article>
+<nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="73-stream-growing-prefix-generation-in-c23.html"><small>← Previous</small>Stream an Unpadded Growing Prefix with Native C23</a><a class="next" href="../course-map.html"><small>Next →</small>Review All Lessons</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>
