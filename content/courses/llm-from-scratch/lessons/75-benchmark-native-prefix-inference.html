@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Measure full-context and KV-cached unpadded generation with identical model parameters, prompt and sampling policy.">
+<meta name="theme-color" content="#203247">
+<title>Lesson 75 — Benchmark Native Prefix Inference with Real Decoder Evidence | Bits to Banking · Umicom</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span class="brand-divider" aria-hidden="true">·</span> BITS TO BANKING</a>
+<nav class="site-nav" aria-label="Course navigation"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside class="toc" aria-label="Recent lessons"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html" aria-current="page">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html" >76 · Qualify benchmark evidence</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main id="main" class="lesson"><header class="lesson-header"><p class="eyebrow">LESSON 75 · NATIVE C23 · PERFORMANCE MEASUREMENT</p>
+<h1>Benchmark Native Prefix Inference with Real Decoder Evidence</h1><p class="lesson-lede">Measure full-context and KV-cached unpadded generation with identical model parameters, prompt and sampling policy.</p></header>
+<article class="article-content">
+
+<h2>Learning objectives</h2>
+<p>By the end of this lesson you should be able to distinguish <strong>numerical parity</strong> from <strong>work reduction</strong> and <strong>observed execution time</strong>, explain why the benchmark must use the same positional-embedding policy on both paths, and run a native C23 experiment without modifying a saved model.</p>
+<h2>1. Why last week's row counts were not enough</h2>
+<p>Lesson 73 introduced opt-in generation from an unpadded prefix. The first real token occupies learned absolute position zero. As the prompt grows within the configured context length, the KV cache computes one additional token row and retains the earlier projections. A full-context canonical evaluation computes every context row again, even though only the last real token's logits are used for sampling.</p>
+<p>The two approaches can perform different amounts of work. That does not, by itself, establish how many seconds either implementation requires. A full-context implementation may use efficient batched kernels; a row-by-row cache may pay more overhead. Memory allocation, snapshotting model weights, matrix access patterns, softmax and function-call costs also contribute to elapsed time.</p>
+<p>Batch 75–76 therefore introduces <code>UmiAiTrainingPrefixBenchmarkRun</code>, a Framework-owned service that compares the <em>same</em> unpadded generation problem through the original decoder and the already-qualified cached session. The reference path calls <code>UmiAiTrainingDecoderLogits</code>. The cached path calls <code>UmiAiTrainingDecoderGeneratePrefixNucleus</code>. The benchmark implements no new attention mathematics or random-number algorithm.</p>
+<figure><img src="../assets/diagrams/prefix-benchmark-experiment.svg" alt="Same decoder and unpadded prompt feed a canonical full-context path and an incremental KV path. Both pass token, workload and checkpoint checks before timings are reported."><figcaption>One experiment, two calculation schedules, strict qualification before publication.</figcaption></figure>
+<h2>2. Equal semantics are a precondition, not an optional refinement</h2>
+<p>The existing legacy generator always inserts BOS tokens to the <em>left</em> until the context is full. The new prefix generator does <strong>not</strong> use that policy: its prompt starts at position zero. Because the decoder learns a different embedding for each absolute position, left padding changes its numerical input. For that reason, comparing outputs between legacy and prefix modes would not constitute a parity test.</p>
+<p>Instead, the independent reference uses a full <code>contextLength</code>-token buffer with BOS tokens to the <em>right</em> of the retained prefix, and samples logits at position <code>retained - 1</code>. The original causal mask prevents future padding from influencing that row. When the context fills, the oldest retained token is dropped and the canonical decoder recomputes all positions, matching the mathematically necessary cache rebuild.</p>
+<p>The reference and cache receive identical prompt tokens, temperature, top-K, top-p, requested generation count and non-cryptographic seed. Every sampled token must agree at every step, including immediately after a context eviction. They also must reproduce the same sequence in later trials.</p>
+<h2>3. A complete example using the existing Framework API</h2>
+<pre><code class="language-c">#include &quot;umicom/ai/training/prefix_benchmark.h&quot;
+#include &quot;umicom/ai/training/byte_tokenizer.h&quot;
+#include &lt;inttypes.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const UmiAiTrainingDecoderConfig config = {
+        UMI_AI_BYTE_VOCABULARY, 8U, 8U, 16U, 2U, UINT64_C(20261024)
+    };
+    const UmiAiTrainingNucleusOptions policy = {0.85F, 12U, 0.9F};
+    const UmiAiTrainingPrefixBenchmarkPlan plan = {
+        12U, 1U, 5U, UINT64_C(7801)
+    };
+    const size_t prompt[] = {109U, 114U, 120U}; /* &#x27;int&#x27; */
+    UmiAiTrainingPrefixBenchmarkResult report = {0};
+    UmiAiTrainingDecoder *decoder = NULL;
+    UmiStatus status = UmiAiTrainingDecoderCreate(&amp;config, &amp;decoder);
+    if (status == UMI_STATUS_OK)
+        status = UmiAiTrainingPrefixBenchmarkRun(decoder, prompt, 3U,
+                                                &amp;policy, &amp;plan, &amp;report);
+    UmiAiTrainingDecoderDestroy(decoder);
+    if (status != UMI_STATUS_OK) return 1;
+
+    printf(&quot;Verified pairs: %zu\n&quot;, report.verifiedPairs);
+    printf(&quot;Canonical rows: %&quot; PRIu64 &quot;\n&quot;,
+           report.estimate.canonicalComputedRows);
+    printf(&quot;Cached rows: %&quot; PRIu64 &quot;\n&quot;,
+           report.observedCache.computedRows);
+    if (report.wallClockAvailable)
+        printf(&quot;Canonical median wall time: %.6f s\n&quot;,
+               report.canonical.medianWallSeconds);
+    return 0;
+}</code></pre>
+<p>The program deliberately creates an educational decoder rather than loading a production checkpoint. The CMake demonstration executable in <code>learning/native-llm/prefix-work/benchmark_prefix_generation.c</code> contains the same setup and prints both timing distributions. This benchmark does not train the model and does not save or load any files.</p>
+<h2>4. Work through the arithmetic</h2>
+<table><thead><tr><th>Quantity</th><th>How it is calculated</th><th>Result</th></tr></thead><tbody>
+<tr><td>Context length</td><td>Configured decoder capacity</td><td>8 tokens</td></tr>
+<tr><td>Initial prompt</td><td>Nonempty unpadded prefix</td><td>3 tokens</td></tr>
+<tr><td>Generated tokens</td><td>One pending token is not appended until next pull</td><td>12 tokens</td></tr>
+<tr><td>Reference rows</td><td>8 context rows × 12 sampling steps</td><td>96</td></tr>
+<tr><td>Growing-cache rows</td><td>3 initial + 5 one-token appends</td><td>8</td></tr>
+<tr><td>Post-eviction rows</td><td>6 complete rebuilds × 8 rows</td><td>48</td></tr>
+<tr><td>Cached total</td><td>8 + 48</td><td>56</td></tr>
+<tr><td>Saved computation</td><td>96 − 56</td><td>40 rows (41.67%)</td></tr>
+</tbody></table>
+<p>This result is workload evidence, not a claim of a 41.67% faster program. There is no necessary linear relationship between computed token-row counts and wall-clock time, especially for a small educational decoder.</p>
+<h2>5. Why the benchmark alternates execution order</h2>
+<p>Running every reference trial first and every cached trial second would introduce a systematic bias: instruction caches might already be warm, the CPU might have changed clock frequency, and the operating system could have scheduled unrelated work. The benchmark executes complete reference/cache pairs and reverses which path runs first on the next pair. A bounded warm-up is executed before measured runs, but its times are discarded. Warm-up output still has to pass the same parity and workload checks.</p>
+<p>The result stores the minimum, median and maximum observed wall-clock time for each path. A median reduces the influence of a small number of unusually slow samples, but a three- or five-run median is not a statistical guarantee. Use larger representative work outside this small educational laboratory before making deployment decisions.</p>
+<h2>6. Practical exercises</h2><ol>
+<li>Repeat the workload calculation with a context of 16, a prompt of 5 and 9 generated samples. Explain which appended tokens require complete rebuilds.</li>
+<li>Compare a one-token prompt with a full eight-token prompt. Why can the latter have no row saving before the first eviction?</li>
+<li>Explain why the legacy BOS-left-padded generator is not a valid reference for unpadded prefix generation.</li>
+<li>Describe how a lower computed-row count could coexist with a higher observed wall-clock time.</li>
+<li>Find the exact source files containing the benchmark plan, canonical reference and original KV owner. Which files own actual numerical operations?</li>
+</ol><p><strong>Engineering conclusion:</strong> Establish semantic equivalence and numerical parity first. Measure workload second. Only then interpret repeated timing observations.</p>
+</article><nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="74-test-streaming-prefix-generation-parity.html"><small>← Previous</small>Test Prefix-Generation Parity and Observed Workload</a><a class="next" href="76-qualify-benchmark-evidence.html"><small>Next →</small>Qualify Timing Evidence and Protect Native Checkpoints</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

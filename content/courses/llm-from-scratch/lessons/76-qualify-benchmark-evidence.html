@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Reject numerical mismatches, preserve model and output integrity, and interpret benchmark clocks without overstating performance.">
+<meta name="theme-color" content="#203247">
+<title>Lesson 76 — Qualify Timing Evidence and Protect Native Checkpoints | Bits to Banking · Umicom</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span class="brand-divider" aria-hidden="true">·</span> BITS TO BANKING</a>
+<nav class="site-nav" aria-label="Course navigation"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside class="toc" aria-label="Recent lessons"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html" >75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html" aria-current="page">76 · Qualify benchmark evidence</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main id="main" class="lesson"><header class="lesson-header"><p class="eyebrow">LESSON 76 · NATIVE C23 · BENCHMARK EVIDENCE</p>
+<h1>Qualify Timing Evidence and Protect Native Checkpoints</h1><p class="lesson-lede">Reject numerical mismatches, preserve model and output integrity, and interpret benchmark clocks without overstating performance.</p></header>
+<article class="article-content">
+
+<h2>Learning objectives</h2>
+<p>Learn to decide whether a performance comparison deserves to be published. Inspect a native C23 report, distinguish available measurements from missing data, protect caller-owned outputs and checkpoint bytes, and record enough experimental context that another developer can reproduce the result.</p>
+<h2>1. A benchmark report is a claim that needs evidence</h2>
+<p>It is tempting to run a small test once and announce a speedup. That practice is particularly misleading for native inference, where CPU frequency scaling, cache warming, work scheduling, system load, compiler optimisation level and memory allocation costs affect the result. The Umicom approach is stricter: the service can report timing evidence only after proving that it is comparing equivalent computations.</p>
+<p>The new <code>UmiAiTrainingPrefixBenchmarkResult</code> is not a trained model or a production performance certificate. It is a bounded, in-memory report from one execution. The result describes the workload that was actually qualified, the number of parity-checked pairs, a non-cryptographic token fingerprint, the number of checkpoint bytes verified and whether each clock produced usable readings.</p>
+<h2>2. Mandatory gates before publishing the report</h2>
+<table><thead><tr><th>Gate</th><th>Meaning</th><th>On failure</th></tr></thead><tbody>
+<tr><td>Input validation</td><td>Nonempty bounded prefix, valid decoder shape, valid temperature/top-K/top-p, bounded plan</td><td>Invalid arguments rejected, report untouched</td></tr>
+<tr><td>Canonical parity</td><td>Every generated token from both paths is identical for the same seed</td><td>No successful report</td></tr>
+<tr><td>Repeatability</td><td>The full sampled sequence agrees across independent benchmark pairs</td><td>No successful report</td></tr>
+<tr><td>Cache accounting</td><td>Reported rows, retained tokens and rebuilds match the Framework planner</td><td>No successful report</td></tr>
+<tr><td>Model immutability</td><td>Original and final portable decoder checkpoint bytes agree exactly</td><td>No successful report</td></tr>
+<tr><td>Clock integrity</td><td>Durations positive, finite, consistent and supported by the selected clock</td><td>Timing marked unavailable; parity evidence can remain valid</td></tr>
+</tbody></table>
+<p>The crucial distinction in the final row is deliberate. A clock with insufficient resolution is not evidence of a numerical defect. Equally, a correct numerical result must not be used to invent a zero-duration or high-performance result when timing is unavailable.</p>
+<h2>3. Wall clock, CPU time and timer quality</h2>
+<p><em>Wall-clock duration</em> records how much real time passed between the start and end of one complete generation call. For interactive users, this is closer to perceived latency. The Framework uses native monotonic timing facilities when present: <code>QueryPerformanceCounter</code> on Windows and <code>CLOCK_MONOTONIC</code> on POSIX. If neither is available, it falls back to C23 <code>timespec_get</code>; the report flags that fallback as <strong>not guaranteed monotonic</strong>.</p>
+<p><em>Process CPU time</em>, read through C <code>clock()</code>, measures CPU time consumed by the process. It is not necessarily the CPU time of only one thread. Parallel activity may contribute to that number. If the clock is unavailable or too coarse to register a positive interval, the report explicitly sets <code>cpuClockAvailable</code> to zero and leaves the CPU timing value at zero without interpreting that as free computation.</p>
+<p>Because the experiment alternates path ordering, both timing sets include complete repeated calls with equivalent inputs, but they do not eliminate all host-level variation. Report the full min/median/max wall distribution and compiler settings rather than choosing whichever single run looks best.</p>
+<h2>4. Inspecting an evidence report in C23</h2>
+<pre><code class="language-c">#include &quot;umicom/ai/training/prefix_benchmark.h&quot;
+#include &lt;inttypes.h&gt;
+#include &lt;stdio.h&gt;
+
+/* This function receives a successfully published result. */
+static void PrintEvidence(const UmiAiTrainingPrefixBenchmarkResult *report)
+{
+    printf(&quot;Parity-checked pairs: %zu\n&quot;, report-&gt;verifiedPairs);
+    printf(&quot;Tokens compared: %zu\n&quot;, report-&gt;comparedTokens);
+    printf(&quot;Reference rows: %&quot; PRIu64 &quot;\n&quot;,
+           report-&gt;estimate.canonicalComputedRows);
+    printf(&quot;Observed KV rows: %&quot; PRIu64 &quot;\n&quot;,
+           report-&gt;observedCache.computedRows);
+    printf(&quot;Checkpoint integrity: %s\n&quot;,
+           report-&gt;checkpointUnchanged ? &quot;preserved&quot; : &quot;NOT verified&quot;);
+
+    if (report-&gt;wallClockAvailable) {
+        printf(&quot;Reference median wall: %.6f s\n&quot;,
+               report-&gt;canonical.medianWallSeconds);
+        printf(&quot;KV median wall: %.6f s\n&quot;,
+               report-&gt;incremental.medianWallSeconds);
+        printf(&quot;Monotonic timer: %s\n&quot;,
+               report-&gt;wallClockMonotonic ? &quot;yes&quot; : &quot;no&quot;);
+    } else {
+        puts(&quot;Wall timing unavailable: no latency conclusion.&quot;);
+    }
+    if (!report-&gt;cpuClockAvailable)
+        puts(&quot;Process CPU timing unavailable: no CPU-speed conclusion.&quot;);
+}</code></pre>
+<p><code>checkpointUnchanged</code> is one only when the successful benchmark compared complete original and final portable checkpoint bytes and found them identical. The fingerprint is intended for quick reproducibility checks of generated IDs; it uses FNV-1a, not SHA-256 or a digital signature, and does not authenticate a checkpoint.</p>
+<h2>5. Rejected operations must not corrupt the caller's report</h2>
+<p>Umicom Framework contracts require failure-atomic output publication. A caller can reuse its report object after a rejected plan without finding half-filled timings or leftover token counts from a failed comparison. The implementation calculates everything into a local candidate and publishes only after every gate passes.</p>
+<pre><code class="language-c">UmiAiTrainingPrefixBenchmarkResult report;
+unsigned char saved[sizeof report];
+memset(&amp;report, 0xA5, sizeof report);
+memcpy(saved, &amp;report, sizeof report);
+
+UmiAiTrainingPrefixBenchmarkPlan invalid = {
+    12U, 0U, 0U, UINT64_C(99) /* no measured pairs */
+};
+UmiStatus result = UmiAiTrainingPrefixBenchmarkRun(
+    model, prompt, promptCount, &amp;policy, &amp;invalid, &amp;report);
+if (result != UMI_STATUS_INVALID_ARGUMENT ||
+    memcmp(saved, &amp;report, sizeof report) != 0) {
+    /* Reject the implementation: output was changed on failure. */
+}</code></pre>
+<p>The excerpt assumes a caller-owned decoder, prompt and policy, plus <code>&lt;string.h&gt;</code> and <code>&lt;stdint.h&gt;</code> headers. Complete executable regression coverage is in <code>tests/ai_training/test_training_prefix_benchmark_rejections.c</code>. The report has the same byte sequence before and after the rejected call.</p>
+<h2>6. Reproduce the experiment on Windows</h2>
+<p>The opt-in native LLM prefix laboratory composes the same Framework-owned decoder, KV cache and sampler that applications consume. Open PowerShell and use your current <code>C:\umicom\Umicom-Applications</code> tree after reviewing and merging the files with Beyond Compare.</p>
+<pre><code>Set-Location &#x27;C:\umicom\Umicom-Applications&#x27;
+$env:Path = &#x27;C:\msys64\ucrt64\bin;&#x27; + $env:Path
+cmake -S &#x27;.\framework\learning\native-llm\prefix-work&#x27; `
+    -B &#x27;.\build\windows-ucrt64-native-llm-prefix-debug&#x27; `
+    -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw &#x27;Configure failed.&#x27; }
+cmake --build &#x27;.\build\windows-ucrt64-native-llm-prefix-debug&#x27; `
+    --target umicom-native-llm-prefix-benchmark `
+             umicom-ai-training-prefix-benchmark-parity-test `
+             umicom-ai-training-prefix-benchmark-rejections-test --parallel 2
+if ($LASTEXITCODE -ne 0) { throw &#x27;Build failed.&#x27; }
+ctest --test-dir &#x27;.\build\windows-ucrt64-native-llm-prefix-debug&#x27; `
+    -R &#x27;^framework\.ai\.training\.prefix_benchmark_&#x27; --output-on-failure
+if ($LASTEXITCODE -ne 0) { throw &#x27;Benchmark qualification failed.&#x27; }</code></pre>
+<p>Run the same focused tests in an independent Release build. Do not confuse a Release timing with a Debug timing. Also retain the complete command line, operating-system build, CPU model, compiler and compiler version, number of warm-up pairs, number of measured pairs, sampling seed, decoder configuration and prompt. The benchmark executable prints both parity and timing evidence; attach its console output to a development log if you need to compare later.</p>
+<h2>7. Worked decision: what can the team reasonably claim?</h2>
+<p>Suppose the eight-token experiment produces 96 canonical rows and 56 cached rows. If all pairs match, the team may say: <strong>the opt-in KV path computes 40 fewer token rows for this specific input while producing the same sampled token IDs and preserving the checkpoint</strong>. That result is grounded in measured counters.</p>
+<p>Suppose the wall-time medians are 4.2 ms for reference and 4.7 ms for KV. The cached path is <em>slower in this observation</em>, despite its lower row count. It would be wrong to call this a 41.67% speed improvement. If the readings are unavailable, the team can discuss only parity and workload, not measured latency.</p>
+<p>As the context rolls, learned absolute positions force every retained token into a new positional embedding. A cache cannot simply keep prior keys and values unchanged. A future positional model such as RoPE would have different semantics, and old model checkpoints cannot silently be reinterpreted as the new architecture. New mathematical tests and an explicit checkpoint version policy must precede such a migration.</p>
+<h2>8. Practical exercises</h2><ol>
+<li>Describe three reasons for repeating measurements instead of choosing one run.</li>
+<li>Explain the difference between CPU time and wall-clock latency during a multithreaded workload.</li>
+<li>Which result field proves that the model's binary checkpoint was preserved? Is the token fingerprint a cryptographic signature?</li>
+<li>When a measured run returns a different sampled token, should the benchmark still publish its timing statistics? Explain why not.</li>
+<li>Compare Debug and Release results and prepare an evidence record containing the complete environment and workload description.</li>
+</ol><p><strong>Engineering conclusion:</strong> A trustworthy benchmark makes incorrect results impossible to present as successful measurements. Treat performance as observed evidence, not as an inherent property of the words “KV cache”.</p>
+</article><nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="75-benchmark-native-prefix-inference.html"><small>← Previous</small>Benchmark Native Prefix Inference with Real Decoder Evidence</a><a class="next" href="../course-map.html"><small>Next →</small>Review All Lessons</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

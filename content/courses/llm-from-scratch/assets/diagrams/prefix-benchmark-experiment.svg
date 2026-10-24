@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 460" role="img" aria-labelledby="title desc">
+<title id="title">Framework-owned inference comparison and evidence gates</title>
+<desc id="desc">The same model, unpadded prompt, sampling policy and seed enter a canonical full-context logits reference and an incremental KV-cache session. Tokens and workload must agree before checkpoint integrity and timer evidence are reported.</desc>
+<defs>
+<marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3 Z" fill="#277383"/></marker>
+<style>
+  .box{fill:#f1f8fa;stroke:#277383;stroke-width:2}
+  .highlight{fill:#dff4ec;stroke:#1c8068;stroke-width:2}
+  .neutral{fill:#f6f8fc;stroke:#65819b;stroke-width:2}
+  .heading{font:700 19px system-ui, sans-serif;fill:#183244;text-anchor:middle}
+  .sub{font:14px system-ui, sans-serif;fill:#37556b;text-anchor:middle}
+  .line{stroke:#277383;stroke-width:2.5;fill:none;marker-end:url(#arr)}
+  .note{font:700 15px system-ui,sans-serif;fill:#1b5e52;text-anchor:middle}
+</style>
+</defs>
+<rect width="1060" height="460" rx="16" fill="#fbfdff"/>
+<text x="530" y="36" class="heading">One model. One unpadded prefix policy. Repeated paired measurements.</text>
+<rect x="330" y="54" width="400" height="70" rx="12" class="box"/>
+<text x="530" y="80" class="heading">Shared inputs</text>
+<text x="530" y="104" class="sub">decoder · tokens · seed · top-K · top-p · temperature</text>
+<path d="M530 124 V148 H260 V169" class="line"/>
+<path d="M530 124 V148 H800 V169" class="line"/>
+<rect x="75" y="170" width="370" height="92" rx="12" class="neutral"/>
+<text x="260" y="201" class="heading">Canonical reference</text>
+<text x="260" y="225" class="sub">original UmiAiTrainingDecoderLogits</text>
+<text x="260" y="245" class="sub">right-pad, sample last retained row</text>
+<rect x="615" y="170" width="370" height="92" rx="12" class="highlight"/>
+<text x="800" y="201" class="heading">Incremental KV session</text>
+<text x="800" y="225" class="sub">original cache + sampler</text>
+<text x="800" y="245" class="sub">one row while growing · rebuild on rollover</text>
+<path d="M260 262 V291 H530 V313" class="line"/>
+<path d="M800 262 V291 H530 V313" class="line"/>
+<rect x="230" y="314" width="600" height="67" rx="12" class="highlight"/>
+<text x="530" y="340" class="heading">Qualification gates</text>
+<text x="530" y="363" class="sub">exact tokens · repeated parity · KV work · immutable checkpoint</text>
+<path d="M530 381 V403" class="line"/>
+<text x="530" y="427" class="note">Publish min / median / max wall time only with explicit timer validity</text>
+<text x="530" y="445" class="sub">Computed rows ≠ guaranteed CPU speedup</text>
+</svg>
