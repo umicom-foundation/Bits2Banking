@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 480" role="img" aria-labelledby="title desc">
+<title id="title">Training one rotary attention experiment with real parameter updates</title>
+<desc id="desc">Three feature rows enter two trainable four-by-four projections, producing queries and keys. Rotary attention and fixed values produce outputs. MSE compares those outputs with fixed targets. The existing training tape calculates backward gradients and atomically updates both projection matrices. A new forward evaluation checks loss after the update.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2f6784"/></marker></defs>
+<rect width="1020" height="480" rx="18" fill="#f1f7fb"/>
+<g font-family="system-ui,Segoe UI,sans-serif" text-anchor="middle" fill="#173448">
+<rect x="35" y="34" width="195" height="90" rx="14" fill="#fff" stroke="#6891aa" stroke-width="2"/>
+<text x="132" y="67" font-size="20" font-weight="700">Input features</text><text x="132" y="98" font-size="15">3 tokens × 4 values</text>
+<rect x="305" y="24" width="214" height="100" rx="14" fill="#fff" stroke="#6891aa" stroke-width="2"/>
+<text x="412" y="60" font-size="19" font-weight="700">Q projection</text><text x="412" y="90" font-size="15">Trainable 4 × 4 Wq</text>
+<rect x="305" y="160" width="214" height="100" rx="14" fill="#fff" stroke="#6891aa" stroke-width="2"/>
+<text x="412" y="197" font-size="19" font-weight="700">K projection</text><text x="412" y="229" font-size="15">Trainable 4 × 4 Wk</text>
+<rect x="596" y="72" width="240" height="130" rx="14" fill="#e1f4ee" stroke="#0b7669" stroke-width="3"/>
+<text x="716" y="115" font-size="19" font-weight="700">Rotary attention</text><text x="716" y="147" font-size="15">Q, K + fixed V</text><text x="716" y="174" font-size="15">Existing tape operators</text>
+<rect x="853" y="80" width="140" height="115" rx="14" fill="#fff" stroke="#6891aa" stroke-width="2"/>
+<text x="923" y="119" font-size="19" font-weight="700">MSE loss</text><text x="923" y="150" font-size="14">Compare with</text><text x="923" y="169" font-size="14">fixed targets</text>
+<rect x="590" y="293" width="246" height="105" rx="14" fill="#fff" stroke="#6891aa" stroke-width="2"/>
+<text x="713" y="330" font-size="19" font-weight="700">Backward + SGD</text><text x="713" y="358" font-size="15">Gradients to Wq and Wk</text><text x="713" y="382" font-size="14">Framework owns updates</text>
+<rect x="291" y="310" width="240" height="100" rx="14" fill="#d8f2e8" stroke="#0b7669" stroke-width="2"/>
+<text x="411" y="349" font-size="19" font-weight="700">Rebuild graph</text><text x="411" y="378" font-size="15">Measure new loss</text>
+<g stroke="#2f6784" stroke-width="3" fill="none" marker-end="url(#arrow)"><path d="M230 80 H305"/><path d="M132 124 V214 H305"/><path d="M519 74 H567 V118 H596"/><path d="M519 210 H568 V163 H596"/><path d="M836 138 H853"/><path d="M924 195 V344 H836"/><path d="M590 348 H531"/><path d="M411 310 V278 H412 V260"/></g>
+<text x="502" y="452" font-size="16" fill="#185768">After each update, evaluate a new forward graph; never assume loss decreases.</text>
+</g>
+</svg>
