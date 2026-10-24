@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="480" viewBox="0 0 1120 480" role="img" aria-labelledby="title description">
+<title id="title">Rotary position versus learned absolute position when a four-token window rolls</title>
+<desc id="description">The existing learned-absolute decoder rebuilds K/V on rollover; the separate single-block rotary research window keeps original absolute indices and reuses retained K/V. This does not convert old checkpoints.</desc>
+<defs>
+ <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#8ad2d6"/></marker>
+</defs>
+<rect width="1120" height="480" rx="18" fill="#102036"/>
+<text x="36" y="44" fill="#eef7ff" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="bold">Window rollover: two different model families</text>
+<text x="36" y="72" fill="#b7cadd" font-family="Segoe UI,Arial,sans-serif" font-size="15">Context capacity 4; append token 4 after tokens 0,1,2,3</text>
+<rect x="35" y="104" width="510" height="286" rx="14" fill="#1d334f" stroke="#faaf7b" stroke-width="2"/>
+<rect x="575" y="104" width="510" height="286" rx="14" fill="#173f45" stroke="#80e0cd" stroke-width="2"/>
+<text x="58" y="136" fill="#ffd0ab" font-family="Segoe UI,Arial,sans-serif" font-size="21" font-weight="bold">Existing learned-absolute decoder</text>
+<text x="598" y="136" fill="#a1f4e1" font-family="Segoe UI,Arial,sans-serif" font-size="21" font-weight="bold">New single-block rotary research</text>
+<g fill="#edf6ff" font-family="Consolas,monospace" font-size="16" text-anchor="middle">
+<rect x="66" y="172" width="100" height="52" rx="8" fill="#324d6a"/><rect x="181" y="172" width="100" height="52" rx="8" fill="#324d6a"/><rect x="296" y="172" width="100" height="52" rx="8" fill="#324d6a"/><rect x="411" y="172" width="100" height="52" rx="8" fill="#324d6a"/>
+<text x="116" y="202">0 @ p0</text><text x="231" y="202">1 @ p1</text><text x="346" y="202">2 @ p2</text><text x="461" y="202">3 @ p3</text>
+<rect x="606" y="172" width="100" height="52" rx="8" fill="#286267"/><rect x="721" y="172" width="100" height="52" rx="8" fill="#286267"/><rect x="836" y="172" width="100" height="52" rx="8" fill="#286267"/><rect x="951" y="172" width="100" height="52" rx="8" fill="#286267"/>
+<text x="656" y="202">0 @ p0</text><text x="771" y="202">1 @ p1</text><text x="886" y="202">2 @ p2</text><text x="1001" y="202">3 @ p3</text>
+</g>
+<g stroke="#8ad2d6" stroke-width="3" marker-end="url(#arrow)"><path d="M288 235V268"/><path d="M826 235V268"/></g>
+<g fill="#edf6ff" font-family="Consolas,monospace" font-size="16" text-anchor="middle">
+<rect x="66" y="277" width="100" height="52" rx="8" fill="#985d40"/><rect x="181" y="277" width="100" height="52" rx="8" fill="#985d40"/><rect x="296" y="277" width="100" height="52" rx="8" fill="#985d40"/><rect x="411" y="277" width="100" height="52" rx="8" fill="#985d40"/>
+<text x="116" y="307">1 @ p0</text><text x="231" y="307">2 @ p1</text><text x="346" y="307">3 @ p2</text><text x="461" y="307">4 @ p3</text>
+<rect x="606" y="277" width="100" height="52" rx="8" fill="#286267"/><rect x="721" y="277" width="100" height="52" rx="8" fill="#286267"/><rect x="836" y="277" width="100" height="52" rx="8" fill="#286267"/><rect x="951" y="277" width="100" height="52" rx="8" fill="#3a9388"/>
+<text x="656" y="307">1 @ p1</text><text x="771" y="307">2 @ p2</text><text x="886" y="307">3 @ p3</text><text x="1001" y="307">4 @ p4</text>
+</g>
+<text x="58" y="363" fill="#ffdbc4" font-family="Segoe UI,Arial,sans-serif" font-size="16">Positions change: retained K/V must be rebuilt</text>
+<text x="598" y="363" fill="#b5f5e6" font-family="Segoe UI,Arial,sans-serif" font-size="16">Positions stay absolute: retain prior K/V rows</text>
+<rect x="35" y="411" width="1050" height="45" rx="8" fill="#293953"/>
+<text x="53" y="439" fill="#fff0c0" font-family="Segoe UI,Arial,sans-serif" font-size="16" font-weight="bold">Important: first-block numerical study only — not a trained RoPE decoder or a legacy checkpoint migration</text>
+</svg>

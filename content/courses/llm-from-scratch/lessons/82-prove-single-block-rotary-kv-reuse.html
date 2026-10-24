@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Prove the single-attention-block context rollover policy and work accounting." name="description"/>
+<meta content="#203247" name="theme-color"/>
+<title>Lesson 82 — Prove Single-Block Rotary KV Reuse Through Rollover | Bits to Banking · Umicom</title>
+<link href="../../assets/branding/umicom-icon-on-dark.svg" rel="icon" type="image/svg+xml"/>
+<link href="../../assets/umicom-learning.css" rel="stylesheet"/>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span aria-hidden="true" class="brand-divider">·</span> BITS TO BANKING</a>
+<nav aria-label="Course navigation" class="site-nav"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside aria-label="Recent lessons" class="toc"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html">76 · Qualify benchmark evidence</a>
+<a href="77-bind-positions-to-checkpoint-identity.html">77 · Bind checkpoint and position policy</a><a href="78-write-and-verify-position-sidecars.html">78 · Qualify positional sidecar</a><a href="79-admit-model-checkpoints-before-inference.html">79 · Admit approved checkpoints</a>
+<a href="80-qualify-policy-bound-generation-and-benchmarks.html">80 · Bind generation and benchmarks</a>
+<a href="81-introduce-rotary-position-mathematics.html">81 · Rotary position mathematics</a>
+<a aria-current="page" href="82-prove-single-block-rotary-kv-reuse.html">82 · Single-block rotary KV reuse</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 82 · NATIVE C23 · KV RING REUSE</p>
+<h1>Prove Single-Block Rotary KV Reuse Through Rollover</h1><p class="lesson-lede">Independently qualify causal RoPE attention after context eviction.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Build and inspect a bounded native ring buffer that retains original rotary key/value rows across eviction; independently reproduce every attended output; account for the work avoided; and identify the precise boundary beyond which first-block reuse does not prove full-model correctness.</p>
+<h2>1. From position rotation to reusable attention state</h2>
+<p>Lesson 81 introduced a pure RoPE transform. A decoder, however, also requires a lifetime owner for cached keys and values. The new <code>UmiAiTrainingRotaryWindow</code> is an opaque Framework-owned object that stores key/value rows in a bounded circular buffer. Its caller supplies an already projected query, key and value for each token. Every successful append computes one causal attention output and retains the newest rows within the configured capacity.</p>
+<p>The oldest entry is evicted when the buffer fills. The remaining keys are <strong>not shifted into different absolute positions</strong>; they retain the coordinates at which they were originally rotated. Their values are likewise retained. This avoids full-window K/V reconstruction for the explicitly qualified first-block experiment.</p>
+<figure><img src="../assets/diagrams/rotary-single-block-kv-study.svg" alt="A four-token rotary ring keeps original absolute token positions when evicting the oldest row, unlike the existing learned-absolute decoder."><figcaption>The right-hand window preserves absolute indices, rather than relabelling retained keys after eviction.</figcaption></figure>
+<h2>2. Keep attention mathematics explicit</h2>
+<p>For a new query, attention calculates one score per retained key using <code>Q·K / sqrt(headChannels)</code>. Scores are normalised with softmax. A numerically stable implementation subtracts the largest score before evaluating exponentials, then forms the weighted sum of the retained values. Because the new query never reads future keys, the computation is causal.</p>
+<p>Each insertion runs this calculation over at most 32 retained rows. The cache stores projected values for single-block attention; it does not store trainable model parameters, run backpropagation, or generate tokens on its own. The caller must be able to demonstrate that the supplied projections are stable when an earlier row is evicted.</p>
+<h2>3. Run the ring-cache study</h2>
+<pre><code class="language-c">#include &quot;umicom/ai/training/rotary_window.h&quot;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const UmiAiTrainingRotaryWindowConfig cfg = {
+        {4U, 4U, 10000.0}, 4U
+    };
+    UmiAiTrainingRotaryWindow *window = NULL;
+    UmiAiTrainingRotaryWindowStats report = {0};
+    float attended[4] = {0};
+    if (UmiAiTrainingRotaryWindowCreate(&amp;cfg, &amp;window)
+        != UMI_STATUS_OK) return 1;
+    for (size_t token = 0U; token &lt; 12U; ++token) {
+        /* Illustrative stable, already-projected first-block vectors. */
+        const float q[4] = {0.5F, 0.1F, 0.2F, 0.3F};
+        const float k[4] = {0.1F, (float)token * 0.02F, 0.4F, 0.0F};
+        const float v[4] = {(float)token, 0.5F, -0.2F, 1.0F};
+        if (UmiAiTrainingRotaryWindowAppend(window, q, k, v,
+                                            4U, attended, 4U)
+            != UMI_STATUS_OK) return 2;
+    }
+    if (UmiAiTrainingRotaryWindowInspect(window, &amp;report)
+        != UMI_STATUS_OK) return 3;
+    printf(&quot;computed rows=%llu, evicted rows=%llu\n&quot;,
+           (unsigned long long)report.computedRows,
+           (unsigned long long)report.evictedRows);
+    UmiAiTrainingRotaryWindowDestroy(window);
+    return 0;
+}</code></pre>
+<p>The demonstration above inserts twelve synthetic, already-projected rows into a capacity-four window. At the end, <code>computedRows</code> is 12, <code>evictedRows</code> is 8, <code>retainedRows</code> is 4, and <code>fullWindowRebuilds</code> is 0. These are actual insertion counters for this mathematical component. They are <em>not</em> throughput measurements for an Umicom trained decoder.</p>
+<h2>4. Calculate the avoided projection rows</h2>
+<p>Compare the ring against a reference which recomputes every retained Q/K/V projection on each new token. For the first four insertions, the full reference would handle 1, then 2, 3 and 4 rows. The remaining eight insertions each contain a complete four-row window.</p>
+<pre><code>Full-window recomputation = 1 + 2 + 3 + 4 + (8 × 4) = 42 projection rows
+Ring insertion work       = 12 projection rows
+Avoided projection rows   = 42 − 12 = 30
+Avoided share             = 30 / 42 ≈ 71.43%</code></pre>
+<p>This comparison counts projections, not attention score multiplications, peak memory, wall time or tokens per second. Each ring append still scores all currently retained keys. A smaller number of projection rows does not imply that overall latency is reduced by 71.43%.</p>
+<h2>5. The independent reference is essential</h2>
+<p>The <code>rotary_window</code> regression supplies deterministic vectors and independently reconstructs the entire retained attention window at every insertion. It re-rotates each original key from its absolute index, computes scores and normalisation anew, and compares the final attended context. The current regression covers context capacities of 1, 4, 8 and 16 over 18 successive positions each: <strong>72 distinct attention comparisons</strong>, including many evictions.</p>
+<p>The test also inspects the retained count, eviction count and absolute timeline after every append, and proves Reset clears that timeline. The separate rejection test confirms malformed input or insufficient output capacity cannot partially advance the ring or change the output buffer. These checks are in native C23 under <code>tests/ai_training/</code>.</p>
+<h2>6. Why this is not yet a trained rotary decoder</h2>
+<p>In the <em>first</em> block of a suitably designed model, Q/K/V may be projections of fixed token embeddings. After an old token is discarded, a surviving token's original first-block projection remains valid. But in an <em>upper</em> attention block, the surviving token's hidden state may already contain information from tokens outside the new window. Rebuilding an upper block from the truncated window can therefore differ from reusing its historical state. The new lab proves the bounded single-block case only.</p>
+<p>Before a full Umicom RoPE decoder can enter the main Framework, it needs an independently identified architecture and checkpoint format, training and inference alignment, documented window semantics, multi-layer numerical qualifications, deterministic sampling, checkpoint-preservation tests and repeatable performance evidence. Existing learned-absolute checkpoints and the position-admission gate must remain unchanged.</p>
+<h2>7. Practical exercises</h2>
+<ol><li>Compute the number of projection rows recomputed for capacity eight and twelve successive insertions. Compare it against one projection per ring insertion.</li><li>Explain why a ring slot number must never be substituted for an original absolute position in the rotary angle formula.</li><li>Change the test to use context capacity one. What should happen to evictions and the attention output?</li><li>Design a counterexample showing why retaining a second-block key after truncating its earlier context may change the meaning of a fresh-window recomputation.</li></ol>
+<p><strong>Key lesson:</strong> an optimisation is qualified only for the exact model assumptions proved by independent mathematics and regression tests.</p>
+</article><nav aria-label="Lesson pagination" class="lesson-next"><a class="prev" href="81-introduce-rotary-position-mathematics.html"><small>← Previous</small>Introduce Rotary Position Mathematics in Native C23</a><a class="next" href="../course-map.html"><small>Next →</small>Review All Lessons</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br/>Sammy Hegab · Service to Many Leads to Greatness.<br/>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

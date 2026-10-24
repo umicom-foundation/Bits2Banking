@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Introduce a separately identified rotary-position research kernel, not a checkpoint converter." name="description"/>
+<meta content="#203247" name="theme-color"/>
+<title>Lesson 81 — Introduce Rotary Position Mathematics in Native C23 | Bits to Banking · Umicom</title>
+<link href="../../assets/branding/umicom-icon-on-dark.svg" rel="icon" type="image/svg+xml"/>
+<link href="../../assets/umicom-learning.css" rel="stylesheet"/>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span aria-hidden="true" class="brand-divider">·</span> BITS TO BANKING</a>
+<nav aria-label="Course navigation" class="site-nav"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside aria-label="Recent lessons" class="toc"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html">76 · Qualify benchmark evidence</a>
+<a href="77-bind-positions-to-checkpoint-identity.html">77 · Bind checkpoint and position policy</a><a href="78-write-and-verify-position-sidecars.html">78 · Qualify positional sidecar</a><a href="79-admit-model-checkpoints-before-inference.html">79 · Admit approved checkpoints</a>
+<a href="80-qualify-policy-bound-generation-and-benchmarks.html">80 · Bind generation and benchmarks</a>
+<a aria-current="page" href="81-introduce-rotary-position-mathematics.html">81 · Rotary position mathematics</a>
+<a href="82-prove-single-block-rotary-kv-reuse.html">82 · Single-block rotary KV reuse</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 81 · NATIVE C23 · ROTARY POSITION MATHEMATICS</p>
+<h1>Introduce Rotary Position Mathematics in Native C23</h1><p class="lesson-lede">Rotate bounded C23 query and key vectors without altering existing decoder weights.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Understand why the current Umicom decoder cannot retain learned-absolute key/value rows after a context shift; derive rotary position embedding (RoPE) from ordinary two-dimensional rotation; apply a bounded C23 API; and explain why new mathematics requires a new, explicitly identified model and checkpoint family.</p>
+<h2>1. Understand the problem before optimising</h2>
+<p>In Lesson 80, Umicom binds every trained checkpoint to a declared positional strategy and a specific generation convention. The current decoder adds a <strong>learned absolute positional embedding</strong> to the token embedding at each position. Suppose its context capacity is four. Initially, token 1 occupies position 1; after the oldest token is evicted, it moves to position 0. Because its position embedding changes, its key and value may also change. Simply retaining the old key and value would no longer implement the same mathematical model.</p>
+<p>That observation is not a reason to discard earlier work. It tells us to create a different <em>future architecture</em>, while keeping established checkpoint compatibility intact. The previously trained learned-absolute model is not converted by this lesson, and <code>UmiAiTrainingPositionBoundCheckpointDecode</code> must continue rejecting an incompatible sidecar.</p>
+<figure><img src="../assets/diagrams/rotary-single-block-kv-study.svg" alt="Side-by-side comparison of learned absolute embedding rollover and a separate rotary first-block ring cache retaining original absolute token positions."><figcaption>Different positional mathematics permits a different caching policy; it does not rewrite existing checkpoints.</figcaption></figure>
+<h2>2. Rotate a vector pair</h2>
+<p>Imagine two values, <code>(a,b)</code>, as a point on graph paper. Rotating that point by an angle <code>θ</code> changes its coordinates without changing its length:</p>
+<pre><code>a' = a × cos(θ) − b × sin(θ)
+b' = a × sin(θ) + b × cos(θ)</code></pre>
+<p>RoPE applies such rotations to pairs of <em>query</em> and <em>key</em> channels. For pair index <code>j</code>, position <code>p</code> and even rotary width <code>d</code>, the angle in the new bounded research kernel is:</p>
+<pre><code>θ(p,j) = p × base^(−2j/d)</code></pre>
+<p>For four rotary channels and a base of 10,000, pair zero rotates by <code>p</code> radians while pair one rotates by <code>p/100</code> radians. At position one, the pair <code>(1,0)</code> becomes approximately <code>(0.540302, 0.841471)</code>. At position zero no rotation occurs.</p>
+<p>Any trailing non-rotary head channels pass through unchanged. The implementation uses finite double-precision intermediates, materialises FP32 outputs, and refuses input it cannot represent safely. It does not use a second tokenizer, sampler or random generator.</p>
+<h2>3. Why relative positions matter</h2>
+<p>For a query at position 6 and a key at position 2, their separation is four positions. Move both to positions 106 and 102: their separation is still four. The dot product of their mathematically rotated vectors is unchanged by this common shift, up to floating-point rounding. This is what enables attention scores to depend on relative separation while keeping absolute positions in the cache.</p>
+<p>The lesson's invariant concerns <strong>the Q/K rotation</strong>. It is not a proof that hidden representations in every transformer layer remain valid after earlier context tokens disappear. In deeper layers, retained token states may incorporate information from evicted tokens. This distinction will decide whether any subsequent cache optimisation is mathematically qualified.</p>
+<h2>4. Use the reusable Framework C23 primitive</h2>
+<p>The API lives in <code>include/umicom/ai/training/rotary_position.h</code> and its implementation in <code>src/ai/training/rotary_position.c</code>. Use the public interface rather than copying the angle formula into Studio, Trader, or an application plug-in.</p>
+<pre><code class="language-c">#include &quot;umicom/ai/training/rotary_position.h&quot;
+#include &lt;math.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const UmiAiTrainingRotaryConfig cfg = {4U, 4U, 10000.0};
+    const float query[4] = {1.0F, 0.0F, 0.2F, 0.7F};
+    const float key[4] = {0.5F, 0.3F, 0.4F, -0.1F};
+    float rotated[4] = {0};
+    double score = 0.0;
+    UmiStatus s = UmiAiTrainingRotaryRotate(&amp;cfg, query, 4U, 3U,
+                                             rotated, 4U);
+    if (s != UMI_STATUS_OK) return 1;
+    s = UmiAiTrainingRotaryRelativeDot(&amp;cfg, query, key, 4U,
+                                       3U, 1U, &amp;score);
+    if (s != UMI_STATUS_OK) return 1;
+    printf(&quot;rotated Q[0] = %.6f; unscaled Q.K = %.6f\n&quot;,
+           (double)rotated[0], score);
+    return 0;
+}</code></pre>
+<p><code>headChannels</code> and <code>rotaryChannels</code> are element counts, not byte lengths. The training laboratory bounds both to a maximum of 32 channels, requires an even rotary width, restricts the frequency base to [2, 1,000,000], and limits absolute positions to 1,048,576. A rejected call leaves the supplied output untouched; identical-buffer in-place rotation is supported through staging.</p>
+<h2>5. What this does not implement</h2>
+<p>This module is a <strong>mathematical building block</strong>, not a rotary-enabled training decoder. It cannot load existing Umicom model weights under new semantics, train a new rotary model, produce complete model logits, or certify end-to-end inference speed. The current decoder, its absolute-position embeddings, sampling APIs, checkpoint codec and 128-byte position sidecar remain unchanged.</p>
+<h2>6. Verify with real tests</h2>
+<p>The new <code>rotary_position</code> regression validates position zero, a known trigonometric rotation, unrotated channels, in-place output, relative-shift invariance and equal-position preservation of vector norm. The <code>rotary_rejections</code> regression tests malformed shapes, nonfinite values, unsupported positions and failure-atomic outputs. Both compile as native C23; the public headers can also be included from C++ adapters without changing the C ABI.</p>
+<h2>7. Practical exercises</h2>
+<ol><li>For the input pair <code>(0,1)</code>, calculate the output after one radian. Explain why the vector's length remains one.</li><li>Explain the practical difference between a token's fixed absolute index and its slot in a moving four-token window.</li><li>Why would changing the <code>positionEncoding</code> integer in an existing checkpoint declaration be unsafe?</li><li>Propose a test comparing two query/key pairs shifted equally by 100 positions. What numerical tolerance would you choose, and why?</li></ol>
+<p><strong>Key lesson:</strong> rotary position mathematics can make relative-position attention possible, but compatibility with an already trained model must be proved separately.</p>
+</article><nav aria-label="Lesson pagination" class="lesson-next"><a class="prev" href="80-qualify-policy-bound-generation-and-benchmarks.html"><small>← Previous</small>Qualify Policy-Bound Generation and Benchmarks</a><a class="next" href="82-prove-single-block-rotary-kv-reuse.html"><small>Next →</small>Prove Single-Block Rotary KV Reuse Through Rollover</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br/>Sammy Hegab · Service to Many Leads to Greatness.<br/>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>
