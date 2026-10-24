@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://umicom.foundation/schemas/education-source-record",
+  "title": "Umicom Bits2Banking source provenance and rights review",
+  "description": "Governance schema for future ingestion; validation of shape does not grant access or permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "origin",
+    "revision",
+    "source_uri",
+    "creator",
+    "licence",
+    "classification",
+    "publication_permission",
+    "training_permission",
+    "review_status"
+  ],
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9:._-]{3,127}$"
+    },
+    "origin": {
+      "enum": [
+        "original-authored",
+        "external-licensed",
+        "contributor-supplied",
+        "derived-approved"
+      ]
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "source_uri": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "creator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "licence": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "classification": {
+      "enum": [
+        "public",
+        "internal",
+        "confidential",
+        "restricted"
+      ]
+    },
+    "publication_permission": {
+      "enum": [
+        "not_assessed",
+        "approved",
+        "denied"
+      ]
+    },
+    "training_permission": {
+      "enum": [
+        "not_assessed",
+        "approved",
+        "denied"
+      ]
+    },
+    "review_status": {
+      "enum": [
+        "unreviewed",
+        "pending_review",
+        "approved",
+        "rejected"
+      ]
+    },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "parent_source_id": {
+      "type": "string"
+    },
+    "reviewer": {
+      "type": "string"
+    },
+    "review_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "consent_reference": {
+      "type": "string",
+      "maxLength": 1024
+    },
+    "evaluation_partition": {
+      "enum": [
+        "unassigned",
+        "train",
+        "validation",
+        "test",
+        "excluded"
+      ]
+    }
+  }
+}

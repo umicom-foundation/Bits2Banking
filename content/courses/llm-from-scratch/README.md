@@ -36,3 +36,25 @@ local security environment has been reviewed.
 The course's `assets/` are self-contained, including an officially derived
 Umicom vector mark. Framework remains the authoritative logo and learning
 runtime owner. See `../assets/branding/README.md`.
+
+## Complete catalogue and current source inventory (24 October 2026)
+
+The original 42-page design history above is preserved. The current reviewed
+Git tree contains **94 numbered LLM HTML lessons**. Start at
+[the complete Lesson 1–94 catalogue](all-lessons.html) for the entire reading
+path; the original [course home](index.html) and [course map](course-map.html)
+currently expose only Lessons 1–68 and are kept byte-for-byte unchanged in
+this additive release. Their full navigation integration remains a separate,
+source-preserving follow-up; the new catalogue closes the immediate discovery
+gap without shortening either original document.
+
+The machine-readable pathname inventory is
+`knowledge/inventories/course-html-pages.tsv` at the repository root. It is a
+path listing, **not** a claim that the listed pages have reviewed Markdown
+manuscripts, or that any material is authorised for AI training.
+
+The four relocated Markdown lessons (LLM 93–94; mathematics 19–20) are already
+committed under `content/lessons/` and the four old copies have been removed.
+This batch does **not** recreate old files, rename any lesson, or change their
+HTML content. A test-only native C23 inventory validator is available under
+`tests/content_integrity/`.

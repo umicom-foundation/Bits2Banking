@@ -15,3 +15,18 @@ This directory contains **references and governance metadata**, not duplicate ar
 5. Export a separate, explicitly approved and split training dataset **only after** completing a documented rights and governance review.
 
 This release does **not** ingest files, generate text, re-train a model or change production Framework code. None of the existing source material is deleted by the ZIP.
+
+## Supplementary HTML pathname inventory
+
+[`inventories/course-html-pages.tsv`](inventories/course-html-pages.tsv) lists
+all 94 existing LLM and 20 Mathematics HTML pages in a machine-readable format.
+It is only a location/coverage inventory. It does not override the stable-ID
+relations in `registries/education-links.json` and does not imply publication,
+provenance approval, editorial equivalence or AI-training permission.
+
+`schemas/source-record.schema.json` is a proposed metadata contract for
+individual original sources, including collection, licence, permission,
+classification, provenance and review state. A schema describing fields is
+not a cryptographic authenticity check; do not auto-admit a record for
+training because it is parseable JSON. Review requirements are documented in
+`governance/training-data-admission.md`.

@@ -35,3 +35,22 @@ are installed, check all relative links and inspect the result in a browser.
 `mkdocs.yml` and the production publishing workflow are intentionally left
 unchanged until the combined site navigation can be reviewed without risking
 existing books and published lessons.
+
+## Current course inventory — additive clarification
+
+The older "42 interconnected HTML pages" description above records the initial
+course release, not the current page count. At the reviewed revision, the
+repository contains 94 numbered LLM HTML lessons and 20 Mathematics for AI
+HTML units. The active course folders are `llm-from-scratch/` and
+`maths-for-ai/`.
+
+- **Canonical written lessons:** `content/lessons/<subject>/*.md`
+- **Browser course:** `content/courses/<course>/lessons/*.html` plus its
+  existing assets, style and course navigation.
+- **Video production:** `content/videos/scripts/<course>/*.md`
+- **Source relations and inventory:** `knowledge/`; administrative metadata
+  is allowed, but no copied article text or unrestricted training corpus.
+
+The complete 94-lesson browser catalogue is
+[`llm-from-scratch/all-lessons.html`](llm-from-scratch/all-lessons.html).
+Course index and map pages are preserved pending a separate full-file review.
