@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Protect checkpoint compatibility through a strict 128-byte record, independent SHA-256 checks and explicit policy admission." name="description"/>
+<meta content="#203247" name="theme-color"/>
+<title>Lesson 78 — Encode and Verify Portable Position Sidecars | Bits to Banking · Umicom</title>
+<link href="../../assets/branding/umicom-icon-on-dark.svg" rel="icon" type="image/svg+xml"/>
+<link href="../../assets/umicom-learning.css" rel="stylesheet"/>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span aria-hidden="true" class="brand-divider">·</span> BITS TO BANKING</a>
+<nav aria-label="Course navigation" class="site-nav"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside aria-label="Recent lessons" class="toc"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html">76 · Qualify benchmark evidence</a>
+<a href="77-bind-positions-to-checkpoint-identity.html">77 · Bind checkpoint and position policy</a><a aria-current="page" href="78-write-and-verify-position-sidecars.html">78 · Qualify positional sidecar</a><a href="../course-map.html">Complete course map</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 78 · NATIVE C23 · CHECKPOINT IDENTITY</p>
+<h1>Encode and Verify Portable Position Sidecars</h1><p class="lesson-lede">Protect checkpoint compatibility through a strict 128-byte record, independent SHA-256 checks and explicit policy admission.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Write and validate the native positional-compatibility sidecar, understand how portable binary schemas are defined without relying on the C compiler's structure layout, and distinguish a content digest from authentication. Use the existing decoder and prefix benchmark to qualify an inference experiment while preserving the original checkpoint and every caller-owned output on failure.</p>
+<h2>1. An explicit sidecar—not a modified checkpoint</h2>
+<p>The original Umicom native checkpoint format stores a specific decoder architecture and trainable parameters. It is a separate, existing Framework contract. Adding an unrecognised position field into that binary format would risk breaking older readers and generating misleading compatibility claims. For this stage, the more conservative engineering decision is a <strong>new 128-byte unsigned sidecar</strong> that describes how an approved checkpoint may be used.</p>
+<p>A sidecar is a small companion record stored separately from the model file. Think of the signed deployment manifest that identifies an executable without inserting new bytes into the executable itself. Here the record stores a model digest, shape, seed, completed optimiser steps, positional strategy, context policy and rollover rule. It is deliberately not part of the trained model.</p>
+<h2>2. Portable binary layout from first principles</h2>
+<p>A public C23 <code>struct</code> is not automatically a portable file format. Compilers may insert padding between members; machines can differ in endianness; <code>size_t</code> can be 32 or 64 bits. Therefore we must define the byte offsets explicitly and write multibyte integer fields in a chosen order. The new contract uses unsigned little-endian integers, an exact record length and SHA-256 digests.</p>
+<table><thead><tr><th>Offset (bytes)</th><th>Length</th><th>Content</th></tr></thead><tbody>
+<tr><td>0–7</td><td>8</td><td>Magic <code>UMIPOS01</code></td></tr>
+<tr><td>8–23</td><td>16</td><td>Format, positional encoding, context mode and rollover rule</td></tr>
+<tr><td>24–43</td><td>20</td><td>Five decoder dimensions</td></tr>
+<tr><td>44–47</td><td>4</td><td>Canonical checkpoint size in bytes</td></tr>
+<tr><td>48–63</td><td>16</td><td>Initial seed and completed optimiser steps</td></tr>
+<tr><td>64–95</td><td>32</td><td>Checkpoint SHA-256 digest</td></tr>
+<tr><td>96–127</td><td>32</td><td>SHA-256 digest of sidecar bytes 0–95</td></tr>
+</tbody></table>
+<p>The decoder dimensions are validated using the existing Framework KV-cache allocation planner. That allows the same shape validator to protect both live cache sizing and parsed sidecar metadata. A parser must reject unsupported versions, bad lengths, invalid channel/head combinations, corrupt record digests and unknown position strategies. It must not try to guess a compatible replacement.</p>
+<h2>3. Encode and decode with the actual Framework API</h2>
+<pre><code class="language-c">#include "umicom/ai/training/position_contract.h"
+
+UmiAiTrainingPositionContract record = {0};
+UmiAiTrainingPositionContract parsed = {0};
+uint8_t bytes[UMI_AI_POSITION_CONTRACT_RECORD_BYTES] = {0};
+size_t written = 0U;
+
+UmiStatus status = UmiAiTrainingPositionContractBuild(
+    model, UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED, &amp;record);
+if (status == UMI_STATUS_OK)
+    status = UmiAiTrainingPositionContractEncode(
+        &amp;record, bytes, sizeof(bytes), &amp;written);
+if (status == UMI_STATUS_OK)
+    status = UmiAiTrainingPositionContractDecode(
+        bytes, written, &amp;parsed);
+if (status == UMI_STATUS_OK)
+    status = UmiAiTrainingPositionContractVerify(
+        model, &amp;parsed, UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED);</code></pre>
+<p>This example assumes that <code>model</code> has already been created from an approved checkpoint. The buffer is caller-owned. The functions neither choose a filename nor write to disk. Umicom Studio, Umicom Trader and future consumers must use their own approved Framework storage and security policies when persisting the record.</p>
+<p>Notice that the output record is assigned only after every validation step succeeds. A malformed record does not partially replace the caller's structure. An undersized destination does not modify its bytes or length counter. These are examples of <em>failure-atomic</em> APIs: callers either receive one complete valid result or retain their original data.</p>
+<h2>4. A digest is not a signature</h2>
+<p>SHA-256 produces a 256-bit digest that will ordinarily change if the input bytes change. This is useful for detecting accidental corruption and making exact content comparisons. But a digest does not tell us <em>who</em> supplied the input. Anyone able to replace a sidecar can calculate another unkeyed digest for the replacement. Therefore the new sidecar is explicitly <strong>unsigned</strong>.</p>
+<p>To trust an external model, Umicom must separately verify its source and any signed release approval using the Framework's established security and publication services. Only then should the ordinary checkpoint codec accept the file. Decoding the positional sidecar is not a shortcut around that trust boundary. The demonstration creates its own local educational decoder rather than loading an unknown model from the network.</p>
+<h2>5. Pair positional admission with inference evidence</h2>
+<p>The Batch 75 benchmark compared the canonical decoder and growing-prefix session with identical inputs. It checked token parity and checkpoint byte preservation. The new position declaration adds a complementary control: the comparison must be attached to the model and context policy it actually used.</p>
+<pre><code class="language-c">/* Preconditions: approved model, prompt, policy and benchmark plan. */
+UmiAiTrainingPositionContract approval = {0};
+UmiAiTrainingPrefixBenchmarkResult evidence = {0};
+
+UmiStatus status = UmiAiTrainingPositionContractBuild(
+    model, UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED, &amp;approval);
+if (status == UMI_STATUS_OK)
+    status = UmiAiTrainingPositionContractVerify(model, &amp;approval,
+        UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED);
+if (status == UMI_STATUS_OK)
+    status = UmiAiTrainingPrefixBenchmarkRun(model,
+        promptIds, promptCount, &amp;sampling, &amp;plan, &amp;evidence);
+if (status == UMI_STATUS_OK)
+    status = UmiAiTrainingPositionContractVerify(model, &amp;approval,
+        UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED);</code></pre>
+<p>Include <code>umicom/ai/training/prefix_benchmark.h</code> to use the benchmark plan and evidence types. A production application should record the approved sidecar, benchmark build identity, compiler and hardware environment, elapsed wall-clock distributions, token fingerprints, row counts and any independently signed approval as <strong>separate evidence</strong>. A token-row reduction is not itself a guaranteed timing improvement.</p>
+<h2>6. Execute the experiment on Windows</h2>
+<p>After selectively merging the complete Framework files with Beyond Compare, configure the existing isolated native prefix laboratory. This uses the same Framework decoder and SHA-256 owner; no PowerShell script becomes part of the delivered application.</p>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+cmake -S '.\framework\learning\native-llm\prefix-work' `
+  -B '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw 'Configuration failed.' }
+cmake --build '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  --target umicom-native-llm-position-contract `
+           umicom-ai-training-position-contract-roundtrip-test `
+           umicom-ai-training-position-contract-rejections-test `
+           umicom-ai-training-position-contract-benchmark-test --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+ctest --test-dir '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -R '^framework\.ai\.training\.position_contract_' `
+  --output-on-failure --no-tests=error</code></pre>
+<p>The complete test project also includes earlier prefix-reuse, canonical-decoder parity and benchmarking regressions. Those older cases must continue to pass. Run the Release configuration and the full consolidated Framework tests separately before claiming platform-level integration. This book cannot assume your local Windows results.</p>
+<h2>7. A compatibility decision table</h2>
+<table><thead><tr><th>Observed input</th><th>Responsible result</th><th>Reason</th></tr></thead><tbody>
+<tr><td>Same checkpoint and declared context, authentic approved source.</td><td>Admit for the supported decoder.</td><td>Identity, policy and provenance align.</td></tr>
+<tr><td>Record length is 127 or 129 bytes.</td><td>Reject.</td><td>The portable format has exactly 128 bytes.</td></tr>
+<tr><td>Checksum changed or field rehashed with unsupported encoding.</td><td>Reject.</td><td>Unknown strategy cannot be interpreted safely.</td></tr>
+<tr><td>Model weights changed while declaration remained unchanged.</td><td>Reject.</td><td>Canonical checkpoint SHA-256 no longer matches.</td></tr>
+<tr><td>Valid unsigned record from an unknown publisher.</td><td>Do not treat it as trusted.</td><td>Hash agreement does not establish source authenticity.</td></tr>
+</tbody></table>
+<h2>8. Practical exercises</h2>
+<ol><li>Write out the first 24 bytes of a valid position record. What happens if a future record uses a new positional-encoding value?</li><li>Why must a parser compare decoded fields rather than cast raw bytes to a C structure?</li><li>Change one digest byte in a copy of the sidecar. Confirm that Decode rejects the record and preserves the output object.</li><li>Change the checkpoint's approved generation policy while keeping its SHA-256. Why does Verify reject the request?</li><li>Explain to an Umicom Studio contributor the difference between source authentication, checkpoint integrity, numerical parity and benchmark timing evidence.</li></ol>
+<p><strong>Key lesson:</strong> optimisation needs an explicit compatibility boundary. The model's positional mathematics, the caller's context convention and the bytes of the approved checkpoint must remain individually identifiable and independently verifiable.</p>
+</article><nav aria-label="Lesson pagination" class="lesson-next"><a class="prev" href="77-bind-positions-to-checkpoint-identity.html"><small>← Previous</small>Bind Position Policies to Native Checkpoint Identity</a><a class="next" href="../course-map.html"><small>Next →</small>Review All Lessons</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br/>Sammy Hegab · Service to Many Leads to Greatness.<br/>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

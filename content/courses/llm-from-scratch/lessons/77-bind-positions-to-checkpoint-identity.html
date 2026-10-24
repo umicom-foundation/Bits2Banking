@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Separate learned positional mathematics from context construction and reject silent model migrations." name="description"/>
+<meta content="#203247" name="theme-color"/>
+<title>Lesson 77 — Bind Position Policies to Native Checkpoint Identity | Bits to Banking · Umicom</title>
+<link href="../../assets/branding/umicom-icon-on-dark.svg" rel="icon" type="image/svg+xml"/>
+<link href="../../assets/umicom-learning.css" rel="stylesheet"/>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span aria-hidden="true" class="brand-divider">·</span> BITS TO BANKING</a>
+<nav aria-label="Course navigation" class="site-nav"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside aria-label="Recent lessons" class="toc"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html">76 · Qualify benchmark evidence</a>
+<a aria-current="page" href="77-bind-positions-to-checkpoint-identity.html">77 · Bind checkpoint and position policy</a><a href="78-write-and-verify-position-sidecars.html">78 · Qualify positional sidecar</a><a href="../course-map.html">Complete course map</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 77 · NATIVE C23 · POSITION COMPATIBILITY</p>
+<h1>Bind Position Policies to Native Checkpoint Identity</h1><p class="lesson-lede">Separate learned positional mathematics from context construction and reject silent model migrations.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Understand why positional-encoding strategy is part of a trained language model's identity, distinguish it from the way an application constructs the input context, and use a native C23 compatibility contract before Umicom Studio or another application starts a generation experiment. By the end of this lesson you will be able to explain why a checkpoint cannot simply be relabelled as a rotary-position model and why the same original weights can nevertheless support more than one explicitly named context policy.</p>
+<h2>1. Two independent decisions: model mathematics and context construction</h2>
+<p>In earlier lessons the decoder learned a <strong>position embedding</strong> for each time index. Each token embedding is combined with the learned embedding for its position before attention computes query, key and value representations. These learned weights are part of the model's numerical behaviour, not incidental metadata. Changing the position rule changes what the network computes, even if every other parameter remains equal.</p>
+<p>The <em>generation context policy</em> is a separate decision. The historical Umicom generator left-pads short prompts with beginning-of-sequence (BOS) tokens so that the decoder always receives exactly one full context window. The newer prefix session begins with the actual prompt tokens at time zero. Both are valid, explicitly different ways to call the <em>same</em> learned-absolute decoder. Because the token positions differ, the same seed and sampling policy do not guarantee identical outputs between the two modes.</p>
+<table><thead><tr><th>Question</th><th>Learned-position strategy</th><th>Context construction</th></tr></thead><tbody>
+<tr><td>What does it select?</td><td>How the trained decoder represents token positions.</td><td>Where the application places its prompt and retained history.</td></tr>
+<tr><td>Who owns it?</td><td>The model architecture, decoder training and checkpoint family.</td><td>The generation API chosen by the caller.</td></tr>
+<tr><td>Can it change without retraining?</td><td>Not to a mathematically different scheme without qualification.</td><td>Yes, if callers explicitly opt in and compare like with like.</td></tr>
+<tr><td>How is rolling handled today?</td><td>Learned absolute positions require rebasing moved tokens.</td><td>Both modes rebuild K/V after context eviction.</td></tr>
+</tbody></table>
+<h2>2. Worked example: a native assistant in Umicom Studio</h2>
+<p>Assume an eight-token native decoder receives the three byte tokens for <code>int</code>. The historical generator evaluates the complete context <code>BOS BOS BOS BOS BOS i n t</code>. The unpadded prefix session starts with <code>i n t</code>. In the first case <code>i</code> is at position 5; in the second it is at position 0. A token embedding combined with <code>position[5]</code> is generally different from one combined with <code>position[0]</code>. That difference can propagate through attention, normalisation, sampling probabilities and eventually generated source text.</p>
+<p>The two requests may reference the same 32-byte SHA-256 checkpoint digest because the model's weights have not changed. They must carry <strong>different generation-context declarations</strong>. Umicom Studio should display or record which mode was used when it presents a model evaluation or comparison. A result without that context is incomplete evidence.</p>
+<figure><img alt="The Framework hashes a canonical checkpoint, combines its identity with an explicit positional and context declaration, then verifies the model and requested context before inference." src="../assets/diagrams/position-contract-compatibility.svg"/><figcaption>The sidecar binds model identity to an explicit inference policy. Matching SHA-256 does not make two different context policies numerically equivalent.</figcaption></figure>
+<h2>3. The native C23 contract</h2>
+<p>Batch 77 introduces <code>position_contract.h</code> in the shared Umicom Framework. It does not replace the decoder or the existing generation APIs. It introduces a small declaration that an application may store alongside an <em>approved</em> model checkpoint.</p>
+<pre><code class="language-c">#include "umicom/ai/training/position_contract.h"
+
+/* model is an already-created, caller-owned Framework decoder. */
+UmiAiTrainingPositionContract approved = {0};
+UmiStatus status = UmiAiTrainingPositionContractBuild(
+    model, UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED, &amp;approved);
+if (status == UMI_STATUS_OK) {
+    /* This must succeed BEFORE using the prefix generation API. */
+    status = UmiAiTrainingPositionContractVerify(
+        model, &amp;approved,
+        UMI_AI_POSITION_CONTEXT_GROWING_UNPADDED);
+}</code></pre>
+<p>Build asks the canonical checkpoint codec for its actual size and encoded bytes, obtains the model configuration, and computes a SHA-256 digest through the existing Framework hashing service. The decoder is borrowed; the service does not train it, modify its weights, rewrite a checkpoint file or create a second model. After successfully staging the complete declaration, it publishes one caller-owned result.</p>
+<p>Verification performs a fresh canonical encoding of the live model. It compares decoder shape, training steps, initial seed, checkpoint byte count, content digest and requested context. A mismatch returns <code>UMI_STATUS_INVALID_STATE</code>. It does not silently switch context policy to make a request pass.</p>
+<h2>4. Why rotary positions need a different qualified model</h2>
+<p>Rotary position embeddings (RoPE) modify attention projections according to position-dependent rotations. This differs from adding a trainable absolute-position embedding to the token representation. Many modern decoder architectures employ RoPE, but the existence of that technique does not grant the current Umicom educational model RoPE-compatible parameters. Treating an existing checkpoint as RoPE because the name sounds faster would replace its function with another one.</p>
+<p>A future implementation should define a new model-architecture identity, establish how training and inference both compute rotations, explain which cache positions remain valid under a rolling window, and introduce a separately qualified checkpoint family. It must test forward logits, training gradients, checkpoint loading and exact generation semantics before claiming numerical equivalence or a performance benefit. The current sidecar therefore allows only <code>UMI_AI_POSITION_ENCODING_LEARNED_ABSOLUTE</code> and <code>UMI_AI_POSITION_ROLLOVER_REBUILD</code>. An unsupported encoding is refused rather than interpreted heuristically.</p>
+<h2>5. Practical exercise: classify the compatibility request</h2>
+<table><thead><tr><th>Request</th><th>Expected admission result</th><th>Reason</th></tr></thead><tbody>
+<tr><td>Same approved model, growing-prefix declaration, growing-prefix generation.</td><td>Accept if checksum and model identity match.</td><td>All declared semantics agree.</td></tr>
+<tr><td>Same approved model, growing-prefix declaration, BOS-left-padded generation.</td><td>Reject.</td><td>Context policy differs despite identical weights.</td></tr>
+<tr><td>Same model architecture, new weight checkpoint, old declaration.</td><td>Reject.</td><td>Checkpoint SHA-256 differs.</td></tr>
+<tr><td>Original learned-absolute checkpoint declared as a rotary model.</td><td>Reject.</td><td>No qualified decoder or checkpoint conversion exists.</td></tr>
+<tr><td>Unknown metadata version.</td><td>Reject.</td><td>Compatibility must be explicit, never assumed.</td></tr>
+</tbody></table>
+<p>These decisions are not performance measurements. They are preconditions for reliable evidence. Once a model and context policy are approved, the benchmark from Lesson 75 can measure the corresponding inference paths without mixing incompatible semantics.</p>
+<h2>6. Review questions</h2>
+<ol><li>Why does moving a token from position 5 to position 0 change the current decoder's numerical input?</li><li>Why may two explicitly different context declarations carry identical checkpoint hashes?</li><li>What additional training and checkpoint evidence would a real rotary-position decoder require?</li><li>How would you record model identity and generation policy in an Umicom Studio inference experiment?</li><li>Why is a position-policy check valuable even when the current decoder has only one supported positional strategy?</li></ol>
+<p><strong>Key lesson:</strong> position representation is learned model mathematics; prompt layout is an inference policy. Identify and verify both before interpreting generated output.</p>
+</article><nav aria-label="Lesson pagination" class="lesson-next"><a class="prev" href="76-qualify-benchmark-evidence.html"><small>← Previous</small>Qualify Timing Evidence and Protect Native Checkpoints</a><a class="next" href="78-write-and-verify-position-sidecars.html"><small>Next →</small>Encode and Verify Portable Position Sidecars</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br/>Sammy Hegab · Service to Many Leads to Greatness.<br/>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>
