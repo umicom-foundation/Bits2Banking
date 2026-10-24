@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Validate multi-head rotary derivatives, absolute positions and failure-atomic tensors." name="description"/>
+<meta content="#203247" name="theme-color"/>
+<title>Lesson 84 — Qualify Batched Rotary Forward and Backward Operations | Bits to Banking · Umicom</title>
+<link href="../../assets/branding/umicom-icon-on-dark.svg" rel="icon" type="image/svg+xml"/>
+<link href="../../assets/umicom-learning.css" rel="stylesheet"/>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span aria-hidden="true" class="brand-divider">·</span> BITS TO BANKING</a>
+<nav aria-label="Course navigation" class="site-nav"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside aria-label="Recent lessons" class="toc"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html">76 · Qualify benchmark evidence</a>
+<a href="77-bind-positions-to-checkpoint-identity.html">77 · Bind checkpoint and position policy</a><a href="78-write-and-verify-position-sidecars.html">78 · Qualify positional sidecar</a><a href="79-admit-model-checkpoints-before-inference.html">79 · Admit approved checkpoints</a>
+<a href="80-qualify-policy-bound-generation-and-benchmarks.html">80 · Bind generation and benchmarks</a>
+<a href="81-introduce-rotary-position-mathematics.html">81 · Rotary position mathematics</a>
+<a href="82-prove-single-block-rotary-kv-reuse.html">82 · Single-block rotary KV reuse</a>
+<a href="83-differentiate-rotary-position-in-c23.html">83 · RoPE gradient derivation</a>
+<a aria-current="page" href="84-qualify-batched-rotary-gradients.html">84 · Batched rotary gradients</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 84 · NATIVE C23 · TRAINING PREPARATION</p>
+<h1>Qualify Batched Rotary Forward and Backward Operations</h1><p class="lesson-lede">Move from one Q/K vector to bounded multi-head gradients with independent evidence.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>Qualify forward and backward RoPE calculations for multi-head batches, map each time step to the correct absolute token index, test memory ownership and failure-atomic output behaviour, and establish the precise remaining work before Umicom can claim to have a trainable rotary language model.</p>
+<h2>1. Move from one vector to a real training tensor shape</h2>
+<p>In Lesson 83, a projected query or key contained one head-sized vector. Transformer training processes batches and multiple attention heads. A practical C23 training interface therefore needs a well-defined row-major layout. The new <code>UmiAiTrainingRotaryTensorForward</code> and <code>UmiAiTrainingRotaryTensorBackward</code> APIs operate on a bounded tensor with logical shape <code>[batchCount, sequenceLength, attentionHeads, headChannels]</code>. The flattened storage has <code>tokenRows = batchCount × sequenceLength</code> rows and <code>attentionHeads × headChannels</code> columns.</p>
+<p>For example, with two independent sequences, six time steps, two heads and four channels per head, the buffer contains <code>2 × 6 × 2 × 4 = 96</code> float32 elements. One sequence might start at absolute position 0 and the other at 3071. The same trained projection weights can apply to each sequence, but the RoPE angle depends on that sequence's starting position and current time step.</p>
+<figure><img src="../assets/diagrams/rotary-forward-backward.svg" alt="Multi-head Q/K tensor forwards through one rotary owner and gradients return via its transpose, while decoder and checkpoint compatibility remain isolated."><figcaption>Projected query/key tensor operations are independently qualified before entering a trainable decoder graph.</figcaption></figure>
+<h2>2. Absolute positions are not array indices</h2>
+<p>A row index chooses a location in the in-memory tensor. An absolute position chooses an angle in the rotary embedding. They must not be conflated. For each row <code>r</code>, the current batch index is <code>r / sequenceLength</code> and its local time is <code>r % sequenceLength</code>. The position is <code>startPositions[batchIndex] + localTime</code>. The implementation validates that none of those sums exceeds the established RoPE limit.</p>
+<p>If no start-position array is supplied, all sequences begin at position zero. If one is supplied, it must contain exactly one entry for each batch sequence. This explicit rule prevents accidental sharing of position state between independent documents or customer conversations.</p>
+<h2>3. Reuse one mathematical owner for forward and reverse mode</h2>
+<p>Both batch functions dispatch to the Framework's existing per-vector rotary service. The forward function calls <code>UmiAiTrainingRotaryRotate</code> for each row and attention head. The backward function calls <code>UmiAiTrainingRotaryRotateAdjoint</code>. The batch module <strong>does not implement a second cosine/sine engine</strong>; nor does it train or own any decoder parameters.</p>
+<pre><code class="language-c">#include "umicom/ai/training/rotary_training.h"
+#include &lt;stdint.h&gt;
+
+int main(void)
+{
+    const UmiAiTrainingRotaryConfig cfg = {4U, 4U, 10000.0};
+    const uint64_t firstPositions[2] = {0U, UINT64_C(3071)};
+    float queries[96] = {0};       /* [2, 6, 2, 4] */
+    float rotated[96] = {0};
+    float upstream[96] = {0};
+    float inputGradient[96] = {0};
+
+    /* Normally queries come from a Framework training-tape projection,
+     * and upstream comes from that same tape's attention backward pass. */
+    for (size_t i = 0U; i &lt; 96U; ++i) {
+        queries[i] = (float)(i % 11U) * 0.03F;
+        upstream[i] = (float)(i % 7U) * 0.02F;
+    }
+    if (UmiAiTrainingRotaryTensorForward(&amp;cfg, queries, 12U,
+            6U, 2U, firstPositions, 2U, rotated, 96U) != UMI_STATUS_OK)
+        return 1;
+    if (UmiAiTrainingRotaryTensorBackward(&amp;cfg, upstream, 12U,
+            6U, 2U, firstPositions, 2U, inputGradient, 96U) != UMI_STATUS_OK)
+        return 2;
+    return 0;
+}</code></pre>
+<p>Every tensor dimension is an element count. The complete candidate output is staged before publication, so in-place calls are permitted and numerical errors do not expose half-written results. The bounded implementation handles no more than 16,384 float elements and 32 channels per row. Those limits belong to this educational laboratory, not a future production-scale LLM.</p>
+<h2>4. Use an independent adjoint identity</h2>
+<p>There is an especially useful numerical test for any linear transformation <code>R</code>. For arbitrary vectors <code>x</code> and <code>g</code>, <code>dot(Rx, g) = dot(x, Rᵀg)</code>. The left side uses the full forward batch output; the right side uses the backward output. Their difference should be very small for finite float32 values. This catches transpose errors even when no trainable model exists yet.</p>
+<p>The delivered <code>rotary_tensor</code> regression tests that identity with two distinct sequence offsets, two attention heads, in-place operations and explicit checks against individual scalar RoPE calls. The <code>rotary_gradients</code> regression additionally checks 56 combinations of configuration and query/key position, perturbing every relevant input component independently. The <code>rotary_training_rejections</code> regression verifies unchanged outputs after invalid positions, nonfinite values, overlapping result ranges and insufficient capacities.</p>
+<h2>5. Build and test with the real native C23 implementation</h2>
+<pre><code>Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+cmake -S '.\framework\learning\native-llm\prefix-work' `
+  -B '.\build\windows-ucrt64-native-llm-prefix-debug' -G Ninja `
+  -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw 'Configure failed.' }
+cmake --build '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  --target umicom-ai-training-rotary-gradients-test `
+           umicom-ai-training-rotary-tensor-test `
+           umicom-ai-training-rotary-training_rejections-test `
+           umicom-native-llm-rotary-gradients --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+ctest --test-dir '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -R '^framework\.ai\.training\.rotary_(gradients|tensor|training_rejections|gradients_demo)$' `
+  --output-on-failure --no-tests=error</code></pre>
+<p>The delivered regressions use the actual rotary source, not substituted rotation or derivative implementations. An isolated GCC/Clang validation cannot, by itself, establish that the complete production decoder, training tape and Windows application tree compile together. The project must still run the full lab and consolidated build in the approved Windows development environment.</p>
+<h2>6. What remains before a trained RoPE decoder</h2>
+<p>These results qualify a <em>building block</em>, not an end-to-end model. A separately identified trainable RoPE decoder still requires a tape-owned rotary operator with reverse-mode graph integration; full attention and feed-forward differentiation; a decoder configuration that deliberately omits learned absolute-position embedding weights; model-family-specific checkpoint encoding/decoding; training and evaluation parity; and inference/cache equivalence across the intended context policy.</p>
+<p>Equally importantly, RoPE does not guarantee that the upper layers of a multi-layer transformer can reuse retained hidden states after old tokens are evicted. Exact full-window equivalence can require recomputation of hidden representations in those layers. Position-correct caches and semantically equivalent attention states are different engineering claims and must be tested separately.</p>
+<h2>7. Practical exercises</h2>
+<ol>
+<li>For three sequences of eight tokens and four heads of four channels each, calculate the total projected tensor element count.</li>
+<li>In the second sequence with <code>startPositions[1]=120</code>, what absolute position is assigned to its seventh token?</li>
+<li>Explain why <code>dot(Rx,g)=dot(x,Rᵀg)</code> is a stronger test than only checking that an output has finite values.</li>
+<li>What happens if a 96-element caller buffer advertises capacity 95? Which memory may change?</li>
+<li>List the additional graph, checkpoint and multi-layer experiments needed before using this operator to train an AI assistant for Umicom Studio IDE.</li>
+</ol>
+<p><strong>Key lesson:</strong> a reliable trainable model is assembled from individually qualified forward and backward operators under explicit tensor, position, lifetime and checkpoint contracts.</p>
+</article><nav aria-label="Lesson pagination" class="lesson-next"><a class="prev" href="83-differentiate-rotary-position-in-c23.html"><small>← Previous</small>Differentiate Rotary Position Mathematics</a><a class="next" href="../course-map.html"><small>Next →</small>Review All Lessons</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br/>Sammy Hegab · Service to Many Leads to Greatness.<br/>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

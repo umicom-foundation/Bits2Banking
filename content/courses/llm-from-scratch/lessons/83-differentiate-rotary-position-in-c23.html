@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Derive analytic RoPE gradients and verify query/key derivatives independently." name="description"/>
+<meta content="#203247" name="theme-color"/>
+<title>Lesson 83 — Differentiate Rotary Position Mathematics in Native C23 | Bits to Banking · Umicom</title>
+<link href="../../assets/branding/umicom-icon-on-dark.svg" rel="icon" type="image/svg+xml"/>
+<link href="../../assets/umicom-learning.css" rel="stylesheet"/>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">UMICOM FOUNDATION <span aria-hidden="true" class="brand-divider">·</span> BITS TO BANKING</a>
+<nav aria-label="Course navigation" class="site-nav"><a href="../index.html">Home</a><a href="../start-here.html">Start here</a><a href="../course-map.html">Lessons</a><a href="../glossary.html">Glossary</a><a href="../labs.html">Labs</a></nav></div></header>
+<div class="reading-shell"><aside aria-label="Recent lessons" class="toc"><div class="toc-head"><b>THE LEARNING PATH</b></div><div class="toc-links"><h3>Generation, caching and qualification</h3>
+<a href="67-measure-decoder-and-kv-cache-work.html">67 · Count real decoder work</a>
+<a href="68-qualify-native-generation-performance.html">68 · Qualify a generation benchmark</a>
+<a href="69-reuse-kv-cache-within-a-growing-prefix.html">69 · Reuse a growing prefix</a>
+<a href="70-test-prefix-reuse-with-real-decoder.html">70 · Test prefix scheduling</a>
+<a href="71-qualify-canonical-decoder-kv-parity.html">71 · Compare canonical logits</a>
+<a href="72-test-learned-position-rollover.html">72 · Test rollover rebasing</a>
+<a href="73-stream-growing-prefix-generation-in-c23.html">73 · Stream an unpadded prefix</a>
+<a href="74-test-streaming-prefix-generation-parity.html">74 · Qualify prefix generation</a>
+<a href="75-benchmark-native-prefix-inference.html">75 · Measure real inference</a>
+<a href="76-qualify-benchmark-evidence.html">76 · Qualify benchmark evidence</a>
+<a href="77-bind-positions-to-checkpoint-identity.html">77 · Bind checkpoint and position policy</a><a href="78-write-and-verify-position-sidecars.html">78 · Qualify positional sidecar</a><a href="79-admit-model-checkpoints-before-inference.html">79 · Admit approved checkpoints</a>
+<a href="80-qualify-policy-bound-generation-and-benchmarks.html">80 · Bind generation and benchmarks</a>
+<a href="81-introduce-rotary-position-mathematics.html">81 · Rotary position mathematics</a>
+<a href="82-prove-single-block-rotary-kv-reuse.html">82 · Single-block rotary KV reuse</a>
+<a aria-current="page" href="83-differentiate-rotary-position-in-c23.html">83 · RoPE gradient derivation</a>
+<a href="84-qualify-batched-rotary-gradients.html">84 · Batched rotary gradients</a>
+<a href="../course-map.html">Complete course map</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 83 · NATIVE C23 · ROTARY GRADIENTS</p>
+<h1>Differentiate Rotary Position Mathematics in Native C23</h1><p class="lesson-lede">Prove the Jacobian-transpose rule before integrating RoPE into a trainable decoder.</p></header>
+<article class="article-content">
+<h2>Learning objectives</h2>
+<p>After this lesson, you should be able to derive the reverse-mode gradient of a rotary positional transform, distinguish a rotation's transpose from a second forward rotation, relate a scalar attention dot product to the gradients of its query and key, and explain why a numerical gradient check must precede integration into Umicom Framework's training tape.</p>
+<h2>1. Why position encoding must be differentiable</h2>
+<p>The previous two lessons examined inference: a query sees keys rotated at their original absolute positions and the single-block cache can keep previously projected rows after an old token leaves the context. Training requires a second direction of computation. The forward pass maps parameter-dependent projected queries and keys to attention scores; the backward pass must return the loss gradient through those rotations to the original projections. Without that derivative, a model could execute rotary attention but could not correctly train the query/key projection matrices.</p>
+<p>In Umicom's educational decoder, learnable parameters and reverse-mode automatic differentiation belong to the Framework training tape. The new RoPE research code is <strong>a forward/adjoint mathematical boundary for later tape integration</strong>, not a substitute optimiser or a complete language model. The existing learned-absolute decoder and its checkpoints remain untouched.</p>
+<figure><img src="../assets/diagrams/rotary-forward-backward.svg" alt="Training flow: original projected query and key vectors enter the shared rotary forward kernel, produce a scalar dot, and receive their gradients through the transposed rotation. The existing tape remains the eventual owner of a trainable graph."><figcaption>The forward operator maps projections to position-aware attention. Reverse mode sends loss gradients back through the transposed rotations.</figcaption></figure>
+<h2>2. Derive one rotary pair</h2>
+<p>For a two-channel vector <code>[x, y]</code>, let <code>c = cos(θ)</code> and <code>s = sin(θ)</code>. The forward transform is <code>[x·c − y·s, x·s + y·c]</code>. The angle depends on the absolute position and a configurable frequency schedule. Higher channel pairs rotate at progressively lower angular frequencies; a nonrotary tail passes through unchanged.</p>
+<pre><code>Forward:
+    [u]   [ cos(θ)  -sin(θ) ] [x]
+    [v] = [ sin(θ)   cos(θ) ] [y]
+
+Given upstream gradients du = ∂L/∂u and dv = ∂L/∂v:
+    ∂L/∂x =  du·cos(θ) + dv·sin(θ)
+    ∂L/∂y = -du·sin(θ) + dv·cos(θ)
+
+Backward:  inputGradient = R(θ)ᵀ · rotatedGradient</code></pre>
+<p>The second matrix is the <em>transpose</em> of the first; because a rotation is orthogonal, the transpose is also the inverse. Accidentally applying the forward rotation again is a subtle bug: it may pass tests at position zero (where the angle is zero) but fail when actual token positions advance. Therefore the regression suite includes multiple nonzero positions and full rotary and partially rotary head widths.</p>
+<h2>3. Derive the scalar query/key gradient</h2>
+<p>A single unscaled attention similarity is <code>d = dot(R(pq)·q, R(pk)·k)</code>. Here <code>pq</code> and <code>pk</code> are the <em>absolute</em> query and key positions, not ring-buffer slots. If a later loss contributes the scalar upstream gradient <code>g = ∂L/∂d</code>, the correct vector derivatives are:</p>
+<pre><code>∂L/∂q = g · R(pq)ᵀ · R(pk) · k
+∂L/∂k = g · R(pk)ᵀ · R(pq) · q</code></pre>
+<p>For full attention, the surrounding operator also differentiates the <code>1/sqrt(headChannels)</code> scale and softmax probabilities. This research module intentionally differentiates <strong>only the rotary dot and tensor rotation</strong>. It does not claim to implement softmax backpropagation or a complete transformer.</p>
+<p>The new Framework function <code>UmiAiTrainingRotaryDotBackward</code> obtains the forward rotations and their adjoints from the existing <code>rotary_position</code> owner. It accumulates intermediate scaling in double precision, checks that the final values fit float32, and publishes both result vectors only after every calculation succeeds. Overlapping query-gradient and key-gradient output ranges are rejected because those two distinct results cannot coexist in the same storage.</p>
+<h2>4. Use the native C23 contract</h2>
+<pre><code class="language-c">#include "umicom/ai/training/rotary_training.h"
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const UmiAiTrainingRotaryConfig cfg = {4U, 4U, 10000.0};
+    const float query[4] = {0.4F, -0.3F, 0.2F, 0.5F};
+    const float key[4] = {-0.1F, 0.4F, 0.8F, -0.2F};
+    float queryGradient[4] = {0};
+    float keyGradient[4] = {0};
+    double score = 0.0;
+
+    if (UmiAiTrainingRotaryRelativeDot(&amp;cfg, query, key, 4U,
+            UINT64_C(21), UINT64_C(18), &amp;score) != UMI_STATUS_OK)
+        return 1;
+    if (UmiAiTrainingRotaryDotBackward(&amp;cfg, query, key, 4U,
+            UINT64_C(21), UINT64_C(18), 1.0,
+            queryGradient, 4U, keyGradient, 4U) != UMI_STATUS_OK)
+        return 2;
+    printf("unscaled similarity=%.7f, first query derivative=%.7f\n",
+           score, (double)queryGradient[0]);
+    return 0;
+}</code></pre>
+<p>The parameter <code>1.0</code> is an illustrative upstream gradient, not a learning rate. Real training supplies the gradient that the loss and softmax operator computed. The example uses fixed vectors to expose mathematics; it does not train weights or write checkpoints.</p>
+<h2>5. Check the derivative independently</h2>
+<p>Analytical differentiation can be wrong while producing plausible-looking numbers. A <em>central finite difference</em> estimates one gradient component without calling the backward function. Perturb the original <code>q[i]</code> by a small <code>ε</code>, call the production <code>UmiAiTrainingRotaryRelativeDot</code> for both perturbations, and estimate <code>g·(score(q+ε)−score(q−ε))/(2ε)</code>. Compare it with the corresponding analytical component.</p>
+<p>Float32 rounding means a very tiny perturbation may vanish when added to an input. The bounded regression uses <code>ε = 0.001</code>, a documented absolute tolerance and a matrix of head widths, rotary widths, frequency bases and absolute positions. Checks cover derivatives with respect to both query and key. This is independent derivative evidence, not a comparison of two copies of the same backward code.</p>
+<h2>6. Ownership and correctness boundaries</h2>
+<p>All calls are synchronous, native C23 and memory-bounded. The existing decoder's learned absolute positions are never reinterpreted as RoPE. The operation does not read secret keys, invoke an external model, sample tokens or mutate global random state. Invalid inputs—including nonfinite gradients, oversized position indices or insufficient output capacities—leave caller buffers byte-for-byte unchanged.</p>
+<p>The reverse-mode derivative addresses <em>how gradients propagate</em>, not <em>when a multi-layer hidden state may be reused</em>. Later transformer layers can depend on tokens that have left the sliding window. RoPE alone does not prove their cache remains valid under context eviction; that question requires separately qualified layer-specific semantics.</p>
+<h2>7. Practical exercises</h2>
+<ol>
+<li>At angle zero, compute both the forward and adjoint transforms for the vector <code>[2, −1]</code>. Why is testing only this position inadequate?</li>
+<li>For a two-channel rotation with <code>cos(θ)=0</code> and <code>sin(θ)=1</code>, calculate the backward result for upstream gradient <code>[3, 4]</code>.</li>
+<li>Use two fixed query/key vectors and change both absolute positions by the same offset. Why should the rotary dot remain approximately invariant?</li>
+<li>Explain why the dot derivative above is not yet the derivative of a complete softmax attention block.</li>
+<li>Identify who owns projected tensors, gradient buffers, trained weights and checkpoint files in a future Umicom Studio AI assistant.</li>
+</ol>
+<p><strong>Key lesson:</strong> trainability requires an independently checked transpose-gradient operator, not merely an inference-time position transform.</p>
+</article><nav aria-label="Lesson pagination" class="lesson-next"><a class="prev" href="82-prove-single-block-rotary-kv-reuse.html"><small>← Previous</small>Prove Single-Block Rotary KV Reuse</a><a class="next" href="84-qualify-batched-rotary-gradients.html"><small>Next →</small>Qualify Batched Rotary Gradients</a></nav>
+</main></div>
+<footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br/>Sammy Hegab · Service to Many Leads to Greatness.<br/>Educational C23 model; not a production financial system.</div><div><a href="../course-map.html">Course map</a></div></div></footer>
+</body></html>

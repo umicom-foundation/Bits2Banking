@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 555" role="img" aria-labelledby="title desc">
+  <title id="title">Differentiable rotary position encoding</title>
+  <desc id="desc">The Framework's shared RoPE forward operator rotates projected query and key vectors at distinct absolute positions. The scalar query-key dot receives an upstream loss gradient. Reverse mode passes the gradient through the transpose of each original rotation. Future training-tape integration retains the same numerical owner. The legacy decoder and checkpoint format are not changed.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f2134"/><stop offset="100%" stop-color="#193e52"/></linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#6ad0df"/></marker>
+    <marker id="backArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#eab66b"/></marker>
+    <style>
+      .heading{font:700 27px system-ui,sans-serif;fill:#f1faff}
+      .sub{font:15px system-ui,sans-serif;fill:#c8e3ef}
+      .title{font:700 17px system-ui,sans-serif;fill:#f6fbff}
+      .detail{font:14px system-ui,sans-serif;fill:#dceaf5}
+      .math{font:700 16px ui-monospace,Consolas,monospace;fill:#ffffff}
+      .box{fill:#24435d;stroke:#81aec6;stroke-width:2}
+      .central{fill:#0c5965;stroke:#58e4dd;stroke-width:2.5}
+      .reverse{fill:#655039;stroke:#f1c67a;stroke-width:2}
+      .flow{fill:none;stroke:#6ad0df;stroke-width:3;marker-end:url(#arrow)}
+      .grad{fill:none;stroke:#eab66b;stroke-width:3;marker-end:url(#backArrow)}
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1140" height="555" rx="16" fill="url(#background)"/>
+  <text class="heading" x="40" y="50">RoPE forward and backward: one mathematical owner</text>
+  <text class="sub" x="40" y="80">Single-head illustration — the batch service applies these same operations independently per token and attention head</text>
+  <rect class="box" x="45" y="128" width="208" height="91" rx="12"/>
+  <text class="title" x="66" y="159">Projected query q</text>
+  <text class="detail" x="66" y="185">Absolute position pq</text>
+  <rect class="box" x="45" y="249" width="208" height="91" rx="12"/>
+  <text class="title" x="66" y="280">Projected key k</text>
+  <text class="detail" x="66" y="306">Absolute position pk</text>
+  <rect class="central" x="321" y="127" width="287" height="95" rx="12"/>
+  <text class="title" x="339" y="157">Framework RoPE rotate</text>
+  <text class="math" x="339" y="190">Rq = R(pq) · q</text>
+  <rect class="central" x="321" y="248" width="287" height="95" rx="12"/>
+  <text class="title" x="339" y="278">Framework RoPE rotate</text>
+  <text class="math" x="339" y="311">Rk = R(pk) · k</text>
+  <path class="flow" d="M253 173 H320"/>
+  <path class="flow" d="M253 294 H320"/>
+  <rect class="box" x="706" y="180" width="340" height="113" rx="12"/>
+  <text class="title" x="730" y="210">Unscaled attention similarity</text>
+  <text class="math" x="730" y="240">d = dot(Rq, Rk)</text>
+  <text class="detail" x="730" y="265">Downstream loss supplies g = ∂L/∂d</text>
+  <path class="flow" d="M608 173 H659 V213 H705"/>
+  <path class="flow" d="M608 294 H659 V262 H705"/>
+  <rect class="reverse" x="692" y="376" width="354" height="114" rx="12"/>
+  <text class="title" x="716" y="407">Backward: transpose rotations</text>
+  <text class="math" x="716" y="437">dq = g · R(pq)ᵀ · Rk</text>
+  <text class="math" x="716" y="468">dk = g · R(pk)ᵀ · Rq</text>
+  <path class="grad" d="M876 293 V375"/>
+  <rect class="reverse" x="321" y="392" width="287" height="85" rx="12"/>
+  <text class="title" x="339" y="423">Caller-owned input gradients</text>
+  <text class="detail" x="339" y="452">Validated, then published atomically</text>
+  <path class="grad" d="M691 436 H609"/>
+  <text class="sub" x="40" y="527">Training-tape integration is a later milestone · no change to existing learned-absolute checkpoints · no claim of multi-layer cache parity</text>
+</svg>
