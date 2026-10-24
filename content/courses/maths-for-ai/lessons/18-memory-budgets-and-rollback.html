@@ -1,0 +1,41 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Accessible mathematical foundations for native AI and LLM development, with worked numbers and explanations of every formula."><title>Unit 18: Memory budgets, peak allocation and safe rollback | Maths for AI · Bits to Banking</title><link rel="stylesheet" href="../assets/maths.css"></head><body>
+    <a class="skip" href="#main">Skip to lesson</a><header class="top"><strong>UMICOM FOUNDATION · BITS TO BANKING</strong><nav aria-label="Course navigation"><a href="../index.html">Maths for AI home</a><a href="../formulas.html">Formula dictionary</a><a href="../../llm-from-scratch/recent-lessons-69-92.html">Native LLM lessons</a></nav></header>
+    <div class="page"><aside class="side"><h2>Study support</h2><p>Use this lesson on its own, or return to it whenever a native AI topic becomes difficult.</p>
+    <div class="list"><a href="../lessons/03-vectors-and-dot-products.html">Vectors from the beginning</a><a href="../lessons/04-matrices-and-shapes.html">Matrices from the beginning</a><a href="../lessons/06-derivatives-and-chain-rule.html">Derivatives from the beginning</a><a href="../lessons/15-repeatability-and-precision.html">Numerical accuracy</a><a href="../formulas.html">Every formula, explained</a></div>
+    <p><strong>Learning method:</strong> a real problem, familiar numbers, a formula explained symbol-by-symbol, then a C23 example and a practice question.</p></aside><main id="main" class="main"><p class="kicker">FOUNDATION MATHEMATICS · UNIT 18 OF 18</p><h1>Memory budgets, peak allocation and safe rollback</h1><p class="lede">Understand why a training program must release temporary work after an error.</p>
+    <div class="note"><strong>Designed for all educational backgrounds.</strong> No previous university mathematics or AI experience is assumed. When a symbol is new, its meaning is explained before it is used.</div>
+
+<h2>1. A memory budget is like a spending limit</h2>
+<p>Suppose an Umicom application gives one process a budget for working memory. It must not allocate unlimited storage merely because it can calculate a result. The same principle applies to a training tape: tensor values, gradients and some saved intermediate information occupy memory.</p>
+<p>Memory accounting is not the same as the total memory reported by Windows Task Manager. The Framework's tape measurements describe specific tracked allocations that it owns, not every part of the process.</p>
+<h2>2. Current allocation versus the historic peak</h2>
+<table><thead><tr><th>Measurement</th><th>What it means</th><th>Example</th></tr></thead><tbody><tr><td>Current bytes</td><td>Storage currently retained by the tape</td><td>1,200 bytes</td></tr><tr><td>Peak bytes</td><td>Largest tracked current allocation reached so far</td><td>1,800 bytes</td></tr><tr><td>Budget bytes</td><td>Maximum permitted tracked allocation, when enabled</td><td>1,900 bytes</td></tr></tbody></table>
+<div class="formula"><span class="tag">Capacity rule</span><strong>currentBytes + requestedBytes ≤ budgetBytes</strong><span class="read">Current means memory already in use. Requested means the new allocation. Budget is the configured maximum. The ≤ sign means the combined amount must be no larger than the budget.</span></div>
+<p>For current 1,200 bytes, a request for 600 bytes and a 1,900-byte budget, 1,200+600=1,800≤1,900, so the request fits. A request for 800 bytes gives 2,000&gt;1,900 and should be refused.</p>
+<h2>3. Why rollback does not erase the peak</h2>
+<p>Imagine a calculation begins with 1,200 bytes. It briefly reaches 1,800 bytes and then an operation fails. The Framework releases the temporary nodes and returns to 1,200 bytes.</p>
+<div class="formula"><span class="tag">Rollback state</span><strong>current: 1,200 → 1,800 → 1,200; peak: 1,800</strong><span class="read">The arrows show the timeline. The <em>current</em> value decreases when allocations are released; the <em>peak</em> remains at 1,800 because it records the highest amount ever reached.</span></div>
+<p>The fact that the peak remains high is not evidence that memory has leaked. A leak investigation needs repeatable current allocations, lifetime checks and external tools.</p>
+<h2>4. Why an incomplete answer must never be published</h2>
+<p>Suppose the training calculation needs four stages. If stage three runs out of memory, the Framework must not return an apparently successful output from stage two. Otherwise a caller might mistake incomplete data for a correct result.</p>
+<p>A <em>failure-atomic</em> operation either publishes the complete new result or leaves the caller's published output unchanged. Intermediate allocations are released through the owning tape's rollback contract.</p>
+<h2>5. A simple C23 engineering check</h2>
+<pre><code>UmiAiTrainingTapeMemory before = {0};
+UmiAiTrainingTapeMemory after = {0};
+UmiStatus status = UmiAiTrainingTapeMemoryInspect(tape, &amp;before);
+if (status != UMI_STATUS_OK) return 1;
+/* Perform a Framework rotary operation and, on failure,
+   verify that rollback restored the expected retained nodes. */
+status = UmiAiTrainingTapeMemoryInspect(tape, &amp;after);
+if (status != UMI_STATUS_OK) return 1;
+</code></pre>
+<p>This is explanatory C23, not a complete executable test. The full regressions in the Framework package create real tensor handles, use the public memory-budget contract and check both the graph count and current allocation.</p>
+<h2>6. Why sanitiser testing is a separate check</h2>
+<p>A memory counter can look normal even if a program briefly reads beyond an array boundary. AddressSanitizer can detect many invalid accesses, while UndefinedBehaviourSanitizer checks additional classes of undefined behaviour. Neither replaces correct ownership rules or proves a program is free from all bugs.</p>
+<p>The Windows native build, Linux builds, and any sanitiser configuration must be reported independently. A successful test against an API-compatible demonstration does not establish that the production Framework passed.</p>
+<h2>7. Practice with worked answers</h2><ol><li>The current allocation is 1,250 bytes, the budget is 2,000 bytes and a new tensor needs 900 bytes. Does it fit?</li><li>A tape reaches 1,900 bytes, then rolls back to 1,250. What is the peak afterwards?</li><li>Why should an output pointer remain unchanged if the tape fails while assembling a result?</li></ol>
+<details class="answer"><summary>Reveal the worked answers</summary><p><strong>1.</strong> 1,250+900=2,150; it exceeds 2,000 and must be refused. <strong>2.</strong> The peak remains 1,900 bytes: it records the highest observed tracked allocation. <strong>3.</strong> Publishing only complete outputs prevents downstream software from using an incomplete, misleading result.</p></details>
+<p class="tip"><strong>Continue in the native LLM course:</strong> <a href="../../llm-from-scratch/lessons/92-measure-tape-memory-and-rewind.html">Lesson 92</a> checks the real Framework graph's memory budget, rollback and repeated rewind.</p>
+
+    <nav class="pagination" aria-label="Lesson pagination"><a href="17-backpropagation-from-a-small-example.html">← Previous mathematics unit</a><a href="../index.html">Next step →</a></nav>
+    </main></div><footer class="footer"><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></footer></body></html>

@@ -1,0 +1,64 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Accessible native C23 LLM engineering lesson with step-by-step mathematics and links to a beginner foundation course."><title>Lesson 92: Measure Tape Memory and Verify Safe Rewind | Bits to Banking · Umicom</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><div class="course-layout"><aside class="course-sidebar"><div class="sidebar-inner"><a href="../index.html">Native LLM course home</a><a href="../recent-lessons-69-92.html">Recent lessons 69–92</a><h3>Extra mathematics support</h3><a href="../../maths-for-ai/lessons/18-memory-budgets-and-rollback.html">Unit 18 · Memory and rollback</a><a href="../../maths-for-ai/lessons/16-tensor-shapes-and-indexing.html">Unit 16 · Tensor shapes</a><a href="../../maths-for-ai/lessons/15-repeatability-and-precision.html">Unit 15 · Precision</a><a href="../../maths-for-ai/formulas.html">Formula dictionary</a><a href="../../maths-for-ai/index.html">Mathematics from the beginning</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 92 · UMICOM FRAMEWORK · C23</p><h1>Measure Tape Memory and Verify Safe Rewind</h1><p class="lesson-lede">Test failure-atomic memory budgets and 48 repeated training passes without changing the existing decoder.</p></header><article class="article-content">
+<div class="bridge"><strong>For readers from any background:</strong> The mathematical operations are explained with ordinary numbers before the code is introduced. You can pause at the <a href="../../maths-for-ai/index.html">Mathematics for AI companion</a> and return to this exact lesson afterwards.</div>
+
+<h2>1. A training result must be correct <em>and</em> safely owned</h2>
+<p>Lesson 91 examined gradients. This lesson covers what happens when an operation runs out of its permitted memory, when a result needs to be discarded, and when the same tape is used repeatedly. These are engineering questions as important as the formula itself.</p>
+<p>Think of an Umicom Notes editor. If saving a document fails halfway through, the application should not silently replace a complete document with a partial file. A training-tape operation follows a similar rule: publish the complete new tensor only after all required work succeeds.</p>
+<h2>2. Three memory numbers explained</h2>
+<p>Suppose the tape starts with <strong>1,200 bytes</strong> of retained leaf tensors. A new operation temporarily needs <strong>600 more bytes</strong>. If the permitted budget is <strong>1,900 bytes</strong>, then it fits because 1,200+600=1,800≤1,900.</p>
+<div class="formula"><strong>current + requested ≤ budget</strong><p><strong>Current</strong> is the memory already retained, <strong>requested</strong> is the extra allocation, and <strong>budget</strong> is the maximum. The ≤ sign means “less than or equal to”. If the new request were 800 bytes, 1,200+800=2,000&gt;1,900, so it should be refused.</p></div>
+<p>Study <a href="../../maths-for-ai/lessons/18-memory-budgets-and-rollback.html">Maths Unit 18</a> for a full example that does not assume prior programming knowledge.</p>
+<h2>3. What does rollback mean?</h2>
+<p>During a complicated calculation, the tape may temporarily create several tensor nodes. A node contains an intermediate result and sometimes saved data needed to calculate gradients. If a later step fails, we must return to a known good earlier graph.</p>
+<figure class="diagram"><img src="../assets/diagrams/rotary-real-tape-lifecycle.svg" alt="A native tape keeps four original leaf tensors, temporarily creates rotary and loss nodes, and on successful rewind or failed operation returns to exactly the original four leaves." style="width:100%;height:auto"><figcaption>Intermediate graph nodes are temporary. The original leaf tensors remain owned by the same tape.</figcaption></figure>
+<p>The new budget regression sets a small memory limit through the **existing Framework API**, tries to assemble rotary attention and verifies that a failed attempt has not returned an incomplete result. It also checks that the tape's current tracked allocation and node count return to the exact saved baseline.</p>
+<h2>4. The peak does not decrease when memory is freed</h2>
+<div class="formula"><strong>current: 1,200 → 1,800 → 1,200; peak: 1,800</strong><p>The arrows show time passing. The temporary operation increases current usage, then rollback returns it to the starting value. Peak retains the highest historical usage, because it is a high-water mark.</p></div>
+<p>A high peak does not automatically mean a memory leak. A stable current value is helpful evidence, but not proof that every allocation and pointer is safe.</p>
+<h2>5. Why repeat a graph 48 times?</h2>
+<p>The new <code>rotary_real_tape_rewind</code> test retains the same four input tensors and repeats a forward calculation, backward gradient pass and graph rewind <strong>48 times</strong>. After each rewind it checks that only the original four leaf nodes remain.</p>
+<table><thead><tr><th>Checkpoint</th><th>Expected observation</th></tr></thead><tbody><tr><td>Before a calculation</td><td>Four original leaf nodes retained</td></tr><tr><td>During attention and loss</td><td>More nodes and greater current tracked memory</td></tr><tr><td>After rewind</td><td>Original four nodes and the original current allocation restored</td></tr><tr><td>Across all 48 passes</td><td>Finite gradients and stable peak for this fixed graph shape</td></tr></tbody></table>
+<p>The earlier learned-absolute-position decoder and its checkpoint compatibility policies are untouched. This is a training-tape component acceptance gate, not a new model.</p>
+<h2>6. Verify this with the native Framework APIs</h2>
+<pre><code>/* Full executable test is in the Batch 91–92 Framework package. */
+UmiAiTrainingTapeMemory before = {0};
+UmiAiTrainingTapeMemory after  = {0};
+size_t checkpoint = 0U;
+
+UmiStatus status = UmiAiTrainingTapeCheckpoint(tape, &amp;checkpoint);
+/* Check status before using any output. */
+status = UmiAiTrainingTapeMemoryInspect(tape, &amp;before);
+/* Compose rotary attention, loss and backpropagation. */
+status = UmiAiTrainingTapeRewind(tape, checkpoint);
+status = UmiAiTrainingTapeMemoryInspect(tape, &amp;after);
+/* after.currentBytes should equal before.currentBytes. */</code></pre>
+<p><code>checkpoint</code> is a saved node count, not a decoder model checkpoint file. The names are similar, but their purposes differ. The code above is a teaching excerpt, not a complete function with error handling.</p>
+<h2>7. Run the full Batch 91–92 acceptance gate</h2>
+<pre><code>Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+cmake -S '.\framework\learning\native-llm\prefix-work' `
+  -B '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw 'Configure failed.' }
+cmake --build '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  --target umicom-ai-training-rotary-real-tape-gradients-test `
+           umicom-ai-training-rotary-real-tape-budget-test `
+           umicom-ai-training-rotary-real-tape-rewind-test `
+           umicom-native-llm-real-rotary-tape `
+  --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+ctest --test-dir '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -R '^framework\.ai\.training\.rotary_real_tape_' `
+  --output-on-failure --no-tests=error
+if ($LASTEXITCODE -ne 0) { throw 'Tape acceptance test failed.' }</code></pre>
+<p>The exact build and machine-specific results must be recorded. A syntax-only compile check is not a production-tape run. A stable tape counter does not replace AddressSanitizer, UndefinedBehaviourSanitizer or leak checks.</p>
+<h2>8. Practice with worked answers</h2>
+<ol><li>Current memory is 1,250 bytes. A new operation needs 900 bytes, and the budget is 2,000. Can it proceed?</li><li>After a failed calculation returns current memory to 1,250, should the recorded historic peak of 1,900 also become 1,250?</li><li>Why do the tests check both a successful operation after lifting the budget and a failure while the budget is small?</li></ol>
+<details><summary>Reveal the worked solutions</summary><p><strong>1.</strong> 1,250+900=2,150; this is above 2,000, so it must be refused. <strong>2.</strong> No. Peak is the highest observed usage, not the current usage. <strong>3.</strong> Both behaviours matter: failure must leave state intact, and the system must still work correctly once an acceptable request is made.</p></details>
+<h2>9. What is next?</h2>
+<p>A dedicated efficient rotary tape operator can be considered only after the existing operator passes numerical, rollback and lifetime gates against the real production library. It would then need independent parity and gradient tests. There is still no complete RoPE-trained LLM, and the current single-block KV research does not prove correct reuse for all multi-layer contexts.</p>
+<p>For further study: <a href="../../maths-for-ai/lessons/16-tensor-shapes-and-indexing.html">tensor shapes</a>, <a href="../../maths-for-ai/lessons/17-backpropagation-from-a-small-example.html">gradients</a> and <a href="../../maths-for-ai/lessons/18-memory-budgets-and-rollback.html">memory ownership</a>.</p>
+
+</article><nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="91-qualify-the-production-rotary-training-tape.html"><small>← Previous</small>Lesson 91: Real tape qualification</a><a class="next" href="../recent-lessons-69-92.html"><small>Next →</small>Recent native LLM lessons</a></nav></main></div><footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 research; not production financial or language-model software.</div><div><a href="../../maths-for-ai/index.html">Maths foundation</a></div></div></footer></body></html>

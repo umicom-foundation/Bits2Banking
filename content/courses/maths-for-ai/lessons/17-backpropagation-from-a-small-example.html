@@ -1,0 +1,43 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Accessible mathematical foundations for native AI and LLM development, with worked numbers and explanations of every formula."><title>Unit 17: Backpropagation with one understandable example | Maths for AI · Bits to Banking</title><link rel="stylesheet" href="../assets/maths.css"></head><body>
+    <a class="skip" href="#main">Skip to lesson</a><header class="top"><strong>UMICOM FOUNDATION · BITS TO BANKING</strong><nav aria-label="Course navigation"><a href="../index.html">Maths for AI home</a><a href="../formulas.html">Formula dictionary</a><a href="../../llm-from-scratch/recent-lessons-69-92.html">Native LLM lessons</a></nav></header>
+    <div class="page"><aside class="side"><h2>Study support</h2><p>Use this lesson on its own, or return to it whenever a native AI topic becomes difficult.</p>
+    <div class="list"><a href="../lessons/03-vectors-and-dot-products.html">Vectors from the beginning</a><a href="../lessons/04-matrices-and-shapes.html">Matrices from the beginning</a><a href="../lessons/06-derivatives-and-chain-rule.html">Derivatives from the beginning</a><a href="../lessons/15-repeatability-and-precision.html">Numerical accuracy</a><a href="../formulas.html">Every formula, explained</a></div>
+    <p><strong>Learning method:</strong> a real problem, familiar numbers, a formula explained symbol-by-symbol, then a C23 example and a practice question.</p></aside><main id="main" class="main"><p class="kicker">FOUNDATION MATHEMATICS · UNIT 17 OF 18</p><h1>Backpropagation with one understandable example</h1><p class="lede">Follow a prediction, calculate its error and see how a gradient travels backwards.</p>
+    <div class="note"><strong>Designed for all educational backgrounds.</strong> No previous university mathematics or AI experience is assumed. When a symbol is new, its meaning is explained before it is used.</div>
+
+<h2>1. Why does a training system calculate gradients?</h2>
+<p>An AI training program adjusts numerical parameters called <em>weights</em>. The goal is usually to reduce a precisely defined error or <em>loss</em>. A <em>gradient</em> tells us how a small change to a weight would affect that loss. The word <em>backward</em> refers to calculating these effects from the final loss back through earlier operations.</p>
+<p>We can understand the idea using one number. No knowledge of matrix calculus is needed.</p>
+<h2>2. A two-step calculation</h2>
+<p>Suppose the first operation in a tiny model takes a weight <strong>w</strong> and produces a prediction <strong>p</strong>:</p>
+<div class="formula"><span class="tag">Forward calculation</span><strong>p = 2w + 1</strong><span class="read">w is the weight to train; p is the predicted result. “2w” means two multiplied by w. The +1 is a fixed offset.</span></div>
+<p>We want the prediction to equal a target of 5. We measure error using half the squared difference:</p>
+<div class="formula"><span class="tag">Loss</span><strong>L = (p − 5)² / 2</strong><span class="read">L is the loss. The superscript ² means multiply a number by itself. Divide by two to make the derivative arithmetic simpler; it does not change which prediction is best.</span></div>
+<p>With <strong>w=1</strong>, the prediction is p=2×1+1=<strong>3</strong>. The difference from the target is 3−5=−2. Square it: (−2)²=4. Divide by two: L=<strong>2</strong>.</p>
+<h2>3. Backward: find the effect of the weight</h2>
+<p>The prediction changes twice as fast as the weight because p=2w+1. The loss changes by the size of the prediction error, p−5. To connect these two effects, we multiply them.</p>
+<div class="formula"><span class="tag">Chain rule</span><strong>dL/dw = (dL/dp) × (dp/dw)</strong><span class="read">d means a small change. dL/dw asks how loss changes when w changes. dL/dp asks how loss changes when prediction p changes. dp/dw asks how prediction changes when w changes.</span></div>
+<p>Here dL/dp=p−5=3−5=<strong>−2</strong>, and dp/dw=<strong>2</strong>. Therefore dL/dw=(−2)×2=<strong>−4</strong>.</p>
+<p>The negative sign tells us that a small increase in w is expected to <em>decrease</em> the loss near w=1. It is not a promise that any arbitrarily large change will help.</p>
+<h2>4. Check the direction with a real number</h2>
+<p>Increase w from 1 to 1.1. The new prediction is 2×1.1+1=3.2. The new loss is (3.2−5)²/2=(−1.8)²/2=3.24/2=<strong>1.62</strong>. The loss fell from 2 to 1.62.</p>
+<table><thead><tr><th>Weight</th><th>Prediction</th><th>Loss</th></tr></thead><tbody><tr><td>1.0</td><td>3.0</td><td>2.00</td></tr><tr><td>1.1</td><td>3.2</td><td>1.62</td></tr><tr><td>1.2</td><td>3.4</td><td>1.28</td></tr></tbody></table>
+<p>We now understand what the backward result means without memorising notation.</p>
+<h2>5. How it connects to rotary attention</h2>
+<p>Real attention has more steps: projected queries and keys, position-aware rotations, scores, softmax weights and a final loss. Each intermediate result depends on earlier results. Reverse-mode automatic differentiation uses the chain rule repeatedly to find the effect of every trainable parameter.</p>
+<figure class="diagram"><img src="../assets/tape-gradient-flow.svg" alt="A four-stage left-to-right flow of weight to prediction to loss, then a right-to-left arrow labelled gradient returns information to the weight." style="width:100%;height:auto"><figcaption>The forward pass calculates a result. The backward pass follows the dependencies in reverse.</figcaption></figure>
+<p>A real <em>training tape</em> is the Framework's record of those operations and their gradients. It is an engineering data structure, not a video or a literal strip of tape.</p>
+<h2>6. Inspect the Framework C23 boundary</h2>
+<pre><code>/* Simplified excerpts of the established Umicom API: */
+UmiStatus status = UmiAiTrainingBackward(tape, loss);
+/* Once status == UMI_STATUS_OK, inspect the gradient
+   of a retained input tensor with a caller-owned buffer. */
+status = UmiAiTrainingTensorGradients(query, gradient, count);
+</code></pre>
+<p>In the production tape, the Framework owns the gradient memory. Applications request an approved copy; they must not reach into the private tape representation.</p>
+<h2>7. Practice with worked answers</h2><ol><li>With w=2, what prediction does p=2w+1 produce?</li><li>At w=2, what is L=(p−5)²/2?</li><li>What does a derivative of −4 suggest about making a <em>small</em> increase to the weight?</li></ol>
+<details class="answer"><summary>Reveal the worked answers</summary><p><strong>1.</strong> 2×2+1=5. <strong>2.</strong> (5−5)²/2=0. <strong>3.</strong> The local slope is negative, so increasing w slightly should initially decrease L. The conclusion is local; a large update can overshoot.</p></details>
+<p class="tip"><strong>Use this in engineering:</strong> <a href="../../llm-from-scratch/lessons/91-qualify-the-production-rotary-training-tape.html">LLM Lesson 91</a> compares derivatives calculated by the Framework against an independent numerical estimate.</p>
+
+    <nav class="pagination" aria-label="Lesson pagination"><a href="16-tensor-shapes-and-indexing.html">← Previous mathematics unit</a><a href="18-memory-budgets-and-rollback.html">Next step →</a></nav>
+    </main></div><footer class="footer"><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></footer></body></html>

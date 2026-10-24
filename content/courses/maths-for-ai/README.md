@@ -5,7 +5,7 @@ Part of **Bits to Banking**, Umicom Foundation. Author: Sammy Hegab.
 Open [`index.html`](index.html) in a web browser. All resources are local;
 no external fonts, network calls, scripts, account or login is required.
 
-The fifteen units begin with fractions and finish with reading the mathematics
+The eighteen units begin with fractions and finish with reading the mathematics
 behind native C23 transformer code. Every unit contains an accessible diagram,
 formula symbols explained in words, step-by-step numbers, one learner exercise
 and an expandable answer. Use it as a complete introductory course or jump to
@@ -34,3 +34,11 @@ tests. Open [`formulas.html`](formulas.html) for a one-page symbol dictionary.
 The latest independent tests are linked from native LLM Lessons 89–90. The
 existing training-tape, decoder and learned-absolute checkpoint code remain
 unchanged; this release adds integration qualification, not another model.
+
+## Units 16–18 (Batch 91–92)
+
+16. Tensor shapes and indexing (3×4 attention examples).
+17. Backpropagation from one two-stage numerical calculation.
+18. Training-tape memory, high-water marks and rollback.
+
+All mathematical expressions include symbol descriptions, concrete values, practice and worked answers. Links to native C23 LLM Lessons 91–92 preserve the connection to the engineering project.

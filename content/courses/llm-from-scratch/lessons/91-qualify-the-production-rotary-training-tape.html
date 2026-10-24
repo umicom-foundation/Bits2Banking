@@ -1,0 +1,62 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Accessible native C23 LLM engineering lesson with step-by-step mathematics and links to a beginner foundation course."><title>Lesson 91: Qualify the Real Rotary Training Tape | Bits to Banking · Umicom</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><div class="course-layout"><aside class="course-sidebar"><div class="sidebar-inner"><a href="../index.html">Native LLM course home</a><a href="../recent-lessons-69-92.html">Recent lessons 69–92</a><h3>Extra mathematics support</h3><a href="../../maths-for-ai/lessons/16-tensor-shapes-and-indexing.html">Unit 16 · Tensor shapes</a><a href="../../maths-for-ai/lessons/17-backpropagation-from-a-small-example.html">Unit 17 · Backpropagation</a><a href="../../maths-for-ai/lessons/14-independent-gradient-checks.html">Unit 14 · Numerical gradients</a><a href="../../maths-for-ai/formulas.html">Formula dictionary</a><a href="../../maths-for-ai/index.html">Mathematics from the beginning</a></div></aside>
+<main class="lesson" id="main"><header class="lesson-header"><p class="eyebrow">LESSON 91 · UMICOM FRAMEWORK · C23</p><h1>Qualify the Real Rotary Training Tape</h1><p class="lesson-lede">Verify gradient mathematics against the actual Framework tape, with every formula explained in ordinary language.</p></header><article class="article-content">
+<div class="bridge"><strong>For readers from any background:</strong> The mathematical operations are explained with ordinary numbers before the code is introduced. You can pause at the <a href="../../maths-for-ai/index.html">Mathematics for AI companion</a> and return to this exact lesson afterwards.</div>
+
+<h2>1. Why our next engineering step is verification, not another model</h2>
+<p>Earlier lessons introduced rotary position mathematics, a differentiable rotary-attention path and a small query/key training experiment. The next challenge is not writing another attention formula. It is establishing that the implementation works with <strong>the real Umicom Framework training tape</strong>, including its memory owner, lifetime rules, automatic differentiation and rollback behaviour.</p>
+<p>The Framework source remains the authority. The new tests link to the existing <code>Umicom::AiTraining</code> target, not a copied tape or a different numerical implementation. The original learned-absolute-position decoder and its checkpoint files are unchanged.</p>
+<h2>2. Read the tensor dimensions before the mathematics</h2>
+<p>Imagine three customer-service enquiries in Umicom Desk. A small experimental model represents each one by four numerical features. That gives a table with <strong>3 rows × 4 columns</strong>, or twelve numbers. For training, we use separate query and key tables with the same shape.</p>
+<div class="formula"><strong>shape = [3, 4] &nbsp; → &nbsp; 3 × 4 = 12 elements</strong><p><strong>3</strong> counts token rows; <strong>4</strong> counts channels (features) per row. Two attention heads each receive two channels because 4/2=2. These are experimental numerical features, not bank-account amounts or personal customer data.</p></div>
+<p>Need to practise shapes first? <a href="../../maths-for-ai/lessons/16-tensor-shapes-and-indexing.html">Maths Unit 16</a> explains tables, flat indexing and attention heads from the beginning.</p>
+<h2>3. What a gradient means, using one weight</h2>
+<p>Suppose we have a weight <strong>w=1</strong>, a prediction <strong>p=2w+1</strong> and a target value of 5. The prediction is 3. Define the loss as half the squared error: L=(p−5)²/2=2. A derivative tells us how the loss changes after a small weight adjustment. At w=1, the derivative is −4.</p>
+<div class="formula"><strong>dL/dw = (dL/dp) × (dp/dw) = (−2) × 2 = −4</strong><p><strong>L</strong> is the loss, <strong>p</strong> the prediction and <strong>w</strong> the weight. The symbol <strong>d</strong> introduces a rate of change. The negative sign tells us a small increase in this weight will initially reduce the loss.</p></div>
+<p>See <a href="../../maths-for-ai/lessons/17-backpropagation-from-a-small-example.html">Maths Unit 17</a> for every arithmetic step before returning to the Framework's multi-head query/key gradients.</p>
+<h2>4. Independently check a Framework gradient</h2>
+<p>The training tape calculates gradients by working backwards through the recorded operations. A second approach estimates the change numerically by evaluating the loss at two nearby values. It does not rely on the tape's backward logic.</p>
+<div class="formula"><strong>estimated gradient ≈ [L(w+h) − L(w−h)] / [(w+h) − (w−h)]</strong><p><strong>L</strong> is loss; <strong>w</strong> is one input component; <strong>h</strong> is a small positive test change (in this test, 0.002). The numerator is the change in measured loss. The denominator is the actual separation between the two represented FP32 input values.</p></div>
+<p>For the simple L=(p−5)²/2 example above, if w changes from 1 to 1.1, the loss drops from 2 to 1.62. A central-difference test is more accurate than this one-sided illustration because it measures on both sides of the same starting value.</p>
+<p>The new <code>rotary_real_tape_gradients</code> regression performs <strong>72 comparisons</strong>: twelve query and twelve key components, each checked at three different starting positions. Its specific absolute tolerance is 0.0020; this is not a universal rule for neural-network mathematics.</p>
+<h2>5. Trace the code without becoming lost in C syntax</h2>
+<pre><code>/* Simplified sequence of REAL Umicom Framework API calls. */
+UmiAiTrainingTape *tape = NULL;
+UmiStatus status = UmiAiTrainingTapeCreate(&amp;tape);
+/* Create query, key, value and target tensors on the tape. */
+/* Compose rotary attention and MSE; reject any failed step. */
+status = UmiAiTrainingBackward(tape, loss);
+if (status == UMI_STATUS_OK) {
+    status = UmiAiTrainingTensorGradients(query,
+                                         queryGradient, 12U);
+}
+/* Destroy the tape once after releasing all work owned by it. */
+UmiAiTrainingTapeDestroy(tape);</code></pre>
+<p>The <code>&amp;</code> character gives C access to a variable whose value a function must fill. The Framework remains the sole owner of the tape's internal memory. The small excerpt shows the intended order; the full test contains error checks, fresh tape creation for each comparison and a complete cleanup path.</p>
+<h2>6. A useful distinction: two independent things to verify</h2>
+<table><thead><tr><th>Check</th><th>Question it answers</th><th>Question it does not answer</th></tr></thead><tbody>
+<tr><td>Analytic vs numerical gradients</td><td>Does this tape's backward path agree with changes in its forward loss?</td><td>Is its forward attention formula independent of other mistakes?</td></tr>
+<tr><td>Earlier independent loss oracle (Lesson 89)</td><td>Does the forward loss agree with an independently written mathematical reference?</td><td>Will a very large future LLM be correct or fast?</td></tr>
+<tr><td>Memory and rollback tests (Lesson 92)</td><td>Does a failed graph operation preserve published state and release tracked nodes?</td><td>Can no other memory defect ever occur?</td></tr>
+</tbody></table>
+<p>These three checks support one another; none replaces all the others.</p>
+<h2>7. Practical exercise with answers</h2>
+<ol><li>How many numerical values are in three rows with four channels each?</li><li>Why do we change only one query or key value at a time when estimating its gradient?</li><li>If the numerical estimate is 0.0030 and the tape gives 0.0034, what is the absolute difference? Does it meet a 0.0020 threshold?</li></ol>
+<details><summary>Reveal the worked solutions</summary><p><strong>1.</strong> 3×4=12 values. <strong>2.</strong> Changing one value isolates its local effect on the loss, making the derivative meaningful. <strong>3.</strong> |0.0034−0.0030|=0.0004. Since 0.0004≤0.0020, it passes this test's stated absolute threshold.</p></details>
+<h2>8. Build and run the production-linked regression</h2>
+<pre><code>Set-Location 'C:\umicom\Umicom-Applications'
+$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path
+cmake -S '.\framework\learning\native-llm\prefix-work' `
+  -B '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+if ($LASTEXITCODE -ne 0) { throw 'Configure failed.' }
+cmake --build '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  --target umicom-ai-training-rotary-real-tape-gradients-test --parallel 2
+if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+ctest --test-dir '.\build\windows-ucrt64-native-llm-prefix-debug' `
+  -R '^framework\.ai\.training\.rotary_real_tape_gradients$' `
+  --output-on-failure --no-tests=error
+if ($LASTEXITCODE -ne 0) { throw 'Real-tape gradient test failed.' }</code></pre>
+<p>Do not describe production Windows integration as passing until this command actually succeeds on the target machine. The current exercise is a bounded component test, not a completed rotary decoder.</p>
+
+</article><nav class="lesson-next" aria-label="Lesson pagination"><a class="prev" href="90-test-real-tape-positions-and-lifetimes.html"><small>← Previous</small>Lesson 90: Tape lifecycle</a><a class="next" href="92-measure-tape-memory-and-rewind.html"><small>Next →</small>Lesson 92: Memory and rewind</a></nav></main></div><footer class="site-footer"><div class="footer-inner"><div><b>UMICOM FOUNDATION · BITS TO BANKING</b><br>Sammy Hegab · Service to Many Leads to Greatness.<br>Educational C23 research; not production financial or language-model software.</div><div><a href="../../maths-for-ai/index.html">Maths foundation</a></div></div></footer></body></html>
