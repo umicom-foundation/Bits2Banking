@@ -3,7 +3,7 @@
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab
 
-This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for Units 1–12 and 19–20. Units 13–18 remain fully readable in HTML while their written companions are prepared.
+This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
 
 ## A route from arithmetic to model training
 
@@ -23,17 +23,17 @@ Begin with familiar numbers and notation. Vectors and matrices then supply the l
 10. **Gradient descent and learning rates** — [Written lesson](10-gradient-descent-and-learning-rate.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/10-gradient-descent-and-learning-rate.html).
 11. **Matrix weights and training** — [Written lesson](11-matrix-weights-and-training.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/11-matrix-weights-and-training.html).
 12. **Finite differences and floating point** — [Written lesson](12-finite-differences-and-floating-point.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/12-finite-differences-and-floating-point.html).
-13. **Attention scores and causal masks** — [Illustrated HTML](../../courses/maths-for-ai/lessons/13-attention-scores-and-causal-masks.html).
-14. **Independent gradient checks** — [Illustrated HTML](../../courses/maths-for-ai/lessons/14-independent-gradient-checks.html).
-15. **Repeatability and precision** — [Illustrated HTML](../../courses/maths-for-ai/lessons/15-repeatability-and-precision.html).
-16. **Tensor shapes and indexing** — [Illustrated HTML](../../courses/maths-for-ai/lessons/16-tensor-shapes-and-indexing.html).
-17. **Backpropagation from a small example** — [Illustrated HTML](../../courses/maths-for-ai/lessons/17-backpropagation-from-a-small-example.html).
-18. **Memory budgets and rollback** — [Illustrated HTML](../../courses/maths-for-ai/lessons/18-memory-budgets-and-rollback.html).
+13. **Attention scores and causal masks** — [Written lesson](13-attention-scores-and-causal-masks.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/13-attention-scores-and-causal-masks.html).
+14. **Independent gradient checks** — [Written lesson](14-independent-gradient-checks.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/14-independent-gradient-checks.html).
+15. **Repeatability and precision** — [Written lesson](15-repeatability-and-precision.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/15-repeatability-and-precision.html).
+16. **Tensor shapes and indexing** — [Written lesson](16-tensor-shapes-and-indexing.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/16-tensor-shapes-and-indexing.html).
+17. **Backpropagation from a small example** — [Written lesson](17-backpropagation-from-a-small-example.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/17-backpropagation-from-a-small-example.html).
+18. **Memory budgets and rollback** — [Written lesson](18-memory-budgets-and-rollback.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/18-memory-budgets-and-rollback.html).
 19. **Evidence thresholds and uncertainty** — [Written lesson](19-evidence-thresholds-and-uncertainty.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/19-evidence-thresholds-and-uncertainty.html) · [Video script](../../videos/scripts/maths-for-ai/19-evidence-thresholds-and-uncertainty.md).
 20. **Matrix chain rule and computation graphs** — [Written lesson](20-matrix-chain-rule-and-computation-graphs.md) · [Illustrated HTML](../../courses/maths-for-ai/lessons/20-matrix-chain-rule-and-computation-graphs.html) · [Video script](../../videos/scripts/maths-for-ai/20-matrix-chain-rule-and-computation-graphs.md).
 
 ## Reading mathematics alongside the native LLM course
 
-The introductory units explain calculations used later in the C23-based lessons. Continue with [native inference and cache semantics](../10-native-ai/63-qualify-kv-cached-nucleus-generation.md), [canonical-decoder parity](../10-native-ai/71-qualify-canonical-decoder-kv-parity.md) and [unpadded prefix streaming](../10-native-ai/73-stream-growing-prefix-generation-in-c23.md), or use [Lesson 93](../10-native-ai/93-check-real-tape-evidence.md) for numerical acceptance evidence and [Lesson 94](../10-native-ai/94-plan-a-fused-rotary-tape-operator.md) for gradient propagation.
+The introductory units explain calculations used later in the C23-based lessons. The [low-rank fine-tuning lesson](../10-native-ai/train-a-frozen-projection-with-low-rank-adapters.md) applies shapes, gradients and memory ownership to one reusable Framework component. Continue with [native inference and cache semantics](../10-native-ai/63-qualify-kv-cached-nucleus-generation.md), [canonical-decoder parity](../10-native-ai/71-qualify-canonical-decoder-kv-parity.md) and [unpadded prefix streaming](../10-native-ai/73-stream-growing-prefix-generation-in-c23.md), or use [Lesson 93](../10-native-ai/93-check-real-tape-evidence.md) for numerical acceptance evidence and [Lesson 94](../10-native-ai/94-plan-a-fused-rotary-tape-operator.md) for gradient propagation.
 
 The [formula dictionary](../../courses/maths-for-ai/formulas.html) supplies further definitions. The classroom examples are illustrative mathematics, not investment advice or a source of real transaction statistics.
