@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Umicom Foundation: accessible native C23 AI engineering and mathematics, with worked examples and exercises."><title>Native LLM 220 — Reuse cached key and value projections | Bits2Banking</title><style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f3f7fb;color:#172a3b;font:17px/1.7 system-ui,-apple-system,Segoe UI,sans-serif}a{color:#005d88}a:hover,a:focus-visible{text-decoration:underline}header{background:#17354d;color:white;padding:2.4rem max(1.2rem,calc((100vw - 990px)/2))}header a{color:#d7f1ff}main{max-width:990px;margin:1.5rem auto;padding:2.2rem;background:white;border:1px solid #d5e3ea;border-radius:13px}h1{font-size:2.15rem;line-height:1.2;margin:.5rem 0}h2{line-height:1.3;margin-top:2.5rem;color:#0e4865}p,li{max-width:84ch}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#162b3a;color:#e3f7ff;padding:1.1rem;border-radius:8px}code{font-family:ui-monospace,Consolas,monospace}p code,li code{padding:.11em .28em;background:#eaf2f7;border-radius:4px;color:#102b45}details{margin-top:1rem;background:#eaf7f7;border:1px solid #c9e6e3;border-radius:8px;padding:1rem}summary{cursor:pointer;font-weight:700}nav{margin:1.2rem 0;padding:1rem;background:#edf4f9;border-radius:8px}nav a{margin-right:1rem}footer{text-align:center;padding:2rem;color:#475c69}table{border-collapse:collapse;width:100%}th,td{border:1px solid #cbdde8;padding:.65rem;text-align:left}@media(max-width:700px){main{margin:0;padding:1.1rem;border-radius:0}header{padding:1.25rem}h1{font-size:1.75rem}}@media print{body{background:white}main{border:0}header{background:white;color:black;padding:1rem}pre{color:black;background:#f5f5f5}}
+</style></head><body><header><small>Umicom Foundation · Bits to Banking · Native LLM 220</small><h1>Reuse cached key and value projections</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header><main id="content"><nav aria-label="Lesson navigation"><a href="219-prefill-from-the-authoritative-transformer.html">← Previous</a> <a href="221-normalise-the-new-token-without-changing-the-model.html">Next →</a> <a href="../incremental-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/220-reuse-cached-key-and-value-projections.md">Editable Markdown</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab<br />
+<strong>Language:</strong> Native C23 · <strong>Level:</strong> Building beyond the introductory Transformer.</p>
+<p><strong>Learning objective:</strong> Follow an actual C23 one-token proposal without implementing a second neural kernel.</p>
+<h2>1. The engineering question</h2>
+<p>The new token uses the original Framework <code>EmbeddingLookup</code>, <code>LayerNorm</code> and <code>Matmul</code> operations to calculate query, key and value. The earlier rows are read from <code>UmiAiTrainingStackedKvStore</code>. Only the new row has fresh Q/K/V projections; previous K/V are not regenerated in the proposal.</p>
+<h2>2. Work through a concrete example</h2>
+<p>If a layer has retained three K/V rows, the step computes one new 1×C query, key and value, then builds a four-row attention input. The old three K/V rows are copied from cache; the fourth row comes from the live projection.</p>
+<h2>3. How Umicom Framework implements the idea</h2>
+<p><code>UmiAiTrainingStackedKvStepPropose</code> uses the private decoder parameter ordering already defined by Framework. The training tape owns numerical execution and temporary allocations; <code>TapeRollback</code> removes the transient graph after the result is copied.</p>
+<p>The relevant public contract is <code>umicom/ai/training/stacked_kv_step.h</code>. The native implementation and numerical tests belong to Umicom Framework; this manuscript does not introduce an alternative application-local training or inference service. The training tape owns mathematical operators and tensor lifetimes, while consumers use explicit C23 handles and status results.</p>
+<h2>4. Check the mathematical foundation</h2>
+<p>For a step-by-step explanation of the arithmetic, read <a href="../../maths-for-ai/lessons/114-calculate-one-query-attention-by-hand.html">Mathematics Unit 114</a>. Keep tensor <strong>shape</strong>, <strong>absolute position</strong>, <strong>model checkpoint identity</strong> and <strong>actual executed work</strong> distinct when describing a cache.</p>
+<h2>5. Practice and verify</h2>
+<p><strong>Question:</strong> Why is retaining only K and V sufficient when the next token attends to earlier tokens?</p>
+<details>
+<summary>Reveal the worked explanation</summary>
+<p>The next query is calculated from the new token. Attention compares it with earlier K values and combines their V vectors. Old queries are not required for the new token’s weighted result.</p>
+</details>
+<h2>6. Limits and responsible interpretation</h2>
+<p>The current tape attention primitive computes additional placeholder query rows, so fewer Q/K/V projections do not automatically mean faster latency.</p>
+<p>A passing test in an isolated demonstration is not a production integration result. Evaluate against the actual Framework checkout and document any numerical or timing limitations before making deployment claims.</p>
+<h2>Continue learning</h2>
+<p><a href="219-prefill-from-the-authoritative-transformer.html">Previous lesson</a> · <a href="221-normalise-the-new-token-without-changing-the-model.html">Next lesson</a> · <a href="../incremental-attention-learning-path.html">Browser learning path</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+<nav aria-label="Continue reading"><a href="219-prefill-from-the-authoritative-transformer.html">← Previous</a> <a href="221-normalise-the-new-token-without-changing-the-model.html">Next →</a> <a href="../incremental-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/220-reuse-cached-key-and-value-projections.md">Editable Markdown</a></nav></main><footer>Sammy Hegab · Umicom Foundation · MIT educational manuscript · Not a claim of production-model verification.</footer></body></html>

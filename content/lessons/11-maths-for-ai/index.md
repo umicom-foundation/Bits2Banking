@@ -3,7 +3,7 @@
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab
 
-This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus advanced Markdown-only units through Unit 104 covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
+This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus advanced Markdown and HTML companion units through Unit 124 covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
 
 ## A route from arithmetic to model training
 
@@ -124,6 +124,36 @@ The original illustrated course through [Unit 20](../../courses/maths-for-ai/ind
 102. **Keep Softmax Numerically Stable** — [Written lesson](102-keep-softmax-numerically-stable.md) · [HTML companion](../../courses/maths-for-ai/lessons/102-keep-softmax-numerically-stable.html).
 103. **Compare Full-Context and Prefix Work** — [Written lesson](103-compare-full-context-and-prefix-work.md) · [HTML companion](../../courses/maths-for-ai/lessons/103-compare-full-context-and-prefix-work.html).
 104. **Distinguish Latency From Workload** — [Written lesson](104-distinguish-latency-from-workload.md) · [HTML companion](../../courses/maths-for-ai/lessons/104-distinguish-latency-from-workload.html).
+
+## Units 105–112: Mathematics of projection capture
+
+105. **Count every K/V projection element** — [Written unit](105-count-projection-tensor-elements.md) · [HTML companion](../../courses/maths-for-ai/lessons/105-count-projection-tensor-elements.html).
+106. **Compare fixed-position prefix rows numerically** — [Written unit](106-compare-multilayer-prefix-rows.md) · [HTML companion](../../courses/maths-for-ai/lessons/106-compare-multilayer-prefix-rows.html).
+107. **Understand frozen checkpoint fingerprints** — [Written unit](107-interpret-frozen-checkpoint-identities.md) · [HTML companion](../../courses/maths-for-ai/lessons/107-interpret-frozen-checkpoint-identities.html).
+108. **Measure numerical error without claiming speed** — [Written unit](108-measure-error-without-claiming-speed.md) · [HTML companion](../../courses/maths-for-ai/lessons/108-measure-error-without-claiming-speed.html).
+109. **Separate stored K/V rows from executed token-layer work** — [Written unit](109-separate-stored-from-executed-token-rows.md) · [HTML companion](../../courses/maths-for-ai/lessons/109-separate-stored-from-executed-token-rows.html).
+110. **Check layer-major address arithmetic** — [Written unit](110-check-layer-major-address-arithmetic.md) · [HTML companion](../../courses/maths-for-ai/lessons/110-check-layer-major-address-arithmetic.html).
+111. **Understand temporary graph memory and rollback** — [Written unit](111-understand-memory-rollback-and-peak.md) · [HTML companion](../../courses/maths-for-ai/lessons/111-understand-memory-rollback-and-peak.html).
+112. **Design controlled inference benchmarks** — [Written unit](112-design-controlled-inference-benchmarks.md) · [HTML companion](../../courses/maths-for-ai/lessons/112-design-controlled-inference-benchmarks.html).
+
+The corresponding existing [browser study route](../../courses/maths-for-ai/projection-capture-maths.html) remains available.
+
+## Units 113–124: Mathematics of incremental inference
+
+113. **Count multi-layer Q/K/V tensor shapes** — [Written unit](113-count-multilayer-qkv-tensor-shapes.md) · [HTML companion](../../courses/maths-for-ai/lessons/113-count-multilayer-qkv-tensor-shapes.html).
+114. **Calculate one-query causal attention by hand** — [Written unit](114-calculate-one-query-attention-by-hand.md) · [HTML companion](../../courses/maths-for-ai/lessons/114-calculate-one-query-attention-by-hand.html).
+115. **Keep softmax stable by subtracting the maximum** — [Written unit](115-keep-softmax-stable-by-subtracting-the-maximum.md) · [HTML companion](../../courses/maths-for-ai/lessons/115-keep-softmax-stable-by-subtracting-the-maximum.html).
+116. **Extract the last attention row with a selector** — [Written unit](116-extract-the-last-attention-row-with-a-selector.md) · [HTML companion](../../courses/maths-for-ai/lessons/116-extract-the-last-attention-row-with-a-selector.html).
+117. **Calculate layer normalisation by hand** — [Written unit](117-calculate-layer-normalisation-by-hand.md) · [HTML companion](../../courses/maths-for-ai/lessons/117-calculate-layer-normalisation-by-hand.html).
+118. **Follow residual connections and ReLU** — [Written unit](118-follow-residual-connections-and-relu.md) · [HTML companion](../../courses/maths-for-ai/lessons/118-follow-residual-connections-and-relu.html).
+119. **Measure logit parity with an absolute tolerance** — [Written unit](119-measure-logit-parity-with-an-absolute-tolerance.md) · [HTML companion](../../courses/maths-for-ai/lessons/119-measure-logit-parity-with-an-absolute-tolerance.html).
+120. **Understand seeded nucleus sampling** — [Written unit](120-understand-seeded-nucleus-sampling.md) · [HTML companion](../../courses/maths-for-ai/lessons/120-understand-seeded-nucleus-sampling.html).
+121. **Separate projection work from attention work** — [Written unit](121-separate-projection-work-from-attention-work.md) · [HTML companion](../../courses/maths-for-ai/lessons/121-separate-projection-work-from-attention-work.html).
+122. **Distinguish byte tokens from UTF-8 characters** — [Written unit](122-distinguish-byte-tokens-from-utf8-characters.md) · [HTML companion](../../courses/maths-for-ai/lessons/122-distinguish-byte-tokens-from-utf8-characters.html).
+123. **Count full-window rollovers correctly** — [Written unit](123-count-full-window-rollovers-correctly.md) · [HTML companion](../../courses/maths-for-ai/lessons/123-count-full-window-rollovers-correctly.html).
+124. **Compare Release timings with uncertainty** — [Written unit](124-compare-release-timings-with-uncertainty.md) · [HTML companion](../../courses/maths-for-ai/lessons/124-compare-release-timings-with-uncertainty.html).
+
+These units complement the [full browser study route](../../courses/maths-for-ai/incremental-attention-mathematics.html). The original illustrated units and previous manuscripts remain unchanged.
 
 ## Reading mathematics alongside the native LLM course
 

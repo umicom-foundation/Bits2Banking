@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Umicom Foundation: accessible native C23 AI engineering and mathematics, with worked examples and exercises."><title>Native LLM 221 — Normalise the new token without changing the model | Bits2Banking</title><style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f3f7fb;color:#172a3b;font:17px/1.7 system-ui,-apple-system,Segoe UI,sans-serif}a{color:#005d88}a:hover,a:focus-visible{text-decoration:underline}header{background:#17354d;color:white;padding:2.4rem max(1.2rem,calc((100vw - 990px)/2))}header a{color:#d7f1ff}main{max-width:990px;margin:1.5rem auto;padding:2.2rem;background:white;border:1px solid #d5e3ea;border-radius:13px}h1{font-size:2.15rem;line-height:1.2;margin:.5rem 0}h2{line-height:1.3;margin-top:2.5rem;color:#0e4865}p,li{max-width:84ch}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#162b3a;color:#e3f7ff;padding:1.1rem;border-radius:8px}code{font-family:ui-monospace,Consolas,monospace}p code,li code{padding:.11em .28em;background:#eaf2f7;border-radius:4px;color:#102b45}details{margin-top:1rem;background:#eaf7f7;border:1px solid #c9e6e3;border-radius:8px;padding:1rem}summary{cursor:pointer;font-weight:700}nav{margin:1.2rem 0;padding:1rem;background:#edf4f9;border-radius:8px}nav a{margin-right:1rem}footer{text-align:center;padding:2rem;color:#475c69}table{border-collapse:collapse;width:100%}th,td{border:1px solid #cbdde8;padding:.65rem;text-align:left}@media(max-width:700px){main{margin:0;padding:1.1rem;border-radius:0}header{padding:1.25rem}h1{font-size:1.75rem}}@media print{body{background:white}main{border:0}header{background:white;color:black;padding:1rem}pre{color:black;background:#f5f5f5}}
+</style></head><body><header><small>Umicom Foundation · Bits to Banking · Native LLM 221</small><h1>Normalise the new token without changing the model</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header><main id="content"><nav aria-label="Lesson navigation"><a href="220-reuse-cached-key-and-value-projections.html">← Previous</a> <a href="222-understand-head-local-causal-attention.html">Next →</a> <a href="../incremental-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/221-normalise-the-new-token-without-changing-the-model.md">Editable Markdown</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab<br />
+<strong>Language:</strong> Native C23 · <strong>Level:</strong> Building beyond the introductory Transformer.</p>
+<p><strong>Learning objective:</strong> Identify the exact forward sequence reused for new-token query, key and value calculations.</p>
+<h2>1. The engineering question</h2>
+<p>The pre-layer-normalised Transformer applies a learned affine layer normalisation to the incoming hidden state, then derives the three projections by matrix multiplication. Using different epsilon, affine weights or operand order would change logits and invalidate the new inference path.</p>
+<h2>2. Work through a concrete example</h2>
+<p>A token hidden row has shape 1×8. Its first normalisation retains that shape; multiplying it by an 8×8 query matrix produces one 1×8 query row. Key and value use separate 8×8 matrices. No parameter is updated during inference.</p>
+<h2>3. How Umicom Framework implements the idea</h2>
+<p><code>UmiAiTrainingLayerNorm</code> and <code>UmiAiTrainingMatmul</code> are called on the original decoder-owned tape. The new code composes operations, not copied maths. Projection values are staged before the store can be advanced.</p>
+<p>The relevant public contract is <code>umicom/ai/training/tape.h</code>. The native implementation and numerical tests belong to Umicom Framework; this manuscript does not introduce an alternative application-local training or inference service. The training tape owns mathematical operators and tensor lifetimes, while consumers use explicit C23 handles and status results.</p>
+<h2>4. Check the mathematical foundation</h2>
+<p>For a step-by-step explanation of the arithmetic, read <a href="../../maths-for-ai/lessons/117-calculate-layer-normalisation-by-hand.html">Mathematics Unit 117</a>. Keep tensor <strong>shape</strong>, <strong>absolute position</strong>, <strong>model checkpoint identity</strong> and <strong>actual executed work</strong> distinct when describing a cache.</p>
+<h2>5. Practice and verify</h2>
+<p><strong>Question:</strong> Explain why the inference path must use the same layer-normalisation epsilon as the canonical forward.</p>
+<details>
+<summary>Reveal the worked explanation</summary>
+<p>Epsilon changes the denominator of the normalisation. A different value changes the normalised features, so even unchanged weights can produce different Q/K/V and final logits.</p>
+</details>
+<h2>6. Limits and responsible interpretation</h2>
+<p>The new proposal does not change training history or checkpoint family. A failed forward must still restore the tape graph prefix.</p>
+<p>A passing test in an isolated demonstration is not a production integration result. Evaluate against the actual Framework checkout and document any numerical or timing limitations before making deployment claims.</p>
+<h2>Continue learning</h2>
+<p><a href="220-reuse-cached-key-and-value-projections.html">Previous lesson</a> · <a href="222-understand-head-local-causal-attention.html">Next lesson</a> · <a href="../incremental-attention-learning-path.html">Browser learning path</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+<nav aria-label="Continue reading"><a href="220-reuse-cached-key-and-value-projections.html">← Previous</a> <a href="222-understand-head-local-causal-attention.html">Next →</a> <a href="../incremental-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/221-normalise-the-new-token-without-changing-the-model.md">Editable Markdown</a></nav></main><footer>Sammy Hegab · Umicom Foundation · MIT educational manuscript · Not a claim of production-model verification.</footer></body></html>
