@@ -3,7 +3,7 @@
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab
 
-This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus eight advanced Markdown-only units covering cross-entropy, low-rank adaptation, projection shapes, gradients, response-only loss masks, gradient selection, evaluation and adapter parameter budgets. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
+This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus eighteen advanced Markdown-only units covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
 
 ## A route from arithmetic to model training
 
@@ -40,9 +40,21 @@ Begin with familiar numbers and notation. Vectors and matrices then supply the l
 26. **Gradient flow through selected rows** — [Written lesson](26-gradient-flow-through-selected-rows.md) · a tape-owned row selector, mean cross-entropy and ignored-row gradients.
 27. **Selected gradient paths in Transformers** — [Written lesson](27-selected-gradient-paths-in-transformers.md) · prompt context, masked logits and adapter gradient flow.
 28. **Parameter budgets and evaluation loss** — [Written lesson](28-parameter-budgets-and-evaluation-loss.md) · trainable matrix counts, frozen weights and held-out cross-entropy.
+29. **Token-weighted loss** — [Written lesson](29-token-weighted-loss.md) · average losses by selected target counts.
+30. **Accuracy and perplexity** — [Written lesson](30-accuracy-and-perplexity.md) · evaluate held-out targets honestly.
+31. **Permutations without replacement** — [Written lesson](31-permutations-without-replacement.md) · seeded deterministic training order.
+32. **Integer bounds and evidence identities** — [Written lesson](32-integer-bounds-and-evidence-identities.md) · source and model digest contracts.
+33. **Epoch cursors and integer invariants** — [Written lesson](33-epoch-cursors-and-integer-invariants.md) · predict completed steps after restart.
+34. **Hashes, content identity and signatures** — [Written lesson](34-hashes-content-identity-and-signatures.md) · distinguish exact bytes from authority.
+35. **SGD, AdamW and restart state** — [Written lesson](35-sgd-and-adamw-state-for-restarts.md) · learn why moment tensors change continuation.
+36. **Token-weighted held-out averages** — [Written lesson](36-token-weighted-held-out-averages.md) · combine unequal-length target sequences.
+37. **Quality thresholds and trade-offs** — [Written lesson](37-quality-thresholds-and-tradeoffs.md) · loss and accuracy acceptance.
+38. **Binary layouts and safe capacity** — [Written lesson](38-binary-layouts-and-safe-capacity.md) · little-endian values, checked sizes and digests.
 
 ## Reading mathematics alongside the native LLM course
 
 The introductory units explain calculations used later in the C23-based lessons. [Train a frozen decoder logit adapter](../10-native-ai/train-a-frozen-decoder-logit-adapter.md) connects Units 21–22 to the real native decoder without duplicating its implementation. [Review dataset leakage](../10-native-ai/check-reviewed-corpus-for-data-leakage.md) explains a separate source-integrity gate. The [low-rank fine-tuning lesson](../10-native-ai/train-a-frozen-projection-with-low-rank-adapters.md) applies shapes, gradients and memory ownership to one reusable Framework component. [Transformer projection adaptation](../10-native-ai/adapt-attention-and-feed-forward-projections.md) extends that study from one dense projection to the actual pre-layer-normalised block. [Assistant-response training windows](../10-native-ai/prepare-assistant-response-training-windows.md) and [selected-token cross-entropy](../10-native-ai/selected-token-cross-entropy-in-c23.md) connect the mathematics to the original byte tokenizer, frozen decoder and native training tape. [Projection-level response-only adaptation](../10-native-ai/train-transformer-projections-with-response-only-loss.md) and [held-out adapter evaluation](../10-native-ai/evaluate-frozen-decoder-and-adapters.md) connect Units 27–28 to one Framework-owned training laboratory. Continue with [native inference and cache semantics](../10-native-ai/63-qualify-kv-cached-nucleus-generation.md), [canonical-decoder parity](../10-native-ai/71-qualify-canonical-decoder-kv-parity.md) and [unpadded prefix streaming](../10-native-ai/73-stream-growing-prefix-generation-in-c23.md), or use [Lesson 93](../10-native-ai/93-check-real-tape-evidence.md) for numerical acceptance evidence and [Lesson 94](../10-native-ai/94-plan-a-fused-rotary-tape-operator.md) for gradient propagation.
+
+For a complete [native checkpoint and restart study route](../10-native-ai/native-checkpoint-and-resume-learning-path.md), continue from Unit 33 into the optional C23 laboratory.
 
 The [formula dictionary](../../courses/maths-for-ai/formulas.html) supplies further definitions. The classroom examples are illustrative mathematics, not investment advice or a source of real transaction statistics.
