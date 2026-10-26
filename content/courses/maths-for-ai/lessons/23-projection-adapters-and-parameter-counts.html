@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Mathematics for AI · Unit 23: Mathematics for AI — Unit 23: Projection Adapters and Parameter Counts">
+<title>Mathematics for AI — Unit 23: Projection Adapters and Parameter Counts | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root { color-scheme: light; --ink:#172f42; --navy:#12335a; --link:#075eaf; --border:#d7e1e9; }
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f2f6fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(130deg,#12335a,#1b5672);color:#fff;padding:2rem max(1rem,calc((100% - 62rem)/2))}
+header h1{font-size:clamp(1.6rem,3vw,2.35rem);line-height:1.19;max-width:36ch;margin:.6rem 0}
+header p{margin:.4rem 0;color:#e1f4ff}header small{font-weight:700;letter-spacing:.055em}
+a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #03999c;outline-offset:3px}
+main{max-width:970px;margin:1.6rem auto;padding:clamp(1rem,3vw,2.5rem);background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 4px 22px #12335a0b}
+nav.lesson-nav{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;background:#eef5fc;border-radius:8px;padding:.8rem 1.1rem}
+main h2{margin:2.1rem 0 .75rem;color:#123b61;font-size:1.4rem;line-height:1.35}
+main h3{margin:1.6rem 0 .6rem;color:#18587b}main p,main li{max-width:80ch}main ul,main ol{padding-left:1.7rem}
+main blockquote{background:#eef7fc;margin:1.1rem 0;padding:1px 1.2rem;border-left:4px solid #16939a}
+pre{background:#102132;color:#e9f7ff;padding:1.1rem;border-radius:9px;overflow-x:auto;white-space:pre}
+pre code{font:0.89rem/1.6 Consolas,"Liberation Mono",monospace;color:inherit;background:none;padding:0}
+code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em;background:#edf3f9;padding:.12em .28em;border-radius:3px}
+.table-scroll{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;min-width:490px}
+th,td{border:1px solid #cad9e7;padding:.6rem .7rem;text-align:left;vertical-align:top}th{background:#eaf3fb}
+details{padding:1rem;border:1px solid #d1e5ef;background:#f0f8ff;border-radius:9px;margin:1rem 0}
+summary{cursor:pointer;font-weight:700}details[open]>summary{margin-bottom:.75rem}
+footer{padding:1.4rem 1rem 2.3rem;text-align:center;color:#526374;font-size:.92rem}
+.source-note{margin-top:2rem;padding:1rem;border-left:4px solid #258c93;background:#eef9f7}
+.skip{position:absolute;left:.5rem;top:-100px;background:white;padding:.55rem;color:#12335a}.skip:focus{top:.5rem}
+@media(max-width:600px){main{border-radius:0;margin:0}body{font-size:16px}}
+@media print{body{background:#fff}header{background:white;color:#173247;border-bottom:2px solid #173247}header p{color:#173247}main{border:0;box-shadow:none;padding:0}nav.lesson-nav{display:none}details{display:block}}
+</style></head>
+<body><a class="skip" href="#lesson-main">Skip to lesson</a><header><small>Mathematics for AI · Unit 23</small>
+<h1>Mathematics for AI — Unit 23: Projection Adapters and Parameter Counts</h1><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></header>
+<main id="lesson-main"><nav class="lesson-nav" aria-label="Lesson navigation"><a href="22-low-rank-residuals-and-frozen-models.html">← Previous</a><a href="24-gradients-through-low-rank-projections.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav>
+<article>
+
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab</p>
+<h2>Purpose</h2>
+<p>Learn to calculate the shapes and parameter counts of a low-rank adapter before writing C23. This unit accompanies <a href="../../../lessons/10-native-ai/adapt-attention-and-feed-forward-projections.md">native Transformer projection adaptation</a>. No advanced mathematics is required: only multiplication, addition and a basic understanding of matrices.</p>
+<h2>1. What does a dense projection do?</h2>
+<p>A row of <code>I</code> input values is multiplied by a matrix containing <code>I</code> rows and <code>O</code> columns. The result contains <code>O</code> output values. The full weight matrix has:</p>
+<pre><code class="language-text">denseParameters = I × O
+</code></pre>
+<p>For four inputs and six outputs, the dense matrix contains <code>4 × 6 = 24</code> values. Their units are <em>parameters</em>, not bytes. If each value occupies four bytes, the weight data occupy <code>24 × 4 = 96</code> bytes, excluding graph and storage metadata.</p>
+<h2>2. Use two narrow matrices instead</h2>
+<p>A low-rank adapter adds a trainable correction without replacing the dense weights. Choose a small rank <code>r</code>:</p>
+<pre><code class="language-text">A: [I, r]       B: [r, O]
+X: [N, I]       XA: [N, r]
+(XA)B: [N, O]
+</code></pre>
+<p>The adapter has <code>I×r + r×O = r×(I+O)</code> trainable numbers. With <code>I=4</code>, <code>O=6</code>, <code>r=2</code>, this is <code>8+12=20</code>. The original 24 dense values are retained but need not be updated during adapter training.</p>
+<p>Notice that the example saves only four trainable values compared with training the entire dense matrix. For narrow toy networks, low rank may provide little benefit; its practical advantage grows with wider projections.</p>
+<h2>3. A more realistic numerical comparison</h2>
+<p>Suppose a projection has 128 inputs, 256 outputs and rank 8:</p>
+<pre><code class="language-text">Full dense matrix:       128 × 256      = 32,768 weights
+Adapter down matrix:     128 × 8        =  1,024 weights
+Adapter up matrix:         8 × 256      =  2,048 weights
+Total adapter trainables:                =  3,072 weights
+</code></pre>
+<p>The adapter has <code>3,072 / 32,768 = 0.09375</code>, or <strong>9.375%</strong> as many <em>trainable</em> parameters as that one dense projection. This does not mean the total model occupies 9.375% of its previous memory: the frozen dense weights still exist. Optimiser moments, gradients and temporary activations add further memory costs.</p>
+<h2>4. Why a zero-initialised matrix matters</h2>
+<p>Write the adapted result as <code>Y = XW + (XA)B</code>. At creation, <code>B</code> is zero. The correction <code>(XA)B</code> is then zero and the initial output is <code>XW</code>. This is a useful regression invariant: an untrained adapter must not unexpectedly alter the established model.</p>
+<p>Once training changes <code>B</code>, the correction can become nonzero. Gradients may subsequently update both narrow matrices. All of those calculations remain inside the Framework training tape; educational applications should use the public API rather than implement an independent neural engine.</p>
+<h2>Practice</h2>
+<ol>
+<li>Calculate the dense parameter count when <code>I=64</code>, <code>O=64</code>.</li>
+<li>Calculate adapter parameters when <code>I=64</code>, <code>O=64</code>, <code>r=4</code>.</li>
+<li>Explain why a small adapter count does not mean the frozen dense weights can be discarded.</li>
+<li>What is the output shape of an <code>[8,128]</code> input multiplied by a <code>[128,8]</code> adapter-down matrix and then an <code>[8,256]</code> adapter-up matrix?</li>
+</ol>
+<h2>Worked answers</h2>
+<ol>
+<li><code>64×64 = 4,096</code>.</li>
+<li><code>64×4 + 4×64 = 512</code>, which is <strong>12.5%</strong> of the dense weight count.</li>
+<li>The correction adds to the original dense result; inference still needs the original weights.</li>
+<li>The intermediate shape is <code>[8,8]</code>; the final correction shape is <code>[8,256]</code>.</li>
+</ol>
+<p><strong>Further study:</strong> <a href="04-matrices-and-shapes.html">Matrices and shapes</a>, <a href="10-gradient-descent-and-learning-rate.html">Gradient descent</a> and <a href="24-gradients-through-low-rank-projections.html">Unit 24 — Gradients through a low-rank residual</a>.</p>
+
+</article>
+<p class="source-note">This HTML page accompanies the original <a href="../../../lessons/11-maths-for-ai/23-projection-adapters-and-parameter-counts.md">editable Markdown manuscript</a>. The browser does not execute code samples or approve data for model training.</p>
+<nav class="lesson-nav" aria-label="Continue learning"><a href="22-low-rank-residuals-and-frozen-models.html">← Previous</a><a href="24-gradients-through-low-rank-projections.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.<br>Educational examples are not production financial or AI verification.</footer>
+</body></html>

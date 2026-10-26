@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Mathematics for AI · Unit 34: Mathematics for AI — Unit 34: Hashes, Content Identity and Signatures">
+<title>Mathematics for AI — Unit 34: Hashes, Content Identity and Signatures | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root { color-scheme: light; --ink:#172f42; --navy:#12335a; --link:#075eaf; --border:#d7e1e9; }
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f2f6fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(130deg,#12335a,#1b5672);color:#fff;padding:2rem max(1rem,calc((100% - 62rem)/2))}
+header h1{font-size:clamp(1.6rem,3vw,2.35rem);line-height:1.19;max-width:36ch;margin:.6rem 0}
+header p{margin:.4rem 0;color:#e1f4ff}header small{font-weight:700;letter-spacing:.055em}
+a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #03999c;outline-offset:3px}
+main{max-width:970px;margin:1.6rem auto;padding:clamp(1rem,3vw,2.5rem);background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 4px 22px #12335a0b}
+nav.lesson-nav{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;background:#eef5fc;border-radius:8px;padding:.8rem 1.1rem}
+main h2{margin:2.1rem 0 .75rem;color:#123b61;font-size:1.4rem;line-height:1.35}
+main h3{margin:1.6rem 0 .6rem;color:#18587b}main p,main li{max-width:80ch}main ul,main ol{padding-left:1.7rem}
+main blockquote{background:#eef7fc;margin:1.1rem 0;padding:1px 1.2rem;border-left:4px solid #16939a}
+pre{background:#102132;color:#e9f7ff;padding:1.1rem;border-radius:9px;overflow-x:auto;white-space:pre}
+pre code{font:0.89rem/1.6 Consolas,"Liberation Mono",monospace;color:inherit;background:none;padding:0}
+code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em;background:#edf3f9;padding:.12em .28em;border-radius:3px}
+.table-scroll{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;min-width:490px}
+th,td{border:1px solid #cad9e7;padding:.6rem .7rem;text-align:left;vertical-align:top}th{background:#eaf3fb}
+details{padding:1rem;border:1px solid #d1e5ef;background:#f0f8ff;border-radius:9px;margin:1rem 0}
+summary{cursor:pointer;font-weight:700}details[open]>summary{margin-bottom:.75rem}
+footer{padding:1.4rem 1rem 2.3rem;text-align:center;color:#526374;font-size:.92rem}
+.source-note{margin-top:2rem;padding:1rem;border-left:4px solid #258c93;background:#eef9f7}
+.skip{position:absolute;left:.5rem;top:-100px;background:white;padding:.55rem;color:#12335a}.skip:focus{top:.5rem}
+@media(max-width:600px){main{border-radius:0;margin:0}body{font-size:16px}}
+@media print{body{background:#fff}header{background:white;color:#173247;border-bottom:2px solid #173247}header p{color:#173247}main{border:0;box-shadow:none;padding:0}nav.lesson-nav{display:none}details{display:block}}
+</style></head>
+<body><a class="skip" href="#lesson-main">Skip to lesson</a><header><small>Mathematics for AI · Unit 34</small>
+<h1>Mathematics for AI — Unit 34: Hashes, Content Identity and Signatures</h1><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></header>
+<main id="lesson-main"><nav class="lesson-nav" aria-label="Lesson navigation"><a href="33-epoch-cursors-and-integer-invariants.html">← Previous</a><a href="35-sgd-and-adamw-state-for-restarts.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav>
+<article>
+
+<p><strong>Bits to Banking · Umicom Foundation · Sammy Hegab</strong></p>
+<h2>Begin with a simple identifier</h2>
+<p>Suppose two pupils submit documents containing exactly the same text. We might compare every byte to confirm equality, but that becomes expensive for a large library. A cryptographic hash function calculates a short, fixed-length <strong>digest</strong> of the supplied bytes. SHA-256 returns 256 bits, traditionally displayed as 64 hexadecimal characters.</p>
+<p>A hexadecimal digit encodes four bits. Thus <code>64 × 4 = 256</code> bits. Since eight bits make one byte, the raw digest occupies <code>256 ÷ 8 = 32</code> bytes.</p>
+<h2>What a digest can tell us</h2>
+<p>If two byte sequences are different, a cryptographic hash is designed so their digests will overwhelmingly likely differ. This supports accidental-change detection and exact content identification, but collisions are theoretically possible. A digest is <strong>not</strong> encrypted content: it is a one-way derived identifier, not a reversible storage format.</p>
+<p>A Framework snapshot contains the digest of its original frozen decoder checkpoint. If even one original weight bit changes, the digest should almost certainly change, so an adapter paired with the old model must not be accepted as matching the new one.</p>
+<h2>What a digest cannot tell us</h2>
+<p>Anyone can run SHA-256. If someone substitutes a different file, they can also substitute a freshly calculated digest. Therefore <code>file + hash</code> is not proof of trusted authorship. Digital signatures use a cryptographic key and a trusted verification policy to establish a separate authenticity claim.</p>
+<p>The Framework's existing signed-release and publisher-trust services remain the relevant authority for external model provenance. An adapter checkpoint's own SHA-256 serves integrity only.</p>
+<h2>Separate three identities</h2>
+<p>The <strong>frozen-model digest</strong> identifies the original decoder weights. The <strong>adapter snapshot digest</strong> identifies the trained low-rank weights and step count. The <strong>dataset digest</strong> identifies the ordered collection of approved training examples and their partitions. All three must agree with the intended experiment when resuming it.</p>
+<h2>Practise</h2>
+<ol>
+<li>How many bytes occupy a 256-bit digest? 2. Why can't an ordinary digest prove a supplier was authorised? 3. Why are the adapter and base-model digests separate?</li>
+</ol>
+<details><summary>Show the worked answers</summary>
+<ol>
+<li><code>256 ÷ 8 = 32</code> bytes. 2. Anyone able to replace bytes can recompute the unsigned digest. 3. An adapter can change while the frozen model remains identical; they are distinct owned objects and must be identified separately.</li>
+</ol>
+</details>
+<p><strong>Continue:</strong> <a href="../../llm-from-scratch/lessons/96-build-portable-snapshot-records.html">portable snapshots</a>.</p>
+<hr/>
+<p><em>Service to Many Leads to Greatness. Educational C23 examples; not a production financial or model-training certification.</em></p>
+
+</article>
+<p class="source-note">This HTML page accompanies the original <a href="../../../lessons/11-maths-for-ai/34-hashes-content-identity-and-signatures.md">editable Markdown manuscript</a>. The browser does not execute code samples or approve data for model training.</p>
+<nav class="lesson-nav" aria-label="Continue learning"><a href="33-epoch-cursors-and-integer-invariants.html">← Previous</a><a href="35-sgd-and-adamw-state-for-restarts.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.<br>Educational examples are not production financial or AI verification.</footer>
+</body></html>

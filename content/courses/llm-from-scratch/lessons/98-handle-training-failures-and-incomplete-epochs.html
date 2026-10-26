@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Native LLM · Lesson 98: Lesson 98 — Handle Failures Without Losing or Repeating Training">
+<title>Lesson 98 — Handle Failures Without Losing or Repeating Training | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root { color-scheme: light; --ink:#172f42; --navy:#12335a; --link:#075eaf; --border:#d7e1e9; }
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f2f6fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(130deg,#12335a,#1b5672);color:#fff;padding:2rem max(1rem,calc((100% - 62rem)/2))}
+header h1{font-size:clamp(1.6rem,3vw,2.35rem);line-height:1.19;max-width:36ch;margin:.6rem 0}
+header p{margin:.4rem 0;color:#e1f4ff}header small{font-weight:700;letter-spacing:.055em}
+a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #03999c;outline-offset:3px}
+main{max-width:970px;margin:1.6rem auto;padding:clamp(1rem,3vw,2.5rem);background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 4px 22px #12335a0b}
+nav.lesson-nav{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;background:#eef5fc;border-radius:8px;padding:.8rem 1.1rem}
+main h2{margin:2.1rem 0 .75rem;color:#123b61;font-size:1.4rem;line-height:1.35}
+main h3{margin:1.6rem 0 .6rem;color:#18587b}main p,main li{max-width:80ch}main ul,main ol{padding-left:1.7rem}
+main blockquote{background:#eef7fc;margin:1.1rem 0;padding:1px 1.2rem;border-left:4px solid #16939a}
+pre{background:#102132;color:#e9f7ff;padding:1.1rem;border-radius:9px;overflow-x:auto;white-space:pre}
+pre code{font:0.89rem/1.6 Consolas,"Liberation Mono",monospace;color:inherit;background:none;padding:0}
+code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em;background:#edf3f9;padding:.12em .28em;border-radius:3px}
+.table-scroll{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;min-width:490px}
+th,td{border:1px solid #cad9e7;padding:.6rem .7rem;text-align:left;vertical-align:top}th{background:#eaf3fb}
+details{padding:1rem;border:1px solid #d1e5ef;background:#f0f8ff;border-radius:9px;margin:1rem 0}
+summary{cursor:pointer;font-weight:700}details[open]>summary{margin-bottom:.75rem}
+footer{padding:1.4rem 1rem 2.3rem;text-align:center;color:#526374;font-size:.92rem}
+.source-note{margin-top:2rem;padding:1rem;border-left:4px solid #258c93;background:#eef9f7}
+.skip{position:absolute;left:.5rem;top:-100px;background:white;padding:.55rem;color:#12335a}.skip:focus{top:.5rem}
+@media(max-width:600px){main{border-radius:0;margin:0}body{font-size:16px}}
+@media print{body{background:#fff}header{background:white;color:#173247;border-bottom:2px solid #173247}header p{color:#173247}main{border:0;box-shadow:none;padding:0}nav.lesson-nav{display:none}details{display:block}}
+</style></head>
+<body><a class="skip" href="#lesson-main">Skip to lesson</a><header><small>Native LLM · Lesson 98</small>
+<h1>Lesson 98 — Handle Failures Without Losing or Repeating Training</h1><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></header>
+<main id="lesson-main"><nav class="lesson-nav" aria-label="Lesson navigation"><a href="97-resume-deterministic-sgd-mid-epoch.html">← Previous</a><a href="99-verify-restored-training-against-uninterrupted.html">Next →</a><a href="../advanced-lessons.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav>
+<article>
+
+<p><strong>Bits to Banking · Umicom Foundation · Sammy Hegab</strong></p>
+<h2>Learning objectives</h2>
+<p>Separate three states: an attempted update, a committed adapter update and a durably saved checkpoint. Learn what to do when disk I/O, evaluation or a training step fails.</p>
+<h2>1. A training attempt is not automatically a commit</h2>
+<p>Assume a native training call receives approved next-token targets. It validates the model, source identity, mask and learning rate; constructs its temporary tape graph; computes selected cross-entropy; differentiates it; then asks the established SGD writer to update the adapter parameters. If any calculation fails <strong>before</strong> the SGD transaction completes, no new training step should be counted.</p>
+<p>Once the SGD writer returns success, the update is committed in the active in-memory adapter. An error in a later measurement cannot safely pretend that update never happened. The next valid cursor must reflect the weights that actually exist.</p>
+<h2>2. Evaluate at a clear boundary</h2>
+<p>In the new continuation API, the run deliberately separates <code>TrainNext</code> and <code>FinishEpoch</code>. Training the final example advances the offset to the known training-example count. <code>FinishEpoch</code> carries out the held-out evaluation and transitions to the next epoch. If held-out assessment is unavailable, the training state stays at the end-of-epoch boundary; it does <strong>not</strong> train that example again.</p>
+<h2>3. Memory snapshots and durable files are different</h2>
+<p><code>SnapshotEncode</code> returns one complete native byte array. Successful encoding does not imply that bytes have reached a storage device. A production Umicom application should apply the existing Framework approved-file policy to write a new staging file, flush and publish it safely, keep the earlier known-good snapshot until the new one is verified, and restrict filesystem permissions.</p>
+<p>Do not teach an application to overwrite its only recovery copy directly. Reopening a file and comparing its digest and complete length can detect accidental damage but cannot prove the source was trusted. An appropriately signed approval is a separate security decision.</p>
+<h2>4. Predict recovery behaviour</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Failure point</th>
+<th>In-memory weights</th>
+<th>Next safe action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Invalid source approval</td>
+<td>Unchanged</td>
+<td>Correct review evidence; do not train</td>
+</tr>
+<tr>
+<td>Insufficient snapshot buffer</td>
+<td>Unchanged</td>
+<td>Allocate exact capacity and encode again</td>
+</tr>
+<tr>
+<td>Invalid loss mask</td>
+<td>Unchanged</td>
+<td>Correct window preparation</td>
+</tr>
+<tr>
+<td>Completed SGD, later evaluation fails</td>
+<td>Updated</td>
+<td>Keep committed cursor and retry evaluation</td>
+</tr>
+<tr>
+<td>Crash after update but before durable snapshot</td>
+<td>Possibly lost from disk</td>
+<td>Resume <strong>only</strong> from the last complete approved snapshot</td>
+</tr>
+<tr>
+<td>Tampered snapshot</td>
+<td>Never admitted</td>
+<td>Recover from independently approved good copy</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Practice</h2>
+<p>A trainer saved a complete snapshot after 12 updates and then performed 3 more updates before a power failure. The only intact on-disk checkpoint has 12 updates. Can it resume as though 15 updates survived? <strong>No.</strong> It must restore 12 updates and repeat the subsequent deterministic sequence, or adopt a separately designed durable per-step transaction mechanism.</p>
+<p>Read <a href="96-build-portable-snapshot-records.html">portable record integrity</a> and <a href="99-verify-restored-training-against-uninterrupted.html">restart verification</a>.</p>
+<hr/>
+<p><em>Service to Many Leads to Greatness. Educational C23 examples; not a production financial or model-training certification.</em></p>
+
+</article>
+<p class="source-note">This HTML page accompanies the original <a href="../../../lessons/10-native-ai/98-handle-training-failures-and-incomplete-epochs.md">editable Markdown manuscript</a>. The browser does not execute code samples or approve data for model training.</p>
+<nav class="lesson-nav" aria-label="Continue learning"><a href="97-resume-deterministic-sgd-mid-epoch.html">← Previous</a><a href="99-verify-restored-training-against-uninterrupted.html">Next →</a><a href="../advanced-lessons.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.<br>Educational examples are not production financial or AI verification.</footer>
+</body></html>

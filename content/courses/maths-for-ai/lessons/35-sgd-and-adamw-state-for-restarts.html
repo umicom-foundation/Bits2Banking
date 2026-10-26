@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Mathematics for AI · Unit 35: Mathematics for AI — Unit 35: SGD, AdamW and Restart State">
+<title>Mathematics for AI — Unit 35: SGD, AdamW and Restart State | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root { color-scheme: light; --ink:#172f42; --navy:#12335a; --link:#075eaf; --border:#d7e1e9; }
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f2f6fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(130deg,#12335a,#1b5672);color:#fff;padding:2rem max(1rem,calc((100% - 62rem)/2))}
+header h1{font-size:clamp(1.6rem,3vw,2.35rem);line-height:1.19;max-width:36ch;margin:.6rem 0}
+header p{margin:.4rem 0;color:#e1f4ff}header small{font-weight:700;letter-spacing:.055em}
+a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #03999c;outline-offset:3px}
+main{max-width:970px;margin:1.6rem auto;padding:clamp(1rem,3vw,2.5rem);background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 4px 22px #12335a0b}
+nav.lesson-nav{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;background:#eef5fc;border-radius:8px;padding:.8rem 1.1rem}
+main h2{margin:2.1rem 0 .75rem;color:#123b61;font-size:1.4rem;line-height:1.35}
+main h3{margin:1.6rem 0 .6rem;color:#18587b}main p,main li{max-width:80ch}main ul,main ol{padding-left:1.7rem}
+main blockquote{background:#eef7fc;margin:1.1rem 0;padding:1px 1.2rem;border-left:4px solid #16939a}
+pre{background:#102132;color:#e9f7ff;padding:1.1rem;border-radius:9px;overflow-x:auto;white-space:pre}
+pre code{font:0.89rem/1.6 Consolas,"Liberation Mono",monospace;color:inherit;background:none;padding:0}
+code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em;background:#edf3f9;padding:.12em .28em;border-radius:3px}
+.table-scroll{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;min-width:490px}
+th,td{border:1px solid #cad9e7;padding:.6rem .7rem;text-align:left;vertical-align:top}th{background:#eaf3fb}
+details{padding:1rem;border:1px solid #d1e5ef;background:#f0f8ff;border-radius:9px;margin:1rem 0}
+summary{cursor:pointer;font-weight:700}details[open]>summary{margin-bottom:.75rem}
+footer{padding:1.4rem 1rem 2.3rem;text-align:center;color:#526374;font-size:.92rem}
+.source-note{margin-top:2rem;padding:1rem;border-left:4px solid #258c93;background:#eef9f7}
+.skip{position:absolute;left:.5rem;top:-100px;background:white;padding:.55rem;color:#12335a}.skip:focus{top:.5rem}
+@media(max-width:600px){main{border-radius:0;margin:0}body{font-size:16px}}
+@media print{body{background:#fff}header{background:white;color:#173247;border-bottom:2px solid #173247}header p{color:#173247}main{border:0;box-shadow:none;padding:0}nav.lesson-nav{display:none}details{display:block}}
+</style></head>
+<body><a class="skip" href="#lesson-main">Skip to lesson</a><header><small>Mathematics for AI · Unit 35</small>
+<h1>Mathematics for AI — Unit 35: SGD, AdamW and Restart State</h1><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></header>
+<main id="lesson-main"><nav class="lesson-nav" aria-label="Lesson navigation"><a href="34-hashes-content-identity-and-signatures.html">← Previous</a><a href="36-token-weighted-held-out-averages.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav>
+<article>
+
+<p><strong>Bits to Banking · Umicom Foundation · Sammy Hegab</strong></p>
+<h2>What is an optimiser?</h2>
+<p>An optimiser uses a gradient to adjust trainable numerical parameters. For simple stochastic gradient descent (SGD), a learning rate <code>α</code> and gradient <code>g</code> update a weight <code>w</code> using:</p>
+<p><strong>SGD:</strong> <code>w(next) = w(current) − α × g</code>.</p>
+<p>With <code>w=1.00</code>, <code>α=0.10</code> and <code>g=0.20</code>, the new weight is <code>1.00−0.10×0.20 = 0.98</code>.</p>
+<h2>Why a restart needs the correct state</h2>
+<p>If future gradients are determined by exactly the same weights, data order and numerical computation, a simple SGD run can continue from a checkpoint of its latest weights and training cursor. It does <strong>not</strong> maintain running averages of earlier gradients inside the optimiser.</p>
+<p>AdamW is more sophisticated. It maintains at least a running first-moment estimate and a running second-moment estimate for every trainable element, plus a completed-update count used in bias correction. It can also apply decoupled weight decay. These quantities affect the next update.</p>
+<h2>A two-step illustration</h2>
+<p>Imagine a fictional optimiser that remembers the average of previous gradients. Its current moment is <code>m=0.40</code>, and the next gradient is <code>0.20</code>. If a simple half-and-half average is used, the next moment is <code>(0.40+0.20)÷2 = 0.30</code>. If we mistakenly restart <code>m</code> at zero, the same averaging calculation produces <code>(0+0.20)÷2 = 0.10</code>. The weights will receive a different update even though the new input gradient is identical.</p>
+<p>This example is only to illustrate retained state; it is <strong>not</strong> AdamW's complete equation.</p>
+<h2>Framework contract</h2>
+<p>The Umicom continuation component expressly supports <strong>stateless SGD</strong>. It saves trained low-rank weights, the model identity, dataset identity, training-plan values and exact next-example position. It must not advertise itself as an exact AdamW continuation until the canonical Framework AdamW moments and schedule are also saved and restored.</p>
+<h2>Practise</h2>
+<p>Why does recording only <code>w=0.98</code> fail to reproduce the next AdamW update? Because AdamW also depends on its remembered moment tensors and step count, which cannot be inferred uniquely from a single current weight value.</p>
+<details><summary>Show another calculation</summary>
+<p>SGD with <code>w=0.98</code>, learning rate <code>0.10</code> and new gradient <code>−0.30</code> gives <code>0.98−0.10×(−0.30)=1.01</code>.</p>
+</details>
+<p><strong>Continue:</strong> <a href="../../llm-from-scratch/lessons/97-resume-deterministic-sgd-mid-epoch.html">SGD cursor lesson</a>.</p>
+<hr/>
+<p><em>Service to Many Leads to Greatness. Educational C23 examples; not a production financial or model-training certification.</em></p>
+
+</article>
+<p class="source-note">This HTML page accompanies the original <a href="../../../lessons/11-maths-for-ai/35-sgd-and-adamw-state-for-restarts.md">editable Markdown manuscript</a>. The browser does not execute code samples or approve data for model training.</p>
+<nav class="lesson-nav" aria-label="Continue learning"><a href="34-hashes-content-identity-and-signatures.html">← Previous</a><a href="36-token-weighted-held-out-averages.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.<br>Educational examples are not production financial or AI verification.</footer>
+</body></html>

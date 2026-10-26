@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Native LLM · Lesson 159: Lesson 159 — Display generated HTML as text, not executable markup">
+<title>Lesson 159 — Display generated HTML as text, not executable markup | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root { color-scheme: light; --ink:#172f42; --navy:#12335a; --link:#075eaf; --border:#d7e1e9; }
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f2f6fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(130deg,#12335a,#1b5672);color:#fff;padding:2rem max(1rem,calc((100% - 62rem)/2))}
+header h1{font-size:clamp(1.6rem,3vw,2.35rem);line-height:1.19;max-width:36ch;margin:.6rem 0}
+header p{margin:.4rem 0;color:#e1f4ff}header small{font-weight:700;letter-spacing:.055em}
+a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #03999c;outline-offset:3px}
+main{max-width:970px;margin:1.6rem auto;padding:clamp(1rem,3vw,2.5rem);background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 4px 22px #12335a0b}
+nav.lesson-nav{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;background:#eef5fc;border-radius:8px;padding:.8rem 1.1rem}
+main h2{margin:2.1rem 0 .75rem;color:#123b61;font-size:1.4rem;line-height:1.35}
+main h3{margin:1.6rem 0 .6rem;color:#18587b}main p,main li{max-width:80ch}main ul,main ol{padding-left:1.7rem}
+main blockquote{background:#eef7fc;margin:1.1rem 0;padding:1px 1.2rem;border-left:4px solid #16939a}
+pre{background:#102132;color:#e9f7ff;padding:1.1rem;border-radius:9px;overflow-x:auto;white-space:pre}
+pre code{font:0.89rem/1.6 Consolas,"Liberation Mono",monospace;color:inherit;background:none;padding:0}
+code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em;background:#edf3f9;padding:.12em .28em;border-radius:3px}
+.table-scroll{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;min-width:490px}
+th,td{border:1px solid #cad9e7;padding:.6rem .7rem;text-align:left;vertical-align:top}th{background:#eaf3fb}
+details{padding:1rem;border:1px solid #d1e5ef;background:#f0f8ff;border-radius:9px;margin:1rem 0}
+summary{cursor:pointer;font-weight:700}details[open]>summary{margin-bottom:.75rem}
+footer{padding:1.4rem 1rem 2.3rem;text-align:center;color:#526374;font-size:.92rem}
+.source-note{margin-top:2rem;padding:1rem;border-left:4px solid #258c93;background:#eef9f7}
+.skip{position:absolute;left:.5rem;top:-100px;background:white;padding:.55rem;color:#12335a}.skip:focus{top:.5rem}
+@media(max-width:600px){main{border-radius:0;margin:0}body{font-size:16px}}
+@media print{body{background:#fff}header{background:white;color:#173247;border-bottom:2px solid #173247}header p{color:#173247}main{border:0;box-shadow:none;padding:0}nav.lesson-nav{display:none}details{display:block}}
+</style></head>
+<body><a class="skip" href="#lesson-main">Skip to lesson</a><header><small>Native LLM · Lesson 159</small>
+<h1>Lesson 159 — Display generated HTML as text, not executable markup</h1><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></header>
+<main id="lesson-main"><nav class="lesson-nav" aria-label="Lesson navigation"><a href="158-finish-and-cancel-unicode-streams.html">← Previous</a><a href="160-verify-html-course-continuations.html">Next →</a><a href="../advanced-lessons.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav>
+<article>
+
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab · <strong>Implementation language:</strong> C23</p>
+<h2>Learning objectives</h2>
+<p>Understand the encoding and ownership invariant, follow a concrete example, identify the reusable Framework service and explain a safe failure outcome.</p>
+<h2>1. The engineering problem</h2>
+<p>A language model might generate <code>&lt;script&gt;</code>, event handler attributes or other HTML-like strings. Such output is untrusted content, even if it was produced from a verified checkpoint. A chat viewer must distinguish text display from interpreting markup.</p>
+<p>Suppose the generated answer includes <code>2 &lt; 5 &amp; 7 &gt; 4</code>. If the application inserts that string as raw HTML, the symbols may be parsed as markup. For a safe HTML text node, encode <code>&amp;</code> as <code>&amp;amp;</code>, <code>&lt;</code> as <code>&amp;lt;</code> and <code>&gt;</code> as <code>&amp;gt;</code>. For HTML attribute values, quotes also need escaping. A validated Unicode sequence is still not trusted application code.</p>
+<p>A checkpoint digest proves which model bytes were used; it cannot certify that model output is true, safe or suitable for executing instructions.</p>
+<h2>2. Use the existing Framework boundaries</h2>
+<p>In Umicom Studio, the presentation adapter should display escaped plain text using Framework-owned UI/text facilities. The AI runtime supplies length-delimited bytes or validated Unicode text; the user interface handles authorised rendering. Do not pass model output to a shell, C compiler, trade-order service or payment API merely because the bytes are well formed.</p>
+<p>The native educational HTML catalogue renderer <code>UmiEducationCourseCatalogueRender</code> explicitly escapes lesson headings; that principle also applies to user-visible model output, although production chat escaping and authorisation belong to their own Framework services.</p>
+<h2>Practice</h2>
+<p><strong>Question:</strong> Is valid UTF-8 sufficient to permit an AI response to be used as an HTML fragment?</p>
+<details><summary>Reveal the worked answer</summary>
+<p>No. UTF-8 validity checks encoding only. HTML must be escaped for its insertion context and any executable action requires separate authorisation.</p>
+</details>
+<h2>Continue</h2>
+<p>Return to <a href="155-plan-tokenisation-before-model-scaling.html">tokenisation and context planning</a>, or use <a href="../../maths-for-ai/lessons/69-utf8-byte-sequences-and-character-counts.html">Mathematics Unit 69</a> for the byte-level arithmetic. Code examples are educational and not automatically executed.</p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+</article>
+<p class="source-note">This HTML page accompanies the original <a href="../../../lessons/10-native-ai/159-keep-ai-generated-html-inert.md">editable Markdown manuscript</a>. The browser does not execute code samples or approve data for model training.</p>
+<nav class="lesson-nav" aria-label="Continue learning"><a href="158-finish-and-cancel-unicode-streams.html">← Previous</a><a href="160-verify-html-course-continuations.html">Next →</a><a href="../advanced-lessons.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.<br>Educational examples are not production financial or AI verification.</footer>
+</body></html>

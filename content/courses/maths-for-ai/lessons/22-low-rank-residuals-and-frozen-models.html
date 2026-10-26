@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Mathematics for AI · Unit 22: Mathematics for AI — Unit 22: Low-rank residuals and frozen models">
+<title>Mathematics for AI — Unit 22: Low-rank residuals and frozen models | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root { color-scheme: light; --ink:#172f42; --navy:#12335a; --link:#075eaf; --border:#d7e1e9; }
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f2f6fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(130deg,#12335a,#1b5672);color:#fff;padding:2rem max(1rem,calc((100% - 62rem)/2))}
+header h1{font-size:clamp(1.6rem,3vw,2.35rem);line-height:1.19;max-width:36ch;margin:.6rem 0}
+header p{margin:.4rem 0;color:#e1f4ff}header small{font-weight:700;letter-spacing:.055em}
+a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #03999c;outline-offset:3px}
+main{max-width:970px;margin:1.6rem auto;padding:clamp(1rem,3vw,2.5rem);background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 4px 22px #12335a0b}
+nav.lesson-nav{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;background:#eef5fc;border-radius:8px;padding:.8rem 1.1rem}
+main h2{margin:2.1rem 0 .75rem;color:#123b61;font-size:1.4rem;line-height:1.35}
+main h3{margin:1.6rem 0 .6rem;color:#18587b}main p,main li{max-width:80ch}main ul,main ol{padding-left:1.7rem}
+main blockquote{background:#eef7fc;margin:1.1rem 0;padding:1px 1.2rem;border-left:4px solid #16939a}
+pre{background:#102132;color:#e9f7ff;padding:1.1rem;border-radius:9px;overflow-x:auto;white-space:pre}
+pre code{font:0.89rem/1.6 Consolas,"Liberation Mono",monospace;color:inherit;background:none;padding:0}
+code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em;background:#edf3f9;padding:.12em .28em;border-radius:3px}
+.table-scroll{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;min-width:490px}
+th,td{border:1px solid #cad9e7;padding:.6rem .7rem;text-align:left;vertical-align:top}th{background:#eaf3fb}
+details{padding:1rem;border:1px solid #d1e5ef;background:#f0f8ff;border-radius:9px;margin:1rem 0}
+summary{cursor:pointer;font-weight:700}details[open]>summary{margin-bottom:.75rem}
+footer{padding:1.4rem 1rem 2.3rem;text-align:center;color:#526374;font-size:.92rem}
+.source-note{margin-top:2rem;padding:1rem;border-left:4px solid #258c93;background:#eef9f7}
+.skip{position:absolute;left:.5rem;top:-100px;background:white;padding:.55rem;color:#12335a}.skip:focus{top:.5rem}
+@media(max-width:600px){main{border-radius:0;margin:0}body{font-size:16px}}
+@media print{body{background:#fff}header{background:white;color:#173247;border-bottom:2px solid #173247}header p{color:#173247}main{border:0;box-shadow:none;padding:0}nav.lesson-nav{display:none}details{display:block}}
+</style></head>
+<body><a class="skip" href="#lesson-main">Skip to lesson</a><header><small>Mathematics for AI · Unit 22</small>
+<h1>Mathematics for AI — Unit 22: Low-rank residuals and frozen models</h1><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></header>
+<main id="lesson-main"><nav class="lesson-nav" aria-label="Lesson navigation"><a href="21-cross-entropy-for-native-fine-tuning.html">← Previous</a><a href="23-projection-adapters-and-parameter-counts.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav>
+<article>
+
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab</p>
+<h2>Learning objectives</h2>
+<p>Understand a rank-limited matrix product, compute a low-rank residual step by step and explain why a trainable output adapter can change predictions while its original decoder weights remain frozen.</p>
+<h2>1. An ordinary matrix can be expensive to change</h2>
+<p>A dense matrix mapping <strong>100 inputs to 100 outputs</strong> contains <code>100 × 100 = 10,000</code> weights. Training all those weights requires gradients and often optimiser state for every element.</p>
+<p>Instead of updating the original matrix, we can learn two smaller matrices:</p>
+<ul>
+<li><strong>D</strong> has shape <code>[inputChannels, rank]</code>.</li>
+<li><strong>U</strong> has shape <code>[rank, outputChannels]</code>.</li>
+</ul>
+<p>The product <strong>D × U</strong> has the original <code>[inputChannels, outputChannels]</code> shape. For rank <strong>4</strong>, the two trainable matrices need <code>100×4 + 4×100 = 800</code> weights: <strong>92% fewer than 10,000</strong>.</p>
+<p>This counts trainable weights only. It does not include temporary activations, gradients, checkpoint metadata or the still-retained frozen base model.</p>
+<h2>2. Worked example with two numbers</h2>
+<p>Let the input be row vector <code>x = [2, 1]</code>. Choose a rank-one down matrix:</p>
+<pre><code>D = [ 0.5 ]
+    [−0.2 ]
+</code></pre>
+<p>The reduced value is <code>xD = 2×0.5 + 1×(−0.2) = 0.8</code>.</p>
+<p>Let the up matrix be <code>U = [0.1, −0.3]</code>. The low-rank residual is:</p>
+<p><code>(xD)U = 0.8×[0.1, −0.3] = [0.08, −0.24]</code>.</p>
+<p>Suppose the frozen base output is <code>[1.5, 0.5]</code>. Add the residual:</p>
+<p><code>adaptedOutput = [1.5, 0.5] + [0.08, −0.24] = [1.58, 0.26]</code>.</p>
+<p>The base has not changed. Only the adapter controls how much is added.</p>
+<h2>3. What this means for a language-model head</h2>
+<p>A language model normally emits logits for each token position. In the new bounded teaching experiment, the existing Umicom decoder produces a matrix of frozen logits <code>Z</code> of shape <code>[tokenCount, vocabularySize]</code>. A separate adapter applies:</p>
+<p><code>Z_adapted = Z + (Z × D) × U</code>.</p>
+<p>For vocabulary size <strong>260</strong>, adapter rank <strong>4</strong>, the trainable count is <code>260×4 + 4×260 = 2,080</code>. A dense 260×260 transformation would need <strong>67,600</strong> trainable weights. The residual adapter uses approximately <strong>96.9% fewer weights</strong> for this output transformation.</p>
+<p><strong>This is not the same operation as inserting LoRA into each Transformer attention projection.</strong> It is an experimental <em>logit-residual head</em>. The decoder remains an unchanged feature producer; the adapter learns only a correction to its output scores. Calling the two methods identical would confuse distinct model architectures.</p>
+<h2>4. Why the up matrix often begins at zero</h2>
+<p>At creation, the Framework can initialise <strong>U = 0</strong>. Then <code>(Z × D) × U = 0</code>, so the adapted output initially equals the original decoder output. After backpropagation and optimiser updates, the residual may become nonzero. This gives a useful test: before any training, compare the output of the original decoder with the adapter's output.</p>
+<h2>5. Exercise with answer</h2>
+<p>A frozen projection maps <strong>32 input channels to 64 outputs</strong>, using rank <strong>8</strong>. Calculate dense versus low-rank trainable weights.</p>
+<p><strong>Answer:</strong> a dense matrix has <code>32×64 = 2,048</code> elements. Down matrix <code>32×8 = 256</code>; up matrix <code>8×64 = 512</code>; combined <strong>768</strong>, a reduction of <code>2,048 − 768 = 1,280</code> or <strong>62.5%</strong>. The reduction is smaller than in a 100×100 example because the selected rank is proportionally larger.</p>
+<p><strong>Takeaway:</strong> parameter efficiency is a property of the matrix shapes. Model quality still requires measured held-out evaluation and correct lifetime rules.</p>
+<p><a href="../../../lessons/11-maths-for-ai/index.md">Mathematics index</a> · <a href="21-cross-entropy-for-native-fine-tuning.html">Previous: token loss</a> · <a href="../../../lessons/10-native-ai/train-a-frozen-decoder-logit-adapter.md">Native adapter lesson</a></p>
+
+</article>
+<p class="source-note">This HTML page accompanies the original <a href="../../../lessons/11-maths-for-ai/22-low-rank-residuals-and-frozen-models.md">editable Markdown manuscript</a>. The browser does not execute code samples or approve data for model training.</p>
+<nav class="lesson-nav" aria-label="Continue learning"><a href="21-cross-entropy-for-native-fine-tuning.html">← Previous</a><a href="23-projection-adapters-and-parameter-counts.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.<br>Educational examples are not production financial or AI verification.</footer>
+</body></html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Mathematics for AI · Unit 28: Mathematics for AI — Unit 28: Parameter Budgets and Evaluation Loss">
+<title>Mathematics for AI — Unit 28: Parameter Budgets and Evaluation Loss | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root { color-scheme: light; --ink:#172f42; --navy:#12335a; --link:#075eaf; --border:#d7e1e9; }
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f2f6fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(130deg,#12335a,#1b5672);color:#fff;padding:2rem max(1rem,calc((100% - 62rem)/2))}
+header h1{font-size:clamp(1.6rem,3vw,2.35rem);line-height:1.19;max-width:36ch;margin:.6rem 0}
+header p{margin:.4rem 0;color:#e1f4ff}header small{font-weight:700;letter-spacing:.055em}
+a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #03999c;outline-offset:3px}
+main{max-width:970px;margin:1.6rem auto;padding:clamp(1rem,3vw,2.5rem);background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 4px 22px #12335a0b}
+nav.lesson-nav{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;background:#eef5fc;border-radius:8px;padding:.8rem 1.1rem}
+main h2{margin:2.1rem 0 .75rem;color:#123b61;font-size:1.4rem;line-height:1.35}
+main h3{margin:1.6rem 0 .6rem;color:#18587b}main p,main li{max-width:80ch}main ul,main ol{padding-left:1.7rem}
+main blockquote{background:#eef7fc;margin:1.1rem 0;padding:1px 1.2rem;border-left:4px solid #16939a}
+pre{background:#102132;color:#e9f7ff;padding:1.1rem;border-radius:9px;overflow-x:auto;white-space:pre}
+pre code{font:0.89rem/1.6 Consolas,"Liberation Mono",monospace;color:inherit;background:none;padding:0}
+code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em;background:#edf3f9;padding:.12em .28em;border-radius:3px}
+.table-scroll{overflow-x:auto;margin:1rem 0}table{width:100%;border-collapse:collapse;min-width:490px}
+th,td{border:1px solid #cad9e7;padding:.6rem .7rem;text-align:left;vertical-align:top}th{background:#eaf3fb}
+details{padding:1rem;border:1px solid #d1e5ef;background:#f0f8ff;border-radius:9px;margin:1rem 0}
+summary{cursor:pointer;font-weight:700}details[open]>summary{margin-bottom:.75rem}
+footer{padding:1.4rem 1rem 2.3rem;text-align:center;color:#526374;font-size:.92rem}
+.source-note{margin-top:2rem;padding:1rem;border-left:4px solid #258c93;background:#eef9f7}
+.skip{position:absolute;left:.5rem;top:-100px;background:white;padding:.55rem;color:#12335a}.skip:focus{top:.5rem}
+@media(max-width:600px){main{border-radius:0;margin:0}body{font-size:16px}}
+@media print{body{background:#fff}header{background:white;color:#173247;border-bottom:2px solid #173247}header p{color:#173247}main{border:0;box-shadow:none;padding:0}nav.lesson-nav{display:none}details{display:block}}
+</style></head>
+<body><a class="skip" href="#lesson-main">Skip to lesson</a><header><small>Mathematics for AI · Unit 28</small>
+<h1>Mathematics for AI — Unit 28: Parameter Budgets and Evaluation Loss</h1><p>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</p></header>
+<main id="lesson-main"><nav class="lesson-nav" aria-label="Lesson navigation"><a href="27-selected-gradient-paths-in-transformers.html">← Previous</a><a href="29-token-weighted-loss.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav>
+<article>
+
+<p><strong>Bits to Banking · Umicom Foundation · Sammy Hegab</strong></p>
+<h2>A clear reason to use low-rank adapters</h2>
+<p>Large dense matrices contain many weights. Training all of them requires
+storage for parameters, gradients and, for optimisers such as AdamW, additional
+moment values. A low-rank adapter reduces the <strong>trainable subset</strong>, while the
+original matrix can remain frozen.</p>
+<h2>1. Count the original matrix</h2>
+<p>Suppose a Transformer projection has eight input channels and eight output
+channels. It contains:</p>
+<p><code>8 × 8 = 64</code> base weights.</p>
+<p>Its full matrix still must be stored for inference; freezing does <strong>not</strong> make
+those 64 values disappear.</p>
+<h2>2. Count the adapter</h2>
+<p>With rank <code>r = 2</code>, the adapter contains two matrices:</p>
+<ul>
+<li>Down projection: <code>8 × 2 = 16</code> values.</li>
+<li>Up projection: <code>2 × 8 = 16</code> values.</li>
+</ul>
+<p>The trainable adapter therefore contains <code>16 + 16 = 32</code> values, or
+<code>r × (inputChannels + outputChannels)</code>.</p>
+<p>Relative to training the entire dense matrix, the adapter trains half as many
+parameters in this <strong>particular</strong> small example. Not every chosen rank saves
+parameters; for an <code>8 × 8</code> matrix with rank four, the adapter also has
+<code>4 × (8 + 8) = 64</code> values.</p>
+<p>For four projections—Query, Key, attention output and feed-forward reduction—
+with channel width eight, hidden width sixteen and rank two, the totals are:</p>
+<p><code>32 + 32 + 32 + 48 = 144 trainable values</code>.</p>
+<p>These values are <strong>additional to</strong> the frozen base weights. Memory use also
+includes the training tape, activations, gradients, caches and allocation
+overhead. A parameter count is not process-resident memory (RSS).</p>
+<h2>3. The meaning of held-out loss</h2>
+<p>A held-out evaluation set is a collection of approved examples whose targets
+were not used to update the adapter. Its purpose is to test whether a learned
+change generalises beyond the training examples.</p>
+<p>For next-token language modelling, cross-entropy is the average negative log
+probability of the correct selected token. A lower value usually means the
+model assigns higher probability to the held-out correct targets, <strong>under the
+same evaluation protocol</strong>.</p>
+<p>Suppose an example has target probabilities <code>0.5</code> and <code>0.25</code>. Its mean loss is:</p>
+<p><code>L = (−ln(0.5) − ln(0.25)) / 2</code></p>
+<p><code>≈ (0.693147 + 1.386294) / 2 ≈ 1.039721</code>.</p>
+<p>If another candidate was evaluated on different targets, the two numerical
+losses would not be a fair direct comparison.</p>
+<h2>4. The source-level split matters</h2>
+<p>If an original video appears in training and its transcript appears in
+validation, the same knowledge may leak across partitions. Hashing or tagging
+only the derived filenames is insufficient; the original source identity must
+be retained by the review service. Near-duplicate content also needs human or
+independently qualified automated review.</p>
+<h2>Worked exercises</h2>
+<ol>
+<li><strong>An original <code>16 × 8</code> projection uses rank two. How many adapter values?</strong>
+<code>2 × (16 + 8) = 48</code>.</li>
+<li><strong>An <code>8 × 8</code> projection uses rank one. How many additional trainable values?</strong>
+<code>1 × (8 + 8) = 16</code>.</li>
+<li><strong>If the training loss falls but the held-out loss increases, what might be
+happening?</strong> The adapter may be overfitting. Check source separation and
+the evaluation protocol before drawing conclusions.</li>
+<li><strong>Does a lower held-out loss prove financial-answer accuracy?</strong> No. It
+measures the selected predictive objective on the declared data, not the
+truth of every generated response.</li>
+</ol>
+<p>Continue with <a href="../../../lessons/10-native-ai/evaluate-frozen-decoder-and-adapters.md">evaluation and provenance</a>
+or <a href="27-selected-gradient-paths-in-transformers.html">Mathematics Unit 27</a>.</p>
+
+</article>
+<p class="source-note">This HTML page accompanies the original <a href="../../../lessons/11-maths-for-ai/28-parameter-budgets-and-evaluation-loss.md">editable Markdown manuscript</a>. The browser does not execute code samples or approve data for model training.</p>
+<nav class="lesson-nav" aria-label="Continue learning"><a href="27-selected-gradient-paths-in-transformers.html">← Previous</a><a href="29-token-weighted-loss.html">Next →</a><a href="../advanced-units.html">Continuation catalogue</a><a href="../index.html">Course home</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.<br>Educational examples are not production financial or AI verification.</footer>
+</body></html>
