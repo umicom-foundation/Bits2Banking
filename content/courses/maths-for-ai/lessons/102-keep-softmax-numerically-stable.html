@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A worked mathematics step for native Transformer cache engineering.">
+<title>Mathematics 102 — Keep Softmax Numerically Stable | Bits2Banking</title>
+<style>
+:root{color-scheme:light;--navy:#12344b;--blue:#086a86;--border:#d9e7ed;--paper:#fff;--shade:#f2f7fb}
+*{box-sizing:border-box}body{margin:0;background:#f1f5f9;color:#193449;font:17px/1.72 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#096b85}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #0d9aa7;outline-offset:3px}
+header{background:linear-gradient(120deg,#12344b,#205b75);color:#fff;padding:2.8rem max(1rem,calc((100% - 72rem)/2)) 2.1rem}
+header h1{line-height:1.2;margin:.3rem 0;max-width:25ch}header a{color:#e0fbff}
+header .strap{color:#b6e6f2;font-weight:650;letter-spacing:.02em}
+main{max-width:74rem;margin:1.4rem auto;padding:0 1rem 2.3rem}
+article{background:var(--paper);border:1px solid var(--border);border-radius:15px;padding:clamp(1.2rem,3vw,2.5rem);box-shadow:0 8px 25px #13374b0b}
+article h1{display:none}h2{margin:1.7rem 0 .5rem;color:#15445b;font-size:1.4rem}h3{color:#24586e}
+p,li{max-width:86ch}li{margin:.4rem 0}pre{overflow:auto;background:#102d43;color:#edfbff;border-radius:10px;padding:1.2rem;font:14px/1.6 Consolas,monospace}code{font-family:Consolas,monospace}p code,li code{background:#e8f2f5;color:#163a4d;border-radius:4px;padding:.1em .3em}
+blockquote{border-left:4px solid #13869a;margin:1.2rem 0;padding:.5rem 1.1rem;background:#eaf7f7}
+table{border-collapse:collapse;width:100%;font-size:.94rem}th,td{border:1px solid #ccdee8;padding:.65rem;text-align:left;vertical-align:top}th{background:#e8f3f7}
+details{border:1px solid #abd3d5;background:#f2faf9;border-radius:10px;padding:1rem 1.2rem;margin-top:1.2rem}summary{cursor:pointer;font-weight:bold;color:#0d5568}
+nav{display:flex;gap:.75rem 1.3rem;flex-wrap:wrap;background:#e7f0f5;padding:1rem;border-radius:10px;margin-bottom:1.4rem}
+footer{padding:2rem 1rem;text-align:center;color:#516975;font-size:.93rem}
+@media print{body{background:#fff}article{border:0;box-shadow:none}nav{display:none}header{background:#fff;color:#12344b;padding:1rem}}
+</style></head><body>
+<header><div class="strap">UMICOM FOUNDATION · BITS TO BANKING · Mathematics 102</div><h1>Keep Softmax Numerically Stable</h1><p>A worked mathematics step for native Transformer cache engineering.</p></header>
+<main><nav aria-label="Lesson navigation"><a href="../advanced-units.html">Complete Mathematics catalogue</a><a href="101-distinguish-attention-scores-from-values.html">← Previous unit</a><a href="103-compare-full-context-and-prefix-work.html">Next unit →</a><a href="../../../lessons/11-maths-for-ai/102-keep-softmax-numerically-stable.md">Editable Markdown manuscript</a></nav>
+<article aria-label="Keep Softmax Numerically Stable"><h1>Mathematics for AI — Unit 102: Keep Softmax Numerically Stable</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab<br/>
+<strong>Level:</strong> Introductory mathematics with practical native C23 AI examples.</p>
+<h2>1. Begin with ordinary numbers</h2>
+<p>Softmax converts scores to positive weights that add to one. Large positive scores can overflow <code>exp</code> if used directly. Subtract the maximum score first: <code>[1000,999]</code> becomes <code>[0,-1]</code>. Softmax gives approximately <code>[0.7311,0.2689]</code>. Subtracting the same constant changes neither mathematical probability nor rank.</p>
+<p>The word <strong>tensor</strong> means a structured collection of numbers. In this subject, <strong>layer</strong> identifies one Transformer block, <strong>token</strong> identifies one position in a sequence, and <strong>channel</strong> identifies one numerical feature of that token. <code>FP32</code> means a four-byte floating-point value. These definitions let you read a cache diagram without pretending that every number describes an entire language model.</p>
+<h2>2. Translate the mathematics into engineering</h2>
+<p>Write the quantities on paper first, attach a unit to every count, and check the operation against the native Framework contract. A number described as <strong>float elements</strong> is not interchangeable with a number described as <strong>bytes</strong>; a count of <strong>token-layer rows</strong> is not a count of <strong>seconds</strong>. The Framework's K/V store and conditional prefix planner expose different measurements for this reason.</p>
+<p>Where an example contains a digest, remember that an SHA-256 content hash detects changed bytes but is not a signature. Where it contains synthetic tokens or numbers, those are teaching fixtures, not customer or training records.</p>
+<h2>3. Exercise</h2>
+<p><strong>Question:</strong> What is the stable shifted form of <code>[500,498,495]</code>?</p>
+<details>
+<summary>Show the worked answer</summary>
+<p>Subtract 500 from each: <code>[0,-2,-5]</code>. Apply exponentials and normalise only after this shift.</p>
+</details>
+<h2>4. Continue</h2>
+<p>Read <a href="102-keep-softmax-numerically-stable.html">the browser version of this unit</a> and <a href="../../../lessons/11-maths-for-ai/kv-cache-mathematics.md">the K/V mathematics learning path</a>. For the native connection, study <a href="../../../lessons/10-native-ai/185-own-k-v-rows-for-each-transformer-layer.md">LLM Lesson 185</a> and <a href="../../../lessons/10-native-ai/194-measure-stored-token-layer-work.md">LLM Lesson 194</a>.</p>
+<p><em>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness.</em></p>
+</article></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness. Educational research, not a production AI or financial system.</footer>
+</body></html>

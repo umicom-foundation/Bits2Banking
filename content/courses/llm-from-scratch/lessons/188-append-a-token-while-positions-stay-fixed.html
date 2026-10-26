@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Explain the safe incremental window before the first eviction.">
+<title>LLM 188 — Append a Token While Positions Stay Fixed | Bits2Banking</title>
+<style>
+:root{color-scheme:light;--navy:#12344b;--blue:#086a86;--border:#d9e7ed;--paper:#fff;--shade:#f2f7fb}
+*{box-sizing:border-box}body{margin:0;background:#f1f5f9;color:#193449;font:17px/1.72 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#096b85}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #0d9aa7;outline-offset:3px}
+header{background:linear-gradient(120deg,#12344b,#205b75);color:#fff;padding:2.8rem max(1rem,calc((100% - 72rem)/2)) 2.1rem}
+header h1{line-height:1.2;margin:.3rem 0;max-width:25ch}header a{color:#e0fbff}
+header .strap{color:#b6e6f2;font-weight:650;letter-spacing:.02em}
+main{max-width:74rem;margin:1.4rem auto;padding:0 1rem 2.3rem}
+article{background:var(--paper);border:1px solid var(--border);border-radius:15px;padding:clamp(1.2rem,3vw,2.5rem);box-shadow:0 8px 25px #13374b0b}
+article h1{display:none}h2{margin:1.7rem 0 .5rem;color:#15445b;font-size:1.4rem}h3{color:#24586e}
+p,li{max-width:86ch}li{margin:.4rem 0}pre{overflow:auto;background:#102d43;color:#edfbff;border-radius:10px;padding:1.2rem;font:14px/1.6 Consolas,monospace}code{font-family:Consolas,monospace}p code,li code{background:#e8f2f5;color:#163a4d;border-radius:4px;padding:.1em .3em}
+blockquote{border-left:4px solid #13869a;margin:1.2rem 0;padding:.5rem 1.1rem;background:#eaf7f7}
+table{border-collapse:collapse;width:100%;font-size:.94rem}th,td{border:1px solid #ccdee8;padding:.65rem;text-align:left;vertical-align:top}th{background:#e8f3f7}
+details{border:1px solid #abd3d5;background:#f2faf9;border-radius:10px;padding:1rem 1.2rem;margin-top:1.2rem}summary{cursor:pointer;font-weight:bold;color:#0d5568}
+nav{display:flex;gap:.75rem 1.3rem;flex-wrap:wrap;background:#e7f0f5;padding:1rem;border-radius:10px;margin-bottom:1.4rem}
+footer{padding:2rem 1rem;text-align:center;color:#516975;font-size:.93rem}
+@media print{body{background:#fff}article{border:0;box-shadow:none}nav{display:none}header{background:#fff;color:#12344b;padding:1rem}}
+</style></head><body>
+<header><div class="strap">UMICOM FOUNDATION · BITS TO BANKING · LLM 188</div><h1>Append a Token While Positions Stay Fixed</h1><p>Explain the safe incremental window before the first eviction.</p></header>
+<main><nav aria-label="Lesson navigation"><a href="../advanced-lessons.html">Complete LLM catalogue</a><a href="187-prefill-every-layer-as-one-transaction.html">← Previous lesson</a><a href="189-refuse-silent-eviction-when-the-context-is-full.html">Next lesson →</a><a href="../../../lessons/10-native-ai/188-append-a-token-while-positions-stay-fixed.md">Editable Markdown manuscript</a></nav>
+<article aria-label="Append a Token While Positions Stay Fixed"><h1>Lesson 188 — Append a Token While Positions Stay Fixed</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab<br/>
+<strong>Study area:</strong> Native C23, Transformer inference and reliable cache ownership.</p>
+<p><strong>Learning objective:</strong> Explain the safe incremental window before the first eviction.</p>
+<h2>1. The engineering problem</h2>
+<p>While an unpadded prefix grows from position zero, every earlier token keeps its learned absolute index. Causal attention also prevents future tokens from changing a previous token's hidden representation. In that specific interval, an attention implementation can reuse previously calculated projections, provided every layer's original projections were correct. The storage owner supports an <code>Append</code> operation only until the fixed context reaches capacity.</p>
+<h2>2. A worked example</h2>
+<p>Use context capacity four, a two-token prefill and three Transformer layers. Two appends fill the context. The first prefill stores <code>2 * 3 = 6</code> token-layer rows; each append adds three, for twelve total. There is no shift yet. A request to append a fifth token must fail rather than silently overwriting position zero, because the first token's eviction would change the remaining tokens' learned positions.</p>
+<h2>3. Put this into the existing Umicom Framework</h2>
+<p>The Framework defines the relevant interface in <code>include/umicom/ai/training/stacked_kv_store.h</code> and implements it in <code>src/ai/training/stacked_kv_store.c</code>. Work-count qualification composes the existing <code>stacked_prefix_cache_plan.h</code> contract; the data owner must never be copied into Umicom Studio or Bits2Banking. Calls must be externally serialised, with inputs retained long enough for validation and one successful copy.</p>
+<p>The following excerpt assumes the caller has already prepared valid tensors and all variables named in it. It illustrates the public boundary; it is not a standalone program.</p>
+<pre><code class="language-c">/* New K/V projected rows must contain layers * channels floats. */
+UmiStatus status = UmiAiTrainingStackedKvStoreAppend(
+    store, nextTokenId, layerKeys, elementCount,
+    layerValues, elementCount);
+</code></pre>
+<h2>4. How to verify the result</h2>
+<p><strong>Engineering boundary:</strong> This chapter's C23 cache component stores and validates rows supplied by an approved producer; it does not calculate canonical stacked decoder logits, supply a new attention kernel, authorise training material or establish an end-to-end inference speedup. Reuse the established Umicom Framework decoder, checkpoint identity and attention services for those responsibilities.</p>
+<p>The optional native laboratory lives under <code>framework/learning/native-ai-stacked-kv</code>. Its tests compile the real K/V storage and the established scaling and prefix-work estimators. An actual accelerated decoder must separately pass independent logit parity, rollover and sampled-token regressions. Measure elapsed inference time only after those gates succeed.</p>
+<h2>5. Practice and worked answer</h2>
+<p><strong>Exercise:</strong> For context four and a two-token prefill, how many successful single-row appends are possible before a rebuild?</p>
+<details>
+<summary>Reveal the worked answer</summary>
+<p>Exactly two. They fill positions two and three. The next token cannot be stored as a fixed-position append because the retained window would need to shift.</p>
+</details>
+<h2>Continue learning</h2>
+<p><a href="188-append-a-token-while-positions-stay-fixed.html">Open the HTML version of this lesson</a>. Read <a href="../../../lessons/10-native-ai/multi-layer-kv-storage-learning-path.md">the multi-layer K/V learning path</a> or revisit <a href="../../../lessons/10-native-ai/194-measure-stored-token-layer-work.md">conditional prefix work</a>.</p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</article></main>
+<footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness. Educational research, not a production AI or financial system.</footer>
+</body></html>

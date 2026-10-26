@@ -3,7 +3,7 @@
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab
 
-This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus advanced Markdown-only units through Unit 90 covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
+This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus advanced Markdown-only units through Unit 104 covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
 
 ## A route from arithmetic to model training
 
@@ -109,6 +109,21 @@ The original illustrated course through [Unit 20](../../courses/maths-for-ai/ind
 88. **Interpret Nucleus Membership** — [Written lesson](88-interpret-nucleus-membership.md) · [Browser HTML](../../courses/maths-for-ai/lessons/88-interpret-nucleus-membership.html).
 89. **Track UTF-8 As Bytes** — [Written lesson](89-track-utf8-as-bytes.md) · [Browser HTML](../../courses/maths-for-ai/lessons/89-track-utf8-as-bytes.html).
 90. **Design Independent Regression Evidence** — [Written lesson](90-design-independent-regression-evidence.md) · [Browser HTML](../../courses/maths-for-ai/lessons/90-design-independent-regression-evidence.html).
+
+91. **Calculate a Three-Dimensional K/V Shape** — [Written lesson](91-calculate-a-three-dimensional-k-v-shape.md) · [HTML companion](../../courses/maths-for-ai/lessons/91-calculate-a-three-dimensional-k-v-shape.html).
+92. **Count Appends and Full Rebuilds** — [Written lesson](92-count-appends-and-full-rebuilds.md) · [HTML companion](../../courses/maths-for-ai/lessons/92-count-appends-and-full-rebuilds.html).
+93. **Verify a One-Step Rolling Sequence** — [Written lesson](93-verify-a-one-step-rolling-sequence.md) · [HTML companion](../../courses/maths-for-ai/lessons/93-verify-a-one-step-rolling-sequence.html).
+94. **Convert K/V Floats into Memory Bytes** — [Written lesson](94-convert-k-v-floats-into-memory-bytes.md) · [HTML companion](../../courses/maths-for-ai/lessons/94-convert-k-v-floats-into-memory-bytes.html).
+95. **Reject Unsafe Capacity Multiplication** — [Written lesson](95-reject-unsafe-capacity-multiplication.md) · [HTML companion](../../courses/maths-for-ai/lessons/95-reject-unsafe-capacity-multiplication.html).
+96. **Distinguish Finite Values From NaN** — [Written lesson](96-distinguish-finite-values-from-nan.md) · [HTML companion](../../courses/maths-for-ai/lessons/96-distinguish-finite-values-from-nan.html).
+97. **Separate SHA-256 Content Identity From Trust** — [Written lesson](97-separate-sha-256-content-identity-from-trust.md) · [HTML companion](../../courses/maths-for-ai/lessons/97-separate-sha-256-content-identity-from-trust.html).
+98. **Locate a Row in Layer-Major Storage** — [Written lesson](98-locate-a-row-in-layer-major-storage.md) · [HTML companion](../../courses/maths-for-ai/lessons/98-locate-a-row-in-layer-major-storage.html).
+99. **Compare Predicted and Observed Row Counts** — [Written lesson](99-compare-predicted-and-observed-row-counts.md) · [HTML companion](../../courses/maths-for-ai/lessons/99-compare-predicted-and-observed-row-counts.html).
+100. **Calculate Failure-Atomic Replacement** — [Written lesson](100-calculate-failure-atomic-replacement.md) · [HTML companion](../../courses/maths-for-ai/lessons/100-calculate-failure-atomic-replacement.html).
+101. **Distinguish Attention Scores From Values** — [Written lesson](101-distinguish-attention-scores-from-values.md) · [HTML companion](../../courses/maths-for-ai/lessons/101-distinguish-attention-scores-from-values.html).
+102. **Keep Softmax Numerically Stable** — [Written lesson](102-keep-softmax-numerically-stable.md) · [HTML companion](../../courses/maths-for-ai/lessons/102-keep-softmax-numerically-stable.html).
+103. **Compare Full-Context and Prefix Work** — [Written lesson](103-compare-full-context-and-prefix-work.md) · [HTML companion](../../courses/maths-for-ai/lessons/103-compare-full-context-and-prefix-work.html).
+104. **Distinguish Latency From Workload** — [Written lesson](104-distinguish-latency-from-workload.md) · [HTML companion](../../courses/maths-for-ai/lessons/104-distinguish-latency-from-workload.html).
 
 ## Reading mathematics alongside the native LLM course
 
