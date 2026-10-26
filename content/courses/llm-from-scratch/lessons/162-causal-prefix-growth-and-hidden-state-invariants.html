@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="LLM lesson 162 — Prove What Causal Prefix Growth Actually Preserves. Free native C23 and AI mathematics education.">
+<title>LLM 162 — Prove What Causal Prefix Growth Actually Preserves | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root{color-scheme:light;--ink:#173247;--navy:#173b5b;--teal:#0d7882;--border:#cfdfe9}
+*{box-sizing:border-box}body{margin:0;background:#f3f7fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(125deg,#142f4f,#256477);color:white;padding:2rem max(1rem,calc((100% - 70rem)/2))}header p{color:#e1f4fa}
+main{max-width:70rem;margin:1.5rem auto;padding:clamp(1.1rem,4vw,2.5rem);background:white;border:1px solid var(--border);border-radius:12px}
+h1{line-height:1.2;font-size:clamp(1.7rem,3vw,2.4rem)}h2{margin-top:2.1rem;color:#163f63}a{color:#075eaf}a:focus-visible,summary:focus-visible{outline:3px solid #0195a3;outline-offset:3px}
+p,li{max-width:86ch}nav{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;padding:.8rem;background:#eaf5f8;border-radius:8px}nav a{font-weight:600}
+blockquote{background:#eaf6f7;border-left:4px solid var(--teal);margin:1.4rem 0;padding:.5rem 1.25rem}
+pre{background:#12283b;color:#eaf5ff;padding:1rem;border-radius:9px;overflow-x:auto}code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em}pre code{color:inherit}
+details{background:#edf6fc;padding:.8rem 1.1rem;margin:1.2rem 0;border:1px solid #d2e4f0;border-radius:8px}summary{cursor:pointer;font-weight:700}
+table{width:100%;border-collapse:collapse}td,th{border:1px solid #d3e1ee;padding:.45rem;text-align:left}
+footer{text-align:center;color:#506a7b;font-size:.9rem;padding:1.1rem} .skip{position:absolute;left:-100vw}.skip:focus{left:1rem;top:.5rem;background:white;padding:.5rem}
+@media print{body{background:white}main{border:none}nav{display:none}}
+</style></head><body>
+<a class="skip" href="#content">Skip to the lesson</a>
+<header><p>Umicom Foundation · Bits to Banking · LLM 162</p><h1>Prove What Causal Prefix Growth Actually Preserves</h1>
+<p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main id="content">
+<nav aria-label="Course navigation"><a href="../advanced-lessons.html">Browse continuation</a><a href="../index.html">Original course home</a><a href="../../../lessons/10-native-ai/162-causal-prefix-growth-and-hidden-state-invariants.md">Editable Markdown</a></nav>
+<h1>Lesson 162 — Prove What Causal Prefix Growth Actually Preserves</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br>
+<strong>Author:</strong> Sammy Hegab<br>
+<strong>Language:</strong> Native C23, mathematics and accessible explanation</p>
+<blockquote>
+<p><strong>Learning objective:</strong> Explain why unchanged past token positions are a necessary condition for incremental attention and identify what must be tested in every transformer layer.</p>
+</blockquote>
+<h2>1. Start with the engineering problem</h2>
+<p>In a causal model, the representation of token 2 can depend on tokens 0, 1 and 2 but not tokens 3 or 4, which have not arrived yet. Appending one more token therefore leaves the mathematical computation for earlier tokens unchanged—provided their positions, weights, normalisation and input contexts remain unchanged. The reasoning applies layer by layer to a growing prefix, not to arbitrary deletion of history.</p>
+<p>Do not confuse three different outcomes: a calculation that is mathematically permitted, a program that is compiled, and a program that has passed an independent numerical qualification. An assumption used for planning can be valuable without yet being an implemented runtime feature.</p>
+<h2>2. Work through the calculation</h2>
+<p>Imagine three tokens A, B and C at positions 0, 1 and 2. In the first Transformer block, C can attend to A, B and C. In the next block, the representation of B already contains information from A. Adding D at position 3 does not change B: B is prohibited by the causal mask from reading future D. Dropping A is different. A fresh computation of B without A may give a different hidden vector in the second block. Retaining B’s old upper-layer key may then disagree with fresh recomputation.</p>
+<p>The crucial questions are <strong>which positions remain unchanged</strong>, <strong>which history each layer contains</strong>, and <strong>which observations the implementation has actually measured</strong>. Record the assumptions before interpreting a counter or timing number.</p>
+<h2>3. Inspect the existing Framework boundary</h2>
+<pre><code class="language-c">/* Independently compare full-context and incremental logits.
+ * Use the SAME decoder weights, positions and sampling convention.
+ * A successful shape check is not numerical parity evidence. */
+size_t retainedBefore = 3U;
+size_t retainedAfterAppend = 4U;
+/* Assert that the first three absolute positions remain 0,1,2. */
+</code></pre>
+<p>The C23 excerpt illustrates a <strong>Framework-owned interface or validation scenario</strong>. It is not a substitute for creating the surrounding model, verifying argument lifetimes and checking every return status. The compiled implementation belongs to <code>Umicom-Applications/framework</code>; this repository stores its educational explanation.</p>
+<h2>4. Qualification and review checklist</h2>
+<ol>
+<li>Compare every vocabulary logit at the last real token, not only the most likely token.</li>
+<li>Probe every layer before the first eviction, then separately at and after the first eviction.</li>
+<li>Test with several weight initialisations and trained checkpoints, not a single all-zero synthetic model.</li>
+</ol>
+<h3>Why these checks matter</h3>
+<p>Causal masking is an exact forward-dependency statement. It does not guarantee bitwise floating-point agreement between different kernels, and it does not imply that a cache remains valid after positional rebasing or context truncation.</p>
+<p>For financial applications, training quality and generated-code confidence must remain separate from authorised transaction processing. Educational AI output must not be executed, treated as a trusted trading signal, or used to bypass treasury controls.</p>
+<h2>5. Practice and reveal the worked answer</h2>
+<p><strong>Question:</strong> Why does appending D leave B’s prior hidden state unchanged but dropping A may not?</p>
+<details>
+<summary>Show the worked answer</summary>
+<p>The causal mask prevents B from reading future D. Before A is removed, B may already have incorporated A in its hidden state. Removing A changes the available past, so recomputing B from the truncated sequence can change its upper-layer representation.</p>
+</details>
+<h2>6. Connect to the next idea</h2>
+<p>Read <a href="../../maths-for-ai/lessons/72-calculate-causal-prefix-invariance.html">Mathematics for AI Unit 72 — Calculate What a Causal Prefix Can and Cannot See</a> for a slower explanation of the numerical steps. Compare the original native Framework API declarations before reusing an example in an application. A successful educational build does not imply completed model validation.</p>
+<p><a href="161-forecast-multilayer-prefix-work-before-caching.html">Previous: Lesson 161</a> · <a href="163-recognise-upper-layer-cache-history-divergence.html">Next: Lesson 163</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+<p><strong>Publication note:</strong> The source manuscript is available as <a href="../../../lessons/10-native-ai/162-causal-prefix-growth-and-hidden-state-invariants.md">editable Markdown</a>. Static educational HTML does not execute code samples, authorise training data or demonstrate production qualification.</p>
+<nav aria-label="Continue learning"><a href="../advanced-lessons.html">All continuation lessons</a><a href="../index.html">Course home</a></nav>
+</main><footer>Umicom Foundation · Accessible educational material, not production financial or AI verification.</footer>
+</body></html>

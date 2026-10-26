@@ -3,7 +3,7 @@
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab
 
-This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus eighteen advanced Markdown-only units covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
+This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus advanced Markdown-only units through Unit 78 covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
 
 ## A route from arithmetic to model training
 
@@ -50,6 +50,52 @@ Begin with familiar numbers and notation. Vectors and matrices then supply the l
 36. **Token-weighted held-out averages** — [Written lesson](36-token-weighted-held-out-averages.md) · combine unequal-length target sequences.
 37. **Quality thresholds and trade-offs** — [Written lesson](37-quality-thresholds-and-tradeoffs.md) · loss and accuracy acceptance.
 38. **Binary layouts and safe capacity** — [Written lesson](38-binary-layouts-and-safe-capacity.md) · little-endian values, checked sizes and digests.
+
+
+## Further mathematics — Units 39–78
+
+The original illustrated course through [Unit 20](../../courses/maths-for-ai/index.html) is preserved. All subsequent units have editable Markdown and browser-friendly HTML counterparts in the [advanced mathematics catalogue](../../courses/maths-for-ai/advanced-units.html). Each entry below links to both views.
+
+39. **Counting neural network parameters** — [Written lesson](39-model-parameter-counts-and-shapes.md) · [HTML companion](../../courses/maths-for-ai/lessons/39-model-parameter-counts-and-shapes.html).
+40. **The arithmetic of low-rank adapters** — [Written lesson](40-low-rank-factorisation-counts.md) · [HTML companion](../../courses/maths-for-ai/lessons/40-low-rank-factorisation-counts.html).
+41. **Compute KV cache memory** — [Written lesson](41-attention-cache-and-memory-units.md) · [HTML companion](../../courses/maths-for-ai/lessons/41-attention-cache-and-memory-units.html).
+42. **Working out optimiser storage** — [Written lesson](42-moments-gradients-and-storage.md) · [HTML companion](../../courses/maths-for-ai/lessons/42-moments-gradients-and-storage.html).
+43. **Why attention work grows quadratically** — [Written lesson](43-attention-score-matrix-growth.md) · [HTML companion](../../courses/maths-for-ai/lessons/43-attention-score-matrix-growth.html).
+44. **Convert timing observations into rates** — [Written lesson](44-training-throughput-and-uncertainty.md) · [HTML companion](../../courses/maths-for-ai/lessons/44-training-throughput-and-uncertainty.html).
+45. **Comparing models with multiple objectives** — [Written lesson](45-loss-accuracy-and-objective-tradeoffs.md) · [HTML companion](../../courses/maths-for-ai/lessons/45-loss-accuracy-and-objective-tradeoffs.html).
+46. **Overflow-safe multiplication and addition** — [Written lesson](46-safe-capacity-arithmetic.md) · [HTML companion](../../courses/maths-for-ai/lessons/46-safe-capacity-arithmetic.html).
+47. **Count parameters in several Transformer layers** — [Written lesson](47-count-parameters-in-transformer-layers.md) · [HTML companion](../../courses/maths-for-ai/lessons/47-count-parameters-in-transformer-layers.html).
+48. **Track tensor shapes from embeddings to logits** — [Written lesson](48-track-tensor-shapes-through-the-stack.md) · [HTML companion](../../courses/maths-for-ai/lessons/48-track-tensor-shapes-through-the-stack.html).
+49. **Prove that future tokens do not change earlier outputs** — [Written lesson](49-prove-causal-prefix-independence.md) · [HTML companion](../../courses/maths-for-ai/lessons/49-prove-causal-prefix-independence.html).
+50. **Combine cross-entropy for selected answer tokens** — [Written lesson](50-combine-selected-token-cross-entropies.md) · [HTML companion](../../courses/maths-for-ai/lessons/50-combine-selected-token-cross-entropies.html).
+51. **Understand deterministic training permutations** — [Written lesson](51-understand-deterministic-training-permutations.md) · [HTML companion](../../courses/maths-for-ai/lessons/51-understand-deterministic-training-permutations.html).
+52. **Measure a portable stacked-model checkpoint** — [Written lesson](52-measure-portable-stacked-checkpoint-sizes.md) · [HTML companion](../../courses/maths-for-ai/lessons/52-measure-portable-stacked-checkpoint-sizes.html).
+53. **Compare training loss with held-out loss** — [Written lesson](53-compare-training-and-heldout-loss.md) · [HTML companion](../../courses/maths-for-ai/lessons/53-compare-training-and-heldout-loss.html).
+54. **Estimate full-context generation work across layers** — [Written lesson](54-estimate-full-context-generation-work.md) · [HTML companion](../../courses/maths-for-ai/lessons/54-estimate-full-context-generation-work.html).
+55. **Logit rankings and the most likely token** — [Written lesson](55-logit-rankings-and-the-most-likely-token.md) · [HTML companion](../../courses/maths-for-ai/lessons/55-logit-rankings-and-the-most-likely-token.html).
+56. **Temperature and probability concentration** — [Written lesson](56-temperature-and-probability-concentration.md) · [HTML companion](../../courses/maths-for-ai/lessons/56-temperature-and-probability-concentration.html).
+57. **Top-K versus top-p nucleus membership** — [Written lesson](57-topk-versus-topp-nucleus-membership.md) · [HTML companion](../../courses/maths-for-ai/lessons/57-topk-versus-topp-nucleus-membership.html).
+58. **Left-padding and token position indices** — [Written lesson](58-left-padding-and-token-position-indices.md) · [HTML companion](../../courses/maths-for-ai/lessons/58-left-padding-and-token-position-indices.html).
+59. **Count full-context token-layer work** — [Written lesson](59-count-full-context-token-layer-work.md) · [HTML companion](../../courses/maths-for-ai/lessons/59-count-full-context-token-layer-work.html).
+60. **Weighted selected-token loss and perplexity** — [Written lesson](60-weighted-selected-token-loss-and-perplexity.md) · [HTML companion](../../courses/maths-for-ai/lessons/60-weighted-selected-token-loss-and-perplexity.html).
+61. **Hash ordered tokens independently of the CPU word size** — [Written lesson](61-hash-ordered-tokens-portably.md) · [HTML companion](../../courses/maths-for-ai/lessons/61-hash-ordered-tokens-portably.html).
+62. **Absolute loss thresholds versus accuracy thresholds** — [Written lesson](62-absolute-loss-thresholds-versus-accuracy.md) · [HTML companion](../../courses/maths-for-ai/lessons/62-absolute-loss-thresholds-versus-accuracy.html).
+63. **Prefill and decoding work, counted carefully** — [Written lesson](63-prefill-and-decoding-row-arithmetic.md) · [HTML companion](../../courses/maths-for-ai/lessons/63-prefill-and-decoding-row-arithmetic.html).
+64. **Why the attention score table grows quadratically** — [Written lesson](64-quadratic-attention-and-causal-mask.md) · [HTML companion](../../courses/maths-for-ai/lessons/64-quadratic-attention-and-causal-mask.html).
+65. **Distinguish saved activations from stored weights** — [Written lesson](65-activation-memory-is-not-parameter-memory.md) · [HTML companion](../../courses/maths-for-ai/lessons/65-activation-memory-is-not-parameter-memory.html).
+66. **Understand quantisation as a controlled numerical approximation** — [Written lesson](66-quantisation-error-and-the-accuracy-budget.md) · [HTML companion](../../courses/maths-for-ai/lessons/66-quantisation-error-and-the-accuracy-budget.html).
+67. **Calculate tokens per second without hiding prefill** — [Written lesson](67-throughput-first-token-and-decode-time.md) · [HTML companion](../../courses/maths-for-ai/lessons/67-throughput-first-token-and-decode-time.html).
+68. **Combine numerical gates without confusing their meanings** — [Written lesson](68-loss-thresholds-and-model-admission.md) · [HTML companion](../../courses/maths-for-ai/lessons/68-loss-thresholds-and-model-admission.html).
+69. **Count UTF-8 bytes separately from displayed characters** — [Written lesson](69-utf8-byte-sequences-and-character-counts.md) · [HTML companion](../../courses/maths-for-ai/lessons/69-utf8-byte-sequences-and-character-counts.html).
+70. **Calculate capacity for streamed Unicode scalars** — [Written lesson](70-safe-buffer-capacity-for-streamed-utf8.md) · [HTML companion](../../courses/maths-for-ai/lessons/70-safe-buffer-capacity-for-streamed-utf8.html).
+71. **Count Token-Layer Rows in a Proposed Cache** — [Written lesson](71-count-token-layer-rows-in-a-cache-plan.md) · [HTML companion](../../courses/maths-for-ai/lessons/71-count-token-layer-rows-in-a-cache-plan.html).
+72. **Calculate What a Causal Prefix Can and Cannot See** — [Written lesson](72-calculate-causal-prefix-invariance.md) · [HTML companion](../../courses/maths-for-ai/lessons/72-calculate-causal-prefix-invariance.html).
+73. **Separate Logit Agreement from Token Agreement** — [Written lesson](73-separate-logit-parity-from-token-agreement.md) · [HTML companion](../../courses/maths-for-ai/lessons/73-separate-logit-parity-from-token-agreement.html).
+74. **Keep Absolute Token Positions Distinct from Ring Slots** — [Written lesson](74-keep-absolute-positions-through-rolling-windows.md) · [HTML companion](../../courses/maths-for-ai/lessons/74-keep-absolute-positions-through-rolling-windows.html).
+75. **Budget Raw Key/Value Storage Across Transformer Layers** — [Written lesson](75-budget-key-value-memory-across-layers.md) · [HTML companion](../../courses/maths-for-ai/lessons/75-budget-key-value-memory-across-layers.html).
+76. **Measure Inference Timing Without Confusing Workload and Speed** — [Written lesson](76-measure-time-and-uncertainty-honestly.md) · [HTML companion](../../courses/maths-for-ai/lessons/76-measure-time-and-uncertainty-honestly.html).
+77. **Calculate Complete HTML and Markdown Course Coverage** — [Written lesson](77-calculate-html-and-markdown-coverage.md) · [HTML companion](../../courses/maths-for-ai/lessons/77-calculate-html-and-markdown-coverage.html).
+78. **Calculate Source-Preserving HTML Output Capacity** — [Written lesson](78-calculate-source-preserving-html-output-capacity.md) · [HTML companion](../../courses/maths-for-ai/lessons/78-calculate-source-preserving-html-output-capacity.html).
 
 ## Reading mathematics alongside the native LLM course
 

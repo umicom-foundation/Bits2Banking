@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="LLM lesson 166 — Measure Cache Memory, Work and Time as Separate Quantities. Free native C23 and AI mathematics education.">
+<title>LLM 166 — Measure Cache Memory, Work and Time as Separate Quantities | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<style>
+:root{color-scheme:light;--ink:#173247;--navy:#173b5b;--teal:#0d7882;--border:#cfdfe9}
+*{box-sizing:border-box}body{margin:0;background:#f3f7fb;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(125deg,#142f4f,#256477);color:white;padding:2rem max(1rem,calc((100% - 70rem)/2))}header p{color:#e1f4fa}
+main{max-width:70rem;margin:1.5rem auto;padding:clamp(1.1rem,4vw,2.5rem);background:white;border:1px solid var(--border);border-radius:12px}
+h1{line-height:1.2;font-size:clamp(1.7rem,3vw,2.4rem)}h2{margin-top:2.1rem;color:#163f63}a{color:#075eaf}a:focus-visible,summary:focus-visible{outline:3px solid #0195a3;outline-offset:3px}
+p,li{max-width:86ch}nav{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;padding:.8rem;background:#eaf5f8;border-radius:8px}nav a{font-weight:600}
+blockquote{background:#eaf6f7;border-left:4px solid var(--teal);margin:1.4rem 0;padding:.5rem 1.25rem}
+pre{background:#12283b;color:#eaf5ff;padding:1rem;border-radius:9px;overflow-x:auto}code{font-family:Consolas,"Liberation Mono",monospace;font-size:.92em}pre code{color:inherit}
+details{background:#edf6fc;padding:.8rem 1.1rem;margin:1.2rem 0;border:1px solid #d2e4f0;border-radius:8px}summary{cursor:pointer;font-weight:700}
+table{width:100%;border-collapse:collapse}td,th{border:1px solid #d3e1ee;padding:.45rem;text-align:left}
+footer{text-align:center;color:#506a7b;font-size:.9rem;padding:1.1rem} .skip{position:absolute;left:-100vw}.skip:focus{left:1rem;top:.5rem;background:white;padding:.5rem}
+@media print{body{background:white}main{border:none}nav{display:none}}
+</style></head><body>
+<a class="skip" href="#content">Skip to the lesson</a>
+<header><p>Umicom Foundation · Bits to Banking · LLM 166</p><h1>Measure Cache Memory, Work and Time as Separate Quantities</h1>
+<p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main id="content">
+<nav aria-label="Course navigation"><a href="../advanced-lessons.html">Browse continuation</a><a href="../index.html">Original course home</a><a href="../../../lessons/10-native-ai/166-measure-cache-memory-work-and-time-separately.md">Editable Markdown</a></nav>
+<h1>Lesson 166 — Measure Cache Memory, Work and Time as Separate Quantities</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br>
+<strong>Author:</strong> Sammy Hegab<br>
+<strong>Language:</strong> Native C23, mathematics and accessible explanation</p>
+<blockquote>
+<p><strong>Learning objective:</strong> Calculate the raw retained kv memory, describe what row counters mean, and interpret measured timing results without unsupported speed claims.</p>
+</blockquote>
+<h2>1. Start with the engineering problem</h2>
+<p>A cache exchanges recomputation for retained storage and bookkeeping. One model-token row is not a fixed number of floating-point operations: longer prefixes require more query–key comparisons per new token. Even if the cache reduces recomputed projections, allocations, memory access and processor scheduling may offset those savings.</p>
+<p>Do not confuse three different outcomes: a calculation that is mathematically permitted, a program that is compiled, and a program that has passed an independent numerical qualification. An assumption used for planning can be valuable without yet being an implemented runtime feature.</p>
+<h2>2. Work through the calculation</h2>
+<p>For two Transformer layers, context eight, eight channels per layer and float32 storage, a simple full-head KV estimate is <code>2 (K and V) × 2 layers × 8 positions × 8 channels × 4 bytes = 1,024 bytes</code>. It excludes allocator metadata, activations, attention-score work, gradients, model weights and any device transfer. In the separate 8/3/12 example, 80 of 192 token-layer rows are avoided by a hypothetical growing-prefix schedule, but that is only a workload forecast.</p>
+<p>The crucial questions are <strong>which positions remain unchanged</strong>, <strong>which history each layer contains</strong>, and <strong>which observations the implementation has actually measured</strong>. Record the assumptions before interpreting a counter or timing number.</p>
+<h2>3. Inspect the existing Framework boundary</h2>
+<pre><code class="language-c">/* Only an estimator: no allocation or inference occurs. */
+UmiAiTrainingStackedPrefixCachePlan plan = {0};
+UmiStatus status = UmiAiTrainingStackedPrefixCachePlanBuild(
+    &amp;config, 3U, 12U, &amp;plan);
+/* Inspect plan.kvTensorFp32Bytes and plan.fullWindowRebuilds.
+ * Run warm, repeated wall-clock benchmarks separately. */
+</code></pre>
+<p>The C23 excerpt illustrates a <strong>Framework-owned interface or validation scenario</strong>. It is not a substitute for creating the surrounding model, verifying argument lifetimes and checking every return status. The compiled implementation belongs to <code>Umicom-Applications/framework</code>; this repository stores its educational explanation.</p>
+<h2>4. Qualification and review checklist</h2>
+<ol>
+<li>Record time-to-first-token separately from inter-token latency.</li>
+<li>Report compiler, CPU/GPU, input length, repetitions and time distribution.</li>
+<li>A run showing fewer rows but higher elapsed time is not paradoxical; do not rewrite the measured result.</li>
+</ol>
+<h3>Why these checks matter</h3>
+<p>The cache-memory figure is a lower bound for raw K/V arrays only. It is not total RAM, a GPU allocation plan or a throughput certificate.</p>
+<p>For financial applications, training quality and generated-code confidence must remain separate from authorised transaction processing. Educational AI output must not be executed, treated as a trusted trading signal, or used to bypass treasury controls.</p>
+<h2>5. Practice and reveal the worked answer</h2>
+<p><strong>Question:</strong> A cache computes fewer rows but has a median latency of 9.1 ms against 8.4 ms for the reference. Which path was faster in this measurement?</p>
+<details>
+<summary>Show the worked answer</summary>
+<p>The reference was faster by 0.7 ms for the measured runs. Avoided token rows do not override observed wall-clock time, and repeated measurements are needed before making a general performance claim.</p>
+</details>
+<h2>6. Connect to the next idea</h2>
+<p>Read <a href="../../maths-for-ai/lessons/76-measure-time-and-uncertainty-honestly.html">Mathematics for AI Unit 76 — Measure Inference Timing Without Confusing Workload and Speed</a> for a slower explanation of the numerical steps. Compare the original native Framework API declarations before reusing an example in an application. A successful educational build does not imply completed model validation.</p>
+<p><a href="165-design-independent-cache-parity-regressions.html">Previous: Lesson 165</a> · <a href="167-audit-markdown-html-lesson-companions.html">Next: Lesson 167</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+<p><strong>Publication note:</strong> The source manuscript is available as <a href="../../../lessons/10-native-ai/166-measure-cache-memory-work-and-time-separately.md">editable Markdown</a>. Static educational HTML does not execute code samples, authorise training data or demonstrate production qualification.</p>
+<nav aria-label="Continue learning"><a href="../advanced-lessons.html">All continuation lessons</a><a href="../index.html">Course home</a></nav>
+</main><footer>Umicom Foundation · Accessible educational material, not production financial or AI verification.</footer>
+</body></html>
