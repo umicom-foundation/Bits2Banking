@@ -3,7 +3,7 @@
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab
 
-This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus advanced Markdown-only units through Unit 78 covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
+This is the reading map for the editable mathematics manuscripts. The complete [illustrated HTML course](../../courses/maths-for-ai/index.html) is available for every unit, with worked examples and accessible diagrams. Written Markdown companions are available for all twenty illustrated units, plus advanced Markdown-only units through Unit 90 covering cross-entropy, low-rank adaptation, loss masking, supervised evaluation, checkpoint mathematics, reproducibility and evidence. The HTML course and its existing interactive diagrams remain available alongside the editable manuscripts.
 
 ## A route from arithmetic to model training
 
@@ -96,6 +96,19 @@ The original illustrated course through [Unit 20](../../courses/maths-for-ai/ind
 76. **Measure Inference Timing Without Confusing Workload and Speed** — [Written lesson](76-measure-time-and-uncertainty-honestly.md) · [HTML companion](../../courses/maths-for-ai/lessons/76-measure-time-and-uncertainty-honestly.html).
 77. **Calculate Complete HTML and Markdown Course Coverage** — [Written lesson](77-calculate-html-and-markdown-coverage.md) · [HTML companion](../../courses/maths-for-ai/lessons/77-calculate-html-and-markdown-coverage.html).
 78. **Calculate Source-Preserving HTML Output Capacity** — [Written lesson](78-calculate-source-preserving-html-output-capacity.md) · [HTML companion](../../courses/maths-for-ai/lessons/78-calculate-source-preserving-html-output-capacity.html).
+
+79. **Read The Right Logit Row** — [Written lesson](79-read-the-right-logit-row.md) · [Browser HTML](../../courses/maths-for-ai/lessons/79-read-the-right-logit-row.html).
+80. **Causal Suffix Invariance** — [Written lesson](80-causal-suffix-invariance.md) · [Browser HTML](../../courses/maths-for-ai/lessons/80-causal-suffix-invariance.html).
+81. **Pending Samples And Append Counts** — [Written lesson](81-pending-samples-and-append-counts.md) · [Browser HTML](../../courses/maths-for-ai/lessons/81-pending-samples-and-append-counts.html).
+82. **Calculate Real Token Layer Work** — [Written lesson](82-calculate-real-token-layer-work.md) · [Browser HTML](../../courses/maths-for-ai/lessons/82-calculate-real-token-layer-work.html).
+83. **Compare Actual And Planned Cache Work** — [Written lesson](83-compare-actual-and-planned-cache-work.md) · [Browser HTML](../../courses/maths-for-ai/lessons/83-compare-actual-and-planned-cache-work.html).
+84. **Count Evictions After Context Fills** — [Written lesson](84-count-evictions-after-context-fills.md) · [Browser HTML](../../courses/maths-for-ai/lessons/84-count-evictions-after-context-fills.html).
+85. **Read Content Hash Identities** — [Written lesson](85-read-content-hash-identities.md) · [Browser HTML](../../courses/maths-for-ai/lessons/85-read-content-hash-identities.html).
+86. **Budget Key Value Memory** — [Written lesson](86-budget-key-value-memory.md) · [Browser HTML](../../courses/maths-for-ai/lessons/86-budget-key-value-memory.html).
+87. **Choose A Numerical Parity Tolerance** — [Written lesson](87-choose-a-numerical-parity-tolerance.md) · [Browser HTML](../../courses/maths-for-ai/lessons/87-choose-a-numerical-parity-tolerance.html).
+88. **Interpret Nucleus Membership** — [Written lesson](88-interpret-nucleus-membership.md) · [Browser HTML](../../courses/maths-for-ai/lessons/88-interpret-nucleus-membership.html).
+89. **Track UTF-8 As Bytes** — [Written lesson](89-track-utf8-as-bytes.md) · [Browser HTML](../../courses/maths-for-ai/lessons/89-track-utf8-as-bytes.html).
+90. **Design Independent Regression Evidence** — [Written lesson](90-design-independent-regression-evidence.md) · [Browser HTML](../../courses/maths-for-ai/lessons/90-design-independent-regression-evidence.html).
 
 ## Reading mathematics alongside the native LLM course
 
