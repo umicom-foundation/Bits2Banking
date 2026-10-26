@@ -82,3 +82,9 @@ Read the **first meaningful error** in a failed compile rather than just the fin
 A debugger can pause a running program, inspect its variables and step through code. Umicom Studio aims to provide these features inside a reusable development environment, but the concepts apply to any toolchain.
 
 **Next:** [Store structured data in a database](19-databases.md).
+
+## Continue with a connected course
+
+[Build one real OS component](../../courses/umicom-os-from-scratch/lessons/02-build-the-parser.html) — Use the toolchain concepts in a small hosted lab.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

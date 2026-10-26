@@ -107,3 +107,9 @@ A useful next exercise is to design a simple audit record for each **accepted** 
 ### Continue with Umicom
 
 Study the [Framework repository](https://github.com/umicom-foundation/umicom-framework) and the [Umicom Bank module](https://github.com/umicom-foundation/umicom-bank-module) as you advance. Real applications must use the shared financial contracts, controlled posting workflows and durable transaction services rather than this isolated training structure.
+
+## Continue with a connected course
+
+[Reject overflow before multiplying](../../courses/umicom-kernel-from-scratch/lessons/03-overflow-and-ownership.html) — Compare checked arithmetic across financial and system-input domains.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

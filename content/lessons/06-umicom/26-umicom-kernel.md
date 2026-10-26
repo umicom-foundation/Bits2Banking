@@ -64,3 +64,9 @@ An **interrupt** tells the processor that an event needs attention, such as a ti
 After you see a serial diagnostic, ask what evidence would prove that the kernel can safely schedule two tasks, isolate their memory and deliver a message between them. Kernel engineering advances by testing such specific guarantees, not merely by displaying a boot banner.
 
 **Next:** [Understand Umicom OS](27-umicom-os.md).
+
+## Continue with a connected course
+
+[Read a native kernel without booting it](../../courses/umicom-kernel-from-scratch/lessons/01-native-kernel-and-host-models.html) — Compare the host exercise with the actual native Kernel responsibilities.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

@@ -74,3 +74,9 @@ The names and numbers will depend on your computer. Nothing in these commands ch
 Think of a source-code file open in Umicom Studio. Where is the saved version stored? Where are its working contents held while you type? Which component follows the instructions that make the editor respond? Why would a program need an operating system to open a file?
 
 **Next:** [How information becomes bits and bytes](02-bits-and-logic.md).
+
+## Continue with a connected course
+
+[What does a computer do?](../../courses/computing-from-the-beginning/lessons/02-input-instructions-and-results.html) — Return to the input, instruction and result model before the component details.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

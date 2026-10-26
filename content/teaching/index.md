@@ -1,5 +1,10 @@
 # Teaching guides
 
+## Support a first-time learner
+
+[Help someone take their first steps](support-first-time-learners.md) offers a patient, age-inclusive way to use the new foundation course, with spoken, drawn and written responses.
+
+
 Use these guides alongside the lessons and laboratory source. They provide session plans, worked answers and assessment criteria. A suggested test count describes the exercise; it is not evidence that a particular learner's build has passed.
 
 | Subject | Teaching guide |

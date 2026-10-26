@@ -85,3 +85,9 @@ Draw the boot sequence in your notebook. Mark the moment when Assembly hands con
 Make a short comparison between an ordinary application and a freestanding kernel: Who provides the initial stack? Who establishes the output device? What does the linker control? What additional test is required after compiling the kernel image?
 
 Finally, explain in your own words why **Umicom Kernel**, **Umicom OS** and **Umicom Framework** are different projects. Umicom Kernel develops original native-kernel mechanisms. Umicom OS packages operating-system services and user-space components and can target different kernels. Umicom Framework provides reusable application capabilities above those system boundaries.
+
+## Continue with a connected course
+
+[Read the native Kernel source](../../courses/umicom-kernel-from-scratch/lessons/01-native-kernel-and-host-models.html) — Distinguish host checks from target-machine execution.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

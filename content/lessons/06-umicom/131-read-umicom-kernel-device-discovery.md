@@ -99,3 +99,9 @@ You now have the foundation for a meaningful documentation improvement or a new 
 **Why is a copied hardware catalogue safer than keeping unchecked pointers into a temporary FDT buffer?** Why does a discovered `reg` address still require bus translation and driver admission? What is the difference between a successful WRITE completion and confirmed persistence? When would the driver retain frames after a failure rather than release them immediately?
 
 Return to [Chapter 127](../05-engineering/127-inspect-device-tree-in-c23.md) if you want to practise interpreting FDT bytes, or continue with [Chapter 130](../05-engineering/130-understand-virtio-split-queues.md) to revisit the queue ownership model.
+
+## Continue with a connected course
+
+[Read firmware bytes without following their addresses](../../courses/umicom-kernel-from-scratch/lessons/05-firmware-metadata.html) — Follow the shared device-tree reader before interpreting device bindings.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

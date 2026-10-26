@@ -39,3 +39,19 @@ The standalone self-test can be run before merging.
 Use the exact merge workflow in `docs/BITS2BANKING_BATCH03.md`. The staging
 executable never modifies original course pages: it reads from the current
 repository and creates complete proposed copies in an explicit external folder.
+
+## Connected beginner and systems learning
+
+The additional test `btb.education.learning_paths` checks the learning-path registry, manuscript destinations, published URL spelling, reciprocal chapter links and the foundation course order. It performs source checks only. It does not rate teaching quality or prove browser accessibility.
+
+After separately building the learning website, check that the mapped destinations were emitted:
+
+```powershell
+cmake -DREPOSITORY_ROOT="C:/umicom/Umicom-Bits2Banking" -DSITE_ROOT="C:/umicom/Umicom-Bits2Banking/site" -P "./tests/content_integrity/check_learning_paths.cmake"
+```
+
+A missing site destination is an error, not skipped coverage. Preview the website after this check: follow a foundation lesson into the written chapters, return to the map, and open the OS and Kernel courses. Check keyboard navigation, zoom and the explained answers. No successful execution of these checks is implied by their presence here.
+
+## Introductory C course
+
+The first_c_course structural check verifies lesson navigation and complete displayed examples against the source files in labs/native/first-c-programs. It does not compile those files. Build and run the separate laboratory to check its outputs and count contract. Keyboard, zoom, screen-reader and first-time-learner review remain distinct activities.

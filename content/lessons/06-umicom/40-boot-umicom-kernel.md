@@ -140,3 +140,9 @@ Open `arch/riscv64/boot.S` and identify the instruction sequence that creates th
 Do not edit the normal Umicom Kernel checkout for the first exercise. Use a separate practice copy if you want to test a deliberate failure. Once you understand the output, a small documentation correction or a new focused test can become your first kernel contribution.
 
 Continue with [Assembly and processor contracts](../03-native-code/35-assembly-and-processor-contracts.md) or return to [Umicom OS](27-umicom-os.md).
+
+## Continue with a connected course
+
+[Hosted Kernel labs](../../courses/umicom-kernel-from-scratch/index.html) — Study bounded input and firmware contracts before machine boot experiments.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

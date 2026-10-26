@@ -8,3 +8,7 @@ Use algorithms, PowerShell, Bash and Python to solve practical problems.
 - [7. Python: build a note-taking program](07-python.md)
 
 [Explore the practical source files](../../labs/index.md)
+
+## Start with small C programs
+
+[C from the Beginning](../c-from-the-beginning/index.md) introduces each concept through a small traceable example. Reading and paper exercises need no installation; practical compilation uses a separately explained prepared toolchain.

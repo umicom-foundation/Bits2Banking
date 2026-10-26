@@ -1,5 +1,10 @@
 # Computer fundamentals
 
+## Before the hardware chapters
+
+The [foundation course](../00-getting-started/index.md) explains input, files, saving and commands from the beginning. The [learning map](../../start/systems-learning.md) connects this subject to programming, OS and Kernel work.
+
+
 Learn how computers represent information, execute instructions and store files.
 
 - [1. Inside a computer](01-inside-a-computer.md)

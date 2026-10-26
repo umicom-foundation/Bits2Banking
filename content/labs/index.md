@@ -159,3 +159,7 @@ The [existing C23 HTTP web-server laboratory](https://github.com/umicom-foundati
 - [163. Add conditional GET in C23](../lessons/05-engineering/163-build-conditional-get-in-c23.md)
 - [164. Bounded request admission and backpressure](../lessons/05-engineering/164-bounded-request-admission-and-backpressure.md)
 - [165. Run the new HTTP and admission tests](../lessons/05-engineering/165-test-conditional-http-and-admission.md)
+
+## First C programs, one idea at a time
+
+The [first C programs lab](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/first-c-programs) contains five small demonstrations and a checked count function. Follow [C from the Beginning](../courses/c-from-the-beginning/index.html) for explanations of each step, expected output and recovery from errors. Reading and paper tracing need no compiler.

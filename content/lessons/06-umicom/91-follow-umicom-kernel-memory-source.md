@@ -67,3 +67,9 @@ Next, answer a lifetime question: if a page-table hierarchy contains a mapping t
 ## 7. Continue
 
 The next phase will examine controlled page faults, address-space switching, user processes and native kernel interfaces. Each lesson should continue referring to tested Umicom Kernel source rather than replacing it with a second teaching-only kernel implementation.
+
+## Continue with a connected course
+
+[Keep firmware-owned pages out of the allocator](../../courses/umicom-kernel-from-scratch/lessons/06-reserved-pages.html) — Connect page ownership to the boot reservation planner.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

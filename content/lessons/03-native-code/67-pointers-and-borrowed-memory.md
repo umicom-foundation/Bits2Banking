@@ -96,3 +96,9 @@ Next open the [Arena Allocator laboratory](https://github.com/umicom-foundation/
 Explain why `char *name` is insufficient to check whether 20 bytes are available. Explain who owns the storage when a function receives `const char *text` but does not allocate or copy the text. Finally, explain why returning the address of a local variable creates a lifetime defect.
 
 Continue with [Lesson 68: Arenas and checkpoints](68-arenas-and-checkpoints.md).
+
+## Continue with a connected course
+
+[A byte span is not a string](../../courses/umicom-kernel-from-scratch/lessons/02-bounded-input.html) — Apply bounds and lifetime ideas to Kernel input.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

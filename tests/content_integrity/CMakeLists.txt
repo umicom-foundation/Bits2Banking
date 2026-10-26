@@ -36,3 +36,17 @@ if(BUILD_TESTING)
     add_test(NAME btb.education.navigation
         COMMAND btb-lesson-navigation --verify "${_btb_repo_root}")
 endif()
+
+# Source relationships are checked without building or executing the website.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.learning_paths
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_learning_paths.cmake")
+endif()
+
+# Keep displayed beginner examples tied to their executable laboratory source.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.first_c_course
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_first_c_course.cmake")
+endif()

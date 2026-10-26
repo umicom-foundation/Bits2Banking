@@ -1,5 +1,12 @@
 # Start here
 
+## New to computers? Start before the technical chapters
+
+[Computing from the Beginning](../lessons/00-getting-started/index.md) assumes no computing knowledge. Eight lessons explain following a course, input and output, files, memory, instructions, commands and system layers. Paper activities are enough to begin.
+
+[Find connected learning routes](systems-learning.md) links these foundations to existing lessons and the OS and Kernel courses.
+
+
 A computer programme is a set of instructions that a computer can follow. You will learn to understand those instructions, write them, check that they work and use them to build useful applications.
 
 ## Start with the computer

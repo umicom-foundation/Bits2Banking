@@ -45,3 +45,9 @@ This distinction protects the architecture. The native kernel must not depend on
 Imagine selecting an Umicom Studio icon. Describe the chain of responsibility: desktop launcher, application process, framework services, system-call boundary, kernel and device access. Which parts can be restarted without rebooting the whole computer? Which part must enforce memory protection?
 
 **Next:** [Explore the Umicom applications](28-umicom-applications.md).
+
+## Continue with a connected course
+
+[A system has several layers](../../courses/umicom-os-from-scratch/lessons/01-system-boundaries.html) — Connect this overview to the OS startup source and its separate owners.
+
+[Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

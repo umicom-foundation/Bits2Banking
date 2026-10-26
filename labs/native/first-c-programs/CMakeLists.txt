@@ -1,0 +1,66 @@
+# Bits2Banking | Sammy Hegab, Umicom Foundation | MIT
+# Separate small executables keep each lesson's entry point visible.
+cmake_minimum_required(VERSION 3.24)
+project(Bits2BankingFirstC LANGUAGES C)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+include(CTest)
+add_library(btb-first-counts STATIC counts.c)
+target_include_directories(btb-first-counts PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+foreach(_lesson IN ITEMS greeting values decisions repetition functions)
+    add_executable("btb-first-${_lesson}" "${_lesson}.c")
+    if(_lesson STREQUAL "functions")
+        target_link_libraries("btb-first-${_lesson}" PRIVATE btb-first-counts)
+    endif()
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options("btb-first-${_lesson}" PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+    endif()
+    if(BUILD_TESTING)
+        add_test(NAME "bits2banking.first_c.${_lesson}"
+            COMMAND "${CMAKE_COMMAND}"
+                "-DPROGRAM=$<TARGET_FILE:btb-first-${_lesson}>"
+                "-DEXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected/${_lesson}.txt"
+                -P "${CMAKE_CURRENT_SOURCE_DIR}/check_output.cmake")
+    endif()
+endforeach()
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(btb-first-counts PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+endif()
+if(BUILD_TESTING)
+    add_executable(btb-first-counts-tests test_counts.c)
+    target_link_libraries(btb-first-counts-tests PRIVATE btb-first-counts)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(btb-first-counts-tests PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+    endif()
+    add_test(NAME bits2banking.first_c.count_contract COMMAND btb-first-counts-tests)
+    set_tests_properties(bits2banking.first_c.count_contract PROPERTIES TIMEOUT 10)
+endif()
+
+# Borrowed-memory examples build on the introductory control-flow lessons.
+add_library(btb-borrowed-counts STATIC borrowed_counts.c)
+target_include_directories(btb-borrowed-counts PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+add_executable(btb-first-arrays arrays.c)
+add_executable(btb-first-borrowing borrowing.c)
+target_link_libraries(btb-first-borrowing PRIVATE btb-borrowed-counts)
+foreach(_target IN ITEMS btb-borrowed-counts btb-first-arrays btb-first-borrowing)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(${_target} PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+    endif()
+endforeach()
+if(BUILD_TESTING)
+    foreach(_lesson IN ITEMS arrays borrowing)
+        add_test(NAME "bits2banking.first_c.${_lesson}"
+            COMMAND "${CMAKE_COMMAND}"
+                "-DPROGRAM=$<TARGET_FILE:btb-first-${_lesson}>"
+                "-DEXPECTED=${CMAKE_CURRENT_SOURCE_DIR}/expected/${_lesson}.txt"
+                -P "${CMAKE_CURRENT_SOURCE_DIR}/check_output.cmake")
+    endforeach()
+    add_executable(btb-borrowed-counts-tests test_borrowed_counts.c)
+    target_link_libraries(btb-borrowed-counts-tests PRIVATE btb-borrowed-counts)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(btb-borrowed-counts-tests PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+    endif()
+    add_test(NAME bits2banking.first_c.borrowing_contract COMMAND btb-borrowed-counts-tests)
+    set_tests_properties(bits2banking.first_c.borrowing_contract PROPERTIES TIMEOUT 10)
+endif()

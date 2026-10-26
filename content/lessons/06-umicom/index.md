@@ -1,5 +1,12 @@
 # Developing with Umicom
 
+## Find a route into these projects
+
+If the terminology is new, begin with [applications, an OS and a kernel](../00-getting-started/07-applications-os-and-kernel.md). Then use the [connected learning map](../../start/systems-learning.md) to choose prerequisites and related chapters.
+
+The browser courses provide guided routes through [Umicom OS](../../courses/umicom-os-from-scratch/index.html) and [Umicom Kernel](../../courses/umicom-kernel-from-scratch/index.html). Their hosted labs require introductory C and build-tool knowledge; they are not complete production-system courses.
+
+
 Explore Umicom Framework, the Kernel, Umicom OS and real application source.
 
 - [23. Introducing Umicom Framework and its architecture](23-introducing-umicom.md)
@@ -66,3 +73,7 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## Storage and filesystem source tour
 
 - [136. Follow storage and file systems in Umicom Kernel](136-follow-kernel-filesystems-and-storage.md) — inspect real VFS path ownership, file services, RAMFS, FAT16 ordered updates and VirtIO flush boundaries.
+
+## Service processes and streams
+
+[Keep a service's process and streams under one owner](supervise-service-ownership.md) explains descriptors, child waiting and launch-error reporting before following the OS supervisor source.
