@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mathematics for AI — 224: Reconcile waiting, ready and in-flight state | Bits to Banking</title><style>
+:root{--ink:#142a3b;--nav:#173f58;--link:#086290;--soft:#edf6fa;--line:#cfe0e8;--good:#edfbf5}*{box-sizing:border-box}body{margin:0;background:#f3f7fa;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",sans-serif}header{background:linear-gradient(120deg,#132e45,#185a74);color:#fff;padding:2.4rem max(1.2rem,calc((100vw - 1000px)/2))}header h1{font-size:clamp(1.9rem,4vw,2.7rem);line-height:1.14;margin:.35em 0}header p,header small{color:#dcf0f9}main{max-width:1010px;margin:1.6rem auto 2.5rem;background:#fff;border:1px solid var(--line);border-radius:13px;padding:2.2rem}nav{padding:.9rem 1rem;background:var(--soft);border-radius:9px;display:flex;gap:.65rem 1rem;flex-wrap:wrap}a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #12a2a7;outline-offset:3px}h2{color:var(--nav);margin-top:1.7em;line-height:1.25}h3{color:var(--nav)}p,li{max-width:89ch}pre{padding:1rem;border-radius:8px;background:#142e42;color:#eef7fc;overflow:auto}code{font-family:Consolas,ui-monospace,monospace}p code,li code{padding:.11em .25em;border-radius:4px;background:var(--soft)}details{margin:1.2rem 0;padding:.9rem 1rem;background:var(--good);border:1px solid #c9e8d5;border-radius:8px}summary{cursor:pointer;font-weight:750}footer{text-align:center;color:#4c6271;padding:1.2rem}@media(max-width:700px){main{margin:0;border-radius:0;padding:1.1rem}header{padding:1.2rem}}@media print{body{background:#fff}main{border:0;margin:0;padding:0}header{background:#fff;color:#000}header p,header small{color:#000}}
+blockquote{border-left:4px solid #1491aa;background:#f2f9fc;padding:.7rem 1.2rem}table{border-collapse:collapse;width:100%;margin:1.1rem 0}th,td{border:1px solid #c6d6e1;padding:.6rem;text-align:left}th{background:#e7f4fa}ol,ul{padding-left:1.5rem}h1,h2,h3{line-height:1.3}pre{overflow:auto;white-space:pre-wrap}main>h1{font-size:2rem}article{max-width:90ch}
+</style></head><body><header><small>Bits to Banking · Umicom Foundation</small><h1>Mathematics for AI — 224: Reconcile waiting, ready and in-flight state</h1><p>At every snapshot, each live scheduler request occupies exactly one of WAITING, READY or DISPATCHED. Let W, R and F be those counts. Then live requests = W+R+F. The single-in-flight contract restricts F to 0 or 1.</p></header><main><nav aria-label="Learning navigation"><a href="../kv-scheduling-mathematics.html">Course learning path</a> · <a href="223-derive-round-robin-dispatch-sequences.html">Previous</a> · <a href="225-reconcile-active-idle-and-physical-cache-bytes.html">Next</a> · <a href="../../llm-from-scratch/kv-scheduling-learning-path.html">LLM</a></nav><article><p class="source">Canonical editable manuscript: <a href="../../../lessons/11-maths-for-ai/224-reconcile-waiting-ready-and-in-flight-state.md">Markdown lesson</a>.</p><h1>Mathematics for AI — Unit 224: Reconcile waiting, ready and in-flight state</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab<br />
+<strong>Prerequisite:</strong> Units 209–220 and basic arithmetic.</p>
+<h2>Learning objective</h2>
+<p>At every snapshot, each live scheduler request occupies exactly one of WAITING, READY or DISPATCHED. Let W, R and F be those counts. Then live requests = W+R+F. The single-in-flight contract restricts F to 0 or 1.</p>
+<h2>Fully worked example</h2>
+<p>Suppose seven jobs were submitted historically, two completed and one cancelled. Four remain live. An inspection with W=2, R=1 and F=1 is consistent because 2+1+1=4. A report claiming F=2 violates the single in-flight contract even if the historic submission total is large.</p>
+<h2>Mathematical scope</h2>
+<p>Numbers and rates in these examples are illustrative. A KV payload estimate excludes allocator overhead, model parameters, activation tensors and process memory. A counted scheduler work unit is not automatically a model-generated token.</p>
+<h2>Exercise</h2>
+<p><strong>Question:</strong> If 12 were submitted, 4 completed and 3 cancelled, how many remain? Give a valid W/R/F breakdown.</p>
+<details><summary>Reveal full worked solution</summary>
+
+<p>12−4−3=<strong>5</strong> remain; for example W=3,R=1,F=1.</p>
+</details>
+
+<h2>Discussion</h2>
+<p>Note that totalAdmitted can exceed the current number of ready sessions because completed requests are counted historically.</p>
+<h2>Connect to native AI engineering</h2>
+<p><a href="../../llm-from-scratch/lessons/365-apply-backpressure-to-physical-kv-capacity.html">LLM Lesson 365</a> explains the corresponding Framework ownership and scheduling contracts. Reusable calculations belong to the native Framework rather than an application-specific script.</p>
+<h2>Continue learning</h2>
+<p><a href="../kv-scheduling-mathematics.html">HTML study route</a> · <a href="223-derive-round-robin-dispatch-sequences.html">Previous unit</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness</footer></body></html>

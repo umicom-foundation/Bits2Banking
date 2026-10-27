@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LLM from Scratch — 369: Construct deterministic scheduling fixtures | Bits to Banking</title><style>
+:root{--ink:#142a3b;--nav:#173f58;--link:#086290;--soft:#edf6fa;--line:#cfe0e8;--good:#edfbf5}*{box-sizing:border-box}body{margin:0;background:#f3f7fa;color:var(--ink);font:17px/1.72 system-ui,-apple-system,"Segoe UI",sans-serif}header{background:linear-gradient(120deg,#132e45,#185a74);color:#fff;padding:2.4rem max(1.2rem,calc((100vw - 1000px)/2))}header h1{font-size:clamp(1.9rem,4vw,2.7rem);line-height:1.14;margin:.35em 0}header p,header small{color:#dcf0f9}main{max-width:1010px;margin:1.6rem auto 2.5rem;background:#fff;border:1px solid var(--line);border-radius:13px;padding:2.2rem}nav{padding:.9rem 1rem;background:var(--soft);border-radius:9px;display:flex;gap:.65rem 1rem;flex-wrap:wrap}a{color:var(--link)}a:focus-visible,summary:focus-visible{outline:3px solid #12a2a7;outline-offset:3px}h2{color:var(--nav);margin-top:1.7em;line-height:1.25}h3{color:var(--nav)}p,li{max-width:89ch}pre{padding:1rem;border-radius:8px;background:#142e42;color:#eef7fc;overflow:auto}code{font-family:Consolas,ui-monospace,monospace}p code,li code{padding:.11em .25em;border-radius:4px;background:var(--soft)}details{margin:1.2rem 0;padding:.9rem 1rem;background:var(--good);border:1px solid #c9e8d5;border-radius:8px}summary{cursor:pointer;font-weight:750}footer{text-align:center;color:#4c6271;padding:1.2rem}@media(max-width:700px){main{margin:0;border-radius:0;padding:1.1rem}header{padding:1.2rem}}@media print{body{background:#fff}main{border:0;margin:0;padding:0}header{background:#fff;color:#000}header p,header small{color:#000}}
+blockquote{border-left:4px solid #1491aa;background:#f2f9fc;padding:.7rem 1.2rem}table{border-collapse:collapse;width:100%;margin:1.1rem 0}th,td{border:1px solid #c6d6e1;padding:.6rem;text-align:left}th{background:#e7f4fa}ol,ul{padding-left:1.5rem}h1,h2,h3{line-height:1.3}pre{overflow:auto;white-space:pre-wrap}main>h1{font-size:2rem}article{max-width:90ch}
+</style></head><body><header><small>Bits to Banking · Umicom Foundation</small><h1>LLM from Scratch — 369: Construct deterministic scheduling fixtures</h1><p>Use reproducible request sequences to test admission, fairness and failure behaviour.</p></header><main><nav aria-label="Learning navigation"><a href="../kv-scheduling-learning-path.html">Course learning path</a> · <a href="368-cancel-queued-and-ready-sessions-safely.html">Previous</a> · <a href="370-coordinate-prefill-decode-and-rollover-phases.html">Next</a> · <a href="../../maths-for-ai/kv-scheduling-mathematics.html">Mathematics</a></nav><article><p class="source">Canonical editable manuscript: <a href="../../../lessons/10-native-ai/369-construct-deterministic-scheduling-fixtures.md">Markdown lesson</a>.</p><h1>Lesson 369 — Construct deterministic scheduling fixtures</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab<br />
+<strong>Language:</strong> Native C23 · <strong>Prerequisites:</strong> Lessons 329–360 and Mathematics Unit 221.</p>
+<h2>Learning outcome</h2>
+<p>Use reproducible request sequences to test admission, fairness and failure behaviour.</p>
+<h2>Technical foundations</h2>
+<p>A scheduling fixture needs only request IDs, declared step budgets, admission actions and expected dispatch order. It does not need pseudo-random neural data. Keep the canonical decoder tests separate: those check logits, sampled IDs, attention masks and K/V positions against actual checkpoint data. For scheduler tests use bounded model geometry, a real pool when available and explicit assertions about request state transitions and memory reservations.</p>
+<h2>Worked scenario</h2>
+<p>Fixture: three requests [101:2, 202:2, 303:1], two available K/V stores. Admit 101 and 202; third admission encounters backpressure. Dispatch/acknowledge 101,202,101,202; then admit and finish 303. This verifies the sequence [101,202,101,202,303], total five acknowledgements and three completed requests.</p>
+<h2>Boundary conditions and failure modes</h2>
+<p>A test that compares only the final number of completed requests can miss an unfair selection policy. Preserve and inspect the exact intermediate order, stale-ticket rejection, memory budget and idle-store counters. A test double must never be reported as genuine full-Framework integration.</p>
+<h2>Practical native Framework exercise</h2>
+<p>Turn the fixture into a table with columns Event, Queued, Ready, InFlight, PoolActive and ExpectedStatus. Add a failing admission and confirm caller-owned output is byte-for-byte unchanged.</p>
+<h3>Relevant native interfaces</h3>
+<p>The established <code>UmiAiTrainingStackedKvPool</code> owns K/V allocations. The additive <code>UmiAiTrainingStackedKvScheduler</code> manages queue metadata, admission and cooperative dispatch; its <code>Dispatch</code> result is <strong>not</strong> a sampled token. Use <code>UmiAiTrainingStackedKvSchedulerSubmit</code>, <code>AdmitNext</code>, <code>Dispatch</code> and <code>Acknowledge</code> under the borrowed-pool lifetime contract. Correct model execution remains inside the canonical stacked decoder and its K/V services.</p>
+<h2>Check your understanding</h2>
+<p><strong>Question:</strong> Which counters prove exact fairness?</p>
+<details><summary>Show worked answer</summary>
+
+<p>Counters alone do not. The recorded dispatch sequence and the defined slot-rotation policy establish ordering for the fixture.</p>
+</details>
+
+<h2>Mathematics connection</h2>
+<p>See <a href="../../maths-for-ai/lessons/227-understand-generation-count-identity-limits.html">Unit 227</a>.</p>
+<h2>External research for context</h2>
+<ul>
+<li><a href="https://www.usenix.org/conference/osdi22/presentation/yu">Orca: iteration-level scheduling for Transformer serving (OSDI 2022)</a></li>
+<li><a href="https://arxiv.org/abs/2309.06180">vLLM: PagedAttention and LLM serving (2023)</a></li>
+</ul>
+<h2>Continue learning</h2>
+<p><a href="../kv-scheduling-learning-path.html">HTML study route</a> · <a href="368-cancel-queued-and-ready-sessions-safely.html">Previous lesson</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness</footer></body></html>
