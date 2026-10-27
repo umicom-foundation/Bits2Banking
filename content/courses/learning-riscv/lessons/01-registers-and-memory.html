@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Registers, memory and instructions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav aria-label="Learning navigation"><a href="../../learning-paths.html">Learning map</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Registers, memory and instructions</h1><p class="lead">A processor follows instructions. We will trace a real Umicom instruction sequence without assuming you have written a program.</p><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-programs-and-privileges.html">Next lesson</a></nav>
+
+<h2>1. Separate three things</h2>
+<p>An <strong>instruction</strong> tells a processor to do one operation. A <strong>register</strong> is a small named storage location inside the processor. <strong>Memory</strong> holds larger collections of bytes outside those working registers. A byte is a group of eight bits; each bit has two possible values, 0 and 1. A memory address is a number used to identify a location. An address is not the content stored there.</p>
+<p>Umicom's current native Kernel target uses RV64: the ordinary integer registers are 64 bits wide. That does not mean every variable consumes 64 bits or that all possible 64-bit addresses are usable. The Kernel chooses which memory locations a program can access.</p>
+<figure><svg viewBox="0 0 700 110" role="img" aria-label="The program arranges values in registers before requesting a Kernel service." style="width:100%;max-width:700px"><title>The program arranges values in registers before requesting a Kernel service.</title><rect x="10" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="115" y="53" text-anchor="middle" fill="white" font-size="17">C function arguments</text><path d="M220 47h18l-7 -6m7 6l-7 6" fill="none" stroke="#287b78" stroke-width="3"/><rect x="240" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="345" y="53" text-anchor="middle" fill="white" font-size="17">Named registers</text><path d="M450 47h18l-7 -6m7 6l-7 6" fill="none" stroke="#287b78" stroke-width="3"/><rect x="470" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="575" y="53" text-anchor="middle" fill="white" font-size="17">Kernel request</text></svg><figcaption>The program arranges values in registers before requesting a Kernel service.</figcaption></figure>
+<h2>2. Give each register a role</h2>
+<p>Open <code>umicom-kernel/programs/diagnostic/entry.S</code>. The final <code>.S</code> identifies Assembly source processed by the build tools. In this example, names <code>a0</code> to <code>a7</code> identify argument registers. <code>sp</code> identifies the stack pointer, used to find the current function's stack storage. <code>ra</code> holds a return address. These are conventions shared by the compiler and Assembly code.</p>
+<h2>3. Trace the actual moves</h2>
+<pre><code>mv a7, a0
+mv a0, a1
+mv a1, a2
+mv a2, a3
+ecall
+ret</code></pre>
+<p><code>mv destination, source</code> copies a value into the destination. It does not erase the source. <code>ecall</code> requests service through the processor's environment-call mechanism; it is not a normal C function call. <code>ret</code> returns to the calling program after the monitor returns control.</p>
+<p>Suppose the C caller passes <code>number=3, first=2, second=0, third=0</code>. Initially a0=3, a1=2, a2=0, a3=0. After the moves, a7=3, a0=2, a1=0, a2=0. In this Kernel, service 3 queries the ABI and selector 2 asks for word width. The expected reply in a0 is 64. The meanings come from <code>include/umicom/kernel/user_abi.h</code>, not from the RISC-V processor itself.</p>
+<h2>4. Why order matters</h2>
+<p>If the first instruction instead replaced a0 with a1, the original operation number would be lost before it reached a7. A sequence can use individually valid instructions and still produce the wrong result. This is why we test complete requests as well as individual arithmetic operations.</p>
+<h2>Try it yourself</h2>
+<p>Draw boxes labelled a0, a1, a2, a3 and a7. Put 3, 0, 0 and 0 in the first four boxes. Trace each move. Which selector reaches the monitor? Predict before opening the answer.</p>
+<details><summary>Answer and explanation</summary><p>a7 becomes 3; a0, a1 and a2 become zero. Selector zero asks for VERSION. The current reply is hexadecimal <code>0x00010000</code>, representing major version 1 and minor version 0. It is a contract version, not a date or product release.</p></details>
+<h2>Connect the learning</h2><p>Continue with <a href="02-programs-and-privileges.html">program privileges</a>. For a line-by-line Assembly explanation, use <a href="../../learning-riscv-assembly/index.html">Learning RISC-V Assembly</a>. No instructions on this page have been executed by opening the lesson.</p>
+
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-programs-and-privileges.html">Next lesson</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original explanations and illustrations.</p></div></footer></body></html>

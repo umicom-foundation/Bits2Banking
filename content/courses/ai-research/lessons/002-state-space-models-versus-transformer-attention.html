@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en-GB"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>AI Research 02 — State-space sequence mixers versus Transformer attention | Bits to Banking</title><style>
+:root{--ink:#17324b;--navy:#0b2c46;--accent:#087f84;--bg:#f3f7fb;--soft:#ecf8f5;--line:#d0e0ea;--link:#075d87}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,Segoe UI,Arial,sans-serif}header{background:linear-gradient(115deg,#102b46,#0b6471);color:#fff;padding:2.2rem max(1.2rem,calc((100vw - 1020px)/2))}header small{color:#a8f0e3}h1{line-height:1.2;font-size:clamp(1.8rem,4vw,2.65rem)}main{max-width:1050px;margin:1.6rem auto 3rem;padding:2.2rem;background:white;border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 24px #102d4614}a{color:var(--link)}a:focus-visible{outline:3px solid #3cae8c;outline-offset:3px}h2,h3{color:var(--navy);margin-top:1.7em;line-height:1.3}nav{background:#e6f3f6;padding:1rem;border-radius:8px;display:flex;gap:.7rem;flex-wrap:wrap}blockquote{border-left:4px solid var(--accent);background:#eff8f7;margin:1.2rem 0;padding:.4rem 1.1rem}pre{background:#112a42;color:#eaf6ff;padding:1rem;overflow-x:auto;border-radius:8px}code{font-family:ui-monospace,Consolas,monospace;font-size:.9em}p code,li code{background:#ebf1f7;padding:.12rem .32rem;border-radius:4px}details{border:1px solid #a7dac9;background:var(--soft);padding:.9rem 1rem;border-radius:8px;margin:.9rem 0}summary{font-weight:700;cursor:pointer}footer{text-align:center;padding:1rem;color:#486479;font-size:.85rem}.learning-note{background:#fff8e9;border-left:4px solid #e3ae52;padding:1rem}ol{padding-left:1.55rem}li{margin:.45rem 0}@media(max-width:700px){header{padding:1.4rem}main{border-radius:0;margin:0;padding:1.1rem}}@media print{body{background:#fff}header{color:#172e45;background:#fff}main{box-shadow:none;border:0}}
+</style></head><body><header><small>Bits to Banking · AI Research Frontiers</small><h1>AI Research 02 — State-space sequence mixers versus Transformer attention</h1><p>Sammy Hegab · Umicom Foundation · Original educational material</p></header><main><nav aria-label="Course navigation"><a href="001-sparse-mixture-of-experts-and-routing.html">Previous</a> · <a href="../index.html">Course home</a> · <a href="003-compare-adamw-muon-soap-and-optimiser-baselines.html">Next</a></nav><h1>AI Research Frontiers — Lesson 02: State-space sequence mixers versus Transformer attention</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab · <strong>Level:</strong> Research foundations and practical systems comparisons</p>
+<h2>What this topic investigates</h2>
+<p>Transformer attention compares queries with keys from context; state-space models use learned recurrent state transitions to capture history. Mamba introduced selective state-space updates as a different way to scale long-sequence processing. Hybrid designs combine attention and state-space operations when both exact retrieval and efficient recurrence matter.</p>
+<p>Distinguish a model architecture, an optimisation algorithm, an execution kernel and a dataset pipeline. Each operates at a different layer of the system and should be evaluated against its own fit-for-purpose baseline rather than combined into a single untestable claim.</p>
+<h2>Worked example</h2>
+<p>Suppose attention processes a prompt of N=1,024 tokens. A dense query-key score matrix has N²=1,048,576 positions per head in a full forward pass. A linear-scan state-space operator need not materialise this N×N matrix, but it introduces its own state and numerical kernels. This is a complexity comparison, not a quality or hardware-speed benchmark.</p>
+<h2>Practical research exercise</h2>
+<p>Measure actual prefill latency, held-out perplexity, retrieval accuracy on long-range tasks and memory traffic. The Framework’s current tiny native decoder uses attention; state-space training is a <strong>proposed research direction</strong>, not a merged Umicom backend.</p>
+<p>For a reproducible result, fix the model/dataset revision, precision, hardware, source permissions and measurement conditions. Report both the primary metric and at least one limitation. The existing Umicom Framework owns reusable C23 maths, model interfaces, provenance and approval services; an application must reuse them rather than fork an equivalent implementation.</p>
+<h2>Self-assessment</h2>
+<p><strong>Question:</strong> Does eliminating the N×N score matrix ensure a state-space model memorises long-range facts equally well?</p>
+<details><summary>Reveal the explanation</summary>
+<p>No. Efficiency and representation capacity are different properties, and exact retrieval tasks may favour different architectures.</p>
+</details>
+<h2>Research starting points</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2312.00752">Mamba — Gu &amp; Dao (2023)</a></li>
+<li><a href="https://arxiv.org/abs/2205.14135">FlashAttention — Dao et al. (2022)</a></li>
+</ul>
+<h2>Related courses</h2>
+<p><a href="../../llm-from-scratch/lessons/390-study-c23-simd-riscv-kernels-with-controlled-baselines.html">Advanced native LLM research</a> · <a href="../../distributed-learning/index.html">Distributed Learning introduction</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+<p><a href="../../../lessons/13-ai-research/002-state-space-models-versus-transformer-attention.md">Editable canonical Markdown lesson</a>.</p>
+</main><footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness</footer></body></html>

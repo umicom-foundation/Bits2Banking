@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Responsive and keyboard-friendly pages | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav aria-label="Learning navigation"><a href="../../learning-paths.html">Learning map</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Responsive and keyboard-friendly pages</h1><p class="lead">A responsive page adjusts to available space. A usable page also keeps every action visible and reachable when a person uses a keyboard or larger text.</p><nav aria-label="Lesson navigation"><a href="01-rules-colour-and-spacing.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+<h2>Let content set the width</h2><p>A desktop browser may be narrow, and a phone may use enlarged text. Device names alone do not tell you the available reading space. Start with a single readable column, then add columns where the content comfortably fits.</p><pre><code>.lesson-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+@media (min-width: 48rem) {
+    .lesson-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}</code></pre><p><code>grid</code> arranges child boxes into rows and columns. <code>fr</code> means a share of available grid space. <code>gap</code> leaves space between cells. The media condition applies the two-column rule only when the viewport is wide enough. The example is a learning pattern; choose a breakpoint by checking content rather than assuming all phones have one width.</p>
+<figure><svg viewBox="0 0 700 110" role="img" aria-label="The same lesson content changes arrangement without requiring a second document." style="width:100%;max-width:700px"><title>The same lesson content changes arrangement without requiring a second document.</title><rect x="10" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="115" y="53" text-anchor="middle" fill="white" font-size="17">Narrow: one column</text><path d="M220 47h18l-7 -6m7 6l-7 6" fill="none" stroke="#287b78" stroke-width="3"/><rect x="240" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="345" y="53" text-anchor="middle" fill="white" font-size="17">More space</text><path d="M450 47h18l-7 -6m7 6l-7 6" fill="none" stroke="#287b78" stroke-width="3"/><rect x="470" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="575" y="53" text-anchor="middle" fill="white" font-size="17">Wide: two columns</text></svg><figcaption>The same lesson content changes arrangement without requiring a second document.</figcaption></figure>
+<h2>Learn from Bits2Banking</h2><p>The shared stylesheet defines <code>.hero-inner</code>, <code>.feature-grid</code> and <code>.path-grid</code>. Find their grid declarations and then their media rules. Read both: the first appearance of a class is not the complete story. This is useful when editing the Umicom Framework website too, because a shared component may be used on several pages.</p>
+<h2>Keep focus visible</h2><p>When someone presses Tab, focus moves to the next interactive element. A visible outline communicates that position:</p><pre><code>a:focus-visible,
+button:focus-visible {
+    outline: 3px solid #087784;
+    outline-offset: 3px;
+}</code></pre><p>The real stylesheet applies focus styles to links, buttons and disclosure summaries. Do not remove the browser outline unless you provide a visible replacement. A hover style alone does not help keyboard users.</p>
+<h2>A skip link has two states</h2><p>In the real CSS, <code>.skip</code> starts off screen and <code>.skip:focus</code> places it in view. Press Tab at the top of a lesson to see why. Hiding the link with <code>display: none</code> would remove it from normal keyboard navigation, defeating its purpose.</p>
+<h2>Use colour with another signal</h2><p>Do not make “passed” and “failed” differ only by green and red. Display the words too. A focus outline needs enough contrast against surrounding colours. Inspect a contrast calculation when choosing a palette; pleasant-looking colours are not automatically accessible.</p>
+<h2>Try these checks</h2><ol><li>Resize your practice page and confirm headings do not overlap.</li><li>Increase browser zoom and read the whole paragraph.</li><li>Tab through links and verify the focus indicator is visible.</li><li>Use a long code line and inspect whether its own region can scroll without forcing the whole page sideways.</li></ol><p>A narrow browser preview is not a qualified mobile application. Touch targets, offline storage, device permissions and platform packaging need their own implementation and testing.</p>
+<nav aria-label="Lesson navigation"><a href="01-rules-colour-and-spacing.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original explanations and illustrations.</p></div></footer></body></html>

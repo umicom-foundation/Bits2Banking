@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep results separate from the memory they describe | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav aria-label="Learning navigation"><a href="../../learning-paths.html">Learning map</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Keep results separate from the memory they describe</h1><p class="lead">A function can calculate the right number and still damage a file if it writes that number into the wrong place. Follow the Kernel's real memory-backed filesystem to see why result storage has its own rules.</p><nav aria-label="Lesson navigation"><a href="11-testing-storage-boundaries.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="13-read-file-ranges.html">Next lesson</a></nav>
+
+<h2>1. Name the parts before reading the code</h2>
+<p><strong>RAM</strong> is the working memory used while a computer is running. A <strong>filesystem</strong> gives names to files and remembers where their bytes live. Umicom's RAM filesystem, called RAMFS, keeps those bytes in memory. It is useful for the console's temporary files; the contents disappear when that guest stops.</p>
+<p>A <strong>page</strong> is a fixed-size block of memory. This Kernel uses 4,096-byte pages. A <strong>node</strong> is the filesystem's record for a file or directory. It stores facts such as the file length and the addresses of its pages. The <strong>owner</strong> is the structure that keeps track of all those records and their lifetimes.</p>
+<p>A <strong>snapshot</strong> is a set of measurements copied out at one point during a serialized call. Here it counts nodes, pages and active references. It is not a saved copy of every file and cannot restore a deleted file.</p>
+<figure><svg viewBox="0 0 700 110" role="img" aria-label="The filesystem keeps its own metadata and file pages; a checked snapshot copies counts to separate caller-owned storage." style="width:100%;max-width:700px"><title>The filesystem keeps its own metadata and file pages; a checked snapshot copies counts to separate caller-owned storage.</title><rect x="10" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="115" y="53" text-anchor="middle" fill="white" font-size="17">Filesystem owner</text><path d="M220 47h18l-7 -6m7 6l-7 6" fill="none" stroke="#287b78" stroke-width="3"/><rect x="240" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="345" y="53" text-anchor="middle" fill="white" font-size="17">Checked snapshot</text><path d="M450 47h18l-7 -6m7 6l-7 6" fill="none" stroke="#287b78" stroke-width="3"/><rect x="470" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="575" y="53" text-anchor="middle" fill="white" font-size="17">Separate result</text></svg><figcaption>The filesystem keeps its own metadata and file pages; a checked snapshot copies counts to separate caller-owned storage.</figcaption></figure>
+<h2>2. An address is a location, not permission</h2>
+<p>In C, a pointer holds the address of storage. The expression <code>&amp;info</code> means “the address of the variable named info.” It lets another function write a result there. It does not create extra storage or establish ownership by itself.</p>
+<pre><code>UmicomKernelRamfsInfo info = {0};
+UmicomKernelVfsStatus status =
+    UmicomKernelRamfsSnapshot(&amp;filesystem, &amp;info);
+if (status == UMICOM_VFS_OK) {
+    /* Use info.nodes and info.dataPages here. */
+}</code></pre>
+<p>This excerpt belongs inside Kernel code with an already initialized, valid <code>filesystem</code>. The type <code>UmicomKernelRamfsInfo</code> describes the result's fields. <code>{0}</code> initializes them. <code>UMICOM_VFS_OK</code> is the success result; the caller must inspect it before using the new measurements. This is not a complete standalone program.</p>
+<p>Two pointers <strong>alias</strong> when the storage they refer to overlaps. If the result points into the owner's own record, writing a count may overwrite an address needed to find a file. If it points into a file's data page, writing a count changes that file. A pointer being non-null is not enough to prevent either mistake.</p>
+<h2>3. Work through the boundary check</h2>
+<ol>
+<li>Check that the owner and result pointers are non-null and suitably aligned. <strong>Alignment</strong> means the address starts at a boundary required by that type.</li>
+<li>Check that the complete address range fits. Adding a result's size must not wrap around the largest address.</li>
+<li>Reject a result that overlaps any part of the owner.</li>
+<li>Validate the filesystem's own records under its execution rules.</li>
+<li>Reject overlap with every owned metadata page and every file-data page, including unused bytes at a page's end.</li>
+<li>Only then calculate and publish the snapshot.</li>
+</ol>
+<p>Read <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/ramfs_snapshot.inc"><code>kernel/ramfs_snapshot.inc</code></a>. <code>UmicomRamfsOutputAdmission</code> implements the shared checks. “Admission” means deciding whether an operation may start. The checks are for trusted Kernel storage; they do not prove that an arbitrary number is a readable address or replace the user-memory copying interface.</p>
+<h2>4. Why check the whole page?</h2>
+<p>Imagine a file containing 4,200 bytes. The first page holds bytes 0 through 4,095. The second page holds the remaining 104 bytes, plus 3,992 unused bytes. Those unused bytes still belong to the filesystem. A later append may use them. They are not a safe place for an unrelated result.</p>
+<table><thead><tr><th>Memory</th><th>Visible file bytes</th><th>Ownership</th></tr></thead><tbody>
+<tr><td>First page</td><td>4,096</td><td>The filesystem owns all 4,096 bytes.</td></tr>
+<tr><td>Second page</td><td>104</td><td>The filesystem also owns this whole page.</td></tr>
+<tr><td>Separate result variable</td><td>None</td><td>The caller supplies independent storage.</td></tr>
+</tbody></table>
+<h2>5. Deleting a name and freeing memory are different</h2>
+<p><strong>Unlinking</strong> removes a file's name from its directory. Another part of the system might still have the file open. A <strong>pin</strong> is a counted reference that keeps the underlying node alive while it is being used. Reclamation, called <code>Reap</code> in the API, frees only nodes that have no directory link and no pins.</p>
+<ol><li>Create a file and open it: it has a name and an active reference.</li><li>Remove its name: an existing open handle can still keep it alive.</li><li>Close the final handle: the node can now be reclaimed.</li><li>Reap the eligible node: release its data pages, then its metadata record.</li></ol>
+<p>Read <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/ramfs.c"><code>UmicomKernelRamfsReap</code></a>. Its result counter also uses the shared admission check. Even a small counter must not overwrite the owner or a page that the operation is about to release.</p>
+<h2>6. Distinguish refusal from partial progress</h2>
+<p>An invalid output location is refused before the result is changed or any page is released. A later release failure is different: some work may already be complete. If the first page is released and the second is refused, the remaining page stays owned. The node is not yet counted as reclaimed. A later call retries the remaining work.</p>
+<p>A snapshot has another contract: it stages all totals in a temporary local structure and publishes them only after all checks succeed. It also checks addition before accumulating pin counts. A sum that would exceed the largest representable number returns an error instead of wrapping to a small count.</p>
+<h2>7. Study the regression as an experiment</h2>
+<p>Open <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/tests/ramfs/snapshot_tests.c">snapshot tests</a> and <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/tests/ramfs/reap_tests.c">cleanup tests</a>. Each uses the real RAMFS and allocator in an isolated memory arena. The test creates a 4,200-byte file, deliberately supplies an overlapping result, and expects refusal. It compares the owner and complete backing arena with copies made before the call, then reads the file again.</p>
+<p>These tests deliberately create invalid pointer relationships to check refusal. Do not copy those relationships into application code. The <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/RAMFS_RESULT_OWNERSHIP.md">Kernel ownership guide</a> gives focused build and test commands and explains which parts are modeled.</p>
+<h2>Try explaining the result</h2>
+<p>A file has been unlinked but still has one open handle. Reap is called with a valid independent counter. How many nodes should it reclaim?</p>
+<details><summary>Reason through the answer</summary><p>Zero for that file. The remaining handle pins its node. Losing the filename does not end the open handle's ownership. After the final handle closes, a later Reap call can reclaim it.</p></details>
+<p>A second exercise: why is a result in unused page padding still unsafe? Explain it using a future append, rather than assuming that unused bytes are unowned.</p>
+<p>Return to <a href="../../learning-c/index.html">Learning C</a> for pointers, structures, bounds and return values. Continue reading the Kernel through its <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/wiki/index.md">wiki</a>.</p>
+
+<nav aria-label="Lesson navigation"><a href="11-testing-storage-boundaries.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="13-read-file-ranges.html">Next lesson</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original explanations and illustrations.</p></div></footer></body></html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en-GB"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Lesson 381 — Compare local SGD, DiLoCo and synchronisation cadence | Bits to Banking</title><style>
+:root{--ink:#17324b;--navy:#0b2c46;--accent:#087f84;--bg:#f3f7fb;--soft:#ecf8f5;--line:#d0e0ea;--link:#075d87}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,Segoe UI,Arial,sans-serif}header{background:linear-gradient(115deg,#102b46,#0b6471);color:#fff;padding:2.2rem max(1.2rem,calc((100vw - 1020px)/2))}header small{color:#a8f0e3}h1{line-height:1.2;font-size:clamp(1.8rem,4vw,2.65rem)}main{max-width:1050px;margin:1.6rem auto 3rem;padding:2.2rem;background:white;border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 24px #102d4614}a{color:var(--link)}a:focus-visible{outline:3px solid #3cae8c;outline-offset:3px}h2,h3{color:var(--navy);margin-top:1.7em;line-height:1.3}nav{background:#e6f3f6;padding:1rem;border-radius:8px;display:flex;gap:.7rem;flex-wrap:wrap}blockquote{border-left:4px solid var(--accent);background:#eff8f7;margin:1.2rem 0;padding:.4rem 1.1rem}pre{background:#112a42;color:#eaf6ff;padding:1rem;overflow-x:auto;border-radius:8px}code{font-family:ui-monospace,Consolas,monospace;font-size:.9em}p code,li code{background:#ebf1f7;padding:.12rem .32rem;border-radius:4px}details{border:1px solid #a7dac9;background:var(--soft);padding:.9rem 1rem;border-radius:8px;margin:.9rem 0}summary{font-weight:700;cursor:pointer}footer{text-align:center;padding:1rem;color:#486479;font-size:.85rem}.learning-note{background:#fff8e9;border-left:4px solid #e3ae52;padding:1rem}ol{padding-left:1.55rem}li{margin:.45rem 0}@media(max-width:700px){header{padding:1.4rem}main{border-radius:0;margin:0;padding:1.1rem}}@media print{body{background:#fff}header{color:#172e45;background:#fff}main{box-shadow:none;border:0}}
+</style></head><body><header><small>Bits to Banking · Native AI Research</small><h1>Lesson 381 — Compare local SGD, DiLoCo and synchronisation cadence</h1><p>Sammy Hegab · Umicom Foundation · Original educational material</p></header><main><nav aria-label="Course navigation"><a href="380-understand-non-iid-client-data-and-bias.html">Previous</a> · <a href="../distributed-ai-research-learning-path.html">Course home</a> · <a href="382-plan-heterogeneous-workers-and-straggler-tests.html">Next</a></nav><h1>Lesson 381 — Compare local SGD, DiLoCo and synchronisation cadence</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab<br/>
+<strong>Level:</strong> Intermediate and advanced research · <strong>Implementation:</strong> C23 / Assembly where qualified</p>
+<h2>Learning objectives</h2>
+<p>By completing this lesson you will explain <strong>compare local sgd, diloco and synchronisation cadence</strong>, distinguish established research from a proposed Umicom capability, and design a numerical or systems test with a falsifiable outcome.</p>
+<h2>Concept and essential distinctions</h2>
+<p>Every synchronisation round exchanges information over a network. Local SGD permits multiple local optimiser steps before a shared update. DiLoCo studies a particularly low-communication outer optimisation regime across weakly connected accelerator islands.</p>
+<p>This lesson treats three separate boundaries as non-interchangeable: the <em>learning objective</em> that determines model quality, the <em>distributed systems protocol</em> that moves updates and controls work, and the <em>verification policy</em> that decides what evidence is trusted. A claimed training contribution is not promoted into an accepted checkpoint merely because it is well formed.</p>
+<h2>Step-by-step worked example</h2>
+<p>At 100 local steps per communication round, a 10,000-step worker needs roughly 100 update exchanges rather than one per step. That is 100× fewer exchanges in the idealised count, but the model may drift and the exchanged payload may differ. Latency, uplink throughput and the quality target determine whether the change is beneficial.</p>
+<p>Check the example by writing down its inputs, units, initial model state, communication assumptions and expected output. Then vary exactly one input and predict the direction of change. In a full experiment, retain the complete reproducible configuration rather than reporting only an attractive final metric.</p>
+<h2>What can go wrong?</h2>
+<p>The DiLoCo paper reports gains under its studied model/data/network conditions. It does not establish that increasing local steps always improves convergence or that all workers are equally trustworthy.</p>
+<p>For any proposed optimiser or security improvement, retain a simple controlled baseline. A negative result is still a meaningful research observation when measured under declared conditions.</p>
+<h2>Native C23 engineering connection</h2>
+<p>The Framework remains the authority for model mathematics, checkpoints, messaging and validation. The opt-in <code>UmiAiTrainingFederatedRound</code> component delivered with this course accepts compatible <strong>weight-space deltas</strong>, performs bounded sample-weighted accumulation and rejects malformed/duplicate contributions. It is <strong>not</strong> a remote trainer, privacy protocol, cryptographic verifier or blockchain. The <code>labs/native/distributed-learning/fedavg-round</code> program exercises the actual Framework API rather than copying the aggregator into the educational application.</p>
+<p>A completed advanced implementation would connect locally trained deltas, verified identities, authorised datasets and held-out evaluation through the existing Framework services. New public release claims require independent qualification and not just a passing demonstration.</p>
+<h2>Research method and suggested experiment</h2>
+<ol>
+<li>State one hypothesis that could be disproved and identify the exact baseline.</li>
+<li>Pin one model/checkpoint identity, one reviewed dataset partition and an explicit seed.</li>
+<li>Define what is observed: loss, bytes, elapsed time, memory, energy or verification rejection counts.</li>
+<li>Try a success case and at least one deliberately malformed or harmful input.</li>
+<li>Record the distinction between <em>observed</em>, <em>simulated</em> and <em>not tested</em> results.</li>
+</ol>
+<h2>Exercise</h2>
+<p><strong>Question:</strong> Which two experimental measurements reveal whether fewer synchronisations are worthwhile?</p>
+<details><summary>Reveal the worked answer</summary>
+<p>Measure actual bytes transferred and wall-clock time to reach a pre-specified held-out quality target, against a strong baseline at matched training compute.</p>
+</details>
+<h2>Mathematics companion</h2>
+<p><a href="../../maths-for-ai/lessons/236-count-lora-trainable-parameters-and-bytes.html">Related Maths for AI Unit 236</a>. Consult the mathematics track for dimension, ratio, security-cost and numerical-error calculations.</p>
+<h2>Verified research starting points</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2311.08105">DiLoCo — Douillard et al. (2023 preprint)</a></li>
+<li><a href="https://arxiv.org/abs/2407.07852">OpenDiLoCo — Jaghouar et al. (2024)</a></li>
+<li><a href="https://proceedings.mlr.press/v54/mcmahan17a.html">FedAvg — McMahan et al. (AISTATS 2017)</a></li>
+</ul>
+<h2>Continue learning</h2>
+<p><a href="../distributed-ai-research-learning-path.html">Editable curriculum learning path</a> · <a href="../../distributed-learning/index.html">Introductory distributed-learning course</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+<p><a href="../../../lessons/10-native-ai/381-compare-local-sgd-diloco-and-sync-cadence.md">Download the editable canonical Markdown lesson</a>.</p>
+</main><footer>Sammy Hegab · Umicom Foundation · Service to Many Leads to Greatness</footer></body></html>
+

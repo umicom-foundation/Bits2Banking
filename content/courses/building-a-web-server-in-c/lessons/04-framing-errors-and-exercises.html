@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recognise complete requests and honest results | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav aria-label="Learning navigation"><a href="../../learning-paths.html">Learning map</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Recognise complete requests and honest results</h1><p class="lead">A network read can stop in the middle of a message. A response can fail after a handler has already run. Study the existing Framework contracts before treating either event as success or retrying work.</p><nav aria-label="Lesson navigation"><a href="03-own-the-server-lifetime.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+
+<h2>1. One read is not necessarily one request</h2>
+<p>A connection transports bytes. A callback may return fewer bytes than the complete request. The parser must distinguish “more bytes are needed” from “these bytes cannot form a supported request.” This distinction is part of <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/connection.h"><code>connection.h</code></a>.</p>
+<pre><code>UmiStatus status = UmiWebRequestFrameRead(
+    bytes, length, maximum_bytes, &amp;frame);</code></pre>
+<p>This is a source-reading excerpt, with caller-owned byte storage and a result variable. <code>UMI_STATUS_BUSY</code> means the frame is incomplete. The service must not dispatch a handler yet. Other failures identify unsupported or invalid input. For this framing function, output is cleared on failure or incomplete input; the later strict parser has a different unchanged-on-failure contract. Read each API's own rule.</p>
+<h2>2. Bound both memory and work</h2>
+<p>The current request and response types have 16,384-byte body arrays. That capacity is not permission to accept every request of that body length: the strict request contract also enforces its framing and body limits. The native server limits the entire received request to at most 16 KiB. The portable exchange API has its own 64 KiB wire-request bound and still respects the smaller body type.</p>
+<p>A limit is a reason to refuse an oversized message, not to cut off bytes and pretend the remaining prefix is the whole message. The Kernel's bounded input lessons use the same ownership principle with a different protocol.</p>
+<h2>3. Use the deliberately supported HTTP subset</h2>
+<p>The strict path accepts one HTTP/1.1 origin-form request with one Host header and at most one decimal Content-Length. It refuses transfer encoding, protocol upgrades, Expect, duplicate lengths and extra pipelined bytes. Each connection receives one response and then closes. Those are limits of this Framework path, not claims that HTTP itself forbids every refused feature.</p>
+<p>The response formatter supplies authoritative length and close headers. It omits a HEAD body while retaining the representation length. This example does not provide persistent connections, HTTP/2, TLS or a general public web-hosting service.</p>
+<h2>4. Separate execution from delivery</h2>
+<p><code>UmiWebExchangeResult</code> records <code>dispatched</code> and <code>response_complete</code>. They answer different questions:</p>
+<table><thead><tr><th>Observation</th><th>What you may conclude</th></tr></thead><tbody>
+<tr><td>Not dispatched</td><td>The service routing phase was not entered for this exchange.</td></tr>
+<tr><td>Dispatched</td><td>Routing ran; it may have produced a route-miss response or called a handler.</td></tr>
+<tr><td>Response complete</td><td>The server completed its response write. This does not prove a user read it.</td></tr>
+<tr><td>Dispatched, response incomplete</td><td>A handler may already have changed state even though the client did not receive the full response.</td></tr>
+</tbody></table>
+<p>Do not automatically retry a state-changing operation just because sending the response failed. A future application needs an explicit duplicate-request design and appropriate authorization. The local echo demonstration has no persistent operation to retry.</p>
+<h2>5. Understand static preview before choosing a folder</h2>
+<p>The example supports <code>--root</code> followed by an absolute export directory. In that mode, exported files replace the demo routes. Choose a folder containing only intended website assets. There are no directory listings or uploads, and files must be smaller than 16 KiB in this bounded example. A larger asset is refused rather than streamed.</p>
+<p>The rooted reader rejects links at and below the selected root but trusts its ancestors. This is not a privileged filesystem sandbox. Static preview and a private developer-source directory are different purposes; select the export deliberately.</p>
+<h2>6. Read the actual regression boundaries</h2>
+<ol><li>Open <code>cmake/UmicomWebConnection.cmake</code>.</li><li>Follow its request-frame, closed-response, exchange, native-exchange, static-preview and request-gate test includes.</li><li>For each area, identify the actual test source and the contract it exercises.</li><li>Keep pure byte-transport tests separate from native socket execution.</li></ol>
+<p>The optional build in lesson 3 creates only the demonstration target and its dependencies. It does not establish that these regression executables exist or have passed. Follow the project's full qualification guide when testing a Framework change.</p>
+<h2>Exercises with explanations</h2>
+<p>A connection disappears after a handler updates a record. Should the server call the handler again automatically?</p>
+<details><summary>Answer</summary><p>No. The first update may already exist. Inspect the exchange result and apply the application's explicit request-identity and recovery rules. A missing response is not proof of no effect.</p></details>
+<p>A request has a complete-looking first line but no terminating blank line after its headers. Should routing start?</p>
+<details><summary>Answer</summary><p>No. The framing stage has not established a complete request. Wait within the configured limits or refuse the incomplete exchange; do not treat a damaged prefix as a whole message.</p></details>
+<p>Continue with <a href="../../umicom-development/index.html">Umicom Framework Development</a> and <a href="../../learning-html/index.html">Learning HTML</a> to connect native services with understandable user interfaces.</p>
+
+<nav aria-label="Lesson navigation"><a href="03-own-the-server-lifetime.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original explanations and illustrations.</p></div></footer></body></html>

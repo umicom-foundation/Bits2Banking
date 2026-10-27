@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Submodules and application dependencies | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav aria-label="Learning navigation"><a href="../../learning-paths.html">Learning map</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Submodules and application dependencies</h1><p class="lead">Umicom Applications uses separate repositories for shared Framework and application modules. The parent records which child commits belong together.</p><nav aria-label="Lesson navigation"><a href="03-remotes-and-safe-updates.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+<h2>Read the real registration</h2><p>Open <code>Umicom-Applications/.gitmodules</code>. The Framework entry includes:</p><pre><code>[submodule "framework"]
+    path = framework
+    url = https://github.com/umicom-foundation/umicom-framework.git
+    branch = main</code></pre><p>The path is relative to the parent repository. The URL says where the child history comes from. The branch setting is a preference for branch-aware operations; it does not automatically keep every checkout on main or at the latest commit.</p>
+<p>A <strong>gitlink</strong> is the parent tree entry that records a child commit identifier. The child has its own files, staging area and commits. Recording the parent does not record uncommitted child edits.</p>
+<figure><svg viewBox="0 0 700 110" role="img" aria-label="Publish shared source once; then each parent records the checked-out child commit it uses." style="width:100%;max-width:700px"><title>Publish shared source once; then each parent records the checked-out child commit it uses.</title><rect x="10" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="115" y="53" text-anchor="middle" fill="white" font-size="17">Publish Framework</text><path d="M220 47h18l-7 -6m7 6l-7 6" fill="none" stroke="#287b78" stroke-width="3"/><rect x="240" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="345" y="53" text-anchor="middle" fill="white" font-size="17">Update clean copies</text><path d="M450 47h18l-7 -6m7 6l-7 6" fill="none" stroke="#287b78" stroke-width="3"/><rect x="470" y="15" width="210" height="65" rx="8" fill="#203247"/><text x="575" y="53" text-anchor="middle" fill="white" font-size="17">Record parent pin</text></svg><figcaption>Publish shared source once; then each parent records the checked-out child commit it uses.</figcaption></figure>
+<h2>Inspect the relationship</h2><pre><code>Set-Location "C:\umicom\Umicom-Applications"
+git ls-tree HEAD framework
+git -C framework status --short --branch
+git -C framework rev-parse HEAD
+git diff --submodule=log</code></pre><p>The first command shows the published-in-that-parent pin. The third shows the child currently checked out. Different identifiers need explanation: the child may be intentionally newer, older, or independently edited. A parent status can also report modified child content without a changed child commit.</p>
+<h2>Follow the Framework implementation</h2><p>Read <code>umicom-framework/src/repository/control/lock_plan.c</code>. <code>umi_repository_lock_plan_build</code> receives an inventory, observed child heads and policy, then produces proposed steps. Its action names include <code>no-change</code>, <code>stage-gitlink</code> and <code>missing-head</code>. This separates deciding what to record from actually changing the parent index.</p>
+<pre><code>for each registered child:
+    read its checked-out commit
+    if the commit is missing:
+        report the missing input
+    otherwise:
+        compare it with the parent's recorded commit
+        propose no change or a gitlink update</code></pre><p>This is explanatory pseudocode, not an executable script. Locking records checked-out revisions; it does not download new source or prove that every child commit is published.</p>
+<h2>A safe publication order</h2><ol><li>Review and publish the edited Framework repository once.</li><li>Fast-forward other clean main-branch Framework copies to the published revision. Preserve unique edits separately.</li><li>Review the parent gitlinks and its own changes.</li><li>Record and publish the parent after its children. A parent push using <code>--recurse-submodules=check</code> checks referenced submodule commits are available on a remote.</li></ol>
+<p>That availability check is not proof that every remote is the intended one or that tests passed. Do not update third-party dependency pins merely because another dependency changed.</p>
+<h2>Exercise</h2><p>Framework contains an uncommitted edit, while its HEAD identifier still equals the parent pin. Will committing the parent include that edit?</p><details><summary>Answer</summary><p>No. The edit belongs to the child working tree. First review and record the child, publish it, then record the new child identifier in the parent.</p></details>
+<nav aria-label="Lesson navigation"><a href="03-remotes-and-safe-updates.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original explanations and illustrations.</p></div></footer></body></html>
