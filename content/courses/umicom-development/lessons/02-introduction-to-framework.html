@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Introduction to Umicom Framework | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">All courses</a><a href="../../learning-computer-architecture/index.html">Start at the beginning</a><a href="../../learning-paths.html">Learning map</a></nav></div></header><main id="main" class="simple-page"><article><h1>Introduction to Umicom Framework</h1><h2>Why a framework exists</h2>
+<p>Consider two applications: one records exercises and another displays bank statements. Both need to report errors, open files, manage memory and present information. Writing a different version of every shared operation in every application makes corrections difficult to keep consistent.</p>
+<p>A library is reusable compiled code with a declared interface. A framework brings reusable libraries, conventions and services together so applications can share a foundation. Umicom Framework uses C23 for its primary implementation. An application supplies its own purpose and composes the services it needs.</p>
+<p>A framework does not automatically provide a completed product. A Bank application still needs usable banking workflows, and a Studio application still needs an editor that opens, saves and builds real projects.</p>
+<h2>Separate the responsibilities</h2>
+<pre><code class="language-text">Console window                 GTK4 window
+       \                         /
+        \                       /
+         Activity rule: validate and advance
+                       |
+               Umicom::base status contract
+                       |
+                Operating-system services</code></pre>
+<p>Our teaching example has one rule for advancing an exercise count. The console and graphical versions call the same function. The rule does not print text, open a window or read a file. This makes it easier to test independently.</p>
+<p>The example uses Framework's UmiStatus enumeration. An enumeration gives readable names to a defined set of values. UMI_STATUS_OK means the operation succeeded. UMI_STATUS_INVALID_ARGUMENT means an input was outside the function's contract. UMI_STATUS_CAPACITY_EXCEEDED means that a supported limit prevented the operation.</p>
+<h2>Know the files you are reading</h2>
+<p>Open <a href="../../../../labs/native/framework-activity/activity.h">activity.h</a>. A header describes the interface callers can use. Read its comment before reading its implementation. The contract says that an unsuccessful operation leaves the output unchanged and does not retain the caller's address.</p>
+<p>Open <a href="../../../../labs/native/framework-activity/activity.c">activity.c</a>. It implements that contract: it validates the pointer and count, checks the maximum, and only then stores the new value. The order matters. If it wrote a result first and discovered an error later, callers could receive both an error and a partially changed value.</p>
+<p>Open <a href="../../../../labs/native/framework-activity/console.c">console.c</a>. It translates the result into a message. umi_status_text is a real Framework function, supplied by the SDK; this lab does not copy its implementation.</p>
+<h2>Understand an SDK</h2>
+<p>SDK means software development kit. For this example it includes public headers, compiled libraries and a CMake package description. Headers let the compiler check a call. Libraries provide its implementation. The package description tells CMake which include directories and dependent libraries belong to a component.</p>
+<p>A source folder containing status.h is not enough to satisfy a linker looking for umi_status_text. An installed SDK brings the corresponding declarations and compiled implementations together.</p>
+<p>Use the <a href="../../../umicom/windows-development.md">standalone Framework build and installation steps</a>. Keep the SDK built from the revision you intend to test. Mixing a new header with an old library can cause compile, link or runtime failures.</p>
+<h2>Find the next layer</h2>
+<p>The CMake name Umicom::base denotes an imported component target. The double colon is part of CMake's target naming convention; it is not a C operator in this context. Link the target rather than copying Framework source files into the application.</p>
+<p>For a larger product, look for an existing Framework service before implementing another persistence, ownership or error-reporting mechanism. Put product-specific rules in the product. Add reusable services to Framework with an explicit contract and regression checks.</p>
+<p><strong>Question:</strong> Does a successful console example prove that the GTK window works?</p>
+<p><strong>Answer:</strong> No. It checks the console route and linked logic. The graphical route also depends on GTK, a display environment and its own interactions. Keep those results separate.</p>
+<p>Next, read <a href="03-introduction-to-cmake.html">Introduction to CMake</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="01-introduction-to-c.html">Previous lesson</a> · <a href="03-introduction-to-cmake.html">Next lesson</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original learning material.</p></div></footer></body></html>

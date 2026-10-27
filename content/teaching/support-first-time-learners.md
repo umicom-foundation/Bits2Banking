@@ -1,6 +1,6 @@
 # Help someone take their first steps with computers
 
-[Computing from the Beginning](../courses/computing-from-the-beginning/index.html) starts without programming or command-line prerequisites. The same original lessons are available as [written chapters](../lessons/00-getting-started/index.md). Use the [connected learning map](../start/systems-learning.md) to find the next subject.
+[Introduction to Computers](../courses/learning-computer-architecture/index.html) starts without programming or command-line prerequisites. The same original lessons are available as [written chapters](../lessons/00-getting-started/index.md). Use the [connected learning map](../start/systems-learning.md) to find the next subject.
 
 ## Begin with the learner's purpose
 

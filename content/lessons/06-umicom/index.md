@@ -1,5 +1,9 @@
 # Developing with Umicom
 
+## Build your first Framework application
+
+Follow [Umicom Framework Development](../umicom-development/index.md) for introductions to C, Framework, CMake and GTK4, with a shared console/window example. Use the [Windows setup guide](../../umicom/windows-development.md) for repository-specific commands and expected results.
+
 ## Find a route into these projects
 
 If the terminology is new, begin with [applications, an OS and a kernel](../00-getting-started/07-applications-os-and-kernel.md). Then use the [connected learning map](../../start/systems-learning.md) to choose prerequisites and related chapters.

@@ -94,7 +94,7 @@ Why does the body run at step three but not at step four?
 
 You can trace every condition check, including the one that stops the loop.
 
-[Course contents](index.md) · [Words explained](../../courses/c-from-the-beginning/glossary.html) · [Practical lab guide](../../courses/c-from-the-beginning/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Make a decision before calculating](04-decisions-and-valid-input.md).
 

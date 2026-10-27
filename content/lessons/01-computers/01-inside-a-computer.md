@@ -77,6 +77,6 @@ Think of a source-code file open in Umicom Studio. Where is the saved version st
 
 ## Continue with a connected course
 
-[What does a computer do?](../../courses/computing-from-the-beginning/lessons/02-input-instructions-and-results.html) — Return to the input, instruction and result model before the component details.
+[What does a computer do?](../../courses/learning-computer-architecture/lessons/02-input-instructions-and-results.html) — Return to the input, instruction and result model before the component details.
 
 [Find prerequisites and other learning routes](../../start/systems-learning.md). Return to this chapter whenever the course refers to its concepts.

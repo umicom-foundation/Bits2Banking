@@ -11,4 +11,4 @@ Use algorithms, PowerShell, Bash and Python to solve practical problems.
 
 ## Start with small C programs
 
-[C from the Beginning](../c-from-the-beginning/index.md) introduces each concept through a small traceable example. Reading and paper exercises need no installation; practical compilation uses a separately explained prepared toolchain.
+[Learning C: For beginners](../learning-c/index.md) introduces each concept through a small traceable example. Reading and paper exercises need no installation; practical compilation uses a separately explained prepared toolchain.

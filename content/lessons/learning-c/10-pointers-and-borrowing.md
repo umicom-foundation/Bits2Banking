@@ -96,7 +96,7 @@ Can the function discover that an arbitrary pointer refers to only three element
 
 You can state the caller's lifetime and length responsibilities and the function's read-only promise.
 
-[Course contents](index.md) · [Words explained](../../courses/c-from-the-beginning/glossary.html) · [Practical lab guide](../../courses/c-from-the-beginning/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Keep several values in an array](09-arrays-and-valid-positions.md).
 

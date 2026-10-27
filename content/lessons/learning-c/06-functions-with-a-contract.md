@@ -97,7 +97,7 @@ Does including counts.h by itself supply the executable instructions for BtbRema
 
 You can state the contract, trace the caller's handling and explain why the implementation must be linked.
 
-[Course contents](index.md) · [Words explained](../../courses/c-from-the-beginning/glossary.html) · [Practical lab guide](../../courses/c-from-the-beginning/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Repeat work without losing the stopping rule](05-repeat-with-a-boundary.md).
 

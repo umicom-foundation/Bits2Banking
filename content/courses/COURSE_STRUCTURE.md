@@ -57,7 +57,7 @@ Course index and map pages are preserved pending a separate full-file review.
 
 ## Foundation and systems routes
 
-`computing-from-the-beginning/` provides eight introductory lessons with matching manuscripts under `content/lessons/00-getting-started/`. It requires no prior computing knowledge or installation. `umicom-os-from-scratch/` and `umicom-kernel-from-scratch/` provide initial source-reading and hosted labs with stated technical prerequisites.
+`learning-computer-architecture/` provides eight introductory lessons with matching manuscripts under `content/lessons/00-getting-started/`. It requires no prior computing knowledge or installation. `umicom-os-from-scratch/` and `umicom-kernel-from-scratch/` provide initial source-reading and hosted labs with stated technical prerequisites.
 
 `learning-paths.html` connects these courses to the existing written chapters. The equivalent written map is `content/start/systems-learning.md`. `knowledge/registries/learning-paths.json` records destinations and reasons for the links. Existing lessons remain in their subject folders.
 

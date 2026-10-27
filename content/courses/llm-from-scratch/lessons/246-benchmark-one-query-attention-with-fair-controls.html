@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Umicom Foundation Bits2Banking: native C23 Transformer learning, worked examples and exercises."><title>Lesson 246 — Benchmark one-query attention with fair controls | Bits2Banking</title><style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f3f7fb;color:#172a3b;font:17px/1.7 system-ui,-apple-system,Segoe UI,sans-serif}a{color:#005d88}a:hover,a:focus-visible{text-decoration:underline}a:focus-visible,summary:focus-visible{outline:3px solid #009aab;outline-offset:3px}header{background:#17354d;color:white;padding:2.4rem max(1.2rem,calc((100vw - 990px)/2))}header a{color:#d7f1ff}.skip{position:absolute;left:.8rem;top:-100px;background:white;padding:.5rem}.skip:focus{top:.5rem}main{max-width:990px;margin:1.5rem auto;padding:2.2rem;background:white;border:1px solid #d5e3ea;border-radius:13px}h1{font-size:2.15rem;line-height:1.25;margin:.5rem 0}h2{line-height:1.3;margin-top:2.1rem;color:#0e4865}p,li{max-width:84ch}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#162b3a;color:#e3f7ff;padding:1.1rem;border-radius:8px}code{font-family:ui-monospace,Consolas,monospace}p code,li code{padding:.11em .28em;background:#eaf2f7;border-radius:4px;color:#102b45}details{margin-top:1rem;background:#eaf7f7;border:1px solid #c9e6e3;border-radius:8px;padding:1rem}summary{cursor:pointer;font-weight:700}nav{display:flex;gap:.6rem 1rem;flex-wrap:wrap;margin:1.2rem 0;padding:1rem;background:#edf4f9;border-radius:8px}footer{text-align:center;padding:2rem;color:#475c69}table{border-collapse:collapse;width:100%}th,td{border:1px solid #cbdde8;padding:.65rem;text-align:left}@media(max-width:700px){main{margin:0;padding:1.1rem;border-radius:0}header{padding:1.25rem}h1{font-size:1.75rem}}@media print{body{background:white}main{border:0}header{background:white;color:black;padding:1rem}pre{color:black;background:#f5f5f5}nav{border:1px solid #bbb}}
+</style></head>
+<body><a class="skip" href="#content">Skip to lesson</a><header><small>Umicom Foundation · Bits to Banking · Native LLM 246</small><h1>Lesson 246 — Benchmark one-query attention with fair controls</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main id="content"><nav aria-label="Lesson navigation"><a href="245-design-adversarial-single-query-fixtures.html">← Previous</a> <a href="247-plan-portable-cpu-kernel-optimisation.html">Next →</a> <a href="../single-query-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/246-benchmark-one-query-attention-with-fair-controls.md">Editable Markdown</a> <a href="../../maths-for-ai/lessons/136-read-paired-latency-measurements.html">Maths companion</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Course lead:</strong> Sammy Hegab<br />
+<strong>Language:</strong> Native C23 and Assembly where justified · <strong>Level:</strong> Advanced native Transformer engineering.</p>
+<p><strong>Learning objective:</strong> Plan Release comparisons that separate kernel work from whole-session latency.</p>
+<h2>1. Understand the problem</h2>
+<p>A single-query kernel may reduce executed attention-query work while leaving memory bandwidth, projection costs, tokenisation, output callbacks and context rebuilds unchanged. Benchmarking only the kernel can therefore exaggerate the impact on end-to-end generation.</p>
+<p>Use identical model bytes, prompt IDs, context length, generation policy, seed, CPU, thread count and precision. Warm both paths; use paired measurements with alternating order when practical. Report a distribution (median and variability), not a single best run. Keep compilation options and machine power state recorded. Check numerical parity <strong>before</strong> timing.</p>
+<h2>2. Fully worked example</h2>
+<p>Suppose five paired full-session measurements in milliseconds are reference <code>[4.4,4.5,4.3,4.6,4.4]</code>, candidate <code>[4.1,4.2,4.4,4.2,4.1]</code>. The medians are <code>4.4</code> and <code>4.2</code> ms: an illustrative median ratio <code>4.4/4.2≈1.0476</code>, about 4.8% faster for this tiny sample. The pair at position three is slower for the candidate. Neither result predicts performance on other contexts, hardware or rollover ratios.</p>
+<h2>3. Engineering verification and connection to Umicom Framework</h2>
+<p>Record <code>queries computed</code>, <code>K/V rows read</code>, <code>bytes transferred</code>, <code>time per generated token</code>, <code>rollovers</code>, <code>allocation count</code> and confidence or variability estimates. Explicitly label counters that are estimates rather than instrumented values. Do not claim a measured improvement until the real integrated build passes and a controlled Release comparison demonstrates it.</p>
+<p>The existing Umicom Framework decoder, training tape and K/V ownership services remain the authority for implementation. This educational lesson specifies behaviour; it does <strong>not</strong> introduce a competing application-local inference engine or claim that the proposed single-query kernel is already merged or performance-qualified.</p>
+<h2>4. Mathematics connection</h2>
+<p>Review <a href="../../maths-for-ai/lessons/136-read-paired-latency-measurements.html">Mathematics for AI — Unit 136</a>. The mathematics companion includes a calculation that can be verified independently of a compiled model.</p>
+<h2>5. Exercise</h2>
+<p><strong>Question:</strong> Why does a two-token prompt benchmark not establish production throughput?</p>
+<details>
+<summary>Reveal the worked answer</summary>
+
+<p>It may avoid eviction, cold-cache effects, larger working sets and output overhead; its mix of work differs from longer real workloads.</p>
+</details>
+
+<h2>6. Acceptance note</h2>
+<p>Educational calculations and design specifications are not substitutes for running the complete numerical and memory-safety qualification suite against the actual Windows and other supported Framework builds. Do not claim an inference speedup from hypothetical arithmetic counts.</p>
+<h2>Continue learning</h2>
+<p><a href="245-design-adversarial-single-query-fixtures.html">Previous lesson</a> · <a href="../single-query-attention-learning-path.html">Browser learning path</a> · <a href="247-plan-portable-cpu-kernel-optimisation.html">Next lesson</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+<nav aria-label="Continue reading"><a href="245-design-adversarial-single-query-fixtures.html">← Previous</a> <a href="247-plan-portable-cpu-kernel-optimisation.html">Next →</a> <a href="../single-query-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/246-benchmark-one-query-attention-with-fair-controls.md">Editable Markdown</a> <a href="../../maths-for-ai/lessons/136-read-paired-latency-measurements.html">Maths companion</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Educational manuscript · Not a claim of production verification.</footer></body></html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Umicom Foundation Bits2Banking: native C23 Transformer learning, worked examples and exercises."><title>Mathematics Unit 126 — Calculate scaled dot products and temperature | Bits2Banking</title><style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f3f7fb;color:#172a3b;font:17px/1.7 system-ui,-apple-system,Segoe UI,sans-serif}a{color:#005d88}a:hover,a:focus-visible{text-decoration:underline}a:focus-visible,summary:focus-visible{outline:3px solid #009aab;outline-offset:3px}header{background:#17354d;color:white;padding:2.4rem max(1.2rem,calc((100vw - 990px)/2))}header a{color:#d7f1ff}.skip{position:absolute;left:.8rem;top:-100px;background:white;padding:.5rem}.skip:focus{top:.5rem}main{max-width:990px;margin:1.5rem auto;padding:2.2rem;background:white;border:1px solid #d5e3ea;border-radius:13px}h1{font-size:2.15rem;line-height:1.25;margin:.5rem 0}h2{line-height:1.3;margin-top:2.1rem;color:#0e4865}p,li{max-width:84ch}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#162b3a;color:#e3f7ff;padding:1.1rem;border-radius:8px}code{font-family:ui-monospace,Consolas,monospace}p code,li code{padding:.11em .28em;background:#eaf2f7;border-radius:4px;color:#102b45}details{margin-top:1rem;background:#eaf7f7;border:1px solid #c9e6e3;border-radius:8px;padding:1rem}summary{cursor:pointer;font-weight:700}nav{display:flex;gap:.6rem 1rem;flex-wrap:wrap;margin:1.2rem 0;padding:1rem;background:#edf4f9;border-radius:8px}footer{text-align:center;padding:2rem;color:#475c69}table{border-collapse:collapse;width:100%}th,td{border:1px solid #cbdde8;padding:.65rem;text-align:left}@media(max-width:700px){main{margin:0;padding:1.1rem;border-radius:0}header{padding:1.25rem}h1{font-size:1.75rem}}@media print{body{background:white}main{border:0}header{background:white;color:black;padding:1rem}pre{color:black;background:#f5f5f5}nav{border:1px solid #bbb}}
+</style></head>
+<body><a class="skip" href="#content">Skip to lesson</a><header><small>Umicom Foundation · Bits to Banking · Mathematics for AI 126</small><h1>Mathematics Unit 126 — Calculate scaled dot products and temperature</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main id="content"><nav aria-label="Lesson navigation"><a href="125-identify-single-query-attention-dimensions.html">← Previous</a> <a href="127-derive-stable-online-softmax.html">Next →</a> <a href="../single-query-attention-mathematics.html">Maths study route</a> <a href="../../../lessons/11-maths-for-ai/126-calculate-scaled-dot-products-and-temperature.md">Editable Markdown</a> <a href="../../llm-from-scratch/lessons/235-calculate-one-query-causal-attention.html">LLM companion</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Course lead:</strong> Sammy Hegab · <strong>Prerequisite:</strong> Basic arithmetic and an interest in neural networks.</p>
+<h2>What will you learn?</h2>
+<p>Understand why attention scores divide the query–key dot product by square root of head width.</p>
+<h2>Step-by-step calculation</h2>
+<p>For <code>d_k=4</code>, choose <code>q=(2,0,2,0)</code> and <code>k=(1,0,1,0)</code>. The dot product is <code>2×1+0×0+2×1+0×0=4</code>. Since <code>sqrt(4)=2</code>, the scaled score is <code>4/2=2</code>.</p>
+<p>With another key <code>k_2=(0,1,0,1)</code>, its raw dot product is zero, so scaled score is zero. These two scores produce weights <code>exp(2)/(exp(2)+1)≈0.880797</code> and <code>0.119203</code>. Dividing by <code>sqrt(d_k)</code> changes how sharply softmax concentrates; it must use the model’s trained convention, not a guessed scaling.</p>
+<p><strong>Notation guide:</strong> <code>H</code> = number of attention heads; <code>T</code> = valid causal token count; <code>D</code> = channels per head; <code>L</code> = Transformer layers. The symbols describe <em>example data</em>, not the size or performance of an actual deployed model.</p>
+<h2>Work it out yourself</h2>
+<p><strong>Question:</strong> For a head width of 9 and raw dot product 6, what is the scaled score?</p>
+<details>
+<summary>Show the worked answer</summary>
+
+<p><code>6/sqrt(9)=6/3=2</code>. The square root uses the key head dimension, not the number of retained tokens.</p>
+</details>
+
+<h2>Connect the numbers with native C23</h2>
+<p><a href="../../llm-from-scratch/lessons/235-calculate-one-query-causal-attention.html">LLM Lesson 235</a> explains where this calculation belongs in the planned single-query kernel. The numerical implementation remains Framework-owned; these educational numbers are for checking reasoning, not a substitute for integrated decoder tests.</p>
+<h2>Continue learning</h2>
+<p><a href="125-identify-single-query-attention-dimensions.html">Previous unit</a> · <a href="../single-query-attention-mathematics.html">Browser mathematics path</a> · <a href="127-derive-stable-online-softmax.html">Next unit</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+<nav aria-label="Continue reading"><a href="125-identify-single-query-attention-dimensions.html">← Previous</a> <a href="127-derive-stable-online-softmax.html">Next →</a> <a href="../single-query-attention-mathematics.html">Maths study route</a> <a href="../../../lessons/11-maths-for-ai/126-calculate-scaled-dot-products-and-temperature.md">Editable Markdown</a> <a href="../../llm-from-scratch/lessons/235-calculate-one-query-causal-attention.html">LLM companion</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Educational manuscript · Not a claim of production verification.</footer></body></html>

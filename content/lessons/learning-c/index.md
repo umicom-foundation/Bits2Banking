@@ -1,6 +1,6 @@
-# C from the Beginning
+# Learning C: For beginners
 
-Read small programs, predict results and learn one concept at a time. No previous programming experience is assumed. If files or commands are unfamiliar, start with [Computing from the Beginning](../00-getting-started/index.md). Reading and paper tracing need no installation.
+Read small programs, predict results and learn one concept at a time. No previous programming experience is assumed. If files or commands are unfamiliar, start with [Introduction to Computers](../00-getting-started/index.md). Reading and paper tracing need no installation.
 
 1. [Read a C program before running it](01-read-your-first-program.md)
 2. [Prepare, build and run without mixing the steps](02-build-and-run-one-step.md)
@@ -14,7 +14,7 @@ Read small programs, predict results and learn one concept at a time. No previou
 10. [Let a function read memory you still own](10-pointers-and-borrowing.md)
 11. [Connect borrowed memory to bounded system input](11-bounded-spans-and-rejection.md)
 
-[Browser course](../../courses/c-from-the-beginning/index.html) · [Practical guide](../../courses/c-from-the-beginning/practical-guide.html) · [Words explained](../../courses/c-from-the-beginning/glossary.html) · [Connected learning map](../../start/systems-learning.md)
+[Browser course](../../courses/learning-c/index.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Words explained](../../courses/learning-c/glossary.html) · [Connected learning map](../../start/systems-learning.md)
 
 Use spoken, drawn or written answers and take breaks whenever helpful. There is no timer, account requirement or automatic progress tracking. The practical guide assumes a prepared compiler environment and explains its limits.
 

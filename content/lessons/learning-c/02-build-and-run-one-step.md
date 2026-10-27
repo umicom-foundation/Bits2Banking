@@ -57,7 +57,7 @@ Configuration succeeds but compilation reports a missing semicolon. Should you l
 
 You can identify the stage that failed and distinguish an expected result from an observed result.
 
-[Course contents](index.md) · [Words explained](../../courses/c-from-the-beginning/glossary.html) · [Practical lab guide](../../courses/c-from-the-beginning/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Read a C program before running it](01-read-your-first-program.md).
 

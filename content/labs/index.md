@@ -162,4 +162,4 @@ The [existing C23 HTTP web-server laboratory](https://github.com/umicom-foundati
 
 ## First C programs, one idea at a time
 
-The [first C programs lab](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/first-c-programs) contains five small demonstrations and a checked count function. Follow [C from the Beginning](../courses/c-from-the-beginning/index.html) for explanations of each step, expected output and recovery from errors. Reading and paper tracing need no compiler.
+The [first C programs lab](https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/first-c-programs) contains five small demonstrations and a checked count function. Follow [Learning C: For beginners](../courses/learning-c/index.html) for explanations of each step, expected output and recovery from errors. Reading and paper tracing need no compiler.

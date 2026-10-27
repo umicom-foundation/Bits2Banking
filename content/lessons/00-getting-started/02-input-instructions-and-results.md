@@ -45,7 +45,7 @@ A screen shows 8. Does that prove the program added 5 and 3?
 
 Continue when you can describe the input, rule and output of one everyday example.
 
-[Course contents](index.md) · [Words explained](../../courses/computing-from-the-beginning/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-computer-architecture/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Start with curiosity, not experience](01-learning-at-your-own-pace.md).
 

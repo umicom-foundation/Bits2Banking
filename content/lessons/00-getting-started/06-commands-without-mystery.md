@@ -45,7 +45,7 @@ If a command works in PowerShell, must the same text work in Bash?
 
 Continue when you can separate the prompt from the command and explain what a working folder is.
 
-[Course contents](index.md) · [Words explained](../../courses/computing-from-the-beginning/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-computer-architecture/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Give instructions and check what happens](05-instructions-and-checking.md).
 

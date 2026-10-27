@@ -45,7 +45,7 @@ If you return to an earlier lesson, have you failed to make progress?
 
 You are ready to continue when you can find the course contents and name one question you want to investigate.
 
-[Course contents](index.md) · [Words explained](../../courses/computing-from-the-beginning/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-computer-architecture/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Next:** [What does a computer do?](02-input-instructions-and-results.md).
 

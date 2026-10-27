@@ -6,14 +6,14 @@ Choose by what you want to understand, not by age or job title. You can return t
 
 Begin with everyday ideas and paper activities. No installation is required. Read at your own pace; a learner can speak, draw or write an answer.
 
-1. [Computing from the Beginning](../courses/computing-from-the-beginning/index.html) — Eight lessons from following a page to understanding what an operating system does.
+1. [Introduction to Computers](../courses/learning-computer-architecture/index.html) — Eight lessons from following a page to understanding what an operating system does.
 2. [Inside a computer](../lessons/01-computers/01-inside-a-computer.md) — Meet physical components after practising input, rules and output.
 3. [Bits and digital logic](../lessons/01-computers/02-bits-and-logic.md) — Explore how a shared interpretation turns patterns into information.
 4. [The processor and memory](../lessons/01-computers/03-cpu-and-memory.md) — Follow a sequence of instructions and distinguish working memory from storage.
 
 ## I want to write my first program
 
-Begin with [C from the Beginning](../courses/c-from-the-beginning/index.html): eleven detailed lessons, paper tracing and an optional hosted lab.
+Begin with [Learning C: For beginners](../courses/learning-c/index.html): eleven detailed lessons, paper tracing and an optional hosted lab.
 
 First practise giving clear instructions. Then learn one command environment and one language. Reading the concepts does not require installing every tool.
 
@@ -24,6 +24,10 @@ First practise giving clear instructions. Then learn one command environment and
 5. [Write safer C23](../lessons/03-native-code/36-safer-c-programming.md) — Practise checking inputs and errors before a systems lab.
 6. [Pointers and borrowed memory](../lessons/03-native-code/67-pointers-and-borrowed-memory.md) — Prepare for buffer and lifetime discussions in the Kernel course.
 7. [Compilers, CMake and tests](../lessons/05-engineering/18-build-and-tests.md) — Understand which stage prepares, compiles, links or checks a program.
+
+## I want to build an application with Umicom Framework
+
+Follow [Umicom Framework Development](../lessons/umicom-development/index.md) to connect introductory C, installed libraries, CMake and a GTK4 window. The console and window share one checked function so you can see which code belongs to the application and which comes from Framework. The [Windows guide](../umicom/windows-development.md) explains the tool setup and separate configure, build, test and launch stages.
 
 ## I want to understand Umicom OS
 

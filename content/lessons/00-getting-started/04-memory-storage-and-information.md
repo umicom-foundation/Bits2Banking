@@ -47,7 +47,7 @@ Does adding more storage necessarily let an application keep more unsaved workin
 
 Continue when you can distinguish a location from its contents and a working copy from a saved record.
 
-[Course contents](index.md) · [Words explained](../../courses/computing-from-the-beginning/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-computer-architecture/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Keep something you can find again](03-files-folders-and-saving.md).
 

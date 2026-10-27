@@ -1,4 +1,4 @@
-# Computing from the Beginning
+# Introduction to Computers
 
 No previous computing knowledge is expected. Read, listen, discuss or draw. Paper is enough for the first activities; device exercises are optional. You do not need an account or an installation.
 
@@ -11,10 +11,10 @@ No previous computing knowledge is expected. Read, listen, discuss or draw. Pape
 7. [How applications, an OS and a kernel fit together](07-applications-os-and-kernel.md) — Explain the role of each layer and distinguish Umicom OS from Umicom Kernel.
 8. [Choose your next learning route](08-choose-your-next-project.md) — Choose an achievable next step and recognise which knowledge a practical lab expects.
 
-[Read the browser course](../../courses/computing-from-the-beginning/index.html) · [Find your next learning route](../../start/systems-learning.md)
+[Read the browser course](../../courses/learning-computer-architecture/index.html) · [Find your next learning route](../../start/systems-learning.md)
 
 Keep a private note of your place; this course does not track progress automatically. The exercises ask for understanding, not speed.
 
 ## Continue into first programming
 
-[C from the Beginning](../c-from-the-beginning/index.md) follows this foundation with small worked programs. Every new concept is introduced before the OS and Kernel source exercises use it.
+[Learning C: For beginners](../learning-c/index.md) follows this foundation with small worked programs. Every new concept is introduced before the OS and Kernel source exercises use it.

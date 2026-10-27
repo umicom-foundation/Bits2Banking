@@ -2,7 +2,7 @@
 
 ## A starting point for every learner
 
-Begin with [Computing from the Beginning](lessons/00-getting-started/index.md) if files, programs or commands are unfamiliar. No installation or previous coding is required. Use the [connected learning map](start/systems-learning.md) to continue into existing chapters and courses.
+Begin with [Introduction to Computers](lessons/00-getting-started/index.md) if files, programs or commands are unfamiliar. No installation or previous coding is required. Use the [connected learning map](start/systems-learning.md) to continue into existing chapters and courses.
 
 
 ![Umicom Foundation logo](assets/branding/umicom-logo.png)

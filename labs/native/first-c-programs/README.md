@@ -71,7 +71,7 @@ The expected result is nine executed passing tests with no skips. Record your ac
 
 In a personal working copy, change only the greeting text. Save the file, rebuild btb-first-greeting and launch it. Predict the new line first. Its existing output check should fail until you deliberately update expected/greeting.txt to the intended wording. Do not change expected results just to conceal an unexplained failure.
 
-The values, decisions, repetition and functions targets use the same btb-first- prefix. Their complete sources are paired with explanations in the [C from the Beginning course](../../../content/courses/c-from-the-beginning/index.html).
+The values, decisions, repetition and functions targets use the same btb-first- prefix. Their complete sources are paired with explanations in the [Learning C: For beginners course](../../../content/courses/learning-c/index.html).
 
 ## Troubleshooting
 

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Umicom Foundation Bits2Banking: native C23 Transformer learning, worked examples and exercises."><title>Lesson 234 — Trace head-local key and value layout | Bits2Banking</title><style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f3f7fb;color:#172a3b;font:17px/1.7 system-ui,-apple-system,Segoe UI,sans-serif}a{color:#005d88}a:hover,a:focus-visible{text-decoration:underline}a:focus-visible,summary:focus-visible{outline:3px solid #009aab;outline-offset:3px}header{background:#17354d;color:white;padding:2.4rem max(1.2rem,calc((100vw - 990px)/2))}header a{color:#d7f1ff}.skip{position:absolute;left:.8rem;top:-100px;background:white;padding:.5rem}.skip:focus{top:.5rem}main{max-width:990px;margin:1.5rem auto;padding:2.2rem;background:white;border:1px solid #d5e3ea;border-radius:13px}h1{font-size:2.15rem;line-height:1.25;margin:.5rem 0}h2{line-height:1.3;margin-top:2.1rem;color:#0e4865}p,li{max-width:84ch}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#162b3a;color:#e3f7ff;padding:1.1rem;border-radius:8px}code{font-family:ui-monospace,Consolas,monospace}p code,li code{padding:.11em .28em;background:#eaf2f7;border-radius:4px;color:#102b45}details{margin-top:1rem;background:#eaf7f7;border:1px solid #c9e6e3;border-radius:8px;padding:1rem}summary{cursor:pointer;font-weight:700}nav{display:flex;gap:.6rem 1rem;flex-wrap:wrap;margin:1.2rem 0;padding:1rem;background:#edf4f9;border-radius:8px}footer{text-align:center;padding:2rem;color:#475c69}table{border-collapse:collapse;width:100%}th,td{border:1px solid #cbdde8;padding:.65rem;text-align:left}@media(max-width:700px){main{margin:0;padding:1.1rem;border-radius:0}header{padding:1.25rem}h1{font-size:1.75rem}}@media print{body{background:white}main{border:0}header{background:white;color:black;padding:1rem}pre{color:black;background:#f5f5f5}nav{border:1px solid #bbb}}
+</style></head>
+<body><a class="skip" href="#content">Skip to lesson</a><header><small>Umicom Foundation · Bits to Banking · Native LLM 234</small><h1>Lesson 234 — Trace head-local key and value layout</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main id="content"><nav aria-label="Lesson navigation"><a href="233-define-a-single-query-attention-contract.html">← Previous</a> <a href="235-calculate-one-query-causal-attention.html">Next →</a> <a href="../single-query-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/234-trace-head-local-key-value-layout.md">Editable Markdown</a> <a href="../../maths-for-ai/lessons/125-identify-single-query-attention-dimensions.html">Maths companion</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Course lead:</strong> Sammy Hegab<br />
+<strong>Language:</strong> Native C23 and Assembly where justified · <strong>Level:</strong> Advanced native Transformer engineering.</p>
+<p><strong>Learning objective:</strong> Calculate flat memory offsets safely and recognise when tensor layout differs from logical attention shape.</p>
+<h2>1. Understand the problem</h2>
+<p>A textbook attention tensor is often written <code>[heads, tokens, headWidth]</code>. Real Framework storage may be layer-major, padded or strided. <strong>Logical shape is not proof of physical contiguity.</strong> A single-query kernel must consume the actual storage contract or an explicitly verified view; it must not infer a stride from a drawing in a lesson.</p>
+<p>For tightly packed head-major storage, the zero-based FP32 element index is <code>((head × validTokenCapacity) + token) × headWidth + channel</code>. With a larger physical token stride, replace <code>validTokenCapacity</code> in that formula with the <em>allocated</em> token pitch. Bounds are checked against the true allocation before multiplying.</p>
+<h2>2. Fully worked example</h2>
+<p>Take <code>heads=2</code>, allocated token pitch <code>T=3</code>, <code>headWidth=2</code>. For <code>head=1</code>, <code>token=2</code>, <code>channel=1</code>, the flat index is <code>((1×3+2)×2)+1 = 11</code>, the last of 12 elements. If a developer mistakenly flattens as <code>[token, head, width]</code>, they obtain <code>((2×2+1)×2)+1 = 11</code> for this boundary example, so the bug hides. Check another point: <code>head=1</code>, <code>token=0</code>, <code>channel=1</code> should be <code>7</code>; token-major gives <code>3</code>. One matching endpoint is not a layout proof.</p>
+<h2>3. Engineering verification and connection to Umicom Framework</h2>
+<p>Compare the memory view against the existing K/V store API rather than inventing a second layout. Qualify two distinct head–token pairs, non-square dimensions, a strided view, a first/last valid row and a rejected out-of-range row. Validate all multiplies against <code>SIZE_MAX</code> before allocating or calculating an address.</p>
+<p>The existing Umicom Framework decoder, training tape and K/V ownership services remain the authority for implementation. This educational lesson specifies behaviour; it does <strong>not</strong> introduce a competing application-local inference engine or claim that the proposed single-query kernel is already merged or performance-qualified.</p>
+<h2>4. Mathematics connection</h2>
+<p>Review <a href="../../maths-for-ai/lessons/125-identify-single-query-attention-dimensions.html">Mathematics for AI — Unit 125</a>. The mathematics companion includes a calculation that can be verified independently of a compiled model.</p>
+<h2>5. Exercise</h2>
+<p><strong>Question:</strong> What test catches an accidental swap between head-major and token-major axes?</p>
+<details>
+<summary>Reveal the worked answer</summary>
+
+<p>Use a deliberately non-symmetric labelled tensor (for example, values encode head and token), then retrieve several interior elements. Shape and total element count alone cannot detect the swap.</p>
+</details>
+
+<h2>6. Acceptance note</h2>
+<p>Educational calculations and design specifications are not substitutes for running the complete numerical and memory-safety qualification suite against the actual Windows and other supported Framework builds. Do not claim an inference speedup from hypothetical arithmetic counts.</p>
+<h2>Continue learning</h2>
+<p><a href="233-define-a-single-query-attention-contract.html">Previous lesson</a> · <a href="../single-query-attention-learning-path.html">Browser learning path</a> · <a href="235-calculate-one-query-causal-attention.html">Next lesson</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+<nav aria-label="Continue reading"><a href="233-define-a-single-query-attention-contract.html">← Previous</a> <a href="235-calculate-one-query-causal-attention.html">Next →</a> <a href="../single-query-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/234-trace-head-local-key-value-layout.md">Editable Markdown</a> <a href="../../maths-for-ai/lessons/125-identify-single-query-attention-dimensions.html">Maths companion</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Educational manuscript · Not a claim of production verification.</footer></body></html>

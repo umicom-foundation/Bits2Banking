@@ -47,7 +47,7 @@ If a parser test runs successfully on Windows, has a native RISC-V kernel necess
 
 Continue when you can describe an application and a kernel without using them as interchangeable words.
 
-[Course contents](index.md) · [Words explained](../../courses/computing-from-the-beginning/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-computer-architecture/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Read a command before running it](06-commands-without-mystery.md).
 

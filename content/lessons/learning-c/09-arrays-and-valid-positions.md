@@ -96,7 +96,7 @@ An array has three elements. Is index three its last valid element?
 
 You can distinguish the array's size, an element's index and the value stored there.
 
-[Course contents](index.md) · [Words explained](../../courses/c-from-the-beginning/glossary.html) · [Practical lab guide](../../courses/c-from-the-beginning/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [Move from small programs to OS and Kernel source](08-connect-to-systems-lessons.md).
 

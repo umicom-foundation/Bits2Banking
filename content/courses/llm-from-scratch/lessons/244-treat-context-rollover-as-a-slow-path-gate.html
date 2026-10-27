@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Umicom Foundation Bits2Banking: native C23 Transformer learning, worked examples and exercises."><title>Lesson 244 — Treat context rollover as a slow-path gate | Bits2Banking</title><style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f3f7fb;color:#172a3b;font:17px/1.7 system-ui,-apple-system,Segoe UI,sans-serif}a{color:#005d88}a:hover,a:focus-visible{text-decoration:underline}a:focus-visible,summary:focus-visible{outline:3px solid #009aab;outline-offset:3px}header{background:#17354d;color:white;padding:2.4rem max(1.2rem,calc((100vw - 990px)/2))}header a{color:#d7f1ff}.skip{position:absolute;left:.8rem;top:-100px;background:white;padding:.5rem}.skip:focus{top:.5rem}main{max-width:990px;margin:1.5rem auto;padding:2.2rem;background:white;border:1px solid #d5e3ea;border-radius:13px}h1{font-size:2.15rem;line-height:1.25;margin:.5rem 0}h2{line-height:1.3;margin-top:2.1rem;color:#0e4865}p,li{max-width:84ch}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#162b3a;color:#e3f7ff;padding:1.1rem;border-radius:8px}code{font-family:ui-monospace,Consolas,monospace}p code,li code{padding:.11em .28em;background:#eaf2f7;border-radius:4px;color:#102b45}details{margin-top:1rem;background:#eaf7f7;border:1px solid #c9e6e3;border-radius:8px;padding:1rem}summary{cursor:pointer;font-weight:700}nav{display:flex;gap:.6rem 1rem;flex-wrap:wrap;margin:1.2rem 0;padding:1rem;background:#edf4f9;border-radius:8px}footer{text-align:center;padding:2rem;color:#475c69}table{border-collapse:collapse;width:100%}th,td{border:1px solid #cbdde8;padding:.65rem;text-align:left}@media(max-width:700px){main{margin:0;padding:1.1rem;border-radius:0}header{padding:1.25rem}h1{font-size:1.75rem}}@media print{body{background:white}main{border:0}header{background:white;color:black;padding:1rem}pre{color:black;background:#f5f5f5}nav{border:1px solid #bbb}}
+</style></head>
+<body><a class="skip" href="#content">Skip to lesson</a><header><small>Umicom Foundation · Bits to Banking · Native LLM 244</small><h1>Lesson 244 — Treat context rollover as a slow-path gate</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main id="content"><nav aria-label="Lesson navigation"><a href="243-keep-single-query-proposals-failure-atomic.html">← Previous</a> <a href="245-design-adversarial-single-query-fixtures.html">Next →</a> <a href="../single-query-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/244-treat-context-rollover-as-a-slow-path-gate.md">Editable Markdown</a> <a href="../../maths-for-ai/lessons/133-prove-prefix-position-invariance.html">Maths companion</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Course lead:</strong> Sammy Hegab<br />
+<strong>Language:</strong> Native C23 and Assembly where justified · <strong>Level:</strong> Advanced native Transformer engineering.</p>
+<p><strong>Learning objective:</strong> Build an unambiguous routing policy for unchanged-position appends versus full-window rebuilds.</p>
+<h2>1. Understand the problem</h2>
+<p>The optimisation is intentionally conditional. When a new token can be appended without reassigning prior absolute positions, the session may compute one query and reuse retained K/V. At a full context window under the current learned-position policy, it must select the canonical rebuild path. Mixing a partially shifted cache with freshly computed projections produces a seemingly plausible but numerically different model.</p>
+<p>Routing is a correctness rule, not a performance heuristic. The decision should occur before any persistent mutation, and the work counters must distinguish incremental rows, reference fallback work and K/V cache replacement. An eventual alternative policy must pass independent parity tests across the same boundaries.</p>
+<h2>2. Fully worked example</h2>
+<p>Let capacity be 4 and the current prompt <code>[A,B]</code>. Appending <code>C</code>, then <code>D</code>, keeps earlier position indices fixed. Appending <code>E</code> requires a window <code>[B,C,D,E]</code> at positions <code>[0,1,2,3]</code>; <code>B</code> moves from 1 to 0, so the canonical rebuild applies. Another new token forces a second rebuild. A benchmark that stops after generating <code>D</code> measures only the easy path.</p>
+<h2>3. Engineering verification and connection to Umicom Framework</h2>
+<p>Exercise the first rollover, two consecutive rollovers, cancellation just before rollover and checkpoint invalidation immediately after a rebuild. Report the number of fast steps and slow steps beside every latency figure. Do not extrapolate a short-prefix speedup to long, eviction-heavy runs.</p>
+<p>The existing Umicom Framework decoder, training tape and K/V ownership services remain the authority for implementation. This educational lesson specifies behaviour; it does <strong>not</strong> introduce a competing application-local inference engine or claim that the proposed single-query kernel is already merged or performance-qualified.</p>
+<h2>4. Mathematics connection</h2>
+<p>Review <a href="../../maths-for-ai/lessons/133-prove-prefix-position-invariance.html">Mathematics for AI — Unit 133</a>. The mathematics companion includes a calculation that can be verified independently of a compiled model.</p>
+<h2>5. Exercise</h2>
+<p><strong>Question:</strong> Why is a test with a prompt shorter than context capacity insufficient?</p>
+<details>
+<summary>Reveal the worked answer</summary>
+
+<p>It may never trigger eviction. The fast-path contract can pass while the most important position-reassignment boundary remains untested.</p>
+</details>
+
+<h2>6. Acceptance note</h2>
+<p>Educational calculations and design specifications are not substitutes for running the complete numerical and memory-safety qualification suite against the actual Windows and other supported Framework builds. Do not claim an inference speedup from hypothetical arithmetic counts.</p>
+<h2>Continue learning</h2>
+<p><a href="243-keep-single-query-proposals-failure-atomic.html">Previous lesson</a> · <a href="../single-query-attention-learning-path.html">Browser learning path</a> · <a href="245-design-adversarial-single-query-fixtures.html">Next lesson</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+
+<nav aria-label="Continue reading"><a href="243-keep-single-query-proposals-failure-atomic.html">← Previous</a> <a href="245-design-adversarial-single-query-fixtures.html">Next →</a> <a href="../single-query-attention-learning-path.html">Study route</a> <a href="../../../lessons/10-native-ai/244-treat-context-rollover-as-a-slow-path-gate.md">Editable Markdown</a> <a href="../../maths-for-ai/lessons/133-prove-prefix-position-invariance.html">Maths companion</a></nav></main>
+<footer>Sammy Hegab · Umicom Foundation · Educational manuscript · Not a claim of production verification.</footer></body></html>

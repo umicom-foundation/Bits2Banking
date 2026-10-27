@@ -51,7 +51,7 @@ What is a useful next step if the Kernel lab mentions C pointers and you have ne
 
 Choose the route that fits your current understanding. There is no time limit and no requirement to finish every route.
 
-[Course contents](index.md) · [Words explained](../../courses/computing-from-the-beginning/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-computer-architecture/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [How applications, an OS and a kernel fit together](07-applications-os-and-kernel.md).
 
@@ -59,4 +59,4 @@ Sammy Hegab · Umicom Foundation · MIT. Original learning material.
 
 ## Continue into first programming
 
-[C from the Beginning](../c-from-the-beginning/index.md) follows this foundation with small worked programs. Every new concept is introduced before the OS and Kernel source exercises use it.
+[Learning C: For beginners](../learning-c/index.md) follows this foundation with small worked programs. Every new concept is introduced before the OS and Kernel source exercises use it.

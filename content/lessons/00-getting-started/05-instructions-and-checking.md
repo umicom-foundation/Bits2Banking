@@ -45,7 +45,7 @@ If one example works, does that prove the instructions handle every possible inp
 
 Continue when you can state an expected result before trying a task and describe a mismatch without guessing its cause.
 
-[Course contents](index.md) · [Words explained](../../courses/computing-from-the-beginning/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-computer-architecture/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [What the computer keeps while it works](04-memory-storage-and-information.md).
 

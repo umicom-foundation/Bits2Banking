@@ -45,7 +45,7 @@ Are two files called greeting.txt necessarily the same file?
 
 Continue when you can explain how you would find a saved practice note again without guessing.
 
-[Course contents](index.md) · [Words explained](../../courses/computing-from-the-beginning/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
+[Course contents](index.md) · [Words explained](../../courses/learning-computer-architecture/glossary.html) · [Connected learning routes](../../start/systems-learning.md)
 
 **Previous:** [What does a computer do?](02-input-instructions-and-results.md).
 
