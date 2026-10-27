@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How a program asks the Kernel for a service | Bits2Banking</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon-on-dark.svg">
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../assets/branding/umicom-icon-on-dark.svg" width="40" height="40" alt="">Umicom · Bits2Banking</a>
+<nav aria-label="Course navigation"><a href="../index.html">Course contents</a> · <a href="06-reserved-pages.html">Previous lesson</a> · <a href="../index.html">Return to contents</a></nav>
+</div></header>
+<main id="main" class="container page-pad"><article>
+<h1>How a program asks the Kernel for a service</h1>
+<p>A program needs help to do some jobs. It may need to read a file, send a message or finish running. The Kernel controls those services and checks which requests are allowed. In this lesson we will follow one small, read-only request in the real Umicom Kernel: asking which native interface is available.</p>
+<p>You can begin by reading the explanation and diagrams. The optional practical section uses the Kernel's existing tests; it does not ask you to write a kernel or change your computer's operating system. If files, memory and instructions are new to you, start with <a href="../../learning-computer-architecture/index.html">Introduction to Computers</a>. For C functions and numbers, use <a href="../../learning-c/index.html">Learning C</a>.</p>
+
+<h2>1. Understand the two sides</h2>
+<p>A <strong>program</strong> is a set of instructions. A running instance is often called a <strong>process</strong>. Its own memory contains its instructions and working data. The <strong>Kernel</strong> manages protected resources and decides how programs may use them.</p>
+<p><strong>Privilege</strong> means authority to perform an operation. A normal program must not gain authority just by writing a number that happens to resemble a Kernel address. Instead it makes a <strong>system call</strong>, also called a <strong>syscall</strong>: a structured request across a controlled boundary.</p>
+<p>The experimental Umicom RV64 monitor currently handles these calls in machine mode, or M-mode. Its native programs execute in user mode, or U-mode. RV64 means a 64-bit RISC-V instruction environment. This is a specific experimental execution model; it does not describe how every operating system handles calls.</p>
+
+<figure>
+<svg viewBox="0 0 760 265" role="img" aria-labelledby="call-title call-description" style="max-width:100%;height:auto">
+<title id="call-title">A request crosses the checked Kernel boundary and returns</title>
+<desc id="call-description">A user program places a request in registers. ECALL enters the monitor, which checks origin, budget and instructions. A scalar result returns to the program.</desc>
+<rect x="5" y="15" width="215" height="150" rx="12" fill="#e3f5f4" stroke="#087784"/>
+<rect x="275" y="15" width="210" height="150" rx="12" fill="#f3f7fb" stroke="#203247"/>
+<rect x="540" y="15" width="215" height="150" rx="12" fill="#e3f5f4" stroke="#087784"/>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="18" fill="#192c3e" text-anchor="middle">
+<text x="112" y="45">User program</text><text x="112" y="82">a7 = request number</text><text x="112" y="110">a0 = selector</text><text x="112" y="138">a1 = 0, a2 = 0</text>
+<text x="380" y="45">Checked boundary</text><text x="380" y="82">Origin and budget</text><text x="380" y="110">Executable instruction</text><text x="380" y="138">Safe continuation</text>
+<text x="647" y="45">Kernel query</text><text x="647" y="82">Read contract value</text><text x="647" y="110">No user buffer</text><text x="647" y="138">No new authority</text>
+<text x="380" y="220">The result returns in a0; the program continues after ECALL.</text>
+</g>
+<path d="M225 90 H265 M257 84 L265 90 L257 96 M490 90 H530 M522 84 L530 90 L522 96" fill="none" stroke="#087784" stroke-width="3"/>
+</svg>
+<figcaption>The drawing describes the implemented request path. It is an explanatory diagram, not a screenshot of a running application.</figcaption>
+</figure>
+
+<h2>2. Learn what the registers carry</h2>
+<p>A <strong>register</strong> is a small named storage location inside the processor. Registers hold values the processor is working with. Names such as <code>a0</code> identify particular registers; they are not filenames or memory addresses.</p>
+<p>Umicom's basic native syscall convention uses <code>a7</code> for the operation number and <code>a0</code>, <code>a1</code> and <code>a2</code> for three arguments. An <strong>argument</strong> is an input to an operation. The RISC-V <code>ecall</code> instruction transfers control to the monitor. This controlled transfer is a <strong>trap</strong>; in this case it is deliberate, not evidence that the program crashed.</p>
+<p>An <strong>application binary interface</strong>, abbreviated <strong>ABI</strong>, is the agreement that lets compiled code communicate. It defines register use, operation numbers and data layouts. A C header describes names for the compiler; the ABI also describes what happens when the compiled instructions run.</p>
+<table><thead><tr><th>Register</th><th>Discovery request</th><th>Example</th></tr></thead><tbody>
+<tr><td><code>a7</code></td><td>Choose ABI discovery</td><td>3</td></tr>
+<tr><td><code>a0</code></td><td>Choose the version value</td><td>0</td></tr>
+<tr><td><code>a1</code></td><td>Reserved argument</td><td>0</td></tr>
+<tr><td><code>a2</code></td><td>Reserved argument</td><td>0</td></tr>
+</tbody></table>
+<p><strong>Reserved</strong> means the caller must use the defined neutral value, zero. It does not mean the value is ignored. Nonzero reserved arguments are refused so a typo cannot silently acquire a meaning in a later interface.</p>
+
+<h2>3. Ask a question without passing a pointer</h2>
+<p>The real header <code>include/umicom/kernel/user_abi.h</code> gives readable names to the numbers. The existing wrapper moves C arguments into the required registers and executes the instruction. In <code>kernel/user_payload.c</code>, find this call:</p>
+<pre><code>observation-&gt;abiVersion = UmicomRiscvUserSystemCall(
+    UMICOM_USER_CALL_ABI_QUERY, UMICOM_USER_ABI_QUERY_VERSION, 0U, 0U);</code></pre>
+<p>Read it from right to left once: the function receives the operation, selector and two zero values. Its result is assigned to <code>observation-&gt;abiVersion</code>. The arrow accesses a field through a pointer to the program's own observation record. That record is not passed as an argument to this syscall.</p>
+<p><code>0U</code> is zero written as an unsigned integer, a number type that does not represent negative values. A <strong>selector</strong> chooses which one of several supported answers is requested. Discovery returns a single number; it does not copy a structure to an address supplied by the program.</p>
+<p>The version result is <code>0x00010000</code>. The <code>0x</code> prefix indicates hexadecimal, a base-16 number system. This value is 65,536 in ordinary decimal notation. Its upper 16-bit field contains major version 1 and its lower 16-bit field contains minor version 0. The number identifies an interface contract, not a release date or build identifier.</p>
+
+<h2>4. Check compatibility before asking about features</h2>
+<p>An older Kernel that does not implement discovery returns the existing <em>unknown call</em> result, 1. A feature answer can also legitimately be 1. Therefore the program must check VERSION first. Without that check, it could mistake an error for a feature.</p>
+<p>After establishing compatibility, selectors can ask for:</p>
+<ul>
+<li>The compiled optional service routes.</li>
+<li>The native register word width: 64 bits.</li>
+<li>The byte order: little-endian, encoded as 1.</li>
+<li>The base page size: 4,096 bytes.</li>
+<li>The COPY operation's maximum: 64 bytes.</li>
+<li>The per-session syscall budget: 32 calls.</li>
+</ul>
+<p>A <strong>byte</strong> contains eight bits. <strong>Little-endian</strong> describes how the bytes of a multi-byte number are ordered: the least significant byte comes first. A <strong>page</strong> is a fixed-size unit used for memory mappings. A <strong>budget</strong> limits work: even a read-only question counts as a syscall, and repeated questions cannot run indefinitely.</p>
+<p>An unknown selector or a nonzero reserved argument returns a refusal with every bit set: <code>0xffffffffffffffff</code>. A zero feature mask is a successful answer meaning that none of the optional routes is compiled. Success and failure must be interpreted using the operation's rules, not a guess that every nonzero number is an error.</p>
+
+<h2>5. Distinguish availability from permission</h2>
+<p>The feature answer is a <strong>bit mask</strong>. Each bit represents one yes/no fact. Messages use bit value 1, blocking communication 2, files 4, streams 8 and service reports 16. An image containing all five returns 1 + 2 + 4 + 8 + 16 = 31.</p>
+<p>If the file bit is present, a file-operation route exists in that image. The program still needs valid service setup, an appropriate handle and the required rights. A <strong>handle</strong> is a token naming an owned resource; it is not permission to use every resource. Discovery does not create handles or grant rights.</p>
+<details><summary>Does a feature answer of 31 mean any program may read any file?</summary><p>No. It only describes the compiled service routes. The file service still checks its caller, handles, rights, buffer addresses and request.</p></details>
+<details><summary>Why does the minimal host fixture report 0 while the guest image reports 31?</summary><p>The host fixture links the basic monitor without the optional services. The normal RV64 image includes those services. The same dispatcher reports its actual composition.</p></details>
+
+<h2>6. Follow the implementation before running it</h2>
+<ol>
+<li>Open <code>include/umicom/kernel/user_abi.h</code>. Find operation 3 and selectors 0 through 6.</li>
+<li>Open <code>kernel/user_monitor.c</code>. Find <code>UmicomKernelUserTrapDispatch</code>. Notice that origin, instruction and budget checks happen before the query.</li>
+<li>Find <code>UmicomKernelUserAbiQuery</code>. It selects a scalar value and rejects nonzero reserved arguments.</li>
+<li>Return to the dispatcher. Notice that only saved <code>a0</code> and the continuation instruction address change after a normal discovery result.</li>
+<li>Open <code>tests/user_memory/user_memory_tests.c</code>. The fixed expected values check the public numbers independently. Additional cases check refusal, register preservation and admission boundaries.</li>
+<li>Open <code>kernel/user_validation.c</code>. The real guest checks two isolated address spaces and verifies Kernel-side counts, protected data and resource cleanup.</li>
+</ol>
+<p>A <strong>continuation</strong> is the place where execution resumes. ECALL occupies four bytes in this contract, so normal completion advances past it. The Kernel checks that the next instruction belongs to executable user memory before resuming.</p>
+
+<h2>7. Run the optional Kernel exercise</h2>
+<p>Use the Kernel repository's <code>docs/WINDOWS_BEGINNER_SETUP.md</code> to install and verify its tools first. The following commands assume the checkout is <code>C:\umicom\umicom-kernel</code> and MSYS2 UCRT64 tools are installed at <code>C:\msys64\ucrt64\bin</code>. Adjust paths if your setup differs. Run one command at a time and stop on an error.</p>
+<p>First, run the host fixture. This is an ordinary program using synthetic aligned memory. It tests the real allocator, mapper and dispatcher but cannot prove processor privilege transitions.</p>
+<pre><code>Set-Location "C:\umicom\umicom-kernel"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+cmake -S ".\tests\user_memory" -B ".\build\user-memory-host" -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe
+cmake --build ".\build\user-memory-host" --parallel 2
+ctest --test-dir ".\build\user-memory-host" -R "^kernel[.]user_boundary[.]abi-" --output-on-failure --no-tests=error</code></pre>
+<p><code>-S</code> selects source, <code>-B</code> selects a separate build folder, and <code>-G Ninja</code> selects a build tool. CMake first prepares the build; the second command compiles and links. CTest's <code>-R</code> selects matching test names. Expect eight selected ABI cases to pass. A skipped or timed-out case has not passed.</p>
+<p>Then qualify the real RISC-V path if the cross-compiler and emulator are available:</p>
+<pre><code>cmake --preset riscv64-clang-debug -DBUILD_TESTING=ON
+cmake --build --preset riscv64-clang-debug --parallel 2
+ctest --preset riscv64-clang-debug -R "^kernel[.]riscv64[.](abi_discovery|user_execution)$" --output-on-failure --no-tests=error</code></pre>
+<p>A <strong>preset</strong> stores named configuration choices. A <strong>cross-compiler</strong> builds instructions for a different target machine. QEMU supplies an emulated RISC-V machine in which the guest executes its real U-mode instructions. The current-image test fixture builds the required image before launching those tests.</p>
+<p>Expected guest output includes <code>UMICOM_KERNEL_ABI_DISCOVERY_READY</code>. It appears only after both discovery cases satisfy their checks. Preserve the full output, exit result and source identity; a copied readiness line alone is not evidence of success. These commands are learner instructions, not a claim about your computer's results.</p>
+
+<h2>8. Predict, investigate and explain</h2>
+<ol>
+<li>Predict the response to VERSION with the second reserved argument set to 1. Find the matching regression case and compare your prediction with its assertion.</li>
+<li>Explain why the call budget still applies even though the query never writes user memory.</li>
+<li>Calculate the mask for messages and file operations only: 1 + 4. Which other bits are absent?</li>
+<li>Explain why a successful host fixture and a successful guest test answer different questions.</li>
+</ol>
+<p>If CMake cannot find a compiler, return to tool setup. If CTest reports no tests, check the build directory and spelling of the filter. If the current-image fixture fails, resolve its compiler or linker output first. Do not launch an old image and treat it as evidence for changed source.</p>
+<p>Continue reading <code>docs/NATIVE_ABI_DISCOVERY.md</code> and <code>docs/USER_MEMORY_BOUNDARIES.md</code> in the Kernel repository. The Framework's portable system services remain a separate layer; this query alone does not make a Framework graphical application run on the experimental Kernel.</p>
+<p>Use the <a href="../../learning-paths.html#kernel">connected learning map</a> to revisit memory, C and system-layer concepts, or return to <a href="../index.html">the course contents</a>.</p>
+</article></main>
+<footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT for this original lesson and diagram.</p></div></footer>
+</body></html>
