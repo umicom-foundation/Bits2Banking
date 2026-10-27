@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en-GB"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="Umicom Foundation native AI and distributed-learning educational lesson" name="description"/><title>AI Research 016: Benchmark C23 SIMD and RISC-V learning kernels | Bits2Banking</title><style>
+:root{--blue:#143c61;--navy:#0e243a;--ink:#1b3043;--pale:#eef6fb;--teal:#0b736e;--border:#d7e4ec;--bg:#f3f6f9}
+*{box-sizing:border-box}body{margin:0;font:17px/1.66 system-ui,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink)}
+a{color:#086295}a:focus-visible{outline:3px solid #08a6a1;outline-offset:3px}header{background:linear-gradient(110deg,#142c43,#155e75);padding:2.4rem max(1.25rem,calc((100vw - 980px)/2));color:white}header small{color:#bce8ec}header h1{font-size:clamp(1.65rem,3.8vw,2.75rem);line-height:1.18;max-width:950px}header p{color:#cde7f0}main{max-width:1020px;margin:1.3rem auto 3rem;background:white;padding:2.3rem;border:1px solid var(--border);border-radius:13px}nav{display:flex;flex-wrap:wrap;gap:.8rem;background:var(--pale);padding:1rem;border-radius:8px}nav a{font-weight:600}h2{color:var(--blue);font-size:1.5rem;margin-top:2rem}h3{color:var(--blue)}pre{background:#102537;color:white;padding:1.2rem;border-radius:8px;overflow-x:auto}code{font-family:'Cascadia Code',Consolas,monospace}p code,li code{background:#eaf2f8;padding:.1rem .25rem}p,li{max-width:92ch}blockquote{border-left:5px solid var(--teal);margin:1.4rem 0;padding:.6rem 1rem;background:#edf8f6}details{background:#eff9f3;border:1px solid #b3d9bf;border-radius:8px;padding:.9rem 1.1rem}summary{font-weight:700;cursor:pointer}table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}th,td{border:1px solid var(--border);padding:.6rem;text-align:left}th{background:var(--pale)}footer{text-align:center;padding:1.5rem;font-size:.85rem;color:#587083}@media(max-width:700px){main{margin:0;padding:1rem;border:0;border-radius:0}header{padding:1.4rem}}
+</style></head><body><header><small>Bits to Banking · Umicom Foundation · Sammy Hegab</small><h1>AI Research 016: Benchmark C23 SIMD and RISC-V learning kernels</h1><p>Research methods · baselines · falsifiable experiments</p></header><main><nav aria-label="Course navigation"><a href="../federated-research-extensions.html">Research course route</a><a href="../../../lessons/13-ai-research/016-benchmark-c23-simd-and-riscv-learning-kernels.md">Canonical Markdown</a><a href="015-govern-held-out-model-quality-and-source-approval.html">Previous HTML lesson</a></nav><article><p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab · <strong>Level:</strong> Advanced research · <strong>Implementation focus:</strong> C23/Assembly where justified.</p>
+<h2>Research problem and state of practice</h2>
+<p>Low-level optimisation must preserve a scalar numerical oracle and report compiler flags, dtype, hardware, vector width, memory hierarchy and energy. Assembly and RISC-V Vector operations are useful <em>after</em> profiling establishes bottlenecks. Avoid a new tensor implementation where Framework already owns the operation; use an optional optimised backend with independent parity tests.</p>
+<p>This subject has established prior art. A promising idea becomes a research contribution only when it names a competing baseline, controls the evaluation budget, demonstrates a reproducible improvement or reports a valid negative result. Keep paper claims distinct from independently replicated observations.</p>
+<h2>Worked research design</h2>
+<p>Compare scalar C23 matrix multiplication against compiler auto-vectorisation and, if hardware supports it, one bounded SIMD path on identical shapes. Record max absolute/relative error and median wall-clock per warm workload. Include model-level latency to avoid mistaking a micro-kernel gain for a total training improvement.</p>
+<h2>Falsifiable hypothesis and measurements</h2>
+<p>Hypothesis: a specific architecture-targeted kernel reduces time or joules for fixed matrix shapes without exceeding declared numerical error; report negative results and fallbacks.</p>
+<p>Collect an immutable dataset/checkpoint identifier, compiler/backend version, model shape, worker topology, bandwidth and RTT, random seeds, held-out evaluation, communication bytes, total time and verified cost. Pre-register the main success metric before comparing implementations; report confidence ranges if observed effects are small.</p>
+<h2>Integration boundary</h2>
+<p>Use existing Framework training, optimisation, model-provenance, messaging and lifecycle APIs. Where a new capability is required, develop a bounded native C23 component and qualify it against a simple independent numerical oracle. Do not place unreviewed learner code directly in the production Bank/TMS services, and do not claim networked training or cryptographic proof from an in-process demonstration.</p>
+<h2>Questions for a research notebook</h2>
+<ol>
+<li>Which property of the method is genuinely novel relative to the strongest listed baseline?</li>
+<li>Which hardware, dataset or adversary assumption could reverse the outcome?</li>
+<li>What failed experiment would disprove the proposed advantage?</li>
+<li>How could a different research group reproduce every measured result?</li>
+</ol>
+<h2>Primary literature</h2>
+<ul>
+<li><a href="https://riscv.org/">RISC-V International</a></li>
+<li><a href="https://arxiv.org/abs/2403.03507">GaLore — Memory-Efficient LLM Training by Gradient Low-Rank Projection</a></li>
+</ul>
+<p><a href="../federated-research-extensions.html">Advanced research route</a> · <a href="../../distributed-learning/rounds-and-verification.html">Distributed Learning course</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Educational material · Service to Many Leads to Greatness.</footer></body></html>

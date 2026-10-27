@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en-GB"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="Umicom Foundation native AI and distributed-learning educational lesson" name="description"/><title>Lesson 393: Design round-scoped native learning jobs | Bits2Banking</title><style>
+:root{--blue:#143c61;--navy:#0e243a;--ink:#1b3043;--pale:#eef6fb;--teal:#0b736e;--border:#d7e4ec;--bg:#f3f6f9}
+*{box-sizing:border-box}body{margin:0;font:17px/1.66 system-ui,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink)}
+a{color:#086295}a:focus-visible{outline:3px solid #08a6a1;outline-offset:3px}header{background:linear-gradient(110deg,#142c43,#155e75);padding:2.4rem max(1.25rem,calc((100vw - 980px)/2));color:white}header small{color:#bce8ec}header h1{font-size:clamp(1.65rem,3.8vw,2.75rem);line-height:1.18;max-width:950px}header p{color:#cde7f0}main{max-width:1020px;margin:1.3rem auto 3rem;background:white;padding:2.3rem;border:1px solid var(--border);border-radius:13px}nav{display:flex;flex-wrap:wrap;gap:.8rem;background:var(--pale);padding:1rem;border-radius:8px}nav a{font-weight:600}h2{color:var(--blue);font-size:1.5rem;margin-top:2rem}h3{color:var(--blue)}pre{background:#102537;color:white;padding:1.2rem;border-radius:8px;overflow-x:auto}code{font-family:'Cascadia Code',Consolas,monospace}p code,li code{background:#eaf2f8;padding:.1rem .25rem}p,li{max-width:92ch}blockquote{border-left:5px solid var(--teal);margin:1.4rem 0;padding:.6rem 1rem;background:#edf8f6}details{background:#eff9f3;border:1px solid #b3d9bf;border-radius:8px;padding:.9rem 1.1rem}summary{font-weight:700;cursor:pointer}table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}th,td{border:1px solid var(--border);padding:.6rem;text-align:left}th{background:var(--pale)}footer{text-align:center;padding:1.5rem;font-size:.85rem;color:#587083}@media(max-width:700px){main{margin:0;padding:1rem;border:0;border-radius:0}header{padding:1.4rem}}
+</style></head><body><header><small>Bits to Banking · Umicom Foundation · Sammy Hegab</small><h1>Lesson 393: Design round-scoped native learning jobs</h1><p>Native distributed AI research · C23-first engineering</p></header><main><nav aria-label="Course navigation"><a href="../federated-job-learning-path.html">LLM study route</a><a href="../../../lessons/10-native-ai/393-design-round-scoped-learning-jobs.md">Canonical Markdown</a><a href="392-capstone-three-node-native-federated-research.html">Previous HTML lesson</a><a href="394-admit-workers-through-scoped-tickets.html">Next HTML lesson</a></nav><article><p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab<br/>
+<strong>Implementation approach:</strong> native C23, with Assembly only after justified profiling.<br/>
+<strong>Prerequisites:</strong> Lessons 377–392, Mathematics Unit 245.</p>
+<h2>Learning outcomes</h2>
+<p>Explain <strong>design round-scoped native learning jobs</strong>, identify the exact boundary between evidence, model arithmetic and coordination, and design at least one test that can fail. Distinguish implemented Umicom source from suggested research.</p>
+<h2>Concept and mechanism</h2>
+<p>A federated training job is not merely a queue entry. It pins an initial model checkpoint, data-use policy, worker identity, dataset shard and numerical aggregation rule to <strong>one</strong> synchronisation round. All workers in an ordinary FedAvg round must begin from the same tensor layout and base state. The coordinator allocates a finite step and sample budget before any update is considered for aggregation. Different initial checkpoints produce deltas that cannot safely be combined as if they share a common origin.</p>
+<p>A correct research system starts with the immutable experiment contract: a common base checkpoint, authorised dataset partitions, an explicit sample-count rule, a deterministic round identifier and a preregistered evaluation metric. Distributed operation also requires stated concurrency, failure and network assumptions. The mathematical candidate resulting from averaging does not become an approved model checkpoint without an independent quality gate.</p>
+<h2>Worked scenario</h2>
+<p>Consider three workers, each given checkpoint hash <strong>A</strong>, 12 local steps and one authorised shard. Worker B returns a delta labelled hash <strong>B</strong> instead. Comparing 32 digest bytes can reject a mismatched label before the numerical stage, but cannot prove that A was honestly used. A genuine training/replay check is needed for the stronger claim.</p>
+<h2>What can go wrong?</h2>
+<p>Treating a well-formed digest as proof of training leads to false trust. Likewise, reporting a worker count without a round identifier makes stale work indistinguishable from fresh contributions.</p>
+<h2>Native Umicom engineering connection</h2>
+<p>The Framework's established <code>UmiAiTrainingFederatedRound</code> is the sole numeric FedAvg-delta owner. The additive <code>UmiAiTrainingFederatedJob</code> admission component tracks one round of assignments and routes accepted full FP32 deltas through that existing numeric API. It does <strong>not</strong> train remote workers, sign contributions, verify dataset rights, provide Byzantine resilience, implement secure aggregation or run blockchain consensus. The remaining training, checkpoint, messaging and governance functions must be composed from reviewed Framework capabilities rather than duplicated in application code.</p>
+<p>Umicom Framework owns the job state; Studio and LLM workbenches only display its inspected state.</p>
+<h2>Verification exercise</h2>
+<p>Reproduce the worked case using synthetic inputs. Then reject an invalid, stale, mismatched or adversarial input without changing the accepted aggregate. Report the exact result and a separate list of work <strong>not measured</strong>: real network RTT, GPU hours, held-out model improvement and privacy guarantee.</p>
+<p><strong>Question:</strong> What must be pinned before a round can combine three workers?</p>
+<details><summary>Reveal the worked answer</summary>
+<p>The shared base checkpoint and tensor schema, training configuration, permitted dataset shards and a defined round identity. Authorisation and real worker computation are separately checked.</p>
+</details>
+<h2>Mathematics connection</h2>
+<p><a href="../../maths-for-ai/lessons/245-reserve-bytes-for-concurrent-worker-assignments.html">Mathematics for AI — Unit 245</a> provides a quantitative counterpart.</p>
+<h2>Primary reading</h2>
+<ul>
+<li><a href="https://proceedings.mlr.press/v54/mcmahan17a.html">Federated Averaging — McMahan et al., AISTATS 2017</a></li>
+<li><a href="https://arxiv.org/abs/2311.08105">DiLoCo — Distributed Low-Communication Training</a></li>
+</ul>
+<h2>Continue</h2>
+<p><a href="392-capstone-three-node-native-federated-research.html">392 — previous lesson</a> · <a href="394-admit-workers-through-scoped-tickets.html">394 — next lesson</a> · <a href="../federated-job-learning-path.html">HTML study route</a> · <a href="../../distributed-learning/lessons/013-bind-one-worker-to-one-round.html">Introduction to Distributed Learning</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Educational material · Service to Many Leads to Greatness.</footer></body></html>
