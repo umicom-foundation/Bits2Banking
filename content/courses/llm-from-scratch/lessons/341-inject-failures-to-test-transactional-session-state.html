@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html lang="en-GB">
+<head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Umicom Foundation Bits to Banking — practical native C23 AI education." name="description"/>
+<title>Lesson 341 — Inject failures to test transactional session state | Bits2Banking</title><style>
+:root{color-scheme:light;--ink:#182a3d;--line:#cedfe9;--accent:#11658c;--muted:#465d6f;--bg:#f1f6f9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 system-ui,"Segoe UI",sans-serif}a{color:#035e90}a:focus-visible{outline:3px solid #139f91;outline-offset:3px}header{padding:2.4rem max(1.25rem,calc((100vw - 1000px)/2));color:white;background:linear-gradient(120deg,#12283f,#12647a)}header h1{line-height:1.15;font-size:clamp(1.9rem,4vw,2.65rem)}header p{color:#def2fc}main{max-width:1020px;margin:1.3rem auto 3rem;border:1px solid var(--line);border-radius:14px;background:white;padding:2.2rem}h2{color:#174a6a;margin-top:2rem}p,li{max-width:88ch}p code,li code{padding:.12em .3em;background:#eaf3fa;border-radius:4px}pre{padding:1.15rem;background:#102537;color:#e9f7ff;border-radius:9px;overflow:auto}pre code{white-space:pre}nav{display:flex;gap:.75rem;flex-wrap:wrap;background:#ecf5f9;padding:1rem;border-radius:8px}details{padding:.8rem 1rem;border:1px solid #bde2cb;border-radius:9px;background:#edf9f1}summary{font-weight:700;cursor:pointer}footer{padding:1.6rem;text-align:center;font-size:.86rem;color:var(--muted)}table{border-collapse:collapse;width:100%}th,td{border:1px solid var(--line);padding:.6rem}th{text-align:left;background:#edf5f9}@media(max-width:650px){main{border-radius:0;margin:0;padding:1rem}header{padding:1.5rem}}@media print{header{background:white;color:black;padding:0}header p{color:#333}main{border:0;padding:0}body{background:white}}
+</style></head>
+<body><header><small>Umicom Foundation · Bits to Banking · LLM Lesson 341</small><h1>Lesson 341 — Inject failures to test transactional session state</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main><nav aria-label="Learning navigation"><a href="340-separate-raw-cache-payload-from-process-memory-overhead.html">← Previous</a> <a href="../kv-session-lifecycle-learning-path.html">Learning path</a> <a href="../../../lessons/10-native-ai/341-inject-failures-to-test-transactional-session-state.md">Editable Markdown</a> <a href="342-measure-latency-and-allocations-independently.html">Next →</a></nav><h1>Lesson 341 — Inject failures to test transactional session state</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab<br/>
+<strong>Implementation:</strong> C23 and native Umicom Framework APIs<br/>
+<strong>Prerequisite:</strong> LLM Lesson 340; Mathematics Unit 201.</p>
+<h2>Learning objective</h2>
+<p>Explain and test <strong>inject failures to test transactional session state</strong> within the bounded, educational native Transformer architecture.</p>
+<h2>Technical explanation and worked example</h2>
+<p>Happy-path tests prove little about ownership boundaries. A pool's most important guarantees appear when a request fails: no corrupted session, no leaked reservation and no partially published lease. Test malformed dimensions, budget exhaustion, wrong checkpoint identity, stale generation, full-window append and invalid shifted histories.</p>
+<p>Failure injection is stronger when each case checks both the return code <strong>and</strong> the state that follows. Initialise an output lease with a sentinel, attempt an acquisition that must fail, and assert the sentinel is unchanged. Then inspect active count and reserved bytes. For a rejected rollover, compare the retained K/V row against the previous canonical data.</p>
+<p><strong>Worked scenario.</strong> Before a wrong-shift attempt, the store has <code>retained=4</code> and <code>fullWindowRebuilds=0</code>. The invalid token sequence is rejected. After the call, both numbers remain unchanged. A subsequent valid full replacement must succeed and increment rebuilds to one.</p>
+<p><strong>Native walkthrough.</strong> Execute the new CTest cases <code>budget</code>, <code>rollover</code>, <code>rejections</code> and <code>lifecycle</code>. Use sanitizers in an integrated Framework build as an additional class of evidence; sanitizer success in a fixture-only test does not prove whole-product safety.</p>
+<h2>Practise</h2>
+<p><strong>Question:</strong> Is a returned error code enough to prove failure atomicity?</p>
+<details><summary>Reveal the worked answer</summary>
+<p>No. You must also verify unchanged outputs, counts and underlying cache contents after rejection.</p>
+</details>
+<h2>Explore the mathematics</h2>
+<p><a href="../../maths-for-ai/lessons/201-prove-reservation-accounting-across-a-release.html">Mathematics Unit 201</a> develops a related calculation. Distinguish stated design, tested library contracts and measured runtime evidence.</p>
+<h2>Continue learning</h2>
+<p><a href="340-separate-raw-cache-payload-from-process-memory-overhead.html">Previous lesson</a> · <a href="342-measure-latency-and-allocations-independently.html">Next lesson</a> · <a href="341-inject-failures-to-test-transactional-session-state.html">Browser lesson</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</main>
+<footer>Sammy Hegab · Umicom Foundation · MIT educational material</footer></body></html>
+

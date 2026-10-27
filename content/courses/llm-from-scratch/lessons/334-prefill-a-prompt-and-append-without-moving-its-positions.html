@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html lang="en-GB">
+<head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Umicom Foundation Bits to Banking — practical native C23 AI education." name="description"/>
+<title>Lesson 334 — Prefill a prompt and append without moving its positions | Bits2Banking</title><style>
+:root{color-scheme:light;--ink:#182a3d;--line:#cedfe9;--accent:#11658c;--muted:#465d6f;--bg:#f1f6f9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 system-ui,"Segoe UI",sans-serif}a{color:#035e90}a:focus-visible{outline:3px solid #139f91;outline-offset:3px}header{padding:2.4rem max(1.25rem,calc((100vw - 1000px)/2));color:white;background:linear-gradient(120deg,#12283f,#12647a)}header h1{line-height:1.15;font-size:clamp(1.9rem,4vw,2.65rem)}header p{color:#def2fc}main{max-width:1020px;margin:1.3rem auto 3rem;border:1px solid var(--line);border-radius:14px;background:white;padding:2.2rem}h2{color:#174a6a;margin-top:2rem}p,li{max-width:88ch}p code,li code{padding:.12em .3em;background:#eaf3fa;border-radius:4px}pre{padding:1.15rem;background:#102537;color:#e9f7ff;border-radius:9px;overflow:auto}pre code{white-space:pre}nav{display:flex;gap:.75rem;flex-wrap:wrap;background:#ecf5f9;padding:1rem;border-radius:8px}details{padding:.8rem 1rem;border:1px solid #bde2cb;border-radius:9px;background:#edf9f1}summary{font-weight:700;cursor:pointer}footer{padding:1.6rem;text-align:center;font-size:.86rem;color:var(--muted)}table{border-collapse:collapse;width:100%}th,td{border:1px solid var(--line);padding:.6rem}th{text-align:left;background:#edf5f9}@media(max-width:650px){main{border-radius:0;margin:0;padding:1rem}header{padding:1.5rem}}@media print{header{background:white;color:black;padding:0}header p{color:#333}main{border:0;padding:0}body{background:white}}
+</style></head>
+<body><header><small>Umicom Foundation · Bits to Banking · LLM Lesson 334</small><h1>Lesson 334 — Prefill a prompt and append without moving its positions</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main><nav aria-label="Learning navigation"><a href="333-make-session-acquisition-failure-atomic.html">← Previous</a> <a href="../kv-session-lifecycle-learning-path.html">Learning path</a> <a href="../../../lessons/10-native-ai/334-prefill-a-prompt-and-append-without-moving-its-positions.md">Editable Markdown</a> <a href="335-rebuild-complete-kv-layers-at-learned-position-rollover.html">Next →</a></nav><h1>Lesson 334 — Prefill a prompt and append without moving its positions</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab<br/>
+<strong>Implementation:</strong> C23 and native Umicom Framework APIs<br/>
+<strong>Prerequisite:</strong> LLM Lesson 333; Mathematics Unit 202.</p>
+<h2>Learning objective</h2>
+<p>Explain and test <strong>prefill a prompt and append without moving its positions</strong> within the bounded, educational native Transformer architecture.</p>
+<h2>Technical explanation and worked example</h2>
+<p>Prefill and append have different shape contracts. <code>Prefill</code> takes ordered prompt token IDs and <code>[layer][token][channel]</code> K/V arrays; <code>Append</code> takes the next ID and a <code>[layer][channel]</code> slice for each projection. The pool delegates both to the original store. It does not recompute the Transformer mathematics and it never changes the checkpoint digest.</p>
+<p>With learned absolute positions, a growing prefix assigns the first token position 0 and each append the next free position. Earlier keys and values remain valid <em>only while those positions and their causal prefixes are unchanged</em>. Moving every old row left by one position would invalidate the model's learned position representation.</p>
+<p><strong>Worked scenario.</strong> Two layers and eight channels give 16 key floats and 16 value floats for a one-token append. For a two-token prefill the supplied arrays each contain 32 floats. Supplying 31 key floats should be rejected without publishing any row. A full cache must reject append even though the caller supplies a correctly sized vector.</p>
+<p><strong>Native walkthrough.</strong> After acquiring a lease, call <code>PoolPrefill</code>, inspect <code>retainedTokens</code>, then append. Read the final token's K and V and verify they match the supplied layer-major slice. Repeat with an invalid length and check that retained rows do not change.</p>
+<h2>Practise</h2>
+<p><strong>Question:</strong> Why should an append to a full context be rejected?</p>
+<details><summary>Reveal the worked answer</summary>
+<p>Because it requires context eviction and learned-position recomputation, which are defined by a different full-rollover operation.</p>
+</details>
+<h2>Explore the mathematics</h2>
+<p><a href="../../maths-for-ai/lessons/202-check-multiplication-before-it-overflows-size-t.html">Mathematics Unit 202</a> develops a related calculation. Distinguish stated design, tested library contracts and measured runtime evidence.</p>
+<h2>Continue learning</h2>
+<p><a href="333-make-session-acquisition-failure-atomic.html">Previous lesson</a> · <a href="335-rebuild-complete-kv-layers-at-learned-position-rollover.html">Next lesson</a> · <a href="334-prefill-a-prompt-and-append-without-moving-its-positions.html">Browser lesson</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</main>
+<footer>Sammy Hegab · Umicom Foundation · MIT educational material</footer></body></html>
+

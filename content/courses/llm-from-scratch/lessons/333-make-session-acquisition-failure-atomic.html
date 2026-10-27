@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html lang="en-GB">
+<head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Umicom Foundation Bits to Banking — practical native C23 AI education." name="description"/>
+<title>Lesson 333 — Make session acquisition failure atomic | Bits2Banking</title><style>
+:root{color-scheme:light;--ink:#182a3d;--line:#cedfe9;--accent:#11658c;--muted:#465d6f;--bg:#f1f6f9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 system-ui,"Segoe UI",sans-serif}a{color:#035e90}a:focus-visible{outline:3px solid #139f91;outline-offset:3px}header{padding:2.4rem max(1.25rem,calc((100vw - 1000px)/2));color:white;background:linear-gradient(120deg,#12283f,#12647a)}header h1{line-height:1.15;font-size:clamp(1.9rem,4vw,2.65rem)}header p{color:#def2fc}main{max-width:1020px;margin:1.3rem auto 3rem;border:1px solid var(--line);border-radius:14px;background:white;padding:2.2rem}h2{color:#174a6a;margin-top:2rem}p,li{max-width:88ch}p code,li code{padding:.12em .3em;background:#eaf3fa;border-radius:4px}pre{padding:1.15rem;background:#102537;color:#e9f7ff;border-radius:9px;overflow:auto}pre code{white-space:pre}nav{display:flex;gap:.75rem;flex-wrap:wrap;background:#ecf5f9;padding:1rem;border-radius:8px}details{padding:.8rem 1rem;border:1px solid #bde2cb;border-radius:9px;background:#edf9f1}summary{font-weight:700;cursor:pointer}footer{padding:1.6rem;text-align:center;font-size:.86rem;color:var(--muted)}table{border-collapse:collapse;width:100%}th,td{border:1px solid var(--line);padding:.6rem}th{text-align:left;background:#edf5f9}@media(max-width:650px){main{border-radius:0;margin:0;padding:1rem}header{padding:1.5rem}}@media print{header{background:white;color:black;padding:0}header p{color:#333}main{border:0;padding:0}body{background:white}}
+</style></head>
+<body><header><small>Umicom Foundation · Bits to Banking · LLM Lesson 333</small><h1>Lesson 333 — Make session acquisition failure atomic</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main><nav aria-label="Learning navigation"><a href="332-prevent-stale-handles-with-generation-stamped-leases.html">← Previous</a> <a href="../kv-session-lifecycle-learning-path.html">Learning path</a> <a href="../../../lessons/10-native-ai/333-make-session-acquisition-failure-atomic.md">Editable Markdown</a> <a href="334-prefill-a-prompt-and-append-without-moving-its-positions.html">Next →</a></nav><h1>Lesson 333 — Make session acquisition failure atomic</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab<br/>
+<strong>Implementation:</strong> C23 and native Umicom Framework APIs<br/>
+<strong>Prerequisite:</strong> LLM Lesson 332; Mathematics Unit 201.</p>
+<h2>Learning objective</h2>
+<p>Explain and test <strong>make session acquisition failure atomic</strong> within the bounded, educational native Transformer architecture.</p>
+<h2>Technical explanation and worked example</h2>
+<p>Acquisition touches multiple resources: a free slot, a memory budget, a store allocation and a returned lease. A partial failure is dangerous if any resource is made visible before all prerequisites are met. The safe order is: validate arguments; check available slot and budget; allocate the canonical store; inspect its reserved bytes; commit the slot, counters and lease together.</p>
+<p>If the store constructor reports out-of-memory, nothing should be reserved. If the planner and actual store disagree, the candidate allocation is destroyed without publishing a session. The public output lease stays untouched on every rejection. In C, local staging and one final publication point are often simpler than rolling back a half-mutated object graph.</p>
+<p><strong>Worked scenario.</strong> An allocator fails after the pool identifies slot 1. The old active count is 1 and reserved bytes are 512. The expected state after failure is still 1 active session and 512 reserved bytes; no observable lease points to slot 1.</p>
+<p><strong>Native walkthrough.</strong> Trace the conditions preceding the assignment to <code>slot-&gt;store</code> in <code>StackedKvPoolAcquire</code>. Then inspect the <code>budget</code> and <code>rejections</code> CTest cases. Confirm that no failure occurs after any of the count increments without a compensating action.</p>
+<p><strong>Subtle point.</strong> Failure-atomic API output does not mean allocator failure is impossible. It means the caller can retry without repairing hidden partial state.</p>
+<h2>Practise</h2>
+<p><strong>Question:</strong> Which operation should happen last in a successful acquisition?</p>
+<details><summary>Reveal the worked answer</summary>
+<p>The public lease publication, after creating and validating the canonical store and committing its reservation.</p>
+</details>
+<h2>Explore the mathematics</h2>
+<p><a href="../../maths-for-ai/lessons/201-prove-reservation-accounting-across-a-release.html">Mathematics Unit 201</a> develops a related calculation. Distinguish stated design, tested library contracts and measured runtime evidence.</p>
+<h2>Continue learning</h2>
+<p><a href="332-prevent-stale-handles-with-generation-stamped-leases.html">Previous lesson</a> · <a href="334-prefill-a-prompt-and-append-without-moving-its-positions.html">Next lesson</a> · <a href="333-make-session-acquisition-failure-atomic.html">Browser lesson</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</main>
+<footer>Sammy Hegab · Umicom Foundation · MIT educational material</footer></body></html>
+

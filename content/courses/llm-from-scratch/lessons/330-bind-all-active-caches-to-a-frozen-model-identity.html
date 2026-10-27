@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html lang="en-GB">
+<head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Umicom Foundation Bits to Banking — practical native C23 AI education." name="description"/>
+<title>Lesson 330 — Bind all active caches to a frozen model identity | Bits2Banking</title><style>
+:root{color-scheme:light;--ink:#182a3d;--line:#cedfe9;--accent:#11658c;--muted:#465d6f;--bg:#f1f6f9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 system-ui,"Segoe UI",sans-serif}a{color:#035e90}a:focus-visible{outline:3px solid #139f91;outline-offset:3px}header{padding:2.4rem max(1.25rem,calc((100vw - 1000px)/2));color:white;background:linear-gradient(120deg,#12283f,#12647a)}header h1{line-height:1.15;font-size:clamp(1.9rem,4vw,2.65rem)}header p{color:#def2fc}main{max-width:1020px;margin:1.3rem auto 3rem;border:1px solid var(--line);border-radius:14px;background:white;padding:2.2rem}h2{color:#174a6a;margin-top:2rem}p,li{max-width:88ch}p code,li code{padding:.12em .3em;background:#eaf3fa;border-radius:4px}pre{padding:1.15rem;background:#102537;color:#e9f7ff;border-radius:9px;overflow:auto}pre code{white-space:pre}nav{display:flex;gap:.75rem;flex-wrap:wrap;background:#ecf5f9;padding:1rem;border-radius:8px}details{padding:.8rem 1rem;border:1px solid #bde2cb;border-radius:9px;background:#edf9f1}summary{font-weight:700;cursor:pointer}footer{padding:1.6rem;text-align:center;font-size:.86rem;color:var(--muted)}table{border-collapse:collapse;width:100%}th,td{border:1px solid var(--line);padding:.6rem}th{text-align:left;background:#edf5f9}@media(max-width:650px){main{border-radius:0;margin:0;padding:1rem}header{padding:1.5rem}}@media print{header{background:white;color:black;padding:0}header p{color:#333}main{border:0;padding:0}body{background:white}}
+</style></head>
+<body><header><small>Umicom Foundation · Bits to Banking · LLM Lesson 330</small><h1>Lesson 330 — Bind all active caches to a frozen model identity</h1><p>Sammy Hegab · Service to Many Leads to Greatness.</p></header>
+<main><nav aria-label="Learning navigation"><a href="329-make-one-kv-store-the-authority-for-each-session.html">← Previous</a> <a href="../kv-session-lifecycle-learning-path.html">Learning path</a> <a href="../../../lessons/10-native-ai/330-bind-all-active-caches-to-a-frozen-model-identity.md">Editable Markdown</a> <a href="331-reserve-memory-before-publishing-an-inference-session.html">Next →</a></nav><h1>Lesson 330 — Bind all active caches to a frozen model identity</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab<br/>
+<strong>Implementation:</strong> C23 and native Umicom Framework APIs<br/>
+<strong>Prerequisite:</strong> LLM Lesson 329; Mathematics Unit 198.</p>
+<h2>Learning objective</h2>
+<p>Explain and test <strong>bind all active caches to a frozen model identity</strong> within the bounded, educational native Transformer architecture.</p>
+<h2>Technical explanation and worked example</h2>
+<p>A key/value projection is meaningful only relative to the exact weights, positions and attention configuration that produced it. Two checkpoints may have identical shapes yet different weights. A pool therefore keeps the full store configuration and checkpoint SHA-256 digest associated with its stores. Passing only a model name or token count cannot establish compatibility.</p>
+<p>The digest binds bytes, but a SHA-256 hash alone does not prove a trustworthy publisher. The established model-identity service must independently verify the live decoder before inference reads any borrowed cache. <code>StackedKvPoolCheckIdentity</code> verifies consistency between the caller's digest, the pool configuration and the underlying store; it deliberately does not inspect an arbitrary decoder pointer or act as a signature verifier.</p>
+<p><strong>Worked scenario.</strong> Session A prefilled a model whose first checkpoint byte digest begins <code>2A...</code>. After training modifies one weight, session B attempts to reuse A's store using digest <code>31...</code>. The K/V data dimensions still match; nevertheless, the pool rejects the identity mismatch. The stored numerical values belong to the earlier model.</p>
+<p><strong>Native walkthrough.</strong> Capture a checkpoint identity at session creation. Call the Framework model identity verifier before using a borrowed store to propose a token. Check pool/store identity. If either test fails, stop using that cache and explicitly acquire a fresh session after the model has been requalified.</p>
+<p><strong>Boundary.</strong> Checkpoint sameness is not corpus licensing, training approval or model safety certification. Those are separate controls.</p>
+<h2>Practise</h2>
+<p><strong>Question:</strong> Why is checking only <code>contextLength</code> inadequate?</p>
+<details><summary>Reveal the worked answer</summary>
+<p>Because identical shapes do not imply identical parameter values. K/V projections depend on the actual checkpoint and positional semantics.</p>
+</details>
+<h2>Explore the mathematics</h2>
+<p><a href="../../maths-for-ai/lessons/198-convert-a-budget-into-admitted-session-count.html">Mathematics Unit 198</a> develops a related calculation. Distinguish stated design, tested library contracts and measured runtime evidence.</p>
+<h2>Continue learning</h2>
+<p><a href="329-make-one-kv-store-the-authority-for-each-session.html">Previous lesson</a> · <a href="331-reserve-memory-before-publishing-an-inference-session.html">Next lesson</a> · <a href="330-bind-all-active-caches-to-a-frozen-model-identity.html">Browser lesson</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+</main>
+<footer>Sammy Hegab · Umicom Foundation · MIT educational material</footer></body></html>
+
