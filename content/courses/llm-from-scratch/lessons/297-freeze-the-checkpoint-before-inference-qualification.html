@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html lang="en-GB"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Umicom Foundation native AI and mathematics education with worked examples and exercises." name="description"/>
+<title>Native LLM Lesson 297 — Freeze the checkpoint before inference qualification | Bits2Banking</title><style>
+:root{--ink:#182a3c;--blue:#124c73;--link:#075c98;--panel:#eaf4fa;--border:#d0e0e9}*{box-sizing:border-box}
+body{margin:0;background:#f0f4f8;color:var(--ink);font:17px/1.72 system-ui,Segoe UI,Arial,sans-serif}
+a{color:var(--link)}a:focus-visible{outline:3px solid #2eafa9;outline-offset:2px}
+header{background:linear-gradient(125deg,#152e46,#145879);color:white;padding:2.5rem max(1.2rem,calc((100vw - 1010px)/2))}
+header small{color:#d8f4ff}header h1{font-size:clamp(1.85rem,4vw,2.75rem);line-height:1.2;margin:.4em 0}header p{color:#ddf0ff}
+main{max-width:1050px;margin:1.4rem auto 3rem;background:white;border:1px solid var(--border);border-radius:14px;padding:2.3rem}h2{color:var(--blue);margin-top:1.6em;line-height:1.25}p,li{max-width:92ch}
+pre{background:#102637;color:#f0faff;padding:1.1rem;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:9px}
+code{font-family:Consolas,ui-monospace,monospace}p code,li code{background:var(--panel);padding:.13em .35em;border-radius:4px}
+nav{background:var(--panel);padding:1rem;border-radius:9px;display:flex;gap:.75rem;flex-wrap:wrap}details{background:#eaf7f1;border:1px solid #bde1ca;border-radius:9px;padding:.8rem 1rem}summary{cursor:pointer;font-weight:700}footer{text-align:center;padding:1.3rem;color:#506675;font-size:.86rem}
+@media(max-width:650px){main{margin:0;padding:1rem;border-radius:0}header{padding:1.4rem}}@media print{body{background:white}main{border:0;margin:0;padding:0}header{background:white;color:black}}
+</style></head>
+<body><header><small>Bits to Banking · Umicom Foundation · Native LLM Lesson 297</small><h1>Freeze the checkpoint before inference qualification</h1><p>Sammy Hegab · Open educational resource</p></header>
+<main><nav aria-label="Lesson navigation"><a href="296-complete-an-inference-qualification-capstone.html">Previous</a><a href="../numerical-qualification-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/297-freeze-the-checkpoint-before-inference-qualification.md">Editable Markdown</a><a href="../../maths-for-ai/lessons/173-evaluate-an-absolute-plus-relative-threshold.html">Mathematics 173</a></nav>
+<h1>Lesson 297 — Freeze the checkpoint before inference qualification</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br/>
+<strong>Author:</strong> Sammy Hegab · <strong>Implementation:</strong> Native C23; Assembly only where justified.</p>
+<h2>Learning objective</h2>
+<p>Understand, calculate and independently test freeze the checkpoint before inference qualification within the bounded multi-layer Transformer.</p>
+<h2>The underlying mechanism</h2>
+<p>A numerical comparison is meaningful only if both execution paths read the same model parameters. A vocabulary logit changes when a weight changes, even if the query, input tokens and attention code do not. A checkpoint identity therefore belongs to the experiment definition alongside context length, attention heads and token IDs.</p>
+<h2>Step-by-step worked example</h2>
+<p>Suppose two candidate runs both use a context length of six and two Transformer layers, but the second run has undergone one SGD update. The shape still matches, yet its logits are not required to match the previous checkpoint. A model-identity digest distinguishes those runs; it cannot prove who published the weights.</p>
+<h2>C23 implementation and Framework boundaries</h2>
+<p>Use the existing <code>UmiAiTrainingStackedModelIdentityCapture</code> and <code>UmiAiTrainingStackedModelIdentityVerify</code> services before comparing results. Keep a borrowed model alive and caller-serialised throughout qualification; no application-local checkpoint implementation is needed.</p>
+<p>The reference implementation is the existing Umicom Framework stacked decoder and its training tape. Its public APIs own numerical operations and memory lifetimes. Reusable diagnostics belong in Framework; educational manuscripts and demonstrations belong in Bits2Banking. This lesson is not a substitute for running integrated qualification against the actual source checkout.</p>
+<h2>How to diagnose a failed run</h2>
+<p>A SHA-256 match is content identity, not a signature or authorisation decision. Refuse a mutated checkpoint and do not silently relax the tolerance to hide it.</p>
+<p>A useful failed-test record includes the checkpoint identity, token sequence, context length, layer count, expected and observed scalar values, numerical tolerance and the exact position at which divergence begins. This permits the error to be reproduced without changing the training data or using a different decoder.</p>
+<h2>Exercise</h2>
+<p><strong>Question:</strong> Why should a model identity be captured even if model dimensions have not changed?</p>
+<details><summary>Reveal the worked answer</summary>
+<p>Training can change parameter values without changing their dimensions. Comparing logits from different weights confounds a numerical-kernel test.</p>
+</details>
+<h2>Mathematical connection</h2>
+<p>Read <a href="../../maths-for-ai/lessons/173-evaluate-an-absolute-plus-relative-threshold.html">Mathematics Unit 173</a> to reproduce the relevant arithmetic by hand.</p>
+<h2>Continue learning</h2>
+<p><a href="296-complete-an-inference-qualification-capstone.html">Previous lesson</a> · <a href="../numerical-qualification-learning-path.html">Browser learning path</a></p>
+</main><footer>Sammy Hegab · Umicom Foundation · MIT educational manuscript</footer></body></html>
