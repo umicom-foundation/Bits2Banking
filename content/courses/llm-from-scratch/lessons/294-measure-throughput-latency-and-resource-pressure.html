@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Umicom Foundation: Measure throughput, latency and resource pressure separately."><title>Build an LLM from Scratch 294 — Measure throughput, latency and resource pressure separately | Bits to Banking</title><style>
+:root{--ink:#182a3c;--blue:#124c73;--link:#075c98;--panel:#eaf4fa;--border:#d0e0e9}
+*{box-sizing:border-box}body{margin:0;background:#f0f4f8;color:var(--ink);font:17px/1.72 system-ui,Segoe UI,Arial,sans-serif}a{color:var(--link)}a:focus-visible{outline:3px solid #2eafa9;outline-offset:2px}
+header{background:linear-gradient(125deg,#152e46,#145879);color:white;padding:2.5rem max(1.2rem,calc((100vw - 1010px)/2))}header small{color:#d8f4ff}header h1{font-size:clamp(1.85rem,4vw,2.75rem);line-height:1.2;margin:.4em 0}header p{color:#ddf0ff}main{max-width:1050px;margin:1.4rem auto 3rem;background:white;border:1px solid var(--border);border-radius:14px;padding:2.3rem}h2{color:var(--blue);margin-top:2em;line-height:1.25}h3{color:var(--blue)}p,li{max-width:90ch}pre{background:#102637;color:#f0faff;padding:1.1rem;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:9px}code{font-family:Consolas,ui-monospace,monospace}p code,li code{background:var(--panel);padding:.13em .35em;border-radius:4px}nav{background:var(--panel);padding:1rem;border-radius:9px;display:flex;gap:.75rem;flex-wrap:wrap}details{background:#eaf7f1;border:1px solid #bde1ca;border-radius:9px;padding:.8rem 1rem}summary{cursor:pointer;font-weight:700}footer{text-align:center;padding:1.3rem;color:#506675;font-size:.86rem}@media(max-width:650px){main{margin:0;padding:1rem;border-radius:0}header{padding:1.4rem}}@media print{body{background:white}main{border:0;margin:0;padding:0}header{background:white;color:black}}
+</style></head><body><header><small>Bits to Banking · Build an LLM from Scratch · 294</small><h1>Measure throughput, latency and resource pressure separately</h1><p>Sammy Hegab · Umicom Foundation</p></header><main id="content"><nav aria-label="Lesson navigation"><a href="293-treat-kv-quantisation-as-a-new-numerical-contract.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/294-measure-throughput-latency-and-resource-pressure.md">Editable Markdown</a><a href="295-audit-public-course-material-with-native-c23-tools.html">Next →</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab · <strong>Implementation:</strong> C23 / Assembly where justified<br />
+<strong>Prerequisites:</strong> Transformer Lessons 265–280 and Mathematics Unit 170.</p>
+<h2>Learning objective</h2>
+<p>A system can improve token throughput yet worsen interactive response time or peak memory.</p>
+<h2>Understand the mechanism</h2>
+<p>Server benchmarks should report throughput (tokens or requests per second), time to first token, inter-token latency, memory usage, and saturation behaviour as separate dimensions. Workload distribution matters. A stream of short prompts with long completions stresses different parts of the runtime than long documents asking for one answer. Measure the prompt and completion length distributions, concurrency, admission and cancellation.</p>
+<p>A single-request native benchmark is a foundation for CPU regression detection; it does not measure queueing, fairness, multi-user security or the throughput of a distributed serving platform. Draft terminology for TTFT and TPOT exists in IETF work, while public inference benchmarking papers analyse specific workload profiles. Cite what was measured, on which hardware, under what load. For realistic enterprise evaluation, use consented or appropriately licensed corpora and independent held-out prompts.</p>
+<h2>Fully worked example</h2>
+<p>At concurrency 1, 30 tokens produced in 0.6 s gives 50 tokens/s. At concurrency 4, the system emits 120 tokens in 1.2 s, giving 100 aggregate tokens/s. Throughput doubled while response completion may take longer for an individual request. Both figures can be true.</p>
+<h2>Native C23 laboratory</h2>
+<p>Design three workload profiles: short-interactive, long-document and mixed-concurrency. List TTFT, P50/P95 inter-token latency, errors, memory and generated-token counts; do not invent missing measurements.</p>
+<p>The numerical and inference services are owned by <strong>Umicom Framework</strong>. Existing samplers, stacked decoder, K/V store and training tape remain authoritative. Where this lesson discusses a proposed capability, it is labelled as a design rather than a verified implementation. No numerical equivalence or runtime acceleration is inferred merely from an operation count.</p>
+<h2>Connect the mathematics</h2>
+<p>See <a href="../../maths-for-ai/lessons/170-separate-system-throughput-from-user-latency.html">Mathematics Unit 170</a> for the corresponding numerical reasoning and a worked exercise.</p>
+<h2>Self-assessment</h2>
+<p><strong>Question:</strong> Can an engine report double the tokens per second while users see slower individual responses?</p>
+<details><summary>Reveal the worked answer</summary>
+
+<p>Yes. Aggregate throughput and per-request latency have different denominators and can move in opposite directions.</p>
+</details>
+
+<h2>References and further reading</h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/draft-gaikwad-llm-benchmarking-terminology/">IETF LLM benchmarking terminology draft (work in progress)</a></li>
+<li><a href="https://docs.vllm.ai/en/latest/">vLLM documentation — inference serving concepts</a></li>
+</ul>
+<h2>Continue learning</h2>
+<p><a href="293-treat-kv-quantisation-as-a-new-numerical-contract.html">Previous lesson</a> · <a href="../inference-benchmark-learning-path.html">HTML study route</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+<nav aria-label="Lesson navigation"><a href="293-treat-kv-quantisation-as-a-new-numerical-contract.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/294-measure-throughput-latency-and-resource-pressure.md">Editable Markdown</a><a href="295-audit-public-course-material-with-native-c23-tools.html">Next →</a></nav></main><footer>Sammy Hegab · Umicom Foundation · Educational material · MIT</footer></body></html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Umicom Foundation: Design paired canonical-versus-cached experiments."><title>Build an LLM from Scratch 283 — Design paired canonical-versus-cached experiments | Bits to Banking</title><style>
+:root{--ink:#182a3c;--blue:#124c73;--link:#075c98;--panel:#eaf4fa;--border:#d0e0e9}
+*{box-sizing:border-box}body{margin:0;background:#f0f4f8;color:var(--ink);font:17px/1.72 system-ui,Segoe UI,Arial,sans-serif}a{color:var(--link)}a:focus-visible{outline:3px solid #2eafa9;outline-offset:2px}
+header{background:linear-gradient(125deg,#152e46,#145879);color:white;padding:2.5rem max(1.2rem,calc((100vw - 1010px)/2))}header small{color:#d8f4ff}header h1{font-size:clamp(1.85rem,4vw,2.75rem);line-height:1.2;margin:.4em 0}header p{color:#ddf0ff}main{max-width:1050px;margin:1.4rem auto 3rem;background:white;border:1px solid var(--border);border-radius:14px;padding:2.3rem}h2{color:var(--blue);margin-top:2em;line-height:1.25}h3{color:var(--blue)}p,li{max-width:90ch}pre{background:#102637;color:#f0faff;padding:1.1rem;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:9px}code{font-family:Consolas,ui-monospace,monospace}p code,li code{background:var(--panel);padding:.13em .35em;border-radius:4px}nav{background:var(--panel);padding:1rem;border-radius:9px;display:flex;gap:.75rem;flex-wrap:wrap}details{background:#eaf7f1;border:1px solid #bde1ca;border-radius:9px;padding:.8rem 1rem}summary{cursor:pointer;font-weight:700}footer{text-align:center;padding:1.3rem;color:#506675;font-size:.86rem}@media(max-width:650px){main{margin:0;padding:1rem;border-radius:0}header{padding:1.4rem}}@media print{body{background:white}main{border:0;margin:0;padding:0}header{background:white;color:black}}
+</style></head><body><header><small>Bits to Banking · Build an LLM from Scratch · 283</small><h1>Design paired canonical-versus-cached experiments</h1><p>Sammy Hegab · Umicom Foundation</p></header><main id="content"><nav aria-label="Lesson navigation"><a href="282-measure-complete-inference-calls-with-monotonic-clocks.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/283-design-paired-canonical-versus-cached-experiments.md">Editable Markdown</a><a href="284-counterbalance-order-and-run-warmups.html">Next →</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab · <strong>Implementation:</strong> C23 / Assembly where justified<br />
+<strong>Prerequisites:</strong> Transformer Lessons 265–280 and Mathematics Unit 163.</p>
+<h2>Learning objective</h2>
+<p>A performance comparison is invalid if the two paths use different models, prompts, sampling policies or seeds.</p>
+<h2>Understand the mechanism</h2>
+<p>The reference and candidate paths must begin from the same checkpoint. Use identical prompt token IDs, tokenizer, context length, layer count, generation length, sampler configuration and initial random state. The canonical path must remain an independent calculation; comparing a candidate only with its own cached values cannot reveal a shared mathematical defect. Before timing, compare entire token-ID sequences and, where exposed by the model API, <strong>all vocabulary logits</strong> at each step. One successful sampled ID is a weak equality test because multiple nearby distributions may select the same token.</p>
+<p>A paired experiment produces one reference measurement and one candidate measurement under a shared configuration. Pairing reduces variation from changes in machine load and model shape. It does not remove differences from thermal throttling, compilation flags or background activity. Store the run order, warmup count and raw measurements for further analysis.</p>
+<h2>Fully worked example</h2>
+<p>For the same 8-token generation, suppose canonical and cached token lists are <code>[12,5,7,7,9,3,3,4]</code>. Exact ID parity passes; timing is allowed to proceed. If the cached sequence instead contains 10 at position 5, reject the comparison before producing any speed ratio. A faster wrong answer is not a valid optimiser.</p>
+<h2>Native C23 laboratory</h2>
+<p>Use the C23 benchmark's input policy to run a greedy pair and a seeded top-p pair separately. If the sequence differs, investigate numerical invariants, not the tolerance by which timings are accepted.</p>
+<p>The numerical and inference services are owned by <strong>Umicom Framework</strong>. Existing samplers, stacked decoder, K/V store and training tape remain authoritative. Where this lesson discusses a proposed capability, it is labelled as a design rather than a verified implementation. No numerical equivalence or runtime acceleration is inferred merely from an operation count.</p>
+<h2>Connect the mathematics</h2>
+<p>See <a href="../../maths-for-ai/lessons/163-calculate-paired-runtime-ratios.html">Mathematics Unit 163</a> for the corresponding numerical reasoning and a worked exercise.</p>
+<h2>Self-assessment</h2>
+<p><strong>Question:</strong> Both paths generate identical IDs, but one logit differs by 0.01. Is that conclusive proof of numerical equivalence?</p>
+<details><summary>Reveal the worked answer</summary>
+
+<p>No. Exact IDs do not establish all-logit parity; a selected-token outcome can hide distribution differences.</p>
+</details>
+
+<h2>References and further reading</h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/draft-gaikwad-llm-benchmarking-terminology/">IETF LLM benchmarking terminology draft (work in progress)</a></li>
+<li><a href="https://docs.vllm.ai/en/latest/">vLLM documentation — inference serving concepts</a></li>
+</ul>
+<h2>Continue learning</h2>
+<p><a href="282-measure-complete-inference-calls-with-monotonic-clocks.html">Previous lesson</a> · <a href="../inference-benchmark-learning-path.html">HTML study route</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+<nav aria-label="Lesson navigation"><a href="282-measure-complete-inference-calls-with-monotonic-clocks.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/283-design-paired-canonical-versus-cached-experiments.md">Editable Markdown</a><a href="284-counterbalance-order-and-run-warmups.html">Next →</a></nav></main><footer>Sammy Hegab · Umicom Foundation · Educational material · MIT</footer></body></html>

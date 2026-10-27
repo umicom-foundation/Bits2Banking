@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Umicom Foundation: Separate prompt prefill from token decoding."><title>Build an LLM from Scratch 281 — Separate prompt prefill from token decoding | Bits to Banking</title><style>
+:root{--ink:#182a3c;--blue:#124c73;--link:#075c98;--panel:#eaf4fa;--border:#d0e0e9}
+*{box-sizing:border-box}body{margin:0;background:#f0f4f8;color:var(--ink);font:17px/1.72 system-ui,Segoe UI,Arial,sans-serif}a{color:var(--link)}a:focus-visible{outline:3px solid #2eafa9;outline-offset:2px}
+header{background:linear-gradient(125deg,#152e46,#145879);color:white;padding:2.5rem max(1.2rem,calc((100vw - 1010px)/2))}header small{color:#d8f4ff}header h1{font-size:clamp(1.85rem,4vw,2.75rem);line-height:1.2;margin:.4em 0}header p{color:#ddf0ff}main{max-width:1050px;margin:1.4rem auto 3rem;background:white;border:1px solid var(--border);border-radius:14px;padding:2.3rem}h2{color:var(--blue);margin-top:2em;line-height:1.25}h3{color:var(--blue)}p,li{max-width:90ch}pre{background:#102637;color:#f0faff;padding:1.1rem;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:9px}code{font-family:Consolas,ui-monospace,monospace}p code,li code{background:var(--panel);padding:.13em .35em;border-radius:4px}nav{background:var(--panel);padding:1rem;border-radius:9px;display:flex;gap:.75rem;flex-wrap:wrap}details{background:#eaf7f1;border:1px solid #bde1ca;border-radius:9px;padding:.8rem 1rem}summary{cursor:pointer;font-weight:700}footer{text-align:center;padding:1.3rem;color:#506675;font-size:.86rem}@media(max-width:650px){main{margin:0;padding:1rem;border-radius:0}header{padding:1.4rem}}@media print{body{background:white}main{border:0;margin:0;padding:0}header{background:white;color:black}}
+</style></head><body><header><small>Bits to Banking · Build an LLM from Scratch · 281</small><h1>Separate prompt prefill from token decoding</h1><p>Sammy Hegab · Umicom Foundation</p></header><main id="content"><nav aria-label="Lesson navigation"><a href="280-qualify-integrated-incremental-inference.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/281-separate-prompt-prefill-from-token-decoding.md">Editable Markdown</a><a href="282-measure-complete-inference-calls-with-monotonic-clocks.html">Next →</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab · <strong>Implementation:</strong> C23 / Assembly where justified<br />
+<strong>Prerequisites:</strong> Transformer Lessons 265–280 and Mathematics Unit 161.</p>
+<h2>Learning objective</h2>
+<p>First-token latency and subsequent-token latency measure different phases; neither is captured by an undifferentiated token-layer counter.</p>
+<h2>Understand the mechanism</h2>
+<p>A decoder receives a prompt before it can emit a token. During <strong>prefill</strong>, it evaluates the incoming prompt and prepares any reusable key/value projections. The first token can be sampled from the last prompt-position logit row. During <strong>decode</strong>, the model accepts each newly sampled token and produces the next distribution. A KV cache changes the work of later steps, not the need to process a previously unseen prompt. In a streamed application the time to the first emitted token includes more than prefill: admission, queueing, transfers, sampler work and any retrieval may contribute. In a local synchronous test, those services are absent, so report exactly what the timer covers.</p>
+<p>The existing Umicom prefix generator runs full-context calculations. The cached generator can reuse K/V while a prefix grows, but learned-absolute-position rollover forces a canonical rebuild. Measure each regime separately instead of reporting one average as the universal property of the model. This distinction is especially important when a four-token educational context rolls over far more often than a realistic model with a long context.</p>
+<h2>Fully worked example</h2>
+<p>Assume 3 ms to create the session and evaluate the prompt, then 2 ms for each of four subsequent decode transitions. A five-token stream occupies about 11 ms of compute and orchestration: 3 + (4 × 2). The first-token wait is 3 ms in this simplified laboratory. Average end-to-end latency per token is 11 / 5 = 2.2 ms; it is neither the first-token delay nor the 2 ms transition time.</p>
+<h2>Native C23 laboratory</h2>
+<p>Make a timeline that separates session creation, the first generated token, pending-token processing and every later sample. Annotate any position-rollover event. Do not label the total native benchmark runtime as TTFT when it measures an entire generation call.</p>
+<p>The numerical and inference services are owned by <strong>Umicom Framework</strong>. Existing samplers, stacked decoder, K/V store and training tape remain authoritative. Where this lesson discusses a proposed capability, it is labelled as a design rather than a verified implementation. No numerical equivalence or runtime acceleration is inferred merely from an operation count.</p>
+<h2>Connect the mathematics</h2>
+<p>See <a href="../../maths-for-ai/lessons/161-calculate-time-to-first-token-vs-end-to-end.html">Mathematics Unit 161</a> for the corresponding numerical reasoning and a worked exercise.</p>
+<h2>Self-assessment</h2>
+<p><strong>Question:</strong> A request spends 10 ms queueing, 5 ms prefill, and 1 ms sampling its first token. What is the end-user TTFT?</p>
+<details><summary>Reveal the worked answer</summary>
+
+<p>16 ms, assuming other delays are zero. The 5 ms prefill alone is not TTFT.</p>
+</details>
+
+<h2>References and further reading</h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/draft-gaikwad-llm-benchmarking-terminology/">IETF LLM benchmarking terminology draft (work in progress)</a></li>
+<li><a href="https://docs.vllm.ai/en/latest/">vLLM documentation — inference serving concepts</a></li>
+</ul>
+<h2>Continue learning</h2>
+<p><a href="280-qualify-integrated-incremental-inference.html">Previous lesson</a> · <a href="../inference-benchmark-learning-path.html">HTML study route</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+<nav aria-label="Lesson navigation"><a href="280-qualify-integrated-incremental-inference.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/281-separate-prompt-prefill-from-token-decoding.md">Editable Markdown</a><a href="282-measure-complete-inference-calls-with-monotonic-clocks.html">Next →</a></nav></main><footer>Sammy Hegab · Umicom Foundation · Educational material · MIT</footer></body></html>

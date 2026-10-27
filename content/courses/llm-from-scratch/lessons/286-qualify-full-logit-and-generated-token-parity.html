@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Umicom Foundation: Qualify full-logit and generated-token parity."><title>Build an LLM from Scratch 286 — Qualify full-logit and generated-token parity | Bits to Banking</title><style>
+:root{--ink:#182a3c;--blue:#124c73;--link:#075c98;--panel:#eaf4fa;--border:#d0e0e9}
+*{box-sizing:border-box}body{margin:0;background:#f0f4f8;color:var(--ink);font:17px/1.72 system-ui,Segoe UI,Arial,sans-serif}a{color:var(--link)}a:focus-visible{outline:3px solid #2eafa9;outline-offset:2px}
+header{background:linear-gradient(125deg,#152e46,#145879);color:white;padding:2.5rem max(1.2rem,calc((100vw - 1010px)/2))}header small{color:#d8f4ff}header h1{font-size:clamp(1.85rem,4vw,2.75rem);line-height:1.2;margin:.4em 0}header p{color:#ddf0ff}main{max-width:1050px;margin:1.4rem auto 3rem;background:white;border:1px solid var(--border);border-radius:14px;padding:2.3rem}h2{color:var(--blue);margin-top:2em;line-height:1.25}h3{color:var(--blue)}p,li{max-width:90ch}pre{background:#102637;color:#f0faff;padding:1.1rem;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:9px}code{font-family:Consolas,ui-monospace,monospace}p code,li code{background:var(--panel);padding:.13em .35em;border-radius:4px}nav{background:var(--panel);padding:1rem;border-radius:9px;display:flex;gap:.75rem;flex-wrap:wrap}details{background:#eaf7f1;border:1px solid #bde1ca;border-radius:9px;padding:.8rem 1rem}summary{cursor:pointer;font-weight:700}footer{text-align:center;padding:1.3rem;color:#506675;font-size:.86rem}@media(max-width:650px){main{margin:0;padding:1rem;border-radius:0}header{padding:1.4rem}}@media print{body{background:white}main{border:0;margin:0;padding:0}header{background:white;color:black}}
+</style></head><body><header><small>Bits to Banking · Build an LLM from Scratch · 286</small><h1>Qualify full-logit and generated-token parity</h1><p>Sammy Hegab · Umicom Foundation</p></header><main id="content"><nav aria-label="Lesson navigation"><a href="285-report-medians-spread-and-performance-uncertainty.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/286-qualify-full-logit-and-generated-token-parity.md">Editable Markdown</a><a href="287-distinguish-kv-allocation-from-peak-process-memory.html">Next →</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab · <strong>Implementation:</strong> C23 / Assembly where justified<br />
+<strong>Prerequisites:</strong> Transformer Lessons 265–280 and Mathematics Unit 166.</p>
+<h2>Learning objective</h2>
+<p>Correctness comparisons should distinguish exact token parity, bounded numerical logit parity and model-identity integrity.</p>
+<h2>Understand the mechanism</h2>
+<p>A cache can preserve the same sampled token while subtly changing the model's predicted probabilities. Compare every vocabulary logit against the independent canonical decoder, not merely the argmax. A practical floating-point acceptance rule uses an absolute component and a relative component: <code>abs(a-b) &lt;= atol + rtol * max(abs(a),abs(b))</code>. Choose tolerances before seeing results. Different compute orders may produce small round-off differences, but non-finite results always fail.</p>
+<p>For stacked models, verify the new key/value row at every layer, test 1-, 2- and 3-layer cases, compare short and full prompts, and traverse the first and repeated rollover boundaries. Make the checkpoint identity part of the cache contract: a training step invalidates projections retained from older weights. Only after these tests should timing results enter an engineering comparison.</p>
+<h2>Fully worked example</h2>
+<p>Atol = 0.0001 and rtol = 0.00001. For reference 2.00000 and candidate 2.00008, the threshold is 0.0001 + 0.00001 × 2.00008 = 0.0001200008. Error 0.00008 passes. An error of 0.0003 fails.</p>
+<h2>Native C23 laboratory</h2>
+<p>Extend the independent parity matrix beyond the bundled paired token-ID benchmark by comparing every logit and K/V row using the existing Framework qualification services. Keep these stronger checks separately identified from the elapsed benchmark.</p>
+<p>The numerical and inference services are owned by <strong>Umicom Framework</strong>. Existing samplers, stacked decoder, K/V store and training tape remain authoritative. Where this lesson discusses a proposed capability, it is labelled as a design rather than a verified implementation. No numerical equivalence or runtime acceleration is inferred merely from an operation count.</p>
+<h2>Connect the mathematics</h2>
+<p>See <a href="../../maths-for-ai/lessons/166-apply-absolute-plus-relative-logit-tolerances.html">Mathematics Unit 166</a> for the corresponding numerical reasoning and a worked exercise.</p>
+<h2>Self-assessment</h2>
+<p><strong>Question:</strong> Is a successful four-token sequence sufficient to prove the decoder numerical path correct?</p>
+<details><summary>Reveal the worked answer</summary>
+
+<p>No. It may conceal changed logits or K/V rows; full-vector and multi-layer parity testing remains necessary.</p>
+</details>
+
+<h2>References and further reading</h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/draft-gaikwad-llm-benchmarking-terminology/">IETF LLM benchmarking terminology draft (work in progress)</a></li>
+<li><a href="https://docs.vllm.ai/en/latest/">vLLM documentation — inference serving concepts</a></li>
+</ul>
+<h2>Continue learning</h2>
+<p><a href="285-report-medians-spread-and-performance-uncertainty.html">Previous lesson</a> · <a href="../inference-benchmark-learning-path.html">HTML study route</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+<nav aria-label="Lesson navigation"><a href="285-report-medians-spread-and-performance-uncertainty.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/286-qualify-full-logit-and-generated-token-parity.md">Editable Markdown</a><a href="287-distinguish-kv-allocation-from-peak-process-memory.html">Next →</a></nav></main><footer>Sammy Hegab · Umicom Foundation · Educational material · MIT</footer></body></html>

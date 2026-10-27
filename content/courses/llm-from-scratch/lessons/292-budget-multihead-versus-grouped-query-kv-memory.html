@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Umicom Foundation: Budget multi-head versus grouped-query KV memory."><title>Build an LLM from Scratch 292 — Budget multi-head versus grouped-query KV memory | Bits to Banking</title><style>
+:root{--ink:#182a3c;--blue:#124c73;--link:#075c98;--panel:#eaf4fa;--border:#d0e0e9}
+*{box-sizing:border-box}body{margin:0;background:#f0f4f8;color:var(--ink);font:17px/1.72 system-ui,Segoe UI,Arial,sans-serif}a{color:var(--link)}a:focus-visible{outline:3px solid #2eafa9;outline-offset:2px}
+header{background:linear-gradient(125deg,#152e46,#145879);color:white;padding:2.5rem max(1.2rem,calc((100vw - 1010px)/2))}header small{color:#d8f4ff}header h1{font-size:clamp(1.85rem,4vw,2.75rem);line-height:1.2;margin:.4em 0}header p{color:#ddf0ff}main{max-width:1050px;margin:1.4rem auto 3rem;background:white;border:1px solid var(--border);border-radius:14px;padding:2.3rem}h2{color:var(--blue);margin-top:2em;line-height:1.25}h3{color:var(--blue)}p,li{max-width:90ch}pre{background:#102637;color:#f0faff;padding:1.1rem;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:9px}code{font-family:Consolas,ui-monospace,monospace}p code,li code{background:var(--panel);padding:.13em .35em;border-radius:4px}nav{background:var(--panel);padding:1rem;border-radius:9px;display:flex;gap:.75rem;flex-wrap:wrap}details{background:#eaf7f1;border:1px solid #bde1ca;border-radius:9px;padding:.8rem 1rem}summary{cursor:pointer;font-weight:700}footer{text-align:center;padding:1.3rem;color:#506675;font-size:.86rem}@media(max-width:650px){main{margin:0;padding:1rem;border-radius:0}header{padding:1.4rem}}@media print{body{background:white}main{border:0;margin:0;padding:0}header{background:white;color:black}}
+</style></head><body><header><small>Bits to Banking · Build an LLM from Scratch · 292</small><h1>Budget multi-head versus grouped-query KV memory</h1><p>Sammy Hegab · Umicom Foundation</p></header><main id="content"><nav aria-label="Lesson navigation"><a href="291-reason-about-prefix-sharing-and-cache-ownership.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/292-budget-multihead-versus-grouped-query-kv-memory.md">Editable Markdown</a><a href="293-treat-kv-quantisation-as-a-new-numerical-contract.html">Next →</a></nav>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab · <strong>Implementation:</strong> C23 / Assembly where justified<br />
+<strong>Prerequisites:</strong> Transformer Lessons 265–280 and Mathematics Unit 172.</p>
+<h2>Learning objective</h2>
+<p>Grouped-query attention reduces the number of K/V heads without removing query heads.</p>
+<h2>Understand the mechanism</h2>
+<p>In ordinary multi-head attention the model commonly has one independent K and V projection per query head. Grouped-query attention (GQA) allows several query heads to share one K/V head, reducing retained projections and memory bandwidth. It changes the model's parameter shapes and attention mapping. It is not an optimisation that can be enabled by simply dropping rows from a checkpoint trained for standard MHA.</p>
+<p>The native educational stacked decoder uses its original attention-head and projection layout. That checkpoint family remains unchanged. Future GQA support needs a separate architecture identifier, explicit head-to-KV mapping, shape-aware persistence and independent numerical qualification. This lesson treats the memory equations as a planning tool rather than claiming current production support.</p>
+<h2>Fully worked example</h2>
+<p>With 16 query heads, 4 KV heads, head width 64, 24 layers, 4,096 tokens and two FP16 bytes per value, GQA K/V payload is 2 × 24 × 4,096 × 4 × 64 × 2 = 100,663,296 bytes ≈ 96 MiB per sequence. Standard MHA with 16 KV heads would be about 384 MiB, four times larger.</p>
+<h2>Native C23 laboratory</h2>
+<p>Calculate the payload for 8,192 tokens and 8 KV heads under the same layer count and precision. Explain why the result is a storage estimate and not total VRAM usage.</p>
+<p>The numerical and inference services are owned by <strong>Umicom Framework</strong>. Existing samplers, stacked decoder, K/V store and training tape remain authoritative. Where this lesson discusses a proposed capability, it is labelled as a design rather than a verified implementation. No numerical equivalence or runtime acceleration is inferred merely from an operation count.</p>
+<h2>Connect the mathematics</h2>
+<p>See <a href="../../maths-for-ai/lessons/172-compare-mha-and-gqa-cache-capacity.html">Mathematics Unit 172</a> for the corresponding numerical reasoning and a worked exercise.</p>
+<h2>Self-assessment</h2>
+<p><strong>Question:</strong> Under the worked configuration, how many K/V heads are represented by each query-head group?</p>
+<details><summary>Reveal the worked answer</summary>
+
+<p>16 query heads / 4 KV heads = four query heads per shared K/V head.</p>
+</details>
+
+<h2>References and further reading</h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/draft-gaikwad-llm-benchmarking-terminology/">IETF LLM benchmarking terminology draft (work in progress)</a></li>
+<li><a href="https://docs.vllm.ai/en/latest/">vLLM documentation — inference serving concepts</a></li>
+</ul>
+<h2>Continue learning</h2>
+<p><a href="291-reason-about-prefix-sharing-and-cache-ownership.html">Previous lesson</a> · <a href="../inference-benchmark-learning-path.html">HTML study route</a></p>
+<p><em>Service to Many Leads to Greatness.</em></p>
+<nav aria-label="Lesson navigation"><a href="291-reason-about-prefix-sharing-and-cache-ownership.html">← Previous</a><a href="../inference-benchmark-learning-path.html">Learning path</a><a href="../../../lessons/10-native-ai/292-budget-multihead-versus-grouped-query-kv-memory.md">Editable Markdown</a><a href="293-treat-kv-quantisation-as-a-new-numerical-contract.html">Next →</a></nav></main><footer>Sammy Hegab · Umicom Foundation · Educational material · MIT</footer></body></html>
