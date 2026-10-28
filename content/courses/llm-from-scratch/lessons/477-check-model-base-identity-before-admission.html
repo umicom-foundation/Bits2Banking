@@ -1,0 +1,35 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Check model base identity before admission — a researched Bits to Banking lesson"><title>Native LLM Engineering 477 — Check model base identity before admission</title><style>
+:root{--ink:#172b3c;--blue:#125b7b;--link:#085a87;--bg:#edf4f8;--line:#c7dbe5;--light:#e8f3f7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.73 system-ui,Segoe UI,Arial,sans-serif}a{color:var(--link)}a:focus-visible{outline:3px solid #169d93;outline-offset:2px}header{background:linear-gradient(120deg,#142a43,#11506c);color:#eefaff;padding:2rem max(1rem,calc((100vw - 960px)/2))}header h1{line-height:1.27;margin:0 0 .3em;font-size:clamp(1.65rem,3.5vw,2.55rem)}header p{color:#cce9f6}main{background:white;max-width:1000px;margin:1.4rem auto 3rem;padding:2rem 2.6rem;border:1px solid var(--line);border-radius:12px}h2{color:var(--blue);border-bottom:1px solid var(--line);margin-top:2rem}p,li{max-width:92ch}nav{display:flex;flex-wrap:wrap;gap:.7rem;background:var(--light);border-radius:8px;padding:1rem}blockquote{border-left:5px solid #0b8881;background:#eff8f6;padding:1rem}details{background:#f0f8f3;border:1px solid #b6d7cc;border-radius:9px;padding:1rem}summary{cursor:pointer;font-weight:750}code,pre{font-family:Consolas,monospace}pre{background:#112739;color:white;padding:1rem;overflow:auto}footer{text-align:center;color:#4c6373;margin:2rem}@media(max-width:680px){main{padding:1.1rem;margin:0;border:0;border-radius:0}}@media print{main{padding:0;border:0}body{background:white}header{background:white;color:black}}
+</style></head><body><header><p>Bits to Banking · Umicom Foundation</p><h1>Native LLM Engineering — 477: Check model base identity before admission</h1><p>Native AI and distributed-systems education · Sammy Hegab</p></header><main><nav aria-label="Lesson navigation"><a href="../federated-evidence-and-trusted-anchors.html">Study route</a><a href="476-separate-an-anchor-from-a-self-declared-root.html">Previous</a><a href="478-model-idempotent-submission-and-replay-rejection.html">Next</a><a href="../../../lessons/10-native-ai/477-check-model-base-identity-before-admission.md">Canonical Markdown</a></nav><article><h1>Native LLM Engineering — Lesson 477: Check model base identity before admission</h1>
+<p><strong>Bits to Banking · Umicom Foundation</strong><br />
+<strong>Author:</strong> Sammy Hegab · <strong>Licence:</strong> MIT · <strong>Language:</strong> UK English<br />
+<strong>Study route:</strong> Native LLM Engineering · <strong>Method:</strong> reason → compute → test → qualify</p>
+<h2>Learning objective</h2>
+<p>Every worker update must declare the same immutable base checkpoint expected by the aggregation round. Combining updates from different bases without an explicit transform makes the arithmetic ill-defined.</p>
+<p>By the end of the lesson, a learner should be able to distinguish what the method mathematically establishes from what its security or distributed-systems context still requires. The objective is to explain the mechanism, reproduce the worked argument and recognise an invalid inference.</p>
+<h2>Mechanism and architecture</h2>
+<p>Every worker update must declare the same immutable base checkpoint expected by the aggregation round. Combining updates from different bases without an explicit transform makes the arithmetic ill-defined. Consider the boundaries of <strong>data identity</strong>, <strong>computation</strong>, <strong>trust</strong> and <strong>governance</strong> independently. When several computers contribute to a model or ledger, the system must identify the exact input revision, define the legal operation, check the output against an independently fixed reference and record which entity has authority to accept the transition.</p>
+<p>A hash or signature secures a <em>statement about bytes and keys</em>; a numerical test constrains a <em>calculation</em>; a protocol governs <em>who may decide</em>; and an independent benchmark measures <em>whether the model is useful</em>. These statements are complementary, not interchangeable. A transparent experiment separates claims from measured outcomes.</p>
+<h2>Worked case</h2>
+<p>If A reports base digest X and B reports Y, both may have finite vectors but their deltas cannot safely be averaged as one update to X.</p>
+<p><strong>Interpretation.</strong> The worked result is a defined calculation or carefully bounded scenario. It does not assert an observed speedup, network finality, legal authorisation or a trained production model. When interpreting a number, state its denominator, units, assumptions and the exact predicate being checked.</p>
+<h2>Practical native engineering exercise</h2>
+<p>Reuse FederatedJob identity checks before invoking FederatedRound.</p>
+<p>A safe experiment uses <strong>synthetic or explicitly authorised inputs</strong>, checks every buffer bound, preserves independent reference results and records both expected-success and deliberate-rejection cases. Implement reusable operations in Umicom Framework C23/Assembly first; an application or course laboratory consumes the published API rather than maintaining a second implementation of its mathematics or hashing.</p>
+<h2>Independent exercise</h2>
+<p><strong>Question:</strong> What is the minimum response to a base-digest mismatch?</p>
+<details><summary>Reveal a worked answer</summary>
+
+<p>Reject or quarantine B; request a fresh authorised assignment at the correct base rather than reinterpret its bytes.</p>
+</details>
+
+<h2>Security, scientific and governance limits</h2>
+<p>A digest match is not a signature or permission to read a dataset.</p>
+<p>The small experiments in this course do not establish a deployed blockchain, secure multiparty computation, real Internet-scale learning, a signed identity infrastructure or superior model quality unless a separate qualification specifically measures that property. <strong>Honest negative results are valuable evidence.</strong></p>
+<h2>Primary research and technical reading</h2>
+<ul>
+<li><a href="https://proceedings.mlr.press/v54/mcmahan17a.html">FedAvg, McMahan et al.</a></li>
+<li><a href="https://csrc.nist.gov/pubs/ir/8202/final">NIST Blockchain Technology Overview</a></li>
+</ul>
+</article><nav aria-label="Lesson navigation"><a href="../federated-evidence-and-trusted-anchors.html">Study route</a><a href="476-separate-an-anchor-from-a-self-declared-root.html">Previous</a><a href="478-model-idempotent-submission-and-replay-rejection.html">Next</a><a href="../../../lessons/10-native-ai/477-check-model-base-identity-before-admission.md">Canonical Markdown</a></nav></main><footer>Umicom Foundation · MIT educational material · Service to Many Leads to Greatness.</footer></body></html>
