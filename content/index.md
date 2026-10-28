@@ -5,7 +5,10 @@
 Begin with [Introduction to Computers](lessons/00-getting-started/index.md) if files, programs or commands are unfamiliar. No installation or previous coding is required. Use the [connected learning map](start/systems-learning.md) to continue into existing chapters and courses.
 
 
+<!-- The earlier raster reference is retained for artwork comparison. The SVG below uses the shared wordmark sizing rule and stays legible on narrow displays.
 ![Umicom Foundation logo](assets/branding/umicom-logo.png)
+-->
+![Umicom Foundation logo](assets/branding/umicom-wordmark.svg){ .umicom-wordmark width="420" height="103" }
 
 Learn how computers work, how software is built, and how technology can serve people.
 

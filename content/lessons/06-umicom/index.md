@@ -81,3 +81,7 @@ Read the [Umicom project repository guide](../../umicom/repositories.md) to find
 ## Service processes and streams
 
 [Keep a service's process and streams under one owner](supervise-service-ownership.md) explains descriptors, child waiting and launch-error reporting before following the OS supervisor source.
+
+## A small language runtime inside the Kernel
+
+[Run a small Umicom C program in Umicom Kernel](running-a-cvm-program.md) explains native ELF programs, bytecode, user mode, execution budgets and the ordinary console launch path using the real CVM example.
