@@ -89,3 +89,11 @@ It copied the selected resource's illustration metadata. Inspect the copied stat
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
 
 [Next: Find text with shared Framework services](24-find-text-with-shared-services.md)
+
+## Follow an image reference without loading it automatically
+
+An HTML `img` element can name a source file using `src` and describe its meaning using `alt`. The reading model retains the description and separately copies bounded source metadata. `UmiBrowserReadingDocumentImageAt` returns that metadata; it never opens the file. An unusable source has an explicit status and an empty target, so a clipped filename cannot accidentally name another resource.
+
+The native catalogue lists these references under Reading controls. The learner chooses an illustration and explicitly opens it. `UmiLearningCatalogueGtk4OpenReadingImage` checks the displayed reader's admitted pack, requires the resource kind to be image and refuses fragments, remote addresses and undeclared files. Only then does the existing worker verify and decode bytes. Back returns to the guide. This separates describing an image, admitting a local resource and decoding its pixels into three reviewable steps.
+
+Follow `src/browser/reading_document_builder.c` for metadata ownership and `adapters/gtk4/learning_catalogue_reading.c` for the explicit action. The old text-only description is retained. Pixels are still shown in a separate bounded viewport rather than inserted among paragraphs.
