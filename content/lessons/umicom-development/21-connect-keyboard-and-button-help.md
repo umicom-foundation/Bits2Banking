@@ -1,5 +1,7 @@
 # Connect keyboard and button help
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/ui/gtk4/learning_help_binding.h). Match its revision to your checkout before comparing behavior.
+
 <h2>What you will learn</h2>
 <p>A useful Help button should answer a predictable question. It should not open a
 different page merely because a title changed or because the application started

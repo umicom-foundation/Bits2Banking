@@ -1,5 +1,7 @@
 # Store checkpoints on a worker
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/src/teacher/learning_progress_local.c). Match its revision to your checkout before comparing behavior.
+
 <h2>What you will learn</h2>
 <p>Saving a small record can take longer than drawing a window. A disk may be busy,
 a network drive may be unavailable, or a database may be locked. This lesson

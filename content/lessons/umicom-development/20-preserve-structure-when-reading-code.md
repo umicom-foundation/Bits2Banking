@@ -1,5 +1,7 @@
 # Preserve structure when reading code
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/browser/reading_document.h). Match its revision to your checkout before comparing behavior.
+
 <h2>What you will learn</h2>
 <p>A guide can contain instructions, source code, a diagram and links. A reading application must preserve enough structure for those things to remain understandable. In this lesson you will follow the real Umicom Framework reading model from an HTML byte buffer to the text shown in Studio's Guided Learning view. You will learn why a byte position is not always a character position, why a displayed link is not permission to open it, and why a failed replacement should leave the previous page intact.</p>
 <p>You can begin with paper and a pencil. You do not need to install an editor to follow the first examples. When the lesson uses a C term, its meaning is explained before the term is used in a larger example. If you want more practice with variables and functions, visit <a href="../../courses/learning-c/index.html">Learning C</a>.</p>

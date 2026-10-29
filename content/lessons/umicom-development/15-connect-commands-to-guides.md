@@ -1,5 +1,7 @@
 # Connect commands to helpful guides
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/teacher/learning_help.h). Match its revision to your checkout before comparing behavior.
+
 <h2>What you will learn</h2>
 <p>Help is most useful when it explains the action a person is trying to take.
 A general list of documents is useful for browsing, but someone who has just

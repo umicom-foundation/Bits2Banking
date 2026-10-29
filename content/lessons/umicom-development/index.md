@@ -52,3 +52,15 @@ The example is an exercise counter, not a complete application framework. Its si
 - [Find text with shared Framework services](24-find-text-with-shared-services.md)
 
 - [Validate a tool connection](25-validate-a-tool-connection.md)
+
+- [Search verified learning resources](26-search-verified-learning-resources.md)
+
+- [Open search results without losing your place](27-open-search-results-without-losing-your-place.md)
+
+- [Understand waiting and timeouts](28-understand-waiting-and-timeouts.md)
+
+- [Remember projects without deleting their files](29-remember-projects-without-deleting-files.md)
+
+- [Keep test data separate from your work](30-keep-test-data-separate.md)
+
+- [Understand skipped tests and host coverage](31-understand-skipped-tests-and-host-coverage.md)

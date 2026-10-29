@@ -51,9 +51,9 @@ These fictional forecasts must not be combined across currencies without an expl
 
 ## Calypso and Umicom Open TMS
 
-**Nasdaq Calypso** is an enterprise financial platform with established product, workflow, risk and operational concepts. We can study those concepts without using proprietary source code or assuming all releases have identical APIs.
+**Nasdaq Calypso** is an enterprise financial platform with established product, workflow, risk and operational concepts. 
 
-**Umicom Open TMS** is an independent educational and development implementation of treasury and trade-management ideas. Its framework-first design uses reusable services for data authority, messaging, risk, settlement, accounting and integration. The learning examples should not be confused with live institutional processing.
+**Umicom Open TMS** is an independent educational and development implementation of treasury and trade-management ideas. Its framework-first design uses reusable services for data authority, messaging, risk, settlement, accounting and integration. 
 
 ## Check your understanding
 

@@ -1,5 +1,7 @@
 # Follow protocol message boundaries
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/language_runtime/framing.h). Match its revision to your checkout before comparing behavior.
+
 <h2>What you will learn</h2>
 <p>When Umicom Studio asks a language server for suggestions, the answer arrives as
 bytes through a connection between programs. A <em>byte</em> is a small unit of
@@ -175,3 +177,11 @@ so another blocking read could be unnecessary or wrong.</li>
 [Previous: Connect keyboard and button help](21-connect-keyboard-and-button-help.md) · [Course contents](index.md)
 
 [Next: Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md)
+
+## Apply the idea
+
+<details>
+<summary>A frame arrives in three reads</summary>
+<p>The first read ends halfway through Content-Length, the second completes the header and begins the body, and the third completes the body. How many messages should the application receive?</p>
+<p><strong>Explanation:</strong> Exactly one complete message. A read is a transport operation, not a message boundary. Retain incomplete bytes, validate the declared length, and publish only the complete body. No partial read should be presented as a separate response.</p>
+</details>

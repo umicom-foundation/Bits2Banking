@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Search verified learning resources | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav aria-label="Course navigation"><a href="../index.html">Umicom Framework Development</a></nav></div></header><main id="main" class="simple-page"><article><h1>Search verified learning resources</h1>
+<p>Read the accompanying <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/teacher/learning_text.h">Umicom source example</a>. Match its revision to your checkout before comparing behavior.</p>
+<p>Imagine remembering an explanation about ownership but forgetting which guide contained it. Searching a title may not find it. Searching the guide's paragraphs can. This lesson follows the real Umicom Framework implementation that prepares a searchable copy of guides and source examples.</p>
+<p>Read <a href="13-build-an-offline-learning-reader.html">Build an offline learning reader</a> for manifests and verified files. <a href="24-find-text-with-shared-services.html">Find text with shared Framework services</a> explains searching one open document. Here we connect several documents without making each application invent another search engine. You can trace the steps on paper before installing tools.</p>
+<h2>1. Separate a file from its description</h2>
+<p>A file stores bytes. A byte is a small unit of data. Text uses an encoding to give those bytes meaning. UTF-8 is the encoding used by this service; one character may occupy one byte or several.</p>
+<p>A resource description names a file and records its role, title, relative path and expected SHA-256 digest. A digest is a fixed-size value calculated from the bytes. Comparing a calculated digest with the expected digest helps detect changes. It does not tell us who wrote the file. Someone who can replace both a file and its manifest can also replace its digest.</p>
+<p>A learning pack groups these descriptions. A shelf owns admitted packs. Admission checks the manifest's format, paths, identities and compatibility range. It does not mean that every described file has already been opened and checked.</p>
+<p>The body-search builder reads each declared non-image resource, verifies its bytes, and prepares searchable text. A missing or changed file refuses the new index. A search should not look complete when part of its chosen library could not be read.</p>
+<h2>2. Give each snapshot an owner</h2>
+<p>A snapshot is a copy of information at one moment. The index owns copied text and metadata. A search result owns another, smaller copy containing a resource identity, a preview and a match range.</p>
+<ol><li>Admit a shelf of pack descriptions.</li><li>Read verified resources and create a candidate index.</li><li>Accept the complete candidate, or keep the earlier index after refusal.</li><li>Search the accepted index without reading files again.</li><li>Retain copied results for display.</li><li>Verify a selected resource again before opening it.</li></ol>
+<p>The shelf can be released after index construction. The index can be released after a search completes. A successful result remains readable until its own destroy call. These are separate owners, not three pointers that should all release the same allocation.</p>
+<p>Read <code>include/umicom/teacher/learning_text.h</code>. Its create functions clear the output pointer on failure. Use a separate candidate variable when replacing an existing index. Passing the address of the application's only owning pointer would lose access to the earlier object.</p>
+<h2>3. Build searchable text without running it</h2>
+<p>A guide ending in <code>.html</code> or <code>.htm</code> passes through the Framework reading projection. A projection keeps a useful representation of something larger. Here it keeps readable paragraphs, headings and supported structure while omitting script, style and other excluded sections.</p>
+<pre><code>&lt;p&gt;Learn &lt;strong&gt;ownership&lt;/strong&gt; with Umicom Framework.&lt;/p&gt;
+&lt;script&gt;hidden example text&lt;/script&gt;</code></pre>
+<p>A search can find ownership in the readable sentence. It cannot find the hidden script text. The projection does not execute the script or follow network links. Other non-image resources are indexed as complete UTF-8 source text. C comments remain searchable because they are part of the example a learner is reading.</p>
+<p>Images are counted as excluded resources and are not read by body search. An image description inside a guide may still be part of its projected text. Invalid encoding, prohibited control bytes or malformed supported HTML refuses the candidate. It does not silently become an apparently successful partial index.</p>
+<p>The implementation is in <code>src/teacher/learning_text_index.c</code>. It calls the existing verified-resource reader and browser reading projection, then stores copied text in the existing Editor index. Reusing these services keeps file verification, HTML reading and search ownership consistent across applications.</p>
+<h2>4. Follow a simple query</h2>
+<p>A query describes what to find. This service uses one literal phrase. Literal means that characters such as brackets are ordinary text rather than special search instructions.</p>
+<pre><code>UmiLearningTextQuery query;
+UmiLearningTextQueryInit(&amp;query);
+strcpy(query.phrase, "ownership");
+
+UmiLearningTextSearch *results = NULL;
+UmiStatus status = UmiLearningTextSearchCreate(
+    index, &amp;query, &amp;results);</code></pre>
+<p>The initializer sets every field to a known value and chooses a default result limit. The fixed word in this example fits the phrase array. For text entered by a user, check its length before copying, as the complete <code>body_search.c</code> example does.</p>
+<p>The search returns the first occurrence in each matching document. Results follow shelf and manifest order. They are not sorted by an invented relevance score. Optional filters select a product, locale or resource kind. Product identity is exact. Locale comparison ignores ASCII letter case but does not guess another language.</p>
+<p>ASCII case-insensitive matching treats A and a as the same letter. It does not promise every language's case rules. Whole-word matching uses the Editor engine's ASCII identifier boundaries. Interface labels must describe the behaviour the service actually provides.</p>
+<h2>5. Read a byte range correctly</h2>
+<p>A range has a start and an end. The start counts from zero. The end is exclusive, so it points just after the match. If ownership begins at byte 12, its nine ASCII letters occupy bytes 12 through 20, and the range is 12..21.</p>
+<p>The word café uses five UTF-8 bytes: c, a and f each use one, while é uses two. A byte offset must not be used as a character offset in a graphical text widget without conversion.</p>
+<p>HTML results refer to projected reading text. Raw HTML contains tags that the projection removes. Applying a projected offset to raw HTML could select unrelated text. Keep the result's representation flag and recreate the same projection after reopening the selected resource.</p>
+<p>The preview begins at the match. It stops at the line ending or a fixed capacity. If capacity shortens it, the service reports that fact and avoids cutting a UTF-8 character in half. The complete matched range remains separate from this shortened display text.</p>
+<h2>6. Bound the work</h2>
+<p>A budget is an explicit limit on resource use. Default construction allows 256 documents, one MiB of source per resource, 64 KiB of searchable text per document and eight MiB of searchable text overall. One KiB is 1,024 bytes; one MiB is 1,024 KiB.</p>
+<p>The API returns the known pack and resource identity when a candidate fails. Raising a size limit will not repair a missing file or invalid encoding. A query retains at most 256 results, counts matching documents, and reports truncation when its retained list is shorter. An interface should show that distinction.</p>
+<p>Cancellation is checked between resources and search operations. It does not interrupt a filesystem call already in progress. A graphical application should create an independent shelf clone for a worker, keep the worker's owners alive, and publish the resulting index only when the job completes successfully.</p>
+<h2>7. Use the installed example</h2>
+<p>The complete program is <code>examples/learning_pack_inspector/body_search.c</code> in Umicom Framework. Its CMake project builds against an installed SDK and prepares a manifest using the copied files' actual hashes.</p>
+<p>Follow <code>docs/learning/searching-learning-text.html</code> in the Framework source for logged configure, build and test steps. Use a new practice folder so earlier edits remain intact. After building that example, run these commands from its source directory:</p>
+<pre><code>&amp; ".\build\umicom-learning-pack-text.exe" "$PWD\build\pack" learning-pack.json "verified body search"
+$LASTEXITCODE
+&amp; ".\build\umicom-learning-pack-text.exe" "$PWD\build\pack" learning-pack.json "argc &lt; 3"
+$LASTEXITCODE</code></pre>
+<p>The first search should include resource guide. The second should include inspector, where the actual C program checks its argument count. Both commands should exit with zero. A zero-result search can also succeed: it means the search completed without finding the phrase.</p>
+<p>A missing installed symbol may indicate headers and libraries from different builds. Use a matching installed SDK. Do not conceal the mismatch by borrowing source-tree headers. The native catalogue also exposes Search inside guides and examples. Search text reuses the snapshot, Refresh search rebuilds it, and Read result rechecks the file before opening it. Read result now selects the first matching passage after verifying the file and its UTF-8 position. Use current-document Find for later occurrences. If the file changed, the previous document and selection remain available. Back, Forward and Reload navigate resources without replaying a search highlight.</p>
+<h2>8. Recheck a selected result</h2>
+<p>Change an example file after building the index. The existing in-memory result still describes the earlier bytes. That is expected snapshot behaviour.</p>
+<p>Before opening a result, use <code>UmiLearningReaderCreateFromShelf</code> with its pack ID, pack revision, resource ID and expected digest. The reader checks the current selection and bytes. A changed file must be refused rather than highlighted using stale offsets.</p>
+<p>A generation number tracks changes within a shelf's lineage. Two unrelated shelves may have the same generation number. That number is not a global identity or an authentication token.</p>
+<h2>9. Practise and explain</h2>
+<p>Find a function name in an example, then locate it in the source. Compare the returned byte range with the characters you see. Next search for a phrase in an HTML paragraph and explain why its offset differs from the raw HTML position.</p>
+<p>Draw three boxes labelled shelf, index and results. Mark the moment each can be destroyed. Explain why keeping results does not require keeping all source files open.</p>
+<p>Finally, imagine a pack with two valid guides and one changed source example. Should the new index appear complete? It should be refused, while the application can retain an earlier accepted index and explain the failure.</p>
+<p>Shared services make the workflow predictable. Callers still need to respect lifetimes, represent incomplete results honestly, and verify selected content before using an old range.</p>
+<p><a href="25-validate-a-tool-connection.html">Previous: Validate a tool connection</a> · <a href="../index.html">Course contents</a></p>
+<p>Sammy Hegab · Umicom Foundation · MIT</p><p>Next: <a href="27-open-search-results-without-losing-your-place.html">Open search results without losing your place</a>.</p><section aria-label="Apply the idea"><h2>Apply the idea</h2><details>
+<summary>Open a result after the file changes</summary>
+<p>A result names a matching phrase from an accepted index. The file changes before the learner selects it. Is the old matching range sufficient permission to open and highlight the new file?</p>
+<p><strong>Explanation:</strong> No. Recheck the admitted resource identity and expected digest before accepting the new reader. The index describes an earlier snapshot. If verification fails, retain the previous accepted reader and explain why the selected result cannot be opened.</p>
+</details>
+</section></article></main></body></html>

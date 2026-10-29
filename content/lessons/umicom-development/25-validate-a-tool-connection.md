@@ -1,5 +1,7 @@
 # Validate a tool connection
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/examples/language_lifecycle/main.c). Match its revision to your checkout before comparing behavior.
+
 
 An editor can ask another program for information about source code. For example, Umicom Studio IDE can use Framework language services to request a definition location or a list of completion suggestions. Before sending document content, the two programs need to establish what messages they understand. This lesson follows that conversation and explains why receiving an answer is different from accepting a valid answer.
 
@@ -179,3 +181,16 @@ After proving used is within capacity, subtraction gives a valid remaining-space
 [Previous: Find text with shared Framework services](24-find-text-with-shared-services.md) · [Course contents](index.md)
 
 
+
+Sammy Hegab · Umicom Foundation · MIT
+
+
+[Next: Search verified learning resources](26-search-verified-learning-resources.md)
+
+## Apply the idea
+
+<details>
+<summary>Separate cleanup from a valid reply</summary>
+<p>A server replies to shutdown with an invalid envelope. The application then closes the transport successfully. Which result should its diagnostic retain?</p>
+<p><strong>Explanation:</strong> Retain the protocol failure and record that cleanup completed. Closing a resource prevents a leak; it does not make an invalid response valid. The next connection should begin with its own initialization and request identities.</p>
+</details>

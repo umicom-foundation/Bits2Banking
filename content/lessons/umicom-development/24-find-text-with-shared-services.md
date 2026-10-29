@@ -1,7 +1,12 @@
 # Find text with shared Framework services
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/adapters/gtk4/learning_catalogue_find.c). Match its revision to your checkout before comparing behavior.
 
+
+<!-- Preserved initial caption for review; the same controls now support verified source.
 A long guide needs a way to find a word without reading every paragraph again. In this lesson you will follow a real feature in Umicom Framework: Find in this guide. The native learning catalogue uses the same literal-search service as document editors. This shows how one checked rule can support different applications while each window keeps control of its own state.
+-->
+A long guide needs a way to find a word without reading every paragraph again. In this lesson you will follow a real feature in Umicom Framework: Find in this resource. The native learning catalogue uses the same literal-search service as document editors. This shows how one checked rule can support different applications while each window keeps control of its own state.
 
 
 Read [Introduction to GTK4](05-introduction-to-gtk4.md) and [Preserve structure when reading code](20-preserve-structure-when-reading-code.md) if windows, callbacks or reading models are new. You can complete the paper exercises without building software. The complete console example is in `examples/reading_search` in Framework; the native adapter is `adapters/gtk4/learning_catalogue_find.c`.
@@ -108,11 +113,16 @@ This guard protects the shared destination, not merely the Find button. Otherwis
 
 - Use Find next and Find previous; observe the selected text and wrap message.
 
-- Try a word that is absent. The previous selection should remain. Open a source example: this version reports no structured-guide match instead of searching its fallback notice.
+- <!-- Preserved earlier limitation for review: Try a word that is absent. The previous selection should remain. Open a source example: this version reports no structured-guide match instead of searching its fallback notice. -->Try a word that is absent. The previous selection should remain. Open a verified UTF-8 source example and search for a function name. The reader searches the source snapshot already shown, including its comments. It does not execute it. Image and invalid-text notices remain outside Find.
 
 
 The console example, native interaction and installed-package check answer different questions. A console pass does not prove keyboard focus or window lifetime behaviour. Keep the relevant results with the source revision used for your own build.
 
+
+
+## Source examples use the same search engine
+
+A source example has no HTML projection. The worker first verifies its declared digest and UTF-8 bytes, then transfers the displayed allocation to the reader. Find borrows those owned bytes. Its match offsets are source byte positions; GTK still needs character positions. When navigation succeeds, the next selection replaces that allocation. If verification fails during reload, the previous allocation and revision remain intact. A message explaining invalid text is not the source and is never searched.
 
 ## Check your understanding
 
@@ -132,3 +142,11 @@ No. It enforces this catalogue's supported mutation contract during observable c
 [Previous: Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md) · [Next: Validate a tool connection](25-validate-a-tool-connection.md) · [Course contents](index.md)
 
 Sammy Hegab · Umicom Foundation · MIT.
+
+## Apply the idea
+
+<details>
+<summary>Search after a rejected reload</summary>
+<p>The reader shows source revision A. Reloading revision B fails verification. Which text should Find inspect?</p>
+<p><strong>Explanation:</strong> The accepted text of revision A, if that reader remains open. A failed reload must not pair revision B offsets with revision A text. Search the owned displayed snapshot; do not search the failure notice as if it were source.</p>
+</details>

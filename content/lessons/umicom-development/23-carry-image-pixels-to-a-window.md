@@ -1,5 +1,7 @@
 # Carry image pixels from a worker to a window
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/adapters/gtk4/learning_catalogue_images.c). Match its revision to your checkout before comparing behavior.
+
 A diagram is stored as bytes in a file, but a window needs pixels it can display. A *pixel* is one sample in a rectangular image. This chapter follows the native learning catalogue in Umicom Framework: it reads a verified PNG, decodes it away from the window's event processing, and gives the window its own stable pixel storage.
 
 Read [Introduction to GTK4](05-introduction-to-gtk4.md) and [Keep reading state consistent](17-keep-reading-state-consistent.md) first if callbacks and candidate readers are new. You can follow the explanation without compiling anything. The implementation is in `adapters/gtk4/learning_catalogue_images.c` in your Framework checkout.
@@ -97,3 +99,11 @@ An HTML `img` element can name a source file using `src` and describe its meanin
 The native catalogue lists these references under Reading controls. The learner chooses an illustration and explicitly opens it. `UmiLearningCatalogueGtk4OpenReadingImage` checks the displayed reader's admitted pack, requires the resource kind to be image and refuses fragments, remote addresses and undeclared files. Only then does the existing worker verify and decode bytes. Back returns to the guide. This separates describing an image, admitting a local resource and decoding its pixels into three reviewable steps.
 
 Follow `src/browser/reading_document_builder.c` for metadata ownership and `adapters/gtk4/learning_catalogue_reading.c` for the explicit action. The old text-only description is retained. Pixels are still shown in a separate bounded viewport rather than inserted among paragraphs.
+
+## Apply the idea
+
+<details>
+<summary>Choose who releases the pixels</summary>
+<p>A worker prepares valid pixels, but the learner closes the panel before publication. Should the worker reopen the panel to show the image?</p>
+<p><strong>Explanation:</strong> No. Closing the panel retires its request. Release the prepared result through its current owner and do not create a late visible update. If ownership has already transferred to reference-counted bytes, release that reference instead of freeing the same allocation separately.</p>
+</details>

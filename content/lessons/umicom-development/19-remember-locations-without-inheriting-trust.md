@@ -1,5 +1,7 @@
 # Remember locations without inheriting trust
 
+Read the accompanying [Umicom source example](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/teacher/learning_library_choices.h). Match its revision to your checkout before comparing behavior.
+
 <h2>What you will learn</h2>
 <p>Applications often remember a folder that you chose yesterday. Remembering the
 folder is useful, but yesterday's successful read cannot prove that today's files
