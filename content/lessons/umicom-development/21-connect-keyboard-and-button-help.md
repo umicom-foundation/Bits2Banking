@@ -162,3 +162,5 @@ and strongly held only while a request is being admitted.</p></details>
 <li><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/learning_pack/test_help_binding_gtk4.c">Help regression scenarios</a></li></ul>
 
 [Previous: Preserve structure when reading code](20-preserve-structure-when-reading-code.md) · [Course index](index.md)
+
+[Next: Follow protocol message boundaries](22-follow-protocol-message-boundaries.md)

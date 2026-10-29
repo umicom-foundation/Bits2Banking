@@ -1,0 +1,177 @@
+# Follow protocol message boundaries
+
+<h2>What you will learn</h2>
+<p>When Umicom Studio asks a language server for suggestions, the answer arrives as
+bytes through a connection between programs. A <em>byte</em> is a small unit of
+stored information. A <em>stream</em> is a sequence of bytes arriving over time.
+The operating system can deliver part of a message, one complete message, or
+several messages in one read. A program must identify the message boundaries
+itself. In this lesson you will follow that job through the real Framework
+framer used by language services and the debugger.</p>
+<p>You can begin with paper and the diagrams. The practical example needs an
+installed Umicom Framework SDK and the C tools from the Windows development
+guide. SDK means <em>software development kit</em>: the headers, libraries and
+build information needed to use Framework from another project. No account,
+network server or live project data is needed for this example.</p>
+
+<h2>1. Separate a message from a read</h2>
+<p>A read operation asks a connection for bytes that are available now. It does
+not promise a whole answer. Imagine the sender writes this small frame:</p>
+<pre><code>Content-Length: 2\r\n\r\n{}</code></pre>
+<p>The characters <code>\r\n</code> in this illustration stand for two actual
+control bytes: carriage return and line feed. They mark the end of a header
+line. A second pair creates the blank line between the header and the body.
+The body is <code>{}</code>, an empty JSON object. JSON is a text format for
+values and named fields. This body is two bytes long because each brace uses
+one byte in UTF-8.</p>
+<figure><svg viewBox="0 0 720 205" role="img" aria-labelledby="frames-title frames-desc" style="max-width:100%;height:auto">
+<title id="frames-title">Reads and message boundaries are different</title>
+<desc id="frames-desc">The sender writes one frame. The receiver first gets Content-, then the rest of the header and an opening brace, then the closing brace. Only the final read completes the message.</desc>
+<rect x="15" y="12" width="690" height="44" rx="7" fill="#18384d"/><text x="32" y="40" fill="white" font-size="17">One frame: Content-Length: 2 + blank line + {}</text>
+<rect x="15" y="85" width="160" height="47" rx="6" fill="#dceaf2"/><text x="28" y="115" font-size="17">Read 1: Content-</text>
+<rect x="190" y="85" width="360" height="47" rx="6" fill="#dceaf2"/><text x="203" y="115" font-size="17">Read 2: Length: 2 + blank line + {</text>
+<rect x="565" y="85" width="140" height="47" rx="6" fill="#d9eee1"/><text x="578" y="115" font-size="17">Read 3: }</text>
+<text x="20" y="177" font-size="17">Keep the bytes between calls.</text><text x="425" y="177" font-size="17">Now the message is complete.</text>
+</svg><figcaption>The frame stays the same even when the operating system chooses different read sizes.</figcaption></figure>
+
+<h2>2. Understand the three stages</h2>
+<p>The <em>transport</em> moves bytes. The <em>framer</em> finds a header and the
+announced number of body bytes. The <em>message parser</em> understands the JSON
+fields, such as the request number and result. These are different jobs. A
+complete zero-byte frame is possible at the framing layer, but an empty body is
+not a valid JSON response. Separating the jobs lets several applications reuse
+the same byte-handling code.</p>
+<ol>
+<li><code>umi_language_runtime_framer_feed</code> adds a fragment to owned storage.
+An OK result means the fragment was accepted; it does not mean a whole message
+has arrived.</li>
+<li><code>umi_language_runtime_framer_status</code> reports OK for a complete
+frame, NOT_FOUND when more bytes are needed, or an error when the buffered
+header is malformed.</li>
+<li><code>umi_language_runtime_framer_pop</code> copies one complete body into
+caller-owned storage and removes that frame from the queue.</li>
+</ol>
+<p>A queue is an ordered collection: the first complete message is delivered
+first. After popping a message, inspect the framer again before waiting for more
+input. Another complete message, or a malformed next header, may already be
+buffered.</p>
+
+<h2>3. Count bytes, not visible letters</h2>
+<p>UTF-8 represents text using one or more bytes for each character. The letter
+<code>é</code> uses two bytes. Therefore the JSON text
+<code>{"text":"é"}</code> occupies 13 bytes, even though it has fewer visible
+characters. Content-Length describes those bytes. It does not count the header
+or a C string's final zero byte.</p>
+<p>A C string usually ends with a zero byte, written <code>'\0'</code>. Framework
+reserves room for that marker when it returns text. If a body has two bytes,
+the output array needs at least three slots. A literal zero byte is refused
+inside incoming JSON text. The six characters <code>\u0000</code> are different:
+they are a JSON escape which the JSON layer interprets.</p>
+
+<h2>4. Check room before touching input</h2>
+<p><code>size_t</code> is C's unsigned type for storage sizes. It has a largest
+representable value. Adding two large sizes can wrap around to a small value.
+For a ten-slot buffer with six occupied slots and one reserved ending slot,
+there are only three free slots. Ask whether the incoming count fits those
+three slots before reading or copying the input.</p>
+<pre><code>if (count &gt; capacity - 1U - used)
+    return UMI_STATUS_CAPACITY_EXCEEDED;</code></pre>
+<p>This calculation assumes that <code>used &lt; capacity</code> was already
+checked. The order matters. Framework validates its stored state first, then
+checks the remaining capacity. A transport callback has a related obligation:
+if it receives an 8,192-byte destination, it cannot claim to have filled 8,193
+bytes. The caller checks that report before inspecting the data.</p>
+<p><em>Ownership</em> means responsibility for keeping memory alive and using only
+the part that belongs to an operation. The framer owns its buffered bytes.
+The caller owns the output body. Output storage must not overlap the framer
+itself. Those separate lifetimes make it possible to retain a partial message
+without borrowing a temporary read buffer.</p>
+
+<h2>5. Keep a good result when the next message is bad</h2>
+<p>Suppose a read contains a valid response followed by a header with
+<code>Content-Length: -1</code>. A negative byte count is not valid here.
+Framework delivers the first response successfully. The next status check
+reports the malformed header without asking the transport for more bytes.</p>
+<p>This detail matters in an IDE. If a valid completion response were consumed
+and then reported as failed because of a later frame, the editor could lose an
+answer it had already received. The receive service also decodes into a
+temporary candidate. Only a complete, valid decoded message replaces the
+caller's previous result. A failed debugger response does not silently consume
+its pending request.</p>
+<p>A malformed complete header remains an error. An application should close and
+reconnect the affected protocol connection rather than repeatedly reading and
+hoping the byte boundary repairs itself. The low-level initializer resets a
+framer for a new stream; it discards its buffered state, so use it deliberately.</p>
+
+<h2>6. Build the small SDK example</h2>
+<p>Open <code>examples/protocol_frames/main.c</code> in the Framework repository.
+It uses the actual public API. It allocates a framer, encodes a JSON response,
+feeds it in two fragments and checks the recovered body. It then feeds a valid
+frame and a malformed successor together. Its checks remain active in optimized
+builds because they are ordinary control flow.</p>
+<ol>
+<li>Install a matching Framework SDK first. The following commands assume its
+folder is <code>C:\umicom\installed\framework</code>. Replace that path if your
+SDK is elsewhere.</li>
+<li>Open PowerShell and configure this small example. The explicit SDK prefix
+prevents accidental selection of a different installation.</li>
+<li>Build the example, run its focused check, then run the executable to read its
+output. Stop if any command fails.</li>
+</ol>
+<pre><code>Set-Location "C:\umicom\Umicom-Applications\framework"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+cmake -S examples/protocol_frames -B build/examples/protocol-frames -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_EXPECTED_SDK_PREFIX=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build build/examples/protocol-frames --parallel 2
+ctest --test-dir build/examples/protocol-frames --output-on-failure --no-tests=error
+&amp; ".\build\examples\protocol-frames\umicom-protocol-frames.exe"</code></pre>
+<p>The expected successful output contains these lines:</p>
+<pre><code>First fragment: more bytes are needed.
+Complete body: {"jsonrpc":"2.0","id":1,"result":null}
+Coalesced input: the valid first body was delivered.
+Next header: malformed; no extra read is needed.</code></pre>
+<p>This is expected output, not a claim that your machine has run the example.
+Record the actual command result and SDK revision. A missing
+<code>umi_language_runtime_framer_status</code> declaration or linker symbol
+means the example and SDK are from different revisions; update the SDK before
+retrying. A toolchain metadata error means the SDK was built for a different
+environment. Do not hide either mismatch by copying headers into the example.</p>
+
+<h2>7. Follow the production paths</h2>
+<ul>
+<li><code>include/umicom/language_runtime/framing.h</code> defines the public
+contract.</li>
+<li><code>src/language_runtime/framing.c</code> owns buffered bytes and parses
+headers.</li>
+<li><code>src/language_runtime/server.c</code> receives and correlates language
+responses.</li>
+<li><code>src/debug_runtime/adapter.c</code> uses the same framing for debugger
+messages.</li>
+<li><code>tests/language_runtime/test_framing_boundaries.c</code> covers
+fragmentation, refused counts, character encoding and queued messages.</li>
+<li><code>tests/debug_runtime/test_receive_boundaries.c</code> checks output and
+pending-request ownership when a transport or message fails.</li>
+</ul>
+<p>Run the full integration checks when changing protocol services. Passing the
+small console example alone does not establish that a native process launches,
+that a GUI remains responsive, or that every language server works.</p>
+
+<h2>Practice and review</h2>
+<ol>
+<li>Draw three different ways to split the same encoded frame. Explain why each
+must produce the same body.</li>
+<li>Change the first fragment size in a practice copy from seven bytes to one.
+Predict the output before rebuilding.</li>
+<li>Explain why an OK feed result and an OK pop result establish different
+facts.</li>
+<li>For an output array of eight bytes, what is the largest NUL-terminated body
+it can hold? Answer: seven bytes.</li>
+<li>Why must a custom transport's reported count be checked? Because a count
+does not enlarge the destination memory it was given.</li>
+<li>Why inspect status after popping? The next result may already be buffered,
+so another blocking read could be unnecessary or wrong.</li>
+</ol>
+
+
+[Previous: Connect keyboard and button help](21-connect-keyboard-and-button-help.md) · [Course contents](index.md)
+
+[Next: Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md)

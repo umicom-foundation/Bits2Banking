@@ -37,6 +37,8 @@ If folders, programs or commands are unfamiliar, start with [Introduction to Com
 
 21. [Connect keyboard and button help](21-connect-keyboard-and-button-help.md)
 
+22. [Follow protocol message boundaries](22-follow-protocol-message-boundaries.md)
+
 ## Prepare for the practical examples
 
 Use the [Windows development guide](../../umicom/windows-development.md) for the supported tools, repository-specific presets, SDK installation, logs and recovery steps. The console lab needs an installed Framework SDK; the optional window also needs GTK4. Reading and paper tracing do not need either installation.
@@ -44,3 +46,5 @@ Use the [Windows development guide](../../umicom/windows-development.md) for the
 The example is an exercise counter, not a complete application framework. Its six logic checks and its manual window checks cover different behaviour. Follow them separately and keep their results.
 
 [Browse the course pages](../../courses/umicom-development/index.html) · [Connected learning paths](../../start/systems-learning.md) · [Umicom source lessons](../06-umicom/index.md)
+
+- [Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md)
