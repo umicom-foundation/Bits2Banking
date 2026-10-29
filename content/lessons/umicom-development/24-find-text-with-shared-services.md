@@ -129,6 +129,6 @@ There are only two visible matches. Its start is after the second, so the permit
 No. It enforces this catalogue's supported mutation contract during observable changes. It does not validate arbitrary external edits to its widgets or make the whole application memory-safe.
 
 
-[Previous: Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md) · [Course contents](index.md)
+[Previous: Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md) · [Next: Validate a tool connection](25-validate-a-tool-connection.md) · [Course contents](index.md)
 
 Sammy Hegab · Umicom Foundation · MIT.

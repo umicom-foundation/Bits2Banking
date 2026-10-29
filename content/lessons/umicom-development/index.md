@@ -50,3 +50,5 @@ The example is an exercise counter, not a complete application framework. Its si
 - [Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md)
 
 - [Find text with shared Framework services](24-find-text-with-shared-services.md)
+
+- [Validate a tool connection](25-validate-a-tool-connection.md)
