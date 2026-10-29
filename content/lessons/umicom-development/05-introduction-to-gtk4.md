@@ -18,7 +18,7 @@ GTK handles the platform's window and input events. The application supplies cal
 
 ## Read the activation path
 
-Open [window.c](../../../labs/native/framework-activity/window.c).
+Open [window.c](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c).
 
 main creates a GtkApplication and connects its activate signal to Activate. g_application_run starts the event loop. An event loop waits for input and dispatches work to the connected callbacks. When the application exits, main releases its reference.
 
@@ -68,3 +68,5 @@ For the original toolkit explanation, see [GTK's getting-started guide](https://
 Return to [the development course contents](index.md) or explore [Umicom OS from Scratch](../../courses/umicom-os-from-scratch/index.html).
 
 [Course contents](index.md)
+
+[Next lesson: Use an installed Framework SDK](06-use-an-installed-sdk.md)

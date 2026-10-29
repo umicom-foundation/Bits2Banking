@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Use an installed Framework SDK | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="prev" href="05-introduction-to-gtk4.html">
+<link rel="next" href="07-build-only-what-changed.html">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">All courses</a><a href="../../learning-c/index.html">Learning C</a><a href="../../learning-paths.html">Learning map</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Use an installed Framework SDK</h1>
+<p>Read after <a href="05-introduction-to-gtk4.html">the previous lesson</a>. Reading the examples needs no new software installation. Practical steps use <a href="../../../umicom/windows-development/">the Windows setup guide</a>.</p>
+<h2>What an SDK contains</h2>
+<p>An application does not need to contain a separate copy of every reusable function. An SDK, or software development kit, supplies the files another project needs to use those functions. Umicom Framework's SDK contains headers, compiled libraries, and CMake package files. These are different kinds of files with different jobs.</p>
+<table><thead><tr><th>File</th><th>Its job</th><th>When it is used</th></tr></thead><tbody><tr><td>Header (.h)</td><td>Declares names, types and function interfaces.</td><td>The compiler reads it while translating your C source.</td></tr><tr><td>Library (.a or .lib)</td><td>Contains compiled implementations.</td><td>The linker combines the required implementations with your program.</td></tr><tr><td>Package configuration (.cmake)</td><td>Describes library targets and dependencies.</td><td>CMake reads it when configuring the project.</td></tr></tbody></table>
+<p>A declaration is a promise about how a function can be called. The implementation is the code that performs the work. Finding a header does not prove that the corresponding implementation is installed. That is why a program can compile successfully and still fail while linking.</p>
+<h2>Follow one real consumer</h2>
+<p>Read <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/examples/component_integration/client/CMakeLists.txt">the independent component consumer</a> and <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/examples/component_integration/main.c">its complete C source</a>. It uses a fictional market tape, a historical replay, and broker connection settings. It opens no broker connection and submits no real order.</p>
+<pre><code class="language-cmake">target_link_libraries(umicom-components-client PRIVATE
+    Umicom::market_tape Umicom::research_replay Umicom::ibkr_connection)</code></pre>
+<p>The first name identifies the program being linked. The three Umicom names identify Framework components. PRIVATE means these are dependencies of this program; it is not publishing a library interface for another program to inherit. A target is a named build item, not a folder and not a command to run immediately.</p>
+<pre><code class="language-text">your main.c
+    | compiler reads public headers
+    v
+compiled main object
+    | linker resolves Framework functions
+    v
+program + required Framework libraries</code></pre>
+<h2>Choose one installation deliberately</h2>
+<p>An installation prefix is the root folder selected when installing an SDK. A package folder lies below it, often under lib/cmake/UmicomFramework. A computer may have several installations. Supplying CMAKE_PREFIX_PATH normally guides the search; it does not by itself prove which package was selected.</p>
+<ol>
+<li>Complete the Windows tools and SDK installation steps in the setup guide. Use an installation compatible with the compiler and target architecture of your consumer.</li>
+<li>Open the consumer's CMakeLists.txt. Find find_package and its requested components. A required component must be available before configuration can finish.</li>
+<li>For the integration laboratory, set UMICOM_EXPECTED_SDK_PREFIX to the exact installation being checked. The laboratory's installed case supplies this automatically.</li>
+<li>After configuration, inspect sdk-origin.txt in that consumer's build folder. It records the selected prefix and package configuration. It does not claim a successful build or execution.</li>
+<li>Build the consumer, then run its registered test. If configuration or linking fails, fix that stage before interpreting any old executable as the new result.</li>
+</ol>
+<p>The full SDK also offers umicom_require_installed_sdk. Its layout check follows transitive Framework dependencies: libraries needed by other libraries. If the broker component needs platform storage services, those services must also come from the selected SDK. The full contract additionally checks the public-header identity. The smaller component laboratory deliberately checks a subset and reports that limit.</p>
+<h2>Recognise a mixed installation</h2>
+<p>An ABI, or application binary interface, describes how compiled code exchanges arguments, values and data layouts. Two headers can look similar while describing incompatible binary layouts. Matching file names, or a package version string alone, is not enough to prove compatibility.</p>
+<p>If an archive is missing, inspect the installation log. If a Framework dependency points into a source build, inspect the exported target metadata. If the header identity differs, use a fresh complete installation from the matching build. Do not copy a random archive into the folder merely to make the error disappear.</p>
+<details><summary>Check your understanding</summary><p>The compiler finds a declaration for UmiMarketTapeCreate, but the linker cannot find its implementation. Which SDK part should you investigate?</p><p><strong>Answer:</strong> Investigate the compiled library and its link dependencies. Rewriting the header does not supply the missing implementation. Check the requested package, installed archive, target linkage and matching build configuration.</p></details>
+<p>Continue with <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/guides/inspecting-an-installed-sdk.html">the Framework SDK inspection guide</a>. Reading this lesson and inspecting paths do not qualify an SDK for production use.</p>
+<nav aria-label="Lesson navigation"><p><a href="05-introduction-to-gtk4.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="07-build-only-what-changed.html">Next lesson</a></p></nav>
+</article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original learning material.</p></div></footer></body></html>

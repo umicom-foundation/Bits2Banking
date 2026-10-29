@@ -8,15 +8,54 @@ CONTENT = ROOT / 'content'
 LINK_RE = re.compile(r'(?<!!)\[[^\]]+\]\(([^)]+)\)|!\[[^\]]*\]\(([^)]+)\)')
 
 
+def numbered_lessons(content=CONTENT):
+    """Read the complete ordinal; independent courses may restart at lesson one."""
+    return sorted(page for page in (content / 'lessons').glob('*/*.md')
+                  if re.match(r'^[0-9]+-', page.name))
+
+
+def lesson_number_errors(chapters):
+    """The seven foundational sections share one sequence; other courses own theirs."""
+    groups = {}
+    for page in chapters:
+        number = int(re.match(r'^([0-9]+)-', page.name).group(1))
+        section = page.parent.name
+        namespace = 'foundation' if re.match(r'^0[1-7]-', section) else section
+        groups.setdefault(namespace, {}).setdefault(number, []).append(page)
+    errors = []
+    for namespace, numbers in sorted(groups.items()):
+        for number, pages in sorted(numbers.items()):
+            if number < 1 or len(pages) != 1:
+                errors.append(f'{namespace}: invalid or duplicate lesson {number}: '
+                              + ', '.join(str(page) for page in pages))
+    foundation = groups.get('foundation', {})
+    if len(foundation) < 34:
+        errors.append(f'Expected at least 34 foundational lessons; found {len(foundation)}')
+    # Compare sorted neighbours instead of allocating an array up to a pathname's
+    # number. A malformed, extremely large ordinal must not exhaust the checker.
+    for expected, actual in enumerate(sorted(foundation), start=1):
+        if actual != expected:
+            errors.append(f'Foundational lesson sequence: expected {expected}, found {actual}')
+            break
+    return errors
+
+
 def collect_errors():
     errors = []
-    chapters = sorted((CONTENT / 'lessons').glob('*/[0-9][0-9]-*.md'))
-    diagrams = sorted((CONTENT / 'assets' / 'diagrams').glob('*.svg'))
-    if len(chapters) < 34:
-        errors.append(f'Expected at least 34 numbered lessons; found {len(chapters)}')
-    numbers = sorted(int(page.stem[:2]) for page in chapters)
-    if numbers and numbers != list(range(1, len(numbers) + 1)):
-        errors.append('Lesson numbers must be unique and continuous from 1')
+    # Retained for review: the former global two-digit sequence mixed
+    # independent courses and omitted lesson 100 onward. Scoped ordinals below
+    # preserve duplicate and missing-chapter detection without that assumption.
+    if False:
+        chapters = sorted((CONTENT / 'lessons').glob('*/[0-9][0-9]-*.md'))
+        diagrams = sorted((CONTENT / 'assets' / 'diagrams').glob('*.svg'))
+        if len(chapters) < 34:
+            errors.append(f'Expected at least 34 numbered lessons; found {len(chapters)}')
+        numbers = sorted(int(page.stem[:2]) for page in chapters)
+        if numbers and numbers != list(range(1, len(numbers) + 1)):
+            errors.append('Lesson numbers must be unique and continuous from 1')
+    chapters = numbered_lessons()
+    diagrams = sorted((CONTENT / "assets" / "diagrams").glob("*.svg"))
+    errors.extend(lesson_number_errors(chapters))
     if len(diagrams) < 17:
         errors.append(f'Expected at least 17 diagrams; found {len(diagrams)}')
     if list(CONTENT.rglob('*.class')):

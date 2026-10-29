@@ -12,7 +12,7 @@ In the previous lesson, we introduced a run lock based on the dataset's ordered 
 
 To strengthen the identity, we hash the **original imported bytes**, using the immutable in-memory corpus maintained by Umicom Framework. We do not create a second dataset loader or reopen the source files.
 
-![How the immutable corpus feeds SHA-256 source identity](../assets/diagrams/source-snapshot-hashing.svg)
+![How the immutable corpus feeds SHA-256 source identity](../../assets/diagrams/source-snapshot-hashing.svg)
 
 ## What exactly do we hash?
 

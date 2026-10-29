@@ -38,6 +38,6 @@ Sketch the lifecycle: *propose → inspect permission → admit → local work �
 - [Federated Averaging — McMahan et al., AISTATS 2017](https://proceedings.mlr.press/v54/mcmahan17a.html)
 - [Proof of Learning (PoLe)](https://arxiv.org/abs/2007.15145)
 
-[Course learning route](../../courses/distributed-learning/rounds-and-verification.html) · [Native learning job laboratory](../../../labs/native/distributed-learning/federated-job/README.md)
+[Course learning route](../../courses/distributed-learning/rounds-and-verification.html) · [Native learning job laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/distributed-learning/federated-job/README.md)
 
 *Service to Many Leads to Greatness.*

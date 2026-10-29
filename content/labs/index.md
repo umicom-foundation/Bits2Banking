@@ -121,7 +121,7 @@ The [HTTP header-scanner laboratory](https://github.com/umicom-foundation/Bits2B
 
 ## FAT16 learning laboratory
 
-- [Read-only C23 FAT16 image inspector](../../labs/native/fat16-inspector/README.md)
+- [Read-only C23 FAT16 image inspector](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/fat16-inspector/README.md)
 
 
 ## Virtual filesystem laboratories

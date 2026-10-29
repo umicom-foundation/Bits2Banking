@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read build and test evidence | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="prev" href="07-build-only-what-changed.html">
+<link rel="next" href="09-understand-test-commands.html">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">All courses</a><a href="../../learning-c/index.html">Learning C</a><a href="../../learning-paths.html">Learning map</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Read build and test evidence</h1>
+<p>Read after <a href="07-build-only-what-changed.html">the previous lesson</a>. Reading the examples needs no new software installation. Practical steps use <a href="../../../umicom/windows-development/">the Windows setup guide</a>.</p>
+<h2>A result needs an identity</h2>
+<p>A useful result tells you what ran, which source produced it, which tools and configuration were used, and what happened. A green result from an older executable does not establish that today's source works. A failure from an older source tree does not prove that a newly authored fix failed.</p>
+<table><thead><tr><th>Observation</th><th>What it means</th><th>What it does not mean</th></tr></thead><tbody><tr><td>Configure succeeded</td><td>The build description was generated.</td><td>Every source file compiled.</td></tr><tr><td>Build succeeded</td><td>The requested outputs were produced.</td><td>Every runtime workflow works.</td></tr><tr><td>Test passed</td><td>That test's executed checks passed.</td><td>Unexecuted or skipped checks passed too.</td></tr><tr><td>Test skipped</td><td>The check did not provide a pass for that case.</td><td>The feature is qualified on this host.</td></tr><tr><td>Test not run</td><td>The test could not be executed as requested.</td><td>A test assertion passed or failed.</td></tr></tbody></table>
+<h2>Capture a small, useful record</h2>
+<ol>
+<li>Use a log folder outside the public source repositories for local execution records. Give each run a distinct name so a later attempt does not replace the earlier evidence.</li>
+<li>Record the source revision and any local changes, the preset, tool versions, and the exact command. Do not put credentials or private account information into logs.</li>
+<li>Run configuration before building when needed. Check each command's outcome before starting the next stage.</li>
+<li>Read the first concrete diagnostic and the nearby context. The final message 'build failed' identifies the outcome, not necessarily its cause.</li>
+<li>Keep the original failure and the later rerun. Record a proposed fix as awaiting validation until the rerun identifies the actual fixed source and environment.</li>
+</ol>
+<p>Tee-Object displays command output and writes a copy to a file in PowerShell. It does not make a failed native command stop every following line automatically. CTest's --output-log writes test output to the selected file. A log file existing is not proof that the command completed successfully.</p>
+<h2>Trace a real text-boundary failure</h2>
+<p>Read <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/testing/reuse.c">the Framework receipt importer</a> and <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/test_reuse/check_receipt_file.cmake">its file-boundary cases</a>. Text can use LF or CRLF to mark the end of a line. LF is a line-feed byte; CRLF is a carriage-return byte followed by a line-feed byte. A parser that accepts only LF can reject a valid file written with CRLF.</p>
+<pre><code class="language-text">LF text:       record bytes  [LF]
+CRLF text:     record bytes  [CR][LF]
+Damaged text:  record bytes  [CR]  more record bytes</code></pre>
+<p>The repair accepts complete CRLF pairs while retaining validation of the record contents. A carriage return appearing alone is still rejected. Duplicate identities, truncated records and embedded zero bytes remain invalid. Accepting a common line ending does not justify accepting arbitrary damaged evidence.</p>
+<p>The important regression cases sit at the file boundary as well as the in-memory parser boundary. That exercises the producer's output and the consumer's input together. A unit test containing only a hand-written LF string would not expose the same producer/consumer mismatch.</p>
+<h2>Decide what to run again</h2>
+<p>After a local repair, run the regression checks that demonstrate the original failure and important nearby boundaries. Also account for other consumers affected by the change. A parser fix needs valid-input cases and invalid-input cases; accepting everything would make one failure disappear by weakening the contract.</p>
+<p>Keep skipped coverage visible with a reason and a suitable host or capability requirement. If a native window check needs a graphical session, record that requirement. Do not relabel the skip as a pass, or disable the check just to improve a percentage.</p>
+<details><summary>Check your understanding</summary><p>A test suite reports 99% passed but one installed-consumer test failed. Can the installed SDK be marked complete?</p><p><strong>Answer:</strong> No. The overall percentage does not replace that consumer's acceptance condition. Inspect its configuration, compile, link or runtime failure, repair the cause, and rerun against the identified installation.</p></details>
+<p>For practice, take a non-sensitive local test log and write four lines: source identity, command, observed result, and next investigation. If any identity is unknown, write 'unknown' rather than guessing. Keep that working record private; public guides should teach the workflow without publishing personal machine or account details.</p>
+<nav aria-label="Lesson navigation"><p><a href="07-build-only-what-changed.html">Previous lesson</a> · <a href="09-understand-test-commands.html">Next lesson</a> · <a href="../index.html">Course contents</a></p></nav>
+</article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original learning material.</p></div></footer></body></html>

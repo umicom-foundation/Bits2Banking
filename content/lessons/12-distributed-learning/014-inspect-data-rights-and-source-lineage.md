@@ -37,6 +37,6 @@ Sketch the lifecycle: *propose → inspect permission → admit → local work �
 
 - [DataComp-LM: Designing a Benchmark for Language Model Data](https://arxiv.org/abs/2406.11794)
 
-[Course learning route](../../courses/distributed-learning/rounds-and-verification.html) · [Native learning job laboratory](../../../labs/native/distributed-learning/federated-job/README.md)
+[Course learning route](../../courses/distributed-learning/rounds-and-verification.html) · [Native learning job laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/distributed-learning/federated-job/README.md)
 
 *Service to Many Leads to Greatness.*

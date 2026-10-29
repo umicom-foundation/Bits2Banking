@@ -37,6 +37,6 @@ Sketch the lifecycle: *propose → inspect permission → admit → local work �
 
 - [DiLoCo — Distributed Low-Communication Training](https://arxiv.org/abs/2311.08105)
 
-[Course learning route](../../courses/distributed-learning/rounds-and-verification.html) · [Native learning job laboratory](../../../labs/native/distributed-learning/federated-job/README.md)
+[Course learning route](../../courses/distributed-learning/rounds-and-verification.html) · [Native learning job laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/distributed-learning/federated-job/README.md)
 
 *Service to Many Leads to Greatness.*

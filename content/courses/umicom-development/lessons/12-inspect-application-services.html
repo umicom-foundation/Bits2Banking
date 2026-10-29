@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect application services | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="prev" href="11-register-shared-services.html"><link rel="next" href="13-build-an-offline-learning-reader.html"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">All courses</a><a href="../../learning-c/index.html">Learning C</a><a href="../../learning-paths.html">Learning map</a></nav></div></header><main id="main" class="simple-page"><article><h1>Inspect application services</h1><h2>What you will learn</h2>
+<p>In the previous lesson, a service registry connected a name with a shared object.
+This lesson asks a different question: how can a screen display information about
+those services without keeping their memory alive or accidentally reading old
+storage? You will follow the real Framework service registry and Studio's native
+state tool. You can read the code and draw the memory relationships on paper
+before installing any development tools.</p>
+<h2>1. Separate an object from information about it</h2>
+<p>A service object does work. For example, a document store holds editable
+documents, and a task queue schedules background jobs. Information <em>about</em>
+an object is called metadata. A service's identifier, provider, version and policy
+flags are metadata. They help us describe an object but do not perform its work.</p>
+<p>Think about an application service named <code>example.counter</code> in
+Framework's <code>examples/service_composition</code> directory. Its object holds a
+number. Its provider identifier tells us which module supplied it. A diagnostic
+view can display the provider's name without holding the counter itself.</p>
+<figure><svg viewBox="0 0 840 200" role="img" aria-labelledby="snapshot-title snapshot-description" style="width:100%;height:auto">
+<title id="snapshot-title">A borrowed descriptor and a metadata copy have different lifetimes</title>
+<desc id="snapshot-description">A registry owns an entry that points to a service object. A diagnostic view owns a separate copy of the entry's names, version and flags. Removing the entry does not erase the copy, and the copy does not keep the service alive.</desc>
+<g fill="#e7f1f5" stroke="#245b75" stroke-width="2"><rect x="10" y="20" width="240" height="115" rx="8"/><rect x="300" y="20" width="240" height="115" rx="8"/><rect x="590" y="20" width="240" height="115" rx="8"/></g>
+<g font-family="system-ui" font-size="17" text-anchor="middle" fill="#132b38"><text x="130" y="53">Registry entry</text><text x="130" y="84">Names + object pointer</text><text x="130" y="113">Registry-owned storage</text><text x="420" y="53">Service object</text><text x="420" y="84">State + operations</text><text x="420" y="113">A separate lifetime</text><text x="710" y="53">Diagnostic copy</text><text x="710" y="84">Names + version + flags</text><text x="710" y="113">View-owned storage</text><text x="420" y="173">A copy describes an earlier observation; it does not retain the object.</text></g>
+<path d="M250 70H300" fill="none" stroke="#245b75" stroke-width="3"/>
+</svg><figcaption>Ownership determines how long memory remains valid. A descriptive copy has its own storage.</figcaption></figure>
+<h2>2. Understand a borrowed pointer</h2>
+<p>A pointer is a value that identifies a location in memory. When
+<code>umi_service_registry_find</code> returns a descriptor pointer, the caller
+borrows a location owned by the registry. Borrowing does not allocate another
+descriptor and does not transfer responsibility for freeing it.</p>
+<p>The registry stores entries in an array: a sequence of positions. Removing an
+entry can move later entries forward to fill the gap. Replacing an entry can
+change its contents. Releasing the registry frees its storage. A borrowed pointer
+must not be kept and used across those changes. Even a pointer that still points
+inside allocated memory might now describe another entry.</p>
+<p>Writing <code>UmiServiceDescriptor saved = *found;</code> copies the descriptor
+structure, but its string and service pointers still refer to other storage.
+The star reads the object at <code>found</code>; it does not recursively copy all
+the objects reached through that structure. This is why copying a pointer and
+copying the characters it points to are different operations.</p>
+<h2>3. Read Framework's metadata type</h2>
+<p>Open <code>include/umicom/runtime/service_registry.h</code> in the Framework
+checkout. Find <code>UmiServiceSnapshot</code>. Its service and provider names are
+character arrays inside the structure. The version consists of three numbers.
+Flags are an integer containing policy bits. There are no object pointers or
+destructor callbacks in this type.</p>
+<p>The word <em>snapshot</em> means a recorded observation. It does not mean that
+the whole application stopped changing. Once Framework returns the copy, the
+registry may change later while your copied characters stay the same. This is
+useful for rendering a report, but you must make a fresh request before relying
+on current service availability.</p>
+<h2>4. Follow a checked copy</h2>
+<pre><code>UmiServiceSnapshot description;
+UmiStatus status = UmiServiceRegistryCopySnapshot(
+    registry, "example.counter", "example.counter.provider", &amp;description);
+if (status == UMI_STATUS_OK) {
+    printf("%s comes from %s\n",
+        description.service_id, description.provider_module_id);
+}</code></pre>
+<p><code>description</code> is local storage for the result. The ampersand in
+<code>&amp;description</code> gives Framework its address so the function can fill it.
+<code>status</code> receives the outcome of the request. The two equals signs
+compare that outcome with the success value; they do not assign a new value.</p>
+<p>Only the success branch prints the names. A missing record returns
+<code>UMI_STATUS_NOT_FOUND</code> and leaves the output unchanged. Because this
+local variable was not initialised earlier, reading its fields after failure
+would be wrong. Error handling controls which values are valid to use.</p>
+<p>The example supplies a provider explicitly. Passing <code>NULL</code> instead
+means no specific provider was requested: the first matching registration is
+chosen. It does not ask Framework to find the newest or healthiest provider.</p>
+<h2>5. Capacity is not the same as the total</h2>
+<p>A list needs an array and a limit. If your array has eight positions, you can
+store at most eight snapshots. The registry may contain eleven. Framework's list
+copy can fill the first eight, return <code>UMI_STATUS_CAPACITY_EXCEEDED</code> and
+tell you that the total is eleven. Those eight rows remain useful, provided the
+view clearly says the list is incomplete.</p>
+<pre><code>UmiServiceSnapshot rows[8];
+size_t total = 0U;
+UmiStatus status = UmiServiceRegistryCopySnapshots(registry, rows, 8U, &amp;total);
+if (status == UMI_STATUS_OK || status == UMI_STATUS_CAPACITY_EXCEEDED) {
+    size_t visible = total &lt; 8U ? total : 8U;
+    for (size_t index = 0U; index &lt; visible; ++index)
+        printf("%s\n", rows[index].service_id);
+}</code></pre>
+<p><code>size_t</code> is the C type used for object sizes and array counts.
+The suffix <code>U</code> marks an unsigned integer literal. The expression
+<code>condition ? first : second</code> chooses one of two values: here it chooses
+the smaller of the reported total and the array capacity. The loop starts at
+position zero, checks the limit before each read and adds one to the index after
+each iteration.</p>
+<p>Using <code>index &lt; total</code> would read beyond this array when eleven
+services exist. That is a memory-safety defect, even if the first eight rows were
+copied correctly. Always keep the storage capacity alongside the returned count.</p>
+<p>A count-only request uses <code>NULL, 0U, &amp;total</code>. Allocating an array
+after that request does not freeze the registry. A second request can observe a
+larger count. Handle that possibility rather than assuming two calls saw the
+same moment.</p>
+<h2>6. Know what a mutex protects</h2>
+<p>A mutex coordinates access to shared state so cooperating operations do not
+change it simultaneously. The copied list and its total are read under the same
+registry mutex. Registration and removal use that mutex too. The result therefore
+describes one consistent registry observation.</p>
+<p>The mutex does not extend the lifetime of the registry object itself.
+The owner must keep the registry alive while the call runs and exclude other
+operations before releasing it. It also does not make every registered service
+thread-safe. A service's own operations need their own contract.</p>
+<h2>7. Trace Studio's real reporting path</h2>
+<ol><li>Open Studio's <code>include/umicom/studio/state.h</code> and find
+<code>UmiStudioStateCopyServices</code>.</li>
+<li>Read its implementation in <code>src/app/state.c</code>. It obtains the registry
+from Studio's bootstrap and delegates copying to Framework.</li>
+<li>Read <code>PrintServices</code> in <code>src/tools/state_main.c</code>. It owns the
+output array, prints metadata and frees the array when finished.</li>
+<li>Find the <code>--services</code> command-line branch. Follow the checked bootstrap
+release at the end: printing a report does not remove the need to stop workers and
+close session state.</li></ol>
+<p>After building the updated state tool, run
+<code>umicom-studio-state --services</code> from an intended working directory.
+Use the full executable path when it is not on your process search path.
+The tool starts its own Studio composition and may create its normal local
+session files. It is not a remote inspector for an already open IDE.</p>
+<p>Each row prints an identifier, provider, version and hexadecimal flags.
+Flags describe policies such as ownership and singleton registration; they are
+not a health score. The tool writes control characters in identifiers as visible
+escape sequences so records do not unexpectedly split across console lines.</p>
+<h2>8. Read the regression checks</h2>
+<p>Framework's <code>tests/test_service_snapshots.c</code> checks copies before and
+after removal, replacement and release. It also checks short output buffers and
+read-only inspection from a service destructor. Studio's
+<code>tests/test_service_discovery.c</code> checks the application wrapper, while
+<code>tests/check_service_inventory.cmake</code> checks the native console's exit
+status and row count.</p>
+<p>Study why the C tests keep assertions enabled even in release builds.
+An assertion is a check which stops the test when a condition is false.
+If a build removes assertion expressions that also perform setup, the intended
+experiment does not run at all. The installed module composition example uses
+explicit status checks instead. Both approaches require actual execution before
+you can report a pass.</p>
+<h2>Count without copying every name</h2>
+<p>A status bar may need only the number of services, not a full list. Framework provides <code>UmiServiceRegistryCopySummary</code> for that case. It fills a small structure with the total and four policy counts under one lock. The runtime inventory uses this operation, so its service total and service flag counts describe the same observation without allocating a large array.</p>
+<p>A prefix is the beginning of a name. <code>UmiServiceRegistryCountPrefix</code> can count names beginning with <code>example.</code>. An empty prefix matches all rows. If two providers publish the same service identifier, they are two registrations and count twice. Counting unique names would be a different question.</p>
+<p>These service operations do not freeze other registries. An application report may also read commands and capabilities; its owner must follow those registry access rules. Be precise about what one observation covers before describing a report as consistent.</p>
+<h2>Check your understanding</h2>
+<ol><li>Can a copied provider name keep the provider's service object alive?</li>
+<li>Why does copying a descriptor structure not necessarily copy its strings?</li>
+<li>Your array holds eight rows and the total is eleven. How many rows can you read?</li>
+<li>Does a snapshot taken before shutdown prove that a service is running now?</li>
+<li>What must remain alive while the copy operation locks the registry?</li></ol>
+<details><summary>Compare your answers</summary><p>No: metadata and object lifetime
+are separate. A descriptor can contain pointers whose target storage is not copied.
+Read eight rows and report an incomplete list. An earlier snapshot cannot prove
+current availability. The registry owner must remain valid throughout the call.</p></details>
+<p>For a practical paper exercise, draw a registry with three entries. Copy the
+second entry's metadata into a separate box. Remove the first entry and move the
+remaining entries forward. Mark which borrowed pointers require reacquisition,
+then explain why the separate character arrays in your metadata box still show
+the old observation.</p>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/runtime/service_registry.h">Read the Framework service metadata contract</a></p><p><a href="11-register-shared-services.html">Previous lesson</a> · <a href="../index.html">Course overview</a> · <a href="13-build-an-offline-learning-reader.html">Next: Build an offline learning reader</a></p></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original learning material.</p></div></footer></body></html>

@@ -27,11 +27,11 @@ The example uses Framework's UmiStatus enumeration. An enumeration gives readabl
 
 ## Know the files you are reading
 
-Open [activity.h](../../../labs/native/framework-activity/activity.h). A header describes the interface callers can use. Read its comment before reading its implementation. The contract says that an unsuccessful operation leaves the output unchanged and does not retain the caller's address.
+Open [activity.h](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/activity.h). A header describes the interface callers can use. Read its comment before reading its implementation. The contract says that an unsuccessful operation leaves the output unchanged and does not retain the caller's address.
 
-Open [activity.c](../../../labs/native/framework-activity/activity.c). It implements that contract: it validates the pointer and count, checks the maximum, and only then stores the new value. The order matters. If it wrote a result first and discovered an error later, callers could receive both an error and a partially changed value.
+Open [activity.c](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/activity.c). It implements that contract: it validates the pointer and count, checks the maximum, and only then stores the new value. The order matters. If it wrote a result first and discovered an error later, callers could receive both an error and a partially changed value.
 
-Open [console.c](../../../labs/native/framework-activity/console.c). It translates the result into a message. umi_status_text is a real Framework function, supplied by the SDK; this lab does not copy its implementation.
+Open [console.c](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/console.c). It translates the result into a message. umi_status_text is a real Framework function, supplied by the SDK; this lab does not copy its implementation.
 
 ## Understand an SDK
 

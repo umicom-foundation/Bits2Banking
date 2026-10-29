@@ -51,7 +51,7 @@ include it, even if the source is available on the public website.
 
 Open [the complete LLM HTML catalogue](../../courses/llm-from-scratch/all-lessons.html)
 and follow Lesson 93. Find its Markdown lesson and video script, then inspect
-[`knowledge/registries/education-links.json`](../../../knowledge/registries/education-links.json)
+[`knowledge/registries/education-links.json`](https://github.com/umicom-foundation/Bits2Banking/blob/main/knowledge/registries/education-links.json)
 from the repository root. State which fields prove a **link**, which prove
 **authors' attribution**, and which are still **unreviewed decisions**.
 

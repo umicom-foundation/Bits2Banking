@@ -8,7 +8,7 @@ A program expresses rules in a language a compiler can translate. C is one such 
 
 ## Read a complete small program
 
-Open [the greeting source](../../../labs/native/first-c-programs/greeting.c). Read it without running anything. Its opening comment identifies the file, author and licence. Comments explain intent to people; they are not executed.
+Open [the greeting source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/first-c-programs/greeting.c). Read it without running anything. Its opening comment identifies the file, author and licence. Comments explain intent to people; they are not executed.
 
 The line beginning with #include makes declarations available. A declaration tells the compiler how a function can be called. A function is a named operation, such as printing a message. The main function is the entry point of this ordinary hosted program. Hosted means that an operating system and C runtime prepare its starting environment.
 
@@ -29,7 +29,7 @@ A message in the terminal
 
 ## Give a value a name
 
-In [the activity console](../../../labs/native/framework-activity/console.c), unsigned completed = 0U introduces a variable. A variable is named storage for a value. unsigned means the integer cannot represent a negative number. The suffix U on a number asks for an unsigned integer constant.
+In [the activity console](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/console.c), unsigned completed = 0U introduces a variable. A variable is named storage for a value. unsigned means the integer cannot represent a negative number. The suffix U on a number asks for an unsigned integer constant.
 
 The expression &completed gives the address of this storage. An address tells a function where it may write an answer. It is not the answer itself. The function call passes the current value and the address of the result. Our function copies the current value before updating the result, so this particular in-place call is supported.
 
@@ -47,7 +47,7 @@ cmake --build ".\build\first-c-programs" --target btb-first-greeting
 & ".\build\first-c-programs\btb-first-greeting.exe"
 ~~~
 
-Run one line at a time. If configuration or building reports an error, stop there. Compare the output with [the expected greeting](../../../labs/native/first-c-programs/expected/greeting.txt). The ampersand before the quoted executable path is PowerShell's call operator: it launches that path.
+Run one line at a time. If configuration or building reports an error, stop there. Compare the output with [the expected greeting](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/first-c-programs/expected/greeting.txt). The ampersand before the quoted executable path is PowerShell's call operator: it launches that path.
 
 ## Make one change you understand
 

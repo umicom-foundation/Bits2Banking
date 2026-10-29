@@ -8,7 +8,7 @@ Write this rule before writing the function. It provides examples to reason abou
 
 ## Follow the contract into the implementation
 
-Read [activity.h](../../../labs/native/framework-activity/activity.h) and [activity.c](../../../labs/native/framework-activity/activity.c).
+Read [activity.h](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/activity.h) and [activity.c](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/activity.c).
 
 The function returns UmiStatus and writes a count through an output pointer. These are two separate results: the status tells whether the operation succeeded; the output contains the count only after success. Callers must inspect the status before treating the output as a new answer.
 
@@ -18,7 +18,7 @@ It handles current == 1000U as capacity exceeded. Only after all checks does it 
 
 ## Observe both success and refusal
 
-Build the lab using [the CMake lesson](03-introduction-to-cmake.md). Open [test_activity.c](../../../labs/native/framework-activity/test_activity.c). Each named case checks an externally meaningful contract.
+Build the lab using [the CMake lesson](03-introduction-to-cmake.md). Open [test_activity.c](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/test_activity.c). Each named case checks an externally meaningful contract.
 
 The full and invalid cases initialise the output to 77 before calling the function. They then check that the output is still 77. This sentinel makes an unwanted write visible. Checking only the returned error would miss a function that damaged the output before failing.
 

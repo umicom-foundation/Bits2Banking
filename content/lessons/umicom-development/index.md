@@ -14,6 +14,16 @@ If folders, programs or commands are unfamiliar, start with [Introduction to Com
 4. [Umicom Framework Development](04-framework-development.md)
 5. [Introduction to GTK4](05-introduction-to-gtk4.md)
 
+6. [Use an installed Framework SDK](06-use-an-installed-sdk.md)
+7. [Build only what changed](07-build-only-what-changed.md)
+8. [Read build and test evidence](08-read-build-and-test-evidence.md)
+9. [Understand which program a test runs](09-understand-test-commands.md)
+10. [Close background work safely](10-close-background-work.md)
+11. [Register shared application services](11-register-shared-services.md)
+12. [Inspect application services](12-inspect-application-services.md)
+13. [Build an offline learning reader](13-build-an-offline-learning-reader.md)
+14. [Copy examples without overwriting your work](14-copy-examples-without-overwriting.md)
+
 ## Prepare for the practical examples
 
 Use the [Windows development guide](../../umicom/windows-development.md) for the supported tools, repository-specific presets, SDK installation, logs and recovery steps. The console lab needs an installed Framework SDK; the optional window also needs GTK4. Reading and paper tracing do not need either installation.

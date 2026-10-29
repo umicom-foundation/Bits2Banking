@@ -21,6 +21,6 @@ The course follows Update 32's release-qualification lessons, and continues with
 
 **Videos:** [74](../../videos/scripts/74-why-a-clean-git-status-is-not-release-proof.md), [75](../../videos/scripts/75-understand-detached-head-and-rejected-push.md), [76](../../videos/scripts/76-build-a-c23-git-evidence-timeline.md), [77](../../videos/scripts/77-qualify-the-umicom-os-framework-gitlink.md).
 
-**Practical lab:** [`git-review-timeline`](../../../labs/native/git-review-timeline/README.md). CMake builds the native example without Python or PowerShell scripts. The optional compiled adapter requires a real Framework source checkout; the complete live Framework runtime is not linked by the teaching project. Production Git services remain Framework-owned.
+**Practical lab:** [`git-review-timeline`](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/git-review-timeline/README.md). CMake builds the native example without Python or PowerShell scripts. The optional compiled adapter requires a real Framework source checkout; the complete live Framework runtime is not linked by the teaching project. Production Git services remain Framework-owned.
 
 **Instructor checkpoint:** Do not award a release-ready pass for a clean worktree alone. The learner must identify an observed commit, remote freshness, staged changes, build/test provenance, child publication and parent gitlink separately. Accurate reporting of NOT RUN is a correct professional behaviour.

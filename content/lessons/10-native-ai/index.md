@@ -373,7 +373,7 @@ does not authenticate a source corpus or claim production-ready language ability
 
 ## Illustrated HTML learning course
 
-The beginner-friendly [Umicom Native AI illustrated course](../../llm-course/index.html)
+The beginner-friendly [Umicom Native AI illustrated course](../../courses/llm-from-scratch/index.html)
 connects the source-based lessons into a navigable collection of standalone HTML
 pages. The course uses the **existing** Umicom Foundation brand SVGs and font
 stack, custom explanatory diagrams, glossary, beginner orientation, responsive

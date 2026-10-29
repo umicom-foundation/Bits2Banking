@@ -50,3 +50,13 @@ if(BUILD_TESTING)
         COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
             -P "${CMAKE_CURRENT_LIST_DIR}/check_first_c_course.cmake")
 endif()
+
+# The Framework course has both standalone pages and published manuscripts.
+# Check shared identities and navigable source-reading chapters together.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.framework_course
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_framework_course.cmake")
+    set_tests_properties(btb.education.framework_course PROPERTIES
+        TIMEOUT 10 LABELS "education;framework;navigation")
+endif()

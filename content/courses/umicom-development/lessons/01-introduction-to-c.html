@@ -3,7 +3,7 @@
 <p>Imagine a notebook in which you record one completed exercise. Your starting count is zero. Completing one exercise changes the count to one. Before asking a computer to do this, describe the rule in words: read the current count, check that another exercise is allowed, add one, and report the result.</p>
 <p>A program expresses rules in a language a compiler can translate. C is one such language. Source code is the text you edit. A compiler translates it into machine instructions. The executable is the resulting program you launch. Editing the source does not automatically change an executable you built earlier.</p>
 <h2>Read a complete small program</h2>
-<p>Open <a href="../../../../labs/native/first-c-programs/greeting.c">the greeting source</a>. Read it without running anything. Its opening comment identifies the file, author and licence. Comments explain intent to people; they are not executed.</p>
+<p>Open <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/first-c-programs/greeting.c">the greeting source</a>. Read it without running anything. Its opening comment identifies the file, author and licence. Comments explain intent to people; they are not executed.</p>
 <p>The line beginning with #include makes declarations available. A declaration tells the compiler how a function can be called. A function is a named operation, such as printing a message. The main function is the entry point of this ordinary hosted program. Hosted means that an operating system and C runtime prepare its starting environment.</p>
 <p>Curly braces group the instructions belonging to main. A semicolon ends a statement. Double quotation marks delimit text. A sequence such as \n inside text means a new line. A return value of zero tells the launching environment that this program completed successfully. It does not prove that an arbitrary program has no bugs.</p>
 <pre><code class="language-text">Text in greeting.c
@@ -17,17 +17,17 @@ Executable in a build folder
        v
 A message in the terminal</code></pre>
 <h2>Give a value a name</h2>
-<p>In <a href="../../../../labs/native/framework-activity/console.c">the activity console</a>, unsigned completed = 0U introduces a variable. A variable is named storage for a value. unsigned means the integer cannot represent a negative number. The suffix U on a number asks for an unsigned integer constant.</p>
+<p>In <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/console.c">the activity console</a>, unsigned completed = 0U introduces a variable. A variable is named storage for a value. unsigned means the integer cannot represent a negative number. The suffix U on a number asks for an unsigned integer constant.</p>
 <p>The expression &amp;completed gives the address of this storage. An address tells a function where it may write an answer. It is not the answer itself. The function call passes the current value and the address of the result. Our function copies the current value before updating the result, so this particular in-place call is supported.</p>
 <p>Do not guess whether another function permits this. Its contract must say so. Reading the contract is part of programming, just as reading a measuring instrument's scale is part of using it.</p>
 <h2>Prepare, build, then run</h2>
-<p>First follow <a href="../../../umicom/windows-development.md">Windows tool setup</a>. For the first small C examples, an installed Framework SDK is not required.</p>
+<p>First follow <a href="../../../umicom/windows-development/">Windows tool setup</a>. For the first small C examples, an installed Framework SDK is not required.</p>
 <pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
 $env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
 cmake -S &quot;.\labs\native\first-c-programs&quot; -B &quot;.\build\first-c-programs&quot; -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DBUILD_TESTING=ON
 cmake --build &quot;.\build\first-c-programs&quot; --target btb-first-greeting
 &amp; &quot;.\build\first-c-programs\btb-first-greeting.exe&quot;</code></pre>
-<p>Run one line at a time. If configuration or building reports an error, stop there. Compare the output with <a href="../../../../labs/native/first-c-programs/expected/greeting.txt">the expected greeting</a>. The ampersand before the quoted executable path is PowerShell's call operator: it launches that path.</p>
+<p>Run one line at a time. If configuration or building reports an error, stop there. Compare the output with <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/first-c-programs/expected/greeting.txt">the expected greeting</a>. The ampersand before the quoted executable path is PowerShell's call operator: it launches that path.</p>
 <h2>Make one change you understand</h2>
 <p>Read the greeting text first. Predict what changing one word inside its quotation marks will print. Save your edited file, build the same target again, and launch it again. Keep the braces, quotation marks and semicolon in place. An accidental missing quotation mark is a compiler error, not evidence that you cannot learn programming.</p>
 <p>Then restore the original greeting text and rebuild so its existing expected-output test still describes the example. When intentionally changing a program's behaviour, review the test expectation too; do not change a test just to hide a defect.</p>

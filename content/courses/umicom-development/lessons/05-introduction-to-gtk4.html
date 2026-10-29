@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Introduction to GTK4 | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">All courses</a><a href="../../learning-computer-architecture/index.html">Start at the beginning</a><a href="../../learning-paths.html">Learning map</a></nav></div></header><main id="main" class="simple-page"><article><h1>Introduction to GTK4</h1><h2>Build a window from smaller parts</h2>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Introduction to GTK4 | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="next" href="06-use-an-installed-sdk.html"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">All courses</a><a href="../../learning-computer-architecture/index.html">Start at the beginning</a><a href="../../learning-paths.html">Learning map</a></nav></div></header><main id="main" class="simple-page"><article><h1>Introduction to GTK4</h1><h2>Build a window from smaller parts</h2>
 <p>GTK4 is a toolkit for graphical interfaces. A widget is a part of that interface, such as a button, label or container. A label displays text; a button accepts an action; a box arranges child widgets; a window contains the page.</p>
 <p>Our example has this hierarchy:</p>
 <pre><code class="language-text">Application
@@ -9,7 +9,7 @@
       Button: Record one exercise</code></pre>
 <p>GTK handles the platform's window and input events. The application supplies callbacks: functions GTK calls when something happens. A button's clicked signal is one such event. This is event-driven programming; the program does not repeatedly ask whether the user pressed the button.</p>
 <h2>Read the activation path</h2>
-<p>Open <a href="../../../../labs/native/framework-activity/window.c">window.c</a>.</p>
+<p>Open <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">window.c</a>.</p>
 <p>main creates a GtkApplication and connects its activate signal to Activate. g_application_run starts the event loop. An event loop waits for input and dispatches work to the connected callbacks. When the application exits, main releases its reference.</p>
 <p>Activate constructs a window, its vertical box, a label and a button. It sets the title and margins, adds the label and button to the box, adds the box to the window, then presents the window. The order establishes ownership before the user can interact.</p>
 <p>The activity state contains a count and a borrowed pointer to its label. g_object_set_data_full attaches the state to the window together with g_free as its cleanup function. When the window's object lifetime ends, that state is released. GTK containers own their child widgets; this example does not free the label by hand.</p>
@@ -18,7 +18,7 @@
 <p>The callback temporarily retains the window with g_object_ref and releases it with g_object_unref. This keeps attached state alive while observable label notifications run. Such lifetime decisions matter when a larger application can close or rebuild a panel from another callback.</p>
 <p>The example stores no files and makes no network requests. Closing and reopening its window starts a new count. Persistence would be a separate feature with an explicit storage contract.</p>
 <h2>Enable the optional GTK target</h2>
-<p>Install the tools and SDK described in <a href="../../../umicom/windows-development.md">Windows setup</a>. Reconfigure the existing lab with its graphical option enabled:</p>
+<p>Install the tools and SDK described in <a href="../../../umicom/windows-development/">Windows setup</a>. Reconfigure the existing lab with its graphical option enabled:</p>
 <pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
 $env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
 cmake -S &quot;.\labs\native\framework-activity&quot; -B &quot;.\build\framework-activity&quot; -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework;C:/msys64/ucrt64&quot; -DBUILD_TESTING=ON -DBTB_ACTIVITY_GTK4=ON
@@ -39,4 +39,4 @@ ctest --test-dir &quot;.\build\framework-activity&quot; --output-on-failure --no
 <p><strong>Question:</strong> Should the button callback contain another copy of the counting rules?</p>
 <p><strong>Answer:</strong> No. Both front ends call the same checked function. A future correction then reaches both presentations, and the independent logic tests remain useful.</p>
 <p>Return to <a href="../index.html">the development course contents</a> or explore <a href="../../umicom-os-from-scratch/index.html">Umicom OS from Scratch</a>.</p>
-<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="04-framework-development.html">Previous lesson</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original learning material.</p></div></footer></body></html>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="04-framework-development.html">Previous lesson</a> · <a href="06-use-an-installed-sdk.html">Next lesson</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original learning material.</p></div></footer></body></html>

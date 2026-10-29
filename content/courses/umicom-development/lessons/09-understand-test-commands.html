@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Understand which program a test runs | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="prev" href="08-read-build-and-test-evidence.html">
+<link rel="next" href="10-close-background-work.html"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">All courses</a><a href="../../learning-c/index.html">Learning C</a><a href="../../learning-paths.html">Learning map</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Understand which program a test runs</h1>
+<p>Continue from <a href="08-read-build-and-test-evidence.html">Read build and test evidence</a>. This lesson explains test identity, structured input and C ownership using the actual Framework automatic-test services. Read <a href="../../learning-c/index.html">Learning C</a> alongside it if pointers or status values are new.</p>
+<h2>Why a test name is not a program</h2>
+<p>An executable is a file that the operating system can run. A test is a named check. One executable may contain many checks, and a test tool can choose a particular check by passing arguments. In Umicom, CTest stores the relationship between a test name, an executable and those arguments.</p>
+<p>Suppose a test called fixture.alpha ran yesterday and passed. Today its declaration still points to the old executable, but its actual command now runs another program. Checking the old executable's contents cannot tell us whether the new program is unchanged. A remembered pass is useful only when we first identify the program that will actually run.</p>
+<h2>Read the two records</h2>
+<p>A registry is a list of declared relationships. The automatic qualification registry has two columns: the test name and its expected executable path. A catalogue is the list discovered from CTest. Its command field is an array: an ordered list whose first item is the executable and whose remaining items are arguments.</p>
+<p>These records answer different questions. The registry says what the developer declared. Discovery says what CTest currently plans to execute. A declaration alone does not prove that the two agree.</p>
+<pre><code>Declared owner       Actual CTest command
+      |                       |
+      +---- compare identity--+
+                  |
+           mismatch or unknown
+                  |
+       keep tests selected for execution
+
+Matching identity -&gt; check remaining inputs and outcomes
+                  -&gt; eligible historical pass or execute</code></pre>
+<h2>Follow the real Framework implementation</h2>
+<p>Open the Framework command catalogue header, then its implementation and regression test using the source links below. The public header describes the contract: accepted inputs, ownership, limits and possible failures. The implementation reuses the strict CTest JSON reader, rather than searching raw text for a filename.</p>
+<p>JSON is a structured text format. Quotation marks delimit text, square brackets delimit an array, and braces delimit an object containing named fields. A valid JSON document is not automatically valid CTest data: a command must be an array of strings, identities must not be duplicated, and the version must be supported.</p>
+<p>The parser checks the complete document before returning an owned catalogue. Owned means this object has its own allocated storage. The caller can release the original JSON buffer after parsing. When finished, the caller must destroy the catalogue to release its memory.</p>
+<ul><li><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/test_platform/ctest_commands.h">Command catalogue contract</a></li><li><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/test_platform/ctest_commands.inc">Catalogue implementation</a></li><li><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/test_reuse/test_command_catalogue.c">Native regression cases</a></li><li><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/cmake/UmicomAutomaticTestsRun.cmake">Automatic qualification driver</a></li><li><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/test_reuse/check_command_owners.cmake">File ownership regression</a></li></ul>
+<h2>Understand the C lookup</h2>
+<p>The lookup function receives the catalogue, an exact test name and a place to store a pointer to its executable string. A pointer records the location of data in memory. The returned string is borrowed: it belongs to the catalogue, so the caller must not free or modify it and must not use it after destroying the catalogue.</p>
+<p>A status value tells the caller whether lookup succeeded. UMI_STATUS_OK means an executable string was found. UMI_STATUS_NOT_FOUND means the identity was missing or had no available command. Neither value says that a test passed. The program has not been executed.</p>
+<p>On lookup failure, the output pointer remains unchanged. This makes failure predictable, but the caller must still check the status before using the pointer. An earlier successful value must not be mistaken for the result of a later failed lookup.</p>
+<p>This excerpt assumes a successfully parsed catalogue and the standard I/O header. The complete regression source shows construction and destruction.</p><pre><code class="language-c">const char *program = NULL;
+UmiStatus status = UmiCtestCommandCatalogueFind(catalogue, "alpha", &amp;program);
+if (status == UMI_STATUS_OK) {
+    /* program is borrowed from catalogue and is not executed here. */
+    printf("%s\n", program);
+}</code></pre>
+<h2>Compare paths carefully</h2>
+<p>The driver requires absolute executable paths. An absolute path identifies a location from a filesystem root. A relative path depends on a working directory, which may differ between the build driver and a test. Matching two relative spellings would not establish that both tools refer to the same file.</p>
+<p>On Windows the verifier accepts slash and backslash spelling for separators. It does not change all letters to lower case: a Windows directory can enable case-sensitive names. It also does not assume that different aliases identify the same file. A conservative full run is preferable to accepting an unproven cached result.</p>
+<p>Matching the executable is only the first gate. The driver must also account for runtime libraries, configuration, environment and previous outcomes. Tests that read a network service, mutable file, device, clock or undeclared plugin need an appropriate contract; matching the program does not make those inputs disappear.</p>
+<h2>Why sorted lookup helps</h2>
+<p>A large project can contain tens of thousands of tests. Searching the entire JSON document again for every registration repeats work. Framework creates one owned catalogue, sorts entries by their names and uses binary search for lookup.</p>
+<p>Binary search compares a name with the middle entry of a sorted range. If it comes before that entry, only the earlier half remains relevant; otherwise the later half remains. Repeating this step rapidly narrows the range. The input still needs complete validation, and sorting still costs work. Faster lookup does not justify skipping validation.</p>
+<h2>Trace a mismatch without weakening the check</h2>
+<p>First read the test's add_test declaration and its umicom_test_closed_inputs registration together. Identify the executable in each. Next inspect discovery.json.owners.log in the private automatic-run folder. It records whether the declared bindings were verified or refused.</p>
+<p>If a test now runs a wrapper, inspect what the wrapper does. It may introduce another program, environment or input file. Correct the declaration only when the complete input contract is understood; otherwise keep ordinary test execution. Do not edit saved receipts to turn the old result into a current pass.</p>
+<p>The real-driver regression changes a private fixture's owner from one executable to another, then requires all its tests to remain selected. The fixture also checks for the specific ownership diagnostic, so an unrelated full-run fallback cannot silently stand in for the intended check.</p>
+<h2>Practise the reasoning</h2><ol><li>In the native regression source, find the test named <code>alpha</code> and its escaped Unicode path. Work out what text the JSON reader returns.</li><li>Find the duplicate-name case. Explain why selecting the first matching entry would be ambiguous.</li><li>Read the missing-command case. Explain why an empty command cannot qualify a remembered pass.</li><li>Sketch a test that uses a wrapper. List the extra inputs you would need to identify before considering reuse.</li></ol>
+<details><summary>Check your understanding</summary><p>The registered executable is unchanged, but discovery now runs another executable. Can yesterday's pass be reused?</p><p><strong>Answer:</strong> No. The previous evidence identifies a different program. Keep the test selected, inspect the declaration and verify the actual execution inputs.</p></details>
+<p>This is a source-reading lesson. Reading a regression does not execute it, and matching a command is not a compiler, runtime or application pass.</p>
+<nav aria-label="Lesson navigation"><p><a href="08-read-build-and-test-evidence.html">Previous lesson</a> · <a href="../index.html">Course contents</a></p></nav>
+<p>Next: <a href="10-close-background-work.html">Close background work safely</a>.</p></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT. Original learning material.</p></div></footer></body></html>

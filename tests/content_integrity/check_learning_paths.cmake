@@ -83,7 +83,12 @@ foreach(_b RANGE 0 ${_last_bridge})
     file(READ "${REPOSITORY_ROOT}/${_source}" _text)
     require_text("${_text}" "](${_target_relative})" "reciprocal chapter link")
 endforeach()
-set(_beginner "content/courses/computing-from-the-beginning")
+# The introduction now uses the public course name. Keep the former location
+# disabled for source-history review; the same syllabus checks still execute.
+if(FALSE)
+    set(_beginner "content/courses/computing-from-the-beginning")
+endif()
+set(_beginner "content/courses/learning-computer-architecture")
 file(READ "${REPOSITORY_ROOT}/${_beginner}/course.json" _course)
 file(READ "${REPOSITORY_ROOT}/${_beginner}/index.html" _index)
 string(JSON _count LENGTH "${_course}" lessons)

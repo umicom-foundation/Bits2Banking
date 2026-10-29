@@ -1,0 +1,202 @@
+# Copy examples without overwriting your work
+
+<h2>What you will learn</h2>
+<p>Practice should help you experiment without damaging the reference material
+or your earlier work. This chapter follows the real
+<code>examples/learning_pack_inspector/practice.c</code> application in Umicom
+Framework. It previews an example, checks the source bytes and creates a new
+file only when you explicitly request a copy.</p>
+<p>You will meet four useful ideas: selecting a file through a catalogue,
+checking the bytes before using them, refusing to overwrite an existing file,
+and reporting a failure accurately. These ideas also apply to Studio saving an
+export, Media creating a new output file and Bank exporting a statement. Each
+application decides what the user is allowed to do; Framework provides the
+reusable storage behaviour.</p>
+<p>Read the previous chapter on offline learning readers first. If a term such
+as file, directory, function or pointer is unfamiliar, return to the
+Introduction to Computers and Learning C courses. You can draw the steps in
+this chapter before installing development tools.</p>
+
+<h2>1. Separate the reference from your experiment</h2>
+<p>A directory groups files. A learning pack directory contains a manifest,
+reading material and examples. Your practice directory holds files that you
+intend to edit. A copied file initially contains the same bytes as its source,
+but it is a different file. Changing the copy should leave the reference
+unchanged.</p>
+<p>A <em>byte</em> is a small unit of stored data. Text, images and compiled
+programs are all stored as sequences of bytes, even though applications
+interpret them differently. A copy operation must preserve every byte. It must
+not stop at a zero byte or quietly convert line endings. This matters for both
+source code and binary files.</p>
+<pre><code>learning pack/
+    learning-pack.json
+    guide.html
+    main.c
+
+my practice/
+    my-inspector.c</code></pre>
+<p>The names above illustrate two separate directories. The lesson's manifest
+links <code>guide</code> to the example identifier <code>inspector</code>.
+That identifier refers to <code>main.c</code>. The user chooses the destination
+name <code>my-inspector.c</code>. The file's visible title, stable identifier
+and storage path serve different purposes.</p>
+
+<h2>2. Preview an operation before changing storage</h2>
+<p>Open the complete Framework file
+<code>examples/learning_pack_inspector/practice.c</code>. Start at
+<code>main</code>, the function called when this console application starts.
+The <code>argc</code> parameter counts its command-line arguments.
+<code>argv</code> provides the text of those arguments.</p>
+<p>The program first loads a pack with <code>UmiLearningPackLoad</code>. It then
+calls <code>UmiLearningPracticeResolveExample</code>. This second operation
+returns a copied description of the example; it does not read the example file.
+A lesson without an example link returns <code>NOT_FOUND</code>, which means
+that no example is supplied for that selection.</p>
+<p>Next, the program checks the destination's path syntax. A path is a name
+that locates a file or directory. An <em>absolute</em> root identifies the
+chosen directory without depending on where the application was started.
+A <em>relative</em> filename is interpreted beneath that root.</p>
+<table><thead><tr><th>Part</th><th>Example</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>Absolute root</td><td><code>C:\umicom\practice\learning-packs</code></td><td>The directory the learner chose.</td></tr>
+<tr><td>Relative name</td><td><code>my-inspector.c</code></td><td>A new file inside that directory.</td></tr>
+<tr><td>Nested name</td><td><code>examples/my-inspector.c</code></td><td>A file under an existing <code>examples</code> directory.</td></tr>
+<tr><td>Refused name</td><td><code>../outside.c</code></td><td>Attempts to move above the chosen root.</td></tr>
+</tbody></table>
+<p>Preview displays the selected example and destination. It does not create
+the destination, reserve its name, verify its permissions or establish that
+the source bytes are still correct. These conditions can change before the
+user requests copying, so the later operation must check them again.</p>
+
+<h2>3. Verify the source before creating the destination</h2>
+<p>The copy service begins by reading the entire selected example under a size
+limit. A size limit prevents an unexpectedly large file from consuming
+unbounded memory. The example application permits up to four mebibytes:
+<code>4 × 1024 × 1024</code> bytes. The service itself accepts a chosen limit
+between one byte and sixteen mebibytes.</p>
+<p>Framework compares the read bytes with the SHA-256 digest recorded in the
+manifest. A digest is a fixed-length result calculated from bytes. If the
+bytes change, the digest is expected to change too. A match checks consistency
+with that manifest. It does not identify a trustworthy author or establish
+that the code is safe to run.</p>
+<p>If reading or verification fails, destination creation is not attempted.
+If it succeeds, the service gives the exact verified memory buffer to the
+writer. It does not reopen the source path and read it a second time. Otherwise
+another process could change the file between verification and copying.</p>
+<svg viewBox="0 0 900 215" role="img" aria-labelledby="copy-title copy-desc">
+<title id="copy-title">The checked practice-copy sequence</title>
+<desc id="copy-desc">Resolve the example metadata, read and verify its bytes, then exclusively create the chosen destination. Failure before creation leaves the destination untouched. A later write failure can leave a partial new file.</desc>
+<defs><marker id="copy-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#28708c"/></marker></defs>
+<g fill="#eef5f8" stroke="#28708c" stroke-width="2">
+<rect x="5" y="25" width="245" height="105" rx="12"/>
+<rect x="325" y="25" width="245" height="105" rx="12"/>
+<rect x="645" y="25" width="250" height="105" rx="12"/></g>
+<g stroke="#28708c" stroke-width="2" marker-end="url(#copy-arrow)"><path d="M251 78H319"/><path d="M571 78H639"/></g>
+<g fill="#173047" text-anchor="middle" font-family="sans-serif" font-size="18">
+<text x="127" y="60">Resolve an example</text><text x="127" y="90">Copy its description</text>
+<text x="447" y="60">Read + verify bytes</text><text x="447" y="90">Keep a bounded buffer</text>
+<text x="770" y="60">Create a new file</text><text x="770" y="90">Refuse an existing name</text>
+<text x="450" y="178">A copy is data, not permission to build or run it.</text></g></svg>
+
+<h2>4. Why an existence check is not enough</h2>
+<p>Imagine two application workers exporting to the same new filename. Worker
+A checks and sees no file. Before A opens it, worker B creates a file with that
+name. If A now opens the name for replacement, it may erase B's work even
+though A's earlier check was correct.</p>
+<p>This is a <em>race</em>: the outcome depends on how operations from different
+workers overlap. A preview cannot prevent it. The Framework writer asks the
+operating system to create the file only if no leaf already exists. Creation
+and refusal are one native operation rather than two separate decisions.</p>
+<p>In the source, Windows uses <code>CREATE_NEW</code>; the POSIX implementation
+uses <code>O_CREAT | O_EXCL</code>. The vertical bar combines flags, which are
+named options passed to the operating system. Both implementations also use
+the Framework's checked parent-directory handling. The caller does not build
+a shell command from the selected filename.</p>
+<p>Read <code>tests/platform/test_rooted_create_race.c</code>. Eight workers try
+to create the same file with different byte patterns. The test expects exactly
+one successful writer and checks that every byte in the result belongs to
+that winner. This is different from simply running the writer eight times in
+sequence. The test is one focused check; it cannot prove protection against
+every privileged system change or storage fault.</p>
+
+<h2>5. Read a result instead of guessing from a file</h2>
+<p>A new file can exist even though copying failed. For example, the writer may
+create the file and accept some bytes before storage becomes unavailable.
+Deleting that partial file automatically can also be unsafe: another process
+might have changed the pathname since the failure. The service therefore
+retains the new file and reports what happened.</p>
+<pre><code>UmiLearningPracticeResult result;
+UmiStatus status = UmiLearningPracticeCopy(
+    pack, "guide", selected_root, "my-inspector.c",
+    4U * 1024U * 1024U, &amp;result);
+
+if (status == UMI_STATUS_OK) {
+    /* Report successful copying; do not start a compiler here. */
+} else if (result.destination_attempted &amp;&amp; result.destination.created) {
+    /* Explain that a partial new file remains for inspection. */
+} else {
+    /* Explain the refusal without claiming that a copy was created. */
+}</code></pre>
+<p>This fragment belongs inside an application that already owns a valid pack
+and selected directory. Read the complete <code>practice.c</code> example for
+argument checks and cleanup. <code>UmiStatus</code> is a named result value.
+<code>UMI_STATUS_OK</code> means the operation succeeded. The address operator
+<code>&amp;</code> lets the function fill the caller's result structure.
+<code>&amp;&amp;</code> means both conditions must be true.</p>
+<table><thead><tr><th>Field</th><th>Question it answers</th></tr></thead><tbody>
+<tr><td><code>source_verified</code></td><td>Were the source bytes read and matched against the manifest?</td></tr>
+<tr><td><code>destination_attempted</code></td><td>Was the rooted creation operation called?</td></tr>
+<tr><td><code>destination.created</code></td><td>Did the native exclusive creation succeed?</td></tr>
+<tr><td><code>destination.bytes_written</code></td><td>How many bytes were accepted by native writes?</td></tr>
+<tr><td><code>destination.complete</code></td><td>Did all writing, flushing and closing succeed?</td></tr>
+</tbody></table>
+<p>Flushing asks the operating system to commit buffered output. Closing
+releases the file handle. Neither a successful close nor a complete flag
+guarantees that a future power failure or external edit cannot affect the
+file. Applications should describe what they verified, not promise more.</p>
+
+<h2>6. Try the complete example</h2>
+<ol><li>Follow the previous chapter's installed-SDK configuration and build
+instructions for <code>examples/learning_pack_inspector</code>.</li>
+<li>From that example's build directory, create a separate practice directory
+and run the preview below.</li>
+<li>Read the printed destination. Run the second command only when it is the
+new file you intend to create.</li>
+<li>Open the copy in an editor. Add a comment and save it.</li>
+<li>Repeat the copy command. It should refuse the existing destination and
+preserve your comment. Compare the source pack's file as well.</li></ol>
+<pre><code>New-Item -ItemType Directory -Force "C:\umicom\practice\learning-packs"
+&amp; ".\umicom-learning-pack-practice.exe" "$PWD\pack" learning-pack.json guide "C:\umicom\practice\learning-packs" my-inspector.c
+
+&amp; ".\umicom-learning-pack-practice.exe" "$PWD\pack" learning-pack.json guide "C:\umicom\practice\learning-packs" my-inspector.c --copy</code></pre>
+<p>Stop and read any error. A missing parent requires you to create the intended
+directory. A hash mismatch requires investigation of the source pack. An
+existing destination requires another new filename if you want another copy.
+Do not disable checks or remove earlier work merely to make the command succeed.</p>
+<p>Copying this one C source file does not supply its include directories,
+libraries or CMake project. Continue using the complete SDK example when you
+want to compile it. A future application practice workflow can use the existing
+Framework project generators for multi-file projects and a separate trust
+decision before executing project commands.</p>
+
+<h2>Check your understanding</h2>
+<ol><li>Why does preview not guarantee the destination is still free later?</li>
+<li>Why should the writer receive the verified bytes instead of reopening the
+source filename?</li><li>Can a failed copy leave a new file?</li>
+<li>Does an existing destination authorize replacing it?</li>
+<li>What extra decision is needed before running a copied example?</li></ol>
+<details><summary>Compare your answers</summary><p>Another writer can create
+the destination after preview. Reopening a source could read changed bytes
+that were not verified. A failure after exclusive creation can leave a partial
+new file; the result records that state. An existing destination must be
+refused, preserving the learner's work. Running code requires the application's
+separate execution-trust workflow and an explicit action; reading and copying
+are not that permission.</p></details>
+<p>For a paper exercise, draw two writers checking one filename at overlapping
+times. First draw a separate existence check followed by replacement. Mark
+where work could be lost. Then replace those steps with exclusive creation and
+explain which writer can succeed. Finally draw a storage failure after three
+bytes and show the result fields the interface should display.</p>
+
+[Read the Framework practice-copy contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/teacher/learning_practice.h)
+
+[Previous lesson](13-build-an-offline-learning-reader.md) · [Course overview](index.md)

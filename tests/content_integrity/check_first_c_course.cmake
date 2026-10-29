@@ -5,12 +5,24 @@ cmake_minimum_required(VERSION 3.24)
 if(NOT DEFINED REPOSITORY_ROOT)
     get_filename_component(REPOSITORY_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
 endif()
-set(_course "${REPOSITORY_ROOT}/content/courses/c-from-the-beginning")
+# Resolve the published Learning C course, while retaining the old location
+# for review. Content, navigation and exact source-example checks remain active.
+if(FALSE)
+    set(_course "${REPOSITORY_ROOT}/content/courses/c-from-the-beginning")
+endif()
+set(_course "${REPOSITORY_ROOT}/content/courses/learning-c")
 file(READ "${_course}/course.json" _registry)
 file(READ "${_course}/index.html" _index)
 string(JSON _count LENGTH "${_registry}" lessons)
+# The original eleven lab lessons remain checked below; six reading lessons
+# have their own source and navigation contract. Retain the old gate for review.
+if(FALSE)
 if(NOT _count EQUAL 11)
     message(FATAL_ERROR "Review the introductory syllabus and its checks when adding a lesson")
+endif()
+endif()
+if(NOT _count EQUAL 17)
+    message(FATAL_ERROR "Review the full Learning C syllabus and its checks when adding a lesson")
 endif()
 function(require_text text needle reason)
     string(FIND "${text}" "${needle}" _position)
@@ -28,7 +40,7 @@ foreach(_n RANGE 0 10)
     string(JSON _lesson GET "${_registry}" lessons ${_n} path)
     string(JSON _manuscript GET "${_registry}" lessons ${_n} manuscript)
     if(NOT _lesson MATCHES "^lessons/[a-z0-9-]+\\.html$" OR
-       NOT _manuscript MATCHES "^\\.\\./\\.\\./lessons/c-from-the-beginning/[a-z0-9-]+\\.md$")
+       NOT _manuscript MATCHES "^\\.\\./\\.\\./lessons/learning-c/[a-z0-9-]+\\.md$")
         message(FATAL_ERROR "Unexpected course path")
     endif()
     require_file("${_course}/${_lesson}")
@@ -47,7 +59,7 @@ foreach(_n RANGE 0 10)
         get_filename_component(_previous_name "${_previous_path}" NAME)
         require_text("${_html}" "rel=\"prev\" href=\"${_previous_name}\"" "previous lesson")
     endif()
-    if(_n LESS 10)
+    if(_n LESS 11)
         math(EXPR _next "${_n} + 1")
         string(JSON _next_path GET "${_registry}" lessons ${_next} path)
         get_filename_component(_next_name "${_next_path}" NAME)
@@ -75,6 +87,52 @@ endforeach()
 if(NOT _source_count EQUAL 8)
     message(FATAL_ERROR "The eight displayed lab examples must retain their source identities")
 endif()
+
+# Later chapters are HTML source-reading lessons. They deliberately reference
+# Kernel files, rather than claiming to embed a complete, buildable local lab.
+# Keep that distinct contract explicit while retaining the eight lab comparisons.
+set(_reading_sources
+    "umicom-kernel/include/umicom/user/native_contract.h"
+    "umicom-kernel/programs/support/native_contract.c"
+    "umicom-kernel/kernel/console_shell.c"
+    "umicom-kernel/cmake/DiskInspection.cmake"
+    "umicom-kernel/kernel/console_file_range.inc"
+    "umicom-kernel/kernel/console_file_range.inc")
+foreach(_n RANGE 11 16)
+    string(JSON _lesson GET "${_registry}" lessons ${_n} path)
+    string(JSON _title GET "${_registry}" lessons ${_n} title)
+    string(JSON _source GET "${_registry}" lessons ${_n} source)
+    math(EXPR _reading_index "${_n} - 11")
+    list(GET _reading_sources ${_reading_index} _expected_source)
+    if(NOT _lesson MATCHES "^lessons/[a-z0-9-]+\\.html$" OR
+       NOT _source STREQUAL _expected_source)
+        message(FATAL_ERROR "Unexpected source-reading lesson identity: ${_lesson}")
+    endif()
+    require_file("${_course}/${_lesson}")
+    file(READ "${_course}/${_lesson}" _html)
+    require_text("${_index}" "href=\"${_lesson}\"" "source-reading lesson in contents")
+    require_text("${_html}" "<h1>${_title}</h1>" "registered source-reading title")
+    require_text("${_html}" "<details>" "explained source-reading self-check")
+    require_text("${_html}" "id=\"main\"" "source-reading skip destination")
+    string(REGEX REPLACE "^umicom-kernel/" "" _kernel_file "${_source}")
+    require_text("${_html}"
+        "href=\"https://github.com/umicom-foundation/umicom-kernel/blob/main/${_kernel_file}\""
+        "published Kernel source reference")
+    foreach(_link IN ITEMS "../index.html" "../glossary.html" "../practical-guide.html" "../../learning-paths.html")
+        require_text("${_html}" "href=\"${_link}\"" "source-reading navigation")
+    endforeach()
+    math(EXPR _previous "${_n} - 1")
+    string(JSON _previous_path GET "${_registry}" lessons ${_previous} path)
+    get_filename_component(_previous_name "${_previous_path}" NAME)
+    require_text("${_html}" "rel=\"prev\" href=\"${_previous_name}\"" "previous source-reading lesson")
+    if(_n LESS 16)
+        math(EXPR _next "${_n} + 1")
+        string(JSON _next_path GET "${_registry}" lessons ${_next} path)
+        get_filename_component(_next_name "${_next_path}" NAME)
+        require_text("${_html}" "rel=\"next\" href=\"${_next_name}\"" "next source-reading lesson")
+    endif()
+endforeach()
+
 require_file("${_course}/glossary.html")
 require_file("${_course}/practical-guide.html")
 message(STATUS "Introductory C course source relationships are present; runtime and browser qualification are separate")

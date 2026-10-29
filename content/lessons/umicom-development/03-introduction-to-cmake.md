@@ -22,7 +22,7 @@ CMakeLists.txt + compiler choice
 
 ## Read a real build description
 
-Open [the activity CMakeLists.txt](../../../labs/native/framework-activity/CMakeLists.txt).
+Open [the activity CMakeLists.txt](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/CMakeLists.txt).
 
 1. cmake_minimum_required declares the minimum CMake language/tool behaviour the project uses.
 2. project gives the project a name and declares C as its source language.
