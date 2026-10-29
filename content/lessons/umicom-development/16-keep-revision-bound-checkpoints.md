@@ -185,3 +185,5 @@ Mark which queries should return a current record and which should return
 <code>tests/learning_pack/test_progress.c</code>.</p>
 
 [Previous lesson](15-connect-commands-to-guides.md) · [Course overview](index.md)
+
+[Next: Keep reading state consistent](17-keep-reading-state-consistent.md)
