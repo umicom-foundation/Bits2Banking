@@ -200,3 +200,5 @@ bytes and show the result fields the interface should display.</p>
 [Read the Framework practice-copy contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/teacher/learning_practice.h)
 
 [Previous lesson](13-build-an-offline-learning-reader.md) · [Course overview](index.md)
+
+[Next: Connect commands to helpful guides](15-connect-commands-to-guides.md)

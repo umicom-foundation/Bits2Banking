@@ -24,6 +24,9 @@ If folders, programs or commands are unfamiliar, start with [Introduction to Com
 13. [Build an offline learning reader](13-build-an-offline-learning-reader.md)
 14. [Copy examples without overwriting your work](14-copy-examples-without-overwriting.md)
 
+15. [Connect commands to helpful guides](15-connect-commands-to-guides.md)
+16. [Keep learning checkpoints with their source revision](16-keep-revision-bound-checkpoints.md)
+
 ## Prepare for the practical examples
 
 Use the [Windows development guide](../../umicom/windows-development.md) for the supported tools, repository-specific presets, SDK installation, logs and recovery steps. The console lab needs an installed Framework SDK; the optional window also needs GTK4. Reading and paper tracing do not need either installation.
