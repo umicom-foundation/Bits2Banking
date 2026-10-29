@@ -77,3 +77,5 @@ UmiBrowserReadingDocumentDestroy(document);</code></pre>
 <li><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/learning_pack/test_catalogue_reading_gtk4.c">Native reading workflow cases</a></li></ul>
 
 [Previous: Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md) · [Course index](index.md)
+
+[Next: Connect keyboard and button help](21-connect-keyboard-and-button-help.md)
