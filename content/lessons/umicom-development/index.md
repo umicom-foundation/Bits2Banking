@@ -48,3 +48,5 @@ The example is an exercise counter, not a complete application framework. Its si
 [Browse the course pages](../../courses/umicom-development/index.html) · [Connected learning paths](../../start/systems-learning.md) · [Umicom source lessons](../06-umicom/index.md)
 
 - [Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md)
+
+- [Find text with shared Framework services](24-find-text-with-shared-services.md)

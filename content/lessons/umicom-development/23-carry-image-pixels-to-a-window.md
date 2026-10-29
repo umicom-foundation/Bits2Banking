@@ -87,3 +87,5 @@ It copied the selected resource's illustration metadata. Inspect the copied stat
 [Previous: Follow protocol message boundaries](22-follow-protocol-message-boundaries.md) · [Course contents](index.md)
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
+
+[Next: Find text with shared Framework services](24-find-text-with-shared-services.md)
