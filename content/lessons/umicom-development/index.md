@@ -29,6 +29,12 @@ If folders, programs or commands are unfamiliar, start with [Introduction to Com
 
 17. [Keep reading state consistent](17-keep-reading-state-consistent.md)
 
+18. [Store checkpoints on a worker](18-store-checkpoints-on-a-worker.md)
+
+19. [Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md)
+
+20. [Preserve structure when reading code](20-preserve-structure-when-reading-code.md)
+
 ## Prepare for the practical examples
 
 Use the [Windows development guide](../../umicom/windows-development.md) for the supported tools, repository-specific presets, SDK installation, logs and recovery steps. The console lab needs an installed Framework SDK; the optional window also needs GTK4. Reading and paper tracing do not need either installation.

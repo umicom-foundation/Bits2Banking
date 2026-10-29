@@ -91,3 +91,5 @@ UmiLearningReaderDestroy(candidate);</code></pre>
 <p>For a final source exercise, find where the native worker clears a failed candidate's snapshot before returning the previous reader. Explain why publishing that new snapshot alongside the old text would still be inconsistent, even if no memory leaked.</p>
 
 [Previous lesson](16-keep-revision-bound-checkpoints.md) · [Course overview](index.md)
+
+[Next: store checkpoints on a worker](18-store-checkpoints-on-a-worker.md)

@@ -1,0 +1,171 @@
+# Store checkpoints on a worker
+
+<h2>What you will learn</h2>
+<p>Saving a small record can take longer than drawing a window. A disk may be busy,
+a network drive may be unavailable, or a database may be locked. This lesson
+explains how Umicom Framework lets a reader continue to exist while a background
+worker stores one explicit learning checkpoint. You will trace the real service
+used by Studio's learning catalogue.</p>
+<p>You can follow the diagrams without installing anything. For the code sections,
+you need the ideas of a function, a structure and a pointer. The
+<a href="../../courses/learning-c/index.html">Learning C</a> course introduces them.
+The previous chapters explain verified readers and revision-bound checkpoints.
+Here we concentrate on who owns each object and when a request becomes a result.</p>
+<h2>1. Separate the request from the result</h2>
+<p>A <strong>request</strong> describes what the user has asked the application to
+do. A <strong>result</strong> reports what actually happened. Clicking Record can
+produce an accepted request before the database operation has even started.
+Treating acceptance as success would give the user misleading information.</p>
+<p>The request in <code>learning_progress_local.h</code> contains an action,
+a database path, a learner ID, a checkpoint and an evidence reference. The receipt
+contains those captured fields, the verified lesson selection, storage flags,
+a journal snapshot and the final status. A <strong>snapshot</strong> is a copy of
+some state at a particular point; it is not a live connection to later changes.</p>
+<svg viewBox="0 0 900 180" role="img" aria-labelledby="request-title request-description">
+<title id="request-title">Acceptance is earlier than durable storage</title>
+<desc id="request-description">The user accepts a copied request. A worker opens the database, performs the operation and closes it. The main thread then publishes a captured receipt. A failure can occur in the worker even though the request was accepted.</desc>
+<g fill="#eef5f8" stroke="#23617c" stroke-width="2"><rect x="8" y="25" width="260" height="120" rx="8"/><rect x="320" y="25" width="260" height="120" rx="8"/><rect x="632" y="25" width="260" height="120" rx="8"/></g>
+<g font-family="sans-serif" font-size="18" text-anchor="middle" fill="#173047"><text x="138" y="65">Main thread</text><text x="138" y="98">Copy and accept request</text><text x="450" y="65">Worker thread</text><text x="450" y="98">Open → operate → close</text><text x="762" y="65">Main thread</text><text x="762" y="98">Show captured result</text><text x="294" y="88">→</text><text x="606" y="88">→</text></g></svg>
+<p>A thread is one sequence of instructions running in a process. The main GTK
+thread owns the widgets. A worker performs the storage operation. They belong to
+the same application, but that does not make every object safe to use from both
+threads at the same time.</p>
+<h2>2. Capture the user's choice</h2>
+<p>Imagine that you choose database A, click Record, then change the path field to
+database B. The accepted action must still refer to A. Otherwise the program would
+write to a destination you had not chosen when accepting that action.</p>
+<p>In <code>learning_catalogue_progress.c</code>, the native adapter copies the
+fixed-size request structure into a job. It also clones the current reader.
+Cloning creates an independently owned reader with the already verified selection.
+It does not reopen the source file and it does not silently adopt a newer lesson.</p>
+<pre><code>job-&gt;progress_receipt.request = *request;
+job-&gt;progress_receipt.selection = owner-&gt;state.reader;
+status = UmiLearningReaderClone(
+    owner-&gt;reader, &amp;job-&gt;progress_reader);</code></pre>
+<p><code>*request</code> means the structure at the supplied pointer.
+Structure assignment copies its fixed-size arrays as well as its numeric fields.
+That works here because the request contains values, not borrowed pointers to
+entry-field text. The reader still needs a clone because it owns allocated objects;
+assigning a reader pointer would only make another name for the same object.</p>
+<p>Before accepting the job, the adapter validates the action, the path and the
+identifier fields. Only a displayed guide or lesson can receive progress.
+A source example is refused. This admission stage performs no database operation.
+If cloning fails, it releases the unsubmitted job and leaves the reader unchanged.</p>
+<h2>3. Give one worker the whole connection lifetime</h2>
+<p>A database connection is an object used to communicate with a database.
+Some libraries restrict how connections may be shared between threads.
+Even where sharing is possible, mixed ownership makes it harder to reason about
+transactions and shutdown. The local checkpoint service avoids that problem:
+the same worker opens, uses and closes one connection.</p>
+<p>Read <code>UmiLearningProgressLocalExecute</code> in
+<code>src/teacher/learning_progress_local.c</code>. Its ownership sequence is:</p>
+<ol><li>Validate the copied request and read the verified selection.</li>
+<li>Open the chosen SQLite database. Inspect opens an existing database read-only;
+Record may create the selected database.</li>
+<li>Open a journal for the chosen learner. The journal borrows the connection.</li>
+<li>Inspect the current checkpoint, or record an explicit event.</li>
+<li>Copy the final journal state into the receipt, including an uncertainty flag
+if a storage operation failed.</li>
+<li>Close the journal, then destroy the connection.</li>
+<li>Publish the receipt to the caller.</li></ol>
+<p><strong>Borrowing</strong> means using an object whose lifetime someone else
+controls. The journal must close before its connection is destroyed. The source
+makes that order visible:</p>
+<pre><code>receipt.status = status;
+UmiLearningProgressClose(progress);
+umi_data_server_destroy(server);
+*out = receipt;
+return status;</code></pre>
+<p>The receipt contains copied values. It does not expose the closed connection
+or a pointer into the destroyed journal. A frontend can therefore display it later
+without retaining either storage owner.</p>
+<h2>4. Keep the visible lesson independent</h2>
+<p>The worker's purpose is to record something about the selected lesson. It is not
+a navigation operation. It must not advance reading history, replace the text or
+change which lesson the user is viewing.</p>
+<p>In <code>learning_catalogue_jobs.c</code>, checkpoint jobs have their own action.
+Their independent reader is stored in <code>progress_reader</code>. Completion
+publishes a progress receipt, not a replacement reading session.
+Search and navigation can later change the display without changing the identity
+inside that earlier receipt.</p>
+<p>This separation is useful beyond learning software. A media export receipt must
+keep the export's accepted destination even if another playlist is selected.
+A project-build receipt must keep the source configuration that was actually used.
+Each application has different domain rules, but captured inputs and explicit
+ownership are reusable Framework ideas.</p>
+<h2>5. Understand why retrying can be dangerous</h2>
+<p>A <strong>transaction</strong> groups storage changes into one operation.
+A commit asks the database to make those changes durable. Sometimes the database
+commits but the caller receives an error before it can know that reliably.
+“An error was returned” does not always mean “nothing was written”.</p>
+<p>The progress journal exposes <code>recovery_required</code> after an uncertain
+commit or rollback. The native panel then blocks further records. The learner must
+inspect the same database and learner through a fresh connection. Inspecting a
+different database does not answer whether the first operation succeeded.</p>
+<table><thead><tr><th>Observation</th><th>Appropriate response</th></tr></thead><tbody>
+<tr><td>Request accepted</td><td>Wait for completion. Do not yet claim storage succeeded.</td></tr>
+<tr><td>Successful new event</td><td>Display its captured identity and sequence.</td></tr>
+<tr><td>Identical event already exists</td><td>Explain that no additional event was appended.</td></tr>
+<tr><td>Valid journal, no exact match</td><td>Explain that this revision and hash have no matching checkpoint.</td></tr>
+<tr><td>Uncertain write</td><td>Inspect the original database and learner before deciding whether to retry.</td></tr>
+<tr><td>Damaged journal</td><td>Preserve it for investigation; do not replace it with an empty history.</td></tr>
+</tbody></table>
+<p>These are local, plaintext learning records. They do not authenticate the learner,
+prove that evidence exists or establish mastery. A hash identifies the lesson bytes;
+it does not turn a self-recorded action into an assessment.</p>
+<h2>6. Close the window without losing ownership</h2>
+<p>Closing a panel prevents new requests. It does not undo a write already accepted
+by its worker. The job holds its own copied fields and reader, so it does not need
+to access a destroyed widget to finish.</p>
+<p>The job keeps a weak reference to its presentation root. A weak reference lets
+completion ask whether that object still exists without keeping the window alive.
+If the panel has retired or disappeared, completion discards the presentation
+result. The job still releases its reader and other allocations.</p>
+<p>For a GtkApplication host, accepted jobs also hold the application while work is
+pending. A hold keeps orderly exit from ending the event loop too early.
+An explicit forced quit can bypass this contract. Closing a window is therefore
+not proof that its accepted database write was cancelled; inspect saved state
+when you return.</p>
+<h2>7. Follow the real regression source</h2>
+<p>Open <code>tests/learning_pack/test_catalogue_progress_gtk4.c</code>. The tests
+exercise public requests with real local database operations. One narrow
+substitution reports uncertainty after a real write; that lets the test check
+recovery without depending on a disk randomly failing.</p>
+<ol><li>Find <code>no-automatic-write</code>. Explain why opening and reloading
+a lesson must leave the checkpoint database absent.</li>
+<li>Find <code>captured-request</code>. The caller changes its request after dispatch.
+Explain why the saved receipt must retain the original values.</li>
+<li>Find <code>revision-binding</code>. An older event must not satisfy the query for
+a newly opened pack revision.</li>
+<li>Find <code>other-database-recovery</code>. Explain why a valid inspection of
+another database must leave the record block in place.</li>
+<li>Find <code>destroy-pending</code>. Explain why the durable event can exist after
+the presentation has disappeared.</li></ol>
+<p>These cases are authored checks. Their presence in a source repository is not
+evidence that a particular binary passed them. A missing GTK display or SQLite
+backend is reported as skipped coverage. A skip is not a successful storage or
+window test.</p>
+<h2>8. Try the user workflow</h2>
+<p>After building a version that includes the feature, use Studio's local learning
+catalogue and follow Framework's
+<code>docs/learning/record-private-checkpoints.html</code>. Choose your own private
+database, open a lesson, inspect, then record one deliberate checkpoint.
+Reopen the database and inspect again. Repeat the identical record and check that
+the event count does not grow.</p>
+<p>Do not intentionally damage your real records for this exercise. For source-level
+experiments, use a separate test directory and the supplied regression fixtures.
+Keep learner history outside public repositories.</p>
+<details><summary>Check your understanding</summary><p><strong>Why is a copied path
+not enough?</strong> The request also needs the learner, checkpoint and verified
+document identity. Copying only the path would still allow later selections to
+change what the record describes.</p><p><strong>Why close the journal first?</strong>
+It borrows the database connection. Destroying the connection first would leave
+the journal holding a pointer to an object that no longer exists.</p>
+<p><strong>Does a successful Record prove understanding?</strong> No. It proves
+that this local operation stored the requested event according to its contract.
+Assessment needs separate evidence and authority.</p></details>
+
+[Previous lesson](17-keep-reading-state-consistent.md) · [Course overview](index.md)
+
+
+[Next: Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md)

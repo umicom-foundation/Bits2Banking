@@ -16,7 +16,9 @@ Umicom Framework now offers three **optional, separately verified** companion re
 | `.training-lock` | AdamW parameters, learning-rate schedule, seeds, model shape, evaluation settings and the earlier dataset catalogue | Rejects inconsistent training plans |
 | `.source-lock` | SHA-256 of the exact immutable imported source bytes, including ordered names and partitions | Strengthens source identity beyond the earlier FNV fingerprints |
 
-![Three independent records checked before AdamW resume](../../assets/diagrams/source-locked-adamw-resume.svg)
+![Three independent records checked before AdamW resume](../../courses/llm-from-scratch/assets/diagrams/source-locked-adamw-resume.svg)
+
+<!-- The illustration is owned by the canonical illustrated course. The former ../../assets/diagrams/source-locked-adamw-resume.svg route is retained here as path history; sharing the existing asset keeps both lesson presentations aligned. -->
 
 These files support one another. The source lock does not replace the training lock: a run could retain the exact dataset while silently changing its learning-rate horizon. Likewise, a training lock alone does not cryptographically establish the original source contents.
 
