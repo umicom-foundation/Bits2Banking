@@ -64,3 +64,9 @@ The example is an exercise counter, not a complete application framework. Its si
 - [Keep test data separate from your work](30-keep-test-data-separate.md)
 
 - [Understand skipped tests and host coverage](31-understand-skipped-tests-and-host-coverage.md)
+
+- [Use Studio, Trader and Media workspaces](32-use-application-workspaces.md)
+
+- [Navigate panels with the keyboard](33-follow-keyboard-focus.md)
+
+- [Check layouts without losing your work](34-check-layout-and-draft-retention.md)
