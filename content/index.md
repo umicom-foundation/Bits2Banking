@@ -8,7 +8,11 @@ Begin with [Introduction to Computers](lessons/00-getting-started/index.md) if f
 <!-- The earlier raster reference is retained for artwork comparison. The SVG below uses the shared wordmark sizing rule and stays legible on narrow displays.
 ![Umicom Foundation logo](assets/branding/umicom-logo.png)
 -->
+<!-- The earlier single-theme reference is retained for review.
 ![Umicom Foundation logo](assets/branding/umicom-wordmark.svg){ .umicom-wordmark width="420" height="103" }
+-->
+![Umicom Foundation logo](assets/branding/umicom-wordmark.svg){ .umicom-wordmark .umicom-wordmark-light width="420" height="103" }
+![Umicom Foundation logo](assets/branding/umicom-wordmark-on-dark.svg){ .umicom-wordmark .umicom-wordmark-dark width="420" height="103" }
 
 Learn how computers work, how software is built, and how technology can serve people.
 
