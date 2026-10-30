@@ -70,3 +70,5 @@ The example is an exercise counter, not a complete application framework. Its si
 - [Navigate panels with the keyboard](33-follow-keyboard-focus.md)
 
 - [Check layouts without losing your work](34-check-layout-and-draft-retention.md)
+
+- [Read calendar data without inventing values](35-read-calendar-data-without-inventing-values.md)
