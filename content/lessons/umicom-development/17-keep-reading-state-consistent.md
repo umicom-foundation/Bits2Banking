@@ -93,3 +93,9 @@ UmiLearningReaderDestroy(candidate);</code></pre>
 [Previous lesson](16-keep-revision-bound-checkpoints.md) · [Course overview](index.md)
 
 [Next: store checkpoints on a worker](18-store-checkpoints-on-a-worker.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 6 of 13.
+
+[Previous: Keep learning checkpoints with their source revision](16-keep-revision-bound-checkpoints.md) · [Next: Store checkpoints on a worker](18-store-checkpoints-on-a-worker.md)

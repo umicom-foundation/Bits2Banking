@@ -115,3 +115,9 @@ Without that observation, both tasks might still be pending. The test could then
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
 
 Next: [Register shared application services](11-register-shared-services.md).
+
+## Continue this module
+
+Shared services and application lifetimes · Lesson 3 of 6.
+
+[Previous: Inspect application services](12-inspect-application-services.md) · [Next: Understand waiting and timeouts](28-understand-waiting-and-timeouts.md)

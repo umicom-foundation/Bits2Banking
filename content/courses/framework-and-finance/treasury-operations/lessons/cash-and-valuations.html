@@ -1,0 +1,33 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/treasury-operations/lessons/cash-and-valuations.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Separate cash forecasts from valuations — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>Separate cash forecasts from valuations</h1><p class="lead">Trace a fictional foreign-exchange obligation through dates, valuation, cash and settlement.</p><p>Lesson 2 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>A <strong>cash position</strong> describes money observed at a particular time. A <strong>cash forecast</strong> estimates future receipts and payments. A <strong>valuation</strong> estimates what a contract is worth under stated assumptions. These answer different questions and should not share an unexplained “balance” label.</p>
+<p>Suppose an account holds 1,000 units today, expects 300 tomorrow and must pay 800 tomorrow. The simple forecast ending balance is 500. If the receipt is delayed, the balance becomes 200. A forecast should retain its assumptions so both scenarios can be explained.</p>
+<pre>opening 1,000 + expected receipt 300 − due payment 800 = forecast 500
+opening 1,000 + delayed receipt   0 − due payment 800 = forecast 200</pre>
+<p>A <strong>market snapshot</strong> is the set of prices and rates observed for an evaluation. A model may use that snapshot to discount a future amount. For a simple teaching example, a future 100 multiplied by a discount factor of 0.98 gives a present value of 98. The factor and date convention must be explicit; 98 is not an observed bank balance.</p>
+<h2>Build an evidence table</h2><ol><li>Use columns for amount, currency, expected date, source and confidence.</li><li>Enter the opening cash separately from future flows.</li><li>Create the delayed-receipt scenario without replacing the original forecast.</li><li>Record which market snapshot a valuation used.</li><li>Compare predicted and actual flows after the date passes.</li></ol>
+<p>More advanced models require calendars, day counts, curves and calibration. A calendar decides which days count as business days; a day-count convention measures a time interval for a calculation. Neither should be guessed from the computer's current date.</p>
+<p>The source-reading task introduces Framework's cash-forecast contract. It is a starting point for inspecting what the current implementation represents, not a claim that a complete production pricing engine is qualified.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\include\umicom\finance\treasury\cash_forecast.h</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>typedef struct UmiTreasuryCashForecast {
+    char id[UMI_TREASURY_ID_CAPACITY];
+    int64_t horizon_end_epoch_millis;
+    int64_t inflow_minor;
+    int64_t outflow_minor;
+} UmiTreasuryCashForecast;
+/**
+ * Initialise treasury cash forecast from caller-provided values so later operations
+ * receive a known state.
+ */
+UmiStatus umi_treasury_cash_forecast_init(UmiTreasuryCashForecast *value,
+    const char *id,
+    int64_t horizon_end_epoch_millis,
+    int64_t inflow_minor,</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Inspect cash_forecast.h and cash_position.h side by side. List the inputs each requires and identify any dates or currencies the caller must supply.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>A valuation increased by 20. Must the bank account have received 20?</p><h3>Worked answer</h3><p>No. A valuation can change because prices or assumptions changed. Cash changes need cash-flow or settlement evidence. The two may be connected by later events but are not interchangeable.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="trade-to-settlement.html">Previous lesson</a> · <a href="../index.html">Course overview</a> · <a href="../../index.html">Choose the next course</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

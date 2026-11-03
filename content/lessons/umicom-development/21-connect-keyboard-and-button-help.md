@@ -166,3 +166,9 @@ and strongly held only while a request is being admitted.</p></details>
 [Previous: Preserve structure when reading code](20-preserve-structure-when-reading-code.md) · [Course index](index.md)
 
 [Next: Follow protocol message boundaries](22-follow-protocol-message-boundaries.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 4 of 13.
+
+[Previous: Connect commands to helpful guides](15-connect-commands-to-guides.md) · [Next: Keep learning checkpoints with their source revision](16-keep-revision-bound-checkpoints.md)

@@ -2,7 +2,7 @@
 
 ## A starting point for every learner
 
-Begin with [Introduction to Computers](lessons/00-getting-started/index.md) if files, programs or commands are unfamiliar. No installation or previous coding is required. Use the [connected learning map](start/systems-learning.md) to continue into existing chapters and courses.
+Begin with [Introduction to Computers](lessons/00-getting-started/index.md) if files, programs or commands are unfamiliar. No installation or previous coding is required. Use the [learning sequence](start/learning-sequence.md) to continue into existing chapters and courses.
 
 
 <!-- The earlier raster reference is retained for artwork comparison. The SVG below uses the shared wordmark sizing rule and stays legible on narrow displays.

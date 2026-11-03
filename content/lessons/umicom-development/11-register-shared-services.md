@@ -113,3 +113,9 @@ For a final paper exercise, list three objects in a Studio workflow: a registry,
 <details><summary>Why is checking an error code alone not enough?</summary><p>An operation can report failure after changing part of its state. Check that the original catalogue is unchanged, then try corrected input. Both checks are needed to demonstrate a usable failure path.</p></details>
 
 [Previous lesson](10-close-background-work.md) · [Course overview](index.md) · [Next: Inspect application services](12-inspect-application-services.md)
+
+## Continue this module
+
+Shared services and application lifetimes · Lesson 1 of 6.
+
+[Next: Inspect application services](12-inspect-application-services.md)

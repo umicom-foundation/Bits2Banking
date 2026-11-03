@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/financial-integration/lessons/mapping-boundaries.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Translate meaning, not just field names — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>Translate meaning, not just field names</h1><p class="lead">Translate data without losing meaning and trace one controlled lifecycle across services.</p><p>Lesson 1 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>An <strong>adapter</strong> translates between systems with different interfaces. A <strong>canonical model</strong> is the shared representation used inside an application family. Translation is successful only if the business meaning survives, not merely if two fields share a similar name.</p>
+<p>Suppose one message stores an amount as the decimal text “12.50” with currency GBP, while an internal example uses integer pence. The correct conversion is 1,250 minor units. Parsing “12.50” as the integer 12 loses information. Assuming every currency uses two decimal places also creates errors.</p>
+<pre>external data → parse → validate meaning → canonical value
+canonical value → explicit mapping → external format
+           rejected fields → visible diagnostic</pre>
+<p>Dates need similar care. A calendar date is not a timestamp. A timestamp includes a position on a time scale, often with a timezone or UTC interpretation. Converting a timestamp into a business date requires a stated rule; the machine's current locale is not a safe substitute.</p>
+<h2>Write a mapping table</h2><ol><li>Use columns for source field, target field, unit, required status and refusal rule.</li><li>Map amount and currency together.</li><li>Specify how absent values differ from zero.</li><li>Include an unsupported value and record a visible rejection.</li><li>Keep the source identifier so an operator can trace the transformation.</li></ol>
+<p>Across Java and C, memory and error conventions also differ. A boundary must define string encoding, ownership, size limits and error translation. Do not pass runtime-specific objects as raw portable records. A small versioned contract is easier to inspect and test.</p>
+<p>Historical vendor training material can explain service boundaries and workflows. Exact vendor classes and deployment commands depend on a licensed release. These lessons use Umicom source and invented messages, not unverified vendor signatures.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\include\umicom\integration\fabric\message_contract.h</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>typedef struct UmiFabricMessageContract {
+    char contract_id[UMI_FABRIC_ID_CAPACITY];
+    char schema_id[UMI_FABRIC_ID_CAPACITY];
+    UmiFabricVersion version;
+    uint64_t max_payload_bytes;
+    UmiFabricDeliveryMode delivery_mode;
+} UmiFabricMessageContract;
+
+/**
+ * Initialise fabric message contract from caller-provided values so later operations
+ * receive a known state.
+ */
+UmiStatus umi_fabric_message_contract_init(UmiFabricMessageContract *item, const char *contract_id, const char *schema_id, UmiFabricVersion version, uint64_t max_payload_bytes, UmiFabricDeliveryMode delivery_mode);
+/**</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Read message_contract.h and message_header.h. Identify validation metadata and separate it from business-specific conversion rules that an adapter must supply.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>Should an unknown currency code silently become the system's default currency?</p><h3>Worked answer</h3><p>No. That changes the meaning of the amount. Refuse or route the item for explicit repair while preserving the original input.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="../index.html">Course overview</a> · <a href="lifecycle-capstone.html">Next lesson</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

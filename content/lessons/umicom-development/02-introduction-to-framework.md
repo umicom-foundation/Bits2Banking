@@ -54,3 +54,9 @@ For a larger product, look for an existing Framework service before implementing
 Next, read [Introduction to CMake](03-introduction-to-cmake.md).
 
 [Course contents](index.md)
+
+## Continue this module
+
+First application: one example from source to a window · Lesson 2 of 6.
+
+[Previous: Introduction to C programming](01-introduction-to-c.md) · [Next: Introduction to CMake](03-introduction-to-cmake.md)

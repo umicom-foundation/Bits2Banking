@@ -138,3 +138,9 @@ Continue with [remembering locations without inheriting trust](19-remember-locat
 <p>A Welcome row displays revision 4. Another action updates the same recent item to revision 5 before you press Pin. Should the old button silently pin revision 5?</p>
 <p><strong>Explanation:</strong> No. Its expected item revision is stale. Refuse the change and refresh the view, allowing a new deliberate action. Changing a different recent item does not by itself make this item's revision stale.</p>
 </details>
+
+## Continue this module
+
+Project study: application workspaces · Lesson 1 of 4.
+
+[Next: Use Studio, Trader and Media workspaces](32-use-application-workspaces.md)

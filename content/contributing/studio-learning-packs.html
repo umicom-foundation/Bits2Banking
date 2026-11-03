@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/contributing/studio-learning-packs.html
+
+PURPOSE:
+Explain how maintainers publish reviewed lessons for the native learning catalogue.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Publishing lessons for Umicom Studio</title>
+<style>body{max-width:58rem;margin:2rem auto;padding:0 1rem;font:1rem/1.65 system-ui,sans-serif;color:#203047}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef3f7;padding:1rem}a{color:#00667b}</style></head><body><main>
+<h1>Publishing lessons for Umicom Studio</h1>
+<p>A learning pack is a folder containing lessons and a manifest. A <strong>manifest</strong> is a list of the files the reader may open. Each entry includes a title, a stable identifier and a SHA-256 checksum: a value calculated from the exact file bytes. If the file changes, its checksum changes. This detects a mismatched edition; a checksum alone does not identify or authenticate its publisher.</p>
+<p>The native catalogue, admission checks, reader, history and optional local checkpoints belong to Umicom Framework. This small Python tool prepares course metadata for that reader. It does not compile a project, run lesson examples, install software or grant project trust.</p>
+<h2>Review the course</h2>
+<ol><li>Keep related pages in one ordinary folder, without symbolic links or junctions. Those are filesystem shortcuts to another location and are refused by the publisher.</li><li>Write clear titles, prerequisites, examples, an exercise and a worked answer. Use fictional accounts and transactions.</li><li>Open <code>collection.json</code>. Its <code>resources</code> list is explicit: the publisher does not scan and include every file in a directory.</li><li>Add each intended HTML page with a stable <code>id</code>, <code>title</code>, <code>topic</code>, <code>kind</code> and relative <code>path</code>. Use <code>lesson</code> for lessons and <code>guide</code> for overviews.</li><li>Use local links between declared pages. A link such as <code>../index.html</code> means the index one folder above. It may stay inside the selected pack; it must never escape the pack root.</li><li>Check the Framework version supported by the reader. Set a reviewed inclusive <code>minimum</code> and <code>maximum</code> compatibility range. Do not enlarge it simply to bypass an error.</li></ol>
+<h2>Publish the reviewed bytes</h2>
+<p>Open PowerShell. Replace the checkout path if yours differs. These commands need an installed Python interpreter. Run the write command only after reviewing the content.</p>
+<pre>Set-Location "C:\umicom\Umicom-Bits2Banking"
+python tools/prepare_studio_learning_pack.py content/courses/framework-and-finance --write
+python tools/prepare_studio_learning_pack.py content/courses/framework-and-finance --check</pre>
+<p>The first command writes <code>learning-pack.json</code> through a temporary file in the same folder. The second compares without writing. A matching pack reports <code>Learning pack matches the declared file bytes.</code> A missing resource, unsafe path, duplicate identity, unsupported metadata or stale manifest produces an error. Correct the input and repeat; do not remove the native checks.</p>
+<p>Increase the collection revision for a new published edition. Keep existing resource IDs when their meaning stays the same so a learner can recognise the lesson. Changing the bytes requires publishing new checksums even when only prose changes.</p>
+<h2>Preserve bytes between computers</h2>
+<p>Windows and Unix tools sometimes write different line endings. That changes the checksum even when the text looks identical. The repository's <code>.gitattributes</code> keeps this collection at LF line endings. Apply an equivalent explicit policy to another pack before publishing it, and run <code>--check</code> on the delivered checkout. Do not hash one copy and distribute another.</p>
+<h2>Check the content and reader</h2>
+<ol><li>Open the course index in a browser. Follow every course and lesson link, and check illustrations and worked answers.</li><li>Use the project's test environment to run <code>python -m pytest tests/test_studio_learning_pack.py</code>. This exercises the publisher's refusal and replacement rules and checks this collection's declared links. It is separate from native UI qualification.</li><li>In Studio, open <strong>Guided Learning → Open local learning catalogue</strong>. Select the pack folder and choose <strong>Load learning pack</strong>.</li><li>Open the index, move into a course, follow a lesson, return to the course and use Back/Forward. Check anchor links, long content and keyboard navigation.</li><li>If using checkpoints, select a database file in a writable folder you choose. Record and inspect a checkpoint; then close and reopen the catalogue and load the pack again.</li></ol>
+<p>The native reader shows supported structured content, not arbitrary browser behaviour. CSS styling and interactive scripts are not a native lesson contract. Give every visual explanation a useful text description. Never treat loading a page as passing an exercise.</p>
+<h2>Limits and recovery</h2>
+<ul><li>A pack contains at most 256 resources. This publisher limits each resource to 1 MiB and the manifest to 256 KiB. Split a larger library into focused packs.</li><li>Identifiers, titles, paths and version fields have native limits. Read an error as a request to correct the metadata, rather than truncate it silently.</li><li>If a file is missing or replacement fails, an existing manifest is retained. Recheck the filesystem and permissions before retrying.</li><li>The native course button selects a known pack identity. Other packs can still be loaded and searched through the catalogue; they do not require hard-coded drive letters in Studio.</li><li>Publishing the manifest does not prove a Studio build, UI workflow or learning example works. Keep executed results separate from authored checks.</li></ul>
+<p><a href="../courses/framework-and-finance/index.html">Open Framework and Financial Systems courses</a></p>
+</main></body></html>

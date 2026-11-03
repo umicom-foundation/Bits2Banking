@@ -81,3 +81,9 @@ UmiBrowserReadingDocumentDestroy(document);</code></pre>
 [Previous: Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md) · [Course index](index.md)
 
 [Next: Connect keyboard and button help](21-connect-keyboard-and-button-help.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 9 of 13.
+
+[Previous: Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md) · [Next: Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md)

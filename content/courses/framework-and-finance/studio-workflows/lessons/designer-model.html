@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/studio-workflows/lessons/designer-model.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Build a form from a shared document model — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>Build a form from a shared document model</h1><p class="lead">Understand editing, saving and visual components through the same Framework state model.</p><p>Lesson 2 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>A <strong>component</strong> is a reusable interface part, such as a text field or button. A visual designer lets you arrange components. Its picture is a <strong>view</strong> of a document model: the stored description of components, properties and relationships.</p>
+<p>For a notes form, start with a window containing a title field, a notes field and a Save button. Give each component a stable identifier. The identifier connects selection, property editing, event binding and saved data. A displayed caption can change without changing that identity.</p>
+<pre>document model
+ ├─ component tree
+ ├─ design canvas
+ ├─ property inspector
+ └─ generated or rendered application</pre>
+<p>If dragging the button changes only its drawn rectangle, saving and reopening may lose the change. The drag must become an edit of the model. An undo record describes how to reverse that edit. The component tree and property inspector then refresh from the same updated document.</p>
+<p>A <strong>declarative</strong> description states what exists, rather than listing every low-level construction call. It still needs validation: a child must have a valid parent, an identifier must not collide, and a requested event handler must be supported. A picture of a button is not an implementation of saving.</p>
+<h2>Design on paper</h2><ol><li>Write the four component identifiers: window, title, notes and save.</li><li>Draw their parent-child tree.</li><li>Change the button label to “Save note”; keep its identifier.</li><li>Describe the event: a user activates Save. Describe the command: save the current document. Describe the result: successful save or a specific failure.</li><li>Move the button and record both old and new positions so the edit can be undone.</li></ol>
+<p>Framework's designer document snapshot exposes component count, revision and dirty state. A <strong>revision</strong> is a state version. It lets a reader notice that its previous view may be stale. It is not a timestamp and does not automatically mean the state was persisted.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\include\umicom\designer\document.h</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>typedef struct UmiDesignerDocument UmiDesignerDocument;
+/**
+ * Represent the designer document snapshot data shared with callers of this public
+ * contract.
+ */
+typedef struct UmiDesignerDocumentSnapshot { char application_id[UMI_DECL_ID_CAPACITY]; size_t component_count; uint64_t revision; int dirty; } UmiDesignerDocumentSnapshot;
+/**
+ * Initialise designer document from caller-provided values so later operations receive a
+ * known state.
+ */
+UmiStatus umi_designer_document_create(const char *application_id,UmiDesignerDocument **out_document);
+/**
+ * Provide the designer document from declarative operation used by this module and its
+ * client applications.</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Locate UmiDesignerDocumentSnapshot. Identify the fields that describe the current model and the field that indicates unsaved changes. Follow a declared operation to src/designer using the repository search.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>Should changing the selected component create a new saved file?</p><h3>Worked answer</h3><p>Selection changes which component is being inspected. It need not alter the document or save anything. Editing a component property changes the model; saving is a separate operation.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="documents-and-saving.html">Previous lesson</a> · <a href="../index.html">Course overview</a> · <a href="../../index.html">Choose the next course</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

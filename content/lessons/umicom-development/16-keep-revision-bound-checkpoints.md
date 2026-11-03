@@ -187,3 +187,9 @@ Mark which queries should return a current record and which should return
 [Previous lesson](15-connect-commands-to-guides.md) · [Course overview](index.md)
 
 [Next: Keep reading state consistent](17-keep-reading-state-consistent.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 5 of 13.
+
+[Previous: Connect keyboard and button help](21-connect-keyboard-and-button-help.md) · [Next: Keep reading state consistent](17-keep-reading-state-consistent.md)

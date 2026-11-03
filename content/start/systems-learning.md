@@ -1,5 +1,7 @@
 # Find your way from first concepts to OS and Kernel
 
+For a first visit, follow [Your learning sequence](learning-sequence.md). The routes below are subject references for returning learners.
+
 Choose by what you want to understand, not by age or job title. You can return to a simpler explanation whenever it helps. Lessons explain one topic; courses arrange topics into a longer route.
 
 ## I am starting with no computing background

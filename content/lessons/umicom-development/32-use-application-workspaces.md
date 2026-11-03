@@ -63,3 +63,9 @@ No. Hiding a panel changes presentation only. The sequence should stay unchanged
 </details>
 
 [Course contents](index.md) · [Read the illustrated lesson](../../courses/umicom-development/lessons/32-use-application-workspaces.html)
+
+## Continue this module
+
+Project study: application workspaces · Lesson 2 of 4.
+
+[Previous: Remember projects without deleting their files](29-remember-projects-without-deleting-files.md) · [Next: Navigate panels with the keyboard](33-follow-keyboard-focus.md)

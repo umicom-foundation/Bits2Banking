@@ -69,3 +69,9 @@ No. The fixture establishes only its own checks. Studio may have a different own
 </details>
 
 [Course contents](index.md) · [Read the illustrated lesson](../../courses/umicom-development/lessons/34-check-layout-and-draft-retention.html)
+
+## Continue this module
+
+Project study: application workspaces · Lesson 4 of 4.
+
+[Previous: Navigate panels with the keyboard](33-follow-keyboard-focus.md) · [Module complete: return to course contents](index.md)

@@ -54,3 +54,9 @@ The activity rule belongs to this teaching application. Framework supplies the s
 Continue with [Introduction to GTK4](05-introduction-to-gtk4.md).
 
 [Course contents](index.md)
+
+## Continue this module
+
+First application: one example from source to a window · Lesson 5 of 6.
+
+[Previous: Use an installed Framework SDK](06-use-an-installed-sdk.md) · [Next: Introduction to GTK4](05-introduction-to-gtk4.md)

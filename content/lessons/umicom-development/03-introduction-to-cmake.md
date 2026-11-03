@@ -72,6 +72,12 @@ A preset saves a collection of options for repeated use. It belongs to the curre
 
 **Answer:** No. Configuration created the build instructions. The compiler and linker run during the build stage.
 
-The [official CMake tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/index.html) provides additional exercises. Next, follow [Umicom Framework Development](04-framework-development.md).
+The [official CMake tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/index.html) provides additional exercises. Related reading: [Umicom Framework Development](04-framework-development.md).
 
 [Course contents](index.md)
+
+## Continue this module
+
+First application: one example from source to a window · Lesson 3 of 6.
+
+[Previous: Introduction to Umicom Framework](02-introduction-to-framework.md) · [Next: Use an installed Framework SDK](06-use-an-installed-sdk.md)

@@ -160,3 +160,9 @@ Sammy Hegab · Umicom Foundation · MIT. Original learning material.
 </details>
 
 [Next: Understand skipped tests and host coverage](31-understand-skipped-tests-and-host-coverage.md)
+
+## Continue this module
+
+Build, test and investigate a change · Lesson 4 of 5.
+
+[Previous: Understand which program a test runs](09-understand-test-commands.md) · [Next: Understand skipped tests and host coverage](31-understand-skipped-tests-and-host-coverage.md)

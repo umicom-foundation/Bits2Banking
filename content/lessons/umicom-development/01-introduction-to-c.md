@@ -64,3 +64,9 @@ Then restore the original greeting text and rebuild so its existing expected-out
 Continue through [Learning C: For beginners](../../courses/learning-c/index.html) for decisions, repetition, functions, arrays and borrowed memory. You can trace values on paper before installing any tools.
 
 [Course contents](index.md)
+
+## Continue this module
+
+First application: one example from source to a window · Lesson 1 of 6.
+
+[Next: Introduction to Umicom Framework](02-introduction-to-framework.md)

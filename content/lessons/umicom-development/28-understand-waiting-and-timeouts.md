@@ -135,3 +135,9 @@ Next: [Remember projects without deleting their files](29-remember-projects-with
 <p>A request has a ten-millisecond budget. An event takes six milliseconds to receive and its callback takes five more. Should the request get a fresh ten milliseconds after the callback?</p>
 <p><strong>Explanation:</strong> No. Eleven milliseconds have elapsed under the original deadline. Receiving an unrelated event or running its observer must not restart the request budget. Preserve accepted queued messages while reporting the timeout honestly.</p>
 </details>
+
+## Continue this module
+
+Shared services and application lifetimes · Lesson 4 of 6.
+
+[Previous: Close background work safely](10-close-background-work.md) · [Next: Follow protocol message boundaries](22-follow-protocol-message-boundaries.md)

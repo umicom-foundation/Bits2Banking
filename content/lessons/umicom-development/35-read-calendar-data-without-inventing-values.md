@@ -78,3 +78,9 @@ No. Both changes invent information. The actual value stays “Not supplied”, 
 </details>
 
 [Previous lesson](34-check-layout-and-draft-retention.md) · [Course contents](index.md)
+
+## Continue this module
+
+Optional application study: calendar data · Lesson 1 of 1.
+
+[Module complete: return to course contents](index.md)

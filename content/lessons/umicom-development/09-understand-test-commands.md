@@ -102,3 +102,9 @@ This is a source-reading lesson. Reading a regression does not execute it, and m
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
 
 Next: [Close background work safely](10-close-background-work.md).
+
+## Continue this module
+
+Build, test and investigate a change · Lesson 3 of 5.
+
+[Previous: Read build and test evidence](08-read-build-and-test-evidence.md) · [Next: Keep test data separate from your work](30-keep-test-data-separate.md)

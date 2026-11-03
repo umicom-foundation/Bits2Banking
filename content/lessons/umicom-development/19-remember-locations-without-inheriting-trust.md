@@ -208,3 +208,9 @@ neither authenticates the source by itself.</p></details>
 [Previous: Store checkpoints on a worker](18-store-checkpoints-on-a-worker.md) · [Course index](index.md)
 
 [Next: Preserve structure when reading code](20-preserve-structure-when-reading-code.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 8 of 13.
+
+[Previous: Store checkpoints on a worker](18-store-checkpoints-on-a-worker.md) · [Next: Preserve structure when reading code](20-preserve-structure-when-reading-code.md)

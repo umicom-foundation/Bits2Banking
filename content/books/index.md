@@ -10,6 +10,12 @@ Read [Volume 1 — Islam: Blueprint for Life](../v001_islam_blueprint_for_life/i
 
 The original book files remain under [`dropzone/documents/islam_blueprint_for_life`](https://github.com/umicom-foundation/Bits2Banking/tree/main/dropzone/documents/islam_blueprint_for_life), with existing BookForge publication tools unchanged.
 
+## Choose a book after a lesson
+
+Use the [beginner sequence](../start/learning-sequence.md) to learn a concept in small steps. Return to a book for a longer explanation of the same subject. A book volume number is a publication identifier, not a prerequisite: financial-system volumes do not come before basic C programming.
+
+[Original books and downloadable editions](original-book-catalogue.md) lists the longer publications. The course library keeps computer foundations, application development, financial systems and AI as separate routes.
+
 ## Computing and development
 
 Start with [Computer fundamentals](../lessons/01-computers/index.md), then continue to [Programming](../lessons/02-programming/index.md), [Native languages](../lessons/03-native-code/index.md), [Web development](../lessons/04-web/index.md) and [Software engineering](../lessons/05-engineering/index.md).

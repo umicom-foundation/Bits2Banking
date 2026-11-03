@@ -1,74 +1,74 @@
 # Umicom Framework Development
 
-Learn how a small C program becomes an application that shares Umicom Framework logic between a terminal and a GTK4 window. Read the explanations first, then build the supplied source when you are ready. Each lesson includes a question with an answer so you can check the idea before moving on.
+Follow First application, then Build, test and investigate a change. Continue with one source-study project at a time.
 
-## Choose a starting point
+[Beginner sequence](../../start/learning-sequence.md) · [Browser course](../../courses/umicom-development/index.html)
 
-If folders, programs or commands are unfamiliar, start with [Introduction to Computers](../../courses/learning-computer-architecture/index.html). The first chapter below introduces C; [Learning C: For beginners](../../courses/learning-c/index.html) offers a longer route through functions, decisions and memory before the later practical chapters.
+## First application: one example from source to a window
 
-## Lessons
+After Learning C, follow the exercise counter through its Framework interface, build description, console and GTK4 window. The C introduction is a recap, not a replacement for the C course.
 
 1. [Introduction to C programming](01-introduction-to-c.md)
 2. [Introduction to Umicom Framework](02-introduction-to-framework.md)
 3. [Introduction to CMake](03-introduction-to-cmake.md)
-4. [Umicom Framework Development](04-framework-development.md)
-5. [Introduction to GTK4](05-introduction-to-gtk4.md)
+4. [Use an installed Framework SDK](06-use-an-installed-sdk.md)
+5. [Umicom Framework Development](04-framework-development.md)
+6. [Introduction to GTK4](05-introduction-to-gtk4.md)
 
-6. [Use an installed Framework SDK](06-use-an-installed-sdk.md)
-7. [Build only what changed](07-build-only-what-changed.md)
-8. [Read build and test evidence](08-read-build-and-test-evidence.md)
-9. [Understand which program a test runs](09-understand-test-commands.md)
-10. [Close background work safely](10-close-background-work.md)
-11. [Register shared application services](11-register-shared-services.md)
-12. [Inspect application services](12-inspect-application-services.md)
-13. [Build an offline learning reader](13-build-an-offline-learning-reader.md)
-14. [Copy examples without overwriting your work](14-copy-examples-without-overwriting.md)
+## Build, test and investigate a change
 
-15. [Connect commands to helpful guides](15-connect-commands-to-guides.md)
-16. [Keep learning checkpoints with their source revision](16-keep-revision-bound-checkpoints.md)
+Use the same project to learn incremental builds, diagnostics and test commands. Continue with test data and skipped coverage after understanding a normal run.
 
-17. [Keep reading state consistent](17-keep-reading-state-consistent.md)
+1. [Build only what changed](07-build-only-what-changed.md)
+2. [Read build and test evidence](08-read-build-and-test-evidence.md)
+3. [Understand which program a test runs](09-understand-test-commands.md)
+4. [Keep test data separate from your work](30-keep-test-data-separate.md)
+5. [Understand skipped tests and host coverage](31-understand-skipped-tests-and-host-coverage.md)
 
-18. [Store checkpoints on a worker](18-store-checkpoints-on-a-worker.md)
+## Shared services and application lifetimes
 
-19. [Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md)
+Further source studies after the first application. Follow registration and inspection before asynchronous work, waiting and connection boundaries.
 
-20. [Preserve structure when reading code](20-preserve-structure-when-reading-code.md)
+1. [Register shared application services](11-register-shared-services.md)
+2. [Inspect application services](12-inspect-application-services.md)
+3. [Close background work safely](10-close-background-work.md)
+4. [Understand waiting and timeouts](28-understand-waiting-and-timeouts.md)
+5. [Follow protocol message boundaries](22-follow-protocol-message-boundaries.md)
+6. [Validate a tool connection](25-validate-a-tool-connection.md)
 
-21. [Connect keyboard and button help](21-connect-keyboard-and-button-help.md)
+## Project study: an offline learning reader
 
-22. [Follow protocol message boundaries](22-follow-protocol-message-boundaries.md)
+A separate project after shared services. Start with the reader and safe example copying, then add help, checkpoints, text and images in that order.
 
-## Prepare for the practical examples
+1. [Build an offline learning reader](13-build-an-offline-learning-reader.md)
+2. [Copy examples without overwriting your work](14-copy-examples-without-overwriting.md)
+3. [Connect commands to helpful guides](15-connect-commands-to-guides.md)
+4. [Connect keyboard and button help](21-connect-keyboard-and-button-help.md)
+5. [Keep learning checkpoints with their source revision](16-keep-revision-bound-checkpoints.md)
+6. [Keep reading state consistent](17-keep-reading-state-consistent.md)
+7. [Store checkpoints on a worker](18-store-checkpoints-on-a-worker.md)
+8. [Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md)
+9. [Preserve structure when reading code](20-preserve-structure-when-reading-code.md)
+10. [Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md)
+11. [Find text with shared Framework services](24-find-text-with-shared-services.md)
+12. [Search verified learning resources](26-search-verified-learning-resources.md)
+13. [Open search results without losing your place](27-open-search-results-without-losing-your-place.md)
 
-Use the [Windows development guide](../../umicom/windows-development.md) for the supported tools, repository-specific presets, SDK installation, logs and recovery steps. The console lab needs an installed Framework SDK; the optional window also needs GTK4. Reading and paper tracing do not need either installation.
+## Project study: application workspaces
 
-The example is an exercise counter, not a complete application framework. Its six logic checks and its manual window checks cover different behaviour. Follow them separately and keep their results.
+After GTK4 events and shared services, study projects, panels, keyboard focus and retained work.
 
-[Browse the course pages](../../courses/umicom-development/index.html) · [Connected learning paths](../../start/systems-learning.md) · [Umicom source lessons](../06-umicom/index.md)
+1. [Remember projects without deleting their files](29-remember-projects-without-deleting-files.md)
+2. [Use Studio, Trader and Media workspaces](32-use-application-workspaces.md)
+3. [Navigate panels with the keyboard](33-follow-keyboard-focus.md)
+4. [Check layouts without losing your work](34-check-layout-and-draft-retention.md)
 
-- [Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md)
+## Optional application study: calendar data
 
-- [Find text with shared Framework services](24-find-text-with-shared-services.md)
+A trading-data example after the core development route; it is not a prerequisite for C or GTK4.
 
-- [Validate a tool connection](25-validate-a-tool-connection.md)
+1. [Read calendar data without inventing values](35-read-calendar-data-without-inventing-values.md)
 
-- [Search verified learning resources](26-search-verified-learning-resources.md)
+## Practise with the source
 
-- [Open search results without losing your place](27-open-search-results-without-losing-your-place.md)
-
-- [Understand waiting and timeouts](28-understand-waiting-and-timeouts.md)
-
-- [Remember projects without deleting their files](29-remember-projects-without-deleting-files.md)
-
-- [Keep test data separate from your work](30-keep-test-data-separate.md)
-
-- [Understand skipped tests and host coverage](31-understand-skipped-tests-and-host-coverage.md)
-
-- [Use Studio, Trader and Media workspaces](32-use-application-workspaces.md)
-
-- [Navigate panels with the keyboard](33-follow-keyboard-focus.md)
-
-- [Check layouts without losing your work](34-check-layout-and-draft-retention.md)
-
-- [Read calendar data without inventing values](35-read-calendar-data-without-inventing-values.md)
+The [Framework project walkthrough](../../umicom/development-path.md) maps each file to its role and explains how to change, build and check the example.

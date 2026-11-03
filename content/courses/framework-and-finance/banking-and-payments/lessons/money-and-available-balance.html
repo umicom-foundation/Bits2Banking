@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/money-and-available-balance.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Represent money and available funds — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>Represent money and available funds</h1><p class="lead">Work with currency amounts, balances, reservations and payment states using fictional data.</p><p>Lesson 1 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>A <strong>currency</strong> identifies the kind of money, such as GBP. An amount needs both a number and a unit. The number 100 alone could mean 100 pounds or 100 pence. A <strong>minor unit</strong> is a smaller accounting unit. In our GBP example, 100 pence equals one pound.</p>
+<p>Store £12.34 as 1,234 pence for this exercise. This avoids representing that amount as an approximate binary fraction. It does not solve every monetary problem: currencies and instruments can use different scales, conversions need explicit rounding rules, and an integer can overflow if its range is exceeded.</p>
+<p>A <strong>ledger balance</strong> reflects posted entries. A <strong>reservation</strong>, or hold, sets money aside for an action that has not yet posted. In this simplified account, available funds equal ledger balance minus active reservations.</p>
+<pre>ledger balance       10,000 pence  (£100.00)
+active reservation    2,500 pence   (£25.00)
+available funds       7,500 pence   (£75.00)</pre>
+<h2>Follow a reservation</h2><ol><li>Start with 10,000 pence and no holds.</li><li>Reserve 2,500. The posted balance stays 10,000; available funds fall to 7,500.</li><li>Release the hold. Available funds return to 10,000.</li><li>Start again and capture the hold as a posted payment. Remove the reservation as the debit posts; do not subtract it twice.</li></ol>
+<p>Framework's reservation report distinguishes manual, card and transfer reservations. A captured report describes one revision. It may be stale after another operation. Reviewing a release against the captured revision prevents a user from acting on an unrelated newer state without noticing.</p>
+<p>Real accounts may also include overdrafts, unsettled amounts and other rules. The arithmetic here is deliberately limited so the meaning of a reservation is visible. It is an educational simulation, not an instruction to operate a real account.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\include\umicom\bank_operations\reservations.h</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>typedef enum UmiBankReservationKind {
+    UMI_BANK_RESERVATION_MANUAL = 1,
+    UMI_BANK_RESERVATION_CARD = 2,
+    UMI_BANK_RESERVATION_TRANSFER = 3
+} UmiBankReservationKind;
+/** All rows are active reservations. Kind plus ID is the identity: a transfer
+ * and a hold may use the same ID. Transfer state is pending or approved; the
+ * field is zero for holds. Reserved money is not a posted debit. */
+typedef struct UmiBankReservationRow {
+    UmiBankReservationKind kind;
+    UmiFinancialId id, accountId, cardId, destinationAccountId, referenceId, makerId;
+    UmiMoney amount;
+    UmiBankTransferState transferState;
+    uint64_t createdRevision;</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Read the reservation summary and its three category totals. Find the comment requiring those totals to explain the reserved balance.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>If a £25 hold becomes a £25 posted debit, should available funds fall by another £25?</p><h3>Worked answer</h3><p>Not if the same hold is removed during posting. The balance falls by £25 and the reservation disappears. Subtracting both would count the same obligation twice.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="../index.html">Course overview</a> · <a href="payment-states.html">Next lesson</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

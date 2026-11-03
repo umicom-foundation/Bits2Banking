@@ -132,3 +132,9 @@ Next: [Open search results without losing your place](27-open-search-results-wit
 <p>A result names a matching phrase from an accepted index. The file changes before the learner selects it. Is the old matching range sufficient permission to open and highlight the new file?</p>
 <p><strong>Explanation:</strong> No. Recheck the admitted resource identity and expected digest before accepting the new reader. The index describes an earlier snapshot. If verification fails, retain the previous accepted reader and explain why the selected result cannot be opened.</p>
 </details>
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 12 of 13.
+
+[Previous: Find text with shared Framework services](24-find-text-with-shared-services.md) · [Next: Open search results without losing your place](27-open-search-results-without-losing-your-place.md)

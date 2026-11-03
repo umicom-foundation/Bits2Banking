@@ -1,5 +1,16 @@
 # Start here
 
+Begin with [Your learning sequence](learning-sequence.md). It starts with computer basics and leads to a small C program, a Framework application and a GTK4 window. Each stage explains what you need to know before continuing.
+
+- [Start learning](learning-sequence.md)
+- [Choose a course](../courses/index.html)
+- [Find a written lesson](../lessons/index.md)
+- [Read a book](../books/index.md)
+- [Try a practical example](../labs/index.md)
+
+<details>
+<summary>Earlier subject overview</summary>
+
 ## New to computers? Start before the technical chapters
 
 [Introduction to Computers](../lessons/00-getting-started/index.md) assumes no computing knowledge. Eight lessons explain following a course, input and output, files, memory, instructions, commands and system layers. Paper activities are enough to begin.
@@ -34,3 +45,5 @@ You can also read [Islam: Blueprint for Life](../v001_islam_blueprint_for_life/i
 ## Follow the full learning roadmap
 
 The [learning roadmap](../roadmap.md) links the practical Assembly, C23, build-engineering, web-server, Kernel and cross-language workshops. Begin with the computer chapters if machine instructions or memory are unfamiliar.
+
+</details>

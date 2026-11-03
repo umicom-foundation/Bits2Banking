@@ -198,3 +198,9 @@ Return to the source and trace the create, format, decision and destroy calls. C
 <details><summary>Show an explanation</summary><p>The exit status remains 1 because editor.save is outstanding. Return code 77 identifies the skip rule, not the missing prerequisite. Read the original testcase output, arrange the required capability and collect a new run for the same source and configuration. Building or testing the reader checks the reader; it does not execute editor.save.</p></details>
 
 [Previous: Keep test data separate from your work](30-keep-test-data-separate.md) · [Course contents](index.md)
+
+## Continue this module
+
+Build, test and investigate a change · Lesson 5 of 5.
+
+[Previous: Keep test data separate from your work](30-keep-test-data-separate.md) · [Module complete: return to course contents](index.md)

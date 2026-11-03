@@ -53,3 +53,9 @@ For practice, take a non-sensitive local test log and write four lines: source i
 [Previous lesson](07-build-only-what-changed.md) · [Next lesson](09-understand-test-commands.md) · [Course contents](index.md)
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
+
+## Continue this module
+
+Build, test and investigate a change · Lesson 2 of 5.
+
+[Previous: Build only what changed](07-build-only-what-changed.md) · [Next: Understand which program a test runs](09-understand-test-commands.md)

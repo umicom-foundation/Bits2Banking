@@ -194,3 +194,9 @@ Sammy Hegab · Umicom Foundation · MIT
 <p>A server replies to shutdown with an invalid envelope. The application then closes the transport successfully. Which result should its diagnostic retain?</p>
 <p><strong>Explanation:</strong> Retain the protocol failure and record that cleanup completed. Closing a resource prevents a leak; it does not make an invalid response valid. The next connection should begin with its own initialization and request identities.</p>
 </details>
+
+## Continue this module
+
+Shared services and application lifetimes · Lesson 6 of 6.
+
+[Previous: Follow protocol message boundaries](22-follow-protocol-message-boundaries.md) · [Module complete: return to course contents](index.md)

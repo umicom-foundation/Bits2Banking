@@ -162,3 +162,9 @@ the old observation.</p>
 [Previous lesson](11-register-shared-services.md) · [Course overview](index.md)
 
 [Next: Build an offline learning reader](13-build-an-offline-learning-reader.md)
+
+## Continue this module
+
+Shared services and application lifetimes · Lesson 2 of 6.
+
+[Previous: Register shared application services](11-register-shared-services.md) · [Next: Close background work safely](10-close-background-work.md)

@@ -119,3 +119,8 @@ A fixture is shared test preparation or cleanup. For example, a reader check mig
 The public source examples are tests/release_impact/test_required_tests.c and tests/release_impact/test_observed_retries.c. The related case demonstrates fixture selection. The ownership case destroys the input inventory and observations after successful planning, then checks the plan's copied identity. This explains why a plan must own the data it exposes after the call.
 
 The host application still needs to identify the correct previous run and environment. These functions do not find logs automatically, interpret an arbitrary report as current, launch a compiler or mark a test Done. The ordinary automatic verification driver uses its own checked receipt workflow. Keep selection, execution and acceptance as three separate responsibilities.
+## Continue this module
+
+Build, test and investigate a change · Lesson 1 of 5.
+
+[Next: Read build and test evidence](08-read-build-and-test-evidence.md)

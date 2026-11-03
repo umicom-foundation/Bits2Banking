@@ -1,0 +1,33 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/margin-and-collateral.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Understand exposure and collateral — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>Understand exposure and collateral</h1><p class="lead">Distinguish market data, orders, executions, positions and collateral.</p><p>Lesson 2 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p><strong>Exposure</strong> is an amount at risk under stated assumptions. <strong>Collateral</strong> is an asset provided as security. <strong>Margin</strong> is a required amount of protection under an agreement or clearing arrangement. These terms are related but are not interchangeable with cash balance.</p>
+<p>A <strong>haircut</strong> reduces the value credited to a collateral asset. If an eligible asset is valued at 1,000 and the teaching haircut is 10%, its adjusted value is 900. Against a requirement of 850, that gives 50 of excess coverage. If the asset is ineligible, arithmetic alone must not make it acceptable.</p>
+<pre>observed value 1,000 → eligibility check → haircut 100 → credited 900
+required protection 850 → compare → excess 50</pre>
+<p>The example omits currency conversion, concentration limits and contractual detail. Real collateral decisions depend on the agreement, valuation time, asset quality and settlement status. A promised delivery is not necessarily collateral already received.</p>
+<h2>Apply the control gates</h2><ol><li>Write the agreement and eligible asset type.</li><li>Record the observed value and its timestamp.</li><li>Apply the stated haircut.</li><li>Compare adjusted value with the requirement.</li><li>Repeat with the asset marked ineligible. Stop before treating it as coverage.</li><li>Repeat with an older price and record why freshness matters.</li></ol>
+<p><strong>Clearing</strong> organises obligations after execution. <strong>Custody</strong> concerns holding and administering assets. <strong>Settlement</strong> fulfils a delivery obligation. A trading screen should distinguish those states rather than label every accepted trade complete.</p>
+<p>The Framework collateral contract provides a source-reading anchor. Inspect its actual fields and validation before assuming it implements the whole operational process.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\include\umicom\finance\treasury\collateral_valuation.h</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>typedef struct UmiTreasuryCollateralValuation {
+    char id[UMI_TREASURY_ID_CAPACITY];
+    int64_t gross_value_minor;
+    uint32_t haircut_bps;
+} UmiTreasuryCollateralValuation;
+/**
+ * Initialise treasury collateral valuation from caller-provided values so later operations
+ * receive a known state.
+ */
+UmiStatus umi_treasury_collateral_valuation_init(UmiTreasuryCollateralValuation *value,
+    const char *id,
+    int64_t gross_value_minor,
+    uint32_t haircut_bps);
+/**</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Read collateral_valuation.h and eligibility_rule.h. Separate arithmetic inputs from eligibility and lifecycle policy.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>Can an asset with sufficient market value always satisfy a margin call?</p><h3>Worked answer</h3><p>No. Eligibility, haircut, currency, concentration, timing and delivery rules may prevent it from counting. Value is one input to the decision.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="orders-and-executions.html">Previous lesson</a> · <a href="../index.html">Course overview</a> · <a href="../../index.html">Choose the next course</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

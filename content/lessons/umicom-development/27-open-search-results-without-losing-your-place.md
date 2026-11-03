@@ -110,3 +110,9 @@ Next: [Understand waiting and timeouts](28-understand-waiting-and-timeouts.md).
 <p>The displayed text is éa. UTF-8 stores é in two bytes and a in one. What half-open byte range and character range select only a?</p>
 <p><strong>Explanation:</strong> The byte range is [2, 3), while the character range is [1, 2). Half-open means that the first position is included and the end position is excluded. Validate byte boundaries before converting; a byte inside é is not a valid character boundary.</p>
 </details>
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 13 of 13.
+
+[Previous: Search verified learning resources](26-search-verified-learning-resources.md) · [Module complete: return to course contents](index.md)

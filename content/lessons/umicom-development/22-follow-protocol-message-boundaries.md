@@ -185,3 +185,9 @@ so another blocking read could be unnecessary or wrong.</li>
 <p>The first read ends halfway through Content-Length, the second completes the header and begins the body, and the third completes the body. How many messages should the application receive?</p>
 <p><strong>Explanation:</strong> Exactly one complete message. A read is a transport operation, not a message boundary. Retain incomplete bytes, validate the declared length, and publish only the complete body. No partial read should be presented as a separate response.</p>
 </details>
+
+## Continue this module
+
+Shared services and application lifetimes · Lesson 5 of 6.
+
+[Previous: Understand waiting and timeouts](28-understand-waiting-and-timeouts.md) · [Next: Validate a tool connection](25-validate-a-tool-connection.md)

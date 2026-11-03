@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/builds-and-diagnostics/lessons/window-lifetime.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Investigate callbacks and window lifetime — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>Investigate callbacks and window lifetime</h1><p class="lead">Distinguish configure, compile, link and runtime evidence, then investigate shared dependency failures.</p><p>Lesson 2 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>A <strong>callback</strong> is a function registered to be called when something happens. A button click, timer or input-method event may invoke one later. The object it refers to must still exist when that call occurs.</p>
+<p>An <strong>input method</strong> helps a person enter text, including characters not directly represented by a keyboard key. An input context may register callbacks with the operating system. If the context is destroyed while a callback remains registered, a later event may refer to invalid state.</p>
+<pre>create object → register callback → handle events
+                    ↓
+            disconnect callback → destroy object</pre>
+<p>The important question is ownership: which component owns the registration, and which path removes it? Closing a window, cancelling an operation and normal application shutdown may all need to converge on the same safe release logic.</p>
+<h2>Collect useful evidence</h2><ol><li>Record the application and exact runtime library version.</li><li>Describe the steps: open a window, focus an editor, close it, then repeat.</li><li>Save the diagnostic without removing the warning from source.</li><li>Check whether the fix belongs in application code, Framework or an external dependency.</li><li>After an authorised repair, repeat the same workflow and record the tested binaries.</li></ol>
+<p>The supplied runtime-repair material illustrates a dependency problem. It is not permission to apply an old patch to every current installation. A vendor may already include a backport, or a later release may have changed the code. Verify package provenance and the actual fix before rebuilding a dependency.</p>
+<p>Framework's runtime diagnostics module records an advisory. Suppressing that message does not repair a callback lifetime defect. Likewise, a successful configure step cannot prove the input-method path is safe; that needs native execution evidence.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\cmake\UmicomGtkRuntimeDiagnostics.cmake</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>function(umicom_gtk_runtime_advisories version target_system out_advisories)
+    set(_advisories)
+    if(NOT version MATCHES &quot;^[0-9]+[.][0-9]+[.][0-9]+([.-][A-Za-z0-9.-]+)?$&quot;)
+        list(APPEND _advisories gtk.runtime.version-unavailable)
+    elseif(target_system STREQUAL &quot;Windows&quot; AND version MATCHES &quot;^4[.]24[.](0|1)($|[.-])&quot;)
+        # The 4.24.0 and 4.24.1 release sources lack disposal-time removal of
+        # the Win32 IME callback. Vendor suffixes alone cannot establish a fix.
+        list(APPEND _advisories gtk.win32.ime-disposal)
+    endif()
+    set(${out_advisories} &quot;${_advisories}&quot; PARENT_SCOPE)
+endfunction()
+
+function(umicom_report_gtk_runtime_advisories version target_system)
+    umicom_gtk_runtime_advisories(&quot;${version}&quot; &quot;${target_system}&quot; _advisories)</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Read the GTK diagnostics module's conditions and advisory text. Separate what its version check observes from what native window-lifetime qualification must establish.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>Why can a warning disappear without the underlying bug being fixed?</p><h3>Worked answer</h3><p>The diagnostic may have been disabled or its trigger changed. Only source/package evidence and a suitable runtime check can support the repair claim.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="build-evidence.html">Previous lesson</a> · <a href="../index.html">Course overview</a> · <a href="../../index.html">Choose the next course</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

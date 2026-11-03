@@ -202,3 +202,9 @@ bytes and show the result fields the interface should display.</p>
 [Previous lesson](13-build-an-offline-learning-reader.md) · [Course overview](index.md)
 
 [Next: Connect commands to helpful guides](15-connect-commands-to-guides.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 2 of 13.
+
+[Previous: Build an offline learning reader](13-build-an-offline-learning-reader.md) · [Next: Connect commands to helpful guides](15-connect-commands-to-guides.md)

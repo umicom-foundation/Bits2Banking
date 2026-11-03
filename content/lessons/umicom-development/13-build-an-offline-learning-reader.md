@@ -200,4 +200,9 @@ earlier failure without losing the learner's place.</p>
 
 [Previous lesson](12-inspect-application-services.md) · [Course overview](index.md)
 
-[Next lesson: Copy examples without overwriting your work](14-copy-examples-without-overwriting.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 1 of 13.
+
+[Next: Copy examples without overwriting your work](14-copy-examples-without-overwriting.md)

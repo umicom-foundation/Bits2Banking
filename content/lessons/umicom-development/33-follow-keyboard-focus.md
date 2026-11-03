@@ -73,3 +73,9 @@ No. A single already-focused region has nowhere else to go. Keeping the existing
 </details>
 
 [Course contents](index.md) · [Read the illustrated lesson](../../courses/umicom-development/lessons/33-follow-keyboard-focus.html)
+
+## Continue this module
+
+Project study: application workspaces · Lesson 3 of 4.
+
+[Previous: Use Studio, Trader and Media workspaces](32-use-application-workspaces.md) · [Next: Check layouts without losing your work](34-check-layout-and-draft-retention.md)

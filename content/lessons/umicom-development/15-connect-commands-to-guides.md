@@ -200,3 +200,9 @@ already connected.</p>
 
 
 [Next: revision-bound checkpoints](16-keep-revision-bound-checkpoints.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 3 of 13.
+
+[Previous: Copy examples without overwriting your work](14-copy-examples-without-overwriting.md) · [Next: Connect keyboard and button help](21-connect-keyboard-and-button-help.md)

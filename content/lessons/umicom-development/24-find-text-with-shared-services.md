@@ -150,3 +150,9 @@ Sammy Hegab · Umicom Foundation · MIT.
 <p>The reader shows source revision A. Reloading revision B fails verification. Which text should Find inspect?</p>
 <p><strong>Explanation:</strong> The accepted text of revision A, if that reader remains open. A failed reload must not pair revision B offsets with revision A text. Search the owned displayed snapshot; do not search the failure notice as if it were source.</p>
 </details>
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 11 of 13.
+
+[Previous: Carry image pixels from a worker to a window](23-carry-image-pixels-to-a-window.md) · [Next: Search verified learning resources](26-search-verified-learning-resources.md)

@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/orders-and-executions.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>An order is a request, a fill is an event — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>An order is a request, a fill is an event</h1><p class="lead">Distinguish market data, orders, executions, positions and collateral.</p><p>Lesson 1 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>An <strong>instrument</strong> identifies what can be traded. A symbol alone may be ambiguous: venue, currency, expiry or other contract details can matter. A <strong>quote</strong> reports a market observation. An <strong>order</strong> requests a trade under specified conditions. A <strong>fill</strong> reports an executed quantity.</p>
+<p>For a fictional limit order, request 10 units with a maximum buy price of 25. A fill for 4 leaves 6 outstanding. Sending a cancellation for the remaining 6 is another request; the order is not cancelled merely because the user clicked Cancel. A fill may arrive while cancellation is being processed.</p>
+<pre>submit 10 → acknowledged → fill 4 → remaining 6
+                                  cancel requested
+                                  ↙              ↘
+                           cancelled       another fill</pre>
+<p>A <strong>journal</strong> retains events needed to explain the lifecycle. Repeated or out-of-order notifications must not create duplicate positions. Request identifiers, order identifiers and execution identifiers serve different purposes; do not replace them all with the symbol.</p>
+<h2>Trace an order safely</h2><ol><li>Write the instrument identity, side, quantity and price condition.</li><li>Record an acknowledgement separately from a fill.</li><li>Apply a fill of 4 and calculate remaining quantity.</li><li>Request cancellation.</li><li>Consider both possible next events: cancellation confirmation or a further fill.</li></ol>
+<p>For broker-connected applications, authentication, API connection, permissions and market-data subscriptions are distinct concerns. A successful connection is not evidence that every quote is live or that orders may be submitted. Follow the configured adapter's documented authentication route; do not invent a username/password field in a socket protocol.</p>
+<p>This is a paper lifecycle exercise. It sends no order and uses no real account. Source inspection can establish how events are represented; live functionality requires separate controlled qualification.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\src\broker_connectivity\order_journal.c</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>UmiStatus umi_broker_order_journal_add(
+    UmiBrokerOrderJournal *journal,
+    const UmiBrokerOrderRecord *record)
+{
+    if (journal == NULL || record == NULL ||
+        record-&gt;request.client_order_id.value[0] == '\0') {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    if (umi_broker_order_journal_find(
+            journal, record-&gt;request.client_order_id.value) != NULL) {
+        return UMI_STATUS_ALREADY_EXISTS;
+    }
+    if (journal-&gt;count &gt;= UMI_BROKER_ORDER_JOURNAL_CAPACITY) {
+        return UMI_STATUS_CAPACITY_EXCEEDED;</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Find how order_journal.c validates or records lifecycle information. Follow one called public function to its header and identify the evidence needed to distinguish a request from an execution.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>After a connection timeout, is it safe to submit the same order with a new ID?</p><h3>Worked answer</h3><p>Not without checking the existing outcome. The original may have reached the broker. Reconcile known order and execution identities before deciding on another submission.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="../index.html">Course overview</a> · <a href="margin-and-collateral.html">Next lesson</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

@@ -107,3 +107,9 @@ Follow `src/browser/reading_document_builder.c` for metadata ownership and `adap
 <p>A worker prepares valid pixels, but the learner closes the panel before publication. Should the worker reopen the panel to show the image?</p>
 <p><strong>Explanation:</strong> No. Closing the panel retires its request. Release the prepared result through its current owner and do not create a late visible update. If ownership has already transferred to reference-counted bytes, release that reference instead of freeing the same allocation separately.</p>
 </details>
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 10 of 13.
+
+[Previous: Preserve structure when reading code](20-preserve-structure-when-reading-code.md) · [Next: Find text with shared Framework services](24-find-text-with-shared-services.md)

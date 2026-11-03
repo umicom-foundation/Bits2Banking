@@ -62,3 +62,9 @@ Continue with [the Framework SDK inspection guide](https://github.com/umicom-fou
 [Previous lesson](05-introduction-to-gtk4.md) · [Course contents](index.md) · [Next lesson](07-build-only-what-changed.md)
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
+
+## Continue this module
+
+First application: one example from source to a window · Lesson 4 of 6.
+
+[Previous: Introduction to CMake](03-introduction-to-cmake.md) · [Next: Umicom Framework Development](04-framework-development.md)

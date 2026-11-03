@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/framework-boundaries/lessons/shared-services.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>One service, several applications — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>One service, several applications</h1><p class="lead">Follow a request from a window to a shared service, and learn how C interfaces connect native components.</p><p>Lesson 1 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>A program is a set of instructions a computer follows. An application adds a purpose, such as editing a document or showing an account. A <strong>framework</strong> supplies reusable parts so each application does not have to solve the same problems again. A <strong>service</strong> is a named capability with a defined interface: for example, asking for a document snapshot.</p>
+<p>Consider a balance shown in a Bank window and a Treasury report. If each window calculates its own balance, a correction might reach one and miss the other. Instead, both ask the same financial service. The windows choose how to display the answer; the service owns the rule and the authoritative data.</p>
+<h2>Follow a request</h2><pre>Bank button → command → shared service → result
+Treasury screen → query ────────┘           ↓
+                                 each screen updates its view</pre>
+<p>A <strong>command</strong> requests a change. A <strong>query</strong> asks a question. An <strong>event</strong> reports something that happened. Pressing a button proves only that a request was made; success must come from the result. A refused request should explain the problem and preserve the previous state.</p>
+<p>In Framework's service registry, an identifier names a service. A version describes the interface expected by a consumer. Ownership says who eventually releases the service. The flags distinguish properties such as a shared instance and thread safety. A registry can organise dependencies; it cannot make arbitrary service code safe to use concurrently.</p>
+<h2>A small design exercise</h2><ol><li>Draw two boxes labelled Bank and TMS, then one labelled Balances.</li><li>Draw read requests from both applications to Balances.</li><li>Add a transfer command. Route it through the service, not directly into a label or database table.</li><li>Add a failure result named “insufficient available funds”. Keep the original displayed balance until a fresh result arrives.</li></ol>
+<p>This sketch is an architecture exercise. It is not a claim that every product screen already follows this route. To assess a real screen, trace its callback to the service and inspect the returned status.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\include\umicom\runtime\service_registry.h</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>typedef enum UmiServiceFlags {
+    UMI_SERVICE_NONE = 0U,
+    UMI_SERVICE_SINGLETON = 1U &lt;&lt; 0,
+    UMI_SERVICE_OWNED = 1U &lt;&lt; 1,
+    UMI_SERVICE_THREAD_SAFE = 1U &lt;&lt; 2,
+    UMI_SERVICE_REPLACEABLE = 1U &lt;&lt; 3
+} UmiServiceFlags;
+
+typedef void (*UmiServiceDestroyFn)(void *service, void *user_data);
+
+/**
+ * Represent the service descriptor data shared with callers of this public contract.
+ */
+typedef struct UmiServiceDescriptor {</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Find UmiServiceFlags and UmiServiceDestroyFn. Identify the ownership flag and the callback used when owned service storage is released. Explain why a borrowed pointer must not outlive its owner.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>Why should changing the colour of the balance display not change how the balance is calculated?</p><h3>Worked answer</h3><p>Colour belongs to presentation. Calculation belongs to the shared financial service. Keeping those responsibilities separate lets several applications display the same result and lets a non-graphical check exercise the same rules.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="../index.html">Course overview</a> · <a href="native-boundaries.html">Next lesson</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

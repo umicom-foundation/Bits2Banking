@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/commodities-and-digital-assets/lessons/confirmations-and-finality.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>A ledger observation is not always final — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>A ledger observation is not always final</h1><p class="lead">Learn why units, delivery evidence and finality matter across different asset types.</p><p>Lesson 2 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>A <strong>distributed ledger</strong> is a record maintained across multiple participants. A transaction may be observed before it is considered final under the network's rules. <strong>Confirmation</strong> and <strong>finality</strong> describe evidence and policy about whether later history can change that observation.</p>
+<p>A <strong>reorganisation</strong> replaces part of the history a node previously regarded as canonical. A deposit seen in an earlier block may need to be reconsidered. Crediting spendable funds immediately after the first observation can therefore create an obligation the application cannot safely support.</p>
+<pre>transaction observed → check network and block → evaluate policy
+                                             ↓
+                               pending credit or accepted credit
+                               reorganisation → review evidence</pre>
+<p>The appropriate policy depends on the network and risk model. This lesson uses no universal confirmation threshold. A percentage of agreeing computers alone does not establish security: independent identity, voting weight, adversary assumptions and the protocol all matter.</p>
+<h2>Track a fictional deposit</h2><ol><li>Record network, asset, transaction identity and observed block.</li><li>Keep the deposit pending while evaluating the configured policy.</li><li>Record the evidence supporting any later acceptance.</li><li>Imagine the block leaves the canonical chain. Identify which balances and downstream actions need review.</li><li>Preserve the original observation and the later correction as separate events.</li></ol>
+<p>A wallet address is not a private key. A <strong>private key</strong> authorises cryptographic operations and must not be copied into a teaching dataset. A reference to a protected key lets a service request signing without distributing the key itself. A signing request also needs policy and approval; possession of an address is not authority to spend.</p>
+<p>Framework has confirmation-policy and settlement-finality contracts. Their presence does not prove a complete network, custody system or secure consensus implementation. Read their limits before building a client around them.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\include\umicom\finance\digital_asset\confirmation_policy.h</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>typedef struct UmiDigitalConfirmationPolicy {
+    UmiDigitalAssetId network_id;
+    uint32_t required_confirmations;
+    uint32_t final_confirmations;
+    bool active;
+} UmiDigitalConfirmationPolicy;
+
+/* Initialise a bounded confirmation policy record for reusable Framework workflows. */
+UmiStatus umi_digital_asset_confirmation_policy_init(UmiDigitalConfirmationPolicy *value, const char *network_id, uint32_t required_confirmations, uint32_t final_confirmations);
+
+/* Validate the invariant fields required before this record enters a workflow. */
+bool umi_digital_asset_confirmation_policy_valid(const UmiDigitalConfirmationPolicy *value);
+
+/** Transfer this value using the portable format described in value_archive.h.</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Compare confirmation_policy.h with settlement_finality.h and chain_observation.h. List the evidence each represents and which network behaviour must be supplied by an adapter.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>Why keep the earlier block observation after a reorganisation?</p><h3>Worked answer</h3><p>It explains why the application previously treated the deposit as pending or accepted. Replacing it silently would remove evidence needed to investigate and reconcile the correction.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="quantity-and-delivery.html">Previous lesson</a> · <a href="../index.html">Course overview</a> · <a href="../../index.html">Choose the next course</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>

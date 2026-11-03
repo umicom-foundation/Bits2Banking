@@ -171,3 +171,9 @@ Assessment needs separate evidence and authority.</p></details>
 
 
 [Next: Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md)
+
+## Continue this module
+
+Project study: an offline learning reader · Lesson 7 of 13.
+
+[Previous: Keep reading state consistent](17-keep-reading-state-consistent.md) · [Next: Remember locations without inheriting trust](19-remember-locations-without-inheriting-trust.md)

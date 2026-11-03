@@ -69,4 +69,9 @@ Return to [the development course contents](index.md) or explore [Umicom OS from
 
 [Course contents](index.md)
 
-[Next lesson: Use an installed Framework SDK](06-use-an-installed-sdk.md)
+
+## Continue this module
+
+First application: one example from source to a window · Lesson 6 of 6.
+
+[Previous: Umicom Framework Development](04-framework-development.md) · [Module complete: return to course contents](index.md)

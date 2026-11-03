@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/data-and-messaging/lessons/retries-and-envelopes.html
+PURPOSE:
+Teach connected Framework and financial-system concepts through worked examples.
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Recognise the same message twice — Bits2Banking</title><link rel="stylesheet" href="../../course.css"></head><body><a class="skip" href="#lesson">Skip to lesson</a><header><strong>Bits2Banking</strong><nav aria-label="Learning library"><a href="../../index.html">Courses</a> <a href="../../start.html">Start here</a> <a href="../../glossary.html">Glossary</a></nav></header><main id="lesson"><h1>Recognise the same message twice</h1><p class="lead">Connect storage, message identity, retries and recovery without confusing a request with completion.</p><p>Lesson 2 of 2. Read <a href="../../start.html">Start here</a> first. No banking account or live connection is needed.</p><p>A <strong>message</strong> carries information between components. Its <strong>payload</strong> is the business content. An <strong>envelope</strong> adds context such as identity, origin or correlation. A correlation identifier helps connect related operations in logs without copying their entire payloads.</p>
+<p>A sender may deliver a request successfully but lose the reply. Retrying is sensible only if the receiver can recognise what has already happened. <strong>Idempotency</strong> means repeating the same logical operation does not create a second business effect. It requires an agreed identifier and rules; it does not come from a “retry” button alone.</p>
+<pre>request PAY-17 → receiver commits once → reply lost
+request PAY-17 → receiver finds receipt → returns same outcome
+request PAY-17 with changed amount → reject identity conflict</pre>
+<p>Using a fresh identifier on every attempt hides the relationship between retries. Reusing an identifier for different content is also wrong. A robust design binds the identifier to the intended operation and retains enough evidence to distinguish an exact retry from conflicting reuse.</p>
+<p>An <strong>outbox</strong> records messages to send alongside the business transaction. A dispatcher sends them later. An <strong>inbox</strong> records received identities and processing outcomes. Neither word guarantees delivery exactly once. Duplicate delivery remains possible, so the receiver must protect the business effect.</p>
+<h2>Trace three arrivals</h2><ol><li>Write a request with ID P7 and amount 250.</li><li>Record a successful receipt for P7.</li><li>Receive P7/250 again. Return the known outcome.</li><li>Receive P7/300. Refuse the conflict and retain the original evidence.</li></ol>
+<p>Framework's message envelope describes payload length and a payload hash separately from header metadata. A hash can help detect a content change. It is not automatically a cryptographic signature, identity proof, authorisation decision or durable duplicate journal.</p><h2>Read a real Umicom source contract</h2><p>In a local checkout, open <code>C:\umicom\Umicom-Applications\framework\include\umicom\integration\fabric\message_envelope.h</code>. A <strong>contract</strong> states what an operation accepts, returns and promises. Read its comments before its implementation.</p><p>The following excerpt comes from that source file. The surrounding declarations and comments are part of the contract too.</p><pre><code>typedef struct UmiFabricMessageEnvelope { UmiFabricMessageHeader header; uint64_t payload_length; uint64_t payload_hash; bool compressed; } UmiFabricMessageEnvelope;
+/**
+ * Initialise fabric message envelope from caller-provided values so later operations
+ * receive a known state.
+ */
+UmiStatus umi_fabric_message_envelope_init(UmiFabricMessageEnvelope *envelope,const UmiFabricMessageHeader *header,const void *payload,size_t payload_length,bool compressed);
+/**
+ * Provide the fabric message envelope matches operation used by this module and its client
+ * applications.
+ */
+bool umi_fabric_message_envelope_matches(const UmiFabricMessageEnvelope *envelope,const void *payload,size_t payload_length);
+
+#ifdef __cplusplus
+}</code></pre><ol><li>Locate the file in your editor. You are reading it; do not edit your working product to complete this exercise.</li><li>Read UmiFabricMessageEnvelope and its initializer. Find which metadata is copied and which operations validate the envelope. Compare it with the payment instruction's idempotency key.</li><li>Write the input, expected result and a possible failure in your own words.</li></ol><p>The source reference identifies an existing implementation or contract. It does not establish that an application has wired every operation, or that its build has passed. If your checkout differs, compare the current declarations and record the difference.</p><h2>Check your understanding</h2><p>Why is “message received” different from “payment settled”?</p><h3>Worked answer</h3><p>Receipt proves that a boundary accepted some information. Settlement is a later business fact requiring its own evidence. Acknowledging a message must not move a payment directly to settled.</p><h2>Keep a learning checkpoint</h2><p>Write one observation, one unanswered question and the result of the exercise. In Studio you may record a private checkpoint as explained in <a href="../../start.html#progress">Start here</a>. Opening the page alone is not completion.</p><nav aria-label="Lesson navigation"><a href="transactions.html">Previous lesson</a> · <a href="../index.html">Course overview</a> · <a href="../../index.html">Choose the next course</a></nav></main><footer>Umicom Foundation · Learn, inspect, practise and explain.</footer></body></html>
