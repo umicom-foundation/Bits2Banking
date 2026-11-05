@@ -1,5 +1,10 @@
 # Software engineering and administration
 
+## Choose a development editor
+
+[Learning Visual Studio for Umicom development](learning-visual-studio.md) introduces the editor, existing compiler, build steps and debugger using the small Umicom C project.
+
+
 Learn Git, testing, databases, networking, modular design and system administration.
 
 - [16. Git: remember and review your changes](16-git.md)

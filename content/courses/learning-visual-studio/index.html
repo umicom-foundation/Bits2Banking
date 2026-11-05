@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Learning Visual Studio for Umicom development</title><link rel="stylesheet" href="../assets/umicom-learning.css"><style>pre{overflow:auto;white-space:pre}article{max-width:76rem;margin:auto}.table-wrap{overflow:auto}nav a{margin-right:1rem}li{margin-block:.45rem}</style></head><body><a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../assets/branding/umicom-icon-on-dark.svg" width="40" height="40" alt="">Umicom · Bits2Banking</a><nav aria-label="Learning navigation"><a href="../index.html">Courses</a><a href="../../lessons/05-engineering/learning-visual-studio.md">Markdown edition</a></nav></div></header><main id="main" class="container page-pad"><article>
+<h1>Learning Visual Studio for Umicom development</h1>
+<h2>What you will learn</h2>
+<p>Install an editor, open a real repository, change and save a file, build a small Umicom project, run its tests and investigate one controlled failure. This guide uses <strong>Visual Studio IDE</strong>, not Visual Studio Code. The repository&#x27;s existing compiler remains responsible for producing the executable.</p>
+<p>Before starting, complete <a href="../learning-computer-architecture/index.html">Introduction to Computers</a> if files and folders are unfamiliar. The first sections of <a href="../learning-c/index.html">Learning C</a> explain the program text. You do not need to finish the entire C course to practise opening a file.</p>
+<h2>1. Separate the tools</h2>
+<pre><code>Visual Studio: edit, navigate, save and read diagnostics
+  PowerShell terminal
+    CMake: choose build settings
+    Ninja: rebuild the affected files
+    GCC: compile C             LLD/other linker: combine machine code
+    CTest: run registered checks
+    GDB: pause and inspect a compatible debug executable</code></pre>
+<p>An <strong>IDE</strong> is an integrated development environment: several development tools in one application. A repository stores source and its history. A build directory stores generated results. Saving text, compiling it and executing it are three different actions. A successful save alone cannot demonstrate a working program.</p>
+<h2>2. Install Visual Studio</h2>
+<ol>
+<li>Open <a href="https://learn.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=visualstudio">Microsoft&#x27;s installation guide</a>. Choose a supported Visual Studio release and an edition whose licence fits your use. Download its installer from Microsoft.</li>
+<li>Start the installer. Select <strong>Desktop development with C++</strong>. The workload name includes C++, but it supplies native development and CMake integration used when editing C projects too.</li>
+<li>Complete installation and any requested restart. Start Visual Studio.</li>
+<li>Select <strong>Continue without code</strong> if the start screen offers it. Later use <strong>File &gt; Open &gt; Folder</strong> to open a repository. Do not create a new solution that replaces its existing <code>CMakeLists.txt</code>.</li>
+</ol>
+<p>The workload&#x27;s Microsoft compiler is not automatically the compiler selected by Umicom&#x27;s presets. Keep the established MSYS2 UCRT64 GCC, CMake and Ninja installation. In the <strong>MSYS2 UCRT64</strong> terminal, install missing tools with:</p>
+<pre><code>pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-gdb</code></pre>
+<p>Use MSYS2&#x27;s documented full-update procedure first if the installation is old; do not mix packages from different MSYS2 environments. A Windows PowerShell window does not understand <code>pacman</code> unless its environment has been configured for MSYS2, so run that installation command in the named terminal.</p>
+<h2>3. Open the small compiler repository</h2>
+<ol>
+<li>Choose <strong>File &gt; Open &gt; Folder</strong> and select <code>C:\umicom\umicom-c</code>.</li>
+<li>Find <code>tools/main.c</code> in Solution Explorer&#x27;s folder view. Double-click it.</li>
+<li>Locate <code>int main(int argc, char **argv)</code>. It receives the command-line words.</li>
+<li>Follow the <code>run</code> and <code>execute</code> variables to the call to <code>umc_execute</code>.</li>
+<li>Open <code>include/umicom_c/umicom_c.h</code> beside it. The declaration explains the arguments and result types; the definition in <code>src/vm.c</code> performs the work.</li>
+</ol>
+<p>An editor may start a CMake configuration when opening a folder. Check the selected preset and output before using a build button. This project uses <code>windows-ucrt64-debug</code> on Windows. If an automatic configuration used another compiler, stop that operation and use the terminal workflow below. Do not change an old build directory&#x27;s compiler to make it fit.</p>
+<p><a href="https://learn.microsoft.com/en-us/cpp/build/cmake-presets-vs?view=msvc-170">Microsoft&#x27;s preset guide</a> explains preset support and version differences. The project commands below remain the reference if your IDE version cannot interpret a preset.</p>
+<h2>4. Build, test and run in the terminal</h2>
+<p>Open <strong>View &gt; Terminal</strong> and select a PowerShell terminal, or use a separate PowerShell window. Run each command separately and stop if <code>$LASTEXITCODE</code> is nonzero. Logs get a new directory every session.</p>
+<pre><code>Set-Location &quot;C:\umicom\umicom-c&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+$LogRoot = &quot;C:\umicom\_local\logs\visual-studio-$(Get-Date -Format yyyyMMdd-HHmmss)&quot;
+New-Item -ItemType Directory -Force $LogRoot
+cmake --preset windows-ucrt64-debug -DBUILD_TESTING=ON 2&gt;&amp;1 | Tee-Object &quot;$LogRoot\configure.log&quot;
+$LASTEXITCODE
+cmake --build --preset windows-ucrt64-debug --parallel 2 2&gt;&amp;1 | Tee-Object &quot;$LogRoot\build.log&quot;
+$LASTEXITCODE
+ctest --preset windows-ucrt64-debug --output-on-failure --no-tests=error --output-log &quot;$LogRoot\tests.log&quot;
+$LASTEXITCODE
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; --version</code></pre>
+<p>This small project is a starting point; it does not rebuild all Umicom Applications. Keep its build directory between edits so Ninja can use the dependency information it already recorded. A shared header change can correctly rebuild several files even if you edited only one file.</p>
+<h2>5. Create and save a program</h2>
+<p>Choose <strong>File &gt; New &gt; File</strong>, select a text file and enter:</p>
+<pre><code>/*-----------------------------------------------------------------------------
+ * Umicom C Learning Example
+ * File: answer.uc
+ *
+ * PURPOSE:
+ *   Evaluate a small expression with the Umicom C arithmetic interpreter.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
+int main(void) { return 6 * 7; }</code></pre>
+<p>Choose <strong>Save As</strong>, create <code>C:\umicom\examples\umicom-c</code> or another location you prefer, and save <code>answer.uc</code> using UTF-8 without a byte-order mark. Make sure Windows has not added <code>.txt</code> to its name. The file belongs to you; no application-specific AppData directory is required.</p>
+<pre><code>&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; run &quot;C:\umicom\examples\umicom-c\answer.uc&quot; --max-steps 4</code></pre>
+<p>Expect <code>Result: 42</code>. Edit 7 to 8, save with <strong>Ctrl+S</strong>, and run the same command: expect 48. You changed input to the interpreter, so this exercise does not require rebuilding the interpreter itself. Editing <code>src/vm.c</code> would require rebuilding it. This distinction avoids unnecessary work.</p>
+<h2>6. Debug the interpreter with its matching debugger</h2>
+<p>A <strong>breakpoint</strong> pauses a process before a selected instruction. Debug symbols connect machine instructions to source lines. GCC&#x27;s Windows debug information is not the same as a Microsoft PDB; do not assume Visual Studio&#x27;s default F5 configuration can debug this GCC executable. Use the matching UCRT64 GDB in the terminal for this workflow:</p>
+<pre><code>&amp; &quot;C:\msys64\ucrt64\bin\gdb.exe&quot; --args &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; run &quot;C:\umicom\examples\umicom-c\answer.uc&quot; --max-steps 4</code></pre>
+<p>At the <code>(gdb)</code> prompt type:</p>
+<pre><code>break main
+run
+print argc
+next
+break umc_execute
+continue
+print count
+print fuel
+backtrace
+continue
+quit</code></pre>
+<p><code>argc</code> counts the executable name and its arguments; this invocation has five. <code>count</code> should be four for this expression and <code>fuel</code> should be four. <code>next</code> advances one source line; <code>backtrace</code> lists active function calls. If GDB says symbols are missing, confirm that this is the Debug executable from the chosen build directory. These commands debug the compiler/interpreter process on the host, not an Umicom Kernel guest.</p>
+<h2>7. Investigate a deliberate failure</h2>
+<p>Run the expression again with <code>--max-steps 3</code>. It should report exhaustion and return code 1 without printing a result. Open <code>src/vm.c</code>; find the comparison between the instruction position and <code>fuel</code>. Disassembly reveals four instructions, including the final return. The rejected run is the expected behaviour, not an instruction to remove the budget check.</p>
+<p>After a genuine code fix, rebuild the affected target and run its focused regression, for example:</p>
+<pre><code>cmake --build --preset windows-ucrt64-debug --target umicom-c --parallel 2
+ctest --preset windows-ucrt64-debug -R &quot;^umicom\.c\.cli-budget$&quot; --output-on-failure --no-tests=error</code></pre>
+<p>A focused pass does not replace wider release testing. If the executable was removed by endpoint protection, inspect its recorded detection instead of assuming a missing-file error is a compiler defect.</p>
+<h2>8. Move to the larger projects</h2>
+<p>Use the same open-folder and terminal habits for Framework and Applications. Choose each repository&#x27;s documented preset. Keep <code>.c</code> files and public headers in their source folders; do not copy generated binaries into source control. For Kernel use its RISC-V cross-toolchain and QEMU guide; F5 on its ELF is not a Windows launch. For OS image development use the Linux build-host workflow.</p>
+<p><strong>Exercise:</strong> you save <code>answer.uc</code>, but execution still prints the old answer. What do you check first? <strong>Answer:</strong> confirm the saved full path, the extension, and the path passed to <code>run</code>. Rebuilding the whole Framework cannot correct a command that reads the wrong file.</p>
+<p>Continue with <a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/execution-guide.md">Umicom C&#x27;s execution guide</a>, then <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/FIRST_SYSTEM_SESSION.md">Umicom Kernel&#x27;s first session</a>. Source links describe the matching repository edition; if a new page is not published yet, read the same relative path in your local checkout.</p>
+</article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT for these original lessons. Referenced projects retain their own licences.</p></div></footer></body></html>

@@ -1,5 +1,13 @@
 # Build Your Own LLM from Scratch — The Umicom Native AI Course
 
+## Begin with a three-token model
+
+1. [Understand one next-token prediction](first-next-token-model.md).
+2. [Run and inspect the first training experiment](first-training-run.md).
+
+Complete these two lessons before the specialist source studies below. They introduce tokens, weights, loss and the existing Framework training example in that order.
+
+
 **Bits to Banking · Umicom Foundation · Course proposal, 20 October 2026**  
 **Author and project originator:** Sammy Hegab  
 **Implementation language:** C23, with Assembly where justified  

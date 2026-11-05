@@ -1,5 +1,10 @@
 # Developing with Umicom
 
+## Begin a Kernel session
+
+[Understand your first boot](umicom-kernel-from-scratch/understand-your-first-boot.md) explains the virtual machine and console before the existing Kernel source studies.
+
+
 ## Build your first Framework application
 
 Follow [Umicom Framework Development](../umicom-development/index.md) for introductions to C, Framework, CMake and GTK4, with a shared console/window example. Use the [Windows setup guide](../../umicom/windows-development.md) for repository-specific commands and expected results.

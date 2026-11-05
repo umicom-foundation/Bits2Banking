@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Umicom Kernel from Scratch: understand your first boot</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><style>pre{overflow:auto;white-space:pre}article{max-width:76rem;margin:auto}.table-wrap{overflow:auto}nav a{margin-right:1rem}li{margin-block:.45rem}</style></head><body><a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../assets/branding/umicom-icon-on-dark.svg" width="40" height="40" alt="">Umicom · Bits2Banking</a><nav aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/understand-your-first-boot.md">Markdown edition</a></nav></div></header><main id="main" class="container page-pad"><article>
+<h1>Umicom Kernel from Scratch: understand your first boot</h1>
+<h2>Goal and starting point</h2>
+<p>By the end you will explain what starts a kernel, distinguish a host from a guest, and identify the real source files responsible for a typed command. Start with <a href="../../learning-computer-architecture/index.html">Introduction to Computers</a>. For reading the C snippets later, complete the first functions and arrays sections of <a href="../../learning-c/index.html">Learning C</a>.</p>
+<p>You do not need to modify boot code or write a disk in this lesson. A <strong>kernel</strong> manages the processor, memory and access to devices. An <strong>operating system</strong> usually adds programs, files, accounts and other services around a kernel. Having a kernel does not automatically provide a desktop or a login screen.</p>
+<h2>1. Follow the journey</h2>
+<pre><code>Your Windows or Linux computer (host)
+  QEMU creates a virtual RISC-V machine (guest)
+    entry code establishes the processor&#x27;s starting environment
+      Kernel initialises memory and services
+        serial console reads input
+          command engine uses the RAM filesystem or process services</code></pre>
+<p><strong>RISC-V</strong> names the processor instruction set used by this native kernel. <strong>Assembly</strong> is a textual way to name instructions closely related to that processor. <strong>C</strong> expresses most services at a higher level. A <strong>serial console</strong> is a stream of text and input bytes, not a graphical desktop.</p>
+<p>QEMU&#x27;s <code>virt</code> machine is a documented virtual board. A physical computer has its own firmware and devices, so a virtual-board pass does not show that any physical computer will boot the same image. See the <a href="https://www.qemu.org/docs/master/system/riscv/virt.html">QEMU board reference</a>.</p>
+<h2>2. Build and launch one existing system</h2>
+<p>Follow <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/FIRST_SYSTEM_SESSION.md">Your first Umicom Kernel session</a>. Its local path is <code>umicom-kernel/docs/FIRST_SYSTEM_SESSION.md</code>. Complete setup, configure, build and tests before running the interactive image. Keep the timestamped logs. Stop on the first failed step.</p>
+<p>The interactive executable is <code>umicom-system.elf</code>. The diagnostic executable <code>umicom-kernel.elf</code> runs checks and finishes. ELF describes an executable container; neither name identifies a bootable CD image. There is currently no native Kernel USB installer or account-creation command.</p>
+<h2>3. Observe one complete input/output example</h2>
+<p>Type these commands at the guest prompt:</p>
+<pre><code>help files
+create /notes/lesson.txt
+write /notes/lesson.txt &quot;The kernel keeps this note in memory&quot;
+cat /notes/lesson.txt</code></pre>
+<p>The path begins with <code>/</code>, the guest filesystem root. A <strong>path</strong> names an item and its containing folders. The quotation marks group the sentence as one argument. An <strong>argument</strong> is information supplied to a command. <code>cat</code> should display the sentence; it reads a file and writes the text to the console.</p>
+<pre><code>keys -&gt; accepted line -&gt; command and arguments -&gt; file service -&gt; console text</code></pre>
+<p>Now type <code>append /notes/lesson.txt &quot; until shutdown&quot;</code>, then repeat <code>cat</code>. The extra words should appear at the end. Type <code>poweroff</code> when finished. This RAM file will not survive the guest shutdown. The Windows source file and your host logs are separate and remain where you saved them.</p>
+<h2>4. Read the real implementation in order</h2>
+<p>Open these files in your editor. Locate the named symbol with text search:</p>
+<ol>
+<li><code>umicom-kernel/kernel/console_line.c</code>: find <code>UmicomKernelConsoleLineFeed</code>. It receives one input byte and decides when a complete line can be used. An incomplete line is not yet a command.</li>
+<li><code>umicom-kernel/kernel/console_shell.c</code>: find <code>UmicomKernelConsoleShellExecute</code>. It parses words and chooses a command. Then find <code>UmicomShellTopicHelp</code> to see the text shown by <code>help files</code>.</li>
+<li>In the same file, find <code>UmicomShellWrite</code>. It distinguishes replacing from appending. This is the behaviour you observed, not a second lesson-only imitation of file storage.</li>
+<li><code>umicom-kernel/kernel/ramfs.c</code> implements the memory-backed filesystem. Leave its allocator details for later lessons; first identify the boundary between command presentation and file operations.</li>
+</ol>
+<p>The <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/include/umicom/kernel/console_shell.h">console header</a> documents ownership. <strong>Ownership</strong> answers who must keep memory alive and who must release it. The console retains its resources until they are closed; a callback must not start another command while the current command is busy.</p>
+<h2>5. Check your understanding</h2>
+<p><strong>Question:</strong> why does typing text into the guest not change a C source file? <strong>Answer:</strong> console text is input to an already-compiled program. It can request only commands that program implements. Editing source happens in the host editor.</p>
+<p><strong>Question:</strong> does <code>help programs</code> start a program? <strong>Answer:</strong> no. It describes <code>run</code> and <code>runrw</code>; launching requires a separate explicit command.</p>
+<p><strong>Question:</strong> why does the lesson avoid a USB writer? <strong>Answer:</strong> this build targets a virtual board, and its ELF has no physical installation layout.</p>
+<p>Continue with <a href="01-native-kernel-and-host-models.html">Read a native kernel without booting it</a>, then follow that course&#x27;s numbered lessons. Those lessons progressively explain the input limits and ownership rules used here. Keep the existing sequence; this orientation prepares you for it rather than replacing its lessons.</p>
+</article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT for these original lessons. Referenced projects retain their own licences.</p></div></footer></body></html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LLM from Scratch: understand one next-token prediction</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><style>pre{overflow:auto;white-space:pre}article{max-width:76rem;margin:auto}.table-wrap{overflow:auto}nav a{margin-right:1rem}li{margin-block:.45rem}</style></head><body><a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../assets/branding/umicom-icon-on-dark.svg" width="40" height="40" alt="">Umicom · Bits2Banking</a><nav aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../../lessons/10-native-ai/first-next-token-model.md">Markdown edition</a></nav></div></header><main id="main" class="container page-pad"><article>
+<h1>LLM from Scratch: understand one next-token prediction</h1>
+<h2>Goal and prerequisites</h2>
+<p>You will turn three familiar words into numbered inputs, predict the next word and understand what training changes. No machine-learning knowledge is assumed. Read <a href="../../learning-computer-architecture/index.html">Introduction to Computers</a> first if a program or saved file is unfamiliar. Later code-reading sections use arrays and functions from <a href="../../learning-c/index.html">Learning C</a>.</p>
+<p>A <strong>language model</strong> predicts a continuation of text. An <strong>LLM</strong> is a large language model. We begin with a tiny example; understanding it does not require a large model, paid service or GPU. A GPU is a processor particularly suited to performing many numerical operations in parallel. This first example runs on the computer&#x27;s ordinary processor, its CPU.</p>
+<h2>1. Choose an understandable task</h2>
+<p>Our vocabulary is a list of three tokens:</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Token identifier</th><th scope="col">Text</th></tr></thead><tbody>
+<tr><td>0</td><td>umicom</td></tr>
+<tr><td>1</td><td>framework</td></tr>
+<tr><td>2</td><td>trains</td></tr>
+</tbody></table></div>
+<p>A <strong>token</strong> is a unit the model works with. In this small example it is one whole word. Other models may use parts of words or bytes. The identifier is a label, not a statement that token 2 is worth twice token 1.</p>
+<p>We use these six teaching pairs:</p>
+<pre><code>input       expected next token
+umicom      framework
+framework   trains
+trains      umicom
+umicom      framework
+framework   trains
+trains      umicom</code></pre>
+<p>The return from <code>trains</code> to <code>umicom</code> is an intentional cycle in this artificial exercise. It is not a claim about ordinary English. Two examples say that <code>framework</code> follows <code>umicom</code>; no example says that either other token follows it. Counting gives a simple reference prediction before any neural mathematics.</p>
+<h2>2. Represent one input as numbers</h2>
+<p>The implementation uses <strong>one-hot</strong> rows. Exactly one entry is 1 and the rest are 0:</p>
+<pre><code>umicom       -&gt; [1, 0, 0]
+framework    -&gt; [0, 1, 0]
+trains       -&gt; [0, 0, 1]</code></pre>
+<p>A <strong>matrix</strong> is a rectangular table of numbers. Six input rows and three columns form a 6-by-3 matrix. The model keeps a 3-by-3 matrix of <strong>weights</strong>, numbers that training can change. Multiplication of a one-hot row by this weight matrix selects the corresponding row of weights.</p>
+<pre><code>[1, 0, 0] x [ row for umicom    ] -&gt; three scores for what follows umicom
+            [ row for framework ]
+            [ row for trains    ]</code></pre>
+<p>The three scores are <strong>logits</strong>, not probabilities yet. A softmax calculation turns them into positive probabilities whose sum is 1. Equal starting scores give each token probability 1/3. A probability describes the model&#x27;s prediction; it does not prove the prediction is true.</p>
+<h2>3. Explain one training step</h2>
+<p>The <strong>target</strong> is the expected answer, such as identifier 1 after <code>umicom</code>. <strong>Loss</strong> is a number measuring the prediction&#x27;s error. The example uses cross-entropy: a low probability for the target produces a larger loss. For one row it is <code>-ln(target probability)</code>, where <code>ln</code> is the natural logarithm. At probability 1/3 this is about 1.099; at probability 0.9 it is about 0.105. You can follow the comparison without memorising the formula.</p>
+<pre><code>inputs + weights -&gt; scores -&gt; loss compared with targets
+                              |
+                  backward: how does each weight affect loss?
+                              |
+                  update weights a small amount -&gt; repeat</code></pre>
+<p>A <strong>gradient</strong> measures how a small change in a number changes loss. Stochastic gradient descent, abbreviated <strong>SGD</strong>, changes weights in the direction expected to reduce loss. A <strong>learning rate</strong> controls the size of each change. Training updates weights; prediction using existing weights is <strong>inference</strong>. They are different operations.</p>
+<h2>4. Find the real Umicom example</h2>
+<p>Open <code>Umicom-Applications/framework/learning/native-llm/train_bigram.c</code>. Its public <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/learning/native-llm/train_bigram.c">source link</a> provides the same entry point. Read in this order:</p>
+<ol>
+<li><code>vocabulary</code> contains the three words.</li>
+<li><code>oneHot[18]</code> holds six rows times three columns. Match each group of three numbers to the table above.</li>
+<li><code>targets[6]</code> contains <code>1, 2, 0, 1, 2, 0</code>, the expected identifier for each row.</li>
+<li><code>zeroWeights[9]</code> starts all nine weights at zero.</li>
+<li><code>UmiAiTrainingMatmul</code> computes scores. <code>UmiAiTrainingCrossEntropy</code> computes loss.</li>
+<li><code>UmiAiTrainingBackward</code> computes gradients and <code>UmiAiTrainingSgdStep</code> updates weights. The example&#x27;s rate is 0.7.</li>
+<li><code>UmiAiTrainingTapeRewind(tape, 2U)</code> removes temporary calculation nodes while keeping the two original tensors. A <strong>tensor</strong> here is a numerical array; the tape owns its storage and records the calculation for differentiation.</li>
+</ol>
+<p>The loop runs 350 <strong>epochs</strong>, repeated training passes over these six pairs. The final loop chooses the largest score in each row and prints the next word. This is a bigram model: each prediction uses one preceding token. It does not have a Transformer&#x27;s larger context or general conversation ability.</p>
+<h2>5. Exercise before running</h2>
+<p>What should follow identifier 2 in this corpus? Write your prediction. <strong>Answer:</strong> identifier 0, <code>umicom</code>. Locate the corresponding entries in <code>targets</code>.</p>
+<p>How many trainable weights are present? <strong>Answer:</strong> nine, from three inputs by three possible next tokens. The 18 input numbers are training data, not weights.</p>
+<p>Would low loss prove the model can answer a question about banking? <strong>Answer:</strong> no. These six repeated pairs demonstrate a training mechanism; they do not test knowledge or generalisation to unseen examples.</p>
+<p>Continue with <a href="first-training-run.html">Run and inspect the first training experiment</a>. The wider <a href="../index.html">LLM from Scratch course</a> then develops tensors, gradients, attention and larger experiments in sequence.</p>
+</article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT for these original lessons. Referenced projects retain their own licences.</p></div></footer></body></html>
