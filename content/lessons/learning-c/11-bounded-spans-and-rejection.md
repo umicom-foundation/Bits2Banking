@@ -100,6 +100,12 @@ You can separate policy limits, storage extent, lifetime and arithmetic bounds b
 
 [Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
-**Previous:** [Let a function read memory you still own](10-pointers-and-borrowing.md).
+**Previous:** [Connect declarations, source files and the linker](15-headers-objects-and-linking.md).
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
+
+## Continue this module
+
+Further study: systems programming · Lesson 1 of 7.
+
+[Next: Pass a function to separate policy from mechanism](13-function-pointers-and-test-doubles.md)

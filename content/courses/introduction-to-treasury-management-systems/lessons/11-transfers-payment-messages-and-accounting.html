@@ -1,0 +1,104 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/11-transfers-payment-messages-and-accounting.html
+
+PURPOSE:
+Present the linked Markdown lesson as an accessible browser reading edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11. From a financial agreement to a completed payment | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a> · <a href="../../../lessons/09-treasury-tms-calypso/11-transfers-payment-messages-and-accounting.md">Markdown edition</a></nav></div></header>
+<main id="main" class="simple-page"><article>
+<h1 id="from-a-financial-agreement-to-a-completed-payment">11. From a financial agreement to a completed payment</h1>
+<p><em>Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation</em></p>
+<p>A trader agrees to exchange currencies. A back-office team checks the settlement instructions. An engine prepares a payment message. The bank sends or receives funds. Accounting records the financial effects.</p>
+<p>These activities are related, but they are not one single operation. Treating them as the same thing makes support problems much harder to understand.</p>
+<h2 id="agreement-cashflow-and-transfer">Agreement, cashflow and transfer</h2>
+<p>A <strong>trade</strong> records the financial agreement. A <strong>cashflow</strong> is an amount expected to be paid or received at a particular time. A <strong>transfer</strong> represents a cash or security movement obligation that must be processed operationally.</p>
+<p>Return to our fictional FX forward:</p>
+<table>
+<thead>
+<tr>
+<th>Expected movement</th>
+<th style="text-align: right;">Amount</th>
+<th>Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GBP leg</td>
+<td style="text-align: right;">GBP 100,000</td>
+<td>Outgoing</td>
+</tr>
+<tr>
+<td>USD leg</td>
+<td style="text-align: right;">USD 125,000</td>
+<td>Incoming</td>
+</tr>
+</tbody>
+</table>
+<p>The system may generate transfer records representing these obligations. The exact number of records and the processing structure depend on the product, client configuration, netting and settlement arrangements.</p>
+<p>A <strong>standing settlement instruction</strong> (often SSI or SDI) helps determine where and through which accounts and agents the money or securities should move. A correct trade with missing or outdated instructions may still fail to settle.</p>
+<h2 id="what-is-a-message">What is a message?</h2>
+<p>A <strong>payment message</strong> communicates an instruction or status to another system or institution. A <strong>confirmation</strong> communicates agreed transaction terms. A message may be generated before it is sent; it may be sent before another system accepts it; and it may be accepted before the underlying obligation is finally settled.</p>
+<p>For this reason, an operations dashboard should not show a single green tick called “done” for all these different stages.</p>
+<p>The original <em>Calypso Training Presentation</em> illustrates this on <strong>pages 16–18</strong>, where trades relate to transfers, BO messages, documents and postings. The diagrams are useful because each box describes a distinct business object.</p>
+<h2 id="a-missing-payment-example">A missing payment example</h2>
+<p>Suppose the GBP 100,000 payment instruction has been sent, but the bank has not confirmed settlement. The support team should ask:</p>
+<ol>
+<li>Is the trade valid and approved?</li>
+<li>Was the expected cashflow and transfer created?</li>
+<li>Was the right settlement instruction selected?</li>
+<li>Was a payment message generated and sent?</li>
+<li>Did the receiving system acknowledge it?</li>
+<li>Is there evidence of the actual account movement?</li>
+</ol>
+<p>The team must not re-send the instruction blindly. If the bank completed the first payment but the acknowledgement was lost, a duplicate instruction could be dangerous. Any retry must follow the approved idempotency and repair controls.</p>
+<h2 id="where-does-accounting-fit">Where does accounting fit?</h2>
+<p><strong>Accounting</strong> records financial events using accounts and balanced debit and credit entries. A <strong>general ledger</strong> provides an organised record of an entity's financial position and activity.</p>
+<p>We will use an easier example than FX settlement to introduce double-entry accounting. Suppose the kitchen has a properly recorded supplier payable of £300. When it pays the supplier, it can reduce the payable by £300 and reduce bank cash by £300. In a simplified journal entry:</p>
+<table>
+<thead>
+<tr>
+<th>Account</th>
+<th style="text-align: right;">Debit</th>
+<th style="text-align: right;">Credit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Supplier payable</td>
+<td style="text-align: right;">£300</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>Bank cash</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">£300</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>£300</strong></td>
+<td style="text-align: right;"><strong>£300</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The equal totals are a basic control. This is a teaching example; real ledger classifications, posting dates and clearing accounts depend on the organisation's accounting policy.</p>
+<p>A message stating “sent” is not enough evidence for the ledger to assume the payment actually completed if the accounting policy requires settled bank evidence.</p>
+<h2 id="try-it-yourself">Try it yourself</h2>
+<p>A fictional loan is due to pay £1,000 principal plus £20 interest tomorrow. Write down the expected cashflow total. Then label each of these as <strong>agreement</strong>, <strong>instruction</strong> or <strong>observed outcome</strong>: signed loan contract; outgoing payment message; bank statement debit.</p>
+<p><strong>Answers:</strong> The expected outgoing amount is £1,020. The contract is the agreement, the message is the instruction, and the bank statement entry is evidence of an observed outcome, subject to reconciliation.</p>
+<p>The next chapter draws the complete picture and shows how Calypso brings these business objects and processes together.</p>
+<p><em>Reading connection: <strong>Calypso Training Presentation</strong>, pages 16–18, and <strong>Calypso Development and TMS Practical Refresher</strong>, chapters on transfers, messaging and accounting.</em></p>
+
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

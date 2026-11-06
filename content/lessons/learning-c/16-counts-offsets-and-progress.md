@@ -93,6 +93,6 @@ Open [umicom-kernel/kernel/console_file_range.inc](https://github.com/umicom-fou
 
 ## Continue this module
 
-Further study: systems programming · Lesson 4 of 6.
+Further study: systems programming · Lesson 4 of 7.
 
 [Previous: Storage duration and freestanding code](14-storage-duration-and-freestanding-code.md) · [Next: Represent bytes with bits and hexadecimal](17-bits-and-hexadecimal.md)

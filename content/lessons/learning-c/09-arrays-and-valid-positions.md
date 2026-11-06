@@ -98,8 +98,14 @@ You can distinguish the array's size, an element's index and the value stored th
 
 [Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
-**Previous:** [Move from small programs to OS and Kernel source](08-connect-to-systems-lessons.md).
+**Previous:** [Test what you promised and understand failures](07-check-results-and-errors.md).
 
-**Next:** [Let a function read memory you still own](10-pointers-and-borrowing.md).
+**Next:** [Group related values in a structure](12-structures-and-complete-results.md).
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
+
+## Continue this module
+
+Working with more information · Lesson 1 of 4.
+
+[Next: Group related values in a structure](12-structures-and-complete-results.md)

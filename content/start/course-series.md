@@ -158,13 +158,23 @@ Relate RISC-V instructions and register conventions to real Kernel and Framework
 
 **Next topics:** Loads, branches, ABI preservation, traps and emulator debugging.
 
+### [Learning Motorola 68000 Assembly](../lessons/03-native-code/learning-68000-assembly/index.md)
+
+Follow registers, memory addresses and a bounded loop through original MC68000 examples.
+
+**Available:** 3 lessons, with matching browser and Markdown editions.
+
+**Start here:** The first lesson introduces bits, registers and instruction notation. Paper exercises need no installation.
+
+**Next topics:** Stack use, subroutines, calling conventions and a documented emulator laboratory.
+
 ### [Learning Motorola 6800 Assembly](../lessons/03-native-code/learning-6800-assembly/index.md)
 
 Understand an 8-bit processor through accumulator, memory and branch traces.
 
 **Available:** 2 lessons in this course.
 
-**Start here:** Learn bytes, hexadecimal and memory addresses in Introduction to Computers. These are Motorola 6800 lessons, not Motorola 68000 lessons.
+**Start here:** Learn bytes, hexadecimal and memory addresses in Introduction to Computers, then trace the 6800 accumulator examples on paper.
 
 **Next topics:** Addressing modes, condition codes, stack use and a documented simulator laboratory.
 
@@ -226,11 +236,11 @@ Follow Java web requests and supply shared dependencies explicitly.
 
 Understand cash, commitments and the evidence a treasury system must keep.
 
-**Available:** 2 lessons in this course.
+**Available:** 18 connected lessons and 2 optional recaps.
 
 **Start here:** No finance or programming knowledge is assumed. Begin with addition, subtraction and the meaning of a balance.
 
-**Next topics:** Accounts and currencies; trade lifecycles; settlement; reconciliation; the existing treasury workbooks.
+**Next topics:** Follow the linked lessons and workbooks, then proceed to financial programming after Learning C.
 
 ### [Learning Pine Script](../lessons/07-practical-domains/learning-pinescript/index.md)
 

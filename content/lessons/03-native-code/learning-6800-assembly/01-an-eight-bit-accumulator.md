@@ -4,7 +4,7 @@
 
 ## Identify the processor first
 
-This course is about the Motorola 6800, not the Motorola 68000. The names are similar, but the processors have different instructions and programming models. Start with the computer-architecture lessons on binary, hexadecimal and memory. No emulator is required for this first paper exercise.
+The Motorola 6800 keeps small working values in registers called accumulators. Start with the computer-architecture lessons on binary, hexadecimal and memory. No emulator is required for this first paper exercise.
 
 An accumulator is a register commonly used for arithmetic. The 6800 has 8-bit accumulators A and B. Eight bits can represent 256 patterns. Interpreted as unsigned values, those patterns represent 0 through 255. An instruction also affects condition flags; later lessons use those flags to make decisions.
 
@@ -38,7 +38,7 @@ Read the short RISC-V addition example in Framework. It offers a comparison of t
 
 ## Source and further reading
 
-[Read the related Umicom example](https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/examples/learning/assembly/add_riscv64.S). Path: `Umicom-Applications/framework/examples/learning/assembly/add_riscv64.S`. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.
+[Compare arithmetic in the Learning C example](../../../../labs/native/first-c-programs/values.c). Follow its starting count, completed count and remaining count. The Assembly fragment above is an original paper exercise.
 
 [Technical reference](https://www.bitsavers.org/components/motorola/6800/M6800_Microprocessor_Applications_Manual_1975.pdf). Check the version requirements in the lesson before practical work.
 

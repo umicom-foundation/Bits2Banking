@@ -38,7 +38,7 @@ Compare this overwrite with `BtbActivityAdvance` in the activity example: its ou
 
 ## Source and further reading
 
-[Read the related Umicom example](https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/examples/learning/assembly/add_riscv64.S). Path: `Umicom-Applications/framework/examples/learning/assembly/add_riscv64.S`. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.
+[Read BtbActivityAdvance](../../../../labs/native/framework-activity/activity.c). Follow the output pointer and the check before assignment. The Assembly fragment above is an original paper exercise.
 
 [Technical reference](https://www.bitsavers.org/components/motorola/6800/M6800_Microprocessor_Applications_Manual_1975.pdf). Check the version requirements in the lesson before practical work.
 

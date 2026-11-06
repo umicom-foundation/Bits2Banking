@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/16-two-currencies-two-dates-understanding-fx-swaps.html
+
+PURPOSE:
+Present the linked Markdown lesson as an accessible browser reading edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>16. Two currencies, two dates: understand an FX swap | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a> · <a href="../../../lessons/09-treasury-tms-calypso/16-two-currencies-two-dates-understanding-fx-swaps.md">Markdown edition</a></nav></div></header>
+<main id="main" class="simple-page"><article>
+<h1 id="two-currencies-two-dates-understand-an-fx-swap">16. Two currencies, two dates: understand an FX swap</h1>
+<p><em>Treasury Management, TMS and Calypso — From Zero · Practical foundations</em></p>
+<p>In Chapter 8, we met a simple <strong>foreign-exchange (FX) forward</strong>: an agreement made today to exchange two currencies on a future date. It had two contractual currency movements, but they took place on the <strong>same</strong> future value date.</p>
+<p>Now imagine a treasury team that <strong>needs dollars for a short period</strong>, but expects to return to pounds afterwards. Rather than making two unrelated decisions, the team may use an <strong>FX swap</strong>. It is commonly constructed from two linked currency exchanges: one on a near date and one on a far date.</p>
+<p>You do not need to know derivatives mathematics to follow the example. You only need to keep four facts clear: <strong>which currency</strong>, <strong>which direction</strong>, <strong>how much</strong> and <strong>on which date</strong>.</p>
+<h2 id="begin-with-a-practical-funding-need">Begin with a practical funding need</h2>
+<p>A fictional British company holds pounds but needs dollars for a payment on the near date. It expects to receive dollars later and wants to exchange back into pounds on a future date.</p>
+<p>For teaching purposes, suppose the company agrees the following two exchanges with a bank:</p>
+<ul>
+<li><strong>Near leg (2 November):</strong> pay GBP 100,000 and receive USD 125,000.</li>
+<li><strong>Far leg (2 December):</strong> pay USD 126,000 and receive GBP 100,000.</li>
+</ul>
+<p>These are <strong>invented contractual amounts</strong>. They imply near and far rates of 1.25 and 1.26 USD per GBP respectively. Do not treat them as current market prices or as a correct valuation formula; actual swap pricing reflects market conditions and conventions.</p>
+<p>Let's put the cash movements in a table from the company's point of view:</p>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th style="text-align: right;">GBP movement</th>
+<th style="text-align: right;">USD movement</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 November</td>
+<td style="text-align: right;"><strong>−100,000</strong></td>
+<td style="text-align: right;"><strong>+125,000</strong></td>
+<td>Exchange pounds for dollars</td>
+</tr>
+<tr>
+<td>2 December</td>
+<td style="text-align: right;"><strong>+100,000</strong></td>
+<td style="text-align: right;"><strong>−126,000</strong></td>
+<td>Exchange dollars back for pounds</td>
+</tr>
+</tbody>
+</table>
+<p><img src="../../../assets/diagrams/treasury-fx-swap-two-dates.svg" alt="An FX swap connects a near exchange and a far exchange" /></p>
+<p>The bank sees the opposite flows. Whenever you read a trade ticket, establish <strong>whose point of view</strong> its buy/sell labels describe. “Buy USD” without a party and date can be dangerously ambiguous.</p>
+<h2 id="why-is-this-called-a-swap">Why is this called a swap?</h2>
+<p>The two exchanges are <strong>linked parts of one FX swap arrangement</strong>. The near exchange provides dollars for an interim period; the far exchange reverses the currency direction on the later date. You may hear people describe this as <em>swapping one currency for another and then swapping back</em>.</p>
+<p>The difference between USD 125,000 received near and USD 126,000 paid far is <strong>USD 1,000</strong> in this fictional deal. It is tempting to call that a simple fee, but doing so would be misleading. The near and far rates express the contract's pricing and interest-rate relationship. The financing economics cannot be understood by subtracting the two USD legs without considering dates, currencies and discounting. For now, recognise the flows rather than deriving a market price.</p>
+<p>An FX swap is not the same as an interest-rate swap. Both use the word <em>swap</em>, but they exchange different contractual things. An interest-rate swap typically exchanges calculated interest cashflows under specified terms; an FX swap involves currency principal exchanges on near and far dates.</p>
+<h2 id="four-objects-a-system-must-keep-separate">Four objects a system must keep separate</h2>
+<p>This example is an excellent way to understand why a Treasury Management System needs more than a “balance” field.</p>
+<p><strong>1. The financial agreement.</strong> The FX swap has a trade identifier, counterparties, currencies, rates, value dates, status and an owning trading book. The agreed economic terms should not be silently edited when a payment fails.</p>
+<p><strong>2. Expected cashflows.</strong> The system can derive four signed amounts: GBP out and USD in on the near date; USD out and GBP in on the far date. These are expectations from the contract.</p>
+<p><strong>3. Settlement instructions.</strong> Each currency movement needs the correct accounts, receiving bank/agent details and cut-off times. Instructions can differ between currencies and dates.</p>
+<p><strong>4. Actual settlement evidence.</strong> A payment message being generated is not the same as money arriving. Settlement acknowledgements and reconciled bank records establish whether the obligations were completed.</p>
+<p>A developer who stores only “FX swap complete: yes/no” would lose useful information about which leg succeeded, which message failed and where the investigation should start.</p>
+<h2 id="what-if-one-currency-arrives-and-the-other-does-not">What if one currency arrives and the other does not?</h2>
+<p>Suppose the company pays GBP 100,000 on the near date, but USD 125,000 has not appeared in the intended account. The economics of the FX swap remain agreed; the problem is in its <strong>operational settlement state</strong>.</p>
+<p>Before taking any action, operations should establish whether the USD payment is delayed, rejected, routed to the wrong account, or simply not yet visible in the bank statement. Sending a duplicate instruction without checking the original message and settlement references could make the problem worse.</p>
+<p>A treasury team will also update its short-term cash forecast. It cannot treat the expected USD as settled cash until the available evidence supports that state. The team might need to escalate to the settlement and liquidity owners because a missing currency leg can affect other payments.</p>
+<h2 id="a-first-look-at-calypso-processing">A first look at Calypso processing</h2>
+<p>In a Calypso-style environment, the FX swap is captured against a <strong>book</strong> and <strong>counterparty</strong>, passed through configured workflow controls, and processed into relevant settlement obligations. Transfer and messaging functions may create operational records for each payment. Exact object types, actions and engine configurations depend on the installed release and client setup.</p>
+<p>The important lesson is one of <strong>authority</strong>: do not make an operational problem disappear by altering the financial agreement or writing directly to a database. Use authorised workflow and repair procedures, preserving an audit trail and the original business identifiers.</p>
+<h2 id="try-it-yourself">Try it yourself</h2>
+<p><strong>Exercise A.</strong> A company receives <strong>EUR 80,000</strong> and pays <strong>GBP 70,000</strong> on a near date. On a far date, it pays <strong>EUR 81,000</strong> and receives <strong>GBP 70,000</strong>. Write the four signed cash movements and identify the dates.</p>
+<p><strong>Exercise B.</strong> Why would a single net amount in GBP be insufficient to describe that FX swap?</p>
+<p><strong>Exercise C.</strong> The near EUR receipt is missing, but the GBP payment has settled. Name three records you would review before considering a payment repair.</p>
+<h3 id="check-your-answers">Check your answers</h3>
+<p><strong>A:</strong> Near: EUR +80,000, GBP −70,000. Far: EUR −81,000, GBP +70,000. Keep the specific contractual value dates with each.<br />
+<strong>B:</strong> The currencies, payment dates and directions are essential. A net GBP figure would conceal the EUR obligation and the fact that there are two separate settlement dates.<br />
+<strong>C:</strong> The original EUR transfer, its settlement instructions, the generated payment message and acknowledgement, plus bank-account reconciliation where available. Check the trade version and business date as context.</p>
+<p><strong>Next:</strong> FX swaps can help a treasury team obtain currency liquidity. Another source of short-term funding uses securities. We will investigate a <em>repurchase agreement</em>, usually called a <strong>repo</strong>, and explain how collateral changes the risk.</p>
+
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

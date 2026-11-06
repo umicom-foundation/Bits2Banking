@@ -59,8 +59,14 @@ You can distinguish build errors, behaviour mismatches, skips and executed passe
 
 [Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
-**Previous:** [Give reusable work a clear contract](06-functions-with-a-contract.md).
+**Previous:** [Writing and calling a function](06-functions-with-a-contract.md).
 
-**Next:** [Move from small programs to OS and Kernel source](08-connect-to-systems-lessons.md).
+**Next:** [Keep several values in an array](09-arrays-and-valid-positions.md).
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
+
+## Continue this module
+
+First programs · Lesson 7 of 7.
+
+[Previous: Writing and calling a function](06-functions-with-a-contract.md) · [Next: Keep several values in an array](09-arrays-and-valid-positions.md)

@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/09-trade-lifecycle-workflow-and-approvals.html
+
+PURPOSE:
+Present the linked Markdown lesson as an accessible browser reading edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9. What happens after a trade is agreed? | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a> · <a href="../../../lessons/09-treasury-tms-calypso/09-trade-lifecycle-workflow-and-approvals.md">Markdown edition</a></nav></div></header>
+<main id="main" class="simple-page"><article>
+<h1 id="what-happens-after-a-trade-is-agreed">9. What happens after a trade is agreed?</h1>
+<p><em>Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation</em></p>
+<p>We have agreed a forward contract to buy USD 125,000 and sell GBP 100,000. The trader has entered its terms in the system. Can everybody now go home and assume the dollars will arrive in three months?</p>
+<p>Not yet. The trade has only begun its <strong>lifecycle</strong>: the sequence of states and actions from creation through its eventual completion, cancellation or termination.</p>
+<h2 id="first-check-the-agreement">First, check the agreement</h2>
+<p>A new trade may need independent verification. Does the system show the correct counterparty? Are the currencies the right way round? Does the recorded settlement date match the agreement? Has the trader used an approved book? A small data-entry error can lead to a large unintended payment.</p>
+<p>A <strong>workflow</strong> tells the system which actions may happen from each status. A simplified training workflow might look like this:</p>
+<table>
+<thead>
+<tr>
+<th>Current status</th>
+<th>Action</th>
+<th>Next status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NEW</td>
+<td>Verify the agreed terms</td>
+<td>VERIFIED</td>
+</tr>
+<tr>
+<td>VERIFIED</td>
+<td>Approve / authorise</td>
+<td>AUTHORISED</td>
+</tr>
+<tr>
+<td>AUTHORISED</td>
+<td>Confirm with counterparty</td>
+<td>CONFIRMED</td>
+</tr>
+<tr>
+<td>CONFIRMED</td>
+<td>Record successful settlement</td>
+<td>SETTLED</td>
+</tr>
+</tbody>
+</table>
+<p>These are <strong>classroom states</strong>, not a claim about the exact workflow configuration used by a particular Calypso client. Real environments can have different names, branches and permissions.</p>
+<p>A <strong>status</strong> describes where something currently stands. An <strong>action</strong> asks the system to move it forward. A <strong>rule</strong> checks whether an action is allowed under the business conditions. A <strong>permission</strong> checks whether the person or process is authorised to attempt it.</p>
+<h2 id="why-approval-is-a-separate-step">Why approval is a separate step</h2>
+<p>A trader who enters a deal should not automatically be able to approve every control exception, change payment instructions and certify settlement. Different people or services may be responsible for different stages. This is called <strong>segregation of duties</strong>.</p>
+<p>Suppose a clerk tries to approve a trade but lacks the required permission. The system should refuse the action and record what was attempted. It must not change the status and then ask for permission afterwards.</p>
+<h2 id="a-trade-can-change-after-confirmation">A trade can change after confirmation</h2>
+<p>Imagine the company and bank discover that the agreed amount should have been USD 120,000, not USD 125,000. Depending on contract and policy, the existing trade may require an approved amendment, cancellation or rebooking. It is not safe simply to edit the displayed number and assume nothing else is affected.</p>
+<p>The amendment may change risk and valuations, invalidate an existing confirmation, require cashflow and transfer regeneration, or trigger reversals in accounting. This is why financial systems keep versions and audit history.</p>
+<p>A user should be able to answer: <em>Who changed the trade, when, from which value to which value, and what happened to the downstream instructions?</em></p>
+<h2 id="what-an-event-does">What an event does</h2>
+<p>In a multi-tier platform, an authorised state change can cause an <strong>event</strong> to be published. An event tells interested services that something happened, for example that a trade has changed. A transfer-processing engine might respond by checking the new trade terms and creating or updating an expected settlement obligation.</p>
+<p>Different systems use different event mechanisms. In classic Calypso explanations, the Data Server, Event Server and business engines work together. We will study their responsibilities in Chapter 12.</p>
+<p>One event may be delivered again after a failure. A system must not create a second payment simply because it sees the same business instruction twice. We call the design goal <strong>idempotency</strong>: repeated handling of the same event should not create duplicate business effects.</p>
+<h2 id="follow-a-mistake-through-the-workflow">Follow a mistake through the workflow</h2>
+<p>Take the USD 125,000 / GBP 100,000 forward from Chapter 8. Suppose it was entered with the wrong counterparty and discovered during verification.</p>
+<ol>
+<li>Should verification approve it? Explain why.</li>
+<li>What evidence should be recorded about the rejected or corrected action?</li>
+<li>If the error is discovered <strong>after</strong> confirmation, what other stages may require attention?</li>
+</ol>
+<p><strong>Check:</strong> The wrong counterparty is a significant defect; the action should be refused or sent for authorised correction. Record the original identifier, version, actor, timestamp, proposed action and reason. After confirmation, review confirmations, cashflows, transfers, accounting, risk and any external messages—not just the trade screen.</p>
+<p>Chapter 10 explains why a correct trade can still have a changing market value.</p>
+<p><em>Reading connection: <strong>Calypso Training Presentation</strong>, conceptual model and workflow sections; <strong>Calypso Development and TMS Practical Refresher</strong>, trade lifecycle and workflow chapters.</em></p>
+
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

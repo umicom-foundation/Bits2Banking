@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/06-products-trades-books-and-legal-entities.html
+
+PURPOSE:
+Present the linked Markdown lesson as an accessible browser reading edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6. Products, trades, books and legal entities | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a> · <a href="../../../lessons/09-treasury-tms-calypso/06-products-trades-books-and-legal-entities.md">Markdown edition</a></nav></div></header>
+<main id="main" class="simple-page"><article>
+<h1 id="products-trades-books-and-legal-entities">6. Products, trades, books and legal entities</h1>
+<p><em>Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation</em></p>
+<p>Financial software uses words that sound familiar but have precise meanings. A <strong>product</strong> is not a carton on a shop shelf; in this context it is a type of financial instrument. A <strong>book</strong> is not something you read; it is an organisational place where a bank groups trading activity.</p>
+<p>We will learn these ideas using the FX forward from Chapter 5. This is one of the most helpful ways to understand Calypso's conceptual model before seeing any programming code.</p>
+<h2 id="product-what-sort-of-agreement-is-this">Product: what sort of agreement is this?</h2>
+<p>A financial <strong>product</strong> describes the kind of contract or instrument. Examples include a bond, a currency forward, a loan and an interest-rate swap. The product determines the important terms and processing rules.</p>
+<p>Some financial products, such as a particular government bond, can be traded many times. Others are individually negotiated contracts with terms specific to a deal. In both cases, a useful system separates the description of the instrument from the particular transaction involving it.</p>
+<h2 id="trade-what-did-these-parties-agree-to-do">Trade: what did these parties agree to do?</h2>
+<p>A <strong>trade</strong> is a recorded transaction between parties. For our forward, the trade says that one side will receive USD 125,000 and pay GBP 100,000 on a specified future date. It has an identity and an audit history.</p>
+<p>A trade is therefore not simply its product type. Two people can trade the same bond on different dates, at different prices and in different quantities. The product may be the same; the trades are distinct.</p>
+<p>This difference is important when somebody asks, “Which transaction should we amend?” Changing one trade must not silently rewrite every trade involving the same product.</p>
+<h2 id="legal-entity-who-is-legally-involved">Legal entity: who is legally involved?</h2>
+<p>A <strong>legal entity</strong> is an organisation or recognised legal unit that can take part in a transaction. The <strong>counterparty</strong> is the other party to the trade. The bank's own trading business is often identified as the <strong>processing organisation (PO)</strong> in classic Calypso terminology.</p>
+<p>A bank might have several legal entities for different countries or businesses. Entering the wrong entity can cause serious problems: the contract may name the wrong party, the settlement account may be wrong, and exposure may be attributed incorrectly.</p>
+<h2 id="book-where-does-the-organisation-record-the-trade">Book: where does the organisation record the trade?</h2>
+<p>A <strong>trading book</strong> groups trading activity for a particular business purpose. Our fictional bank might use <code>LONDON_FX</code> for the London foreign-exchange desk. Another book might hold bond trades. A book is associated with an owning organisation and may be included in one or more <strong>book hierarchies</strong> for reports and risk aggregation.</p>
+<p>An <strong>accounting book</strong> supports the organisation of accounting rules and postings. It is not identical to the trading book. The original presentation distinguishes these concepts because one trading book can be included in wider reporting hierarchies or mapped into an accounting grouping.</p>
+<h2 id="put-the-four-terms-together">Put the four terms together</h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer in our fictional FX example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What instrument?</td>
+<td>FX forward (<strong>Product</strong>)</td>
+</tr>
+<tr>
+<td>What specific agreement?</td>
+<td>Receive USD 125,000, pay GBP 100,000 (<strong>Trade</strong>)</td>
+</tr>
+<tr>
+<td>Where is it recorded?</td>
+<td><code>LONDON_FX</code> (<strong>Trading Book</strong>)</td>
+</tr>
+<tr>
+<td>Who is involved?</td>
+<td>Fictional Bank A and Corporate B (<strong>Legal Entities</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p>Those pieces should agree. A valid-looking amount and date are not enough when the counterparty or book is wrong.</p>
+<h2 id="the-original-calypso-diagrams-are-worth-studying">The original Calypso diagrams are worth studying</h2>
+<p>In the supplied <em>Calypso Training Presentation</em>, the diagrams on <strong>pages 9–15</strong> explain product, trade, legal entity, trading book, book hierarchy and accounting book in a connected model. Study the arrows: they answer whether an item describes an instrument, a transaction, an owner or a reporting grouping. The diagrams represent a classic Calypso conceptual view, so we will check release-specific details later.</p>
+<h2 id="check-your-understanding">Check your understanding</h2>
+<p>A fictional bank buys the same government bond in two separate transactions: 100 units on Monday and 200 units on Wednesday. Both are booked to the same fixed-income desk.</p>
+<ol>
+<li>Is this one trade or two?</li>
+<li>Can the two trades refer to the same product?</li>
+<li>What does the book tell us, and what does it <em>not</em> tell us?</li>
+</ol>
+<p><strong>Answers:</strong> There are two trades, each with its own identity and terms. They may refer to the same bond product. The book tells us how the bank organises and owns the activity; it does not replace the trade's counterparty, quantity, price or settlement obligations.</p>
+<p>The next chapter introduces deposits and loans—two products that are easier to understand before we investigate complex derivatives.</p>
+<p><em>Reading connection: <strong>Calypso Training Presentation</strong>, pages 9–15, and <strong>Calypso Development and TMS Practical Refresher</strong>, Chapters 3–5.</em></p>
+
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

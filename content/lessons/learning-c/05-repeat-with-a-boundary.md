@@ -1,48 +1,84 @@
-# Repeat work without losing the stopping rule
+First programs · Lesson 5 of 7
 
-Trace a loop's initial value, condition, body and update.
+# Repeating work with a loop
 
-**Before you begin:** Read [Make a decision before calculating](04-decisions-and-valid-input.md), or return to it for a refresher.
+A **loop** repeats instructions. We will use one to display the numbers 1, 2 and 3. The important questions are where it starts, when it stops and what changes each time.
 
-## Why repeat an instruction?
+## 1. Write the repetition without a loop
 
-Suppose you want to display three numbered steps. You could write three output calls, but a loop expresses repeated work with a shared rule. A loop is a control structure that runs a body repeatedly while its condition permits it. Each execution of the body is an iteration.
+```text
+printf("Lesson %d\n", 1);
+printf("Lesson %d\n", 2);
+printf("Lesson %d\n", 3);
+```
 
-The repetition example deliberately uses only three iterations. You can inspect every state on paper. Real software may use larger limits, but a large number is not required to understand the mechanism. Finishing this lesson does not require judging how fast a processor runs.
+Only the number changes. A loop can express that pattern without writing the same instruction three times.
 
-## Read the four parts of for
+## 2. Read a for loop
 
-In for (int step = 1; step <= 3; step = step + 1), the first part creates step and initialises it to one. This happens once before checking the loop condition. The condition asks whether step is less than or equal to three. The <= operator includes equality.
+```text
+for (int lesson = 1; lesson <= 3; lesson = lesson + 1) {
+    printf("Lesson %d\n", lesson);
+}
+```
 
-If the condition is true, the loop body runs. Afterwards the update step = step + 1 computes a value one greater and assigns it back to step. Assignment stores a new value; it differs from ==, which compares values. The condition is then checked again before another body execution.
+The three parts inside parentheses are separated by semicolons. `int lesson = 1` sets the starting value and runs once. `lesson <= 3` asks whether lesson is less than or equal to 3; this is checked before every repetition. `lesson = lesson + 1` increases the value after each completed repetition. The braces contain the repeated instructions, called the **loop body**.
 
-## Follow the exact order
+## 3. Trace every repetition
 
-Initially step is one, so the first line is Step 1. The update makes it two. The condition permits another iteration, which displays Step 2. The next update makes it three, and equality is still permitted, so Step 3 appears.
+| Value before the check | Is it at most 3? | What happens? |
+| --- | --- | --- |
+| 1 | Yes | Print Lesson 1; increase to 2. |
+| 2 | Yes | Print Lesson 2; increase to 3. |
+| 3 | Yes | Print Lesson 3; increase to 4. |
+| 4 | No | Leave the loop. Nothing is printed for 4. |
 
-The update then makes step four. Four is not less than or equal to three, so the body does not run again. Nothing displays Step 4. The program continues after the loop and flushes standard output. That final flush is outside the braces and runs once after a successful loop.
+```text
+Lesson 1
+Lesson 2
+Lesson 3
+```
 
-## Understand where a name is available
+The last check matters as much as the first. It is what ends the repetition.
 
-A scope is the region of source code where a name can be used. step is declared in the for initialisation and is available to the condition, update and body. It is not available after that for statement. This reduces the chance of accidentally using a loop's temporary counter elsewhere.
+## 4. Recognise a common spelling
 
-The counter has type int and these small values cannot overflow its range. If you change this pattern to accept very large outside values, you must reconsider the range and update. A stopping condition is not enough if arithmetic overflows before reaching it.
+You will often see `++lesson` instead of `lesson = lesson + 1`. In this position both increase the variable by one. You may also see loops that start at zero. Those are useful for arrays, which we will study later.
 
-## Predict two common mistakes
+## 5. Try two changes on paper
 
-If you change <= 3 to < 3, the iteration with step three is no longer permitted. The output becomes two lines. This is a boundary error, often called an off-by-one error: an operation includes one too many or one too few elements.
+1. Change the starting value from 1 to 2. Keep the condition unchanged. Write the output.
+2. Restore the starting value to 1. Change `<= 3` to `< 3`. Write the output.
 
-If you remove the update, step remains one and the condition remains true. The program can keep producing output. Do not deliberately run an endless example to understand it; trace it on paper. If you accidentally launch one in a terminal, use that terminal's interrupt action, commonly Ctrl+C, then correct the source before rebuilding.
+### Answer
 
-## Connect loops to checked work
+The first change prints Lesson 2 and Lesson 3. The second prints Lesson 1 and Lesson 2: “less than 3” excludes 3, whereas “less than or equal to 3” includes it.
 
-The output result is checked inside each iteration. If writing a line reports an error, return 1 leaves main immediately, including the loop. Successful earlier lines do not make a later error disappear.
+## A stopping rule is part of the program
 
-A bounded loop is useful in systems software when visiting a known number of entries. Later lessons introduce arrays, which are ordered collections of elements. A loop visiting an array must use its real element count and valid indices. The current lesson uses no array access so you can learn control flow first.
+If the value never changes, a true condition may stay true forever. If it grows without a suitable limit, a number can exceed the range of its type. Our loop stops at a small fixed value. When you write another loop, write its start, stopping rule and update in words before trying it.
 
-## Complete example
+## Where this appears in the codebase
 
-From the laboratory file labs/native/first-c-programs/repetition.c.
+`labs/native/first-c-programs/repetition.c` contains a count-based loop. Framework uses loops to inspect lists of files and lessons. The larger examples have more checks, but the same three questions let you begin reading them.
+
+## Before moving on
+
+You can trace the value for every iteration, including the check that ends the loop. An **iteration** is one pass through the loop body.
+
+---
+
+[Read this lesson in HTML](../../courses/learning-c/lessons/05-repeat-with-a-boundary.html) · [Learning sequence](../../start/learning-sequence.md)
+
+## Continue this module
+
+First programs · Lesson 5 of 7.
+
+[Previous: Making decisions with if](04-decisions-and-valid-input.md) · [Next: Writing and calling a function](06-functions-with-a-contract.md)
+
+## Complete laboratory source
+
+The short example above introduces the instructions. This is the complete source file, including its purpose and licence comment, for comparison with your local laboratory.
 
 ```c
 /*-----------------------------------------------------------------------------
@@ -76,28 +112,3 @@ int main(void)
     return 0;
 }
 ```
-
-## Try it step by step
-
-1. Draw columns for step before condition, condition result, displayed line and step after update.
-2. Fill four rows, including the final condition check at four.
-3. Predict the output if the upper bound becomes two.
-4. On paper, remove the update and explain why the condition no longer changes.
-
-## Check your understanding
-
-Why does the body run at step three but not at step four?
-
-**Explanation:** The condition is step <= 3. Equality at three is allowed. After the update to four, the next condition is false and execution continues after the loop.
-
-## Before you continue
-
-You can trace every condition check, including the one that stops the loop.
-
-[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
-
-**Previous:** [Make a decision before calculating](04-decisions-and-valid-input.md).
-
-**Next:** [Give reusable work a clear contract](06-functions-with-a-contract.md).
-
-Sammy Hegab · Umicom Foundation · MIT. Original learning material.

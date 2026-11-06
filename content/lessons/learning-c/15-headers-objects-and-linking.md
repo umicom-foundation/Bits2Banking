@@ -97,4 +97,4 @@ Open [umicom-kernel/cmake/DiskInspection.cmake](https://github.com/umicom-founda
 
 Working with more information · Lesson 4 of 4.
 
-[Previous: Let a function read memory you still own](10-pointers-and-borrowing.md) · [Module complete: return to course contents](index.md)
+[Previous: Let a function read memory you still own](10-pointers-and-borrowing.md) · [Next: Connect borrowed memory to bounded system input](11-bounded-spans-and-rejection.md)

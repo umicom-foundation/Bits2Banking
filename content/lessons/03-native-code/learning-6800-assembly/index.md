@@ -2,7 +2,7 @@
 
 Understand an 8-bit processor through accumulator, memory and branch traces.
 
-Learn bytes, hexadecimal and memory addresses in Introduction to Computers. These are Motorola 6800 lessons, not Motorola 68000 lessons.
+Learn bytes, hexadecimal and memory addresses in Introduction to Computers, then trace the 6800 accumulator examples on paper.
 
 [Browser course](../../../courses/learning-6800-assembly/index.html) · [Choose a subject](../../../start/course-series.md)
 

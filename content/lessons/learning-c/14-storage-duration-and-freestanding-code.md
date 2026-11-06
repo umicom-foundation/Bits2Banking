@@ -71,6 +71,6 @@ Open [umicom-kernel/kernel/console_shell.c](https://github.com/umicom-foundation
 
 ## Continue this module
 
-Further study: systems programming · Lesson 3 of 6.
+Further study: systems programming · Lesson 3 of 7.
 
 [Previous: Pass a function to separate policy from mechanism](13-function-pointers-and-test-doubles.md) · [Next: Keep counts, offsets and progress separate](16-counts-offsets-and-progress.md)

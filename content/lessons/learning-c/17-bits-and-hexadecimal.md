@@ -81,9 +81,9 @@ Open [umicom-kernel/kernel/console_file_range.inc](https://github.com/umicom-fou
 
 ## Continue this module
 
-Further study: systems programming · Lesson 5 of 6.
+Further study: systems programming · Lesson 5 of 7.
 
-[Previous: Keep counts, offsets and progress separate](16-counts-offsets-and-progress.md) · [Next: Move from small programs to OS and Kernel source](08-connect-to-systems-lessons.md)
+[Previous: Keep counts, offsets and progress separate](16-counts-offsets-and-progress.md) · [Next: Check a function at its boundaries](18-check-a-function-at-its-boundaries.md)
 
 
 ## Continue learning

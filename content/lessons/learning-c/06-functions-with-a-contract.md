@@ -1,48 +1,89 @@
-# Give reusable work a clear contract
+First programs · Lesson 6 of 7
 
-Understand a declaration, an implementation, a caller and a rejected result.
+# Writing and calling a function
 
-**Before you begin:** Read [Repeat work without losing the stopping rule](05-repeat-with-a-boundary.md), or return to it for a refresher.
+You have already called library functions such as `puts`. Now you will define a small function of your own. It will calculate how many lessons remain, using the rules introduced earlier.
 
-## Name a repeated piece of work
+## 1. Give the work a name
 
-The count rule is useful beyond one example. We can place it in a function named BtbRemainingCount. A function lets a caller request a defined operation without rewriting its body every time. Reuse only helps if callers know what the operation accepts and what it promises.
+```text
+int RemainingLessons(int total, int completed)
+{
+    if (total < 0 || completed < 0 || completed > total) {
+        return -1;
+    }
+    return total - completed;
+}
+```
 
-A contract is that agreement. Here total must satisfy zero <= total <= one thousand, and completed must satisfy zero <= completed <= total. The function returns total minus completed for valid values and returns minus one for invalid values. It does not display text, allocate memory or change a file.
+`RemainingLessons` is the function's name. The first `int` is the type of value returned. Inside parentheses are two **parameters**, named inputs available inside the function: total and completed. Each parameter has a type and a name. The function body is the block between braces.
 
-## Read the declaration
+A `return` ends the current function call and supplies its result. Here, an invalid input returns -1. Valid inputs return a count of zero or more. We choose -1 as an error result because it cannot be a valid remaining count.
 
-The header counts.h declares int BtbRemainingCount(int total, int completed);. The first int is the return type. The two named int parameters describe the values the function receives. A parameter is the local name used inside a function; an argument is the value supplied by a particular call.
+## 2. Call the function
 
-The caller uses BtbRemainingCount(5, 2). During that call, total receives five and completed receives two. These integer values are passed by value: the function works with its own parameter objects. It cannot change a caller's separate int merely by assigning to one of these parameters.
+```text
+int remaining = RemainingLessons(5, 2);
+```
 
-## Keep declaration and implementation together
+The numbers 5 and 2 are **arguments**: values supplied for this call. The first goes to total and the second to completed. The function checks them, returns 3, and the calling statement stores that result in remaining.
 
-The source counts.c includes counts.h and defines the function body. Including its own public declaration lets the compiler check that the implementation agrees with it. functions.c includes the same header so it can call the function with the declared types.
+```text
+Caller supplies arguments: 5, 2
+                 ↓
+RemainingLessons: total = 5, completed = 2
+                 ↓ check and subtract
+Return 3 to the caller
+                 ↓
+Caller stores remaining = 3
+```
 
-The #ifndef, #define and #endif lines in the header form an include guard. They prevent its contents from being processed repeatedly in the same compilation when several files include it indirectly. You do not need to invent a new guard mechanism for this exercise; notice that the same guard name appears consistently.
+## 3. Handle the result
 
-## Return before unsafe work
+```text
+if (remaining < 0) {
+    puts("Please check the counts.");
+} else {
+    printf("Remaining: %d\n", remaining);
+}
+```
 
-The implementation checks all invalid ranges first. If any check rejects the arguments, return -1 ends that call before subtraction. Only valid small counts reach total - completed. This also makes extreme integer inputs safe to reject without performing potentially overflowing subtraction.
+The calculation function does not decide how a window should look. Its caller chooses what to display. This separation lets the same calculation serve a terminal program or a graphical application.
 
-A valid remaining count is never negative. Reserving minus one for rejection therefore avoids confusing it with a valid result. This is a deliberately small interface. Other interfaces use a separate status and output object; read each contract rather than assuming every negative number means failure everywhere.
+## 4. Describe its promise
 
-## Let the caller decide how to present it
+A function's **contract** describes its inputs and result. Our contract is: total and completed are integers; both must be nonnegative and completed must not exceed total; valid input returns total minus completed; invalid input returns -1. Describing this in words makes it possible for another programmer to call the function correctly.
 
-functions.c stores the return value in remaining. If it is negative, the caller writes a message to stderr, the standard error stream, and returns a failure completion result. Standard error is separate from standard output so diagnostics can be collected separately from ordinary results.
+## 5. Follow the real laboratory
 
-With arguments five and two, remaining is three and the caller displays it on standard output. Keeping arithmetic separate from presentation allows a test to call the function directly without parsing a sentence. It also allows a future graphical interface to present the same result in its own way.
+1. Open `labs/native/first-c-programs/counts.h`. It declares `BtbRemainingCount`, the laboratory's name for this operation. A declaration tells callers how to call it.
+2. Open `counts.c` beside it. This contains the definition: the instructions that do the work.
+3. Open `functions.c`. Find the call that supplies 5 and 2.
+4. Compare the result handling with the example above.
 
-## Understand the link step
+You are following one operation through three files, not learning three unrelated topics. A header shares the declaration; a source file implements it; another source file calls it.
 
-CMake builds counts.c into a small static library and links functions.c against it. A static library collects compiled object code for link-time reuse. The header supplies declarations; it does not itself provide the compiled function body.
+## Try it
 
-If the linker reports an undefined reference to BtbRemainingCount, check whether counts.c was compiled and the required library was linked. Do not paste a second implementation into the caller merely to silence the error. The laboratory's CMake target records that dependency explicitly. Later Framework lessons use the same separation on a larger scale.
+Predict the results for (6, 4), (6, 6), (6, 7) and (-1, 0).
 
-## Complete example
+### Answer
 
-From the laboratory file labs/native/first-c-programs/functions.c.
+The results are 2, 0, -1 and -1. The last two are rejected inputs. In the next lesson you will turn predictions like these into tests.
+
+---
+
+[Read this lesson in HTML](../../courses/learning-c/lessons/06-functions-with-a-contract.html) · [Learning sequence](../../start/learning-sequence.md)
+
+## Continue this module
+
+First programs · Lesson 6 of 7.
+
+[Previous: Repeating work with a loop](05-repeat-with-a-boundary.md) · [Next: Test what you promised and understand failures](07-check-results-and-errors.md)
+
+## Complete laboratory source
+
+The short example above introduces the instructions. This is the complete source file, including its purpose and licence comment, for comparison with your local laboratory.
 
 ```c
 /*-----------------------------------------------------------------------------
@@ -79,28 +120,3 @@ int main(void)
     return 0;
 }
 ```
-
-## Try it step by step
-
-1. Draw three boxes: header declaration, function implementation, caller.
-2. Trace a valid call with 5 and 2 and a rejected call with 5 and 7.
-3. Explain why minus one is distinguishable from every permitted result.
-4. Find the library dependency in CMakeLists.txt without changing it.
-
-## Check your understanding
-
-Does including counts.h by itself supply the executable instructions for BtbRemainingCount?
-
-**Explanation:** No. The header declares its interface. The implementation in counts.c must also be compiled and linked. Keeping both responsibilities explicit prevents the common missing-definition link error.
-
-## Before you continue
-
-You can state the contract, trace the caller's handling and explain why the implementation must be linked.
-
-[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
-
-**Previous:** [Repeat work without losing the stopping rule](05-repeat-with-a-boundary.md).
-
-**Next:** [Test what you promised and understand failures](07-check-results-and-errors.md).
-
-Sammy Hegab · Umicom Foundation · MIT. Original learning material.

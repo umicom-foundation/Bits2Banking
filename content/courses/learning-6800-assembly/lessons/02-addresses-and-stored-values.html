@@ -4,7 +4,7 @@ Umicom Bits2Banking
 File: content/courses/learning-6800-assembly/lessons/02-addresses-and-stored-values.html
 
 PURPOSE:
-Teach Addresses and stored values through an ordered reading route and original worked examples.
+Present the linked Markdown lesson as an accessible browser reading edition.
 
 AUTHOR AND ORGANISATION:
 Sammy Hegab
@@ -17,28 +17,33 @@ MIT for original learning material; linked references retain their own terms.
 <title>Addresses and stored values | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
 <body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
 <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
-<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
-<main id="main" class="simple-page"><article><h1>Addresses and stored values</h1>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a> · <a href="../../../lessons/03-native-code/learning-6800-assembly/02-addresses-and-stored-values.md">Markdown edition</a></nav></div></header>
+<main id="main" class="simple-page"><article>
+<h1 id="addresses-and-stored-values">Addresses and stored values</h1>
 <p><a href="../index.html">Course contents</a> · <a href="01-an-eight-bit-accumulator.html">Previous: An eight-bit accumulator</a></p>
-<h2>A location is different from its contents</h2>
+<h2 id="a-location-is-different-from-its-contents">A location is different from its contents</h2>
 <p>Continue after the accumulator lesson. Memory can be pictured as numbered byte locations. An address identifies a location; the byte stored there is its content. Mixing those two ideas is a common reason an Assembly trace goes wrong.</p>
 <p>For this exercise only, assume hexadecimal address <code>0100</code> contains decimal 6 and <code>0101</code> contains decimal 0. The <code>$</code> notation below means hexadecimal. Work on paper; these are not instructions to write an arbitrary address on your computer.</p>
 <pre><code class="language-asm">LDAA $0100
 ADDA #2
-STAA $0101</code></pre>
+STAA $0101
+</code></pre>
 <p>The first instruction loads the byte at address 0100, so A becomes 6. The second adds the immediate value 2, so A becomes 8. The third stores A at address 0101. Address 0100 still contains 6; address 0101 now contains 8. A store copies a value into memory; it does not rename the register or move a physical component.</p>
-<h2>Draw the state</h2>
+<h2 id="draw-the-state">Draw the state</h2>
 <pre><code class="language-text">Before: [0100: 6] [0101: 0]   A: unspecified
-After:  [0100: 6] [0101: 8]   A: 8</code></pre>
-<p><code>LDAA #2</code> would load the number 2. <code>LDAA $0100</code> loads the contents of a location. A source line&#x27;s operands tell you which meaning applies. The machine encoding may use different addressing modes; choosing the intended mode is part of assembly, not an afterthought.</p>
-<h2>Exercise and answer</h2>
+After:  [0100: 6] [0101: 8]   A: 8
+</code></pre>
+<p><code>LDAA #2</code> would load the number 2. <code>LDAA $0100</code> loads the contents of a location. A source line's operands tell you which meaning applies. The machine encoding may use different addressing modes; choosing the intended mode is part of assembly, not an afterthought.</p>
+<h2 id="exercise-and-answer">Exercise and answer</h2>
 <p>Change the initial byte at 0100 to 9. The final byte at 0101 becomes 11. Explain what happens if the last instruction stores to 0100 instead: the original 9 is replaced with 11. The trace no longer preserves its input memory.</p>
-<h2>Connect to shared software contracts</h2>
+<h2 id="connect-to-shared-software-contracts">Connect to shared software contracts</h2>
 <p>Compare this overwrite with <code>BtbActivityAdvance</code> in the activity example: its output pointer also identifies a destination. That C contract promises no output change on failure. An Assembly implementation would have to obey the same promise explicitly. Later study will introduce branches and flags so a program can check a limit before storing. The example here deliberately performs no such validation and must not be mistaken for a complete safe storage routine.</p>
 <p><a href="../../learning-computer-architecture/index.html">Review the prerequisite course</a>.</p>
-<h2>Source and further reading</h2>
-<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/examples/learning/assembly/add_riscv64.S">Read the related Umicom example</a>. Path: <code>Umicom-Applications/framework/examples/learning/assembly/add_riscv64.S</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<h2 id="source-and-further-reading">Source and further reading</h2>
+<p><a href="../../../../labs/native/framework-activity/activity.c">Read BtbActivityAdvance</a>. Follow the output pointer and the check before assignment. The Assembly fragment above is an original paper exercise.</p>
 <p><a href="https://www.bitsavers.org/components/motorola/6800/M6800_Microprocessor_Applications_Manual_1975.pdf">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
-<p><a href="../../../lessons/03-native-code/learning-6800-assembly/02-addresses-and-stored-values.md">Read this lesson as Markdown</a>.</p>
-<p><a href="../index.html">Course contents</a> · <a href="01-an-eight-bit-accumulator.html">Previous: An eight-bit accumulator</a></p></article></main>
-<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>
+<p><a href="02-addresses-and-stored-values.html">Read this lesson as HTML</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-an-eight-bit-accumulator.html">Previous: An eight-bit accumulator</a></p>
+<p>Sammy Hegab · Umicom Foundation · Original learning material.</p>
+
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

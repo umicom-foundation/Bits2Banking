@@ -1,0 +1,102 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/12-calypso-for-absolute-beginners-and-first-capstone.html
+
+PURPOSE:
+Present the linked Markdown lesson as an accessible browser reading edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12. Your first guided tour of Calypso—and a complete practice trade | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a> · <a href="../../../lessons/09-treasury-tms-calypso/12-calypso-for-absolute-beginners-and-first-capstone.md">Markdown edition</a></nav></div></header>
+<main id="main" class="simple-page"><article>
+<h1 id="your-first-guided-tour-of-calypsoand-a-complete-practice-trade">12. Your first guided tour of Calypso—and a complete practice trade</h1>
+<p><em>Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation</em></p>
+<p>We have travelled from a small kitchen's cash balance to a bank's financial contracts. You now understand why an organisation needs treasury, what a TMS records and why a completed trade has more than one status.</p>
+<p><strong>Calypso</strong> is a commercial platform used for front-to-back processing across capital-markets and treasury activities. It brings together financial products, trade processing, data services, risk, workflow, operational engines, settlement, accounting and reporting. It is not necessary to install Calypso to understand this architecture.</p>
+<h2 id="think-of-the-platform-as-a-connected-workplace">Think of the platform as a connected workplace</h2>
+<p>Imagine several teams sharing reliable information. A person in the front office records a trade. A middle-office control checks risk and approvals. A back-office process derives settlement obligations. Finance records accounting effects. Users see different views of the same underlying business activity.</p>
+<p>A large financial platform needs separate components because the activities have different requirements. One service must protect authoritative trade data; another can distribute notifications; others can process payments or calculate risk.</p>
+<p>In the classic architecture described by the supplied Calypso materials, three names are particularly important:</p>
+<p><strong>Data Server:</strong> the authorised service gateway for persistent trade and reference information, working with caching, validation and object versioning. Applications should use supported services rather than changing core database tables directly.</p>
+<p><strong>Event Server:</strong> distributes notifications about relevant changes to subscribing components. For example, a processing engine may need to learn that a trade reached a workflow state.</p>
+<p><strong>Engine Server:</strong> hosts engines that carry out business processing. A transfer engine can prepare settlement obligations; messaging and accounting engines have other responsibilities.</p>
+<p>The actual deployment and APIs can vary by Calypso release and client estate. Here we are learning the responsibilities, not memorising server commands.</p>
+<h2 id="trace-one-fictional-deal-from-beginning-to-end">Trace one fictional deal from beginning to end</h2>
+<p>Our practice company will buy <strong>USD 125,000</strong> and sell <strong>GBP 100,000</strong> under a forward agreement. We will follow what different people and systems need to know.</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>What happens</th>
+<th>What proves it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Agreement</td>
+<td>Parties agree terms and future exchange date</td>
+<td>Trade identity and agreed terms</td>
+</tr>
+<tr>
+<td>2. Capture</td>
+<td>User records the trade against a book and counterparty</td>
+<td>Saved trade version</td>
+</tr>
+<tr>
+<td>3. Control</td>
+<td>Authorised people and rules verify it</td>
+<td>Approval and workflow history</td>
+</tr>
+<tr>
+<td>4. Processing</td>
+<td>Transfer obligations are prepared</td>
+<td>Transfer records and their states</td>
+</tr>
+<tr>
+<td>5. Communication</td>
+<td>Confirmation or payment messages are produced</td>
+<td>Message identity and delivery status</td>
+</tr>
+<tr>
+<td>6. Settlement</td>
+<td>Cash movements complete</td>
+<td>Bank or settlement confirmation, reconciled</td>
+</tr>
+<tr>
+<td>7. Accounting</td>
+<td>Financial effects are recorded</td>
+<td>Balanced authorised postings and ledger reconciliation</td>
+</tr>
+</tbody>
+</table>
+<p>The stages may overlap and involve parallel processes. There may also be exceptions, amendments and reversals. The table is a <strong>conceptual classroom journey</strong>, not a guaranteed execution order for every product or Calypso release.</p>
+<h2 id="the-most-important-lesson-never-confuse-technical-success-with-business-success">The most important lesson: never confuse technical success with business success</h2>
+<p>Suppose the engine process is running and its log contains “message generated”. Can we say the FX forward has settled? <strong>No.</strong> We still need the appropriate evidence that both currency obligations were completed and reconciled. A healthy-looking program may have unfinished business work.</p>
+<p>Similarly, if a transfer fails, restarting every server may not help. We first need to identify whether the problem is an account instruction, a missing event, an external rejection, an invalid date or a processing exception.</p>
+<h2 id="capstone-solve-a-trade-processing-problem">Capstone: solve a trade-processing problem</h2>
+<p>Complete this exercise using paper or a text editor. You do not need a programming language or Calypso installation.</p>
+<p><strong>Scenario:</strong> A company agrees to receive USD 125,000 and pay GBP 100,000 three months from today. The trade is verified and confirmed. On settlement day, the outgoing GBP leg is confirmed, but the incoming USD leg has not appeared in the expected account.</p>
+<p>Write a short investigation with these sections:</p>
+<ol>
+<li><strong>Known facts.</strong> What is the trade, who are the parties, and which movement is missing?</li>
+<li><strong>Checks.</strong> Which trade version, transfer, settlement instruction, message and bank evidence would you inspect?</li>
+<li><strong>Action.</strong> Why should staff avoid blindly sending a second instruction or marking everything settled?</li>
+<li><strong>Conclusion.</strong> Which evidence would allow the case to be closed?</li>
+</ol>
+<p><strong>Suggested answer:</strong> The trade's economic terms and verification history should be checked first. The team then traces the USD transfer, routing instructions, message acknowledgements and receiving bank records, preserving all identifiers and timestamps. The outgoing GBP payment alone does not prove both obligations completed. Closure requires the appropriate settlement evidence and reconciliation, or an authorised exception and recovery process.</p>
+<h2 id="where-your-learning-goes-next">Where your learning goes next</h2>
+<p>You have completed the introductory stage. The next stage will explain cash ladders in greater depth, loan and deposit lifecycles, FX swaps, funding, book positions, and practical simulations with exact amounts and dates. Programming will be introduced gradually; it is not a prerequisite for these first lessons.</p>
+<p>The supplied books provide the professional depth that we will work towards. The <em>Calypso Training Presentation</em>, <strong>page 20</strong>, shows the classic multi-tier architecture; <strong>pages 22–24</strong> explain data and event responsibilities. The <em>Calypso and TMS Training Manual</em> introduces later V18-oriented concepts. Differences between versions will be identified explicitly rather than treating one historical interface as universal.</p>
+<p><em>Reading connection: <strong>Calypso Training Presentation</strong>, pages 20–24; <strong>Volume 11: Calypso Production Engineering</strong>, Chapter 1; <strong>Calypso and TMS Training Manual</strong>, Parts III–IV.</em></p>
+
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

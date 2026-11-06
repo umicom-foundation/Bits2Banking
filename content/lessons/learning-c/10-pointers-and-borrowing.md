@@ -98,8 +98,14 @@ You can state the caller's lifetime and length responsibilities and the function
 
 [Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
-**Previous:** [Keep several values in an array](09-arrays-and-valid-positions.md).
+**Previous:** [Group related values in a structure](12-structures-and-complete-results.md).
 
-**Next:** [Connect borrowed memory to bounded system input](11-bounded-spans-and-rejection.md).
+**Next:** [Connect declarations, source files and the linker](15-headers-objects-and-linking.md).
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
+
+## Continue this module
+
+Working with more information · Lesson 3 of 4.
+
+[Previous: Group related values in a structure](12-structures-and-complete-results.md) · [Next: Connect declarations, source files and the linker](15-headers-objects-and-linking.md)

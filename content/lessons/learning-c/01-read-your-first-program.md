@@ -1,50 +1,101 @@
-# Read a C program before running it
+First programs · Lesson 1 of 7
 
-Recognise a program's starting point, its instructions and its result without needing a compiler.
+# Your first C program
 
-**Before you begin:** Read the [computing foundation](../00-getting-started/index.md) if files, commands or an operating system are unfamiliar. No programming experience is assumed.
+This lesson explains what a C program is and how to read a very small one. You do not need to install anything yet. By the end, you will be able to point to the instruction that displays a message and say what that message will be.
 
-## Begin with a prediction
+## 1. Start with a text file
 
-C is a programming language: a set of rules for writing instructions that a compiler can translate. This course uses C23, the edition published as ISO/IEC 9899:2024. The examples use a small part of that language. You can read and trace every lesson on paper before setting up tools. You do not need to memorise punctuation before beginning.
+A computer program is a set of instructions. C is a language for writing those instructions. It has rules about words and punctuation, just as a spoken language has rules about sentences. A **source file** holds the instructions as ordinary text. The name `hello.c` has two parts: `hello` is the name chosen for the file, and `.c` tells people and tools that it contains C source.
 
-A source file is a text file containing the program. A filename ending in .c is a convention that helps tools recognise C source. Open greeting.c in a text editor, which edits plain text rather than a page layout. Opening a file to read it does not execute its instructions. Predict that this example displays the line Hello, learner. before reading how it works.
+A text editor lets you read and change that text. Umicom Studio IDE includes a text editor. Opening a source file does not run the program, just as opening a recipe does not prepare a meal. We will learn how to run it in the next lesson.
 
-## Find the starting point
+## 2. Read this complete program
 
-The line int main(void) begins the definition of a function named main. A function is a named piece of work. The word int says that it returns an integer, a whole number. The word void inside these parentheses says that this form of main takes no arguments. An argument is a value supplied to a function when calling it.
+```c
+#include <stdio.h>
 
-In a hosted program, the C environment calls main after preparing the program. Hosted means that the program runs with an operating system and a C library available. The braces { and } surround the function's body: the instructions belonging to it. The research Kernel has a different startup arrangement; do not copy this entry point into Kernel startup and expect it to boot.
+int main(void)
+{
+    puts("Hello from Bits2Banking.");
+    return 0;
+}
+```
 
-## Ask the library to display a line
+The program asks the computer to display one line:
 
-The line #include <stdio.h> makes declarations for standard input and output facilities available to the compiler. A declaration tells the compiler the name and type of something before it is used. It does not paste a second copy of the whole operating system into your file.
+```text
+Hello from Bits2Banking.
+```
 
-The call puts("Hello, learner.") passes a string to puts. A string represents text. The double quotes mark where that text starts and ends; they are not printed. puts writes the text followed by a newline, which moves the output to the next line. Standard output is the program's usual output stream. In a terminal you normally see it on screen; it can also be directed to a file.
+## 3. Understand each line
 
-## Read the check without guessing
+| Source text | Meaning |
+| --- | --- |
+| `#include <stdio.h>` | Make the names for standard input and output operations available. A **library** is a collection of reusable operations. `stdio.h` is a **header**: a file that describes those operations to the compiler. |
+| `int main(void)` | Define the function named `main`. A **function** is a named group of instructions. For this kind of program, execution starts in `main`. `int` means it returns a whole number. `void` here means it receives no input values. |
+| `{` and `}` | The braces mark the beginning and end of the function's instructions. |
+| `puts("Hello from Bits2Banking.");` | Call the library function `puts`. Calling a function means asking it to do its work. The text between double quotation marks is a **string**. `puts` displays that text and moves to a new line. The quotation marks are not displayed. |
+| `return 0;` | Finish the function and report success to the program that started it. This does not print the number zero. |
 
-The example checks whether puts returns EOF, the library's error marker for this operation. The symbol == compares two values. The symbol || means or, and stops once its left-hand side is true. If the first call fails, the second call in this expression is not made.
+The semicolon `;` ends each of the two instructions inside `main`. Spaces at the beginning of those lines make the grouping easier to see. They are called **indentation**.
 
-fflush(stdout) asks the library to deliver buffered output. A buffer is a temporary holding area. A successful puts may have queued text there; flushing can reveal an error while sending it onwards. stdout is the name of the standard output stream. This check does not prove that a human read the message or that a file was durably stored.
+## 4. Trace the order
 
-## Finish with a result
+```text
+Start main
+    ↓
+Display Hello from Bits2Banking.
+    ↓
+Finish with success
+```
 
-if introduces a choice. If either output operation reports an error, return 1 ends main and reports failure to the environment. Otherwise return 0 reports success. These numbers are completion results, not lines printed on screen. The semicolon ends each return statement.
+Read the two instructions from top to bottom. The program does not ask for a name or open a window because neither instruction asks it to do so.
 
-The opening /* and closing */ surround a comment for people. Comments explain ownership and intent but do not execute. Keep the source's author and licence header when you copy it for study. You can change the greeting in your own working copy, rebuild it later and compare the result.
+## 5. Try a small change
 
-## Complete example
+1. Copy the program onto paper or into your own text file.
+2. Change only the text inside the quotation marks to `I am learning C.`
+3. Write the exact output you expect. Do not include the quotation marks.
+4. Find the semicolon after the closing parenthesis. Leave it in place.
 
-From the laboratory file labs/native/first-c-programs/greeting.c.
+### Answer
+
+```text
+I am learning C.
+```
+
+The change affects the message, not the starting function or the success result.
+
+## Where this example lives
+
+The complete example is `labs/native/first-c-programs/hello.c` in Bits2Banking. Its opening comment records its purpose, author and licence. Comments explain code to people and are not instructions to execute. This first example concentrates on displaying a line; later examples check whether output succeeded.
+
+## Before moving on
+
+You are ready when you can explain the difference between the source text, the displayed message and `return 0`. You do not need to memorise every line.
+
+---
+
+[Read this lesson in HTML](../../courses/learning-c/lessons/01-read-your-first-program.html) · [Learning sequence](../../start/learning-sequence.md)
+
+## Continue this module
+
+First programs · Lesson 1 of 7.
+
+[Next: Build and run your first C program](02-build-and-run-one-step.md)
+
+## Complete laboratory source
+
+The short example above introduces the instructions. This is the complete source file, including its purpose and licence comment, for comparison with your local laboratory.
 
 ```c
 /*-----------------------------------------------------------------------------
  * Bits2Banking
- * File: labs/native/first-c-programs/greeting.c
+ * File: labs/native/first-c-programs/hello.c
  *
  * PURPOSE:
- *   Introduce a hosted C entry point and checked text output.
+ *   Introduce a first complete C program with one line of output.
  *
  * AUTHOR AND ORGANISATION:
  * Sammy Hegab
@@ -57,36 +108,9 @@ From the laboratory file labs/native/first-c-programs/greeting.c.
 
 int main(void)
 {
-    /* A successful call queues the greeting; flushing also checks delivery to
-       the C stream. The environment decides where standard output goes. */
-    if (puts("Hello, learner.") == EOF || fflush(stdout) == EOF) {
-        return 1;
-    }
+    /* Keep the first example focused on sequence and text. The neighbouring
+     * greeting example introduces checked output after decisions are taught. */
+    puts("Hello from Bits2Banking.");
     return 0;
 }
 ```
-
-## Try it step by step
-
-1. Write the line you expect the program to display, excluding the quotation marks.
-2. Point to the name of the function that starts the hosted program.
-3. Read the output check aloud using the word 'or' for ||.
-4. Change the greeting on paper. Keep its opening and closing quotation marks.
-
-## Check your understanding
-
-Does opening greeting.c in an editor run main?
-
-**Explanation:** No. The editor shows source text. A compiler and linker prepare an executable, and a separate launch starts that executable. The next lesson explains each step.
-
-## Before you continue
-
-You can separate source text, expected screen output and the program's completion result.
-
-[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
-
-**Next:** [Prepare, build and run without mixing the steps](02-build-and-run-one-step.md).
-
-C edition reference: [ISO/IEC 9899:2024](https://www.iso.org/standard/82075.html).
-
-Sammy Hegab · Umicom Foundation · MIT. Original learning material.

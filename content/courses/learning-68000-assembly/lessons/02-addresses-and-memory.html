@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-68000-assembly/lessons/02-addresses-and-memory.html
+
+PURPOSE:
+Present the linked Markdown lesson as an accessible browser reading edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Addresses and bytes in memory | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a> · <a href="../../../lessons/03-native-code/learning-68000-assembly/02-addresses-and-memory.md">Markdown edition</a></nav></div></header>
+<main id="main" class="simple-page"><article>
+<h1 id="addresses-and-bytes-in-memory">Addresses and bytes in memory</h1>
+<p><a href="01-registers-and-a-calculation.html">Previous: Registers and a first calculation</a> · <a href="../index.html">Course contents</a> · <a href="03-comparisons-and-loops.html">Next: Comparisons and a bounded loop</a></p>
+<h2 id="a-location-and-its-contents">A location and its contents</h2>
+<p><strong>Memory</strong> stores instructions and data outside the working registers. An <strong>address</strong> identifies a location in memory. An address is not the same thing as the value stored at that location. A numbered drawer and the paper inside it give a useful analogy: drawer number 1000 can contain the number 42.</p>
+<p>Programmers often write addresses in <strong>hexadecimal</strong>, a base-16 notation using digits 0–9 followed by A–F. <code>0x10</code> means sixteen: one group of sixteen and zero units. <code>0x1000</code> means 4096. The <code>0x</code> prefix identifies the notation; it is not part of the stored value.</p>
+<h2 id="build-a-memory-diagram">Build a memory diagram</h2>
+<p>Imagine an emulator has explicitly provided readable memory at these four addresses:</p>
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Stored byte in hexadecimal</th>
+<th>Decimal value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x1000</td>
+<td>00</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0x1001</td>
+<td>00</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0x1002</td>
+<td>00</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0x1003</td>
+<td>2A</td>
+<td>42</td>
+</tr>
+</tbody>
+</table>
+<p>The MC68000 stores the most significant byte of a multi-byte number at the lowest address. This ordering is called <strong>big-endian</strong>. Together these four bytes represent the long-word number 0x0000002A, or 42. Address registers A0 through A7 hold addresses. Suppose A0 already contains 0x1000:</p>
+<pre><code class="language-asm">move.l %a0@, %d0
+</code></pre>
+<p>In this notation <code>%a0@</code> means read memory at the address in A0. The instruction reads four bytes into D0. Afterwards D0 contains 42, while A0 still contains 0x1000. Without the memory access, copying the address itself would give 4096 instead of 42.</p>
+<p>No instruction here establishes a valid memory region. The address table is an explicit assumption for a paper exercise. Do not run fragments against guessed addresses: a real program needs a defined memory map and permission to access the region. On the original MC68000, word and long-word accesses also require an even address. 0x1000 meets that alignment requirement.</p>
+<h2 id="connect-to-the-existing-c-laboratory">Connect to the existing C laboratory</h2>
+<p>Read <a href="../../../../labs/native/first-c-programs/arrays.c">arrays.c</a>. It stores the values <code>{2, 1, 3}</code> in an array and visits them by index. An <strong>index</strong> selects an element; a memory address locates the bytes used to store it. C calculates element locations from the array and its element type. Do not assume that every C <code>int</code> on every platform has the same size: this Assembly exercise explicitly selects four bytes with <code>.l</code>.</p>
+<h2 id="try-it-yourself">Try it yourself</h2>
+<ol>
+<li>Keep the first three bytes zero and change the last byte to <code>30</code> in hexadecimal.</li>
+<li>Calculate three groups of sixteen plus zero units.</li>
+<li>Predict D0 after the load, and state whether A0 has changed.</li>
+<li>Explain what information would be missing before attempting a real run.</li>
+</ol>
+<details><summary>Check your reasoning</summary>
+<p>D0 becomes 48. A0 still contains 0x1000 because this instruction does not advance it. Before execution you need a defined target environment with a valid, readable memory region containing the stated bytes. A diagram alone does not provide that environment.</p>
+</details>
+<p>Reference: <a href="https://www.nxp.com/docs/en/reference-manual/M68000PRM.pdf">Motorola programmer's manual, integer data formats and addressing</a>. Address diagrams and exercises are original Bits2Banking material.</p>
+<p>Sammy Hegab · Umicom Foundation · MIT for original teaching material.</p>
+
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

@@ -59,8 +59,14 @@ You can choose a next lesson and describe what its checks would and would not es
 
 [Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
 
-**Previous:** [Test what you promised and understand failures](07-check-results-and-errors.md).
+**Previous:** [Check a function at its boundaries](18-check-a-function-at-its-boundaries.md).
 
-**Next:** [Keep several values in an array](09-arrays-and-valid-positions.md).
+**Next:** [Choose your next learning path](index.md).
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
+
+## Continue this module
+
+Further study: systems programming · Lesson 7 of 7.
+
+[Previous: Check a function at its boundaries](18-check-a-function-at-its-boundaries.md) · [Course complete: return to contents](index.md)

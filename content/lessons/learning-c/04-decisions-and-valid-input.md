@@ -1,48 +1,88 @@
-# Make a decision before calculating
+First programs · Lesson 4 of 7
 
-Express an allowed range and follow both the accepted and rejected paths.
+# Making decisions with if
 
-**Before you begin:** Read [Give values names and calculate a result](03-values-and-calculations.md), or return to it for a refresher.
+A program sometimes needs to choose between two actions. This lesson uses `if` to decide whether a completed-lesson count makes sense before subtracting it.
 
-## Write the rule in ordinary language
+## 1. State the rule in ordinary words
 
-For this activity counter, total must be between zero and one thousand, including both ends. completed must be between zero and total. We choose a maximum of one thousand to keep the example bounded. It is a rule of this exercise, not a universal limit for programs.
+If a plan contains five lessons, a count of two completed lessons makes sense. A count of seven does not fit that plan. A negative completed count does not make sense either. We want to accept counts from zero up to the total, including both ends.
 
-A boundary is an edge of the allowed set. Zero and one thousand are total's boundaries. A value just outside a boundary is useful when checking the rule. For example, minus one and one thousand and one must be rejected. Checking only a comfortable middle value can miss mistakes at the edges.
+```text
+completed:  -1   0   1   2   3   4   5   6
+valid?       no  yes yes yes yes yes yes  no
+```
 
-## Translate one comparison at a time
+**Validation** means checking that information follows a rule before using it. It does not mean guessing what an incorrect value was meant to be.
 
-total < 0 asks whether total is less than zero. total > 1000 asks whether it is greater than one thousand. completed < 0 rejects a negative completed count. completed > total rejects a count larger than the total.
+## 2. Read a comparison
 
-The || operator connects these questions with or. The whole condition is true if any one rejection condition is true. C uses zero for false and a nonzero value for true in conditions. These comparisons produce an int result of zero or one. You do not have to understand machine bits to trace the choice.
+```text
+completed > total
+```
 
-## Follow the selected body
+`>` asks whether the left value is greater than the right value. The result is either true or false. With completed 7 and total 5 it is true. With completed 2 and total 5 it is false. Other comparisons include `<` (less than), `==` (equal) and `!=` (not equal). The two equals signs compare values; one equals sign assigns a value.
 
-if (condition) chooses its body when the condition is true. else chooses the alternative when it is false. Braces make the start and end of each body visible. In decisions.c the initial values are total 5 and completed 7, so the rejection body is selected.
+## 3. Choose an action
 
-The rejection body displays Counts do not fit the rule. It does not calculate a negative remaining count and pretend it is a valid answer. The alternative subtracts only after all four checks permit it. This order is useful in larger systems: validate the conditions that make an operation safe before performing it.
+```text
+if (completed > total) {
+    puts("The completed count is too large.");
+} else {
+    int remaining = total - completed;
+    printf("Remaining: %d\n", remaining);
+}
+```
 
-## Separate rejection from a program crash
+The expression in parentheses after `if` is the **condition**. If it is true, run the first block between braces. Otherwise, `else` selects the second block. Only one of those blocks runs for this decision.
 
-Here rejection is an expected demonstration result. If the rejection message is delivered successfully, main returns zero because the example behaved as designed. The later function uses a distinct negative return value to tell its caller that input was rejected. Different interfaces can use different conventions; their contracts must explain which one applies.
+## 4. Check all invalid counts
 
-Neither a rejection message nor a nonzero completion result is automatically a crash. A crash means execution ended abnormally, for example because the operating system stopped an invalid memory access. Do not make a test accept a crash merely because both situations indicate a problem.
+```text
+if (total < 0 || completed < 0 || completed > total) {
+    puts("Please check the counts.");
+} else {
+    int remaining = total - completed;
+    printf("Remaining: %d\n", remaining);
+}
+```
 
-## Trace the alternatives
+`||` means “or”. The condition is true when any of the three comparisons is true. Read it aloud: “total is negative, or completed is negative, or completed is greater than total”. We subtract only after all those problems have been ruled out. For nonnegative `int` values with completed no greater than total, the subtraction also stays within the range of `int`.
 
-With total 5 and completed 2, every rejection question is false and the program displays Remaining: 3. With total 5 and completed 5, the remaining count is zero. With total 0 and completed 0, the empty set of activities is valid.
+## 5. Work through examples
 
-With total 1001, the second question rejects the input even when completed is zero. With completed minus one, the third rejects it. Check one case at a time on paper. Write the reason as well as the output; that helps distinguish a correctly rejected value from an accidentally rejected one.
+| Total | Completed | Action |
+| --- | --- | --- |
+| 5 | 2 | Display Remaining: 3 |
+| 5 | 5 | Display Remaining: 0 |
+| 5 | 7 | Display Please check the counts. |
+| 5 | -1 | Display Please check the counts. |
 
-## Use a condition to protect an operation
+## Try it
 
-This example does not read text typed by a user. Its inputs are constants in the source so that you can focus on decisions. Accepting outside text would add parsing: recognising whether bytes follow a required grammar and safely turning them into values. That is a later topic.
+Predict the result for total 0 and completed 0. Then predict total -2 and completed 0.
 
-OS and Kernel parsers also validate first, but have more responsibilities, including input length, integer overflow and memory ownership. Understanding this small choice prepares you to read those checks without claiming that this example is itself a secure parser.
+### Answer
 
-## Complete example
+Zero and zero is valid and gives zero remaining. A negative total fails the first comparison, so the program asks you to check the counts.
 
-From the laboratory file labs/native/first-c-programs/decisions.c.
+## Where Umicom uses this idea
+
+The Bits2Banking file `labs/native/first-c-programs/decisions.c` introduces checks before calculation. Framework applies the same principle when checking a requested file position or the size of an input. You do not need those larger implementations yet: being able to trace this decision is the objective of this lesson.
+
+---
+
+[Read this lesson in HTML](../../courses/learning-c/lessons/04-decisions-and-valid-input.html) · [Learning sequence](../../start/learning-sequence.md)
+
+## Continue this module
+
+First programs · Lesson 4 of 7.
+
+[Previous: Variables and simple calculations](03-values-and-calculations.md) · [Next: Repeating work with a loop](05-repeat-with-a-boundary.md)
+
+## Complete laboratory source
+
+The short example above introduces the instructions. This is the complete source file, including its purpose and licence comment, for comparison with your local laboratory.
 
 ```c
 /*-----------------------------------------------------------------------------
@@ -80,28 +120,3 @@ int main(void)
     return 0;
 }
 ```
-
-## Try it step by step
-
-1. Draw a decision box with two exits: rejected and accepted.
-2. Trace the initial 5 and 7 values through the four questions.
-3. Repeat with 5 and 2, 0 and 0, 1001 and 0, and 5 and minus 1.
-4. For each row, write both the selected message and the reason.
-
-## Check your understanding
-
-Why is total 5 with completed 5 accepted?
-
-**Explanation:** The rule permits equality. completed > total is false when both are 5, so the remaining count can be zero. Changing > to >= would incorrectly reject completion of all activities.
-
-## Before you continue
-
-You can explain both paths and name at least one boundary case.
-
-[Course contents](index.md) · [Words explained](../../courses/learning-c/glossary.html) · [Practical lab guide](../../courses/learning-c/practical-guide.html) · [Connected learning routes](../../start/systems-learning.md)
-
-**Previous:** [Give values names and calculate a result](03-values-and-calculations.md).
-
-**Next:** [Repeat work without losing the stopping rule](05-repeat-with-a-boundary.md).
-
-Sammy Hegab · Umicom Foundation · MIT. Original learning material.

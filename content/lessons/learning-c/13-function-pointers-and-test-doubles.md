@@ -68,6 +68,6 @@ Open [umicom-kernel/programs/support/native_contract.c](https://github.com/umico
 
 ## Continue this module
 
-Further study: systems programming · Lesson 2 of 6.
+Further study: systems programming · Lesson 2 of 7.
 
 [Previous: Connect borrowed memory to bounded system input](11-bounded-spans-and-rejection.md) · [Next: Storage duration and freestanding code](14-storage-duration-and-freestanding-code.md)

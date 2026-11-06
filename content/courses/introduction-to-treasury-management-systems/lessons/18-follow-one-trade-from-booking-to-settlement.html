@@ -1,0 +1,182 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/18-follow-one-trade-from-booking-to-settlement.html
+
+PURPOSE:
+Present the linked Markdown lesson as an accessible browser reading edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>18. Follow one trade from booking to settlement | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a> · <a href="../../../lessons/09-treasury-tms-calypso/18-follow-one-trade-from-booking-to-settlement.md">Markdown edition</a></nav></div></header>
+<main id="main" class="simple-page"><article>
+<h1 id="follow-one-trade-from-booking-to-settlement">18. Follow one trade from booking to settlement</h1>
+<p><em>Treasury Management, TMS and Calypso — From Zero · Practical foundations</em></p>
+<p>A financial trade is not finished when a trader clicks <strong>Save</strong>. That action may record a contract, but other people and systems still need to verify its terms, prepare settlement instructions, exchange messages, move money and record accounting effects.</p>
+<p>We have already met a forward transaction: a company agreed to <strong>buy USD 125,000 and sell GBP 100,000</strong> on a future date. In this chapter, we follow that same fictional trade through the processing chain. The goal is not to memorise product-specific Calypso screens. It is to understand <strong>who is responsible</strong>, <strong>what each stage means</strong>, and <strong>what evidence proves the next stage is safe</strong>.</p>
+<h2 id="the-difference-between-a-product-and-a-trade">The difference between a product and a trade</h2>
+<p>Before the deal can be saved, the system needs a way to describe the kind of financial contract being used. That is the <strong>product</strong>. An FX forward product defines a type of agreement with currencies, amounts, rates and dates.</p>
+<p>A <strong>trade</strong> is one particular agreement between two parties. It has its own identifier, terms, version, status and organisational owner. Many trades can use the same product family, just as many customer orders can use the same product catalogue without being the same order.</p>
+<p>A trade is normally associated with a <strong>book</strong>, which groups activity for an organisational purpose, and a <strong>counterparty</strong>, the other party to the deal. A <strong>legal entity</strong> represents a party recognised in the platform's organisation and reference data; a bank's internal processing organisation is not necessarily the same entity as its external counterparty.</p>
+<p>For this example, imagine:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Fictional value</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trade reference</td>
+<td>FX-TRAINING-2041</td>
+<td>Helps trace one agreement</td>
+</tr>
+<tr>
+<td>Product</td>
+<td>FX forward</td>
+<td>Defines its economic structure</td>
+</tr>
+<tr>
+<td>Book</td>
+<td>LONDON_FX</td>
+<td>Identifies the owning business portfolio</td>
+</tr>
+<tr>
+<td>Counterparty</td>
+<td>Riverside Bank</td>
+<td>Identifies the other party</td>
+</tr>
+<tr>
+<td>Buy currency</td>
+<td>USD</td>
+<td>The company expects to receive dollars</td>
+</tr>
+<tr>
+<td>Buy amount</td>
+<td>125,000</td>
+<td>Exact contractual amount in USD</td>
+</tr>
+<tr>
+<td>Sell currency</td>
+<td>GBP</td>
+<td>The company expects to pay pounds</td>
+</tr>
+<tr>
+<td>Sell amount</td>
+<td>100,000</td>
+<td>Exact contractual amount in GBP</td>
+</tr>
+<tr>
+<td>Value date</td>
+<td>Agreed future date</td>
+<td>Determines when obligations are due</td>
+</tr>
+</tbody>
+</table>
+<p>The reference is an invented teaching identifier, not a Calypso trade ID.</p>
+<h2 id="a-chain-of-responsibilities">A chain of responsibilities</h2>
+<p><img src="../../../assets/diagrams/treasury-trade-to-settlement.svg" alt="A trade's economic agreement moves through distinct processing and settlement states" /></p>
+<p><strong>1 — Front office: capture the agreement.</strong> An authorised trader or interface records the contract terms. The system checks that required information exists. A successful save proves that a version of the trade was recorded; it does not prove later settlement.</p>
+<p><strong>2 — Middle-office or configured control: verify the trade.</strong> Independent checks may examine counterparty limits, product eligibility, rates, dates and permissions. An action such as <strong>Verify</strong> or <strong>Authorise</strong> is meaningful only under the workflow configured for that organisation and product.</p>
+<p><strong>3 — Back-office processing: derive obligations.</strong> For our deliverable FX forward, the system expects a GBP payment and a USD receipt on the relevant value date. The processing service needs valid settlement instructions, which may identify accounts and correspondent banks. Missing reference data can stop or delay this stage.</p>
+<p><strong>4 — Messaging: communicate the obligations.</strong> A confirmation or payment instruction may be created and transmitted. The system should keep track of the message's identity and status. <strong>Generated</strong> is not the same as <strong>sent</strong>; <strong>sent</strong> is not the same as <strong>acknowledged</strong>; and acknowledgement is not necessarily the same as final settlement.</p>
+<p><strong>5 — Settlement and reconciliation: prove the movements.</strong> Operations needs appropriate evidence that the cash actually moved to and from the intended accounts. Depending on the product and settlement arrangement, the proof may involve bank statements, network messages, settlement-system acknowledgements and account reconciliation.</p>
+<p><strong>6 — Accounting: record the financial effects.</strong> Accounting rules produce entries according to the institution's configuration, accounting policy and the trade's lifecycle. The relevant postings must balance and reconcile with the appropriate ledger. Accounting can begin or change before final settlement; the stages are not always one straight line.</p>
+<h2 id="why-calypso-uses-data-services-and-events">Why Calypso uses data services and events</h2>
+<p>In classic Calypso architectures, a <strong>Data Server</strong> provides authorised access to business objects through supported services. It is not good practice for custom applications to edit the core database directly: doing so could bypass validation, audit, workflow and event processing.</p>
+<p>The <strong>Event Server</strong> distributes notifications that help downstream components discover relevant business changes. An <strong>Engine Server</strong> can host processing engines that act on those notifications or other configured work. Transfer, messaging and accounting responsibilities are logically different, even when an installation groups some components together.</p>
+<p>For example, an approved trade action may make the trade available for transfer processing. A transfer-related event may then be consumed by a messaging function. Exact event classes, engine names, filters and deployment arrangements differ across Calypso releases and client configurations. At this stage, understand the <strong>roles</strong> before attempting vendor-specific implementation.</p>
+<h2 id="work-through-a-settlement-exception">Work through a settlement exception</h2>
+<p>It is settlement morning. Operations finds the following fictional records:</p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Observed result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trade status</td>
+<td>Confirmed</td>
+</tr>
+<tr>
+<td>GBP transfer</td>
+<td>Settled</td>
+</tr>
+<tr>
+<td>USD transfer</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>USD message</td>
+<td>Generated; no final receipt acknowledgement</td>
+</tr>
+<tr>
+<td>Treasury cash forecast</td>
+<td>USD 125,000 shown as expected, not settled</td>
+</tr>
+</tbody>
+</table>
+<p>A colleague says, “The trade is confirmed and the GBP has gone. Mark it all settled so the dashboard goes green.” That would turn an unknown or incomplete business outcome into a false statement.</p>
+<p>A better investigation starts with the <strong>USD transfer identifier</strong>, the <strong>settlement instruction</strong>, the <strong>message and acknowledgement history</strong>, the relevant value date and the receiving account's reconciled information. Was the message sent? Was it rejected? Was it accepted but delayed? Was a payment received but not yet matched? The next action depends on the answer.</p>
+<p>Only an authorised repair process should resend, amend or reconcile instructions. Without duplicate controls, simply pressing <strong>Send</strong> again might create a second payment. Similarly, a restart may clear an error display without proving that the underlying obligation completed.</p>
+<p>This is why system administrators, treasury users and software engineers need a <strong>shared vocabulary</strong>. A server process can be running while a transfer is pending; a trade can be economically valid but operationally incomplete.</p>
+<h2 id="put-the-whole-journey-together">Put the whole journey together</h2>
+<p>Copy the following table into your notebook and fill the third column before checking the answer:</p>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Is it enough to close the trade?</th>
+<th>What other evidence is needed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“The trade was saved”</td>
+<td>No</td>
+<td>Authorised workflow and downstream status</td>
+</tr>
+<tr>
+<td>“The confirmation was generated”</td>
+<td>No</td>
+<td>Delivery or matching result where required</td>
+</tr>
+<tr>
+<td>“The GBP payment settled”</td>
+<td>No</td>
+<td>The USD receipt and complete settlement evidence</td>
+</tr>
+<tr>
+<td>“Both cash legs are settled”</td>
+<td>Not necessarily</td>
+<td>Accounting, reconciliation and any remaining lifecycle obligations</td>
+</tr>
+</tbody>
+</table>
+<p>The final answer is <strong>not always one universal status</strong>. Different organisations close different operational tasks at different times. The essential requirement is that every status claim should identify <strong>what it proves</strong> and <strong>what it does not prove</strong>.</p>
+<h2 id="try-it-yourself">Try it yourself</h2>
+<p><strong>Exercise A — explain a term.</strong> Describe the difference between a product, trade, book, counterparty and transfer in one plain sentence each.</p>
+<p><strong>Exercise B — diagnose the gap.</strong> Suppose the trade is confirmed, the transfer exists, but the payment message was rejected for an invalid receiving account. Which team or function would normally investigate the settlement instruction? Why is changing the trade's FX rate not a solution?</p>
+<p><strong>Exercise C — connect to the cash ladder.</strong> In Harbour Supplies' cash forecast, should USD 125,000 appear as settled cash if the trade's USD receipt is still pending? What should the record say instead?</p>
+<h3 id="check-your-answers">Check your answers</h3>
+<p><strong>A:</strong> A <em>product</em> describes the contract type; a <em>trade</em> is a particular agreement; a <em>book</em> groups/owns trades for a business portfolio; a <em>counterparty</em> is the other contractual party; a <em>transfer</em> represents a cash or securities movement to be processed.<br />
+<strong>B:</strong> Back-office settlement/reference-data owners would examine the standing settlement instruction and approved repair route. The FX rate belongs to the economic contract; an account-routing error is a different problem.<br />
+<strong>C:</strong> No. It may remain in a forecast or expected-cashflow view with a <strong>pending</strong> or <strong>unconfirmed receipt</strong> status, depending on the system's terminology.</p>
+<h2 id="what-you-can-now-explain">What you can now explain</h2>
+<p>You can make a dated cash ladder, calculate simple interest under a stated day-count convention, recognise a funding gap, describe both legs of an FX swap, understand repo cash and collateral, and follow a trade towards settlement. Those are meaningful foundations for learning the Calypso object model and the software that manages it.</p>
+<p>In the next stage, we will examine reference data, trade workflows and how to read a real financial requirement before attempting any programming. <strong>You do not need access to a licensed Calypso environment to complete these foundation lessons.</strong></p>
+
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>
