@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-bitcoin-in-c/lessons/01-scope-bytes-and-compatibility.html
+
+PURPOSE:
+Teach Scope, bytes and compatibility through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scope, bytes and compatibility | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Scope, bytes and compatibility</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-bounded-little-endian-reader.html">Next: A bounded little-endian reader</a></p>
+<h2>Decide what building means</h2>
+<p>Bitcoin is a protocol and ecosystem, not a single hashing loop. A full validating implementation needs exact encodings, transaction and script rules, networking, storage and chain handling. We start with a header reader and byte helpers. These are educational components; they cannot send payments or participate as a complete node.</p>
+<p>Read the Bitcoin concept and source courses, then C pointers, arrays and integer operations. Start with paper traces. Do not connect unfinished parsers to public peers or give them real wallet secrets.</p>
+<p>The standard Bitcoin block header is 80 bytes. Its fields are version (4), previous block hash (32), Merkle root (32), time (4), compact target (4) and nonce (4). Scalar fields use little-endian encoding; hash fields have their documented internal byte ordering. Displayed hash text requires care and is not a licence to reverse every field blindly.</p>
+<pre><code class="language-text">offset 0     4              36              68   72   76   80
+       |ver | previous hash | Merkle root    |time|bits|nonce|</code></pre>
+<h2>Make a byte worksheet</h2>
+<ol>
+<li>Draw 80 numbered boxes, starting at zero.</li>
+<li>Mark the six field boundaries.</li>
+<li>Copy a future published test vector into the boxes without changing order.</li>
+<li>Record the source and expected digest alongside it.</li>
+<li>Keep parsing and hash display as separate functions with separate checks.</li>
+</ol>
+<p>A compatible implementation needs known-answer vectors and rejection cases. Producing the correct byte count alone does not establish consensus compatibility. The course will reuse Framework cryptographic primitives rather than invent a new hash algorithm.</p>
+<h2>Exercise</h2>
+<p>At which offset does the nonce begin? If a buffer has 79 bytes, should the parser read the final field anyway?</p>
+<h2>Explained answer</h2>
+<p>The nonce begins at offset 76 and occupies bytes 76 through 79. A 79-byte buffer is too short. Reject before any out-of-bounds access; never assume an absent byte is zero. The next lesson implements a smaller bounded read so this rule becomes concrete.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-bounded-little-endian-reader.html">Next: A bounded little-endian reader</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/building-bitcoin-in-c/01-scope-bytes-and-compatibility.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://developer.bitcoin.org/reference/block_chain.html">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

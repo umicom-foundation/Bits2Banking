@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/01-widgets-and-the-event-loop.html
+
+PURPOSE:
+Teach Widgets and the event loop through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Widgets and the event loop | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Widgets and the event loop</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-connect-a-button-to-a-shared-rule.html">Next: Connect a button to a shared rule</a></p>
+<h2>Before opening a window</h2>
+<p>First learn C functions, pointers and the basics of compiling a program. A widget is an interface element such as a button or label. GTK4 arranges widgets inside containers. An event loop waits for input and asks registered functions to respond. The program does not repeatedly ask a button whether it was clicked.</p>
+<p>Use the existing Framework activity project for this course. Read its <code>README.md</code> and <code>CMakeLists.txt</code> before building. They describe the installed SDK and GTK dependency; copying <code>window.c</code> alone is not enough because it calls the shared activity rule.</p>
+<h2>Read the real window</h2>
+<p>Open <code>labs/native/framework-activity/window.c</code>. Find <code>Activate</code>, then follow these operations in order:</p>
+<pre><code class="language-text">GtkApplication -&gt; application window -&gt; vertical box
+                                      |-- label
+                                      |-- button</code></pre>
+<p><code>gtk_application_window_new</code> associates a window with the application. <code>gtk_box_new</code> creates a container. Its orientation controls the direction children are arranged. Spacing is the gap between children; margins are space outside the container&#x27;s content. These are different decisions.</p>
+<p><code>gtk_window_set_child</code> attaches the main content. Appending a label and button to the box makes them part of that content. <code>gtk_window_present</code> asks for the window to be shown. The application continues through its event loop until it exits.</p>
+<h2>Observe before changing</h2>
+<p>Build and run the example using its README when your environment is ready. Expect a label showing zero completed exercises and a button labelled Record one exercise. Resize the window. Observe which space grows and which text remains readable. A source inspection alone cannot establish that the native window opens or accepts input on your machine.</p>
+<h2>Exercise and answer</h2>
+<p>In a practice copy, change the box spacing from 12 to 20 and rebuild the example. The space between the label and button should increase; the number of completed exercises should not change. If changing appearance changes the counting rule, presentation and behaviour have become unnecessarily coupled.</p>
+<p>Find the allocation of <code>ActivityWindow</code> and its <code>g_object_set_data_full</code> call. The state has an owner and a cleanup function. You do not need to memorise every GLib function yet; identify what survives after <code>Activate</code> returns and who releases it. The next lesson follows the button event through that retained state.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/window.c">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/window.c</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://docs.gtk.org/gtk4/getting_started.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/06-umicom/learning-gtk4/01-widgets-and-the-event-loop.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-connect-a-button-to-a-shared-rule.html">Next: Connect a button to a shared rule</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

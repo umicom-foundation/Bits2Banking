@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-linux-development/lessons/02-processes-output-and-exit-status.html
+
+PURPOSE:
+Teach Processes, output and exit status through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Processes, output and exit status | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Processes, output and exit status</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-your-first-user-space-build.html">Previous: Your first user-space build</a></p>
+<h2>What happens when a program runs</h2>
+<p>Continue with <code>hello</code> from the previous lesson. An executable is a file; a process is a running instance of a program. The shell starts it, waits when appropriate and receives an exit status when it finishes. By convention, zero means success and a nonzero value indicates a problem or another documented outcome.</p>
+<p>Programs normally have standard output for results and standard error for diagnostics. They are separate streams even when both appear in the same terminal.</p>
+<h2>Capture a result in your chosen folder</h2>
+<pre><code class="language-sh">./hello &gt; output.txt 2&gt; errors.txt
+result=$?
+printf &#x27;Program status: %s\n&#x27; &quot;$result&quot;
+cat output.txt
+cat errors.txt</code></pre>
+<p><code>&gt;</code> writes standard output to a file, replacing that file&#x27;s previous contents. <code>2&gt;</code> redirects standard error. Choose disposable practice filenames. <code>result=$?</code> saves the status immediately, before another command replaces it. Expect the learning message in output.txt, an empty errors.txt and status zero.</p>
+<p>An empty error log does not prove every behaviour is correct: a faulty program might report nothing. You still need an expected result and a check. Similarly, text in a log is not necessarily an error; classify its actual meaning.</p>
+<h2>Exercise and answer</h2>
+<p>In a practice copy of hello.c, change <code>return 0;</code> to <code>return 3;</code>, rebuild successfully and repeat the commands. The message is unchanged, but the status becomes 3. This demonstrates why looking only for visible output misses failures. Restore the original return value afterward.</p>
+<h2>Follow the same idea in Umicom</h2>
+<p>Read the activity console&#x27;s handling of <code>UmiStatus</code>. The service reports a domain result; the application decides how to display it and which process status to return. Build, test and launch logs should preserve both diagnostics and the command&#x27;s actual outcome. A later module will cover pipelines, whose final command&#x27;s status may hide an earlier failure unless handled deliberately.</p>
+<p>Never solve a permission error by automatically running the whole development workflow as administrator. First identify the requested path and use a practice folder you own. Learning the boundary between your program and the operating system makes troubleshooting much more precise.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/console.c">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/console.c</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://docs.kernel.org/process/howto.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/08-system-administration/learning-linux-development/02-processes-output-and-exit-status.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-your-first-user-space-build.html">Previous: Your first user-space build</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

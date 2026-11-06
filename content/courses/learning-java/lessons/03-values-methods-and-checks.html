@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/03-values-methods-and-checks.html
+
+PURPOSE:
+Teach Values, methods and checks through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Values, methods and checks | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Values, methods and checks</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-decimal-values-and-checks.html">Previous: Decimal values and checks</a></p>
+<h2>What a method does</h2>
+<p>Complete the two earlier Java lessons first. A method is a named operation belonging to a class. An argument is a value supplied to it. A return value is the result given back. This lesson uses whole minor units: 250 means 250 cents in this exercise, not an unspecified amount in any currency.</p>
+<p>Save the following complete program as <code>BalanceCheck.java</code> in a practice folder. A public class&#x27;s name must match its filename.</p>
+<pre><code class="language-java">public class BalanceCheck {
+    static long remaining(long available, long payment) {
+        if (available &lt; 0 || payment &lt; 0 || payment &gt; available) {
+            throw new IllegalArgumentException(&quot;Invalid practice payment&quot;);
+        }
+        return available - payment;
+    }
+
+    public static void main(String[] args) {
+        long result = remaining(1000, 250);
+        if (result != 750) {
+            throw new IllegalStateException(&quot;Unexpected balance&quot;);
+        }
+        System.out.println(result);
+    }
+}</code></pre>
+<p>After installing a Java Development Kit as described in the earlier course, run <code>javac BalanceCheck.java</code>, then <code>java BalanceCheck</code>. <code>javac</code> compiles source into a class file; <code>java</code> runs the named class. Expect <code>750</code>. If <code>javac</code> is not found, check the JDK installation and terminal path rather than renaming the program.</p>
+<p><code>long</code> stores a signed whole number. <code>||</code> means either condition is true. <code>throw</code> stops the normal path and reports an exceptional condition. This example intentionally leaves that exception uncaught so its failure is visible. A production interface would handle it and present an appropriate message without losing the user&#x27;s work.</p>
+<h2>Exercise and answer</h2>
+<p>Change only the payment argument to 1000: expect 0. Change it to 1001: expect the invalid-payment exception, not a negative balance. The explicit result check runs without enabling Java&#x27;s optional <code>assert</code> mechanism.</p>
+<p>Compare the real <code>LedgerDemo.java</code> with this exercise. Its decimal-value lesson addresses a different representation. Never mix an amount, a currency and a scale by assumption. This is arithmetic practice, not an implemented bank transfer: it has no accounts, approval, durable ledger or concurrency control. Shared financial operations remain responsibilities of Umicom Framework, even when a Java integration client is used.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../../labs/java-ledger/LedgerDemo.java">Read the related Umicom example</a>. Path: <code>content/labs/java-ledger/LedgerDemo.java</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://dev.java/learn/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/03-native-code/learning-java/03-values-methods-and-checks.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-decimal-values-and-checks.html">Previous: Decimal values and checks</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

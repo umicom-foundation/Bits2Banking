@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-spring-framework/lessons/01-a-java-web-request.html
+
+PURPOSE:
+Teach A Java web request through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A Java web request | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A Java web request</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-supply-a-service-through-a-constructor.html">Next: Supply a service through a constructor</a></p>
+<h2>Begin with the request path</h2>
+<p>Complete Learning Java before starting. Spring provides application infrastructure. Spring Boot helps configure and start a Spring application. An HTTP controller receives a request and returns a result; it is not the same thing as a desktop button callback, although both connect an event to behaviour.</p>
+<p>Use Spring Initializr at <code>https://start.spring.io</code>. Select Maven, Java, a stable Spring Boot release and a Java version supported by that release and your installed JDK. Set the package name to <code>org.umicom.learning</code>, the artifact to <code>learning-portal</code>, and add Spring Web. Generate and extract the project into your chosen practice folder. Keep its generated application class and build file.</p>
+<p>Create <code>src/main/java/org/umicom/learning/LearningController.java</code>:</p>
+<pre><code class="language-java">package org.umicom.learning;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class LearningController {
+    @GetMapping(&quot;/learning&quot;)
+    public String overview() {
+        return &quot;Choose a learning course&quot;;
+    }
+}</code></pre>
+<p>An annotation begins with <code>@</code> and supplies metadata. Here it tells Spring that the class handles web requests and which path calls the method. The package must be under the generated application&#x27;s package so normal component discovery can find it.</p>
+<p>Run <code>./mvnw.cmd spring-boot:run</code> on Windows PowerShell or <code>./mvnw spring-boot:run</code> on Linux. Open <code>http://localhost:8080/learning</code>. Expect the sentence, then stop the server with Ctrl+C. If port 8080 is already used, resolve that conflict before interpreting it as a controller defect.</p>
+<h2>Exercise and answer</h2>
+<p>Add another method mapped to <code>/learning/help</code> returning <code>Follow one course in order</code>. Both paths should work independently. A 404 suggests a path or discovery issue; a build failure happens earlier and needs its compiler diagnostic investigated first.</p>
+<p>Compare the existing Java ledger example&#x27;s calculation with this controller. A web entry point should coordinate a request, not become a second implementation of authoritative banking logic. Later integration can call shared Umicom services through a documented boundary; this lesson creates no such connection yet.</p>
+<p><a href="../../learning-java/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../../labs/java-ledger/LedgerDemo.java">Read the related Umicom example</a>. Path: <code>content/labs/java-ledger/LedgerDemo.java</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://spring.io/guides/gs/serving-web-content/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-spring-framework/01-a-java-web-request.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-supply-a-service-through-a-constructor.html">Next: Supply a service through a constructor</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

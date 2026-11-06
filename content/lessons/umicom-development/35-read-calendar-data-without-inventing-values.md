@@ -84,3 +84,8 @@ No. Both changes invent information. The actual value stays “Not supplied”, 
 Optional application study: calendar data · Lesson 1 of 1.
 
 [Module complete: return to course contents](index.md)
+
+
+## Continue learning
+
+[Continue: Map a shared feature before changing it](36-map-a-shared-feature-before-changing-it.md)

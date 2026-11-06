@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-bitcoin/lessons/01-payments-and-shared-records.html
+
+PURPOSE:
+Teach Payments and shared records through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Payments and shared records | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Payments and shared records</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-hashes-signatures-and-ownership.html">Next: Hashes, signatures and ownership</a></p>
+<h2>What are we trying to record?</h2>
+<p>Begin with a list of payments, not a price chart. Imagine a digital record that says one participant can spend 12 units. Copying the file does not create another legitimate 12 units. The hard question is how independent computers agree that those same units have not already been spent elsewhere.</p>
+<p>A node is a program participating in a network. A ledger is a record of accepted changes. A transaction proposes a change. In Bitcoin, transactions consume previous outputs and create new outputs. An output is an amount with a spending condition. It is not a bank account row.</p>
+<pre><code class="language-text">previous output: 12 units
+           |
+           v
+transaction: consume that output once
+           |
+           +--&gt; recipient output: 7
+           +--&gt; change output:    4
+           +--&gt; difference:       1 fee</code></pre>
+<p>The numbers are fictional teaching units. Bitcoin amounts are commonly expressed in satoshis, with 100,000,000 satoshis per bitcoin. Use whole-number units for transaction accounting rather than rounding binary floating-point values.</p>
+<h2>Follow a payment on paper</h2>
+<ol>
+<li>Give the previous output a label, such as output-A.</li>
+<li>Cross it off the unspent list when the transaction is accepted.</li>
+<li>Add the new outputs to that list.</li>
+<li>Try a second transaction spending output-A. It conflicts with the first because the output has already been consumed.</li>
+</ol>
+<p>A wallet helps manage keys, construct payments and display relevant history. A node validates rules and exchanges data. They can be combined in one software product, but they have different responsibilities. Downloading wallet software does not establish that a payment has been accepted.</p>
+<h2>Exercise</h2>
+<p>A previous output contains 20 units. A transaction creates 11 units for one recipient and 8 units of change. What is the fee? Could a transaction create 21 units from the same input under ordinary spending rules?</p>
+<h2>Explained answer</h2>
+<p>20 - 11 - 8 = 1. Creating 21 from 20 would create an unsupported extra unit. Bitcoin also has special coinbase transactions governed by separate issuance rules; they are not permission for ordinary payments to create value.</p>
+<h2>Source connection</h2>
+<p>Framework&#x27;s SHA-256 header exposes a hashing primitive. Hashes help identify data, but hashing a payment does not prove ownership or decide whether it may be spent. Keep these separate as the course introduces signatures and consensus.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-hashes-signatures-and-ownership.html">Next: Hashes, signatures and ownership</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/introduction-to-bitcoin/01-payments-and-shared-records.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://bitcoin.org/bitcoin.pdf">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

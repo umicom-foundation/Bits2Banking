@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/02-connect-a-button-to-a-shared-rule.html
+
+PURPOSE:
+Teach Connect a button to a shared rule through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect a button to a shared rule | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Connect a button to a shared rule</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-widgets-and-the-event-loop.html">Previous: Widgets and the event loop</a></p>
+<h2>From a click to a result</h2>
+<p>Continue with the same window. A signal is GTK&#x27;s notification that something happened. A callback is a function registered to receive that notification. In <code>window.c</code>, find the <code>clicked</code> connection and the callback named <code>Completed</code>.</p>
+<pre><code class="language-text">Click -&gt; clicked signal -&gt; Completed
+                        -&gt; BtbActivityAdvance
+                        -&gt; status check -&gt; update label</code></pre>
+<p>Read the callback signature. GTK supplies the button and the connected user data. The callback retrieves the window&#x27;s retained state instead of using a pointer to a local variable that has already disappeared. Callback parameters must match the signal&#x27;s expected types; a cast does not repair an incompatible function.</p>
+<h2>Separate rule and presentation</h2>
+<p>The callback asks <code>BtbActivityAdvance</code> for the next value. That function is shared by the console and window example. Only after checking its result does the window show the new count. Read <code>activity.h</code> to find the rule&#x27;s limit and failure promise.</p>
+<p>Do not create a second counting rule inside the button handler. The same principle applies when a Media button starts a job or a Studio command saves a document: the interface requests an operation and reports the engine&#x27;s result.</p>
+<h2>Check the interaction</h2>
+<p>With the example running, click once: expect 1. Click again: expect 2. Move keyboard focus to the button using Tab and activate it with Space: expect one further increment. Record the actual outcome. If nothing happens, inspect the signal connection, whether the control is sensitive and whether the event loop is blocked. A disabled button and a disconnected callback can look similar but have different causes.</p>
+<h2>Exercise and answer</h2>
+<p>Write down four checks before editing: initial count, mouse activation, keyboard activation and closing the window. Then compare the shared rule&#x27;s test for the maximum count. A UI check proves that input reaches a command; the rule test checks accepted values. Both are needed.</p>
+<p>The existing callback holds a window reference while using its state and releases it afterward. That balances ownership during work; it is not permission to keep raw widget pointers indefinitely. Long-running work should not occupy this callback until completion. Later lessons introduce worker results returned to the UI thread and cancellation when the owning window closes.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/window.c">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/window.c</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://docs.gtk.org/gtk4/getting_started.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/06-umicom/learning-gtk4/02-connect-a-button-to-a-shared-rule.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-widgets-and-the-event-loop.html">Previous: Widgets and the event loop</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

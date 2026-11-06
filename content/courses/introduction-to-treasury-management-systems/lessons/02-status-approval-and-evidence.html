@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/02-status-approval-and-evidence.html
+
+PURPOSE:
+Teach Status, approval and evidence through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Status, approval and evidence | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Status, approval and evidence</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-cash-timing-and-a-system.html">Previous: Cash, timing and a treasury system</a></p>
+<h2>Build on the cash forecast</h2>
+<p>The previous lesson found when money was needed. This lesson follows the £1,000 supplier payment through a system. A status describes its current stage. A transition is a move from one status to another. A rule decides whether that transition is allowed.</p>
+<p>Use a notebook. Draw six boxes labelled Draft, Awaiting approval, Approved, Sent, Settled and Rejected. This is a teaching workflow, not a claim that every treasury product uses these exact names.</p>
+<h2>Trace one payment</h2>
+<ol>
+<li>A clerk creates <code>PAY-001</code> for £1,000 due Wednesday. The record is Draft. It can still be corrected.</li>
+<li>The clerk submits it for review. It is Awaiting approval. Submission does not send money.</li>
+<li>An authorised reviewer checks the beneficiary, amount and due date. Approval records that decision and who made it.</li>
+<li>An authorised process sends a payment instruction. The status becomes Sent only after that step has evidence; clicking a button alone is not proof.</li>
+<li>A bank response and the organisation&#x27;s reconciliation process establish the outcome. Settled means the required settlement evidence has been accepted.</li>
+<li>A rejection records its reason. A rejected instruction must not silently be treated as settled or resent with a new identity.</li>
+</ol>
+<p>An audit trail is the sequence of recorded actions: who acted, what changed and when. Reconciliation compares records from different sources, for example the intended payment and the bank&#x27;s reported movement. A timestamp helps order observations, but it is not proof that an event happened correctly.</p>
+<h2>Separate a command from its result</h2>
+<pre><code class="language-text">Command: Approve PAY-001
+Inputs:  reviewer identity, payment revision, permission
+Checks:  still awaiting approval? authorised? same revision?
+Result:  approval recorded OR an explained refusal
+Evidence: approval event linked to PAY-001 and its revision</code></pre>
+<p>This diagram uses pseudocode: a description of an algorithm without the syntax of a particular programming language. A revision identifies a particular saved version. If the amount changes after review, the old approval must not accidentally authorise the new amount.</p>
+<p>An interface may show an Approve button. The reusable service must still check the rules, because another interface or integration could request the same operation. This is why Umicom places shared business behaviour in Framework and lets applications present it. A greyed-out button is useful guidance, not a substitute for the service&#x27;s checks.</p>
+<p>The existing lesson <code>09-trade-lifecycle-workflow-and-approvals.md</code> extends this idea to financial trades. <code>11-transfers-payment-messages-and-accounting.md</code> separates transfers, payment messages and accounting. Those are the next readings after the introductory account and currency chapters; neither should be inferred from a balance display alone.</p>
+<h2>Exercise</h2>
+<p>A payment was approved for £1,000. Someone changes its amount to £1,200 before it is sent. What should happen to the old approval? A second operator then clicks Send twice because the first request appears slow. What information would help prevent two payments?</p>
+<h2>Answer and explanation</h2>
+<p>The old approval applies to the reviewed revision. The changed payment needs the appropriate review again. The service should recognise repeated requests for the same operation using a stable request or instruction identity and preserve the recorded outcome. This property is often called idempotency: retrying the same request must not accidentally perform the business action twice. The exact implementation and bank acknowledgement rules need their own design and tests.</p>
+<h2>Continue the existing course</h2>
+<p>Read the treasury lesson index in order, then complete its Stage 1 workbook. The Stage 2 lessons add a seven-day cash forecast, funding gaps and a full trade lifecycle. Keep a list of unfamiliar words and use the glossary before moving into product-specific screens or programming. No live payment is created by this course.</p>
+<p><a href="../../computing-from-the-beginning/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../../lessons/09-treasury-tms-calypso/03-how-a-treasury-management-system-helps.md">Read the related Umicom example</a>. Path: <code>content/lessons/09-treasury-tms-calypso/03-how-a-treasury-management-system-helps.md</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="../../../lessons/09-treasury-tms-calypso/index.md">Continue the existing treasury lessons and workbooks</a>.</p>
+<p><a href="../../../lessons/09-treasury-tms-calypso/introduction-to-treasury-management-systems/02-status-approval-and-evidence.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-cash-timing-and-a-system.html">Previous: Cash, timing and a treasury system</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

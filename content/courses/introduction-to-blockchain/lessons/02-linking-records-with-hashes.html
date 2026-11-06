@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-blockchain/lessons/02-linking-records-with-hashes.html
+
+PURPOSE:
+Teach Linking records with hashes through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linking records with hashes | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Linking records with hashes</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-ledger-and-a-state.html">Previous: A ledger and a state</a> · <a href="03-agreement-is-more-than-counting.html">Next: Agreement is more than counting</a></p>
+<h2>A link that depends on content</h2>
+<p>In an ordinary list, each item can refer to the previous item&#x27;s number. In a hash-linked list, each record includes the digest of previous content. Altering old content changes its digest and breaks the next recorded link, unless an attacker can replace the later history too.</p>
+<pre><code class="language-text">record A bytes -&gt; hash A
+record B includes hash A -&gt; hash B
+record C includes hash B -&gt; hash C</code></pre>
+<p>This is tamper evidence relative to a trusted reference, not magical immutability. If one person can rewrite every file and every reference digest, a local chain alone cannot prove which history was originally accepted. External checkpoints, permissions, signatures and distributed agreement address different parts of that threat model.</p>
+<h2>Define the exact bytes</h2>
+<p>Suppose a record has a sequence number and amount. Decide the integer width, signedness and byte order. Signedness tells whether negative values are allowed. Byte order says which byte of a multi-byte number comes first. Hashing raw C structure memory is unsuitable: compilers can insert padding between fields, and machines can store integer bytes differently.</p>
+<p>Read Framework&#x27;s SHA-256 header. The update operation takes a pointer plus a byte count. That count makes the boundary explicit. Do not use strlen for arbitrary binary records; a zero byte inside a record is valid data and would make a string-length calculation stop early.</p>
+<h2>Exercise</h2>
+<p>Two writers encode the amount 1 as the text 1 and as four bytes 01 00 00 00. Should you expect their digests to match? If not, what must the design specify?</p>
+<h2>Explained answer</h2>
+<p>No. A human can interpret both as the same value, but hashing operates on exact bytes. Specify one encoding and validate it at every boundary. Text may be a legitimate format if its grammar is exact; binary may be legitimate if widths and ordering are exact. Neither is automatically safe without rules.</p>
+<h2>Continue</h2>
+<p>The construction course begins with an original small record format and invalid-input checks. The existing blockchain-ledgers library provides deeper work on Merkle proofs and append-only histories after these foundations.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-ledger-and-a-state.html">Previous: A ledger and a state</a> · <a href="03-agreement-is-more-than-counting.html">Next: Agreement is more than counting</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/introduction-to-blockchain/02-linking-records-with-hashes.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

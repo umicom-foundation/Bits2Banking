@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-sql/lessons/02-changes-and-transactions.html
+
+PURPOSE:
+Teach Changes and transactions through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Changes and transactions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Changes and transactions</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-tables-rows-and-questions.html">Previous: Tables, rows and questions</a></p>
+<h2>What you will learn</h2>
+<p>A transaction groups database changes so that they can be accepted together or undone together. Continue in the temporary database from lesson 1. Re-enter its setup if you closed SQLite. We will practise on lesson lengths, not account balances.</p>
+<h2>Inspect before changing</h2>
+<p>First run <code>SELECT * FROM lesson ORDER BY id;</code>. The star requests every column. Confirm that id 1 exists with 12 minutes. Then enter these statements individually:</p>
+<pre><code class="language-sql">BEGIN;
+UPDATE lesson SET minutes = 18 WHERE id = 1;
+SELECT id, minutes FROM lesson WHERE id = 1;
+ROLLBACK;
+SELECT id, minutes FROM lesson WHERE id = 1;</code></pre>
+<p><code>BEGIN</code> starts the transaction. <code>UPDATE</code> changes an existing row. Its <code>WHERE</code> clause is essential: without it, every row would receive the new duration. The first result should be 18. <code>ROLLBACK</code> abandons the transaction&#x27;s changes, so the final result should be 12. A query inside the transaction can see your provisional change before it is accepted.</p>
+<h2>Accept one intended edit</h2>
+<p>Repeat the same sequence but replace <code>ROLLBACK</code> with <code>COMMIT</code>. The final result is now 18. Commit makes the edit part of this database&#x27;s state. Because this database is in memory, it still disappears on closing. A committed change in a file-backed database normally survives reopening; it is not a substitute for backups.</p>
+<pre><code class="language-text">BEGIN -&gt; proposed edit -&gt; inspect -&gt; COMMIT: retain
+                              -&gt; ROLLBACK: undo</code></pre>
+<h2>Exercise and answer</h2>
+<p>How would you change only the lesson named <code>Reading a C program</code>? Look up its id, then use <code>WHERE id = 2</code>. Titles can change or repeat; the primary key is the clearer identity. Before committing, inspect the selected row and the full table. A transaction cannot decide whether your chosen id was correct.</p>
+<h2>From SQL text to application code</h2>
+<p>An application should bind user values to prepared statements rather than joining text into SQL. A prepared statement separates the question&#x27;s structure from its data. We study the C binding API later; there is no input-concatenating example to copy here. Framework owns reusable data rules so Bank, Trader and other clients need not invent their own storage policies.</p>
+<p>If <code>BEGIN</code> reports an existing transaction, finish that transaction deliberately before starting another. If a constraint rejects an edit, inspect the error and choose to roll back; do not assume every error automatically undid every earlier statement.</p>
+<p><a href="../../learning-computer-architecture/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../framework-and-finance/framework-boundaries/lessons/shared-services.html">Read the related Umicom example</a>. Path: <code>content/courses/framework-and-finance/framework-boundaries/lessons/shared-services.html</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://www.sqlite.org/quickstart.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-sql/02-changes-and-transactions.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-tables-rows-and-questions.html">Previous: Tables, rows and questions</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

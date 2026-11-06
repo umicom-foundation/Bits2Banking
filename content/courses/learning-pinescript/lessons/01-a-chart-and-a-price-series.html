@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-pinescript/lessons/01-a-chart-and-a-price-series.html
+
+PURPOSE:
+Teach A chart and a price series through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A chart and a price series | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A chart and a price series</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-live-bars-and-confirmed-values.html">Next: Live bars and confirmed values</a></p>
+<h2>Begin with a picture of data</h2>
+<p>A price chart places time along the horizontal axis and price along the vertical axis. One candle summarises an interval, such as a minute or a day. Its open is the first recorded price, high and low are the interval&#x27;s extremes, and close is the last recorded price. A series is a sequence of values indexed by bars, rather than one value for the whole chart.</p>
+<p>You can trace this lesson on paper. To run the script, use TradingView&#x27;s Pine Editor with an account and a chart you are entitled to view. The practical example targets Pine Script version 6. Pine Script is a separate charting language; it is not C and this lesson does not add a Pine interpreter to Umicom Trader.</p>
+<h2>Draw a short moving average</h2>
+<p>An average adds several values and divides by how many there are. A moving average repeats that calculation over a window that moves along the series.</p>
+<pre><code class="language-text">Closing prices: 10, 12, 14, 16
+Three-bar average at bar 3: (10 + 12 + 14) / 3 = 12
+Three-bar average at bar 4: (12 + 14 + 16) / 3 = 14</code></pre>
+<p>Create a new indicator in the Pine Editor. Replace its example text with the following original script, save it under a name of your choice and use Add to chart. Menu placement can vary; the official Pine first-indicator guide explains the editor workflow.</p>
+<pre><code class="language-pine">//@version=6
+indicator(&quot;Learning: three closing prices&quot;, overlay=true)
+average = ta.sma(close, 3)
+plot(average, title=&quot;Three-bar mean&quot;, color=color.blue)</code></pre>
+<p><code>//@version=6</code> selects the language version. <code>indicator</code> declares a study; <code>overlay=true</code> puts it in the price pane. <code>close</code> supplies each bar&#x27;s closing-price value. <code>ta.sma</code> calculates a simple moving average. The assignment gives that result the name <code>average</code>. <code>plot</code> draws the values using a blue line and a readable title.</p>
+<p>At the start of a short series there may not yet be three available values. Do not invent zeros to fill that gap: zero would change the calculation. On an ordinary chart with enough history, expect a line that follows the prices more smoothly than the individual closes. Its actual numbers depend on the chart, not on the invented four-number example above.</p>
+<h2>Connect the idea to Umicom</h2>
+<p>Framework&#x27;s <code>include/umicom/chart/candle_study.h</code> defines native candle-study inputs and results. It describes volume-weighted averages, Bollinger bands and Donchian bands. Those are not all the same calculation as this simple mean. The reusable idea is to compute from an ordered series and then render the result; chart appearance must not decide the mathematics.</p>
+<p>Read that header as a map, not as a requirement to understand every C declaration today. In particular, its <code>valid</code> flag describes whether a result can be used. Later native exercises can compare input candles and calculated samples without pretending that a visual resemblance proves numerical parity.</p>
+<h2>Exercise</h2>
+<p>Use closing prices 8, 10, 12 and 18. Find the three-bar mean at the third and fourth bars. Change the script&#x27;s window from 3 to 2 and calculate the final two-bar mean on paper.</p>
+<h2>Answer and explanation</h2>
+<p>The third bar gives (8 + 10 + 12) / 3 = 10. The fourth gives (10 + 12 + 18) / 3 = 40 / 3, about 13.33. The final two-bar mean is (12 + 18) / 2 = 15. A shorter window reacts more strongly to the recent rise. That is a numerical property, not evidence of profitable trading.</p>
+<h2>If the result is unexpected</h2>
+<p>Check the version line, spelling and whether you created an indicator. Check that the chart has enough bars. A line drawn behind candles can be difficult to see; inspect the indicator&#x27;s displayed values too. Do not place orders for this exercise. Next, distinguish an unfinished bar from a completed one.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/chart/candle_study.h">Read the related Umicom example</a>. Path: <code>Umicom-Applications/framework/include/umicom/chart/candle_study.h</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://www.tradingview.com/pine-script-docs/primer/first-indicator/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/07-practical-domains/learning-pinescript/01-a-chart-and-a-price-series.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-live-bars-and-confirmed-values.html">Next: Live bars and confirmed values</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

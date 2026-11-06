@@ -72,3 +72,17 @@ A trading-data example after the core development route; it is not a prerequisit
 ## Practise with the source
 
 The [Framework project walkthrough](../../umicom/development-path.md) maps each file to its role and explains how to change, build and check the example.
+
+
+## Consolidation: map a shared feature
+
+After the earlier modules, trace the same example through its contract, implementation, consumers and checks.
+
+1. [Map a shared feature before changing it](36-map-a-shared-feature-before-changing-it.md)
+
+
+## Course outline: later topics
+
+New shared services, documentation, SDK consumers and application integration.
+
+[Choose another subject](../../start/course-series.md).

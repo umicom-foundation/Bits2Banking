@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-laravel/lessons/01-a-route-and-a-response.html
+
+PURPOSE:
+Teach A route and a response through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A route and a response | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A route and a response</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-view-with-data.html">Next: A view with data</a></p>
+<h2>Give a request somewhere to go</h2>
+<p>Complete Learning PHP&#x27;s functions and Learning HTML&#x27;s links first. A browser sends an HTTP request. A route matches its method and path to application code. A response supplies a status and content. A route is not the same as a file path on disk.</p>
+<p>This introductory exercise uses a Laravel 12 project deliberately, so its source conventions are explicit. It is not a claim that 12 is the newest release. Follow the official version-specific installation prerequisites for PHP, Composer and extensions. In an empty parent practice folder run:</p>
+<pre><code class="language-text">composer create-project laravel/laravel learning-portal &quot;^12.0&quot;
+cd learning-portal
+php artisan --version</code></pre>
+<p>Composer downloads dependencies; <code>artisan</code> is the project&#x27;s command-line entry. Do not continue after an installation failure. Record the selected framework version and retain its lock file.</p>
+<h2>Add one route</h2>
+<p>Open <code>routes/web.php</code>. Keep its existing routes and PHP opening tag. Add this declaration after the imports:</p>
+<pre><code class="language-php">Route::get(&#x27;/learning&#x27;, function () {
+    return &#x27;Welcome to the learning library&#x27;;
+});</code></pre>
+<p>The standard file imports <code>Illuminate\Support\Facades\Route</code>; verify that import exists. <code>get</code> handles a GET request. The anonymous function runs when that route is requested, and returns the response text.</p>
+<p>Run <code>php artisan serve --host=127.0.0.1 --port=8000</code>. Open <code>http://127.0.0.1:8000/learning</code>. Expect the welcome sentence. Stop the development server with Ctrl+C when finished. A 404 means the requested path was not matched; check the URL, file and route listing with <code>php artisan route:list</code> before editing unrelated code.</p>
+<h2>Exercise and answer</h2>
+<p>Add a separate <code>/learning/help</code> route returning <code>Choose one course and follow its order</code>. Visit both URLs and an unregistered URL. Expect two intended responses and a not-found response. That is evidence of routing, not a complete course database.</p>
+<p>Compare the static Bits2Banking HTML course index: a static file can be served without a PHP route. Use a backend when a workflow actually needs server behaviour, and keep reusable Umicom business rules in Framework rather than duplicating them in route closures.</p>
+<p><a href="../../learning-php/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../learning-html/index.html">Read the related Umicom example</a>. Path: <code>content/courses/learning-html/index.html</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://laravel.com/framework/docs/12.x/routing">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-laravel/01-a-route-and-a-response.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-view-with-data.html">Next: A view with data</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

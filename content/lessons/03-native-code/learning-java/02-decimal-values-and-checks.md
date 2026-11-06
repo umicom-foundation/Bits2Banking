@@ -42,3 +42,8 @@ Exercise: write pseudocode that first rejects an empty journal and then performs
 ---
 
 [Read this lesson in HTML](../../../courses/learning-java/lessons/02-decimal-values-and-checks.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+
+## Continue learning
+
+[Continue: Values, methods and checks](03-values-methods-and-checks.md)

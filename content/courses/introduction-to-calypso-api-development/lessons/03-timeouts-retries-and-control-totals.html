@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-calypso-api-development/lessons/03-timeouts-retries-and-control-totals.html
+
+PURPOSE:
+Teach Timeouts, retries and control totals through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Timeouts, retries and control totals | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Timeouts, retries and control totals</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-java-port-and-a-fake-repository.html">Previous: A Java port and a fake repository</a></p>
+<h2>A missing reply is an unknown outcome</h2>
+<p>Suppose an integration submits a request and waits. The server may accept it, but the reply may be lost. A timeout tells the caller that no reply arrived before the deadline; it does not prove that the operation was rejected.</p>
+<p>Reliable treasury integrations need bounded queries, retry limits and a way to stop interrupted work. We apply those concepts to an original exercise. No vendor write method is assumed here.</p>
+<pre><code class="language-text">request sent -&gt; server may commit -&gt; reply lost
+      client sees timeout
+      client must establish outcome before repeating a write</code></pre>
+<h2>Design a read-only investigation</h2>
+<ol>
+<li>Restrict the query by an authorised book, product and date range.</li>
+<li>Choose a page size and stable ordering supported by the service.</li>
+<li>Record query criteria, snapshot identity when available, page count and received record count.</li>
+<li>Detect repeated or missing pages. Do not declare success solely because one page arrived.</li>
+<li>Report partial results separately from a complete result set.</li>
+</ol>
+<p>For a write, use the system&#x27;s supported idempotency or correlation mechanism if available. Idempotency means repeating the same request does not repeat its business effect. If the API provides no such guarantee, query the known outcome or escalate for reconciliation rather than blindly retrying.</p>
+<h2>Exercise</h2>
+<p>A paged query returns 100, 100 and 17 records. The service reports a total of 217 for the same stable snapshot. What control can you record? What if the third page times out?</p>
+<h2>Explained answer</h2>
+<p>The count reconciles: 100 + 100 + 17 = 217. This count alone does not prove every field is correct, so retain identifiers and snapshot criteria too. With the third page missing, report 200 received and incomplete. Do not turn the partial collection into an authoritative portfolio or settlement report.</p>
+<h2>Connect to Framework</h2>
+<p>Put reusable pagination, status, mapping and evidence rules behind Framework contracts. Keep the vendor-specific adapter narrow. Public lesson examples contain fictional identifiers; operational logs must avoid passwords, tokens and unnecessary customer details. The next course module will map a read operation to a documented licensed environment, which cannot be inferred from these teaching classes.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-java-port-and-a-fake-repository.html">Previous: A Java port and a fake repository</a></p>
+<p><a href="../../../lessons/09-treasury-tms-calypso/introduction-to-calypso-api-development/03-timeouts-retries-and-control-totals.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="../../../lessons/09-treasury-tms-calypso/sources-and-licensing.md">Source and context</a>. Follow the source and licensing notes before using vendor APIs.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

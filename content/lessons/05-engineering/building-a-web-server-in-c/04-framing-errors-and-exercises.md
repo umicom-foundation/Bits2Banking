@@ -80,3 +80,8 @@ Continue with [Umicom Framework Development](../../../courses/umicom-development
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-web-server-in-c/lessons/04-framing-errors-and-exercises.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+
+## Next lesson
+
+Continue with [Requests are bytes, not packets](05-requests-are-bytes-not-packets.md).

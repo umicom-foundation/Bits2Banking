@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-blockchain-from-scratch/lessons/02-validate-before-changing-state.html
+
+PURPOSE:
+Teach Validate before changing state through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Validate before changing state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Validate before changing state</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-an-exact-record-format.html">Previous: An exact record format</a> · <a href="03-history-replay-and-recovery.html">Next: History, replay and recovery</a></p>
+<h2>A failed request must not partly succeed</h2>
+<p>Our ledger has one balance of practice units. A request asks to spend some units. Before changing state, check that the amount is permitted and available. A status return tells the caller whether the change happened.</p>
+<pre><code class="language-c">#include &lt;stdbool.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;stdint.h&gt;
+
+static bool spend(uint64_t *balance, uint64_t amount)
+{
+    if (balance == NULL || amount == 0 || amount &gt; *balance)
+        return false;
+    *balance -= amount;
+    return true;
+}</code></pre>
+<p>The stddef.h header defines NULL. A pointer identifies caller-owned memory. The short-circuit OR operator stops checking once a condition is true, so the null check prevents dereferencing a null pointer. Subtract only after all checks pass.</p>
+<p>This is an account model, not Bitcoin&#x27;s unspent-output model. It has no authorisation, concurrency or persistence yet. Stating those limits prevents a small arithmetic example from being mistaken for a financial service.</p>
+<h2>Trace success and failure</h2>
+<ol>
+<li>Set balance to 10.</li>
+<li>Request a spend of 4. Predict true and balance 6.</li>
+<li>Request a spend of 7. Predict false and balance still 6.</li>
+<li>Request zero. Under this exercise&#x27;s rule, predict false.</li>
+<li>Give two callers the same balance snapshot. Notice that checking each in isolation is not enough to prevent concurrent overspending.</li>
+</ol>
+<p>A production service needs an atomic check-and-update or equivalent transaction isolation. Atomic means the operation appears as one indivisible state change to other participants. A hash chain does not supply that property by itself.</p>
+<h2>Exercise</h2>
+<p>For a credit operation, why is balance += amount insufficient for a uint64_t value near its maximum? Write the condition to check first.</p>
+<h2>Explained answer</h2>
+<p>Unsigned addition wraps modulo the type&#x27;s range. Check amount &gt; UINT64_MAX - balance before adding. Reject without mutation when the sum cannot fit. When extending the lab, add assertions for unchanged output on rejected requests. Expected results in this lesson are reasoning targets, not a claim that a particular compiler has run them.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="01-an-exact-record-format.html">Previous: An exact record format</a> · <a href="03-history-replay-and-recovery.html">Next: History, replay and recovery</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/building-blockchain-from-scratch/02-validate-before-changing-state.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

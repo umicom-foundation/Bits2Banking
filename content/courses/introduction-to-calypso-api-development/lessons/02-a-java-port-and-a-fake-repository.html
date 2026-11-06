@@ -1,0 +1,67 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-calypso-api-development/lessons/02-a-java-port-and-a-fake-repository.html
+
+PURPOSE:
+Teach A Java port and a fake repository through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A Java port and a fake repository | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A Java port and a fake repository</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-service-boundary-before-an-api-call.html">Previous: A service boundary before an API call</a> · <a href="03-timeouts-retries-and-control-totals.html">Next: Timeouts, retries and control totals</a></p>
+<h2>Practise without a licensed server</h2>
+<p>A port is a small interface expressing what the application needs. An adapter implements it for a particular system. A fake implementation lets us learn the contract without contacting a real server. This program contains no vendor classes and no credentials.</p>
+<p>Save the following as TradeLookupLesson.java in your practice directory. The record here is a simple Java class, not a claim about the vendor trade object.</p>
+<pre><code class="language-java">public final class TradeLookupLesson {
+    static final class TradeSummary {
+        final long id;
+        final String currency;
+        TradeSummary(long id, String currency) {
+            this.id = id;
+            this.currency = currency;
+        }
+    }
+
+    interface TradeRepository {
+        TradeSummary findById(long id);
+    }
+
+    static final class PracticeRepository implements TradeRepository {
+        public TradeSummary findById(long id) {
+            return id == 42 ? new TradeSummary(42, &quot;GBP&quot;) : null;
+        }
+    }
+
+    public static void main(String[] args) {
+        TradeRepository repository = new PracticeRepository();
+        TradeSummary trade = repository.findById(42);
+        if (trade == null) {
+            System.out.println(&quot;Trade not found&quot;);
+            return;
+        }
+        System.out.println(trade.id + &quot; &quot; + trade.currency);
+    }
+}</code></pre>
+<p>The interface names one operation. PracticeRepository provides its teaching behaviour. main asks through the interface, so replacing the adapter does not require rewriting the display code. null explicitly means not found in this tiny contract; a production contract should distinguish absence from transport or permission failure.</p>
+<p>With a JDK installed, optional commands are javac TradeLookupLesson.java and java TradeLookupLesson. Expected output is 42 GBP. No Calypso installation is needed for this fake repository.</p>
+<h2>Exercise</h2>
+<p>Change the lookup argument to 43. Predict the output. Then explain why the adapter should not turn a permission error into Trade not found.</p>
+<h2>Explained answer</h2>
+<p>The fake returns null, so the program prints Trade not found. A permission error means the caller is not allowed to determine or retrieve the result, not that the trade does not exist. An explicit failure contract is necessary for correct audit and troubleshooting. A real adapter must map documented SDK behaviour, not guess from this exercise.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-service-boundary-before-an-api-call.html">Previous: A service boundary before an API call</a> · <a href="03-timeouts-retries-and-control-totals.html">Next: Timeouts, retries and control totals</a></p>
+<p><a href="../../../lessons/09-treasury-tms-calypso/introduction-to-calypso-api-development/02-a-java-port-and-a-fake-repository.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="../../../lessons/09-treasury-tms-calypso/sources-and-licensing.md">Source and context</a>. Follow the source and licensing notes before using vendor APIs.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

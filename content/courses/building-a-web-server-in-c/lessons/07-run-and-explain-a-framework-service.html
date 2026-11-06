@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/07-run-and-explain-a-framework-service.html
+
+PURPOSE:
+Teach Run and explain a Framework service through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Run and explain a Framework service | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Run and explain a Framework service</h1>
+<p><a href="../index.html">Course contents</a> · <a href="06-buffer-capacity-and-partial-input.html">Previous: Buffer capacity and partial input</a></p>
+<h2>Read the real example before building</h2>
+<p>Open Framework&#x27;s examples/web/local_service.c using the source link below. Its Home and Health handlers construct responses; its main function configures routes and server lifetime. The inspected example accepts --port and optionally --root. It does not accept a guessed --host option.</p>
+<p>Find ParsePort. It accepts decimal ports between 1024 and 65535 and rejects invalid characters and overflow. Find the loopback request gate. Then find route registration for /api/health and /api/echo. Loopback limits the exercise to the local machine; it does not make every local request trusted.</p>
+<pre><code class="language-text">local client -&gt; connection and framing -&gt; route -&gt; handler
+                                                  |
+local client &lt;- response bytes &lt;-------------------+</code></pre>
+<h2>Prepare the optional run</h2>
+<ol>
+<li>Prepare the Windows UCRT64 tools described in the Framework setup guide: CMake, Ninja, GCC and the repository&#x27;s required libraries.</li>
+<li>Open PowerShell in the Framework checkout. The example below assumes it is under C:\umicom\Umicom-Applications\framework; use your own checkout location if different.</li>
+<li>Configure with learning examples enabled, then build only umicom-web-local-service-example and its dependencies. A target is CMake&#x27;s name for a buildable library or program. The target is declared in cmake/UmicomLocalWebService.cmake.</li>
+<li>Launch the program with --port 8080. If the port is occupied, choose another permitted port and change the client URL to match. Run each line separately and stop on any error.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Applications\framework&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --preset windows-ucrt64-debug -DUMICOM_BUILD_LEARNING_EXAMPLES=ON
+cmake --build --preset windows-ucrt64-debug --target umicom-web-local-service-example --parallel 2
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-web-local-service-example.exe&quot; --port 8080</code></pre>
+<p>The preset supplies the compiler and build directory. If it reports a missing dependency, resolve that configure error before building. If the target is unknown, check the learning-examples option and whether this checkout contains the source linked below. Do not treat a previous executable as the result of a failed build. While the service runs, open a second terminal for a read-only request:</p>
+<pre><code class="language-powershell">curl.exe -i http://127.0.0.1:8080/api/health</code></pre>
+<p>The inspected handler specifies status 200, application/json content and a service/status response containing umicom-local-example and ready. These are expected results for this source, not evidence that your build or server has run. An absent response needs investigation of the launch log, port and process state.</p>
+<h2>Trace a failure</h2>
+<p>Stop the practice server and repeat the request. Connection failure is different from an HTTP error response: no handler may have run at all. Keep these categories distinct in logs. Do not expose this learning server to a network as a production deployment; authentication, TLS, resource limits and operational hardening need explicit qualification.</p>
+<h2>Exercise</h2>
+<p>Where should a new /api/version response be implemented: in the socket receive loop or in a route handler? Which layer should reject oversized headers?</p>
+<h2>Explained answer</h2>
+<p>A route handler owns the version response. Shared connection/parser code enforces header limits before routing. This separation lets Studio, Media and other applications reuse Framework web services while supplying their own domain behaviour.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="06-buffer-capacity-and-partial-input.html">Previous: Buffer capacity and partial input</a></p>
+<p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/07-run-and-explain-a-framework-service.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/examples/web/local_service.c">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc9112.html">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

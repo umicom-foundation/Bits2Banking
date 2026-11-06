@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-zig/lessons/01-types-and-a-small-check.html
+
+PURPOSE:
+Teach Types and a small check through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Types and a small check | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Types and a small check</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-return-an-explicit-error.html">Next: Return an explicit error</a></p>
+<h2>Let the expected result be visible</h2>
+<p>Zig is a systems programming language with explicit types and built-in test declarations. This first lesson uses a test rather than version-sensitive console I/O. Install a stable Zig release from its official distribution and select the matching version of the language reference. Record <code>zig version</code>; development documentation can differ from an installed stable compiler.</p>
+<p>Save this as <code>progress.zig</code>:</p>
+<pre><code class="language-zig">const std = @import(&quot;std&quot;);
+
+fn remaining(target: u32, completed: u32) u32 {
+    return target - completed;
+}
+
+test &quot;three of five leaves two&quot; {
+    try std.testing.expectEqual(@as(u32, 2), remaining(5, 3));
+}</code></pre>
+<p><code>@import</code> makes another module available. <code>const</code> names a value that is not reassigned. <code>fn</code> defines a function; types follow parameter names after a colon. The type after the closing parenthesis is the return type. <code>@as(u32, 2)</code> makes the expected value&#x27;s type explicit. The test compares expected and actual values.</p>
+<p>Run <code>zig test progress.zig</code> from that folder. Expect the named test to pass. A successful result concerns this example and compiler, not the whole Umicom product. If Zig is not found, check its installation and terminal path; do not replace the command with a different language&#x27;s compiler.</p>
+<h2>Exercise and answer</h2>
+<p>Add a second test expecting remaining(5, 5) to equal zero. Then deliberately expect 1 and observe a failure. Restore the correct expectation. A check that has never been seen to fail may not be checking what you think it is.</p>
+<p>The function currently assumes completed &lt;= target. Passing a larger value violates that assumption and can underflow. It is not a complete validated counter. The next lesson replaces the implicit assumption with an explicit error result.</p>
+<p>Read the real activity rule in Bits2Banking. Its guarded update provides the architectural comparison: accepted input, reported failure and unchanged output. A language exercise should make those decisions visible rather than silently fork the production Framework rule.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/activity.c">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/activity.c</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://ziglang.org/documentation/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/03-native-code/learning-zig/01-types-and-a-small-check.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-return-an-explicit-error.html">Next: Return an explicit error</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

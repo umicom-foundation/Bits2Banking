@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-codeigniter/lessons/02-a-controller-and-an-escaped-view.html
+
+PURPOSE:
+Teach A controller and an escaped view through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A controller and an escaped view | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A controller and an escaped view</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-an-explicit-route.html">Previous: An explicit route</a></p>
+<h2>Give presentation its own file</h2>
+<p>Continue in the project from lesson 1. A view contains the HTML presentation. The controller supplies data and returns the rendered result. This makes it easier to change the page layout without changing route selection.</p>
+<p>Create <code>app/Views/course.php</code>:</p>
+<pre><code class="language-php">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;Course overview&lt;/title&gt;
+&lt;main&gt;
+  &lt;h1&gt;&lt;?= esc($title) ?&gt;&lt;/h1&gt;
+  &lt;p&gt;Begin with the first lesson and check its expected result.&lt;/p&gt;
+&lt;/main&gt;
+&lt;/html&gt;</code></pre>
+<p>Add a method to the existing Learning controller, inside its class:</p>
+<pre><code class="language-php">public function course(): string
+{
+    return view(&#x27;course&#x27;, [&#x27;title&#x27; =&gt; &#x27;Learning HTML &amp; CSS&#x27;]);
+}</code></pre>
+<p>Add a route to <code>app/Config/Routes.php</code>:</p>
+<pre><code class="language-php">$routes-&gt;get(&#x27;learning/course&#x27;, &#x27;Learning::course&#x27;);</code></pre>
+<p>The array maps title to its text. <code>view</code> selects the template. <code>esc</code> encodes the value for its default HTML output context. The short echo syntax <code>&lt;?= ... ?&gt;</code> outputs that encoded value. It does not run a second HTTP request.</p>
+<h2>Observe the complete path</h2>
+<p>Start the local development server as before and visit <code>/learning/course</code>. Expect the heading Learning HTML &amp; CSS. Then change the title to <code>Learning &lt;C&gt;</code> and reload. Expect literal angle brackets in the heading rather than a new HTML element.</p>
+<pre><code class="language-text">GET /learning/course -&gt; route -&gt; controller data -&gt; view -&gt; response</code></pre>
+<h2>Exercise</h2>
+<p>In a practice copy, change <code>view(&#x27;course&#x27;, ...)</code> to <code>view(&#x27;missing_course&#x27;, ...)</code> without creating another view file. Reload the page. Which step of the request path fails? Restore <code>course</code> and reload again.</p>
+<h2>Explained answer</h2>
+<p>The route still selects the controller, but rendering cannot find <code>app/Views/missing_course.php</code>. The page cannot be completed. Restoring the view name restores the connection to the existing template. A successful route match is not enough: its downstream dependencies must exist too. Keep detailed diagnostics local while learning; production error handling must avoid disclosing private configuration.</p>
+<p>Compare this with Bits2Banking&#x27;s manifest and HTML pairs. A course&#x27;s order is data that must agree with its navigation. When a later integration reads Umicom course metadata, it should consume that declared order rather than invent another sort. The exercise adds no database or login yet; those belong after request flow and output handling are understood.</p>
+<p><a href="../../learning-php/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../learning-php/index.html">Read the related Umicom example</a>. Path: <code>content/courses/learning-php/index.html</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://codeigniter.com/user_guide/guides/first-app/static_pages.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-codeigniter/02-a-controller-and-an-escaped-view.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-an-explicit-route.html">Previous: An explicit route</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

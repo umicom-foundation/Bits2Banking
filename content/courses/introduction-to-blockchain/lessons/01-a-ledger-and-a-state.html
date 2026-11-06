@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-blockchain/lessons/01-a-ledger-and-a-state.html
+
+PURPOSE:
+Teach A ledger and a state through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A ledger and a state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A ledger and a state</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-linking-records-with-hashes.html">Next: Linking records with hashes</a></p>
+<h2>Start with a record you can read</h2>
+<p>A ledger records changes. State is the result of applying accepted changes. If a practice account starts at zero, receives 10 units and pays 3, its balance is 7. The list of events and the balance answer different questions: how did we get here, and what is true now?</p>
+<pre><code class="language-text">events:  receive 10 -&gt; pay 3
+state:       10    -&gt;    7</code></pre>
+<p>Blockchain systems group records into blocks and link them cryptographically. That structure can help detect altered history. It does not automatically make input data truthful, private or useful. If a sensor reports a wrong reading, storing the reading in a block preserves the wrong reading unless other validation catches it.</p>
+<h2>Choose rules before a technology</h2>
+<ol>
+<li>Decide what one record means: payment, inventory movement or document revision.</li>
+<li>Decide who may propose a record.</li>
+<li>State the conditions under which it is valid.</li>
+<li>State what changes when it is accepted.</li>
+<li>State who needs to agree and which failures the design must tolerate.</li>
+</ol>
+<p>For one trusted application on one computer, a conventional transactional database may already meet the need. Independent organisations that cannot rely on one writer pose a different problem. Naming a file blockchain does not answer that problem.</p>
+<h2>Exercise</h2>
+<p>A stockroom begins with 4 components, receives 6 and issues 3. Write the event list and final state. A colleague proposes an issue of 20. What should validation do before changing the state?</p>
+<h2>Explained answer</h2>
+<p>The final quantity is 7. Reject the proposed issue of 20 if the rules forbid negative stock. Leave both the accepted event list and current state unchanged. Writing a rejected event into an audit log is possible, but label it rejected; it must not become an accepted stock movement.</p>
+<h2>Umicom connection</h2>
+<p>Framework should own reusable encoding, persistence and validation contracts. A product chooses its business rules. The SHA-256 API linked below is one building block; it is not a ledger service or a consensus implementation by itself.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-linking-records-with-hashes.html">Next: Linking records with hashes</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/introduction-to-blockchain/01-a-ledger-and-a-state.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-bitcoin/lessons/03-confirmations-and-a-reading-path.html
+
+PURPOSE:
+Teach Confirmations and a reading path through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confirmations and a reading path | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Confirmations and a reading path</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-hashes-signatures-and-ownership.html">Previous: Hashes, signatures and ownership</a></p>
+<h2>Why several histories can temporarily exist</h2>
+<p>Messages take time to travel. Two participants can learn about different valid candidate blocks before hearing about the other candidate. A block groups transactions and refers to a previous block. A chain is a linked history of such blocks.</p>
+<p>Bitcoin nodes apply consensus rules and use accumulated proof of work to select among valid competing chains. A longer-looking list of invalid blocks is not acceptable. A confirmation describes a transaction&#x27;s inclusion in the selected chain and subsequent blocks built on that history. It is not a promise that a transaction can never be displaced.</p>
+<pre><code class="language-text">shared block --&gt; candidate A --&gt; another valid block
+           \--&gt; candidate B</code></pre>
+<p>Draw this fork on paper. Circle the currently selected history. If selection changes, a wallet may need to update the status of transactions. This change is called a reorganisation. Software displaying balances must account for it rather than treating the first received message as permanent truth.</p>
+<h2>Learn in a deliberate order</h2>
+<ol>
+<li>Explain inputs, outputs and change without code.</li>
+<li>Distinguish hashes from signatures and state validation.</li>
+<li>Read the Introduction to Bitcoin Source Code course to see how one implementation separates responsibilities.</li>
+<li>Study the independent blockchain construction course for encoding and state changes.</li>
+<li>Only then attempt the Assembly and C implementation labs. A small ledger is not automatically Bitcoin-compatible.</li>
+</ol>
+<p>This course does not require buying bitcoin, joining a mining pool or opening a trading account. The purpose is to understand software and protocols. Performance and investment claims are outside the examples.</p>
+<h2>Exercise</h2>
+<p>Two nodes agree that a block hash is correctly calculated. Is that enough to accept all its transactions? List at least three other questions.</p>
+<h2>Explained answer</h2>
+<p>No. Are the referenced outputs available? Do signatures and spending conditions hold? Are values and fees valid? Does the block satisfy the relevant header and consensus constraints? These questions are not replaced by a vote that the hash looks right.</p>
+<h2>Connect to existing lessons</h2>
+<p>Use the existing blockchain-ledgers library after these foundations for Merkle proofs, forks and finality. A general ledger lesson may use an account model; keep that model distinct from Bitcoin&#x27;s unspent-output model.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-hashes-signatures-and-ownership.html">Previous: Hashes, signatures and ownership</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/introduction-to-bitcoin/03-confirmations-and-a-reading-path.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://bitcoin.org/bitcoin.pdf">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

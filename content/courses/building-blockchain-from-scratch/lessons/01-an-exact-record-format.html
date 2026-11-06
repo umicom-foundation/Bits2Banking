@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-blockchain-from-scratch/lessons/01-an-exact-record-format.html
+
+PURPOSE:
+Teach An exact record format through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>An exact record format | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>An exact record format</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-validate-before-changing-state.html">Next: Validate before changing state</a></p>
+<h2>Build the smallest useful part</h2>
+<p>Read Introduction to Blockchain and C arrays, functions and pointers first. We will design an offline teaching ledger, not a currency or public network. The first component converts a number into exact bytes. A deterministic encoding produces the same bytes every time for the same value.</p>
+<p>Our fictional record contains a four-byte sequence number followed by a four-byte amount in whole practice units. Both are unsigned and little-endian: the least significant byte comes first. This is our teaching format, not Bitcoin&#x27;s transaction format.</p>
+<pre><code class="language-c">#include &lt;stdint.h&gt;
+
+static void write_u32_le(unsigned char out[4], uint32_t value)
+{
+    out[0] = (unsigned char)(value &amp; 255u);
+    out[1] = (unsigned char)((value &gt;&gt; 8) &amp; 255u);
+    out[2] = (unsigned char)((value &gt;&gt; 16) &amp; 255u);
+    out[3] = (unsigned char)((value &gt;&gt; 24) &amp; 255u);
+}</code></pre>
+<p>The caller must provide at least four writable bytes. The shift operator moves the desired byte down to the low eight bits; the mask keeps only those bits. This function writes a field, not a whole transaction validator.</p>
+<h2>Trace a record</h2>
+<ol>
+<li>Allocate an eight-byte array named record in a practice main function.</li>
+<li>Call write_u32_le(record, 1u) for the sequence.</li>
+<li>Call write_u32_le(record + 4, 1000u) for the amount. Adding four advances four bytes in this array.</li>
+<li>Print each byte in hexadecimal using a loop over all eight positions.</li>
+</ol>
+<p>Expected bytes: 01 00 00 00 e8 03 00 00. Hexadecimal e8 represents 232; 3 * 256 + 232 = 1000. Defining the field order makes a decoder possible later.</p>
+<h2>Exercise</h2>
+<p>Encode sequence 2 and amount 256 on paper. Explain why writing a C struct directly to disk is not a substitute for this function.</p>
+<h2>Explained answer</h2>
+<p>02 00 00 00 00 01 00 00. A struct&#x27;s padding and native byte order can differ between toolchains. Explicit serialization is a boundary contract. When this becomes a shared product capability, implement the contract in Framework and keep the teaching program separate from production clients.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-validate-before-changing-state.html">Next: Validate before changing state</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/building-blockchain-from-scratch/01-an-exact-record-format.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

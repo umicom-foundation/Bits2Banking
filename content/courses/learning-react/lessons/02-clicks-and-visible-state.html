@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-react/lessons/02-clicks-and-visible-state.html
+
+PURPOSE:
+Teach Clicks and visible state through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clicks and visible state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Clicks and visible state</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-components-and-inputs.html">Previous: Components and their inputs</a></p>
+<h2>What you will learn</h2>
+<p>State is information a component remembers between renders. Rendering means calculating what its screen should show. An event handler is a function called in response to an action such as a click. We will make a study counter that changes visibly, then explain its limits.</p>
+<h2>Replace the practice component</h2>
+<p>Use the same prepared editor as lesson 1. This complete example replaces App.js:</p>
+<pre><code class="language-jsx">import { useState } from &#x27;react&#x27;;
+
+export default function App() {
+  const [completed, setCompleted] = useState(0);
+  function recordExercise() {
+    setCompleted(previous =&gt; previous + 1);
+  }
+  return (
+    &lt;main&gt;
+      &lt;h1&gt;Practice counter&lt;/h1&gt;
+      &lt;p aria-live=&quot;polite&quot;&gt;Completed: {completed}&lt;/p&gt;
+      &lt;button onClick={recordExercise}&gt;Record one exercise&lt;/button&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+<p><code>useState(0)</code> supplies an initial value and a function that requests an update. The arrow function receives the previous value and returns the next. Pass <code>recordExercise</code> to <code>onClick</code>; writing <code>recordExercise()</code> there would call it during rendering instead of waiting for a click. <code>aria-live</code> lets assistive technology announce the changed text without moving keyboard focus.</p>
+<h2>Trace one interaction</h2>
+<pre><code class="language-text">Initial state 0 -&gt; click -&gt; updater receives 0 -&gt; next state 1 -&gt; text becomes 1</code></pre>
+<p>Click three times and expect 3. Press Tab to focus the button, then activate it with the keyboard. Reload the example and observe that the count returns to 0. Component state alone is not saved progress. Persistent learning records need an explicit service and storage policy.</p>
+<h2>Exercise and answer</h2>
+<p>Add a Reset button whose handler calls <code>setCompleted(0)</code>. Check 0, one click, reset, another click. Expect 0, 1, 0, 1. A button&#x27;s appearance is not evidence that its event is connected; observing the resulting state is the essential check.</p>
+<h2>Connect this to Umicom</h2>
+<p>In the activity-window source, find <code>Completed</code>, its signal connection and <code>BtbActivityAdvance</code>. The C example applies a bounded shared rule before updating a label. Our React counter deliberately teaches local state only. A future web client should call the shared engine for authoritative progress, show failures and avoid showing success before the engine accepts the change. If the screen repeatedly rerenders, first look for an accidentally called handler in JSX.</p>
+<p><a href="../../learning-javascript/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/window.c">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/window.c</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://react.dev/learn">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-react/02-clicks-and-visible-state.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-components-and-inputs.html">Previous: Components and their inputs</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

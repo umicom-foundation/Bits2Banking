@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-linux-from-scratch/lessons/02-a-c-program-meets-the-host.html
+
+PURPOSE:
+Teach A C program meets the host through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A C program meets the host | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A C program meets the host</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-what-makes-a-linux-system.html">Previous: What makes a Linux system</a> · <a href="03-plan-the-toolchain-and-root-filesystem.html">Next: Plan the toolchain and root filesystem</a></p>
+<h2>A small experiment with a clear boundary</h2>
+<p>This lesson runs on an existing Linux system. It does not require root privileges, replace a kernel or create a boot image. A terminal accepts commands; the compiler builds a program; the program returns an exit status to the terminal&#x27;s shell.</p>
+<p>Save this original example as hello.c in a directory you choose:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    if (puts(&quot;Hello from a user-space C program.&quot;) == EOF)
+        return 1;
+    return 0;
+}</code></pre>
+<p>stdio.h declares standard input/output functions. puts writes the text followed by a newline. EOF is the failure result we check here. Returning zero reports success by this program&#x27;s convention. The executable still depends on the host environment and libraries used to build it.</p>
+<h2>Optional commands in a Linux shell</h2>
+<pre><code class="language-sh">cc -std=c17 -Wall -Wextra -Wpedantic hello.c -o hello
+./hello
+printf &#x27;exit status: %s\n&#x27; &quot;$?&quot;</code></pre>
+<p>Run the commands one at a time and stop on a compiler error. This sample uses C17-compatible syntax so it can illustrate a host baseline before the C23 toolchain is built. Umicom&#x27;s main source standard remains C23. The expected message is the string above, followed by exit status 0 when output succeeds.</p>
+<h2>Follow the layers</h2>
+<ol>
+<li>Source contains the requested behaviour.</li>
+<li>Compilation and linking produce an executable for a target environment.</li>
+<li>The operating system loads the program and its required runtime components.</li>
+<li>The C library and system interfaces cooperate to write output.</li>
+</ol>
+<p>The related Framework activity console example shows a real application entry point. Read its README and build configuration to identify dependencies before trying it in a newly constructed system.</p>
+<h2>Exercise</h2>
+<p>Why might copying hello to another machine fail, even though both machines run Linux? List two causes.</p>
+<h2>Explained answer</h2>
+<p>The processor architecture may differ, or the expected runtime loader/libraries may be absent or incompatible. File permissions can also prevent execution. A useful report records the compiler, target, linkage and observed error rather than only saying Linux does not work.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="01-what-makes-a-linux-system.html">Previous: What makes a Linux system</a> · <a href="03-plan-the-toolchain-and-root-filesystem.html">Next: Plan the toolchain and root filesystem</a></p>
+<p><a href="../../../lessons/08-system-administration/building-linux-from-scratch/02-a-c-program-meets-the-host.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/console.c">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://www.linuxfromscratch.org/lfs/view/12.4/">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

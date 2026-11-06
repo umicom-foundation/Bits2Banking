@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-bitcoin/lessons/02-hashes-signatures-and-ownership.html
+
+PURPOSE:
+Teach Hashes, signatures and ownership through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hashes, signatures and ownership | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Hashes, signatures and ownership</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-payments-and-shared-records.html">Previous: Payments and shared records</a> · <a href="03-confirmations-and-a-reading-path.html">Next: Confirmations and a reading path</a></p>
+<h2>Three different questions</h2>
+<p>The previous lesson described amounts and outputs. Now ask: did the bytes change, was the required spending authorisation supplied, and is the spend still available? These are different checks.</p>
+<p>A hash is a fixed-size digest calculated from bytes. The same bytes under the same algorithm produce the same digest. A hash is not encryption: there is no decryption key that recovers the message. A digital signature uses a private key to authorise a message and can be checked with a corresponding public key. A signature check is not a check that the payment has sufficient funds.</p>
+<pre><code class="language-text">data integrity        authorisation        ledger state
+hash the bytes        check signature      input is unspent
+      \                    |                    /
+       \-------------------+-------------------/
+                   all relevant rules</code></pre>
+<h2>Why bytes matter</h2>
+<p>The text 12 and the text 012 look like the same number to a person. They are different byte sequences. Before independent computers can hash or sign a record consistently, they need an exact encoding: field order, integer sizes, byte order and rules for omitted fields. This encoding is called serialization.</p>
+<p>Use a simple paper exercise: write payment, recipient and amount on separate lines. Reorder the lines. The meaning might look similar, but the stored bytes changed. This is why later implementation lessons define an encoding instead of hashing an in-memory C structure, which can include padding bytes.</p>
+<p>Never put a real private key or wallet recovery phrase into a lesson, screenshot or bug report. For reading exercises, labels such as key-A are enough. When practical wallet exercises arrive, use an isolated practice network and disposable keys.</p>
+<h2>Exercise</h2>
+<p>A node receives a correctly signed transaction that spends an output already consumed by an earlier accepted transaction. Should it accept it? Does computing a SHA-256 digest change the answer?</p>
+<h2>Explained answer</h2>
+<p>No. The signature may establish authorisation by the required key, but the output is unavailable. Hashing gives the transaction an identity; it does not change ledger state. In Umicom, reuse cryptographic primitives through Framework while keeping transaction rules explicit. An application must not label an item verified merely because a digest was calculated.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="01-payments-and-shared-records.html">Previous: Payments and shared records</a> · <a href="03-confirmations-and-a-reading-path.html">Next: Confirmations and a reading path</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/introduction-to-bitcoin/02-hashes-signatures-and-ownership.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://bitcoin.org/bitcoin.pdf">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

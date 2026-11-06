@@ -1,0 +1,54 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-bitcoin-in-c/lessons/03-assembly-after-a-c-reference.html
+
+PURPOSE:
+Teach Assembly after a C reference through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assembly after a C reference | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Assembly after a C reference</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-bounded-little-endian-reader.html">Previous: A bounded little-endian reader</a></p>
+<h2>Optimise only a defined operation</h2>
+<p>Assembly instructions are specific to a processor architecture and calling convention. A calling convention defines where arguments and results go and which registers a function must preserve. Write a correct C reference and expected results before substituting Assembly.</p>
+<p>Consider this illustrative function that returns the first four bytes of a valid buffer as a little-endian number. The caller must already have validated the pointer and four-byte span. The snippet is GNU assembler AT&amp;T syntax for the x86-64 System V ABI on Linux, not Windows x64 or RISC-V.</p>
+<pre><code class="language-asm">.text
+.globl read_word_unchecked
+.type read_word_unchecked, @function
+read_word_unchecked:
+    movl (%rdi), %eax
+    ret
+.size read_word_unchecked, .-read_word_unchecked
+.section .note.GNU-stack,&quot;&quot;,@progbits</code></pre>
+<p>In this ABI the first pointer argument arrives in rdi. movl loads 32 bits into eax, where a 32-bit result is returned. x86-64 stores this integer in little-endian order. The ret instruction returns to the caller. This function performs no length check; its name deliberately says unchecked. The <a href="https://gitlab.com/x86-psABIs/x86-64-ABI">x86-64 psABI project</a> maintains the calling-convention specification.</p>
+<h2>A comparison plan</h2>
+<ol>
+<li>Keep the bounded C reader from lesson 2 as the public interface.</li>
+<li>Compare only after validation succeeds; never let an Assembly shortcut bypass the span check.</li>
+<li>Prepare vectors with zero, high bits set and differing byte orders.</li>
+<li>Compare C and Assembly results under the same architecture and ABI.</li>
+<li>Measure a realistic workload before deciding the Assembly is worthwhile. A compiler may already emit the same load.</li>
+</ol>
+<h2>Exercise</h2>
+<p>Why is pasting this function into a Windows build incorrect? Why should a faster hash implementation still be checked against known answers?</p>
+<h2>Explained answer</h2>
+<p>Windows x64 normally passes the first pointer argument in a different register and uses different object-format conventions. Matching an architecture name is not enough. A fast hash that produces a wrong digest is incompatible; performance never replaces correctness. Framework should own reviewed optimisations and portable fallbacks so applications share the same behaviour.</p>
+<p>The opening module stops at bounded parsing and an Assembly comparison design. It does not implement Bitcoin mining, signatures, networking or a spendable cryptocurrency.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-bounded-little-endian-reader.html">Previous: A bounded little-endian reader</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/building-bitcoin-in-c/03-assembly-after-a-c-reference.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://developer.bitcoin.org/reference/block_chain.html">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

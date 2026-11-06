@@ -1,0 +1,54 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-blockchain-from-scratch/lessons/03-history-replay-and-recovery.html
+
+PURPOSE:
+Teach History, replay and recovery through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>History, replay and recovery | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>History, replay and recovery</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-validate-before-changing-state.html">Previous: Validate before changing state</a></p>
+<h2>Memory is not durable storage</h2>
+<p>The previous function changes a value in memory. A process crash loses that value unless a durable record survives. Replay reconstructs state by reading accepted events in order and applying the same rules again.</p>
+<pre><code class="language-text">validated proposal
+       |
+       v
+durable accepted event -&gt; acknowledged result
+       |
+       v
+replay events -&gt; rebuilt state -&gt; compare checkpoint</code></pre>
+<p>This diagram expresses a requirement, not a complete disk algorithm. Appending bytes, flushing an application buffer, asking the operating system to sync, and surviving power loss are different guarantees. A practical implementation must state which it provides on each platform.</p>
+<h2>Design an interruption exercise</h2>
+<p>Imagine a record containing length, sequence, payload and digest. Stop the writer halfway through the payload. On restart, the reader must distinguish a complete valid record from an incomplete tail. It must not silently interpret partial bytes as another valid event.</p>
+<ol>
+<li>Define a maximum record length before allocating memory.</li>
+<li>Validate the length and sequence before applying the payload.</li>
+<li>Check the digest over the documented bytes.</li>
+<li>Apply each accepted event once, using a stable event identifier to detect duplicates.</li>
+<li>Report damaged or incomplete data explicitly and preserve it for recovery analysis.</li>
+</ol>
+<p>For product integration, use Framework&#x27;s persistence and transactional facilities after inspecting their contracts. Do not create a second unreviewed ledger writer inside every application. A teaching file format helps explain requirements; it is not a replacement for proven storage behaviour.</p>
+<h2>Exercise</h2>
+<p>A client times out after submitting event E. It resends E with the same identifier. What should the service return if E was already accepted? What if the same identifier carries different content?</p>
+<h2>Explained answer</h2>
+<p>Return the recorded outcome for the identical accepted event without applying it again. A reused identifier with different content is a conflict to reject and investigate. Timeout means the client does not know the outcome; it does not prove that the server did nothing.</p>
+<h2>Continue the implementation</h2>
+<p>The next modules will add a bounded decoder and integrate Framework hashing, followed by executable crash-recovery exercises. Network consensus and signatures remain separate milestones. The available opening module establishes the byte and state contracts those later parts will depend on.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-validate-before-changing-state.html">Previous: Validate before changing state</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/building-blockchain-from-scratch/03-history-replay-and-recovery.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

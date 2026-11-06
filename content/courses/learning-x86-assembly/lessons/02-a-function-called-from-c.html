@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-x86-assembly/lessons/02-a-function-called-from-c.html
+
+PURPOSE:
+Teach A function called from C through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A function called from C | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A function called from C</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-registers-and-instructions.html">Previous: Registers and instructions</a></p>
+<h2>The agreement between caller and function</h2>
+<p>An application binary interface, or ABI, describes rules such as where arguments arrive, where a result is returned and which registers must be preserved. Knowing the instruction set is not enough to call a function correctly.</p>
+<p>Read <code>AddTwoAssembly</code> in the real x86-64 example. It adds two unsigned 32-bit inputs and returns their low 32-bit sum. The source selects these paths:</p>
+<pre><code class="language-text">Windows x86-64:  ECX first input, EDX second input -&gt; EAX result
+System V:       EDI first input, ESI second input -&gt; EAX result</code></pre>
+<p>For inputs 7 and 5, the selected <code>movl</code> copies the first input to EAX. <code>addl</code> adds the second. <code>ret</code> returns control to the caller. It does not itself end the whole application or print the result. This function is a leaf: it does not call another function. It needs no local stack storage.</p>
+<h2>Why platform selection matters</h2>
+<p>Imagine using the System V register choices while a Windows caller supplied arguments in ECX and EDX. The instructions might still assemble, but they would read the wrong values. A successful assembly is therefore different from correct integration.</p>
+<p>Find the source&#x27;s checks for x86-64 and Apple targets. Unsupported targets are rejected explicitly. This example supports Windows COFF and ELF, not every executable format. Read the surrounding example instructions before building; selecting the correct toolchain is part of the exercise.</p>
+<h2>Exercise and answer</h2>
+<p>Make a register table for both supported paths with first input 10 and second input 2. Each path should place 12 in EAX. Then write a C-side check for the function&#x27;s declared interface once you have located its declaration in the example project. The check must use the exact declared types, not a guessed prototype.</p>
+<p>For unsigned 32-bit arithmetic, a low-word result can wrap at the maximum value. That behaviour is not automatically suitable for balances or allocation sizes. A shared Framework service must choose and document overflow behaviour for its domain. Assembly optimisation should preserve that contract, not silently redefine it. Later lessons introduce caller-preserved and callee-preserved registers before using more complex functions.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/examples/learning/assembly/add_x86_64.S">Read the related Umicom example</a>. Path: <code>Umicom-Applications/framework/examples/learning/assembly/add_x86_64.S</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://www.nasm.us/doc/nasm03.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/03-native-code/learning-x86-assembly/02-a-function-called-from-c.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-registers-and-instructions.html">Previous: Registers and instructions</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

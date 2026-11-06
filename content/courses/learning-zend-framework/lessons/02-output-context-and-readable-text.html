@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-zend-framework/lessons/02-output-context-and-readable-text.html
+
+PURPOSE:
+Teach Output context and readable text through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Output context and readable text | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Output context and readable text</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-frameworks-packages-and-laminas.html">Previous: Frameworks, packages and Laminas</a></p>
+<h2>A title should remain a title</h2>
+<p>Continue in the same component exercise. HTML gives special meanings to characters such as <code>&lt;</code> and <code>&amp;</code>. Escaping represents text so the browser reads it as text in the intended context. It is different from validating a business value or checking whether a user may perform an action.</p>
+<p>Save this as <code>page.php</code> beside <code>escape.php</code>:</p>
+<pre><code class="language-php">&lt;?php
+require __DIR__ . &#x27;/vendor/autoload.php&#x27;;
+$escaper = new Laminas\Escaper\Escaper(&#x27;utf-8&#x27;);
+$title = &#x27;Learning &lt;C&gt; &amp; GTK4&#x27;;
+?&gt;
+&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;Practice lesson&lt;/title&gt;
+&lt;main&gt;&lt;h1&gt;&lt;?= $escaper-&gt;escapeHtml($title) ?&gt;&lt;/h1&gt;&lt;/main&gt;
+&lt;/html&gt;</code></pre>
+<p>Start <code>php -S 127.0.0.1:8000</code> in the practice folder and open <code>http://127.0.0.1:8000/page.php</code>. This is a local development server, not deployment configuration. Stop it with Ctrl+C when finished. Expect the heading to visibly include <code>&lt;C&gt;</code> and <code>&amp;</code>. Viewing the response source should show encoded characters in the heading.</p>
+<h2>Choose the correct operation</h2>
+<p>The example places a title between HTML tags. An HTML attribute, JavaScript string, CSS value and URL are different contexts. Laminas supplies distinct escaping operations for them. Do not take <code>escapeHtml</code> as a universal protection function or insert a title directly into script code.</p>
+<h2>Exercise and answer</h2>
+<p>Change the title to <code>A &amp; B &lt;notes&gt;</code> and reload. Expect those characters to appear as ordinary title text. If the browser interprets <code>&lt;notes&gt;</code> as markup, inspect whether the escaped value or the original value was output.</p>
+<h2>Relate it to Umicom</h2>
+<p>Bits2Banking contains both Markdown and HTML views of lessons. Code examples must remain visible as examples, not become executable page markup. The same separation matters when a Framework service produces text that a web client displays: storage, validation and output representation have distinct responsibilities. A transport or UI adapter must not assume trusted formatting simply because the data came from another application. Later modules introduce request handling and dependency injection only after this small rendering boundary is understood.</p>
+<p><a href="../../learning-php/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../learning-php/index.html">Read the related Umicom example</a>. Path: <code>content/courses/learning-php/index.html</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://getlaminas.org/about/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-zend-framework/02-output-context-and-readable-text.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-frameworks-packages-and-laminas.html">Previous: Frameworks, packages and Laminas</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

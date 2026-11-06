@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-laravel/lessons/02-a-view-with-data.html
+
+PURPOSE:
+Teach A view with data through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A view with data | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>A view with data</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-route-and-a-response.html">Previous: A route and a response</a></p>
+<h2>Separate page structure from request handling</h2>
+<p>Continue with the same Laravel project. A view is a presentation template. Blade is Laravel&#x27;s template language. The controller or route chooses data; the view decides how to present it. This separation keeps a long HTML page out of request-dispatch code.</p>
+<p>Create <code>resources/views/lesson.blade.php</code>:</p>
+<pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;Learning library&lt;/title&gt;
+&lt;main&gt;
+  &lt;h1&gt;{{ $title }}&lt;/h1&gt;
+  &lt;p&gt;Read the example, predict its result, then practise.&lt;/p&gt;
+&lt;/main&gt;
+&lt;/html&gt;</code></pre>
+<p>Add a new route to <code>routes/web.php</code>, preserving the previous lesson&#x27;s routes:</p>
+<pre><code class="language-php">Route::get(&#x27;/learning/first-lesson&#x27;, function () {
+    return view(&#x27;lesson&#x27;, [&#x27;title&#x27; =&gt; &#x27;Learning C &amp; GTK4&#x27;]);
+});</code></pre>
+<p><code>view(&#x27;lesson&#x27;, ...)</code> resolves the template&#x27;s logical name; it is not an arbitrary user-supplied filename. The array associates the key title with a value made available as <code>$title</code>. Double braces escape normal text output.</p>
+<p>Start the local server as before and visit <code>/learning/first-lesson</code>. Expect the heading Learning C &amp; GTK4. If Laravel cannot find the view, compare its name with the file path and extension. If title is undefined, check the data key and variable spelling.</p>
+<h2>Exercise and answer</h2>
+<p>Change the title value to <code>Learning &lt;C&gt; &amp; GTK4</code> and reload. The angle brackets should appear as text. Do not switch to raw HTML output to make ordinary text display; that changes the trust boundary. Add a second paragraph of your own explanation and confirm it appears without changing the route.</p>
+<h2>Connect to Umicom</h2>
+<p>Compare a Bits2Banking course index and its <code>course.json</code>. The manifest carries ordered course data, while the HTML presents navigation. A future web service can follow that separation without becoming a second source of truth for course ordering or Framework rules. The two routes here do not store learner progress, authenticate users or install a Studio module. Those features require explicit data models, permissions and tests, and are later topics in the course outline.</p>
+<p><a href="../../learning-php/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../learning-html/index.html">Read the related Umicom example</a>. Path: <code>content/courses/learning-html/index.html</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://laravel.com/framework/docs/12.x/routing">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-laravel/02-a-view-with-data.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-route-and-a-response.html">Previous: A route and a response</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

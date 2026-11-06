@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-linux-development/lessons/01-your-first-user-space-build.html
+
+PURPOSE:
+Teach Your first user-space build through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your first user-space build | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Your first user-space build</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-processes-output-and-exit-status.html">Next: Processes, output and exit status</a></p>
+<h2>User space comes first</h2>
+<p>Linux is a kernel, the part of a system that manages resources and mediates access to devices. A distribution adds tools, libraries and applications. A normal program runs in user space and asks the operating system for services. Writing such a program is a useful first step before studying kernel development.</p>
+<p>Use a Linux environment with a C compiler installed. The course&#x27;s Learning C lessons explain source files, functions and terminals. Open a terminal in a practice folder that you own. <code>pwd</code> shows the current directory; <code>ls</code> lists its entries. These are shell commands, not C statements.</p>
+<h2>Build a complete small program</h2>
+<p>Save this as <code>hello.c</code>:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    puts(&quot;Umicom learning workspace&quot;);
+    return 0;
+}</code></pre>
+<p>Run these commands one at a time:</p>
+<pre><code class="language-sh">cc -std=c17 -Wall -Wextra hello.c -o hello
+./hello
+echo $?</code></pre>
+<p>The example uses the C17 subset supported by common system compilers; Umicom&#x27;s main implementation targets C23. <code>-o hello</code> names the executable. <code>./hello</code> means the file named hello in the current directory. Expect the message and then status <code>0</code>. Read any compiler diagnostic before running an older executable left from a previous successful build.</p>
+<h2>Exercise and answer</h2>
+<p>Change only the message and rebuild. Expect the new message. Then remove the closing quote in your practice copy and compile. Expect a diagnostic and a nonzero compiler status. Restore the quote. A failed compile does not prove that the previous executable disappeared.</p>
+<h2>Connect to Umicom</h2>
+<p>Open the activity project&#x27;s <code>console.c</code> and CMake file. It calls a shared rule and uses a build description to locate its dependencies. Your one-file example teaches the individual compiler step; the larger example teaches reproducible dependency management. Neither exercise installs an operating system or changes a boot disk. Later modules distinguish the Umicom OS user-space components from the freestanding Umicom Kernel.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/console.c">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/console.c</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://docs.kernel.org/process/howto.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/08-system-administration/learning-linux-development/01-your-first-user-space-build.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-processes-output-and-exit-status.html">Next: Processes, output and exit status</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

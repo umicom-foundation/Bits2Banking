@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/05-requests-are-bytes-not-packets.html
+
+PURPOSE:
+Teach Requests are bytes, not packets through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Requests are bytes, not packets | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Requests are bytes, not packets</h1>
+<p><a href="../index.html">Course contents</a> · <a href="04-framing-errors-and-exercises.html">Previous: Recognise complete requests and honest results</a> · <a href="06-buffer-capacity-and-partial-input.html">Next: Buffer capacity and partial input</a></p>
+<h2>Start after the existing four lessons</h2>
+<p>The earlier lessons traced requests, routes, ownership and framing errors. Now examine how bytes arrive. A TCP connection is an ordered byte stream. One receive call can return part of a request, one complete request, or bytes from more than one request. Network packet boundaries are not application message boundaries.</p>
+<p>An HTTP/1.1 request contains a request line, header fields, an empty line and sometimes a body. The exact framing rules decide where a message ends. The following is a readable illustration; each displayed line ends with carriage return and line feed bytes, written \r\n in C.</p>
+<pre><code class="language-text">GET /api/health HTTP/1.1
+Host: 127.0.0.1:8080
+</code></pre>
+<h2>Trace a split receive</h2>
+<ol>
+<li>First receive: GET /api/he</li>
+<li>Second receive: alth HTTP/1.1 followed by part of a header.</li>
+<li>Third receive: the rest of the header and the empty line.</li>
+<li>Only now can a parser conclude that these headers are complete.</li>
+</ol>
+<p>Do not search for a zero terminator in arbitrary received bytes unless you placed one within the allocated buffer. Track how many bytes are present. Place upper bounds on request-line length, header size, body size and time spent waiting. A peer that sends one byte very slowly should not hold unlimited resources forever.</p>
+<h2>Exercise</h2>
+<p>A server calls receive once, reads 12 bytes and assumes they contain the whole request. What happens when the request arrives in three pieces? What should the connection state retain?</p>
+<h2>Explained answer</h2>
+<p>It might parse incomplete data as a command or reject a legitimate request unpredictably. Retain buffered byte count, parser state, remaining capacity and a deadline. A later receive continues parsing from the same connection state. Framework owns this machinery; a route handler should receive a parsed request under a documented contract.</p>
+<h2>Reference boundary</h2>
+<p>RFC 9112 defines HTTP/1.1 message syntax and framing. A teaching request example is not the complete specification. Conflicting length information, malformed headers and unsupported transfer encodings require explicit handling before this server can safely accept untrusted traffic.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="04-framing-errors-and-exercises.html">Previous: Recognise complete requests and honest results</a> · <a href="06-buffer-capacity-and-partial-input.html">Next: Buffer capacity and partial input</a></p>
+<p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/05-requests-are-bytes-not-packets.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/examples/web/local_service.c">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc9112.html">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/financial-instruments-pricing/lessons/03-framework-pricing-and-evidence.html
+
+PURPOSE:
+Teach Framework pricing and comparison evidence through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Framework pricing and comparison evidence | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Framework pricing and comparison evidence</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-one-price-three-languages.html">Previous: One price in C, C++ and Java</a></p>
+<h2>From a calculation to a reusable service</h2>
+<p>A successful sample calculation is only a beginning. Different applications need the same convention, validation and error handling. Framework owns that reusable behaviour. Bank, Trader and TMS supply contracts and display results; they should not each invent their own discount formula.</p>
+<p>Open the related source file and find umi_quant_discount_curve_present_value. Read its public header under include/umicom/finance/quant/discount_curve.h. A public header declares what callers can request. The implementation shows how the request is handled.</p>
+<pre><code class="language-text">application: amount, rate, days
+              |
+              v
+Framework present-value function
+              |
+              v
+Framework discount-factor function
+              |
+              v
+status + result -&gt; application display and evidence</code></pre>
+<p>The present-value function takes an output pointer. That means the caller owns a location in memory into which a successful result is written. It returns a status separately. Read the status before using the output; do not use a previous value when a new request fails.</p>
+<h2>Build a comparison sheet</h2>
+<ol>
+<li>Record amount 1050, rate 0.05, days 365 and the continuous-compounding convention.</li>
+<li>Record the C, C++ and Java results from the preceding lesson with more than two decimal places if comparing arithmetic.</li>
+<li>Record the Framework revision, input values and result when you later run a Framework consumer.</li>
+<li>Compare with a declared tolerance, for example absolute difference below 0.000001 for this small example. This tolerance is an exercise choice, not a general financial precision policy.</li>
+<li>Investigate disagreements in assumptions before changing a formula.</li>
+</ol>
+<p>A double is an approximate number. Exact equality between independent floating-point implementations is often an unsuitable comparison. For accounting, exact minor units or decimal arithmetic and a stated rounding rule are separate requirements. Also inspect extreme inputs: exp can overflow even when its input is finite. Callers and service contracts must agree how a non-finite output is reported; do not infer safety merely from an input check.</p>
+<h2>Exercise</h2>
+<p>Prepare a test table without running code: zero time; zero rate; negative days; missing output pointer; a very negative finite rate; and a positive rate with a negative cashflow. Which cases are business choices and which are invalid inputs?</p>
+<h2>Explained answer</h2>
+<p>Zero time and zero rate preserve the amount. The inspected Framework routine rejects negative days and a null output pointer. A negative cashflow can represent a payment and is not inherently invalid. Negative rates can be meaningful, but sufficiently extreme inputs can produce overflow: record this boundary as a required numerical check. Never change a failing reference value simply to make all languages agree.</p>
+<h2>Where this course goes next</h2>
+<p>Before coupon bonds, add a schedule of dated payments. Before options, learn payoffs and uncertainty. Before calibration, learn how a model&#x27;s parameters are fitted to observations. Each step changes the questions the software must answer; none is supplied automatically by one exponential formula.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-one-price-three-languages.html">Previous: One price in C, C++ and Java</a></p>
+<p><a href="../../../lessons/07-practical-domains/financial-instruments-pricing/03-framework-pricing-and-evidence.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/src/finance/quant/discount_curve.c">Source and context</a>. This public revision matches the source inspected for this lesson.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

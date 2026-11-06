@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-rust/lessons/01-values-and-a-first-program.html
+
+PURPOSE:
+Teach Values and a first program through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Values and a first program | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Values and a first program</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-borrow-a-title.html">Next: Borrow a title</a></p>
+<h2>Begin with a small calculation</h2>
+<p>A compiler translates source and checks language rules. Rust uses explicit types and checks many ownership rules before a program runs. This does not mean every Rust program is correct: business rules and external interfaces still need tests.</p>
+<p>Install the Rust toolchain using the official Rust Book&#x27;s first-steps instructions for your operating system. Open a new terminal and run <code>rustc --version</code>. If the command is missing, resolve the installation or terminal path before continuing. Save this complete program as <code>progress.rs</code> in a practice folder:</p>
+<pre><code class="language-rust">fn main() {
+    let completed: u32 = 3;
+    let target: u32 = 5;
+    let remaining = target - completed;
+    println!(&quot;Remaining exercises: {}&quot;, remaining);
+}</code></pre>
+<p><code>fn</code> introduces a function. <code>main</code> is the starting function. <code>let</code> introduces a binding. <code>u32</code> is an unsigned 32-bit integer type. The compiler infers the type of remaining from its expression. <code>println!</code> is a macro invocation that prints a formatted line; <code>{}</code> marks where the value is placed.</p>
+<p>Compile with <code>rustc progress.rs</code>. On PowerShell run <code>./progress.exe</code>; on Linux run <code>./progress</code>. Expect <code>Remaining exercises: 2</code>. Stop if compilation fails, because an older executable is not evidence that the new source worked.</p>
+<h2>Exercise</h2>
+<p>Change completed to 5 and predict the printed line before compiling again. Then consider completed=6 on paper. Can an unsigned value represent the intended remaining count?</p>
+<h2>Explained answer</h2>
+<p>With completed=5, expect <code>Remaining exercises: 0</code>. With completed=6, the mathematical result would be minus one, which <code>u32</code> cannot represent. This is called underflow. A domain check must establish completed &lt;= target before calculating the difference. A later lesson will express that possible failure with <code>Result</code>; fitting each input into a type alone does not make every calculation valid.</p>
+<h2>Compare with Umicom</h2>
+<p>Read the maximum-count promise in the activity header. Rust syntax can express a similar exercise, but duplicating a production rule in every language client would create inconsistent sources of truth. The Framework remains the shared engine. This course teaches Rust and future integration concepts; it does not claim a Rust binding to every Umicom module exists.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/activity.h">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/activity.h</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://doc.rust-lang.org/book/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/03-native-code/learning-rust/01-values-and-a-first-program.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-borrow-a-title.html">Next: Borrow a title</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

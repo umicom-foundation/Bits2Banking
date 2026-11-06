@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-bitcoin-source-code/lessons/02-inputs-outputs-and-data-types.html
+
+PURPOSE:
+Teach Inputs, outputs and data types through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inputs, outputs and data types | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Inputs, outputs and data types</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-source-map-and-a-fixed-version.html">Previous: A source map and a fixed version</a> · <a href="03-reading-rejection-paths.html">Next: Reading rejection paths</a></p>
+<h2>Give every symbol a plain-language meaning</h2>
+<p>Open src/primitives/transaction.h at v28.0. Find COutPoint, CTxIn and CTxOut. An outpoint identifies an earlier transaction output. An input refers to earlier output data; an output describes an amount and spending condition. Read the actual declaration before assuming every field is a simple integer.</p>
+<p>Use this original simplified drawing, which omits real fields and is not a wire-format specification:</p>
+<pre><code class="language-text">transaction
+  inputs  -&gt; [earlier transaction identity, output position, authorisation data]
+  outputs -&gt; [amount, spending condition]</code></pre>
+<p>A collection, such as a vector, stores a sequence of items. Its position is not the same as a globally unique identifier. A reference to output position 1 means an output within a particular earlier transaction; it does not mean the second output in the entire network.</p>
+<h2>Trace an example</h2>
+<ol>
+<li>Draw an earlier transaction T with two outputs, numbered 0 and 1.</li>
+<li>Give output 0 a value of 30 and output 1 a value of 10.</li>
+<li>Draw a new input referencing T, position 1.</li>
+<li>Confirm that this input refers to 10, not 30 or the total 40.</li>
+<li>Record that this drawing alone does not establish whether the output is unspent or authorised.</li>
+</ol>
+<p>When translating an idea into C, do not flatten away ownership and bounds. Every collection needs a length; every index must be checked; every reference needs a clear lifetime. The linked Umicom hashing header demonstrates explicit byte counts and fixed digest sizes, a useful contrast with unbounded text copying.</p>
+<h2>Exercise</h2>
+<p>A parser receives an output index of 3 for a transaction containing three outputs. Is the index valid? Why can a correct hash not repair the problem?</p>
+<h2>Explained answer</h2>
+<p>No: positions are 0, 1 and 2. The parser or validation layer must reject the reference according to its contract. Hashing identifies the invalid bytes as readily as valid bytes; it does not make an out-of-range access safe.</p>
+<h2>Next step</h2>
+<p>Keep the data diagram beside you when reading CheckTransaction. Distinguish checks that use only this transaction from those needing previous ledger state. Avoid treating a lesson diagram as a replacement for the upstream serialization rules.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-source-map-and-a-fixed-version.html">Previous: A source map and a fixed version</a> · <a href="03-reading-rejection-paths.html">Next: Reading rejection paths</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/introduction-to-bitcoin-source-code/02-inputs-outputs-and-data-types.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://github.com/bitcoin/bitcoin/tree/v28.0">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

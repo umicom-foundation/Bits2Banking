@@ -1463,3 +1463,13 @@ Preserved alongside Learning C. It is not an additional course you must complete
 9. [Keep several values in an array](../lessons/c-from-the-beginning/09-arrays-and-valid-positions.md)
 10. [Let a function read memory you still own](../lessons/c-from-the-beginning/10-pointers-and-borrowing.md)
 11. [Connect borrowed memory to bounded system input](../lessons/c-from-the-beginning/11-bounded-spans-and-rejection.md)
+
+
+## Extended subject guide
+
+[Choose a subject and its written course contents](course-series.md). The guide includes new web, data, Assembly, Linux, framework and financial-system courses, plus continuations of existing courses. Prerequisites keep these routes separate and sequential.
+
+
+## Finance, Bitcoin and systems
+
+Follow the [ordered course routes](../courses/finance-and-systems.html) for pricing in C, C++ and Java; Bitcoin concepts and source; blockchain construction; Calypso integration; Linux systems; and a web server in C. Each route lists prerequisites and available lessons.

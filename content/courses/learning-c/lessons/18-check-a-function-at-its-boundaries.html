@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/lessons/18-check-a-function-at-its-boundaries.html
+
+PURPOSE:
+Teach Check a function at its boundaries through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check a function at its boundaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Check a function at its boundaries</h1>
+<p><a href="../index.html">Course contents</a> · <a href="17-bits-and-hexadecimal.html">Previous: Represent bytes with bits and hexadecimal</a> · <a href="08-connect-to-systems-lessons.html">Next: Move from small programs to OS and Kernel source</a></p>
+<h2>Start with a question</h2>
+<p>Complete the lessons on functions, pointers and structures first. Suppose a learning application counts completed exercises, with a maximum of 1000. What happens at 999? At 1000? A boundary is a point where a rule changes. Checking only a normal value such as 5 leaves these important cases unexplored.</p>
+<p>In the real activity example, <code>BtbActivityAdvance</code> returns a status and writes through an output pointer. A status is a named result explaining whether an operation succeeded. The pointer identifies storage supplied by the caller. On failure, that storage must remain unchanged.</p>
+<h2>Trace the existing implementation</h2>
+<p>Open <code>labs/native/framework-activity/activity.h</code> and <code>activity.c</code>. Find the declaration, the definition and the three return paths. Read this table alongside the code; do not edit the shared checkout during the exercise.</p>
+<pre><code class="language-text">Current  Output storage     Status                 New output
+0        valid, starts 42   OK                     1
+999      valid, starts 42   OK                     1000
+1000     valid, starts 42   CAPACITY_EXCEEDED      42
+1001     valid, starts 42   INVALID_ARGUMENT      42
+0        null              INVALID_ARGUMENT      no write</code></pre>
+<p>The value 42 is a sentinel: a recognisable starting value used to detect an unwanted write. It has no business meaning. <code>1000U</code> is an unsigned integer constant. <code>*next</code> accesses the caller&#x27;s object; checking <code>next</code> before dereferencing it avoids accessing a null pointer.</p>
+<h2>Read a regression check</h2>
+<pre><code class="language-c">unsigned next = 42U;
+UmiStatus status = BtbActivityAdvance(1000U, &amp;next);
+assert(status == UMI_STATUS_CAPACITY_EXCEEDED);
+assert(next == 42U);</code></pre>
+<p>This is a fragment for the existing test environment, with <code>activity.h</code> and <code>&lt;assert.h&gt;</code> included. It is not a complete standalone program. The first assertion checks the reported result; the second checks the promised lack of mutation. Read <code>test_activity.c</code> to find how a complete test is arranged. Ordinary <code>assert</code> checks can be disabled by <code>NDEBUG</code>, so understand the build configuration before treating them as always active.</p>
+<h2>Exercise and explanation</h2>
+<p>Predict the result for 998 and a valid output object. The answer is OK with 999. Then explain why returning OK with 1001 at the upper boundary would be a defect even if the window displays a number. A displayed result must satisfy the shared rule. If a check fails, record input, expected result and observed result before changing code. This makes the repair reproducible rather than a guess.</p>
+<p><a href="../../learning-computer-architecture/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/activity.c">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/activity.c</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://en.cppreference.com/w/c/language.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/learning-c/18-check-a-function-at-its-boundaries.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="17-bits-and-hexadecimal.html">Previous: Represent bytes with bits and hexadecimal</a> · <a href="08-connect-to-systems-lessons.html">Next: Move from small programs to OS and Kernel source</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

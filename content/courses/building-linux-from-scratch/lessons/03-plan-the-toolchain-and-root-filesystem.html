@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-linux-from-scratch/lessons/03-plan-the-toolchain-and-root-filesystem.html
+
+PURPOSE:
+Teach Plan the toolchain and root filesystem through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plan the toolchain and root filesystem | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Plan the toolchain and root filesystem</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-c-program-meets-the-host.html">Previous: A C program meets the host</a></p>
+<h2>Separate the builder from the result</h2>
+<p>A toolchain is the compiler, assembler, linker and related components used to create programs. Build identifies the machine doing the compilation; host identifies where the resulting program will run; target is also relevant when that program is itself a compiler. These names become important when constructing tools for another environment.</p>
+<p>A root filesystem is the directory tree a running system sees starting at /. It includes programs, libraries and configuration. It is not just the kernel image. A sysroot gives build tools a controlled view of target headers and libraries so they do not accidentally use unrelated host files.</p>
+<pre><code class="language-text">existing Linux host
+    -&gt; temporary tools
+    -&gt; target headers and libraries
+    -&gt; base programs and configuration
+    -&gt; bootable image and isolated boot verification</code></pre>
+<h2>Prepare a reproducibility notebook</h2>
+<ol>
+<li>Select one book edition and record its URL.</li>
+<li>Check that edition&#x27;s host requirements before downloading package sources.</li>
+<li>Record package versions and verified source checksums.</li>
+<li>Record the target architecture and intended virtual-machine environment.</li>
+<li>Keep configure, build and check output in separate dated logs.</li>
+<li>Stop at a failed prerequisite instead of building later layers on an unknown state.</li>
+</ol>
+<p>This opening course intentionally gives no disk-formatting or bootloader-install command. Those operations require an exact device and image plan. A VM image is an appropriate later exercise, but even an image workflow needs backups and verified paths.</p>
+<h2>Exercise</h2>
+<p>A program builds because it finds a library in the host&#x27;s /usr directory, but that library is missing from the target root filesystem. What went wrong, and what should the build evidence record?</p>
+<h2>Explained answer</h2>
+<p>The build used an undeclared host dependency. Record the actual include/library paths and target dependencies, then correct the toolchain/sysroot configuration. Do not fix it by copying arbitrary host directories into the image. Umicom OS packaging should make its required Framework and GTK runtime versions explicit and verify them in the intended runtime environment.</p>
+<h2>Continue</h2>
+<p>The next module is host qualification and VM preparation. Use the existing Umicom OS and Kernel courses to compare their responsibilities while keeping the Linux-based distribution route separate from the native Umicom Kernel route.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-c-program-meets-the-host.html">Previous: A C program meets the host</a></p>
+<p><a href="../../../lessons/08-system-administration/building-linux-from-scratch/03-plan-the-toolchain-and-root-filesystem.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/console.c">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://www.linuxfromscratch.org/lfs/view/12.4/">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

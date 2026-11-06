@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-sql/lessons/01-tables-rows-and-questions.html
+
+PURPOSE:
+Teach Tables, rows and questions through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tables, rows and questions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Tables, rows and questions</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-changes-and-transactions.html">Next: Changes and transactions</a></p>
+<h2>What you will learn</h2>
+<p>A database stores organised information. A table contains rows about one kind of thing; each column describes one property. SQL is a language for asking a database to store, change or retrieve information. Start with a learning catalogue rather than a real bank database.</p>
+<h2>Open a disposable workspace</h2>
+<p>Use the SQLite browser fiddle linked in the reference, or install the SQLite command-line tool from its official site. In a terminal run <code>sqlite3 :memory:</code>. The special name creates a temporary database that disappears when that connection closes. A terminal accepts commands typed by you; SQLite then displays its own prompt for SQL. Do not type prompt symbols as part of the commands.</p>
+<pre><code class="language-sql">CREATE TABLE lesson (
+  id INTEGER PRIMARY KEY,
+  title TEXT NOT NULL,
+  minutes INTEGER NOT NULL CHECK (minutes &gt; 0)
+);
+INSERT INTO lesson VALUES (1, &#x27;Finding a file&#x27;, 12);
+INSERT INTO lesson VALUES (2, &#x27;Reading a C program&#x27;, 20);
+SELECT title, minutes FROM lesson
+WHERE minutes &lt;= 15 ORDER BY id;</code></pre>
+<p>Enter the statements in order. A semicolon ends a statement. <code>PRIMARY KEY</code> gives each row a distinct identity. <code>TEXT</code> stores characters. <code>NOT NULL</code> requires a value; it does not reject an empty string. <code>CHECK</code> rejects a row whose duration is not positive. Single quotes delimit text values.</p>
+<h2>Read the result</h2>
+<p>The question asks for two columns from lessons taking at most 15 minutes. Expect one row: <code>Finding a file</code>, <code>12</code>. <code>WHERE</code> selects rows; <code>ORDER BY</code> makes their order explicit. A database does not promise the same visible order just because rows were inserted in that order.</p>
+<pre><code class="language-text">Stored rows: 1 (12 minutes), 2 (20 minutes)
+Condition:  minutes &lt;= 15
+Result:    row 1 only</code></pre>
+<h2>Exercise and answer</h2>
+<p>Insert a third row called <code>Opening a project</code> lasting 15 minutes. Use id 3, then repeat the query. Expect rows 1 and 3. Try inserting another row with id 3: the key rejects it. Use a fresh id for a genuinely new lesson, rather than removing the constraint.</p>
+<h2>Connect this to Umicom</h2>
+<p>The linked Framework architecture lesson distinguishes shared data services from application screens. Later, a screen can request catalogue rows through such a service. This exercise creates a separate toy table and does not change an Umicom database. If the prompt waits for more input, look for a missing quote or semicolon. Leave SQLite with <code>.quit</code> when finished.</p>
+<p><a href="../../learning-computer-architecture/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../framework-and-finance/framework-boundaries/lessons/shared-services.html">Read the related Umicom example</a>. Path: <code>content/courses/framework-and-finance/framework-boundaries/lessons/shared-services.html</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://www.sqlite.org/quickstart.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-sql/01-tables-rows-and-questions.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-changes-and-transactions.html">Next: Changes and transactions</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

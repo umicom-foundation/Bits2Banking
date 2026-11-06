@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-pinescript/lessons/02-live-bars-and-confirmed-values.html
+
+PURPOSE:
+Teach Live bars and confirmed values through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live bars and confirmed values | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Live bars and confirmed values</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-chart-and-a-price-series.html">Previous: A chart and a price series</a></p>
+<h2>Why the last point can move</h2>
+<p>The previous lesson used completed sample bars. During an open market interval, new observations can change the current bar&#x27;s price. An indicator can therefore show a different value later in the same bar. Historical bars and an unfinished real-time bar are not equivalent evidence.</p>
+<p>Pine&#x27;s execution model determines when the script runs and which state is retained. Read the official execution-model guide after tracing this small example. Here we concentrate on a simple rule: calculate the mean on every update, but publish a point only when the current bar is confirmed.</p>
+<h2>Make confirmation visible</h2>
+<p>Save a separate copy of the previous indicator and replace it with:</p>
+<pre><code class="language-pine">//@version=6
+indicator(&quot;Learning: confirmed mean&quot;, overlay=true)
+average = ta.sma(close, 3)
+confirmedAverage = barstate.isconfirmed ? average : na
+plot(confirmedAverage, title=&quot;Confirmed three-bar mean&quot;, color=color.blue,
+     style=plot.style_linebr)</code></pre>
+<p>The conditional expression <code>condition ? first : second</code> chooses its first result when the condition is true and its second result otherwise. <code>barstate.isconfirmed</code> supplies that condition. <code>na</code> means no available value. <code>plot.style_linebr</code> leaves a break where values are missing rather than deliberately joining across the missing sample.</p>
+<p>The moving-average function is called on every calculation. We choose whether to display its result afterward. This keeps the time-series calculation separate from display policy.</p>
+<h2>Trace the same interval twice</h2>
+<pre><code class="language-text">Previous completed closes: 10, 12
+Current bar, still open:   close 15 → mean 37 / 3 → hidden
+Current bar, now complete: close 18 → mean 40 / 3 → displayed</code></pre>
+<p>The expected confirmed mean is about 13.33. Waiting for confirmation delays the information. It does not guarantee a successful trade or prevent every source of changing historical data. Provider corrections, other timeframes and different script logic need separate consideration. This introductory indicator does not request other timeframes or submit orders.</p>
+<p>On a closed market, all visible bars may already be confirmed, so both indicators can look alike. That is not proof that the rule is unused. Compare their logic and use the paper trace when live observations are unavailable. A platform&#x27;s replay and alert facilities are later topics, with their own behaviour to verify.</p>
+<h2>Connect to the native chart model</h2>
+<p>Framework&#x27;s candle-study contract requires increasing candle times and finite price and volume inputs. It also tells consumers to recompute after corrections or timeframe changes. This is a useful design lesson: a chart should explain which observations its values came from. It must not silently label provisional or simulated data as final market evidence.</p>
+<p>This comparison teaches data handling. It does not claim that Umicom executes the Pine script or that the two implementations have matching indicators.</p>
+<h2>Exercise</h2>
+<p>The last completed closes are 6 and 9. An unfinished bar first shows 12 and later closes at 15. Calculate both means. Which value does the confirmed-only script publish for that bar? Why should an automated action not assume that the earlier display was final?</p>
+<h2>Answer and explanation</h2>
+<p>The early mean is (6 + 9 + 12) / 3 = 9. The confirmed mean is (6 + 9 + 15) / 3 = 10. The script hides the early point and publishes 10 after confirmation. Acting on the unfinished point uses information that can change before the interval ends. A future alert or trading lesson must specify its observation timing explicitly.</p>
+<h2>Continue learning</h2>
+<p>Practise inputs, history references and missing values before alerts. Then study simulation assumptions, costs and data quality before any strategy experiment. Keep those exercises separate from connecting a broker account.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/chart/candle_study.h">Read the related Umicom example</a>. Path: <code>Umicom-Applications/framework/include/umicom/chart/candle_study.h</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://www.tradingview.com/pine-script-docs/primer/first-indicator/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="https://www.tradingview.com/pine-script-docs/language/execution-model/">Official Pine execution model</a>.</p>
+<p><a href="../../../lessons/07-practical-domains/learning-pinescript/02-live-bars-and-confirmed-values.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-chart-and-a-price-series.html">Previous: A chart and a price series</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

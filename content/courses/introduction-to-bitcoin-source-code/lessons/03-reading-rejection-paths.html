@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-bitcoin-source-code/lessons/03-reading-rejection-paths.html
+
+PURPOSE:
+Teach Reading rejection paths through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading rejection paths | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Reading rejection paths</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-inputs-outputs-and-data-types.html">Previous: Inputs, outputs and data types</a></p>
+<h2>Follow the failure as carefully as success</h2>
+<p>Open src/consensus/tx_check.cpp at v28.0 and locate CheckTransaction. Read its early-return branches. The function checks transaction-local conditions including nonempty input/output collections, output-value restrictions and repeated input references. Other validation stages provide context-dependent checks.</p>
+<p>An early return stops the function when a condition fails. That can make the successful path easier to read, provided the error carries a useful reason. Do not remove a rejected-condition check merely because a normal sample transaction passes.</p>
+<h2>Build a trace table</h2>
+<p>Use a notebook with columns: proposed input, expected rejection, evidence location, and untested assumptions. Try these fictional cases:</p>
+<pre><code class="language-text">case A: no outputs
+case B: two inputs reference exactly the same previous output
+case C: ordinary-looking values, but the referenced output was spent earlier</code></pre>
+<p>For A and B, identify the relevant local checks in the file. For C, follow callers and the wider state validation; do not claim this one function establishes availability. The boundary between local checks and ledger checks matters when designing a reusable validator.</p>
+<h2>Apply the method to Umicom</h2>
+<p>Open a Framework API with a status return. List invalid input branches, then find tests that cover them. Ask whether the output is left unchanged on failure. Ask whether the caller checks the status. A library can reject bad input correctly while a UI still displays an old successful result.</p>
+<p>These lessons use upstream code as reading material and original exercises. They do not copy Bitcoin Core implementation into Umicom or establish licence compatibility for any later reuse. An implementation change needs its own source review and tests.</p>
+<h2>Exercise</h2>
+<p>Someone proposes: “CheckTransaction returned true, so we can credit the wallet immediately.” Explain the missing reasoning.</p>
+<h2>Explained answer</h2>
+<p>Passing one set of structural checks does not establish script validity, current spendability, inclusion in an accepted block or settlement finality. Name the validation stage that produced a result in logs and UI state. A status such as structurally valid is more accurate than an unexplained verified label.</p>
+<h2>Reading references</h2>
+<p><a href="https://github.com/bitcoin/bitcoin/blob/v28.0/src/primitives/transaction.h">Transaction types at v28.0</a> and <a href="https://github.com/bitcoin/bitcoin/blob/v28.0/src/consensus/tx_check.cpp">transaction checks at v28.0</a> are fixed reading references. Use current maintained releases for any separate operational evaluation.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="02-inputs-outputs-and-data-types.html">Previous: Inputs, outputs and data types</a></p>
+<p><a href="../../../lessons/14-blockchain-ledgers/introduction-to-bitcoin-source-code/03-reading-rejection-paths.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://github.com/bitcoin/bitcoin/tree/v28.0">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

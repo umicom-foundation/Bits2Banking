@@ -81,3 +81,8 @@ Continue with [Umicom Kernel from Scratch](../../../courses/umicom-kernel-from-s
 ---
 
 [Read this lesson in HTML](../../../courses/learning-riscv-assembly/lessons/03-preserving-interrupted-registers.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+
+## Continue learning
+
+[Continue: Trace a leaf function](04-trace-a-leaf-function.md)

@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-zig/lessons/02-return-an-explicit-error.html
+
+PURPOSE:
+Teach Return an explicit error through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Return an explicit error | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Return an explicit error</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-types-and-a-small-check.html">Previous: Types and a small check</a></p>
+<h2>Describe both outcomes</h2>
+<p>Continue after the first Zig test. An error union represents either a successful value or an error. It makes a failure path part of the function&#x27;s type. Save this complete example as <code>checked-progress.zig</code>:</p>
+<pre><code class="language-zig">const std = @import(&quot;std&quot;);
+
+fn remaining(target: u32, completed: u32) error{BeyondTarget}!u32 {
+    if (completed &gt; target) return error.BeyondTarget;
+    return target - completed;
+}
+
+test &quot;valid count&quot; {
+    try std.testing.expectEqual(@as(u32, 2), try remaining(5, 3));
+}
+
+test &quot;reject a count beyond target&quot; {
+    try std.testing.expectError(error.BeyondTarget, remaining(5, 6));
+}</code></pre>
+<p>Run <code>zig test checked-progress.zig</code>. Expect both checks to pass. <code>error{BeyondTarget}</code> names the allowed error set. <code>!u32</code> adds the successful result type. In the first test, the inner <code>try</code> obtains the value or propagates an error. The outer <code>try</code> propagates a failed comparison. In the second test, passing the entire result to <code>expectError</code> checks the rejection itself.</p>
+<h2>Follow the branch</h2>
+<pre><code class="language-text">completed &lt;= target -&gt; subtraction is valid -&gt; return remaining count
+completed &gt; target  -&gt; return BeyondTarget -&gt; no subtraction</code></pre>
+<p>The guard is before subtraction. Checking after an unsafe calculation would be too late. The same order matters in C bounds checks and memory-size calculations.</p>
+<h2>Exercise and answer</h2>
+<p>Add checks for target=0/completed=0 and target=0/completed=1. The first returns zero; the second returns BeyondTarget. Explain why both are needed: zero is a valid boundary, not an automatic error.</p>
+<p>Compare this result with Framework&#x27;s status-based interfaces. Different language syntax can express similar contracts, but a native ABI cannot be guessed from a Zig error union. Future integration requires an explicit C-compatible adapter and ownership rules. This lesson adds no such binding; it teaches how to make a local calculation&#x27;s failure visible and testable.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/activity.c">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/activity.c</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://ziglang.org/documentation/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/03-native-code/learning-zig/02-return-an-explicit-error.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-types-and-a-small-check.html">Previous: Types and a small check</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

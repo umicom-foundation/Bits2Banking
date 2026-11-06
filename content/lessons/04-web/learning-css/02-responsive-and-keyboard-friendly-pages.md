@@ -63,3 +63,8 @@ A narrow browser preview is not a qualified mobile application. Touch targets, o
 ---
 
 [Read this lesson in HTML](../../../courses/learning-css/lessons/02-responsive-and-keyboard-friendly-pages.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+
+## Continue learning
+
+[Continue: A flexible course library](03-a-flexible-course-library.md)

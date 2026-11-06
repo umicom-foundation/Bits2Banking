@@ -55,3 +55,8 @@ Exercise: explain why “the method is const” and “the method does not write
 ---
 
 [Read this lesson in HTML](../../../courses/learning-cpp/lessons/02-streams-and-file-lifetime.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+
+## Continue learning
+
+[Continue: Check a file operation](03-check-a-file-operation.md)

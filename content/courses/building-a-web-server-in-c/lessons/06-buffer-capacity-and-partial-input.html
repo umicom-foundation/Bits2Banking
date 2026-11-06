@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/06-buffer-capacity-and-partial-input.html
+
+PURPOSE:
+Teach Buffer capacity and partial input through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buffer capacity and partial input | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Buffer capacity and partial input</h1>
+<p><a href="../index.html">Course contents</a> · <a href="05-requests-are-bytes-not-packets.html">Previous: Requests are bytes, not packets</a> · <a href="07-run-and-explain-a-framework-service.html">Next: Run and explain a Framework service</a></p>
+<h2>Capacity and length mean different things</h2>
+<p>Capacity is the amount of memory available. Length is the number of bytes currently used. Before appending input, prove that the remaining space is sufficient. This original helper is a buffer exercise, not an HTTP parser.</p>
+<pre><code class="language-c">#include &lt;stdbool.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;string.h&gt;
+
+static bool append_bytes(unsigned char *buffer, size_t capacity,
+                         size_t *used, const unsigned char *input,
+                         size_t count)
+{
+    if (buffer == NULL || used == NULL || *used &gt; capacity ||
+        count &gt; capacity - *used || (count != 0 &amp;&amp; input == NULL))
+        return false;
+    if (count != 0) memcpy(buffer + *used, input, count);
+    *used += count;
+    return true;
+}</code></pre>
+<p>The caller must provide real storage of at least capacity bytes. Input must not overlap the destination range for this memcpy-based contract. The function stores binary data and does not add a string terminator. A later text parser must not call string functions beyond used bytes.</p>
+<h2>Trace the boundary</h2>
+<ol>
+<li>Let capacity be 8 and used be 3.</li>
+<li>Append five bytes. There are exactly five spare bytes, so used becomes 8.</li>
+<li>Try appending one more byte. The function returns false and used stays 8.</li>
+<li>Try a zero-byte append. It succeeds without copying, even with a null input pointer.</li>
+</ol>
+<p>Checking count &gt; capacity - used after validating used avoids overflow in used + count. Bounds checks are not decorative; their order affects whether the check itself is safe.</p>
+<h2>Exercise</h2>
+<p>Why should this function not simply resize forever when a peer keeps sending data? Why is returning false better than silently discarding the extra byte?</p>
+<h2>Explained answer</h2>
+<p>Unbounded growth allows a peer to consume memory without limit. Silently discarding bytes changes the message and may confuse framing. A connection layer should turn the limit into an explicit error and close or otherwise handle the request according to its documented protocol. The application&#x27;s handler must never receive a silently truncated request as if it were complete.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="05-requests-are-bytes-not-packets.html">Previous: Requests are bytes, not packets</a> · <a href="07-run-and-explain-a-framework-service.html">Next: Run and explain a Framework service</a></p>
+<p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/06-buffer-capacity-and-partial-input.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/examples/web/local_service.c">Source and context</a>. This public revision matches the source inspected for this lesson.</p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc9112.html">Primary reference</a>.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

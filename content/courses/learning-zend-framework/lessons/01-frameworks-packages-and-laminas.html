@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-zend-framework/lessons/01-frameworks-packages-and-laminas.html
+
+PURPOSE:
+Teach Frameworks, packages and Laminas through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Frameworks, packages and Laminas | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Frameworks, packages and Laminas</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-output-context-and-readable-text.html">Next: Output context and readable text</a></p>
+<h2>Keep the history clear</h2>
+<p>Begin after Learning PHP and Learning HTML. A library supplies reusable operations. A framework also provides conventions for arranging an application and connecting those operations. A package is a distributable unit with dependency information. Composer is a PHP dependency manager that downloads compatible packages and records selected versions.</p>
+<p>Zend Framework&#x27;s open-source continuation is Laminas. This course keeps the requested Learning Zend Framework title for historical continuity, but new exercises use named Laminas components. That does not mean every old Zend application can be upgraded by replacing a word. Check the maintenance status and migration guide for each component before a real migration.</p>
+<h2>Create an isolated component exercise</h2>
+<p>With PHP and Composer installed, choose an empty practice folder. Run:</p>
+<pre><code class="language-text">php --version
+composer --version
+composer require laminas/laminas-escaper</code></pre>
+<p>Stop if dependency installation fails. Composer explains incompatible PHP versions or missing extensions. Do not bypass those requirements. Inspect <code>composer.json</code>, <code>composer.lock</code> and the <code>vendor</code> directory. The first describes requirements; the lock records resolved versions; vendor contains installed dependencies.</p>
+<p>Save this as <code>escape.php</code>:</p>
+<pre><code class="language-php">&lt;?php
+require __DIR__ . &#x27;/vendor/autoload.php&#x27;;
+$escaper = new Laminas\Escaper\Escaper(&#x27;utf-8&#x27;);
+echo $escaper-&gt;escapeHtml(&#x27;C &lt; C++ &amp; GTK4&#x27;), PHP_EOL;</code></pre>
+<p>Run <code>php escape.php</code>. Expect entity text equivalent to <code>C &amp;lt; C++ &amp;amp; GTK4</code>. <code>__DIR__</code> refers to the script&#x27;s directory, avoiding dependence on the terminal&#x27;s current folder when locating its dependency loader. The backslashes separate namespace parts, not filesystem folders in this expression.</p>
+<h2>Exercise and answer</h2>
+<p>Change the title to <code>Notes &amp; lessons</code>. Expect the ampersand to be encoded. The value has not been deleted or treated as a command; it has been represented for an HTML text context. The next lesson explains why output context matters.</p>
+<p>Compare the PHP course&#x27;s existing source examples with Framework&#x27;s dependency-based design. Reuse is valuable because one reviewed component can serve multiple callers. This exercise does not add PHP to the native Umicom engine or claim a complete MVC application has been built.</p>
+<p><a href="../../learning-php/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../learning-php/index.html">Read the related Umicom example</a>. Path: <code>content/courses/learning-php/index.html</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://getlaminas.org/about/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-zend-framework/01-frameworks-packages-and-laminas.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-output-context-and-readable-text.html">Next: Output context and readable text</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

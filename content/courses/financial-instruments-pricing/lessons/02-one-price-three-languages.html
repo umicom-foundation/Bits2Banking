@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/financial-instruments-pricing/lessons/02-one-price-three-languages.html
+
+PURPOSE:
+Teach One price in C, C++ and Java through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One price in C, C++ and Java | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>One price in C, C++ and Java</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-cashflows-before-formulas.html">Previous: Cashflows before formulas</a> · <a href="03-framework-pricing-and-evidence.html">Next: Framework pricing and comparison evidence</a></p>
+<h2>State the model before writing code</h2>
+<p>Complete the first lesson and the variables, functions and output lessons in the language you choose. You can read all three examples without installing three toolchains. A compiler translates source into an executable program; Java&#x27;s compiler produces class files run by a Java runtime.</p>
+<p>We now use continuous compounding: PV = amount * exp(-rate * years). The function exp(x) means e raised to x, where e is about 2.71828. You do not need to derive e to follow this example. Enter rate 0.05 for 5%, and 365 days for one year. Our simplified year fraction is days / 365.0; production contracts can specify different calendars and day-count conventions.</p>
+<p>Choose a practice directory. Save each example under the exact filename shown. These are independent teaching programs that expose the arithmetic. Application pricing should call Framework rather than copying them into Bank or Trader.</p>
+<h2>C: save as price.c</h2>
+<pre><code class="language-c">#include &lt;math.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const double amount = 1050.0;
+    const double rate = 0.05;
+    const int days = 365;
+    const double years = (double)days / 365.0;
+    const double value = amount * exp(-rate * years);
+    if (!isfinite(value)) return 1;
+    printf(&quot;Present value: %.2f\n&quot;, value);
+    return 0;
+}</code></pre>
+<h2>C++: save as price.cpp</h2>
+<pre><code class="language-cpp">#include &lt;cmath&gt;
+#include &lt;cstdio&gt;
+
+int main()
+{
+    const double amount = 1050.0;
+    const double rate = 0.05;
+    const int days = 365;
+    const double years = static_cast&lt;double&gt;(days) / 365.0;
+    const double value = amount * std::exp(-rate * years);
+    if (!std::isfinite(value)) return 1;
+    std::printf(&quot;Present value: %.2f\n&quot;, value);
+    return 0;
+}</code></pre>
+<h2>Java: save as Price.java</h2>
+<pre><code class="language-java">import java.util.Locale;
+
+public final class Price {
+    public static void main(String[] args) {
+        final double amount = 1050.0;
+        final double rate = 0.05;
+        final int days = 365;
+        final double years = days / 365.0;
+        final double value = amount * Math.exp(-rate * years);
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException(&quot;Non-finite price&quot;);
+        }
+        System.out.printf(Locale.ROOT, &quot;Present value: %.2f%n&quot;, value);
+    }
+}</code></pre>
+<h2>Optional build and run</h2>
+<p>In PowerShell with the MSYS2 UCRT64 C/C++ tools available, run the matching pair of commands from your practice directory. Stop if compilation reports an error; an old executable is not evidence about new source. Java needs a JDK providing both javac and java.</p>
+<pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra price.c -lm -o price.exe
+.\price.exe
+g++ -std=c++17 -Wall -Wextra price.cpp -o price-cpp.exe
+.\price-cpp.exe
+javac Price.java
+java Price</code></pre>
+<p>If an older GCC does not recognise c23, consult its supported C-standard options; do not remove warnings to hide a source error. Each successful program should display approximately 998.79. That differs from 1,000 in lesson 1 because the compounding assumption changed. Two decimal places change presentation, not the internal value.</p>
+<h2>Exercise</h2>
+<p>Set days to zero in all three examples. Explain the result before running. Then set rate to zero and restore days to 365.</p>
+<h2>Explained answer</h2>
+<p>Both cases produce 1,050. At zero time or zero rate the exponent is zero and exp(0) = 1. The casts and decimal denominator keep the year fraction from being truncated by integer division. Rounding policy belongs at a declared financial boundary, not after every intermediate multiplication.</p>
+<h2>Continue learning</h2>
+<p><a href="../index.html">Course contents</a> · <a href="01-cashflows-before-formulas.html">Previous: Cashflows before formulas</a> · <a href="03-framework-pricing-and-evidence.html">Next: Framework pricing and comparison evidence</a></p>
+<p><a href="../../../lessons/07-practical-domains/financial-instruments-pricing/02-one-price-three-languages.md">Markdown manuscript</a></p>
+<h2>Read the related Umicom source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/src/finance/quant/discount_curve.c">Source and context</a>. This public revision matches the source inspected for this lesson.</p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

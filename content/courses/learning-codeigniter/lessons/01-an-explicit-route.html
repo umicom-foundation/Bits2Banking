@@ -1,0 +1,54 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-codeigniter/lessons/01-an-explicit-route.html
+
+PURPOSE:
+Teach An explicit route through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>An explicit route | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>An explicit route</h1>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-controller-and-an-escaped-view.html">Next: A controller and an escaped view</a></p>
+<h2>Name the path and its handler</h2>
+<p>First complete the PHP and HTML foundations. CodeIgniter 4 is a PHP web framework. Its route configuration maps a request to a controller method. A controller coordinates a request; it should not become the storage location for every business rule.</p>
+<p>Install PHP and Composer according to CodeIgniter 4&#x27;s current requirements, including the listed PHP extensions. In a practice parent folder, run:</p>
+<pre><code class="language-text">composer create-project codeigniter4/appstarter learning-portal
+cd learning-portal
+php spark --version</code></pre>
+<p>Stop on installation errors. <code>spark</code> is this project&#x27;s command-line tool. Keep <code>composer.lock</code> so later work can identify the dependencies used in the exercise.</p>
+<p>Create <code>app/Controllers/Learning.php</code>:</p>
+<pre><code class="language-php">&lt;?php
+namespace App\Controllers;
+
+class Learning extends BaseController
+{
+    public function index(): string
+    {
+        return &#x27;Choose a learning course&#x27;;
+    }
+}</code></pre>
+<p>Add to <code>app/Config/Routes.php</code>, keeping its existing content:</p>
+<pre><code class="language-php">$routes-&gt;get(&#x27;learning&#x27;, &#x27;Learning::index&#x27;);</code></pre>
+<p>The first string is the URL path; the second names the controller and method. Explicit routing makes the intended entry visible. It does not depend on automatically exposing every public method.</p>
+<p>Run <code>php spark serve --host 127.0.0.1 --port 8080</code> and visit <code>http://127.0.0.1:8080/learning</code>. Expect the course-selection sentence. Stop the server with Ctrl+C afterward. If the route is missing, inspect <code>php spark routes</code> and check controller filename, class name and namespace together.</p>
+<h2>Exercise and answer</h2>
+<p>Add a separate <code>help</code> method returning a short sentence and an explicit <code>learning/help</code> route. Verify the original route still works. If only the second route works, you may have overwritten rather than extended the file.</p>
+<p>Relate this to a Studio menu event: there must be an identifiable path from input to handler. A visible label alone does not establish wiring. These PHP pages are an independent learning exercise; no native Framework integration is implied by the shared lesson topic.</p>
+<p><a href="../../learning-php/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../learning-php/index.html">Read the related Umicom example</a>. Path: <code>content/courses/learning-php/index.html</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://codeigniter.com/user_guide/guides/first-app/static_pages.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-codeigniter/01-an-explicit-route.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-a-controller-and-an-escaped-view.html">Next: A controller and an escaped view</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

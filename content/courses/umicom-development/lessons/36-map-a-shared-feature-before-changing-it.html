@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/36-map-a-shared-feature-before-changing-it.html
+
+PURPOSE:
+Teach Map a shared feature before changing it through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Map a shared feature before changing it | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Map a shared feature before changing it</h1>
+<p><a href="../index.html">Course contents</a> · <a href="35-read-calendar-data-without-inventing-values.html">Previous: Read calendar data without inventing values</a></p>
+<h2>A small map makes a large project understandable</h2>
+<p>Complete the first-application and build-and-diagnose modules in this course. A contract states what an operation accepts, returns and changes. An implementation performs it. A consumer calls it. A test compares actual behaviour with the contract. These roles can live in different files without being different features.</p>
+<p>Use the activity example as a complete small map:</p>
+<pre><code class="language-text">activity.h       declaration and promises
+activity.c       rule implementation
+console.c        text interface
+window.c         GTK4 interface
+test_activity.c  checks of the rule
+CMakeLists.txt   build relationships</code></pre>
+<h2>Follow one request</h2>
+<p>Start at <code>BtbActivityAdvance</code> in the header. Write down the maximum count and what must happen to the output on failure. Find the definition in <code>activity.c</code>. Then find its callers in the console and window sources. Both callers should interpret the same status rather than independently decide the maximum.</p>
+<p>The example uses Framework&#x27;s status vocabulary, but its practice activity rule belongs to the lesson project. It is a teaching model of shared ownership, not a claim that every example function is a Framework public API. In an application feature, reusable production behaviour belongs in Framework and application-specific presentation remains in the client.</p>
+<h2>Plan a change before editing</h2>
+<p>Suppose the practice limit becomes 500. List the affected promise, implementation, boundary checks and user-facing explanation. Do not begin by replacing every number 1000 in the repository: unrelated numbers may mean something else. A focused search for the function and its callers gives evidence of the change&#x27;s scope.</p>
+<p>In a personal practice copy, change the agreed limit consistently. Configure and build using the example README, then run its checks. These are distinct steps: configure discovers dependencies and creates build rules; build compiles and links; tests execute behaviour. A successful configure is not a test pass.</p>
+<h2>Exercise and answer</h2>
+<p>Which checks distinguish a correct 500 limit from a display-only change? Test 499 becoming 500, 500 being rejected without changing the output, and a null output being rejected. Then verify the window reports failure appropriately. If the console and window disagree, trace their calls rather than duplicating fixes in both interfaces.</p>
+<p>Keep a short engineering explanation of the change and a regression check. That gives the next contributor a reason and a way to verify it, instead of a mysterious new constant.</p>
+<p><a href="../../learning-c/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/bb0da4654632ab847ce7e729ced64f14cf230933/labs/native/framework-activity/activity.h">Read the related Umicom example</a>. Path: <code>labs/native/framework-activity/activity.h</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://cmake.org/cmake/help/latest/guide/tutorial/index.html">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/umicom-development/36-map-a-shared-feature-before-changing-it.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="35-read-calendar-data-without-inventing-values.html">Previous: Read calendar data without inventing values</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

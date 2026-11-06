@@ -60,3 +60,8 @@ If a local link fails, compare the destination with the actual directory names, 
 ---
 
 [Read this lesson in HTML](../../../courses/learning-html/lessons/02-links-images-and-access.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+
+## Continue learning
+
+[Continue: Labels and form checks](03-labels-and-form-checks.md)

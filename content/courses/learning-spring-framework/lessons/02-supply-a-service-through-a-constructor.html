@@ -1,0 +1,67 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-spring-framework/lessons/02-supply-a-service-through-a-constructor.html
+
+PURPOSE:
+Teach Supply a service through a constructor through an ordered reading route and original worked examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material; linked references retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Supply a service through a constructor | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar">
+<a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a>
+<nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article><h1>Supply a service through a constructor</h1>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-java-web-request.html">Previous: A Java web request</a></p>
+<h2>Put a dependency where it can be seen</h2>
+<p>A dependency is something a component needs to do its work. Constructor injection means supplying that dependency when the object is created. It makes the relationship explicit and allows a test to supply a controlled implementation later.</p>
+<p>In the same package, create <code>CourseAdvice.java</code>:</p>
+<pre><code class="language-java">package org.umicom.learning;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class CourseAdvice {
+    public String firstStep() {
+        return &quot;Read, predict, practise, compare&quot;;
+    }
+}</code></pre>
+<p>Create a second controller file, <code>AdviceController.java</code>, preserving the previous controller:</p>
+<pre><code class="language-java">package org.umicom.learning;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class AdviceController {
+    private final CourseAdvice advice;
+
+    public AdviceController(CourseAdvice advice) {
+        this.advice = advice;
+    }
+
+    @GetMapping(&quot;/learning/advice&quot;)
+    public String show() {
+        return advice.firstStep();
+    }
+}</code></pre>
+<p>Spring discovers the service and supplies it to the single constructor. <code>final</code> means this field is assigned once; it does not imply that every possible object stored there is immutable. The controller calls a method instead of constructing a new service inside every request.</p>
+<h2>Observe and investigate</h2>
+<p>Restart the application using the previous lesson&#x27;s command and open <code>/learning/advice</code>. Expect the four-part sentence. If startup reports a missing dependency, check the package and service annotation. If it reports ambiguous routes, check that each method has its intended unique mapping.</p>
+<h2>Exercise and answer</h2>
+<p>Change the sentence only in CourseAdvice and restart. The response should change without editing the controller&#x27;s request mapping. This demonstrates separation of responsibilities; it is not yet a proof of testability or production correctness.</p>
+<p>Compare with the Umicom activity example: its window depends on a shared rule. The underlying principle is to supply or call the shared behaviour rather than recreate it in each interface. A future native adapter needs explicit error, lifetime and transport contracts. Dependency injection alone does not provide those contracts or make Java objects directly callable from C.</p>
+<p><a href="../../learning-java/index.html">Review the prerequisite course</a>.</p>
+<h2>Source and further reading</h2>
+<p><a href="../../../labs/java-ledger/LedgerDemo.java">Read the related Umicom example</a>. Path: <code>content/labs/java-ledger/LedgerDemo.java</code>. This reference connects the topic to the codebase; it does not imply a language runtime or adapter is implemented in Umicom.</p>
+<p><a href="https://spring.io/guides/gs/serving-web-content/">Technical reference</a>. Check the version requirements in the lesson before practical work.</p>
+<p><a href="../../../lessons/04-web/learning-spring-framework/02-supply-a-service-through-a-constructor.md">Read this lesson as Markdown</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="01-a-java-web-request.html">Previous: A Java web request</a></p></article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>
