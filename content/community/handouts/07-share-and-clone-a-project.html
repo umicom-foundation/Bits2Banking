@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Share a practice project and clone it | Umicom Bits2Banking</title><link rel="stylesheet" href="../community.css"></head><body><header><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="170"><span>Bits2Banking · Community learning</span></header><main id="main"><nav aria-label="Learning route"><a href="index.html">All community lessons</a></nav><h1>Share a practice project and clone it</h1><p class="lead">Publish your own practice repository deliberately, then download a separate copy.</p><p><strong>Before you start:</strong> PowerShell, Git, GitHub CLI, your own GitHub account and a practice repository with at least one commit. Use git status and git log --oneline -1 to check it. Do not publish an employer’s or another person’s repository.</p><section><h2>Local and online copies</h2><p>A remote is a named address for another repository. origin is a common remote name. Push sends commits to a remote. Clone downloads a repository into a new folder. GitHub authentication proves which account you can act as; it is separate from the author name stored in commits.</p></section>
+<section><h2>1. Sign in through the browser</h2><pre><code class="language-powershell">gh auth login --hostname github.com --git-protocol https --web
+gh auth setup-git
+gh auth status</code></pre>
+<p>Follow the interactive instructions. Complete sign-in yourself in the browser. Do not paste passwords, tokens or authentication codes into project files, lessons or group messages. gh auth status should identify the account you intended to use.</p></section>
+<section><h2>2. Review before publishing</h2><pre><code class="language-powershell">Get-Location
+git status
+git log --oneline -2
+git ls-files
+git remote -v</code></pre>
+<p>Read the tracked-file list. Remove private information from the project before publishing; if it was already committed, merely deleting the current file does not erase history. Use a fresh harmless practice project if you are unsure. The example below creates a private repository first. Private limits visibility; it is not a place to store secrets.</p></section>
+<section><h2>3. Create your remote</h2><pre><code class="language-powershell">gh repo create YOUR-ACCOUNT/notes-practice --private --source . --remote origin --push</code></pre>
+<p>Replace YOUR-ACCOUNT with your GitHub account name. --source . uses the current project. --remote origin adds that remote, and --push uploads your local commits. Choose --public instead only when you intend anyone to view the work. If origin already exists, inspect it rather than replacing it blindly.</p></section>
+<section><h2>4. Clone into a different folder</h2><pre><code class="language-powershell">Set-Location ..
+git clone https://github.com/YOUR-ACCOUNT/notes-practice.git notes-practice-clone
+Set-Location notes-practice-clone
+git status
+git log --oneline -2</code></pre>
+<p>Replace the account name again. A clone must have a new destination; do not clone over the first project. You should see the same commits and files. A clone is a separate working copy: an edit in the first folder does not instantly appear in the second.</p></section>
+<section><h2>If the command fails</h2><p>If the repository name is already in use, inspect it on GitHub or choose a new practice name. If authentication fails, run gh auth status. If cloning reports a non-empty destination, keep that folder and choose a different destination.</p></section>
+<section><h2>Your turn</h2><p>Add and commit a harmless sentence in the first copy, then push with git push origin main. In the clean clone, use git pull --ff-only. Fast-forward-only refuses to combine diverging histories automatically. Stop and inspect if it refuses.</p></section><nav aria-label="Lesson sequence"><a href="06-make-two-local-commits.html">Previous: Record two versions with Git</a> · <a href="08-set-up-the-c-toolchain.html">Next: Set up the Windows C toolchain</a></nav><p><a href="../../courses/introduction-to-version-control/index.html">Explore the related course</a>. You can finish this exercise without leaving this page.</p><h2>Further reading</h2><ul><li><a href="https://cli.github.com/manual/gh_repo_create">GitHub CLI: create a repository</a></li><li><a href="https://cli.github.com/manual/gh_auth_login">GitHub CLI authentication</a></li></ul></main><footer>Umicom Foundation · Learn, practise, check and continue.</footer></body></html>

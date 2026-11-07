@@ -110,3 +110,15 @@ if(BUILD_TESTING)
     set_tests_properties(btb.education.connected_platform_courses PROPERTIES
         TIMEOUT 60 LABELS "education;navigation;platforms")
 endif()
+
+# Community handouts and the first project share one source route. The C
+# example is built here so its documented behaviour stays executable.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.community_route
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_community_route.cmake")
+    set_tests_properties(btb.education.community_route PROPERTIES
+        TIMEOUT 30 LABELS "education;community;navigation")
+    add_subdirectory("${_btb_repo_root}/content/community/examples/notes-word-count"
+        "community-notes")
+endif()

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Copy, rename and preview a deletion | Umicom Bits2Banking</title><link rel="stylesheet" href="../community.css"></head><body><header><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="170"><span>Bits2Banking · Community learning</span></header><main id="main"><nav aria-label="Learning route"><a href="index.html">All community lessons</a></nav><h1>Copy, rename and preview a deletion</h1><p class="lead">Keep a practice copy and understand what a file command will change.</p><p><strong>Before you start:</strong> PowerShell and a practice README.md. If you do not have one, create a new folder and use Notepad to save a short README.md there.</p><section><h2>Keep the original in sight</h2><p>Copying makes another file. Renaming changes the name of one file. Moving changes its location. Deleting removes a file; a terminal deletion should not be treated as a promise that the file will be in the Recycle Bin. We will first preview that last operation.</p>
+<p>Use this lesson only with the small practice note. Do not experiment on application source or a folder containing work you have not backed up.</p></section>
+<section><h2>1. Read and copy</h2><pre><code class="language-powershell">Get-Location
+Get-Content -LiteralPath &quot;.\README.md&quot;
+Copy-Item -LiteralPath &quot;.\README.md&quot; -Destination &quot;.\README-copy.md&quot;
+Get-ChildItem</code></pre>
+<p>You should now see README.md and README-copy.md. If a copy with that name already exists, stop and inspect it before choosing a different destination. A destination is where the result will go.</p></section>
+<section><h2>2. Rename the copy</h2><pre><code class="language-powershell">Rename-Item -LiteralPath &quot;.\README-copy.md&quot; -NewName &quot;README-backup.md&quot;
+Get-ChildItem
+Get-Content -LiteralPath &quot;.\README-backup.md&quot;</code></pre>
+<p>The copy has a new name but the same contents. The original README.md is still there. This local copy is useful for practice; it is not a backup against losing the whole disk.</p></section>
+<section><h2>3. Preview deletion</h2><pre><code class="language-powershell">Remove-Item -LiteralPath &quot;.\README-backup.md&quot; -WhatIf
+Test-Path -LiteralPath &quot;.\README-backup.md&quot;</code></pre>
+<p>-WhatIf asks this PowerShell command to describe the action without performing it. The second command should still print True. Not every program supports -WhatIf; it is not a universal option you can add to any command.</p></section>
+<section><h2>4. Decide whether to remove the practice copy</h2><p>You may keep it. If you want to practise removal, read it once more and remove only this named file:</p>
+<pre><code class="language-powershell">Get-Content -LiteralPath &quot;.\README-backup.md&quot;
+Remove-Item -LiteralPath &quot;.\README-backup.md&quot;
+Test-Path -LiteralPath &quot;.\README-backup.md&quot;</code></pre>
+<p>The last result should be False. README.md should remain. This command has no -Recurse option and does not ask to remove the project folder.</p></section>
+<section><h2>If something goes wrong</h2><p>File not found may simply mean the previous rename or deletion already happened. List the folder before repeating a command. Ctrl+C requests interruption of a running command; it cannot undo an operation that already completed.</p></section>
+<section><h2>Your turn</h2><p>Make another copy with a name you choose. Preview renaming it with Rename-Item and -WhatIf. Check that the name stays unchanged until you deliberately run the operation.</p></section><nav aria-label="Lesson sequence"><a href="03-write-your-first-readme.html">Previous: Write and read your first Markdown file</a> · <a href="05-install-and-find-tools.html">Next: Install and find your everyday tools</a></nav><p><a href="../../courses/introduction-to-version-control/index.html">Explore the related course</a>. You can finish this exercise without leaving this page.</p></main><footer>Umicom Foundation · Learn, practise, check and continue.</footer></body></html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Record two versions with Git | Umicom Bits2Banking</title><link rel="stylesheet" href="../community.css"></head><body><header><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="170"><span>Bits2Banking · Community learning</span></header><main id="main"><nav aria-label="Learning route"><a href="index.html">All community lessons</a></nav><h1>Record two versions with Git</h1><p class="lead">Create a local repository, inspect a change and record two commits.</p><p><strong>Before you start:</strong> Git and PowerShell. Make a new practice folder with a README.md and no private data. You do not need a GitHub account for this lesson.</p><section><h2>What Git records</h2><p>A repository is a project folder with version history. A commit is a recorded checkpoint. The working files are what you edit. The staging area is your selection for the next commit. git add changes that selection; git commit records it. Neither uploads files.</p>
+<p>Git tracks file contents, not empty directories on their own. A branch is a name pointing to a line of commits. We will call the first branch main.</p></section>
+<section><h2>1. Check your folder and identity</h2><pre><code class="language-powershell">Get-Location
+Get-ChildItem -Force
+git config --global user.name
+git config --global user.email</code></pre>
+<p>If .git already exists, use a fresh practice folder for this exercise. If your identity is missing or incorrect, set your own name and email:</p>
+<pre><code class="language-powershell">git config --global user.name &quot;Your Name&quot;
+git config --global user.email &quot;you@example.com&quot;</code></pre>
+<p>Replace those example values. Commit identity is recorded in history and may become public if you publish it. A GitHub-provided noreply email can avoid exposing a personal address. --global sets a default for your account; it does not sign you in to GitHub.</p></section>
+<section><h2>2. Create the local history</h2><pre><code class="language-powershell">git init -b main
+git status
+git add README.md
+git diff --cached
+git commit -m &quot;Add project introduction&quot;</code></pre>
+<p>Read git diff --cached before committing: it shows the selected changes. A successful commit prints its identifier and a summary. If there is nothing to commit, read git status rather than making a meaningless edit.</p></section>
+<section><h2>3. Change and inspect the note</h2><pre><code class="language-powershell">Add-Content -LiteralPath &quot;.\README.md&quot; -Value &quot;Next I will build a small C program.&quot; -Encoding utf8
+git diff
+git status</code></pre>
+<p>git diff shows unstaged changes. Lines beginning with + were added; lines beginning with - were removed in this comparison. These signs describe the change; they are not part of your document.</p></section>
+<section><h2>4. Record the second checkpoint</h2><pre><code class="language-powershell">git add README.md
+git diff --cached
+git commit -m &quot;Describe the next learning step&quot;
+git log --oneline -2
+git status</code></pre>
+<p>You should see two commits. A clean working tree means tracked working files match the recorded state. It does not mean the program is correct or that anything was uploaded.</p></section>
+<section><h2>If a commit fails</h2><p>If Git asks who you are, check the name and email settings. If it reports not a git repository, inspect Get-Location. Do not initialise a repository in an unrelated folder just to silence the message.</p></section>
+<section><h2>Your turn</h2><p>Write a third sentence, inspect it with git diff, then stage and commit only README.md. Explain the difference between editing, staging and committing before moving to online publication.</p></section><nav aria-label="Lesson sequence"><a href="05-install-and-find-tools.html">Previous: Install and find your everyday tools</a> · <a href="07-share-and-clone-a-project.html">Next: Share a practice project and clone it</a></nav><p><a href="../../courses/introduction-to-version-control/index.html">Explore the related course</a>. You can finish this exercise without leaving this page.</p><h2>Further reading</h2><ul><li><a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Git basics: recording changes</a></li></ul></main><footer>Umicom Foundation · Learn, practise, check and continue.</footer></body></html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Make a folder for your practice work | Umicom Bits2Banking</title><link rel="stylesheet" href="../community.css"></head><body><header><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="170"><span>Bits2Banking · Community learning</span></header><main id="main"><nav aria-label="Learning route"><a href="index.html">All community lessons</a></nav><h1>Make a folder for your practice work</h1><p class="lead">Create a practice folder and move into it without touching product source.</p><p><strong>Before you start:</strong> PowerShell on Windows. Open it from Start. Get-Location shows your current folder.</p><section><h2>Choose a place you can find again</h2><p>We will keep the exercises in a folder called Umicom-Practice inside your user folder. Your user folder holds files belonging to your Windows account. The example uses its location from Windows, so you do not have to copy someone else’s user name.</p>
+<p>A path is an address for a file or folder. An absolute path starts from a drive, such as C:\Users\Alex. A relative path starts from your current folder. . means the current folder; .. means its parent.</p></section>
+<section><h2>1. Create your practice folder</h2><pre><code class="language-powershell">Set-Location $env:USERPROFILE
+Get-Location
+New-Item -ItemType Directory -Path &quot;Umicom-Practice&quot;</code></pre>
+<p>$env:USERPROFILE reads the user-folder path from your environment. An environment value is a setting made available to programs. Set-Location moves into that folder. New-Item creates something; -ItemType Directory says it must be a folder. Quotes keep the path together as one value.</p></section>
+<section><h2>2. Enter the folder</h2><pre><code class="language-powershell">Set-Location &quot;Umicom-Practice&quot;
+Get-Location
+Get-ChildItem</code></pre>
+<p>The location should end in Umicom-Practice. An empty listing is fine: we have not created files yet. If New-Item said the folder already exists, do not remove it. List it first and use a new name if it contains work you want to keep.</p></section>
+<section><h2>3. Add a project folder</h2><pre><code class="language-powershell">New-Item -ItemType Directory -Path &quot;notes-practice&quot;
+Set-Location &quot;notes-practice&quot;
+New-Item -ItemType Directory -Path &quot;src&quot;, &quot;include&quot;, &quot;tests&quot;, &quot;docs&quot;
+Get-ChildItem</code></pre>
+<p>src will hold source code, include will hold shared declarations, tests will hold checks, and docs will hold explanations. These are conventions: names people agree to use. Empty folders are useful while working, but Git will later record files rather than empty folders on their own.</p></section>
+<section><h2>4. Leave and return</h2><pre><code class="language-powershell">Set-Location ..
+Get-Location
+Set-Location &quot;.\notes-practice&quot;</code></pre>
+<p>.. moves one level up. .\notes-practice selects the project under the current folder. Check Get-Location whenever you are unsure. Typing cd instead of Set-Location also works in PowerShell.</p></section>
+<section><h2>If a command fails</h2><p>Path not found normally means the spelling or current folder differs from the example. Run Get-Location and Get-ChildItem before trying again. Access denied may mean you selected a protected folder. Use a folder you own; these exercises do not need administrator access.</p></section>
+<section><h2>Your turn</h2><p>Create a folder called drawings inside docs. Return to the project folder and list docs to check it. Keep this practice project for the next lesson.</p></section><nav aria-label="Lesson sequence"><a href="01-open-your-terminal.html">Previous: Open PowerShell and find your place</a> · <a href="03-write-your-first-readme.html">Next: Write and read your first Markdown file</a></nav><p><a href="../../courses/introduction-to-version-control/index.html">Explore the related course</a>. You can finish this exercise without leaving this page.</p></main><footer>Umicom Foundation · Learn, practise, check and continue.</footer></body></html>
