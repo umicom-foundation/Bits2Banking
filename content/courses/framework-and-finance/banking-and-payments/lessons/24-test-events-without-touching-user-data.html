@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/24-test-events-without-touching-user-data.html
+
+PURPOSE:
+Test native events while isolating persistent storage
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test native events while isolating persistent storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Test native events while isolating persistent storage</h1>
+<p>Build a small desktop host around Framework banking services, then follow how an explicit filename becomes an owned workspace.</p>
+<h2>Start here</h2>
+<p>You can read this lesson without prior banking or GTK knowledge. To run the exercise, obtain the Bits2Banking sources, install a C23 compiler, CMake, Ninja and GTK4, and install a matching Umicom Framework SDK with bank_operations_gtk4. A terminal is a window where you type commands; a build translates source files into an executable program. Follow the <a href="../../../../../labs/framework/bank-workspace/README.md">Bank workspace lab setup</a> for complete PowerShell and Bash commands and expected behaviour. The lab uses practice records only.</p>
+<h2>What the regression fixture proves</h2>
+<p>A test fixture prepares controlled starting conditions. The Bank native fixture uses the production launcher, widgets and financial command handlers. Only UmiBankOperationsOpenSqlite is replaced with a function that opens a memory service. A memory service loses its data when destroyed.</p>
+<p>The fixture counts open calls and copies the filename it receives. This lets it check that blank input and selection alone do not open storage, valid Unicode text reaches the boundary unchanged, a failed open can be retried, and an already-open workspace is not redirected.</p>
+<h2>Read and run the focused coverage</h2>
+<ol>
+<li>Open Framework's tests/bank_operations/test_native_commands.c.</li>
+<li>Find IsolatedOpen, OpenCalls and FailOpen. Explain what each controls.</li>
+<li>Find the storage-selection and open-retry branches. Each assertion checks an observable state change.</li>
+<li>After building the matching Framework test target, run the focused tests from its build directory:</li>
+</ol>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-all-debug -R &quot;^framework\.bank_operations\.native\.&quot; --output-on-failure --no-tests=error</code></pre>
+<p>The example build directory is relative to Umicom-Applications. Use the build directory you actually configured. A missing executable means it has not been built; a skip because no display is available is not a pass.</p>
+<h2>What remains to test</h2>
+<p>This fixture does not prove persistence across application restarts, chooser cancellation in the installed desktop environment, or compatibility with an older database. Run storage tests and manual selected-file workflows separately. Record the source revision and runtime version with actual results.</p>
+<h2>Exercise</h2>
+<p>Describe a faulty implementation that these tests would catch: for example, opening storage as soon as SetPath is called. Then describe one they would not catch: for example, a missing SQLite runtime in a packaged application.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/bank-workspace/README.md">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="23-recover-from-a-failed-open.html">Previous: Recover from a failed open without replacing user data</a></p>
+</nav><p><a href="../../../lessons/07-practical-domains/framework-and-finance/banking-and-payments/24-test-events-without-touching-user-data.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>
