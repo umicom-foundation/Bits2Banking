@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/preserve-outputs-on-checkpoint-errors.html
+
+PURPOSE:
+Preserve outputs when checkpoint inspection fails
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve outputs when checkpoint inspection fails | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Preserve outputs when checkpoint inspection fails</h1>
+<p>This module explains how a native learning program checks saved model bytes before using them. Each lesson includes its own setup summary and follows the same small Umicom Framework example.</p>
+<h2>Set up the laboratory</h2>
+<p>A terminal accepts typed commands. A compiler translates C into machine instructions. CMake prepares the build description, and Ninja follows it. Use a C23-capable compiler, CMake 3.26 or later, Ninja, the Bits2Banking checkout and the matching Umicom Framework checkout. The example uses Framework's real training module; no downloaded model or GPU is required.</p>
+<p>On Windows, open PowerShell and use the UCRT64 tools installed at C:\msys64\ucrt64\bin. If your tools or checkouts are elsewhere, replace those paths. Enter each line separately and stop if an error is reported.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\llm-checkpoint-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build --target checkpoint-inspection --parallel 2
+&amp; &quot;.\build\checkpoint-inspection.exe&quot;</code></pre>
+<p>On Linux, install your distribution's C compiler, CMake and Ninja packages, then open Bash in the laboratory folder. Replace the Framework path with your checkout.</p>
+<pre><code class="language-bash">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DUMICOM_FRAMEWORK_SOURCE=/path/to/umicom-framework
+cmake --build build --target checkpoint-inspection --parallel 2
+./build/checkpoint-inspection</code></pre>
+<p>Expected output includes format 1, vocabulary 4, context 2, tensors 15 and completed steps 0. A vocabulary is the set of token identifiers a model accepts; this tiny example has four. The model has just been created, so zero completed training steps is correct. The program creates bytes in memory and does not read or write a checkpoint file.</p>
+<p>If configuration cannot find Framework, check that the chosen directory contains cmake/UmicomNativeLlmTraining.cmake. If compilation cannot find CheckpointInspect, use matching header and source revisions. Do not work around the error by adding a second parser to the lab.</p>
+<p><a href="../../../../labs/native/llm-checkpoint-inspection/README.md">Read the complete laboratory guide</a>.</p>
+<h2>A result should become visible all at once</h2>
+<p>Imagine an application already displaying details for a valid checkpoint. A user selects a damaged file. If parsing overwrites the displayed summary field by field before failing, the screen could mix old and new values. Framework avoids this by building a local summary and copying it to the caller only after complete validation.</p>
+<p>This is called failure atomicity: failure leaves the caller's previous output unchanged. It does not mean all application activity is transactional; it describes a precise contract for one API call.</p>
+<h2>Read the implementation</h2>
+<ol>
+<li>Find the local info structure at the start of CheckpointInspect.</li>
+<li>Follow assignments to info.config and info.completedSteps. These change local temporary storage.</li>
+<li>Find each early return. None assigns to *outInfo.</li>
+<li>Find the final *outInfo = info statement. It is the publication point.</li>
+<li>In the laboratory, confirm printing occurs only after the status check.</li>
+</ol>
+<h2>Read the test</h2>
+<p>The Reject helper fills an information structure with a sentinel byte pattern, copies its raw bytes into before, calls inspection, and compares the bytes afterwards. It also gives Decode an existing model pointer and checks the pointer is unchanged after rejection.</p>
+<p>Use memcpy for the byte snapshot. Assigning one structure to another is appropriate for copying values, but a byte-for-byte padding check needs a byte snapshot. Padding is storage a compiler may place between fields for alignment; it is not application data.</p>
+<h2>Extend the experiment</h2>
+<p>Add a normal inspection before the deliberately corrupted one. Keep the first summary in a separate variable. After rejection, print only that previously validated summary with an explicit message that the new input was rejected. Never label old metadata as belonging to the new file.</p>
+<h2>Review question</h2>
+<p>Does preserving an output pointer free the caller's old model? No. The caller remains responsible for the old model's lifetime. A failed load must not destroy it or replace it with a half-built model.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/llm-checkpoint-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="validate-weights-after-integrity.html">Previous: Validate tensor shapes and finite weights</a> · <a href="understand-optimizer-resume-state.html">Next: Understand what a training restart needs</a></p>
+</nav><p><a href="../../../lessons/10-native-ai/llm-from-scratch/preserve-outputs-on-checkpoint-errors.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

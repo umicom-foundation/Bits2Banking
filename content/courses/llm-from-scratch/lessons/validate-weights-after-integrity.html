@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/validate-weights-after-integrity.html
+
+PURPOSE:
+Validate tensor shapes and finite weights
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate tensor shapes and finite weights | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Validate tensor shapes and finite weights</h1>
+<p>This module explains how a native learning program checks saved model bytes before using them. Each lesson includes its own setup summary and follows the same small Umicom Framework example.</p>
+<h2>Set up the laboratory</h2>
+<p>A terminal accepts typed commands. A compiler translates C into machine instructions. CMake prepares the build description, and Ninja follows it. Use a C23-capable compiler, CMake 3.26 or later, Ninja, the Bits2Banking checkout and the matching Umicom Framework checkout. The example uses Framework's real training module; no downloaded model or GPU is required.</p>
+<p>On Windows, open PowerShell and use the UCRT64 tools installed at C:\msys64\ucrt64\bin. If your tools or checkouts are elsewhere, replace those paths. Enter each line separately and stop if an error is reported.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\llm-checkpoint-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build --target checkpoint-inspection --parallel 2
+&amp; &quot;.\build\checkpoint-inspection.exe&quot;</code></pre>
+<p>On Linux, install your distribution's C compiler, CMake and Ninja packages, then open Bash in the laboratory folder. Replace the Framework path with your checkout.</p>
+<pre><code class="language-bash">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DUMICOM_FRAMEWORK_SOURCE=/path/to/umicom-framework
+cmake --build build --target checkpoint-inspection --parallel 2
+./build/checkpoint-inspection</code></pre>
+<p>Expected output includes format 1, vocabulary 4, context 2, tensors 15 and completed steps 0. A vocabulary is the set of token identifiers a model accepts; this tiny example has four. The model has just been created, so zero completed training steps is correct. The program creates bytes in memory and does not read or write a checkpoint file.</p>
+<p>If configuration cannot find Framework, check that the chosen directory contains cmake/UmicomNativeLlmTraining.cmake. If compilation cannot find CheckpointInspect, use matching header and source revisions. Do not work around the error by adding a second parser to the lab.</p>
+<p><a href="../../../../labs/native/llm-checkpoint-inspection/README.md">Read the complete laboratory guide</a>.</p>
+<h2>Bytes can be intact and still be invalid</h2>
+<p>A checksum answers whether bytes match a stored arithmetic check. It does not establish whether those bytes describe a supported model. Someone constructing a file can compute a matching checksum for an impossible shape or an invalid numeric value.</p>
+<p>A floating-point number can also represent infinity or NaN. NaN means Not a Number and can arise from invalid arithmetic. This checkpoint format accepts finite weights only. Finite means the value is neither infinity nor NaN.</p>
+<h2>Walk through validation</h2>
+<ol>
+<li>Framework checks the minimum and maximum checkpoint lengths before reading fields.</li>
+<li>It checks the format identifier and version.</li>
+<li>It validates model dimensions and calculates the exact expected size.</li>
+<li>It verifies the checksum over the payload.</li>
+<li>For each tensor, it compares stored rows and columns with the shape derived from the model configuration.</li>
+<li>It reads every weight and requires isfinite to succeed.</li>
+<li>Only after every check succeeds does it copy metadata to the output.</li>
+</ol>
+<p>No tensor dimension read from the file is used directly to request a huge allocation. The expected shape comes from validated bounded configuration.</p>
+<h2>Inspect the regression fixture</h2>
+<p>Open test_training_checkpoint_inspect.c. Find the shape, nan and infinity cases. Each changes bytes and then calls RepairChecksum. RepairChecksum is a small test-only fixture helper; applications continue using Framework's parser.</p>
+<p>Why repair the checksum in a rejection test? Otherwise the input would fail at the integrity check and never reach the shape or numeric check being tested. The fixture intentionally gets past the earlier check to test the later one.</p>
+<h2>Exercise</h2>
+<p>Describe two files with identical lengths: one containing valid finite weights and one containing NaN. Explain why length equality alone cannot distinguish them. Then follow the failure path and confirm that no new decoder handle is published for either a wrong shape or a nonfinite weight.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/llm-checkpoint-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="separate-checksum-cursor-and-length.html">Previous: Separate a read cursor from a checksum length</a> · <a href="preserve-outputs-on-checkpoint-errors.html">Next: Preserve outputs when checkpoint inspection fails</a></p>
+</nav><p><a href="../../../lessons/10-native-ai/llm-from-scratch/validate-weights-after-integrity.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

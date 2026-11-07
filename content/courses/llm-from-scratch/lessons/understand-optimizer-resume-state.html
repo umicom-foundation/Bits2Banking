@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/understand-optimizer-resume-state.html
+
+PURPOSE:
+Understand what a training restart needs
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand what a training restart needs | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Understand what a training restart needs</h1>
+<p>This module explains how a native learning program checks saved model bytes before using them. Each lesson includes its own setup summary and follows the same small Umicom Framework example.</p>
+<h2>Set up the laboratory</h2>
+<p>A terminal accepts typed commands. A compiler translates C into machine instructions. CMake prepares the build description, and Ninja follows it. Use a C23-capable compiler, CMake 3.26 or later, Ninja, the Bits2Banking checkout and the matching Umicom Framework checkout. The example uses Framework's real training module; no downloaded model or GPU is required.</p>
+<p>On Windows, open PowerShell and use the UCRT64 tools installed at C:\msys64\ucrt64\bin. If your tools or checkouts are elsewhere, replace those paths. Enter each line separately and stop if an error is reported.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\llm-checkpoint-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build --target checkpoint-inspection --parallel 2
+&amp; &quot;.\build\checkpoint-inspection.exe&quot;</code></pre>
+<p>On Linux, install your distribution's C compiler, CMake and Ninja packages, then open Bash in the laboratory folder. Replace the Framework path with your checkout.</p>
+<pre><code class="language-bash">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DUMICOM_FRAMEWORK_SOURCE=/path/to/umicom-framework
+cmake --build build --target checkpoint-inspection --parallel 2
+./build/checkpoint-inspection</code></pre>
+<p>Expected output includes format 1, vocabulary 4, context 2, tensors 15 and completed steps 0. A vocabulary is the set of token identifiers a model accepts; this tiny example has four. The model has just been created, so zero completed training steps is correct. The program creates bytes in memory and does not read or write a checkpoint file.</p>
+<p>If configuration cannot find Framework, check that the chosen directory contains cmake/UmicomNativeLlmTraining.cmake. If compilation cannot find CheckpointInspect, use matching header and source revisions. Do not work around the error by adding a second parser to the lab.</p>
+<p><a href="../../../../labs/native/llm-checkpoint-inspection/README.md">Read the complete laboratory guide</a>.</p>
+<h2>Weights are only part of a training run</h2>
+<p>A decoder checkpoint stores model configuration, weights and its completed-step count. An optimizer decides how those weights are updated. AdamW keeps additional numbers called moments, which summarize earlier gradients. Restarting with the same weights but freshly reset moments changes the subsequent update sequence.</p>
+<p>A gradient describes how a small change in a weight would affect the loss. Loss is a numeric measure of prediction error. The optimizer uses gradients and its own state to choose an update.</p>
+<h2>Follow Framework's existing layers</h2>
+<ol>
+<li>Open checkpoint.h. It defines the single-decoder checkpoint used by this laboratory.</li>
+<li>Open optimizer_checkpoint.h. Its combined format contains a decoder checkpoint and AdamW state.</li>
+<li>Read the decode contract: both owned handles are published only on complete success.</li>
+<li>Read the lifetime rule: destroy the optimizer before the decoder it is bound to.</li>
+<li>Open training_run_lock.h and training_source_lock.h to see how experiment and source identities can accompany a resumed run.</li>
+</ol>
+<pre><code class="language-text">decoder state + optimizer state + training plan
+              + dataset identity + next data position
+              → a reproducible continuation experiment</code></pre>
+<h2>Plan a restart experiment</h2>
+<p>Write a table with two runs. Run A performs two training steps without interruption. Run B performs one step, saves a combined checkpoint, reloads it and performs the same second step. Keep the input batch, learning-rate schedule and numeric environment consistent. Compare full state, not just a friendly console message.</p>
+<p>The existing tests contain continuation examples. Read them before designing a new one. Do not infer successful exact restart from the metadata inspection lab; this lab does not restore optimizer moments.</p>
+<h2>Check your understanding</h2>
+<p>Can equal completed-step counts establish equal models? No. Can a decoder checkpoint prove which documents were used? No. These facts need separate evidence. Recording explicit identities makes experiment reports useful when investigating different outcomes.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/llm-checkpoint-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="preserve-outputs-on-checkpoint-errors.html">Previous: Preserve outputs when checkpoint inspection fails</a> · <a href="test-checkpoint-rejections-systematically.html">Next: Build a checkpoint rejection checklist</a></p>
+</nav><p><a href="../../../lessons/10-native-ai/llm-from-scratch/understand-optimizer-resume-state.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>
