@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/78-reserve-what-startup-already-owns.html
+
+PURPOSE:
+Reserve what startup already owns
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reserve what startup already owns | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Reserve what startup already owns</h1>
+<p>This lesson explains one boundary between startup software and a kernel. It begins with a small hosted C program, uses synthetic addresses, and links the real Umicom Kernel reader. No previous operating-system course is required.</p>
+<h2>Prepare a small host laboratory</h2>
+<p>A terminal accepts commands as text. A compiler translates C into machine instructions. CMake describes which files form a program; Ninja executes the build steps. Use a C23-capable GCC, CMake 3.24 or later and Ninja. On Windows these commands use an existing MSYS2 UCRT64 installation. Open PowerShell, enter one command at a time, and stop if it fails. Replace the checkout paths if yours differ. No boot disk or administrator access is needed.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/native/boot-handoff -B build/boot-handoff -G Ninja -DUMICOM_KERNEL_SOURCE=C:/umicom/umicom-kernel
+cmake --build build/boot-handoff --parallel 2
+&amp; .\build\boot-handoff\boot-handoff.exe
+ctest --test-dir build/boot-handoff --output-on-failure --no-tests=error</code></pre>
+<p>On Linux, open a Bash terminal and use these equivalent paths:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking
+cmake -S labs/native/boot-handoff -B build/boot-handoff -G Ninja -DUMICOM_KERNEL_SOURCE=&quot;$HOME/umicom/umicom-kernel&quot;
+cmake --build build/boot-handoff --parallel 2
+./build/boot-handoff/boot-handoff
+ctest --test-dir build/boot-handoff --output-on-failure --no-tests=error</code></pre>
+<p>The expected messages begin with <code>Accepted:</code> and <code>Refused:</code>. The latter confirms a deliberate invalid-input exercise. A nonzero exit code indicates the expected result was not obtained. If CMake cannot find the reader, check <code>UMICOM_KERNEL_SOURCE</code>; if a compiler option is unsupported, check the compiler version. These host checks do not establish that a kernel can boot.</p>
+<h2>Availability and ownership</h2>
+<p>Knowing that an address is inside RAM does not mean it is free. The kernel image, boot metadata and other startup structures may already occupy it. A reservation prevents later allocation from overwriting information still in use.</p>
+<p>The reader requires the entire kernel span to fit inside one RAM range and one reserved range. It does not infer coverage by combining adjacent entries. This conservative rule makes the producer responsible for expressing a complete covering range.</p>
+<h2>Reproduce the refusal</h2>
+<ol>
+<li>Run the unchanged lab and observe its accepted message.</li>
+<li>The program copies the result bytes into a snapshot.</li>
+<li>It reduces the reservation from 8192 bytes to 4096.</li>
+<li>The kernel still starts 4096 bytes into RAM, so the reservation ends exactly where the kernel begins.</li>
+<li>The second call returns UMICOM_BOOT_HANDOFF_MEMORY, and the snapshot comparison checks that the prior result is intact.</li>
+</ol>
+<p>The deliberate error demonstrates a useful contract: refusal does not destroy an earlier valid observation.</p>
+<h2>Extend the reasoning</h2>
+<p>A real startup adapter must also protect the input record until parsing completes. The reader's copied output removes the later dependency on input-buffer lifetime, but does not itself reserve that buffer. This is a separate ownership duty at the adapter boundary.</p>
+<h2>Exercise and recovery</h2>
+<p>Increase the kernel length to 8192 and calculate the smallest reservation beginning at 0x80000000 that covers it. The answer is 12288 bytes. Test the smaller value only as an expected-refusal experiment, then restore the original fixture. If a future allocator damages the kernel, investigate the point where reservations enter allocator state; a valid parser result alone does not prove that integration occurred.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/boot_handoff.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="77-check-physical-memory-spans.html">Previous: Check physical-memory spans without integer wrap</a> · <a href="79-admit-optional-boot-descriptors.html">Next: Admit firmware and framebuffer descriptions</a></p>
+</nav><p><a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/78-reserve-what-startup-already-owns.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

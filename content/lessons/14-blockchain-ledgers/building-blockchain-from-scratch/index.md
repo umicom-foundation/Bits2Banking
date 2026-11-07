@@ -28,3 +28,32 @@ These opening lessons do not claim a complete pricing engine, Bitcoin node, bloc
 [Finance and systems learning routes](../../../courses/finance-and-systems.html)
 
 [Browser contents](../../../courses/building-blockchain-from-scratch/index.html)
+
+## Practical labs: read, change and check
+
+Follow these after the introductory lessons. Each lab includes its own setup recap and explains the expected result.
+
+- [Link records with Framework hashes](04-link-records-with-framework-hashes.md)
+
+## Continue with a practical source study
+
+Two programs can describe the same record yet hash different bytes. This lab continues the Framework hash exercise by designing a small unambiguous record representation before using the existing SHA-256 service.
+
+- [Define the bytes before hashing a record](05-define-the-bytes-before-hashing.md)
+
+
+- [Turn record fields into defined bytes](06-turn-record-fields-into-defined-bytes.md)
+
+- [Connect a record to the previous digest](07-connect-a-record-to-the-previous-digest.md)
+
+- [Replay a chain to check determinism](08-replay-a-chain-to-check-determinism.md)
+
+- [Detect an edited record](09-detect-an-edited-record.md)
+
+- [Give a hash input a domain](10-give-a-hash-input-a-domain.md)
+
+- [Separate integrity from approval](11-separate-integrity-from-approval.md)
+
+- [Choose a trusted reference for verification](12-choose-a-trusted-reference-for-verification.md)
+
+- [Plan a small chain-verification project](13-plan-a-small-chain-verification-project.md)

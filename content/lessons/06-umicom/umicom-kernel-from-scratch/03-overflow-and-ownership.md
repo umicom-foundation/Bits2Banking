@@ -26,3 +26,7 @@ Initialize the output to 73, try a field with a trailing question mark, and asse
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/03-overflow-and-ownership.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: A byte span is not a string](02-bounded-input.md)
+
+[Next: Never execute a damaged prefix](04-damaged-console-lines.md)

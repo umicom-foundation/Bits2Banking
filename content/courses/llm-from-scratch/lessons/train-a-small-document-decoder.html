@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/train-a-small-document-decoder.html
+
+PURPOSE:
+Train a small decoder on the reviewed documents
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Train a small decoder on the reviewed documents | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Train a small decoder on the reviewed documents</h1>
+<p>This practical module starts with ordinary text files. You will learn what a dataset, token, training step and evaluation result mean by following the existing native Framework laboratory.</p>
+<h2>Setup recap</h2>
+<p>A terminal runs commands that you type. A compiler translates C source into a program; CMake describes the build and Ninja performs the necessary steps. On Windows install Git and the MSYS2 UCRT64 C compiler, CMake and Ninja. Keep Umicom Applications at <code>C:\umicom\Umicom-Applications</code>. On Linux use your system's C23 compiler, CMake and Ninja and change into your Applications checkout.</p>
+<p>This module uses a small standalone directory within Framework. It does not require a GPU, account or model download. Configure once in PowerShell:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Applications&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S framework/learning/native-llm -B build/learning-dataset -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/learning-dataset --target umicom-native-llm-dataset umicom-native-llm-source-train --parallel 2</code></pre>
+<p>In Bash use the same CMake commands from the checkout directory; omit the PowerShell Path line. Stop if a command reports an error. The lessons explain expected results rather than assuming the build has succeeded. The <a href="../../learning-cmake/index.html">CMake course</a> expands each build concept.</p>
+<h2>What changes during training</h2>
+<p>A parameter is a stored number used by the model. A training step compares predictions with targets, computes how the error changes with each parameter and adjusts parameters. A decoder predicts the next token from the available context.</p>
+<p>Run a short experiment in PowerShell:</p>
+<pre><code class="language-powershell">&amp; &quot;.\build\learning-dataset\umicom-native-llm-source-train.exe&quot; &quot;.\framework\learning\native-llm\datasets\first-documents\dataset.txt&quot; 16</code></pre>
+<p>In Bash replace the executable path with <code>./build/learning-dataset/umicom-native-llm-source-train</code> and use forward slashes in the manifest path.</p>
+<h2>Follow the work</h2>
+<ol>
+<li>The tool loads the reviewed dataset and prints its file metadata.</li>
+<li>It creates a small byte-level decoder with a fixed seed.</li>
+<li>It evaluates held-out examples before updating parameters.</li>
+<li>Sixteen training steps request samples only from the training partition.</li>
+<li>It evaluates the held-out examples again with the same evaluation sampling seed.</li>
+</ol>
+<p>Expect a baseline evaluation loss, training progress and a final evaluation loss. Loss is a numerical measure of prediction error; lower is better for the same evaluation task. Do not expect a particular floating-point value on every machine.</p>
+<h2>Interpret responsibly</h2>
+<p>A successful process exit tells you that the program completed its checks. It does not prove that training improved quality. The final evaluation loss may increase even when training loss decreases. Record both numbers.</p>
+<p>Try 32 steps in a separate run and compare. This tool creates a new model on each invocation; it does not resume the previous model. Keep the dataset unchanged for this comparison. These tiny experiments teach training mechanics, not useful conversational or programming competence.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/learning/native-llm/train_source.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="identify-the-imported-dataset.html">Previous: Record the identity of an imported dataset</a> · <a href="evaluate-before-making-a-claim.html">Next: Evaluate learning before making a quality claim</a></p>
+</nav><p><a href="../../../lessons/10-native-ai/llm-from-scratch/train-a-small-document-decoder.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

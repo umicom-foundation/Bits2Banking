@@ -157,3 +157,5 @@ Use the [connected learning map](../../../courses/learning-paths.html#kernel) to
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/07-native-system-calls.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Keep firmware-owned pages out of the allocator](06-reserved-pages.md)

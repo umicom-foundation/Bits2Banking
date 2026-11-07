@@ -144,3 +144,5 @@ Continue with [remembering locations without inheriting trust](19-remember-locat
 Project study: application workspaces · Lesson 1 of 4.
 
 [Next: Use Studio, Trader and Media workspaces](32-use-application-workspaces.md)
+
+[Previous: Open search results without losing your place](27-open-search-results-without-losing-your-place.md)

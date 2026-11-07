@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-javascript/lessons/03-separate-visible-state-from-saved-state.html
+
+PURPOSE:
+  Present "Separate visible state from saved state" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate visible state from saved state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Separate visible state from saved state</h1>
+<p>The task-board example updates a list in memory and attempts to save it in the browser. These are two separate operations. We will trace what happens when the storage operation fails.</p>
+<p>Source to open: <code>Umicom-Bits2Banking/content/labs/task-board/board.js</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath 'content\labs\task-board\board.js'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' 'content/labs/task-board/board.js'</code></pre>
+<h2>Understand the idea</h2>
+<p>tasks is an array: an ordered collection held by the running page. localStorage keeps strings for a browser origin between visits when storage is available. JSON.stringify converts the array to a string; it does not guarantee that setItem will succeed. The try/catch block lets the program continue after a storage exception.</p>
+<pre><code class="language-text">submit → tasks.push → storage attempt → renderTasks
+                              ↓ failure
+                        console warning; memory still changed</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Find the submit handler and number its operations: prevent the default submission, trim text, reject empty text, push a task, try to save, clear the input, render.</li><li>Draw the array and saved JSON separately. Start with an empty list and trace adding Read GTK. Both contain the task after a successful write.</li><li>Now imagine setItem throws. Follow the catch block, then continue to renderTasks. Identify the warning's destination: the developer console, not a visible status label.</li><li>Write a UI requirement for this case: show Unsaved changes near the list and offer a retry. Describe the state needed before changing code.</li></ol>
+<h2>Expected result</h2>
+<p>The current code can display a new task even when saving failed. A subsequent reload may therefore show older stored tasks. textContent displays task strings as text rather than interpreting HTML.</p>
+<h2>If the result differs</h2>
+<p>If tasks vanish after reload, first inspect the browser origin and storage result. A page opened from another origin does not share the same storage. Do not mistake a visible row for proof of a completed write.</p>
+<h2>Explain it yourself</h2>
+<p>Should a retry add another copy of the task to the array?</p>
+<details><summary>Worked explanation</summary><p>No. The task is already in memory. A storage retry should attempt to persist the current state without repeating the original add operation. Otherwise one failed write can become duplicate visible work.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="02-local-storage-and-untrusted-data.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+<nav aria-label="Next lesson"><a rel="next" href="04-await-a-native-module.html">Continue: Wait for a native module before enabling actions</a></nav></article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>
+

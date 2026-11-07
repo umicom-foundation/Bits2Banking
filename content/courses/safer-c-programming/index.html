@@ -1,0 +1,89 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/index.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Safer C Programming | Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Courses</a><a href="../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><section id="ordered-course-modules"><h1>Safer C Programming</h1><p>Start with the first module and follow its lessons in order. Later project modules build on the earlier ideas. Each exercise identifies the source files, setup, expected result and recovery steps; keep your practice work in a separate folder.</p><p><a href="../learning-paths.html">Find prerequisite courses</a></p><section><h2>Bounds, ownership and representations</h2><p>Read explicit input and failure contracts before composing stateful examples.</p><ol><li><a href="lessons/01-bounds-and-failure-preservation.html">Bounds and preserving state on failure</a></li><li><a href="lessons/02-overlap-and-ownership.html">Overlapping memory and ownership</a></li><li><a href="lessons/03-numbers-files-and-checks.html">Numbers, file writes and useful checks</a></li><li><a href="lessons/04-borrowed-streams-and-failure-boundaries.html">Define a failure boundary for a borrowed stream</a></li><li><a href="lessons/05-untrusted-sizes-and-representations.html">Check representations before crossing a platform boundary</a></li></ol></section><section><h2>Project: a transactional record</h2><p>Use allocation failures and stale revisions to check complete replacement and borrowed-pointer lifetime.</p><ol><li><a href="lessons/06-two-fields-one-commit.html">Replace two fields as one complete change</a></li><li><a href="lessons/07-allocator-context-and-test-doubles.html">Make memory allocation observable through a callback</a></li><li><a href="lessons/08-spans-terminators-and-text-policy.html">Separate a byte span from a terminated string</a></li><li><a href="lessons/09-revisions-and-stale-writers.html">Reject an edit based on an older revision</a></li><li><a href="lessons/10-borrowed-pointers-after-replacement.html">Know when a borrowed pointer stops being valid</a></li><li><a href="lessons/11-destruction-and-idempotence.html">Make repeated cleanup harmless</a></li><li><a href="lessons/12-failure-matrix-and-sentinels.html">Design checks that prove rejected calls preserve state</a></li><li><a href="lessons/13-review-before-sharing-a-model.html">Review a teaching model before using a Framework service</a></li></ol></section><section><h2>Project: a bounded arena</h2><p>Measure space, alignment and output ownership, then rewind a temporary allocation scope.</p><ol><li><a href="lessons/14-borrow-storage-for-a-report.html">Borrow storage for a temporary report</a></li><li><a href="lessons/15-request-space-for-a-terminator.html">Reserve space for the end of a string</a></li><li><a href="lessons/16-understand-alignment-padding.html">Understand alignment and padding</a></li><li><a href="lessons/17-subtract-only-after-checking.html">Check subtraction before using the result</a></li><li><a href="lessons/18-preserve-output-on-allocation-failure.html">Preserve results when allocation fails</a></li><li><a href="lessons/19-use-a-real-void-pointer-output.html">Receive an allocation through the correct pointer type</a></li><li><a href="lessons/20-rewind-a-temporary-allocation-scope.html">Rewind a group of temporary allocations</a></li><li><a href="lessons/21-review-the-arena-contract.html">Review a bounded allocator as a complete contract</a></li></ol></section><section><h2>Project: checked money arithmetic</h2><p>Choose integer units and validate both sides of a transfer before changing either balance.</p><ol><li><a href="lessons/22-choose-a-unit-before-doing-arithmetic.html">Choose a unit before doing arithmetic</a></li><li><a href="lessons/23-check-addition-before-performing-it.html">Check addition before performing it</a></li><li><a href="lessons/24-guard-multiplication-with-division.html">Guard multiplication with division</a></li><li><a href="lessons/25-reject-underflow-as-a-domain-result.html">Reject underflow as a domain result</a></li><li><a href="lessons/26-calculate-a-candidate-before-publishing.html">Calculate a candidate before publishing</a></li><li><a href="lessons/27-validate-both-sides-of-a-transfer.html">Validate both sides of a transfer</a></li><li><a href="lessons/28-refuse-aliasing-accounts-explicitly.html">Refuse aliasing accounts explicitly</a></li><li><a href="lessons/29-test-refusal-with-preserved-state.html">Test refusal with preserved state</a></li></ol></section></section><!-- The ordered module guide is the primary navigation. Earlier explanations and links remain available below so existing reading routes and references are retained. --><details><summary>Additional explanations and reference links</summary><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Safer C Programming</h1><h2>About this course</h2>
+<p>Practise bounds, overlapping memory, explicit ownership, failure preservation and honest safety claims.</p>
+<h2>Before you begin</h2>
+<p>Basic C syntax helps. Each lesson defines the memory concepts it uses and links to Learning C for a slower introduction.</p>
+<h2>Reading order</h2>
+<ol>
+<li><a href="lessons/01-bounds-and-failure-preservation.html">Bounds and preserving state on failure</a></li>
+<li><a href="lessons/02-overlap-and-ownership.html">Overlapping memory and ownership</a></li>
+<li><a href="lessons/03-numbers-files-and-checks.html">Numbers, file writes and useful checks</a></li>
+</ol>
+<h2>Prepare a development environment</h2>
+<p>A compiler translates C source. CMake describes which files belong to a program. Ninja performs the build work. CTest runs registered checks. An editor changes the source text. You may use a plain text editor before learning an IDE.</p>
+<h3>Windows with PowerShell</h3>
+<ol>
+<li>Install MSYS2 from <a href="https://www.msys2.org/">its official installation guide</a>. Use the UCRT64 environment described in <a href="https://www.msys2.org/docs/environments/">the environment guide</a>.</li>
+<li>In the MSYS2 UCRT64 terminal, follow its update instructions, then install the C tools:</li>
+</ol>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja git</code></pre>
+<ol>
+<li>Obtain the Bits2Banking repository. If it is already present, use that checkout; do not clone into it again. In the MSYS2 terminal, an example new location is:</li>
+</ol>
+<pre><code class="language-bash">mkdir -p /c/umicom
+git clone https://github.com/umicom-foundation/Bits2Banking.git /c/umicom/Umicom-Bits2Banking</code></pre>
+<ol>
+<li>Open PowerShell and add the tools to that terminal's PATH. PATH is the list of directories searched for commands.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+gcc --version
+cmake --version
+ninja --version</code></pre>
+<ol>
+<li>Read the files under labs/native/text-editor. Run one command at a time and stop on an error. Check $LASTEXITCODE immediately after a native command; zero reports success.</li>
+</ol>
+<pre><code class="language-powershell">cmake -S labs/native/text-editor -B build/text-editor -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/text-editor --parallel 2
+ctest --test-dir build/text-editor --output-on-failure --no-tests=error
+&amp; &quot;.\build\text-editor\btb-text-editor.exe&quot;</code></pre>
+<h3>Linux with Bash</h3>
+<ol>
+<li>Install Git, a C compiler with the required C23 mode, CMake 3.24 or newer, and Ninja using your distribution's documented package manager. Package names and compiler versions vary.</li>
+<li>Clone into a new folder if needed:</li>
+</ol>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom&quot;
+cd &quot;$HOME/umicom&quot;
+git clone https://github.com/umicom-foundation/Bits2Banking.git Umicom-Bits2Banking
+cd Umicom-Bits2Banking</code></pre>
+<ol>
+<li>Check cc --version, cmake --version and ninja --version. If you choose a different compiler, configure a new build directory with -DCMAKE_C_COMPILER set to that compiler.</li>
+<li>Run each command separately and stop on a failure. echo $? immediately afterwards displays the previous result.</li>
+</ol>
+<pre><code class="language-bash">cmake -S labs/native/text-editor -B build/text-editor -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/text-editor --parallel 2
+ctest --test-dir build/text-editor --output-on-failure --no-tests=error
+./build/text-editor/btb-text-editor</code></pre>
+<h2>Understand the result</h2>
+<p>The editor prints its command summary and waits for input. Type append Hello, then show, then discard on separate lines. Expect TEXT: Hello. This is a bounded ASCII console lab with one-level undo, not a graphical production editor. The -S argument selects source; -B selects a separate build directory. Building again in that same directory normally updates changed inputs and their dependencies. Testing is a separate step. A successful compile does not establish that the tests or a user workflow passed.</p>
+<h2>If setup fails</h2>
+<p>A missing command means its tool is not installed or not on PATH. A compiler-mode error means you need a compiler that supports the requested C mode. A missing build.ninja file means configuration did not finish successfully. Read the first diagnostic before repeating later commands. Keep source separate from generated build files.</p>
+<p>For a slower explanation, use <a href="../learning-c/index.html">Learning C</a>. The <a href="https://cmake.org/cmake/help/latest/manual/cmake.1.html">CMake command manual</a> explains configuration and build options.</p>
+<h2>What to practise next</h2>
+<p>Use <a href="index.html">Safer C Programming</a> and <a href="../building-a-text-editor/index.html">Building a Text Editor in C</a> to apply the ideas. The <a href="../building-a-compiler-in-c/index.html">compiler course</a> offers a separate language project.</p>
+<h2>Scope</h2>
+<p>These are introductory chapters and practical labs. Further topics remain to be developed. Successful reading or compilation alone does not establish runtime correctness; compare expected results with your own checks.</p>
+<section id="practical-extensions"><h2>Further practical lessons</h2><ol><li><a href="lessons/04-borrowed-streams-and-failure-boundaries.html">Define a failure boundary for a borrowed stream</a></li>
+<li><a href="lessons/05-untrusted-sizes-and-representations.html">Check representations before crossing a platform boundary</a></li><li><a href="lessons/06-two-fields-one-commit.html">Replace two fields as one complete change</a></li><li><a href="lessons/07-allocator-context-and-test-doubles.html">Make memory allocation observable through a callback</a></li><li><a href="lessons/08-spans-terminators-and-text-policy.html">Separate a byte span from a terminated string</a></li><li><a href="lessons/09-revisions-and-stale-writers.html">Reject an edit based on an older revision</a></li><li><a href="lessons/10-borrowed-pointers-after-replacement.html">Know when a borrowed pointer stops being valid</a></li><li><a href="lessons/11-destruction-and-idempotence.html">Make repeated cleanup harmless</a></li><li><a href="lessons/12-failure-matrix-and-sentinels.html">Design checks that prove rejected calls preserve state</a></li><li><a href="lessons/13-review-before-sharing-a-model.html">Review a teaching model before using a Framework service</a></li><li><a href="lessons/14-borrow-storage-for-a-report.html">Borrow storage for a temporary report</a></li><li><a href="lessons/15-request-space-for-a-terminator.html">Reserve space for the end of a string</a></li><li><a href="lessons/16-understand-alignment-padding.html">Understand alignment and padding</a></li><li><a href="lessons/17-subtract-only-after-checking.html">Check subtraction before using the result</a></li><li><a href="lessons/18-preserve-output-on-allocation-failure.html">Preserve results when allocation fails</a></li><li><a href="lessons/19-use-a-real-void-pointer-output.html">Receive an allocation through the correct pointer type</a></li><li><a href="lessons/20-rewind-a-temporary-allocation-scope.html">Rewind a group of temporary allocations</a></li><li><a href="lessons/21-review-the-arena-contract.html">Review a bounded allocator as a complete contract</a></li><li><a href="lessons/22-choose-a-unit-before-doing-arithmetic.html">Choose a unit before doing arithmetic</a></li><li><a href="lessons/23-check-addition-before-performing-it.html">Check addition before performing it</a></li><li><a href="lessons/24-guard-multiplication-with-division.html">Guard multiplication with division</a></li><li><a href="lessons/25-reject-underflow-as-a-domain-result.html">Reject underflow as a domain result</a></li><li><a href="lessons/26-calculate-a-candidate-before-publishing.html">Calculate a candidate before publishing</a></li><li><a href="lessons/27-validate-both-sides-of-a-transfer.html">Validate both sides of a transfer</a></li><li><a href="lessons/28-refuse-aliasing-accounts-explicitly.html">Refuse aliasing accounts explicitly</a></li><li><a href="lessons/29-test-refusal-with-preserved-state.html">Test refusal with preserved state</a></li>
+</ol></section></article></details><section id="bounded-domain-collections"><h2>Review Bounded Collections in Framework</h2><p>Follow the data representation, establish the bounds before reading, preserve useful error results, observe rejection without mutation, review ownership, then turn the result into an engineering checklist.</p>
+<ol><li><a href="lessons/30-count-capacity-and-index.html">Understand count, capacity and array indices</a></li><li><a href="lessons/31-validate-before-search.html">Check the count before searching the array</a></li><li><a href="lessons/32-full-list-and-duplicate-results.html">Keep duplicate and full-list results meaningful</a></li><li><a href="lessons/33-prove-failure-keeps-state.html">Verify that rejection leaves the collection unchanged</a></li><li><a href="lessons/34-values-pointers-and-serial-access.html">Understand what a copied watchlist entry owns</a></li><li><a href="lessons/35-review-and-qualify-a-boundary-fix.html">Turn a boundary fix into a repeatable review</a></li></ol></section>
+
+<section id="offline-course"><h2>Read this course in Umicom Studio IDE</h2><p>The <a href="../../../learning-packs/safer-c-programming.json">offline course manifest</a> identifies the HTML lessons and their Markdown manuscripts. Keep the Bits2Banking folder intact, then choose this manifest in the learning catalogue. The reader checks the files before opening them.</p><p><a href="../../../learning-packs/index.html">Follow the offline course setup guide</a> for the folder, manifest path and version checks.</p></section>
+<section id="token-window-ownership"><h2>Memory ranges in a real tokenisation API</h2><p>Six connected lessons use one native laboratory to explain token pairs, element counts, overlapping ranges, ownership, unchanged failure results and focused regression checks.</p>
+<ol><li><a href="lessons/36-read-next-token-pairs.html">Read a next-token pair from bytes</a></li><li><a href="lessons/37-elements-bytes-and-capacity.html">Distinguish elements, bytes and writable capacity</a></li><li><a href="lessons/38-recognise-overlapping-output-ranges.html">Recognise overlap between distinct pointers</a></li><li><a href="lessons/39-keep-failed-output-unchanged.html">Keep caller output unchanged when a request fails</a></li><li><a href="lessons/40-own-the-corpus-and-borrow-the-window.html">Follow corpus and output lifetimes</a></li><li><a href="lessons/41-qualify-the-corpus-range-contract.html">Turn a range contract into focused regression checks</a></li></ol></section>
+</main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

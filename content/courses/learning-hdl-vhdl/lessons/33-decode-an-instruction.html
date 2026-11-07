@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/33-decode-an-instruction.html
+
+PURPOSE:
+Decode operation codes and operands
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Decode operation codes and operands | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Decode operation codes and operands</h1>
+<h2>What you will learn</h2>
+<p>An encoding is a rule that maps a meaning to bits. This CPU uses the upper four bits for an operation code, usually shortened to opcode, and the lower four bits for an operand. An operand supplies the value or address used by the operation.</p>
+<h2>Set up this exercise</h2>
+<p>A terminal is a window in which you type commands. A folder holds the files of a project. Install Git, CMake 3.26 or later, Ninja and GHDL with VHDL-2008 support; make their executable folders available on PATH. PATH is the list of folders the terminal searches for programs. Open a fresh PowerShell or Bash terminal and check:</p>
+<pre><code class="language-text">git --version
+cmake --version
+ninja --version
+ghdl --version</code></pre>
+<p>Each command should print a version. If a command is not found, correct its installation or PATH before continuing. Download the Bits2Banking repository with Git if you do not already have it:</p>
+<pre><code class="language-text">git clone https://github.com/umicom-foundation/Bits2Banking.git
+cd Bits2Banking/labs/hardware/vhdl-cpu</code></pre>
+<p>If you already have the repository, open its labs/hardware/vhdl-cpu folder instead of cloning again. Work in your own practice copy. The following commands are identical in PowerShell and Bash:</p>
+<pre><code class="language-text">cmake --preset simulation
+cmake --build --preset simulation
+ctest --preset simulation</code></pre>
+<p>Configure finds GHDL and writes build instructions. Build analyses the VHDL files. Test runs the simulated circuit and checks its results. Expected: the cpu.instructions test passes. This is a learner check to perform on your computer, not a claim about a supplied binary. To select a GHDL installation outside PATH, configure with a quoted absolute path:</p>
+<pre><code class="language-powershell">cmake --preset simulation &quot;-DGHDL_EXECUTABLE=C:/tools/ghdl/bin/ghdl.exe&quot;</code></pre>
+<p>A simulation predicts the behaviour described by a model. It does not program a physical chip. No hardware board is required for this module.</p>
+<h2>Read hexadecimal notation</h2>
+<p>One hexadecimal digit represents four bits. Digits 0 through 9 have their usual values; A through F mean 10 through 15. Thus x&quot;13&quot; contains the bits 0001 0011. Its opcode is 1 and its operand is 3.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Opcode</th><th scope="col">Operation</th><th scope="col">Effect</th></tr></thead><tbody><tr><td>0</td><td>NOP</td><td>Advance the program counter.</td></tr><tr><td>1</td><td>LOAD</td><td>Replace the accumulator with the operand.</td></tr><tr><td>2</td><td>ADD</td><td>Add the operand, wrapping at 256.</td></tr><tr><td>3</td><td>SUB</td><td>Subtract the operand, wrapping at 256.</td></tr><tr><td>4</td><td>JUMP</td><td>Set the program counter to the operand.</td></tr><tr><td>5</td><td>JZ</td><td>Jump if the accumulator is zero; otherwise advance.</td></tr><tr><td>F</td><td>HALT</td><td>Stop executing until reset.</td></tr><tr><td>6 through E</td><td>Invalid</td><td>Set fault and stop.</td></tr></tbody></table></div>
+<h2>Follow the decoder</h2>
+<pre><code class="language-vhdl">case instruction(7 downto 4) is
+  when x&quot;1&quot; =&gt; acc &lt;= operand; pc &lt;= pc + 1;</code></pre>
+<p>Bits are numbered from zero. The slice 7 downto 4 selects the upper four bits. The case statement chooses the matching operation. The operand is converted to unsigned and resized to the accumulator's width. Resizing a four-bit unsigned value to eight bits adds zero bits at the front.</p>
+<h2>Work an example</h2>
+<ol>
+<li>Write x&quot;19&quot; as opcode 1 and operand 9.</li>
+<li>Predict the accumulator after an enabled clock edge: 9.</li>
+<li>Predict the new program counter: its old value plus 1.</li>
+<li>Find the LOAD example x&quot;13&quot; in the testbench.</li>
+<li>In a separate practice copy, change both the instruction and its expected accumulator to 9.</li>
+<li>Rebuild and run the test.</li>
+</ol>
+<p>Changing only the input should fail an assertion. That is useful feedback: a test compares behaviour with an explicit expectation.</p>
+<h2>Understand the boundary</h2>
+<p>The supplied examples drive defined binary instructions. This teaching model does not validate every unknown or high-impedance input bit. A physical interface needs an input-validity and timing contract before those signals are trusted.</p>
+<h2>Check your understanding</h2>
+<p>Why is the largest LOAD immediate 15 even though the accumulator holds 255? The instruction reserves only four bits for the operand. Wider results can arise through arithmetic.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_cpu.vhd">Open the project source</a>.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="32-read-ports-and-state.html">Previous lesson</a> · <a rel="next" href="34-check-fixed-width-arithmetic.html">Next lesson</a></nav><p><a href="../../../lessons/03-native-code/learning-hdl-vhdl/33-decode-an-instruction.md">Markdown edition</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

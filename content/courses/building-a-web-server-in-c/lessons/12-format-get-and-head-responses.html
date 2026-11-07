@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/12-format-get-and-head-responses.html
+
+PURPOSE:
+Explain the lesson: Format GET and HEAD responses.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Format GET and HEAD responses | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-reject-ambiguous-framing.html">Previous lesson</a> · <a rel="next" href="13-preserve-output-on-small-buffers.html">Next lesson</a></nav>
+<h1>Format GET and HEAD responses</h1>
+<p>A response consists of headers and sometimes a body. GET normally asks for the representation. HEAD asks for its metadata without transferring the body.</p>
+<h2>Prepare</h2>
+<p>Build the HTTP contract lab using its README and open response.c. The response body is the five-byte text ready.</p>
+<p>The program asks the same Framework formatter to produce a normal response and a HEAD response. The boolean argument selects whether body bytes are omitted.</p>
+<h2>Inspect the expectations</h2>
+<ol>
+<li>Both responses declare Content-Length: 5.</li>
+<li>Both announce Connection: close.</li>
+<li>The GET output ends with ready.</li>
+<li>The HEAD output contains five fewer bytes.</li>
+<li>The test checks the declared size independently of the transmitted size.</li>
+</ol>
+<p>A length in a header describes a protocol value. It is not automatically the number of bytes transmitted in every response mode.</p>
+<h2>Understand the spare byte</h2>
+<p>The output arrays begin filled with zero. The formatter receives capacity minus one. This leaves a zero after its bounded output so this particular lab can safely use strstr to inspect headers.</p>
+<p>The formatter's length remains the authoritative count. In a socket adapter, write exactly that count; do not send the spare zero.</p>
+<h2>Exercise</h2>
+<p>Change ready to waiting in a personal copy. Predict the new declared length and the difference between GET and HEAD. Update every expectation that depends on the body length.</p>
+<p>If the HEAD test fails, examine the length and body rules before altering the route. A request method, response content and transmission format have related but separate responsibilities.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/response.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-reject-ambiguous-framing.html">Previous lesson</a> · <a rel="next" href="13-preserve-output-on-small-buffers.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-web-server-in-c/12-format-get-and-head-responses.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

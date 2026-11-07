@@ -17,3 +17,13 @@ Learn values and functions first, then read the first two Java lessons before th
 Collections, exceptions, tests and explicit native integration boundaries.
 
 Read one topic at a time. The list above links to available lessons; the outline describes further study. Each practical lesson gives its own tool requirements.
+
+## Continue with a practical source study
+
+An invariant is a rule expected to remain true while a program works. The Java ledger example checks one such rule: total debits equal total credits. We will find what that check proves and what additional validation it needs.
+
+- [Check a ledger invariant](04-check-a-ledger-invariant.md)
+- [Compare a decimal value and its representation](05-compare-value-and-representation.md)
+- [Make rounding an explicit decision](06-make-rounding-an-explicit-decision.md)
+- [Test a journal without overclaiming its validity](07-test-a-journal-without-overclaiming.md)
+- [Read a test failure and recompile the changed source](08-read-a-test-failure-and-recompile.md)

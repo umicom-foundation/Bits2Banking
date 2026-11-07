@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/07-separate-slot-and-job-identity.html
+
+PURPOSE:
+Explain the lesson: Separate storage slots from job identity.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate storage slots from job identity | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-trace-a-producer-and-consumer.html">Previous lesson</a> · <a rel="next" href="08-reserve-undo-before-changing-state.html">Next lesson</a></nav>
+<h1>Separate storage slots from job identity</h1>
+<p>A circular queue reuses storage slots. A slot number tells you where a value is stored; a job number tells you which piece of work it represents.</p>
+<h2>Prepare</h2>
+<p>Read BtbQueuePush and BtbQueuePop in collections.c beside queue_pipeline.c. A queue starts with head zero and count zero. Its array has eight positions numbered zero through seven.</p>
+<h2>Draw the storage</h2>
+<p>Draw eight boxes. Fill them with jobs 1 through 8. Now remove jobs 1 and 2.</p>
+<p>The removed array cells may still contain old numbers. The queue's head and count determine which cells are active; clearing every released cell is unnecessary for this integer exercise.</p>
+<p>Append jobs 9 and 10. The tail calculation is:</p>
+<pre><code class="language-c">(head + count) % BTB_COLLECTION_CAPACITY</code></pre>
+<p>The remainder operator maps a position back into the eight-slot range.</p>
+<h2>Check your drawing</h2>
+<p>After the two removals and two additions, head is 2 and count is 8. Slot 0 holds job 9 and slot 1 holds job 10. Reading active values from head gives 3, 4, 5, 6, 7, 8, 9, 10.</p>
+<p>The physical array order and logical queue order now differ.</p>
+<h2>Extend the exercise</h2>
+<p>Remove all eight values. Check every received identity against the expected sequence. Finally try another removal with an output variable initialized to -1. Expect BTB_EMPTY and an unchanged output.</p>
+<p>If your drawing gives job 9 before job 3, you followed physical slot order instead of queue order.</p>
+<h2>Apply the distinction</h2>
+<p>A media render queue or network receive queue must preserve logical order even when its storage wraps. Do not expose a reused slot number as a permanent external job identifier.</p>
+<p>This lab stores integers and has one caller at a time. Object lifetimes and concurrent access require additional contracts in a production Framework service.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/collections/queue_pipeline.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-trace-a-producer-and-consumer.html">Previous lesson</a> · <a rel="next" href="08-reserve-undo-before-changing-state.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/07-separate-slot-and-job-identity.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

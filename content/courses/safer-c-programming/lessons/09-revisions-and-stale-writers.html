@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/09-revisions-and-stale-writers.html
+
+PURPOSE:
+Explain the lesson: Reject an edit based on an older revision.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reject an edit based on an older revision | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-spans-terminators-and-text-policy.html">Previous lesson</a> · <a rel="next" href="10-borrowed-pointers-after-replacement.html">Next lesson</a></nav>
+<h1>Reject an edit based on an older revision</h1>
+<h2>Prepare</h2>
+<p>Open the fault-injection lab's header and replacement function. A caller supplies <code>expectedRevision</code> when replacing a note. This is the revision it read before preparing its edit.</p>
+<p>A stale writer is a caller whose expectation no longer matches the current record. It might be an old window, a delayed operation or an outdated draft.</p>
+<h2>Trace two edits</h2>
+<p>Start with revision 1. Two views both read that revision.</p>
+<ol>
+<li>View A prepares an updated title and body.</li>
+<li>View B prepares a different update.</li>
+<li>A calls Replace with expected revision 1. It succeeds and creates revision 2.</li>
+<li>B calls Replace with expected revision 1. It receives <code>BTB_CONFLICT</code>.</li>
+</ol>
+<p>B's text is not silently applied over A's work. The caller can retain its draft, show the current version and ask for a reviewed resolution.</p>
+<h2>Read the ordering</h2>
+<p>The source checks the expected revision before attempting new allocations. A known conflict therefore does not need temporary strings. It also refuses replacement at <code>UINT64_MAX</code>, preventing the revision counter from wrapping to a previously used value.</p>
+<p>This local check does not make the object thread-safe. Concurrent access still needs a shared synchronization policy. Do not infer a distributed transaction protocol from a single in-memory function.</p>
+<h2>Exercise</h2>
+<p>Write a sequence with three calls: successful A, stale B, then B retried with the current revision after review. Record the input revision, status and final stored text each time.</p>
+<p>Expected revisions are 2 after A, still 2 after rejected B, then 3 after an explicitly reviewed retry. A blind automatic retry may discard the user's intent and is not the lesson's policy.</p>
+<h2>Recover from a conflict</h2>
+<p>Keep the caller's proposed content separate from the stored note. Read the current record, compare changes and decide whether to revise or discard the draft. The test should assert that a refused edit preserves both fields and the revision, not just the returned status. Production applications should reuse Framework conflict handling and audit services rather than copying this lab into each screen.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/fault-injection/note.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-spans-terminators-and-text-policy.html">Previous lesson</a> · <a rel="next" href="10-borrowed-pointers-after-replacement.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/09-revisions-and-stale-writers.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

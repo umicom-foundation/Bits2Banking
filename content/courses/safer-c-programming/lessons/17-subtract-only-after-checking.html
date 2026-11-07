@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/17-subtract-only-after-checking.html
+
+PURPOSE:
+Explain the lesson: Check subtraction before using the result.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check subtraction before using the result | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="16-understand-alignment-padding.html">Previous lesson</a> · <a rel="next" href="18-preserve-output-on-allocation-failure.html">Next lesson</a></nav>
+<h1>Check subtraction before using the result</h1>
+<h2>Prepare</h2>
+<p>Open arena.c and find available - padding. size_t is the unsigned type used for storage sizes. Subtracting a larger value from a smaller unsigned value wraps instead of producing a useful negative capacity.</p>
+<p>The allocator avoids that mistake by checking padding &lt;= available first.</p>
+<h2>Follow the order</h2>
+<p>First check that used does not exceed capacity. Then compute available as capacity minus used. Check padding against available. Finally compare the requested byte count with available minus padding.</p>
+<p>Each subtraction is justified by an earlier comparison.</p>
+<h2>Lab</h2>
+<p>Trace a capacity of sixteen, used count fourteen, padding three and request one.</p>
+<p>Expected: available is two; padding exceeds it; the allocation returns insufficient space before computing a usable start position.</p>
+<p>Repeat with padding one and request one. This request fits exactly.</p>
+<h2>Exercise and explanation</h2>
+<p>Why not compare used + padding + byteCount against capacity? The sum itself can overflow before the comparison. Subtraction after validated bounds makes the reasoning explicit.</p>
+<h2>Troubleshoot</h2>
+<p>Keep integer representability and memory capacity as separate checks. The source also checks address arithmetic using uintptr_t before rounding. A region can have sufficient declared capacity while an arithmetic expression is still unrepresentable.</p>
+<p>When reviewing a new allocator, write the inequality that makes each subtraction safe. Do not rely on small demonstration inputs to establish the general boundary.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/arena-allocator/arena.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="16-understand-alignment-padding.html">Previous lesson</a> · <a rel="next" href="18-preserve-output-on-allocation-failure.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/17-subtract-only-after-checking.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

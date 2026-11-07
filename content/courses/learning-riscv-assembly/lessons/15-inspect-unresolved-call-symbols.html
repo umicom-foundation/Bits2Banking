@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/15-inspect-unresolved-call-symbols.html
+
+PURPOSE:
+Explain the lesson: Inspect an unresolved call symbol.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect an unresolved call symbol | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-combine-shifts-with-or.html">Previous lesson</a> · <a rel="next" href="16-check-assembly-with-a-c-oracle.html">Next lesson</a></nav>
+<h1>Inspect an unresolved call symbol</h1>
+<p>An assembler can translate a function call before it knows the final address of the target function. It records information for the linker to finish later.</p>
+<h2>Prepare</h2>
+<p>Use the RISC-V sequences README to assemble call.S and sum.S separately. Stop if either command fails. The resulting .o files are objects, not runnable applications.</p>
+<p>Run the documented llvm-objdump -dr command.</p>
+<h2>Find the reference</h2>
+<p>call.S contains call BtbSum64. The target's implementation is in sum.S, so call.o cannot independently choose its final linked location.</p>
+<p>A relocation tells the linker where a reference needs adjustment. Its exact encoding and displayed form depend on toolchain options and permitted relaxation.</p>
+<h2>Follow the stages</h2>
+<ol>
+<li>Source names the target symbol.</li>
+<li>Assembly creates instructions and relocation information.</li>
+<li>Linking combines compatible objects and resolves the symbol.</li>
+<li>Loading places the executable into an execution environment.</li>
+</ol>
+<p>An error at one stage should be investigated at that stage.</p>
+<h2>Exercise</h2>
+<p>On a local copy of the documented Linux build command, omit sum.S. Predict an unresolved-reference link failure. Restore it before expecting a runnable harness.</p>
+<p>Do not solve a missing symbol by inventing an empty function with the same name. That can hide the build error while removing required behavior.</p>
+<h2>Connect to Umicom</h2>
+<p>When a Framework library reports an undefined reference, inspect which source file defines the symbol and whether that object is included in the linked target. A declaration in a header is not an implementation.</p>
+<p>This lesson's commands are qualification instructions. Record the actual diagnostic from your toolchain rather than assuming its wording or relocation names will exactly match another version.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/call.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-combine-shifts-with-or.html">Previous lesson</a> · <a rel="next" href="16-check-assembly-with-a-c-oracle.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv-assembly/15-inspect-unresolved-call-symbols.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

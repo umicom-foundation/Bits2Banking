@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/21-format-a-register-without-allocation.html
+
+PURPOSE:
+Explain the lesson: Format a register without allocation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Format a register without allocation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="20-bound-emergency-diagnostics.html">Previous lesson</a></nav>
+<h1>Format a register without allocation</h1>
+<p>Hexadecimal makes binary values easier to inspect. Four bits form one hexadecimal digit, often called a nibble. A 64-bit register therefore fits into sixteen hexadecimal digits.</p>
+<h2>Setup recap</h2>
+<p>Read UmicomTrapEmergencyHex in trap_emergency.c. You need only a text editor and paper. The function prints through the bounded emergency byte routine rather than allocating a formatted string.</p>
+<p>The digit table contains the sixteen characters 0 through 9 and a through f.</p>
+<h2>1. Extract one digit</h2>
+<p>For each position, the function shifts the value right and masks with 15. In binary, 15 is 1111, so the mask retains four bits.</p>
+<p>For the small value 0x2a, the final two selected digits are 2 and a. Earlier positions produce zero.</p>
+<h2>2. Follow the loop direction</h2>
+<p>The loop starts with nibble equal to sixteen and stops before zero. Its shift expression is (nibble - 1) multiplied by four.</p>
+<p>The first shift is 60 and the last is zero. No iteration shifts the 64-bit value by 64, and subtraction does not occur with nibble already zero.</p>
+<p>The most significant digit is printed first, giving the familiar left-to-right notation.</p>
+<h2>3. Understand fixed width</h2>
+<p>The function emits a 0x prefix, sixteen digits and a line ending. Leading zeroes make register values align in a report and preserve a consistent width.</p>
+<p>Formatting every value this way does not tell the reader what it means. The caller adds labels such as cause and pc. A program counter is an address associated with execution, while a cause value describes why control entered the handler.</p>
+<h2>Exercise and expected result</h2>
+<p>Trace 0, 1, 0x2a and a value with only the highest bit set. For 0x2a, write the expected digit sequence as 000000000000002a.</p>
+<p>Explain why the digit-table index cannot exceed fifteen. Then describe what would go wrong if the mask were accidentally changed to 31.</p>
+<p>This exercise concerns representation. It does not validate whether a reported address is mapped or whether the interrupted instruction can safely resume.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/platform/qemu-riscv64/trap_emergency.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="20-bound-emergency-diagnostics.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/21-format-a-register-without-allocation.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="22-physical-frames-as-an-inventory.html">Next: Represent physical frames as an inventory</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-iphone-development/lessons/03-state-feedback-and-accessibility.html
+
+PURPOSE:
+Explain the lesson: Keep screen state and feedback understandable.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep screen state and feedback understandable | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="02-call-the-shared-c-model.html">Previous lesson</a> · <a href="04-simulator-device-and-evidence.html">Next lesson</a></nav>
+<h1>Keep screen state and feedback understandable</h1>
+<h2>Before you begin</h2>
+<p>Use the ActivityLab project connected to the supplied C sources. Run it on an iPhone simulator. A state value belongs to the screen while that screen exists. Persistence means storing a value so it can survive a later launch; this example has not added persistence.</p>
+<h2>Read the event</h2>
+<pre><code class="language-swift">let next = BtbActivityNext(completed)
+if next &gt;= 0 {
+    completed = next
+    message = &quot;Exercise recorded&quot;
+} else {
+    message = &quot;No change: check the count or begin another activity&quot;
+}</code></pre>
+<p>The button asks the model for a result. The screen changes its count only after acceptance. On rejection, the previous count remains visible and a message explains what happened.</p>
+<h2>Check a normal interaction</h2>
+<ol>
+<li>Launch with zero completed exercises.</li>
+<li>Press Complete exercise once. Expect 1.</li>
+<li>Press it twice more. Expect 3.</li>
+<li>Rotate the simulator and inspect the layout.</li>
+<li>Increase the simulator's text size and check that the button and feedback remain understandable.</li>
+<li>Use an accessibility reader to find the labelled button and count.</li>
+</ol>
+<p>Record each observed result. A C unit test cannot establish text readability or focus order.</p>
+<h2>Explore state lifetime</h2>
+<p>Stop and relaunch the app. This view initializes its state to zero. A fresh zero is consistent with its current design. If the product should resume progress tomorrow, specify when and where it is saved, how errors appear, and which version of the data is supported before adding storage.</p>
+<h2>Boundary exercise</h2>
+<p>In a practice copy initialize completed to 999. The next press should show 1000; a further press should retain 1000 and display the rejection message. Restore zero afterwards. The model's host checks cover these values without needing a thousand taps.</p>
+<h2>Connect to other Umicom screens</h2>
+<p>A UI should show both accepted changes and rejected operations. Silent failure makes a working rule appear broken. Follow that principle when adding file saving, media rendering or a build action to a Framework-backed application.</p>
+<h2>Recovery</h2>
+<p>If tapping changes nothing, first inspect the event breakpoint, then the native return value, then the state assignment. Investigate one boundary at a time.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/iphone-framework-activity/ActivityView.swift">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-call-the-shared-c-model.html">Previous lesson</a> · <a href="04-simulator-device-and-evidence.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/15-mobile-development/learning-iphone-development/03-state-feedback-and-accessibility.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

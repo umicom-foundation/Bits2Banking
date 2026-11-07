@@ -101,3 +101,13 @@ These additional manuscripts are preserved for further study. They are not extra
 ## Use another format
 
 Each chapter above has a browser counterpart in the [written course catalogue](../../start/written-courses.md). Markdown and HTML remain source material; books, teaching scripts and document editions should select a stated reading route rather than combine every specialist chapter.
+
+## Continue with a practical source study
+
+Distributed work begins with deciding which task is considered next. This lesson traces a small existing Framework queue used for financial jobs, then identifies what additional contracts a learning-work scheduler would need.
+
+- [Lab: trace a stable job queue](priority-queue-reading-lab.md)
+
+## Prepare local contracts before distributing work
+
+Start with the [Framework tokenizer sequence](../umicom-development/60-introduce-byte-token-identities.md) and the [AI contract client](../umicom-development/84-build-the-framework-ai-contract-lab.md). They show how a local worker can validate byte inputs and finite gradients before any network transport is added. They do not supply worker authentication, consensus or distributed training.

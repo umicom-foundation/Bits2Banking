@@ -69,3 +69,7 @@ If an arrow key damages a line, clear it with Ctrl-U and type again. The current
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/08-files-at-the-console.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: How a program asks the Kernel for a service](07-native-system-calls.md)
+
+[Next: Check what a native program needs](09-program-requirements.md)

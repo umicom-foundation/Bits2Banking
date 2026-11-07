@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/lessons/20-allocation-outputs-and-lifetimes.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Allocation outputs and lifetimes | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1 id="allocation-outputs-and-lifetimes">Allocation outputs and lifetimes</h1>
+<p>Allocating storage means setting aside space for some data. Ownership tells us who is responsible for that space. Lifetime tells us when the data may still be used. This lab follows an existing Bits2Banking arena: a teaching allocator that hands out pieces of a caller-owned array and can return to an earlier checkpoint.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>Install GCC with C23 support, CMake and Ninja as explained in <a href="../terminal-lab.html">terminal setup</a>. No Framework SDK is needed for this isolated C exercise. Copy <code>labs/native/arena-allocator</code> from your Bits2Banking checkout into a new practice folder, such as <code>C:\umicom-learning\arena-allocator</code> or <code>$HOME/umicom-learning/arena-allocator</code>. Open a terminal in that folder. Use <code>Get-Content arena.h</code> in PowerShell or <code>cat arena.h</code> in Bash to read the public functions.</p>
+<p>PowerShell, copying into a new destination:</p><pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+New-Item -ItemType Directory -Force &#39;C:\umicom-learning&#39;
+Copy-Item -Recurse &#39;C:\umicom\Umicom-Bits2Banking\labs\native\arena-allocator&#39; &#39;C:\umicom-learning\arena-allocator&#39;
+Set-Location &#39;C:\umicom-learning\arena-allocator&#39;
+Get-Content arena.h</code></pre><p>Bash, copying into a new destination:</p><pre><code class="language-bash">mkdir -p &quot;$HOME/umicom-learning&quot;
+cp -R &quot;$HOME/umicom/Umicom-Bits2Banking/labs/native/arena-allocator&quot; &quot;$HOME/umicom-learning/arena-allocator&quot;
+cd &quot;$HOME/umicom-learning/arena-allocator&quot;
+cat arena.h</code></pre><p>Copy once; repeating the copy into an existing destination can create a nested folder. Stop on any command error.</p>
+<h2 id="trace-ownership">1. Trace ownership</h2>
+<pre><code class="language-text">main owns workspace[512]
+    └── arena describes used and remaining space
+          ├── title points into workspace
+          └── body points into workspace
+checkpoint → allocate report → print report → rewind checkpoint
+</code></pre>
+<p><code>BtbArenaInitialise</code> receives the backing array. It does not obtain memory from an operating system. <code>BtbArenaAllocate</code> advances the used count after checking the request. <code>BtbArenaCheckpoint</code> records a position. <code>BtbArenaRewind</code> makes later allocations available for reuse.</p>
+<p>After rewind, the array still exists, but its old allocations no longer belong to that report. Another allocation can overwrite them. Do not keep using <code>title</code> or <code>body</code> as report values after that point. Rewinding does not securely erase confidential data.</p>
+<h2 id="receive-the-correct-pointer-type">2. Receive the correct pointer type</h2>
+<p>The allocator's last argument is <code>void **</code>: the address of an actual <code>void *</code> variable. A safe call is:</p>
+<pre><code class="language-c">void *storage = NULL;
+BtbArenaStatus result = BtbArenaAllocate(&amp;arena, 32U, 1U, &amp;storage);
+</code></pre>
+<p>Check <code>result</code> before converting the returned pointer value to the type needed by your program. In C, assigning that <code>void *</code> value to <code>char *</code> is permitted. Casting the address of a <code>char *</code> variable to <code>void **</code> is different: it would let the function write through an incompatible pointer-object type. A cast can hide a diagnostic without fixing the underlying rule.</p>
+<p>The report example now uses <code>titleStorage</code> and <code>bodyStorage</code> of type <code>void *</code>, then assigns their values to character pointers. A disabled section retains the older casts with an explanation for code review. Study the active path when following the exercise.</p>
+<h2 id="build-and-inspect-the-result">3. Build and inspect the result</h2>
+<p>The commands are the same in PowerShell and Bash:</p>
+<pre><code class="language-text">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure --no-tests=error
+</code></pre>
+<p>CTest runs ownership checks and the report demonstration. To see the report output after a passing run, use <code>ctest --test-dir build -V -R &#39;^bits2banking[.]arena[.]report$&#39; --no-tests=error</code>. Look for the report's final <code>Bytes after review: 0</code>. The earlier byte count includes both terminating zero characters and depends on the text's encoded bytes; do not infer it from the number of letters on screen.</p>
+<p>Open <code>test_arena.c</code>. It requests more storage than the arena contains and checks that both the output pointer and used count stay unchanged. It also checks alignment: a rule saying which addresses are valid for a particular stored type.</p>
+<h2 id="practise-a-refusal">4. Practise a refusal</h2>
+<p>In your copy of <code>main.c</code>, reduce the workspace to eight bytes. Rebuild. The report should return an error rather than copy text outside its storage. Restore 512 bytes and rerun both checks. If an assertion fails, inspect the allocation result before investigating <code>strcpy</code>; the copy is valid only after enough space was successfully reserved.</p>
+<p>This lab teaches memory ownership, not a replacement production allocator. Applications should use existing Framework services where available. Continue with <a href="../../umicom-development/lessons/37-use-a-framework-function-in-a-lab.html">Framework functions in a lab</a>, or return to <a href="../index.html">Learning C</a>.</p>
+
+<section><h2>Exercise and explanation</h2><p>Does rewinding an arena securely erase the old report?</p><details><summary>Read the explanation</summary><p>No. Rewind releases the allocation for reuse. Existing bytes can remain until overwritten; old report pointers must no longer be used as valid report allocations.</p></details></section><nav aria-label="Lesson sequence"><a rel="prev" href="19-length-capacity-and-terminators.html">Previous lesson</a> · <a href="../glossary.html">Glossary</a> · <a href="../practical-guide.html">Practical guide</a> · <a href="../../learning-paths.html">Learning map</a></nav>
+<p><a rel="next" href="21-follow-a-rejected-call.html">Next: Follow a rejected function call</a></p>
+</article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>
+

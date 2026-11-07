@@ -47,3 +47,5 @@ Exercise: write pseudocode that first rejects an empty journal and then performs
 ## Continue learning
 
 [Continue: Values, methods and checks](03-values-methods-and-checks.md)
+
+[Previous: Records and a journal](01-records-and-a-journal.md)

@@ -1,0 +1,50 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/distributed-learning/lessons/087-weight-a-short-final-microbatch.html
+
+PURPOSE:
+Weight a shorter final microbatch correctly
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Weight a shorter final microbatch correctly | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Weight a shorter final microbatch correctly</h1>
+<p>Training adjusts numbers called model parameters so that predictions better match examples. A batch is a group of examples used for one adjustment. This module follows a small, local Framework experiment. It assumes no previous machine-learning course and introduces each term before using it. A local experiment is the first measurement needed when designing work for several computers.</p>
+<h2>Set up this laboratory</h2>
+<ol>
+<li>Install a C23 compiler, CMake and Ninja. On Windows, open PowerShell and make the installed UCRT64 tools available with <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code>. On Linux, open a terminal and ensure <code>cc</code>, <code>cmake</code> and <code>ninja</code> are installed through your distribution.</li>
+<li>Use a checkout of Umicom Framework containing <code>learning/native-llm/inspect_accumulation.c</code>. The examples below use the Framework child of Umicom Applications.</li>
+<li>Configure a separate laboratory directory. This prepares build instructions; it does not train a model.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Applications\framework
+cmake -S learning/native-llm -B build/learning-accumulation -G Ninja -DBUILD_TESTING=ON
+cmake --build build/learning-accumulation --target umicom-native-llm-accumulation
+&amp; .\build\learning-accumulation\umicom-native-llm-accumulation.exe 2</code></pre>
+<p>In Bash, change to the Framework directory, run the same two <code>cmake</code> commands, then run <code>./build/learning-accumulation/umicom-native-llm-accumulation 2</code>. Stop if configuration or compilation fails; inspect the first diagnostic before proceeding. Expected successful output includes <code>Effective tokens: 40</code> and <code>Comparison: within tolerance</code>. Numerical values and memory observations must be recorded from your actual run. These are instructions to execute, not a claim that a particular environment has passed.</p>
+<h2>A mean needs its denominator</h2>
+<p>A mean is a total divided by the number of items. Suppose three groups contain sixteen, sixteen and eight token positions. Their mean losses are 2, 4 and 8. Averaging these three means equally gives <code>(2 + 4 + 8) / 3</code>, about 4.67. That incorrectly gives the small final group as much influence as either larger group.</p>
+<p>The token-weighted mean is:</p>
+<pre><code class="language-text">(16 × 2 + 16 × 4 + 8 × 8) / 40
+= (32 + 64 + 64) / 40
+= 4</code></pre>
+<p>The same principle applies to each coordinate of a mean gradient. Every coordinate must use the same effective-batch denominator. Do not divide once per worker merely because workers are convenient units of scheduling.</p>
+<h2>Trace the implementation</h2>
+<ol>
+<li>Open <code>decoder.c</code> and find the active <code>CollectAccumulatedGradients</code> function.</li>
+<li>Find <code>currentTokens</code>, which is the smaller of the remaining count and the microbatch limit.</li>
+<li>Find <code>weightedLoss += ... currentTokens</code>. This converts the group mean back into its weighted contribution.</li>
+<li>Find the inner loop that adds each gradient multiplied by <code>currentTokens</code>.</li>
+<li>Find the division by <code>tokenCount</code> after every group has contributed.</li>
+</ol>
+<p>The temporary sums use <code>double</code> and the final gradients use <code>float</code>. These are floating-point number types. The wider temporary representation reduces rounding during accumulation; it does not make arithmetic exact. The implementation also rejects nonfinite values, such as an infinity produced by an invalid numerical result.</p>
+<h2>Exercise</h2>
+<p>Repeat the arithmetic with group sizes 8 and 32 and mean losses 1 and 3. The correct effective mean is 2.6. Explain why 2 is incorrect.</p>
+<p>For a future distributed protocol, carry both the contribution and its sample or token count. Define whether padding, ignored targets or repeated samples contribute to that count. Agreement on a hash cannot repair an ambiguous denominator. This laboratory has no padding or ignored-target convention: it uses the supplied aligned token positions.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/ai/training/decoder.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="086-count-sequences-tokens-and-updates.html">Previous: Count sequences, tokens and optimiser updates</a> · <a href="088-compare-results-with-numerical-tolerances.html">Next: Compare floating-point results with explicit tolerances</a></p>
+</nav><p><a href="../../../lessons/12-distributed-learning/distributed-learning/087-weight-a-short-final-microbatch.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

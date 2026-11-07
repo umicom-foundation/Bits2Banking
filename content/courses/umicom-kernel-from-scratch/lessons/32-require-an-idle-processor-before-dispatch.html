@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/32-require-an-idle-processor-before-dispatch.html
+
+PURPOSE:
+Explain the lesson: Require an idle processor before dispatch.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Require an idle processor before dispatch | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="31-dispatch-in-ready-queue-order.html">Previous lesson</a> · <a rel="next" href="33-match-a-wakeup-to-its-wait.html">Next lesson</a></nav>
+<h1>Require an idle processor before dispatch</h1>
+<h2>Prepare</h2>
+<p>Find the runningSlot guard in BtbRoundRobinNext. The output handle tells the caller which task was selected. Dispatch is allowed only when the teaching processor is idle.</p>
+<p>An existing running task must yield, wait or exit before another selection.</p>
+<h2>Trace refusal</h2>
+<p>Admit A and B. Dispatch A, then immediately call Next again.</p>
+<p>Expected: BUSY. B remains ready and A remains running. The second request cannot silently replace A.</p>
+<h2>Lab</h2>
+<p>Write the initial ready count, first dispatch result, second dispatch result and final running state. Locate the corresponding assertion in test_round_robin.c.</p>
+<p>Then add a paper trace in which A yields before the second Next. This time B should run.</p>
+<h2>Exercise and explanation</h2>
+<p>Why not let Next automatically yield the old task? That would combine two state transitions and hide the caller's intent. This API makes the scheduling boundary explicit.</p>
+<h2>Troubleshoot</h2>
+<p>A BUSY result is not necessarily corruption. It may mean that the caller skipped a required transition. Examine the operation history before changing the scheduler.</p>
+<p>In Umicom Kernel, the point at which execution can safely change is tied to saved registers and privilege state. This hosted model teaches the state rule; it does not establish those hardware conditions.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/round-robin-scheduler/round_robin.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="31-dispatch-in-ready-queue-order.html">Previous lesson</a> · <a rel="next" href="33-match-a-wakeup-to-its-wait.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/32-require-an-idle-processor-before-dispatch.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

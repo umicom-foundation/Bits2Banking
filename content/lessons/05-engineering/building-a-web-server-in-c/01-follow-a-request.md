@@ -59,3 +59,5 @@ No installation is needed to read this lesson. [Learning HTML](../../../courses/
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-web-server-in-c/lessons/01-follow-a-request.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Connect routes to ordinary C functions](02-routes-and-handlers.md)

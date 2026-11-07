@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/14-register-a-route-and-context.html
+
+PURPOSE:
+Explain the lesson: Register a route and its context.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Register a route and its context | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-preserve-output-on-small-buffers.html">Previous lesson</a> · <a rel="next" href="15-handle-short-transfers.html">Next lesson</a></nav>
+<h1>Register a route and its context</h1>
+<p>A route connects a request method and path to a C function. A context pointer lets that function use application state without relying on a global variable.</p>
+<h2>Prepare</h2>
+<p>Open routes.c in the HTTP contract lab. Read the Health function first. It increments a caller-owned counter and fills a plain-text response.</p>
+<h2>Follow registration</h2>
+<ol>
+<li>Create a UmiWebService.</li>
+<li>Initialize a route for GET and /health.</li>
+<li>Pass Health as the callback.</li>
+<li>Pass the address of calls as its context.</li>
+<li>Add the route to the service's router.</li>
+</ol>
+<p>The route stores a borrowed pointer to calls. The local counter remains alive until main finishes. The service is destroyed before main returns, so the borrower does not outlive that counter.</p>
+<h2>Compare two requests</h2>
+<p>The first request targets /health. Expected: response status 200 and calls equal to one.</p>
+<p>The second targets /missing. Expected: response status 404 and calls still equal to one. The service handled a valid request, but it did not invoke the Health callback.</p>
+<p>A Framework status of OK can therefore accompany an HTTP response of 404. The C operation completed; the requested route was absent.</p>
+<h2>Exercise</h2>
+<p>Add a separate GET /version handler returning a short version label. Give it its own counter. Verify that requesting /health does not increment the new counter.</p>
+<p>If the callback never runs, compare method and exact path before investigating the UI. A route named /health does not automatically cover /health/ or POST /health.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/routes.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-preserve-output-on-small-buffers.html">Previous lesson</a> · <a rel="next" href="15-handle-short-transfers.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-web-server-in-c/14-register-a-route-and-context.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

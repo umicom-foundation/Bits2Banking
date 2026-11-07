@@ -48,3 +48,5 @@ For a C23 comparison, the Framework and Kernel return explicit status values ins
 ---
 
 [Read this lesson in HTML](../../../courses/learning-python/lessons/01-names-lists-and-note-functions.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: JSON files and error boundaries](02-json-files-and-error-boundaries.md)

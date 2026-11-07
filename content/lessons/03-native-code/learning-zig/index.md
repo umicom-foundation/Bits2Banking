@@ -16,3 +16,11 @@ Understand variables, functions and return values. Use documentation matching th
 Slices, allocators, resource cleanup and C interoperability.
 
 Read one topic at a time. The list above links to available lessons; the outline describes further study. Each practical lesson gives its own tool requirements.
+
+- [Call the shared C model](03-call-the-shared-c-model.md)
+
+- [Handle an error and continue](04-handle-an-error-and-continue.md)
+
+- [Build a mixed-language program](05-build-a-mixed-language-program.md)
+
+- [Check the interface contract](06-check-the-interface-contract.md)

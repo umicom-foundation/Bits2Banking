@@ -59,3 +59,7 @@ The caller can no longer distinguish an operation that succeeded from one that d
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-web-server-in-c/lessons/02-routes-and-handlers.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Follow a browser request into C](01-follow-a-request.md)
+
+[Next: Start and stop a local service safely](03-own-the-server-lifetime.md)

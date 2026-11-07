@@ -260,3 +260,12 @@ New lessons have matching HTML and Markdown. HTML is for browser reading; Markdo
 ## Finance, Bitcoin and systems
 
 Follow the [ordered course routes](../courses/finance-and-systems.html) for pricing in C, C++ and Java; Bitcoin concepts and source; blockchain construction; Calypso integration; Linux systems; and a web server in C. Each route lists prerequisites and available lessons.
+
+## Mobile and native-language starter courses
+
+Each course starts with its own setup summary. These routes currently contain two introductory lessons each; they are starting points for continued study.
+
+- [Learning Kotlin](../lessons/02-programming/learning-kotlin/index.md) — Write and check a small lesson-progress program. Start with installing a JDK and the Kotlin compiler, then create a file, compile it and explain its values and functions.
+- [Learning D Language](../lessons/03-native-code/learning-d/index.md) — Create a native program with the D compiler. Learn how source becomes an executable, then check a function with input validation and unit tests.
+- [Android Development](../lessons/15-mobile-development/learning-android/index.md) — Build a small lesson counter for an Android device or emulator. Begin with the development tools, run the generated application, then connect a button to visible screen state.
+- [Learning Flutter](../lessons/15-mobile-development/learning-flutter/index.md) — Create a small lesson counter using Dart and Flutter. Begin by running the generated project, then learn widgets, state, callbacks and automated interaction checks.

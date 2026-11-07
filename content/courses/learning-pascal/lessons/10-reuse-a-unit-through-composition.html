@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-pascal/lessons/10-reuse-a-unit-through-composition.html
+
+PURPOSE:
+Explain the lesson: Reuse progress arithmetic through a unit.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reuse progress arithmetic through a unit | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-validate-text-before-storage.html">Previous lesson</a> · <a rel="next" href="11-preserve-results-on-refusal.html">Next lesson</a></nav>
+<h1>Reuse progress arithmetic through a unit</h1>
+<h2>Prepare</h2>
+<p>Open coursebook.pas and lessonprogress.pas side by side. A Pascal unit groups declarations and implementations that other programs can use.</p>
+<p>CourseBook imports LessonProgress. It stores a TLessonProgress inside each TCourseEntry.</p>
+<h2>Follow the calls</h2>
+<p>Adding a course asks TryCreateProgress to validate its total and initial completion count. Completing a lesson calls TryCompleteLesson. Reading a remaining count calls RemainingLessons.</p>
+<p>CourseBook does not calculate Total minus Completed independently. Its own responsibility is selecting a valid course entry and managing names and capacity.</p>
+<h2>Lab</h2>
+<p>Trace TryCompleteCourseLesson for course one. List each check and function call until the Completed field changes.</p>
+<p>Then try completing a course that already has all lessons completed. The progress unit rejects the increment. The book does not need a second copy of that arithmetic rule.</p>
+<h2>Why this helps</h2>
+<p>If the progress contract changes, one implementation remains responsible for it. Tests for the collection still verify that it selects the correct entry and preserves other courses.</p>
+<p>This is composition: a larger feature is built by connecting smaller, defined parts.</p>
+<h2>Troubleshoot</h2>
+<p>A missing unit error concerns source search paths or compilation order. The supplied CMake file passes the source directory with Free Pascal's unit-search option and creates separate unit-output folders for each program.</p>
+<h2>Production connection</h2>
+<p>Umicom applications follow the same architectural principle at a larger scale: reusable services belong in Framework. Language exercises can demonstrate the principle without becoming competing production services. State clearly which layer owns the reusable rule.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/pascal-progress/coursebook.pas">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-validate-text-before-storage.html">Previous lesson</a> · <a rel="next" href="11-preserve-results-on-refusal.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-pascal/10-reuse-a-unit-through-composition.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

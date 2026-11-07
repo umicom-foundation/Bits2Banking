@@ -65,3 +65,5 @@ If a local link fails, compare the destination with the actual directory names, 
 ## Continue learning
 
 [Continue: Labels and form checks](03-labels-and-form-checks.md)
+
+[Previous: A page with meaning](01-a-page-with-meaning.md)

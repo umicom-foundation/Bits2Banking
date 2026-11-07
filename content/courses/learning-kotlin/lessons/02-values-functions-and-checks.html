@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-kotlin/lessons/02-values-functions-and-checks.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calculate progress and check the result | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../course-series.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="calculate-progress-and-check-the-result">Calculate progress and check the result</h1>
+<p>This lesson turns a simple requirement into a function: given a total number of lessons and a completed number, calculate how many remain. A requirement describes what a program must do. A check compares its observed behaviour with that requirement.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>Install a JDK and the Kotlin command-line compiler. Open PowerShell or bash and confirm <code>java -version</code> and <code>kotlinc -version</code>. Create an empty practice folder, then save <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/kotlin-first-program/Progress.kt">Progress.kt</a> there using that exact filename. A <code>.kt</code> file is Kotlin source. The <a href="01-tools-and-first-program.html">first lesson</a> gives the complete installation and file-creation steps.</p>
+<h2 id="read-the-requirement-before-the-code">1. Read the requirement before the code</h2>
+<p>A valid total is zero or more. A completed count must be between zero and the total, including both ends. For valid input the answer is <code>total - completed</code>. Invalid input must be reported instead of becoming a negative remaining count.</p>
+<table>
+<thead>
+<tr>
+<th>Total</th>
+<th>Completed</th>
+<th>Expected behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>1</td>
+<td>Return 3</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4</td>
+<td>Return 0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>Return 0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>5</td>
+<td>Reject the input</td>
+</tr>
+</tbody>
+</table>
+<h2 id="follow-the-function">2. Follow the function</h2>
+<pre><code class="language-kotlin">fun remainingLessons(total: Int, completed: Int): Int {
+    require(total &gt;= 0) { &quot;Total must not be negative&quot; }
+    require(completed in 0..total) { &quot;Completed must be between zero and total&quot; }
+    return total - completed
+}
+</code></pre>
+<p><code>total</code> and <code>completed</code> are parameters: names for values received by a function. <code>Int</code> describes a signed integer. The <code>: Int</code> after the parameter list describes the result type. <code>&gt;=</code> means greater than or equal to. <code>0..total</code> creates an inclusive range, and <code>in</code> asks whether the value belongs to it.</p>
+<p><code>require</code> throws an exception if its condition is false. An exception transfers control out of the ordinary calculation to an error handler; it is not a normal numerical result. The text in braces supplies an explanation. Only valid inputs reach <code>return</code>, which sends the difference to the caller. Validating first also makes the subtraction fit this nonnegative integer range.</p>
+<h2 id="read-the-caller">3. Read the caller</h2>
+<p>In <code>main</code>, <code>val total = 4</code> introduces a value that cannot be reassigned through that name. Kotlin infers its integer type. <code>remainingLessons(total, completed)</code> calls the function with two arguments. The expression <code>${remainingLessons(total, completed)}</code> inserts the calculated result into a string.</p>
+<p>The example then uses <code>check</code> for facts that must hold. <code>check(remainingLessons(0, 0) == 0)</code> compares the result with zero; <code>==</code> means equality. <code>runCatching { ... }</code> runs a block and captures its success or failure. <code>.isFailure</code> lets the example check that invalid input was rejected. This introductory check verifies rejection, not the exact exception type or message.</p>
+<h2 id="compile-and-run-all-the-checks">4. Compile and run all the checks</h2>
+<pre><code class="language-text">kotlinc Progress.kt -include-runtime -d progress.jar
+java -jar progress.jar
+</code></pre>
+<p>Expected application output:</p>
+<pre><code class="language-text">Remaining lessons: 3
+All progress checks passed.
+</code></pre>
+<p>Stop if the compiler reports an error. A failing check ends the program with an exception rather than printing the final success line. Read the first error and its source location; the line number may differ if you added comments.</p>
+<h2 id="investigate-an-intentional-mistake">5. Investigate an intentional mistake</h2>
+<p>Make a separate copy of the source for this exercise. Change <code>return total - completed</code> to <code>return total + completed</code>. Predict the result before running. The first printed result becomes 5, and the all-completed check fails because 4 + 4 is 8, not 0. Restore subtraction, recompile and run again. Keep both source and observed output if you want to explain the repair later.</p>
+<h2 id="connection-to-umicom">Connection to Umicom</h2>
+<p>Compare this example with <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/first-c-programs/counts.c">the C progress contract</a>. C reports a status and writes a result through an output parameter; this Kotlin example reports invalid input using an exception. Both start with the same questions: what is valid, what is returned, and what happens on failure? These are teaching examples, not a production mobile binding to Framework.</p>
+<h2 id="exercise-and-answer">Exercise and answer</h2>
+<p>Add <code>check(remainingLessons(6, 2) == 4)</code> to <code>main</code>. It should pass because both inputs satisfy the contract and 6 − 2 is 4. Add <code>check(runCatching { remainingLessons(6, -1) }.isFailure)</code> to check the lower boundary. A passing normal example alone would not check that invalid boundary.</p>
+<p><a href="01-tools-and-first-program.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="../../learning-android/index.html">Android Development</a></p>
+
+<nav aria-label="Course navigation"><a href="../index.html">Course contents</a> · <a href="../../course-series.html">Subject guide</a></nav><nav aria-label="Next lesson"><a rel="next" href="03-convert-command-line-text.html">Continue: Convert command-line text into checked values</a></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

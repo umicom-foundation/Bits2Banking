@@ -1,0 +1,55 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cmake/lessons/04-target-dependencies.html
+
+PURPOSE:
+Build a target and its required dependencies
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build a target and its required dependencies | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Build a target and its required dependencies</h1>
+<p>CMake describes how a software project is prepared for building. In this course you will follow a small C project from source files to executables, understand dependencies, run tests and record useful evidence. Every chapter includes the setup needed to enter the exercise directly.</p>
+<h2>Start here</h2>
+<p>A terminal is a window in which you type commands. A folder groups files; a path tells a command where a file or folder is. Source files contain the instructions people edit. A build folder contains the machine-readable results. Keep the two folders separate.</p>
+<p>This course uses the existing labs/native/bounded-ledger-line project in Bits2Banking. It decodes a fictional message such as 1001:+2500: training account 1001, with a change of 2500 pence. It does not connect to a bank.</p>
+<p>On Windows, install MSYS2. In its UCRT64 terminal install the tools:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Open PowerShell. Adjust the repository path if your copy is elsewhere. Run each line separately and stop on an error.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version
+ninja --version
+cmake -S labs/native/bounded-ledger-line -B build/ledger-line -G Ninja -DBUILD_TESTING=ON
+cmake --build build/ledger-line --parallel 2
+ctest --test-dir build/ledger-line --output-on-failure --no-tests=error</code></pre>
+<p>Use CMake 3.24 or newer and a compiler with C23 support. On Linux, install these tools through the distribution's package manager, open Bash in the repository, and use the same three cmake/ctest commands. The small project builds independently of Framework. <a href="../../learning-c/index.html">Learning C</a> gives a slower installation walkthrough.</p>
+<p>The expected test names end in syntax, mutations and example. Missing tools, missing executables and zero selected tests need investigation. For experiments, copy the lab to a separate practice folder and point -S at that folder; preserve the original example.</p>
+<h2>Goal</h2>
+<p>Request one program while letting the build tool identify its prerequisites.</p>
+<p>The demo depends on btb_ledger_line through target_link_libraries. The test and mutation programs depend on the same library. That library depends on ledger_line.c and the headers it includes.</p>
+<pre><code class="language-powershell">cmake --build build/ledger-line --target bits2banking-ledger-line-demo --parallel 2</code></pre>
+<p>This selects the demo. Its parser dependency is still built when necessary.</p>
+<h2>Observe changes</h2>
+<ol>
+<li>Build the demo.</li>
+<li>Run the command again. With unchanged inputs and configuration, Ninja normally reports no work.</li>
+<li>Change only main.c in a practice copy. Rebuild and observe the compilation and linking steps.</li>
+<li>Change ledger_line.c. The shared object and library now need updating.</li>
+<li>Build the test targets and run their tests, because they also depend on the parser.</li>
+</ol>
+<p>A header change can trigger several compilations. A comment change can also trigger recompilation when timestamps drive the graph. Incremental building follows dependencies; it does not prove two source versions have identical meaning.</p>
+<h2>Avoid stale results</h2>
+<p>Removing a dependency to make builds faster can produce stale programs. Prefer accurate target links, smaller libraries and separate build directories. Record what actually rebuilt rather than interpreting every progress line as a full rebuild.</p>
+<p>Studio's project build service can select a project recipe and invoke its graph. Framework owns reusable orchestration. A small lesson project does not need to rebuild the ecosystem to exercise its parser.</p>
+<h2>Question</h2>
+<p>If main.c is unchanged but the parser changes, should the demo be relinked? Yes. Its behaviour includes code from the parser library. A correct incremental build must follow that dependency.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/bounded-ledger-line/CMakeLists.txt">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="03-separate-source-and-build.html">Previous: Keep source and build directories separate</a> · <a href="05-public-private-usage.html">Next: Understand PUBLIC and PRIVATE usage requirements</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cmake/04-target-dependencies.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/13-preserve-state-across-a-call.html
+
+PURPOSE:
+Explain the lesson: Preserve state across a nested call.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve state across a nested call | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-read-branches-without-subtraction.html">Previous lesson</a> · <a rel="next" href="14-combine-shifts-with-or.html">Next lesson</a></nav>
+<h1>Preserve state across a nested call</h1>
+<p>A function that calls another function must protect values it still needs afterward. The calling convention defines which registers a called function may overwrite.</p>
+<h2>Prepare</h2>
+<p>Read BtbSumAndBias64 in call.S. It receives an array address, count and bias in a0, a1 and a2. It calls BtbSum64 and adds the bias to that result.</p>
+<p>The bias must survive the call.</p>
+<h2>Draw the stack frame</h2>
+<p>The function subtracts 16 from sp, reserving sixteen bytes. It stores the return address ra at offset 8 and the caller's s0 at offset 0.</p>
+<p>It then copies the bias into s0. A conforming called function preserves s0, so the bias remains available after BtbSum64 returns.</p>
+<h2>Restore in the return path</h2>
+<p>After adding the bias, the function reloads the original s0 and ra, adds 16 back to sp and returns.</p>
+<p>Saving s0 protects the caller's value; using s0 temporarily does not transfer ownership of that register permanently.</p>
+<h2>Exercise</h2>
+<p>Write a table with entry, before call, after call and before return. Track sp, ra, s0 and a0 at each stage.</p>
+<p>Explain why simply leaving the bias in a2 is insufficient: a2 is an argument register that the called routine may overwrite.</p>
+<h2>Review limits</h2>
+<p>The frame retains standard 16-byte alignment. This is an ordinary function-call example, not a complete trap frame. Kernel trap entry has additional responsibilities because an interruption can occur at a point the interrupted code did not choose.</p>
+<p>The behavioral harness checks returned sums. ABI preservation also requires inspecting the save/restore paths or a dedicated register-preservation test; a correct number alone does not prove every calling-convention rule.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/call.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-read-branches-without-subtraction.html">Previous lesson</a> · <a rel="next" href="14-combine-shifts-with-or.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv-assembly/13-preserve-state-across-a-call.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

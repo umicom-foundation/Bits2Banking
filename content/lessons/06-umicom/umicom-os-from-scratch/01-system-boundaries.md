@@ -32,3 +32,5 @@ This course uses the hands-on systems-learning approach of [Linux From Scratch](
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/01-system-boundaries.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Build one real OS component](02-build-the-parser.md)

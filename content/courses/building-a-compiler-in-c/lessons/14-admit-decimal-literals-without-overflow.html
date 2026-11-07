@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/14-admit-decimal-literals-without-overflow.html
+
+PURPOSE:
+Explain the lesson: Admit decimal literals without overflow.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit decimal literals without overflow | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-build-an-instruction-viewer.html">Previous lesson</a> · <a rel="next" href="15-validate-stack-shape-before-execution.html">Next lesson</a></nav>
+<h1>Admit decimal literals without overflow</h1>
+<p>Reading a decimal number requires arithmetic before the interpreter executes any instruction. The lexer must keep that arithmetic within its own limits.</p>
+<h2>Prepare the source study</h2>
+<p>Open src/lexer.c in Umicom C and test_grammar.c in the compiler-experiments lab. Use the lab README for optional PowerShell or Bash execution.</p>
+<p>A lexer groups source characters into tokens. A decimal token is a run of digits, such as 123.</p>
+<h2>1. Accumulate one digit at a time</h2>
+<p>To extend 12 with digit 3, calculate 12 × 10 + 3. Repeating this process gives the numeric value.</p>
+<p>For a bounded integer type, multiplication can overflow before a later check sees the result. Therefore the lexer checks whether the next step fits first.</p>
+<h2>2. Rearrange the bound</h2>
+<p>The desired rule is value × 10 + digit &lt;= INT32_MAX. The implementation checks:</p>
+<p>``<code>c value &gt; (INT32_MAX - part) / 10 </code>``</p>
+<p>If that condition is true, it reports UMC_LITERAL_RANGE before multiplying.</p>
+<p>Here part is a decimal digit from zero to nine, so subtracting it from the maximum is safe. Integer division supplies the permitted whole-number threshold.</p>
+<h2>3. Understand unary minus</h2>
+<p>The lexer reads a positive literal token. The parser handles a preceding minus sign as a separate operation.</p>
+<p>Consequently, this current subset refuses literal 2147483648 even when preceded by minus. The expression -2147483647 - 1 can still produce the minimum signed value through checked execution.</p>
+<p>State this restriction clearly in a language guide. Do not teach an unsupported spelling as if it already works.</p>
+<h2>Exercise</h2>
+<p>Trace the final digit of 2147483647 and 2147483648. Show the threshold and explain the different outcome.</p>
+<p>Then predict the grammar test for -2147483648. The result should be a literal-range failure, not an execution overflow.</p>
+<h2>Troubleshooting</h2>
+<p>An accepted literal and an overflowing expression are different cases. Preserve both in tests because a lexer fix cannot replace runtime arithmetic checks.</p>
+<p>Record the tested source revision; a future deliberate language extension may change literal admission and require updated documentation.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-c/blob/main/src/lexer.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-build-an-instruction-viewer.html">Previous lesson</a> · <a rel="next" href="15-validate-stack-shape-before-execution.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-compiler-in-c/14-admit-decimal-literals-without-overflow.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

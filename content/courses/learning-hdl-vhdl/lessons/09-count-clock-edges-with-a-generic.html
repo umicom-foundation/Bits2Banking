@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/09-count-clock-edges-with-a-generic.html
+
+PURPOSE:
+Explain the lesson: Count clock edges with a configurable width.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Count clock edges with a configurable width | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-from-model-to-hardware.html">Previous lesson</a> · <a rel="next" href="10-check-reset-hold-and-saturation.html">Next lesson</a></nav>
+<h1>Count clock edges with a configurable width</h1>
+<h2>A counter stores a number</h2>
+<p>A counter is a circuit that changes a stored value according to a clock and control inputs. This exercise counts enabled rising clock edges. It stops at its largest representable value instead of wrapping to zero.</p>
+<p>A generic configures an entity when it is instantiated. The width generic selects how many bits store the count. One bit represents zero or one; three bits represent zero through seven.</p>
+<h2>Setup recap</h2>
+<p>Install GHDL with VHDL-2008 support and check <code>ghdl --version</code>. Copy the two files named in the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/COUNTERS.md">counter lab</a> into a practice directory. Its commands work in PowerShell and bash. This is a simulation exercise and requires no physical board.</p>
+<h2>Read the interface</h2>
+<p>The inputs are clk, reset and enable. The outputs are count and full. The count type is unsigned from ieee.numeric_std, allowing arithmetic with an explicit bit width.</p>
+<p>Inside the clocked process:</p>
+<ol>
+<li>A rising edge starts the decision.</li>
+<li>Asserted reset sets every count bit to zero.</li>
+<li>Otherwise, asserted enable increments a count that is not full.</li>
+<li>Every other case retains the stored value.</li>
+</ol>
+<p>Reset is synchronous: it takes effect at the next active edge. Changing reset between edges does not immediately clear count.</p>
+<h2>Lab</h2>
+<ol>
+<li>Analyze, elaborate and run the supplied simulation.</li>
+<li>Find the three-bit and one-bit instances in the testbench.</li>
+<li>Predict both counts after the first enabled edge.</li>
+<li>Predict both counts after the second enabled edge.</li>
+<li>Find the check after the three-bit count reaches seven.</li>
+<li>Inspect counter.vcd with a waveform viewer and compare the count changes with clock edges.</li>
+</ol>
+<p>The one-bit instance remains at one while the wider instance continues counting. They share a design, not stored state.</p>
+<h2>Exercise and explanation</h2>
+<p>Why is saturation useful for a capacity indicator? Wrapping a full count to zero could make a full resource appear empty. Whether saturation is the correct policy depends on the circuit's contract; some counters intentionally wrap.</p>
+<h2>Boundaries</h2>
+<p>The initial count is not usable until reset establishes it. A physical implementation also needs timing constraints and a plan for signals arriving from another clock domain. This lesson does not turn an unsynchronised physical switch into a safe clocked input.</p>
+<p>A count is not a queue. A queue must store data and maintain ordering as well as track occupancy.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/lesson_counter.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-from-model-to-hardware.html">Previous lesson</a> · <a rel="next" href="10-check-reset-hold-and-saturation.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/09-count-clock-edges-with-a-generic.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

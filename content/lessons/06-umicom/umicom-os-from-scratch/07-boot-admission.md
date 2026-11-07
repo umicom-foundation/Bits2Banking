@@ -43,3 +43,7 @@ This policy is specific to minimal PID1 startup. Independent recovery must remai
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/07-boot-admission.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Separate a check from a release claim](06-read-qualification-evidence.md)
+
+[Next: Verify the guest environment](08-guest-environment.md)

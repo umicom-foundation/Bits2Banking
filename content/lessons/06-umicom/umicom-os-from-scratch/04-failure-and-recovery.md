@@ -38,3 +38,7 @@ No. Rejection is one admission result. Recovery qualification needs a guest exec
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/04-failure-and-recovery.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Plan startup before executing it](03-service-dependencies.md)
+
+[Next: Know which bytes you booted](05-image-and-firmware-identity.md)

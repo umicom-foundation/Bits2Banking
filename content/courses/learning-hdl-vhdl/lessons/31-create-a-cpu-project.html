@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/31-create-a-cpu-project.html
+
+PURPOSE:
+Create a CPU simulation project in Studio
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create a CPU simulation project in Studio | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Create a CPU simulation project in Studio</h1>
+<h2>What you will learn</h2>
+<p>A CPU is a circuit that follows instructions. An instruction is a small encoded operation such as adding a number or selecting the next instruction address. In this project you will inspect a small eight-bit CPU and run checks that explain what each operation does. Eight-bit means the accumulator stores eight binary digits, enough for unsigned values from 0 to 255.</p>
+<h2>Set up this exercise</h2>
+<p>A terminal is a window in which you type commands. A folder holds the files of a project. Install Git, CMake 3.26 or later, Ninja and GHDL with VHDL-2008 support; make their executable folders available on PATH. PATH is the list of folders the terminal searches for programs. Open a fresh PowerShell or Bash terminal and check:</p>
+<pre><code class="language-text">git --version
+cmake --version
+ninja --version
+ghdl --version</code></pre>
+<p>Each command should print a version. If a command is not found, correct its installation or PATH before continuing. Download the Bits2Banking repository with Git if you do not already have it:</p>
+<pre><code class="language-text">git clone https://github.com/umicom-foundation/Bits2Banking.git
+cd Bits2Banking/labs/hardware/vhdl-cpu</code></pre>
+<p>If you already have the repository, open its labs/hardware/vhdl-cpu folder instead of cloning again. Work in your own practice copy. The following commands are identical in PowerShell and Bash:</p>
+<pre><code class="language-text">cmake --preset simulation
+cmake --build --preset simulation
+ctest --preset simulation</code></pre>
+<p>Configure finds GHDL and writes build instructions. Build analyses the VHDL files. Test runs the simulated circuit and checks its results. Expected: the cpu.instructions test passes. This is a learner check to perform on your computer, not a claim about a supplied binary. To select a GHDL installation outside PATH, configure with a quoted absolute path:</p>
+<pre><code class="language-powershell">cmake --preset simulation &quot;-DGHDL_EXECUTABLE=C:/tools/ghdl/bin/ghdl.exe&quot;</code></pre>
+<p>A simulation predicts the behaviour described by a model. It does not program a physical chip. No hardware board is required for this module.</p>
+<h2>Find the parts of the project</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">File</th><th scope="col">Purpose</th></tr></thead><tbody><tr><td>rtl/learning_cpu.vhd</td><td>Describes the CPU and the state it retains between clock edges.</td></tr><tr><td>tests/tb_learning_cpu.vhd</td><td>Supplies inputs and checks the resulting outputs.</td></tr><tr><td>CMakeLists.txt</td><td>Defines the analysis and simulation commands.</td></tr><tr><td>CMakePresets.json</td><td>Gives those commands the reusable name simulation.</td></tr><tr><td>README.md</td><td>Summarises the instruction encoding and commands.</td></tr></tbody></table></div>
+<p>The testbench is a second VHDL design that surrounds the CPU. It acts as both a driver, supplying inputs, and an observer, checking outputs.</p>
+<h2>Create the same project from Studio</h2>
+<ol>
+<li>Open Umicom Studio IDE and choose New Project.</li>
+<li>Select VHDL CPU Simulation from the project templates.</li>
+<li>Enter Learning CPU as the application name, org.umicom.learning.cpu as the application ID, learning-cpu as the repository name and learning_cpu as the target name.</li>
+<li>Choose an empty practice folder that you control.</li>
+<li>Review the generated files before creating the project.</li>
+<li>Select the simulation preset for Configure, Build and Test.</li>
+</ol>
+<p>The application ID is a stable name for the project; it is not a login account. The repository name is suitable for the folder, while a target is a named build operation. Framework owns the template and language description, allowing Studio to discover them through its existing project catalogue.</p>
+<p>The native Run command expects an executable program. Use Test for this hardware model, or run the simulate build target from the terminal. If the template is missing, check that your Studio build includes the Framework VHDL template. The terminal path above remains usable independently.</p>
+<h2>Inspect the shared implementation</h2>
+<p>Open Framework's src/developer_project/templates/vhdl_cpu.c and src/developer_project/languages/vhdl.c. The template returns file descriptions; the language pack declares analysis and testing capabilities. It does not claim a debugger, synthesis service or FPGA upload command.</p>
+<h2>Check your understanding</h2>
+<p>Why do we need a testbench as well as a CPU file? The CPU file describes a circuit. The testbench supplies a sequence of inputs and checks whether the circuit behaves as intended. Merely parsing the CPU file does not exercise its instructions.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/README.md">Open the project source</a>.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="30-review-a-hardware-boundary.html">Previous lesson</a> · <a rel="next" href="32-read-ports-and-state.html">Next lesson</a></nav><p><a href="../../../lessons/03-native-code/learning-hdl-vhdl/31-create-a-cpu-project.md">Markdown edition</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

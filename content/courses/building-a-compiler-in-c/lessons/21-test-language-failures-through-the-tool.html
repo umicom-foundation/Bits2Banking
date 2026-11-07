@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/21-test-language-failures-through-the-tool.html
+
+PURPOSE:
+Test language failures through the tool
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test language failures through the tool | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Test language failures through the tool</h1>
+<p>A compiler reads a program and translates it into another representation. An IDE adds editing, project navigation and commands around that compiler. In this module, Umicom C accepts a deliberately small arithmetic language. Umicom Framework supplies the project recipe and Studio presents it. We follow the connection between those three responsibilities.</p>
+<h2>Prepare the tools</h2>
+<ol>
+<li>Open PowerShell on Windows or a terminal running bash on Linux. A terminal accepts written commands; each command below starts an existing program.</li>
+<li>Find your Umicom C executable. Run <code>umicom-c --version</code>. If it is not found, add its actual installation directory to PATH for this terminal or use its full path. PATH is the list of folders searched for program names.</li>
+<li>Run <code>cmake --version</code> and <code>ninja --version</code>. CMake prepares a build description; Ninja follows that description. Install any missing tool through your platform's normal package manager.</li>
+<li>Choose a practice destination, such as <code>C:\umicom\examples\arithmetic-preview</code>. The Studio starter requires a new folder: choose its parent first and do not create the final folder in advance.</li>
+<li>In a Studio build containing the new Framework recipe, use <strong>File → New Project</strong>, choose <strong>Umicom C Arithmetic Preview</strong>, enter project details and the new destination, then create it. Generation creates text files only. It does not install dependencies or run the program.</li>
+</ol>
+<p>The terminal exercises use that generated project independently of Studio's interface. See <a href="../../learning-cmake/index.html">Learning CMake</a> for a longer introduction.</p>
+<h2>A failure can be expected</h2>
+<p>A positive test supplies valid input and expects success. A negative test supplies a specific invalid input and expects rejection. A negative test must not pass merely because an executable is missing.</p>
+<p>The starter has four CTest cases. The result case requires <code>Result: 42</code>. The syntax case checks malformed source. The division case executes division by zero. The fuel case allows too few interpreter steps. Its CMake driver checks the exit result and requires a diagnostic for rejected cases.</p>
+<ol>
+<li>Configure and build using <code>preview</code>.</li>
+<li>Run:</li>
+</ol>
+<pre><code class="language-powershell">ctest --preset preview --output-on-failure --no-tests=error</code></pre>
+<ol>
+<li>Read <code>tests/check_preview.cmake</code>. Find the command for each case. Arguments are separate list entries, preserving paths containing spaces.</li>
+<li>Read the timeout. It bounds waiting if a tool hangs; it does not prove all programs terminate.</li>
+<li>Change the valid result to 41 and rerun the result case. Expect a mismatch. Restore 42 afterwards.</li>
+</ol>
+<p>Windows output often uses carriage-return plus newline. Other systems commonly use newline alone. The driver normalizes this line ending before matching. It must not remove arbitrary characters and hide a different result.</p>
+<h2>Diagnose a failing check</h2>
+<p>Run the exact command printed by the test. Confirm the intended executable and source. A launch failure, parser rejection and runtime arithmetic rejection are different problems. Identify which occurred before changing an assertion.</p>
+<h2>Extend coverage</h2>
+<p>Add a parenthesized expression with an independently calculated answer. Then add an overflow case expecting a runtime diagnostic. Store expected values in the test rather than calculating them with the same compiler again.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/developer_project/test_umicom_c_preview.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="20-check-only-affected-preview-inputs.html">Previous: Check only affected preview inputs</a> · <a href="22-separate-editor-support-from-language-semantics.html">Next: Separate editor support from language semantics</a></p>
+</nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/21-test-language-failures-through-the-tool.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

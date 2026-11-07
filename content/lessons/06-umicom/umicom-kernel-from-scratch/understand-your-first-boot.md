@@ -109,3 +109,5 @@ Continue with [Read a native kernel without booting it](../../../courses/umicom-
 then follow that course's numbered lessons. Those lessons progressively explain
 the input limits and ownership rules used here. Keep the existing sequence;
 this orientation prepares you for it rather than replacing its lessons.
+
+[Next: Read a native kernel without booting it](01-native-kernel-and-host-models.md)

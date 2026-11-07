@@ -1,0 +1,49 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/01-arrays-length-and-capacity.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Arrays, length and capacity | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Arrays, length and capacity</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-stacks-and-undo.html">Next: Stacks and the order of undo</a></p></nav><h2>Organising several values</h2>
+<p>A data structure is a way to organise information so operations have predictable behaviour. An array stores a sequence of elements of one type. An index is a position: C arrays begin at zero.</p>
+<p>The collections lab keeps up to eight integers. Its count tells us how many are currently used. Capacity tells us how many fit. Empty and full are different valid states.</p>
+<h2>Setup recap</h2>
+<p>Follow <a href="../index.html">the setup and collections commands</a>. You need a C23 compiler, CMake and Ninja. Read collections.h and main.c. If variables and functions are new, <a href="../../introduction-to-programming/index.html">Introduction to Programming</a> explains them with complete first programs.</p>
+<h2>Read the representation</h2>
+<pre><code class="language-c">typedef struct {
+    int values[8];
+    size_t count;
+} BtbList;</code></pre>
+<p>A struct groups named fields. size_t is an unsigned integer type used for sizes and positions. The actual header names the capacity with BTB_COLLECTION_CAPACITY rather than repeating 8.</p>
+<pre><code class="language-text">index:     0  1  2  3  4  5  6  7
+storage:  [7][2][9][ ][ ][ ][ ][ ]
+count: 3                capacity: 8</code></pre>
+<p>Only indices less than count hold logical list elements. Storage beyond count belongs to the object but is not part of its current contents.</p>
+<h2>Append one value</h2>
+<p>BtbListAppend checks the pointer, checks that count is not corrupt, and checks for space before writing. When count is 8 it returns BTB_FULL. It does not write a ninth element.</p>
+<ol>
+<li>Open collections.c and locate BtbListAppend.</li>
+<li>Mark the first line that changes the list.</li>
+<li>Verify every rejection comes before that line.</li>
+<li>Follow main.c as it appends 7, 2, 9, 2. Draw the array after each call.</li>
+<li>Build and run the lab. The demonstration sorts these values, so its final output is &quot;2 2 7 9&quot;.</li>
+</ol>
+<h2>Exercise and worked answer</h2>
+<p>Why is the next insertion index count, not count + 1? With three elements, used indices are 0, 1 and 2. Index 3 is the first free slot. Using 4 would leave an unexplained hole and would reach the boundary too early.</p>
+<h2>Umicom connection</h2>
+<p>A document tab list and a queue of jobs both need length rules. This fixed-size teaching list is deliberately small. Framework's document and job services own the richer production behaviour; applications should call those services instead of embedding this lab.</p>
+<h2>Troubleshooting and limits</h2>
+<p>Initialise a list with = {0}. An uninitialised count has no usable meaning. This model has no dynamic allocation, thread safety or automatic growth. Reading values[count] while count equals 8 is outside the array.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/collections/collections.h</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-stacks-and-undo.html">Next: Stacks and the order of undo</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

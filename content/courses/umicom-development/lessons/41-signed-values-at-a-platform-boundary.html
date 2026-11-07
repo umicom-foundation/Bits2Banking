@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/41-signed-values-at-a-platform-boundary.html
+
+PURPOSE:
+Explain the lesson: Validate values at a platform boundary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate values at a platform boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="40-one-model-several-interfaces.html">Previous lesson</a> · <a href="42-desktop-events-and-state.html">Next lesson</a></nav>
+<h1>Validate values at a platform boundary</h1>
+<h2>Before you begin</h2>
+<p>Open <code>labs/native/activity-adapters/bridge.h</code> and <code>bridge.c</code>. No compiler is needed for the first trace. An integer is a whole number. A signed integer can represent negative values; an unsigned integer represents zero and positive values in its range.</p>
+<h2>Why this bridge exists</h2>
+<p>The existing activity function accepts an unsigned count and reports a Framework status. Some screen bindings are easier to teach with a single signed integer result. <code>BtbActivityNext</code> returns the next count, or -1 when the request is rejected.</p>
+<p>This compact interface is appropriate for this bounded lesson. A larger API should expose distinct error reasons when callers need to respond differently. Returning -1 is not a universal replacement for Framework status codes.</p>
+<pre><code class="language-c">int result = BtbActivityNext(current);
+if (result &gt;= 0) {
+    current = result;
+}</code></pre>
+<h2>Follow conversion order</h2>
+<ol>
+<li>Receive a signed value from the caller.</li>
+<li>Reject negative values while their meaning is still clear.</li>
+<li>Convert the accepted nonnegative input to unsigned.</li>
+<li>Call the existing activity function.</li>
+<li>Convert the successful bounded output back to int.</li>
+</ol>
+<p>Converting -1 to unsigned first produces a large positive value. Checking before conversion makes the boundary easier to reason about. The activity function still owns its upper limit.</p>
+<h2>Work through examples</h2>
+<p>For 0, expect 1. For 999, expect 1000. For 1000, expect -1 and leave the screen count unchanged. For -1, the bridge rejects before invoking the model. For a very large positive int, the model rejects it.</p>
+<h2>Lab</h2>
+<p>Read <code>test_bridge.c</code>. Match every input to one branch of the bridge or activity contract. Add a paper case for 500 and predict 501. Explain why a result of -1 must never be assigned to an unsigned displayed count.</p>
+<p>To execute the host checks later, follow the exact setup and CMake commands in the adapter README. A source trace is a prediction until the chosen compiler and tests run.</p>
+<h2>Diagnose a mismatch</h2>
+<p>Check the language binding's integer width and signedness. Do not fix an invalid value by silently clamping it: that changes the requested operation and hides the error.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/activity-adapters/bridge.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="40-one-model-several-interfaces.html">Previous lesson</a> · <a href="42-desktop-events-and-state.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/41-signed-values-at-a-platform-boundary.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

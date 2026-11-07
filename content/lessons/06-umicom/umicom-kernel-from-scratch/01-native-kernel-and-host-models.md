@@ -22,3 +22,7 @@ The first lab uses a real production parser on the host. Memory mapping, interru
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/01-native-kernel-and-host-models.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Understand your first boot](understand-your-first-boot.md)
+
+[Next: A byte span is not a string](02-bounded-input.md)

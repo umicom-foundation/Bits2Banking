@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-algorithms/lessons/05-choose-search-for-a-workload.html
+
+PURPOSE:
+Explain the lesson: Choose a search strategy for the work you actually do.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose a search strategy for the work you actually do | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-test-order-and-preservation.html">Previous lesson</a></nav>
+<h1>Choose a search strategy for the work you actually do</h1>
+<h2>An algorithm has a workload</h2>
+<p>A workload describes how much data you handle and which operations you repeat. A single search in a small unsorted list is different from thousands of searches in a stable catalogue. Choosing an algorithm means including preparation and updates, not just its most attractive step.</p>
+<h2>Setup recap</h2>
+<p>Read and build the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/collections/README.md">collections lab</a> using its C23 and CMake instructions. You need only its small integer list. Linear search checks elements in sequence. Binary search repeatedly discards part of a sorted interval.</p>
+<h2>Count the preparation</h2>
+<p>For an eight-item unsorted list, linear search examines at most eight items for one request. Sorting first costs extra work. Binary search can then use fewer comparisons per query, but the sort has not become free.</p>
+<pre><code class="language-text">one query:
+    unsorted data -&gt; linear search -&gt; answer
+
+many queries, stable data:
+    unsorted data -&gt; sort once -&gt; binary searches -&gt; answers
+
+frequent additions:
+    addition -&gt; maintain order or sort again -&gt; search</code></pre>
+<p>The lab uses insertion sort for clarity. Its worst-case work grows quadratically with list length. Do not extrapolate a tiny teaching model into a claim about a large production catalogue.</p>
+<h2>Lab on paper, then in source</h2>
+<ol>
+<li>Use the list 9,7,2,2 and target 9.</li>
+<li>Count the element comparisons in linear search.</li>
+<li>Trace insertion sort and count each value comparison separately from moves.</li>
+<li>Trace binary search on the sorted result.</li>
+<li>Repeat the search ten times without sorting again.</li>
+<li>Explain which costs are paid once and which repeat.</li>
+</ol>
+<p>Run the supplied program and tests to check answers, not to claim meaningful performance measurements from such a tiny workload.</p>
+<h2>Consistency matters too</h2>
+<p>Both search functions return the first matching index. Binary search requires ascending input. If a caller appends an unsorted value and immediately calls FindSorted, it has broken the precondition even if a few searches still happen to work.</p>
+<h2>Exercise with an answer</h2>
+<p>A catalogue changes once each morning and is searched all day. Is sorting once a reasonable candidate? Yes. Measure it against the real query pattern and data size. A catalogue that changes after every lookup may need a different data structure.</p>
+<h2>Application connection</h2>
+<p>Framework should own reusable indexing and query policy. A UI may request an item without knowing which algorithm is used. Document the ordering and duplicate rules so changing the implementation does not silently change visible results.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/collections/collections.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-test-order-and-preservation.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-algorithms/05-choose-search-for-a-workload.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="06-find-the-first-duplicate.html">Next: Find the first matching duplicate</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

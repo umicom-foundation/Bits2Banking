@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/08-from-model-to-hardware.html
+
+PURPOSE:
+Explain the lesson: Plan the next step from simulation to hardware.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plan the next step from simulation to hardware | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="07-waveforms-and-debugging.html">Previous lesson</a></nav>
+<h1>Plan the next step from simulation to hardware</h1>
+<h2>Before you begin</h2>
+<p>This chapter is a planning lab. You need the four supplied VHDL designs and their test results if you ran them. No board purchase or programming operation is required.</p>
+<h2>Separate the stages</h2>
+<pre><code class="language-text">specification -&gt; source -&gt; simulation -&gt; synthesis -&gt; implementation -&gt; board checks</code></pre>
+<p>Simulation checks a model's behaviour. Synthesis converts an eligible description into a hardware structure. Implementation maps that structure to a chosen device and checks placement and timing. A physical board adds electrical connections and real clocks.</p>
+<p>The testbench's <code>wait for 5 ns</code> is a simulation instruction. It is not an instruction to manufacture a clock on a board.</p>
+<h2>Create a board plan</h2>
+<p>For a board you already have, record:</p>
+<ol>
+<li>The exact device and board revision.</li>
+<li>The supported toolchain and language features.</li>
+<li>Clock frequency and which pin carries that clock.</li>
+<li>Reset polarity and whether it is synchronized.</li>
+<li>LED and button pin names, voltage requirements and active levels.</li>
+<li>The board-specific constraints file and programming procedure.</li>
+<li>How you will confirm the design is running before connecting external hardware.</li>
+</ol>
+<p>Obtain these from that board's official documentation. An unverified pin number is not a useful exercise shortcut.</p>
+<h2>Project exercise</h2>
+<p>Plan a button-controlled progress indicator. Reuse the register's enable/reset concepts. Write a specification for switch debounce before writing its circuit. A single press should cause one update even when an electrical contact bounces.</p>
+<p>Compare the plan with Bits2Banking's <code>labs/native/activity-adapters/button.c</code>. That C example detects edges in already sampled logical input. It deliberately does not claim to debounce a physical switch.</p>
+<h2>Connect the courses</h2>
+<p>Continue Introduction to RISC-V to study the processor interface used by Umicom Kernel. Then study RISC-V Assembly to trace software instructions. Designing a RISC-V processor is a later project requiring instruction decoding, memory, exceptions and a much larger verification plan.</p>
+<h2>Review</h2>
+<p>A passing simulator run does not establish pin safety, clock timing or complete processor compatibility. Write down which claim each piece of evidence actually supports. That makes the next engineering step clear.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/lesson_register.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="07-waveforms-and-debugging.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/08-from-model-to-hardware.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="09-count-clock-edges-with-a-generic.html">Continue: Count clock edges with a configurable width</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

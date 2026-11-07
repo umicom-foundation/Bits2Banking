@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-sql/lessons/04-create-a-small-course-database.html
+
+PURPOSE:
+Explain the lesson: Create a small course database.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create a small course database | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="05-read-filter-and-order-rows.html">Next lesson</a></nav>
+<h1>Create a small course database</h1>
+<p>A database keeps related facts in an organised form. In this project the facts are courses, learners and their recorded progress. A table describes one kind of fact; a row is one instance.</p>
+<h2>Set up the exercise</h2>
+<p>Open the course-progress lab README and follow its PowerShell or Bash instructions. Use the temporary database named <code>:memory:</code>. Nothing in this exercise requires an application account or personal data.</p>
+<p>At the SQLite prompt, read schema.sql and seed.sql. A semicolon ends an SQL statement; a dot command such as <code>.read schema.sql</code> belongs to the shell and does not need one.</p>
+<h2>Read the schema</h2>
+<p>``<code>sql course_id INTEGER PRIMARY KEY, title TEXT NOT NULL UNIQUE </code>``</p>
+<p>The ID identifies a course even if its title changes. INTEGER describes whole-number values. PRIMARY KEY makes the ID the row's key. NOT NULL requires a value. UNIQUE prevents two course rows from using the same title.</p>
+<p>Do not use a row's display position as its identity: sorting changes positions.</p>
+<h2>Draw the relationships</h2>
+<p>``<code>text learner --&lt; progress &gt;-- course </code>``</p>
+<p>One learner may have progress in several courses. One course may have progress from several learners. The progress table connects the two.</p>
+<h2>Exercise and recovery</h2>
+<p>Inspect the schema with <code>.schema</code>. Identify which columns reject an absent value and which use a range check. Why can Learner C exist without a progress row?</p>
+<p>If SQLite reports “table already exists”, you probably repeated the setup in the same session. Close the temporary database and start again; do not add deletion commands to a real application database.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/database/course-progress/schema.sql">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="next" href="05-read-filter-and-order-rows.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/04-web/learning-sql/04-create-a-small-course-database.md">Markdown edition</a></p><nav aria-label="Previous lesson"><a rel="prev" href="03-read-a-transaction-as-a-unit.html">Previous: Read a transaction as one unit of work</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

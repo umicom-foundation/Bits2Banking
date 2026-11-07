@@ -67,3 +67,5 @@ There is one title and one visible list item. Whitespace is rejected after trimm
 ---
 
 [Read this lesson in HTML](../../../courses/learning-javascript/lessons/01-events-and-visible-state.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Local storage and untrusted data](02-local-storage-and-untrusted-data.md)

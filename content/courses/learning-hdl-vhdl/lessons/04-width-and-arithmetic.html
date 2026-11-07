@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/04-width-and-arithmetic.html
+
+PURPOSE:
+Explain the lesson: Keep the carry when adding binary values.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep the carry when adding binary values | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="03-truth-tables-and-selection.html">Previous lesson</a> · <a href="05-clocked-storage.html">Next lesson</a></nav>
+<h1>Keep the carry when adding binary values</h1>
+<h2>Before you begin</h2>
+<p>A binary digit is a bit. Four bits are sometimes called a nibble. They represent unsigned values from 0 to 15. Install GHDL for the executable lab, or trace the calculations on paper.</p>
+<h2>Count the required bits</h2>
+<p>The largest sum of two four-bit unsigned values is 15 + 15 = 30. Four bits cannot represent 30; five bits can.</p>
+<pre><code class="language-text">  01111   15
++ 01111   15
+-------
+  11110   30</code></pre>
+<p>The extra bit is part of the result. Assigning a narrow calculation to a wide destination is too late if the calculation already lost information.</p>
+<h2>Read the implementation</h2>
+<pre><code class="language-vhdl">total &lt;= resize(a, total'length) + resize(b, total'length);</code></pre>
+<p><code>numeric_std</code> supplies unsigned arithmetic. <code>resize</code> extends each operand before addition. <code>total'length</code> asks for the output width, here five. The apostrophe introduces an attribute; it is not a text quotation.</p>
+<h2>Run the exhaustive check</h2>
+<p>From <code>labs/hardware/vhdl-foundations</code>:</p>
+<pre><code class="language-text">ghdl -a --std=08 add_nibble.vhd add_nibble_tb.vhd
+ghdl -e --std=08 add_nibble_tb
+ghdl -r --std=08 add_nibble_tb --assert-level=error</code></pre>
+<p>The bench checks 16 × 16 input pairs. It compares the circuit result with integer addition. Expected final output includes <code>adder checks passed</code>.</p>
+<h2>Lab</h2>
+<ol>
+<li>Calculate 0 + 0, 7 + 8, 8 + 8 and 15 + 15.</li>
+<li>Convert each result to five bits.</li>
+<li>Find <code>to_unsigned</code> and <code>to_integer</code> in the bench and explain their directions.</li>
+<li>In a practice copy, reduce the result width and observe the failure.</li>
+<li>Restore the design and rerun.</li>
+</ol>
+<h2>Connect to C and Framework</h2>
+<p>Integer widths matter at software boundaries too. The activity adapter checks negative C inputs before converting them to unsigned values. Both examples establish the valid range before performing an operation; they do not rely on an output variable to repair an earlier mistake.</p>
+<h2>Troubleshooting</h2>
+<p>A type error between <code>std_logic_vector</code> and <code>unsigned</code> is a request to make interpretation explicit. Use the appropriate conversion rather than adding unrelated arithmetic packages until the error disappears.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/add_nibble.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="03-truth-tables-and-selection.html">Previous lesson</a> · <a href="05-clocked-storage.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/04-width-and-arithmetic.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

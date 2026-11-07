@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/19-specify-busy-time-request-policy.html
+
+PURPOSE:
+Explain the lesson: Specify what happens to a request while busy.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Specify what happens to a request while busy | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="18-count-latency-from-acceptance.html">Previous lesson</a> · <a rel="next" href="20-cancel-work-with-reset.html">Next lesson</a></nav>
+<h1>Specify what happens to a request while busy</h1>
+<p>A circuit must define what happens when new work arrives before earlier work finishes. Ignoring, rejecting, queuing and replacing are different policies.</p>
+<h2>Prepare</h2>
+<p>Open request_timer.vhd. This teaching timer accepts a start pulse only while idle. A pulse while active is ignored and is not saved for later.</p>
+<p>Read the comment above the clocked behavior before tracing the code.</p>
+<h2>Follow branch priority</h2>
+<p>Reset is checked first. If reset is inactive, an active request follows the countdown branch. Only an idle timer reaches the start branch.</p>
+<p>Therefore a start pulse during active work cannot replace remaining with CYCLES.</p>
+<h2>Find the test</h2>
+<p>tb_request_timer pulses start again while the original countdown is active. Completion must still occur at the original expected edge.</p>
+<p>After completion, the test checks that no queued request appears. This verifies both timing and the absence of hidden storage.</p>
+<h2>Exercise</h2>
+<p>Draw two requests, one at acceptance and one two edges later. Mark the second as ignored. Then design a different interface that could report rejection explicitly.</p>
+<p>Would you add ready, an accepted pulse, or a queue? Explain the extra state and tests your choice requires.</p>
+<h2>Avoid a misleading button model</h2>
+<p>A physical button held down produces a level over many cycles. It does not automatically produce one start pulse. After the timer becomes idle, a later edge could accept the still-high level as another request.</p>
+<p>Use an appropriate edge detector and input-conditioning design when adapting a button. The earlier sampled-pulse lesson explains the synchronous edge concept; physical synchronization and debounce remain separate concerns.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/request_timer.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="18-count-latency-from-acceptance.html">Previous lesson</a> · <a rel="next" href="20-cancel-work-with-reset.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/19-specify-busy-time-request-policy.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

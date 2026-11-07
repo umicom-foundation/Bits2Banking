@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/40-bound-a-cpu-simulation.html
+
+PURPOSE:
+Distinguish successful completion from a timeout
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish successful completion from a timeout | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish successful completion from a timeout</h1>
+<h2>What you will learn</h2>
+<p>A simulation can stall because an expected event never occurs. A deadline prevents the test from waiting forever. Successful completion must be explicit, so that merely stopping the simulator is not mistaken for success.</p>
+<h2>Set up this exercise</h2>
+<p>A terminal is a window in which you type commands. A folder holds the files of a project. Install Git, CMake 3.26 or later, Ninja and GHDL with VHDL-2008 support; make their executable folders available on PATH. PATH is the list of folders the terminal searches for programs. Open a fresh PowerShell or Bash terminal and check:</p>
+<pre><code class="language-text">git --version
+cmake --version
+ninja --version
+ghdl --version</code></pre>
+<p>Each command should print a version. If a command is not found, correct its installation or PATH before continuing. Download the Bits2Banking repository with Git if you do not already have it:</p>
+<pre><code class="language-text">git clone https://github.com/umicom-foundation/Bits2Banking.git
+cd Bits2Banking/labs/hardware/vhdl-cpu</code></pre>
+<p>If you already have the repository, open its labs/hardware/vhdl-cpu folder instead of cloning again. Work in your own practice copy. The following commands are identical in PowerShell and Bash:</p>
+<pre><code class="language-text">cmake --preset simulation
+cmake --build --preset simulation
+ctest --preset simulation</code></pre>
+<p>Configure finds GHDL and writes build instructions. Build analyses the VHDL files. Test runs the simulated circuit and checks its results. Expected: the cpu.instructions test passes. This is a learner check to perform on your computer, not a claim about a supplied binary. To select a GHDL installation outside PATH, configure with a quoted absolute path:</p>
+<pre><code class="language-powershell">cmake --preset simulation &quot;-DGHDL_EXECUTABLE=C:/tools/ghdl/bin/ghdl.exe&quot;</code></pre>
+<p>A simulation predicts the behaviour described by a model. It does not program a physical chip. No hardware board is required for this module.</p>
+<h2>Find both endings</h2>
+<p>The stimulus reports CPU checks passed and calls finish after its assertions. A separate process waits for two microseconds and then raises a failure. That process is independent of the instruction-driving procedure.</p>
+<pre><code class="language-vhdl">process
+begin
+  wait for 2 us;
+  assert false report &quot;CPU test exceeded its deadline&quot; severity failure;
+end process;</code></pre>
+<p>A microsecond is one thousand nanoseconds. The normal instruction sequence takes much less than two microseconds in this model.</p>
+<h2>Understand the second limit</h2>
+<p>CMake also sets the CTest timeout to 15 seconds. This is real elapsed time on the computer. It protects against a tool that hangs or stops advancing simulated time.</p>
+<p>The two limits answer different questions. The VHDL deadline asks whether the model reached completion within its simulated schedule. The CTest timeout asks whether the program finished within an acceptable wall-clock duration.</p>
+<h2>Practice a stalled input</h2>
+<p>In a practice copy, replace the clock generator with a constant clock. Run CTest. The CPU stimulus will wait for a rising edge that never occurs, while the independent simulated-time deadline can still report failure.</p>
+<p>Do not change the expected result to a pass. Restore the clock and run again. A timeout is missing evidence, not a successful instruction test.</p>
+<h2>Troubleshoot</h2>
+<p>If the window appears frozen, inspect the test output and the CTest deadline before rerunning the entire repository. Keep the command, exit status and test name with your notes. A test that never reaches its assertions cannot establish CPU correctness.</p>
+<h2>Check your understanding</h2>
+<p>Why not use only a simulator stop-time and call every stopped run successful? A stop-time can end a run before required assertions or completion were reached. The explicit finish point and failing deadline make that distinction visible.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/tests/tb_learning_cpu.vhd">Open the project source</a>.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="39-build-an-independent-cpu-oracle.html">Previous lesson</a> · <a rel="next" href="41-understand-the-vhdl-build-graph.html">Next lesson</a></nav><p><a href="../../../lessons/03-native-code/learning-hdl-vhdl/40-bound-a-cpu-simulation.md">Markdown edition</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

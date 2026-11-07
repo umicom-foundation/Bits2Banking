@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-programming/lessons/12-check-before-at-and-after.html
+
+PURPOSE:
+Explain the lesson: Test a boundary from both sides.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test a boundary from both sides | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-draw-a-state-machine.html">Previous lesson</a> · <a rel="next" href="13-separate-a-query-from-a-command.html">Next lesson</a></nav>
+<h1>Test a boundary from both sides</h1>
+<h2>Prepare</h2>
+<p>Use the logical timer lab. Initialise a clock, advance it to tick ten and arm a timer with interval five. Its finite deadline is tick fifteen.</p>
+<p>A boundary is the exact value where behaviour changes.</p>
+<h2>Build three observations</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Current tick</th><th scope="col">Expected status</th></tr></thead><tbody><tr><td>14</td><td>NOT_DUE</td></tr><tr><td>15</td><td>DUE</td></tr><tr><td>16</td><td>DUE while still pending</td></tr></tbody></table></div>
+<p>The comparison in the source uses greater than or equal to the deadline. It does not require the clock to land on the deadline exactly.</p>
+<h2>Lab</h2>
+<p>Create a fresh clock and timer for each independent case, or advance one clock strictly forwards. Call Status without Fire when comparing the three pending observations.</p>
+<p>Expected: jumping directly from fourteen to sixteen still reports DUE.</p>
+<h2>Understand the contract</h2>
+<p>A logical scheduler may inspect a task later than its exact deadline. Requiring equality would miss the task forever after a skipped tick. The comparison expresses “the deadline has been reached.”</p>
+<h2>Troubleshoot</h2>
+<p>If the sixteen-tick case returns STATE, check whether an earlier test already fired or cancelled the timer. The test setup may have changed the lifecycle before the time comparison.</p>
+<h2>Generalise</h2>
+<p>For an array limit, test one below, exactly at and one above the allowed bound. For a text length, do the same. Boundary tests complement ordinary examples because many defects appear where an inequality changes from true to false.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/monotonic-deadlines/deadline.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-draw-a-state-machine.html">Previous lesson</a> · <a rel="next" href="13-separate-a-query-from-a-command.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/introduction-to-programming/12-check-before-at-and-after.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

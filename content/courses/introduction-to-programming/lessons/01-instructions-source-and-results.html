@@ -1,0 +1,58 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-programming/lessons/01-instructions-source-and-results.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Instructions, source files and results | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Instructions, source files and results</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-values-and-decisions.html">Next: Values, variables and decisions</a></p></nav><h2>What you will make</h2>
+<p>You will run a short program and change its greeting. A program is a set of precise instructions a computer can carry out. The source file is the text a person writes. A compiler translates that text into an executable file that the operating system can start. The terminal is a window where you type commands; it is not the program being compiled.</p>
+<h2>Set up and open the example</h2>
+<p>Follow the setup on <a href="../index.html">the course contents page</a>. It explains installing the C tools and getting the Bits2Banking repository. You do not need Umicom Studio to complete this lab.</p>
+<ol>
+<li>Open PowerShell from the Windows Start menu, or a terminal on Linux.</li>
+<li>Find labs/native/first-c-programs/hello.c in your Bits2Banking folder. The .c ending identifies C source; it is not an executable.</li>
+<li>Open it in a plain text editor. Keep its authorship header. Read main: it is the point where this example starts.</li>
+<li>Locate puts. This library function writes a line of text. The quotation marks delimit the text; they are not printed.</li>
+<li>Build and run using the course commands. Compare the terminal line with the exact text inside puts.</li>
+</ol>
+<h2>A small complete program</h2>
+<p>Create a separate practice file named greeting.c in a folder you choose. Save as plain text, not greeting.c.txt.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+int main(void)
+{
+    if (puts(&quot;Welcome to programming.&quot;) &lt; 0) return 1;
+    return 0;
+}</code></pre>
+<p>The include line makes the declaration of puts available. The braces group instructions. main returns an integer result to its caller: zero means this program completed successfully; one is its chosen error result. The less-than comparison checks whether output failed. You can understand the greeting first and return to error handling later.</p>
+<h3>Compile in PowerShell</h3>
+<p>From the folder containing your practice file:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+gcc -std=c23 -Wall -Wextra greeting.c -o greeting.exe
+.\greeting.exe</code></pre>
+<h3>Compile in Bash</h3>
+<pre><code class="language-bash">cc -std=c23 -Wall -Wextra greeting.c -o greeting
+./greeting</code></pre>
+<p>The -o argument names the executable. The ./ or .\ prefix asks the shell to run a file in the current directory. Expect exactly one greeting line. If compilation fails, stop; an older executable does not contain your new change.</p>
+<h2>Trace the journey</h2>
+<pre><code class="language-text">greeting.c -&gt; compiler -&gt; greeting executable -&gt; terminal output
+human text                machine program       visible result</code></pre>
+<p>Changing the source does not automatically change an already built executable.</p>
+<h2>Exercise and worked answer</h2>
+<p>Change the sentence to &quot;My first Umicom learning project.&quot; Predict the new output, rebuild, and run again. The result should contain that sentence once. If the old greeting remains, check your saved file and the executable path.</p>
+<h2>Connect to Umicom</h2>
+<p>The neighbouring first-c-programs/greeting.c adds output error checks to the same journey. Framework applications also begin with executable entry points; their libraries are additional components linked into the program. Start with this one-file journey before reading those larger programs.</p>
+<h2>Troubleshooting</h2>
+<p>&quot;gcc is not recognised&quot; means the tool is unavailable in that terminal. Revisit setup and PATH. A missing quotation mark is a source error: read the compiler's filename and line number, repair the source, then compile again.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/first-c-programs/hello.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-values-and-decisions.html">Next: Values, variables and decisions</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

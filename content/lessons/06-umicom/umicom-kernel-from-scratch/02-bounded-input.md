@@ -31,3 +31,7 @@ Expected output begins `Accepted bounded value: 123`. Stop on errors. A missing 
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/02-bounded-input.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Read a native kernel without booting it](01-native-kernel-and-host-models.md)
+
+[Next: Reject overflow before multiplying](03-overflow-and-ownership.md)

@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/05-clocked-storage.html
+
+PURPOSE:
+Explain the lesson: Store a value at a clock edge.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store a value at a clock edge | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="04-width-and-arithmetic.html">Previous lesson</a> · <a href="06-ready-valid-transfers.html">Next lesson</a></nav>
+<h1>Store a value at a clock edge</h1>
+<h2>Setup recap</h2>
+<p>Open <code>lesson_register.vhd</code> and its testbench in the VHDL foundations lab. Use GHDL with VHDL-2008 for simulation. A register is storage that holds a value; a clock supplies the events at which this example can change it.</p>
+<h2>Describe the rule first</h2>
+<p>At a rising clock edge, reset clears the stored word. Otherwise, enable permits a new word to be captured. With neither condition active, the previous word remains.</p>
+<pre><code class="language-text">clock edge -&gt; reset? yes -&gt; store zero
+                 |
+                 no
+                 v
+              enabled? yes -&gt; store input
+                 |
+                 no -&gt; keep previous value</code></pre>
+<h2>Read the process</h2>
+<pre><code class="language-vhdl">if rising_edge(clk) then
+    if reset = '1' then
+        stored_word &lt;= (others =&gt; '0');
+    elsif enable = '1' then
+        stored_word &lt;= input_word;
+    end if;
+end if;</code></pre>
+<p>The reset has priority because it is checked first. Here reset is synchronous: asserting it between edges does not immediately clear the register. This choice is part of the interface contract.</p>
+<h2>Run and observe</h2>
+<pre><code class="language-text">ghdl -a --std=08 lesson_register.vhd lesson_register_tb.vhd
+ghdl -e --std=08 lesson_register_tb
+ghdl -r --std=08 lesson_register_tb --assert-level=error --vcd=register.vcd</code></pre>
+<p>Expected checks cover reset priority, enabled capture, disabled retention and the timing of reset. Open the VCD file in a waveform viewer if available.</p>
+<h2>Lab</h2>
+<ol>
+<li>Find the testbench's 5 ns half-period. Calculate the full period.</li>
+<li>Predict the stored value after the first two rising edges.</li>
+<li>Explain why the bench waits briefly after an edge before checking.</li>
+<li>Change the input while enable is zero. Confirm that the output retains its value.</li>
+<li>Add another retained-value observation in a practice copy.</li>
+</ol>
+<h2>Connection to a processor</h2>
+<p>Registers let a processor keep intermediate values across operations. The RISC-V course studies the visible register interface used by software. This eight-bit teaching circuit is not a complete RISC-V register file.</p>
+<h2>Recovery</h2>
+<p>Do not assume a stored output starts at zero before reset. If a waveform starts with U or X, first check whether the testbench has supplied the specified reset edge.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/lesson_register.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="04-width-and-arithmetic.html">Previous lesson</a> · <a href="06-ready-valid-transfers.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/05-clocked-storage.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

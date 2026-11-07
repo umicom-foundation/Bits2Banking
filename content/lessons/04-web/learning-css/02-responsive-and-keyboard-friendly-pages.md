@@ -68,3 +68,5 @@ A narrow browser preview is not a qualified mobile application. Touch targets, o
 ## Continue learning
 
 [Continue: A flexible course library](03-a-flexible-course-library.md)
+
+[Previous: Rules, colour and spacing](01-rules-colour-and-spacing.md)

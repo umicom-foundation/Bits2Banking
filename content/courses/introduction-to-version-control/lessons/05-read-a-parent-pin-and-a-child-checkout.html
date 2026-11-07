@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-version-control/lessons/05-read-a-parent-pin-and-a-child-checkout.html
+
+PURPOSE:
+  Present "Read a parent pin and a child checkout" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read a parent pin and a child checkout | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Read a parent pin and a child checkout</h1>
+<p>An application can use Framework as a separate Git repository. This lesson reads the two revisions involved: the child revision recorded by the parent, and the revision currently checked out inside the child folder. All commands in the exercise inspect state without changing it.</p>
+<p>Source to open: <code>Umicom-Applications/.gitmodules</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath '..\Umicom-Applications\.gitmodules'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' '../Umicom-Applications/.gitmodules'</code></pre>
+<h2>Understand the idea</h2>
+<p>A commit identifies a recorded repository state. A submodule is a separate repository used inside a parent repository. The parent's gitlink records a child commit, while .gitmodules describes paths and remote locations. Fetching a new child commit does not automatically change that parent pin. The child's working files may also differ from its commit. These are three distinct observations: parent pin, child HEAD, and uncommitted child changes. A newer child is not automatically the revision selected for a release.</p>
+<pre><code class="language-text">Parent HEAD --gitlink--&gt; selected Framework commit
+Child HEAD ------------&gt; currently checked-out Framework commit
+Child working files ---&gt; may contain additional uncommitted edits</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Open .gitmodules and find the framework entry. Record its path and URL. The URL identifies where commits can be obtained; it does not identify which commit the parent currently records.</li><li>In a terminal at your Applications checkout, inspect git ls-tree HEAD framework and git -C framework rev-parse HEAD. Write their commit IDs in separate columns. These read-only commands are the same in PowerShell and Bash.</li><li>Inspect git -C framework status --short --branch. If it reports changed files, note that a matching HEAD still does not prove the working content is identical to the committed content.</li><li>Use git diff --submodule=log to inspect a changed parent pointer. Describe the intended publication order in words: review and publish the shared child once, update clean dependency copies, then record the selected child revisions in parents. Stop for separate review if a checkout has divergent or uncommitted work.</li></ol>
+<h2>Expected result</h2>
+<p>Your comparison has three separate entries. A difference between the two commit IDs is evidence to investigate, not permission to discard files or change branches. A clean status describes working-file state; it does not prove that all local commits were published.</p>
+<h2>If the result differs</h2>
+<p>If git says the path is not a repository, check your location and whether the child was initially populated. Do not use a reset, forced checkout or cleanup command to make the numbers match. Preserve differences and choose the intended revision through review.</p>
+<h2>Explain it yourself</h2>
+<p>Both commit IDs match, but the child status lists one modified C file. Are the parent pin and the child working content fully aligned?</p>
+<details><summary>Worked explanation</summary><p>The committed revisions align, but the working content includes an extra change. The parent pin cannot capture an uncommitted child edit. That edit needs its own review and publication before a parent can record it as a child commit.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<section><h2>Technical references</h2><ul><li><a href="https://git-scm.com/docs/gitsubmodules">Git documentation: submodules and gitlinks</a></li></ul></section>
+<nav aria-label="Lesson sequence"><a rel="prev" href="04-submodules-and-application-dependencies.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>
+

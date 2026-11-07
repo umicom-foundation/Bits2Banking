@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/prepare-reviewed-documents.html
+
+PURPOSE:
+Prepare documents for a first training dataset
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prepare documents for a first training dataset | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Prepare documents for a first training dataset</h1>
+<p>This practical module starts with ordinary text files. You will learn what a dataset, token, training step and evaluation result mean by following the existing native Framework laboratory.</p>
+<h2>Setup recap</h2>
+<p>A terminal runs commands that you type. A compiler translates C source into a program; CMake describes the build and Ninja performs the necessary steps. On Windows install Git and the MSYS2 UCRT64 C compiler, CMake and Ninja. Keep Umicom Applications at <code>C:\umicom\Umicom-Applications</code>. On Linux use your system's C23 compiler, CMake and Ninja and change into your Applications checkout.</p>
+<p>This module uses a small standalone directory within Framework. It does not require a GPU, account or model download. Configure once in PowerShell:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Applications&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S framework/learning/native-llm -B build/learning-dataset -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/learning-dataset --target umicom-native-llm-dataset umicom-native-llm-source-train --parallel 2</code></pre>
+<p>In Bash use the same CMake commands from the checkout directory; omit the PowerShell Path line. Stop if a command reports an error. The lessons explain expected results rather than assuming the build has succeeded. The <a href="../../learning-cmake/index.html">CMake course</a> expands each build concept.</p>
+<h2>What a dataset means</h2>
+<p>A dataset is a collection of examples. Training changes numerical model parameters so that the model predicts these examples more accurately. Our first examples are short text documents about projects and editing. They are ordinary UTF-8 text, not PDF files or scanned images.</p>
+<h2>Read before importing</h2>
+<ol>
+<li>Open <code>framework/learning/native-llm/datasets/first-documents/training/project.txt</code> in an editor.</li>
+<li>Read every sentence. These are original teaching sentences; no customer data is needed.</li>
+<li>Open <code>training/document.txt</code> and <code>evaluation/workspace.txt</code> beside it.</li>
+<li>Make a separate practice directory and copy this whole dataset directory into it before making experiments.</li>
+<li>Record who wrote each practice document, whether you may use it and what topic it teaches.</li>
+</ol>
+<p>A PDF may contain page headers, broken words and repeated footers. Extract text with a document tool, then review the result before using it. Preserve meaningful paragraph boundaries. Do not simply rename a PDF to <code>.txt</code>: that changes its name, not its contents.</p>
+<h2>A useful preparation checklist</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Check</th><th scope="col">Why it matters</th></tr></thead><tbody><tr><td>Readable UTF-8 text</td><td>The byte tokenizer reads bytes exactly as stored.</td></tr><tr><td>Permission to use the text</td><td>Availability does not establish training rights.</td></tr><tr><td>No passwords or personal records</td><td>A trained model may reproduce its examples.</td></tr><tr><td>Correct and relevant content</td><td>Training can reinforce errors in the examples.</td></tr><tr><td>Limited repetition</td><td>Repeated pages can dominate a tiny dataset.</td></tr></tbody></table></div>
+<h2>Try and explain</h2>
+<p>Write four original sentences explaining a file-save workflow. Ask another reader to follow them. Correct ambiguity before training. A language model cannot repair missing meaning in its source documents reliably.</p>
+<p>Expected result: a small, reviewed text collection and a note about its origin. There is no trained model yet. If a file displays unreadable symbols, reopen it using the correct encoding or extract it again; do not train on a guessed conversion.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/learning/native-llm/datasets/first-documents/README.md">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="partition-documents-with-a-manifest.html">Next: Separate training and evaluation documents</a></p>
+</nav><p><a href="../../../lessons/10-native-ai/llm-from-scratch/prepare-reviewed-documents.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

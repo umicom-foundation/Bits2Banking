@@ -53,3 +53,7 @@ Open `umicom-c/src/compiler.c` in your Umicom source collection. Read the named 
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/03-expression-order.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Read one token at a time](02-reading-tokens.md)
+
+[Next: Execute instructions with checked arithmetic](04-checked-execution.md)

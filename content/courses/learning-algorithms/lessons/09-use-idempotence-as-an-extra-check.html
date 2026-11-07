@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-algorithms/lessons/09-use-idempotence-as-an-extra-check.html
+
+PURPOSE:
+Explain the lesson: Use idempotence as an extra check.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use idempotence as an extra check | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-check-duplicates-survive-sorting.html">Previous lesson</a></nav>
+<h1>Use idempotence as an extra check</h1>
+<p>An operation is idempotent when applying it again has the same observable effect as applying it once. Sorting an already sorted sequence is a useful example.</p>
+<h2>Prepare</h2>
+<p>Read the second call to BtbListSort in sort_records.c. The first call has already produced the expected order. The second call must preserve that sequence.</p>
+<p>Idempotence is a property of the result, not a promise that the implementation performs no work.</p>
+<h2>Make the check precise</h2>
+<ol>
+<li>Establish the expected ordered values independently.</li>
+<li>Sort the original input.</li>
+<li>Compare every active value with that expectation.</li>
+<li>Sort again.</li>
+<li>Compare again.</li>
+</ol>
+<p>The example uses the same explicit expected array for both comparisons. It does not copy the first result and assume that result was correct.</p>
+<h2>Understand the limit</h2>
+<p>A function that always writes five zeroes could be idempotent and still be an incorrect sort. That is why the first expected-value check remains necessary.</p>
+<p>Properties complement examples. They do not automatically replace all examples.</p>
+<h2>Exercise</h2>
+<p>Name a second property for sorting: the smallest value must be at the beginning when the input is nonempty. Construct a broken result that satisfies this property but loses a duplicate.</p>
+<p>Now combine size, value frequencies, ordering and idempotence. Explain what each detects.</p>
+<h2>Connect to application work</h2>
+<p>Reapplying a layout preference or normalizing a configuration often benefits from idempotence. Sending a payment or appending a chat message usually requires a different duplicate-operation policy.</p>
+<p>Never infer an operation's retry safety from its name. Read its contract and consider external effects.</p>
+<p>Build and run the collections lab only after recording your predictions. When a check fails, preserve the failing input and result so the next investigation starts with evidence.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/collections/sort_records.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-check-duplicates-survive-sorting.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-algorithms/09-use-idempotence-as-an-extra-check.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

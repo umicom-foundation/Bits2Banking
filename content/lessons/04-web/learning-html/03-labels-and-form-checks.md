@@ -61,3 +61,5 @@ Read the real course index linked below. Identify its heading, navigation and or
 [Course contents](index.md) · [Previous: Links, illustrations and access](02-links-images-and-access.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Follow a form to a C service](04-follow-a-form-to-a-c-service.md)

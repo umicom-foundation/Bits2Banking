@@ -1,0 +1,85 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-algorithms/index.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Learning Algorithms | Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Courses</a><a href="../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Learning Algorithms</h1><h2>About this course</h2>
+<p>Find and order values, trace each operation, and compare the work different algorithms perform.</p>
+<h2>Before you begin</h2>
+<p>You should recognise an array and a loop. A short recap and the linked programming course provide a route back.</p>
+<h2>Reading order</h2>
+<ol>
+<li><a href="lessons/01-linear-search-and-cost.html">Linear search and counting work</a></li>
+<li><a href="lessons/02-insertion-sort-and-invariants.html">Insertion sort and a promise kept at every step</a></li>
+<li><a href="lessons/03-binary-search-and-preconditions.html">Binary search and its sorted-input promise</a></li>
+</ol>
+<h2>Prepare a development environment</h2>
+<p>A compiler translates C source. CMake describes which files belong to a program. Ninja performs the build work. CTest runs registered checks. An editor changes the source text. You may use a plain text editor before learning an IDE.</p>
+<h3>Windows with PowerShell</h3>
+<ol>
+<li>Install MSYS2 from <a href="https://www.msys2.org/">its official installation guide</a>. Use the UCRT64 environment described in <a href="https://www.msys2.org/docs/environments/">the environment guide</a>.</li>
+<li>In the MSYS2 UCRT64 terminal, follow its update instructions, then install the C tools:</li>
+</ol>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja git</code></pre>
+<ol>
+<li>Obtain the Bits2Banking repository. If it is already present, use that checkout; do not clone into it again. In the MSYS2 terminal, an example new location is:</li>
+</ol>
+<pre><code class="language-bash">mkdir -p /c/umicom
+git clone https://github.com/umicom-foundation/Bits2Banking.git /c/umicom/Umicom-Bits2Banking</code></pre>
+<ol>
+<li>Open PowerShell and add the tools to that terminal's PATH. PATH is the list of directories searched for commands.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+gcc --version
+cmake --version
+ninja --version</code></pre>
+<ol>
+<li>Read the files under labs/native/collections. Run one command at a time and stop on an error. Check $LASTEXITCODE immediately after a native command; zero reports success.</li>
+</ol>
+<pre><code class="language-powershell">cmake -S labs/native/collections -B build/collections -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/collections --parallel 2
+ctest --test-dir build/collections --output-on-failure --no-tests=error
+&amp; &quot;.\build\collections\btb-collections.exe&quot;</code></pre>
+<h3>Linux with Bash</h3>
+<ol>
+<li>Install Git, a C compiler with the required C23 mode, CMake 3.24 or newer, and Ninja using your distribution's documented package manager. Package names and compiler versions vary.</li>
+<li>Clone into a new folder if needed:</li>
+</ol>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom&quot;
+cd &quot;$HOME/umicom&quot;
+git clone https://github.com/umicom-foundation/Bits2Banking.git Umicom-Bits2Banking
+cd Umicom-Bits2Banking</code></pre>
+<ol>
+<li>Check cc --version, cmake --version and ninja --version. If you choose a different compiler, configure a new build directory with -DCMAKE_C_COMPILER set to that compiler.</li>
+<li>Run each command separately and stop on a failure. echo $? immediately afterwards displays the previous result.</li>
+</ol>
+<pre><code class="language-bash">cmake -S labs/native/collections -B build/collections -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/collections --parallel 2
+ctest --test-dir build/collections --output-on-failure --no-tests=error
+./build/collections/btb-collections</code></pre>
+<h2>Understand the result</h2>
+<p>The program prints 2 2 7 9 and then 7 is at index 2. The checks cover full and empty structures, queue wraparound, sorting and searching. The -S argument selects source; -B selects a separate build directory. Building again in that same directory normally updates changed inputs and their dependencies. Testing is a separate step. A successful compile does not establish that the tests or a user workflow passed.</p>
+<h2>If setup fails</h2>
+<p>A missing command means its tool is not installed or not on PATH. A compiler-mode error means you need a compiler that supports the requested C mode. A missing build.ninja file means configuration did not finish successfully. Read the first diagnostic before repeating later commands. Keep source separate from generated build files.</p>
+<p>For a slower explanation, use <a href="../learning-c/index.html">Learning C</a>. The <a href="https://cmake.org/cmake/help/latest/manual/cmake.1.html">CMake command manual</a> explains configuration and build options.</p>
+<h2>What to practise next</h2>
+<p>Use <a href="../safer-c-programming/index.html">Safer C Programming</a> and <a href="../building-a-text-editor/index.html">Building a Text Editor in C</a> to apply the ideas. The <a href="../building-a-compiler-in-c/index.html">compiler course</a> offers a separate language project.</p>
+<h2>Scope</h2>
+<p>These are introductory chapters and practical labs. Further topics remain to be developed. Successful reading or compilation alone does not establish runtime correctness; compare expected results with your own checks.</p>
+<section id="practical-extensions"><h2>Further practical lessons</h2><ol><li><a href="lessons/04-test-order-and-preservation.html">Test sorting without trusting another sort</a></li>
+<li><a href="lessons/05-choose-search-for-a-workload.html">Choose a search strategy for the work you actually do</a></li><li><a href="lessons/06-find-the-first-duplicate.html">Find the first matching duplicate</a></li><li><a href="lessons/07-prove-a-search-loop-makes-progress.html">Prove a search loop makes progress</a></li><li><a href="lessons/08-check-duplicates-survive-sorting.html">Check that duplicates survive sorting</a></li><li><a href="lessons/09-use-idempotence-as-an-extra-check.html">Use idempotence as an extra check</a></li>
+</ol></section></article>
+<section id="offline-course"><h2>Read this course in Umicom Studio IDE</h2><p>The <a href="../../../learning-packs/learning-algorithms.json">offline course manifest</a> identifies the HTML lessons and their Markdown manuscripts. Keep the Bits2Banking folder intact, then choose this manifest in the learning catalogue. The reader checks the files before opening them.</p><p><a href="../../../learning-packs/index.html">Follow the offline course setup guide</a> for the folder, manifest path and version checks.</p></section>
+</main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

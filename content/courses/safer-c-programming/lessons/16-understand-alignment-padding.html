@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/16-understand-alignment-padding.html
+
+PURPOSE:
+Explain the lesson: Understand alignment and padding.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand alignment and padding | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-request-space-for-a-terminator.html">Previous lesson</a> · <a rel="next" href="17-subtract-only-after-checking.html">Next lesson</a></nav>
+<h1>Understand alignment and padding</h1>
+<h2>Prepare</h2>
+<p>Read BtbArenaAllocate in arena.c and the alignment assertions in test_arena.c. Alignment means that an address meets a spacing requirement, such as being divisible by eight.</p>
+<p>The test requests a region with uint64_t alignment but only inspects its address. It does not write a uint64_t object through that pointer.</p>
+<h2>Trace a boundary</h2>
+<p>Imagine the current address is 101 and the required alignment is eight. The next divisible address is 104. Three bytes are padding before the requested region.</p>
+<p>The implementation accepts nonzero powers of two. For these values, a mask can round an address upwards after checking that the addition is representable.</p>
+<h2>Lab</h2>
+<p>Make a paper table for current addresses 100 through 108 with alignment four. Record the next aligned address and padding.</p>
+<p>Expected padding ranges from zero to three. An already aligned address needs no padding.</p>
+<h2>Exercise and explanation</h2>
+<p>Does a request for eight bytes always consume eight bytes? No. It may also consume alignment padding. Capacity calculations must include both.</p>
+<p>Does alignment establish C object lifetime and access rules? No. Those are separate requirements. Use this arena's text example as the initial supported exercise.</p>
+<h2>Troubleshoot</h2>
+<p>An alignment of three is refused because it does not meet this API's power-of-two contract. Do not silently round the requested alignment. Explain the refusal to the caller, and use the required alignment of the intended data representation.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/arena-allocator/arena.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-request-space-for-a-terminator.html">Previous lesson</a> · <a rel="next" href="17-subtract-only-after-checking.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/16-understand-alignment-padding.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

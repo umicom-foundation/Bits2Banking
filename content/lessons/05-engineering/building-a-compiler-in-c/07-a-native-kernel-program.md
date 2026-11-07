@@ -47,3 +47,7 @@ Open `umicom-kernel/programs/cvm/main.c` in your Umicom source collection. Read 
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/07-a-native-kernel-program.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Explain failures and test the boundaries](06-errors-and-tests.md)
+
+[Next: Understand architectures, firmware and boot media](08-architectures-and-boot-media.md)

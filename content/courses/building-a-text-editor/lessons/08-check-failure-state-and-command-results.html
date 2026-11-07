@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/08-check-failure-state-and-command-results.html
+
+PURPOSE:
+Explain the lesson: Check failure state and command results.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check failure state and command results | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-recognise-line-endings-and-eof.html">Previous lesson</a></nav>
+<h1>Check failure state and command results</h1>
+<p>A regression check should observe the behavior that matters to a user. For file loading, receiving an error code is only half the requirement: the current document must survive.</p>
+<h2>Setup recap</h2>
+<p>Open test_load.c and CMakeLists.txt in labs/native/text-editor. OPENING.md supplies the build and CTest commands. The load test receives a build-owned fixture directory as an argument; it does not choose a personal documents folder.</p>
+<h2>1. Capture the complete relevant state</h2>
+<p>The test copies BtbEditor before a failing operation. SameState compares text, previous text, lengths, the undo flag and the dirty flag.</p>
+<p>It compares the members explicitly rather than comparing the entire structure as raw bytes. C structures can contain padding bytes whose values are not part of the logical editor state.</p>
+<h2>2. Cover distinct boundaries</h2>
+<p>The fixtures include invalid control bytes, embedded zero, non-ASCII bytes, excess capacity, exact capacity and an empty file. Each case targets a different rule.</p>
+<p>The unsaved-document case uses a valid file. That matters: otherwise a refusal could come from a nonexistent path instead of the dirty-state guard.</p>
+<p>A failed load must preserve the previous undo state as well as the visible text. A successful load must clear intermediate validation snapshots.</p>
+<h2>3. Interpret the executable's status</h2>
+<p>The command-line example remembers whether any command was refused. A later successful command does not erase that fact. Automated callers can inspect the final exit status and output together.</p>
+<p>An intentional failure exercise can therefore produce the expected refusal and still end with a nonzero status. This differs from a regression test executable, which returns success when every assertion—including expected refusals—holds.</p>
+<h2>Exercise and recovery</h2>
+<p>Change one fixture in a separate practice copy to printable text. Predict which assertion should now fail and explain why. Do not weaken the loader just to make that assertion pass.</p>
+<p>If a test cannot create its fixture, inspect the supplied build directory and permissions. If it reports a line number, read the condition at that line and compare the expected state with the operation immediately before it.</p>
+<p>Authored assertions are a specification until executed. Keep the tested revision and command with any recorded result.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/text-editor/test_load.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-recognise-line-endings-and-eof.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-text-editor/08-check-failure-state-and-command-results.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

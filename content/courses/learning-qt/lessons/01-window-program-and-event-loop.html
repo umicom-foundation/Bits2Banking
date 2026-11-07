@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/01-window-program-and-event-loop.html
+
+PURPOSE:
+A window, a program and an event loop
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A window, a program and an event loop | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>A window, a program and an event loop</h1>
+<p>Qt is a library for building applications. A widget is a visible control, such as a text box or button. This course builds a small desktop interface that calls a C function in Umicom Framework. The interface uses C++ because Qt Widgets exposes a C++ API; the reusable validation policy stays in Framework C.</p>
+<h2>Before starting</h2>
+<p>Use a development copy of Umicom Bits2Banking and an installed Umicom Framework SDK containing the security component and UmiLocalProfileNameBytes. Install a matching Qt 6 development kit, C++ compiler, CMake and Ninja. A kit groups tools and libraries compiled to work together. Do not combine libraries from different compiler families. Open a terminal in labs/framework/qt-profile. The lab README contains complete PowerShell and Bash commands and explains how to choose installation prefixes. The exercises check names only; they do not create an account or contact a broker.</p>
+<p><a href="../../../../labs/framework/qt-profile/README.md">Open the lab setup guide</a>.</p>
+<h2>What you will learn</h2>
+<p>A running program is a process. Its main function is where this example starts. A window is an object managed by that process; it is not the entire program. An event is a notification, such as a key press, mouse click or request to close a window.</p>
+<pre><code class="language-text">operating system -&gt; event queue -&gt; Qt -&gt; connected function -&gt; visible result</code></pre>
+<h2>Follow the startup</h2>
+<ol>
+<li>Open main.cpp in a text editor.</li>
+<li>Find QApplication application(argc, argv). argc counts command-line arguments; argv points to their text. QApplication prepares the GUI event machinery.</li>
+<li>Find QWidget window. This is the top-level window, stored as a local variable.</li>
+<li>Follow PopulateProfileWindow(&amp;window). The ampersand obtains the address of the window so another function can populate that same object.</li>
+<li>Find window.show(). Construction alone does not display the window.</li>
+<li>Find application.exec(). This runs the event loop until the application is asked to finish. It is normal for this call not to return while the window remains open.</li>
+</ol>
+<p>Qt requires a QApplication for a Widgets application. See the <a href="https://doc.qt.io/qt-6/qapplication.html">QApplication reference</a>.</p>
+<h2>Try it</h2>
+<p>Build and launch using the setup guide. Expect one window with a name input, a Check name button and a result line. Move the window and resize it. Close it and observe that the terminal becomes available again. Record what actually happens on your machine.</p>
+<p>In a separate copy of the lab, temporarily comment out window.show(), rebuild, and compare. Restore it afterwards. This experiment separates creating an object from displaying it; it does not test whether Framework validation works.</p>
+<h2>If the window never appears</h2>
+<p>Run from a terminal so startup diagnostics remain visible. A missing Qt platform plugin or DLL is a runtime packaging problem; a compiler diagnostic is a build problem. Read the first error before changing code. If the window appears but clicks have no effect, continue to the signal lesson rather than repeatedly reinstalling the compiler.</p>
+<h2>Check your understanding</h2>
+<p>Why does code after application.exec() normally wait? Because the event loop remains active while the application handles events. Why use &amp;window? So the function receives the existing object's address, rather than an unrelated window.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/qt-profile/main.cpp">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="02-build-a-small-qt-consumer.html">Next: Build a small Qt consumer of the Framework SDK</a></p>
+</nav><p><a href="../../../lessons/03-native-code/learning-qt/01-window-program-and-event-loop.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

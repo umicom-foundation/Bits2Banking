@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/10-restore-state-at-a-controlled-return.html
+
+PURPOSE:
+Explain the lesson: Restore state at a controlled return.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Restore state at a controlled return | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-understand-stack-sentinels.html">Previous lesson</a></nav>
+<h1>Restore state at a controlled return</h1>
+<p>Returning from a trap changes processor state as well as control flow. The restoration sequence must keep its own working storage usable until the last required load.</p>
+<h2>Prepare the source study</h2>
+<p>Open the section after UmicomRiscvMachineTrapDispatchGuarded in trap_entry.S. Read its comments beside the named status fields.</p>
+<p>This lesson follows the current kernel path. It does not claim that every trap handler uses the same policy.</p>
+<h2>1. Use a checked result</h2>
+<p>The guarded dispatcher validates the frame and the policy result before assembly restores mepc and mstatus.</p>
+<p>In this path the restored status keeps ordinary interrupts masked during the remaining loads and clears MPRV, so those loads do not inherit an unintended memory-access privilege setting.</p>
+<p>The exact meaning of a status bit belongs to the processor architecture; the chosen allowed combination belongs to the kernel policy.</p>
+<h2>2. Restore working registers late</h2>
+<p>Temporary register t0 is used for control-register writes. Its interrupted value is restored near the end, after that work is complete.</p>
+<p>The old sp is restored after the owned frame has supplied the needed values. Restoring it early would lose the reliable base address for subsequent frame loads.</p>
+<h2>3. Identify the final transition</h2>
+<p>The last instruction is mret. It performs the architecture's machine-mode trap return, including the defined interrupt-state transition.</p>
+<p>An ordinary ret instruction returns through a general-purpose return-address register. It does not perform the same processor-control operation.</p>
+<h2>Exercise</h2>
+<p>Mark every instruction that still needs the owned frame. Place the old-sp restoration after those accesses in your diagram.</p>
+<p>Then explain why a second trap uses an emergency route while the first frame is being handled. Reusing the same storage could overwrite the evidence needed to understand the original failure.</p>
+<h2>Evidence</h2>
+<p>A convincing change needs matched source review and target execution evidence. A host-side model can check policy decisions but cannot execute the machine-mode return instruction on an unrelated host.</p>
+<p>Record any emulator configuration with your result; platform behavior and source identity are part of the observation.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/arch/riscv64/trap_entry.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-understand-stack-sentinels.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv-assembly/10-restore-state-at-a-controlled-return.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="11-walk-an-array-with-loads.html">Next: Walk an array with loads</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

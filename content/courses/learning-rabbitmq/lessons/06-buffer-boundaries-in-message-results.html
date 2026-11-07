@@ -1,0 +1,55 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-rabbitmq/lessons/06-buffer-boundaries-in-message-results.html
+
+PURPOSE:
+Copy complete message results without truncation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Copy complete message results without truncation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Copy complete message results without truncation</h1>
+<p>Learn how applications exchange work, recognise repeated requests and recover from failure. Begin with messages and queues, then inspect a small C client of Umicom Framework. The course separates local contracts from the additional work needed for a real broker integration.</p>
+<h2>Start here</h2>
+<p>A terminal is a window where you type commands. A source file contains instructions written by a programmer. A compiler translates those instructions into a program. CMake describes how files belong together; Ninja performs the build; CTest runs the checks registered by CMake. Reading this course requires no account or installation. The practical C lab uses the installed Umicom Framework messaging library and does not contact a message broker.</p>
+<p>On Windows, use PowerShell with an MSYS2 UCRT64 C23 compiler, CMake and Ninja installed. Open the Bits2Banking checkout and locate labs/framework/message-retry. In the commands below, replace the checkout and SDK locations if yours differ. The SDK must include the messaging component and use a compatible compiler and architecture.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\message-retry&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+&amp; &quot;.\build\btb-message-retry.exe&quot;</code></pre>
+<p>On Linux, open Bash with a C23 compiler, CMake, Ninja and a compatible Framework SDK installed:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/framework/message-retry
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+./build/btb-message-retry</code></pre>
+<p>Run one command at a time and stop at the first error. If CMake cannot find UmicomFramework, check the SDK prefix; do not copy arbitrary libraries into the project. A missing messaging target indicates an incomplete or incompatible SDK. Expected example output is “Retry result: report prepared” followed by “Lease owned at 119; expired at 120.” These are local observations, not a broker delivery receipt.</p>
+<p>Read each lesson's explanation before changing the example. No payment, trade, network connection or external file export is performed by this lab. Keep experiments in a practice copy. <a href="../../learning-c/index.html">Learning C</a> provides a deeper introduction to syntax.</p>
+<h2>Capacity is part of a function contract</h2>
+<p>A C character array has a fixed amount of storage. A C string ends with a zero byte. The eight letters in complete therefore require nine bytes when represented as a C string. The lab deliberately offers a two-byte output array so the lookup must refuse the copy.</p>
+<pre><code class="language-c">char result[2] = {'Q', 'Q'};
+UmiStatus outcome = UMI_STATUS_BUSY;</code></pre>
+<p>The Q bytes are sentinels: known values that make accidental modification visible. They are not a string here because neither byte is zero. Do not print this array with a string conversion before a successful full copy.</p>
+<h2>Follow the test</h2>
+<ol>
+<li>Read the record call that stores complete.</li>
+<li>Read the lookup call that passes sizeof result. sizeof reports the whole array's byte size at this declaration site.</li>
+<li>Check that the return value is CAPACITY_EXCEEDED.</li>
+<li>Check both Q bytes and the original BUSY outcome remain unchanged.</li>
+<li>Check the registry count is still one.</li>
+</ol>
+<p>A function that returns a truncated identity or partial result as successful can cause a later component to act on incorrect information. The public Framework contract now requires enough capacity for the entire result plus its terminator.</p>
+<h2>Try a valid buffer</h2>
+<p>In a separate practice case, use a nine-byte output array, call lookup, and inspect both the status and stored outcome before displaying the text. Add an assertion for the final zero byte. Keep the original too-small test: it verifies failure behaviour that the success case cannot establish.</p>
+<h2>Review</h2>
+<p>Explain why changing the output variable before checking capacity would violate this contract even if no memory address was out of bounds. Memory safety and state consistency are related but separate obligations.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/message-retry/test_retry.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="05-stable-identity-and-retries.html">Previous: Use stable identities when requests are retried</a> · <a href="07-leases-time-and-overflow.html">Next: Handle temporary ownership and safe deadlines</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-rabbitmq/06-buffer-boundaries-in-message-results.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

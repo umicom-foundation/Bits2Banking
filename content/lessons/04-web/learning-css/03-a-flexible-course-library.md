@@ -68,3 +68,5 @@ Open the real learning stylesheet below and find its colour variables and `.logo
 [Course contents](index.md) · [Previous: Responsive and keyboard-friendly pages](02-responsive-and-keyboard-friendly-pages.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Test a layout with long content](04-test-a-layout-with-long-content.md)

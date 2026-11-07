@@ -41,3 +41,7 @@ Yes. A transcript alone is not authenticated execution evidence. Keep fixture re
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/06-read-qualification-evidence.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Know which bytes you booted](05-image-and-firmware-identity.md)
+
+[Next: Make recovery decisions testable](07-boot-admission.md)

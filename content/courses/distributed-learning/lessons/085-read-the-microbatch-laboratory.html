@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/distributed-learning/lessons/085-read-the-microbatch-laboratory.html
+
+PURPOSE:
+Read the microbatch laboratory from input to result
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read the microbatch laboratory from input to result | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read the microbatch laboratory from input to result</h1>
+<p>Training adjusts numbers called model parameters so that predictions better match examples. A batch is a group of examples used for one adjustment. This module follows a small, local Framework experiment. It assumes no previous machine-learning course and introduces each term before using it. A local experiment is the first measurement needed when designing work for several computers.</p>
+<h2>Set up this laboratory</h2>
+<ol>
+<li>Install a C23 compiler, CMake and Ninja. On Windows, open PowerShell and make the installed UCRT64 tools available with <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code>. On Linux, open a terminal and ensure <code>cc</code>, <code>cmake</code> and <code>ninja</code> are installed through your distribution.</li>
+<li>Use a checkout of Umicom Framework containing <code>learning/native-llm/inspect_accumulation.c</code>. The examples below use the Framework child of Umicom Applications.</li>
+<li>Configure a separate laboratory directory. This prepares build instructions; it does not train a model.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Applications\framework
+cmake -S learning/native-llm -B build/learning-accumulation -G Ninja -DBUILD_TESTING=ON
+cmake --build build/learning-accumulation --target umicom-native-llm-accumulation
+&amp; .\build\learning-accumulation\umicom-native-llm-accumulation.exe 2</code></pre>
+<p>In Bash, change to the Framework directory, run the same two <code>cmake</code> commands, then run <code>./build/learning-accumulation/umicom-native-llm-accumulation 2</code>. Stop if configuration or compilation fails; inspect the first diagnostic before proceeding. Expected successful output includes <code>Effective tokens: 40</code> and <code>Comparison: within tolerance</code>. Numerical values and memory observations must be recorded from your actual run. These are instructions to execute, not a claim that a particular environment has passed.</p>
+<h2>Start with the data flow</h2>
+<p>A token is a numeric identifier for one item in a model's input vocabulary. This laboratory constructs identifiers directly; it does not download documents or tokenize private text. An array is a numbered collection of values. <code>input[40]</code> stores forty input identifiers and <code>target[40]</code> stores the expected next identifiers.</p>
+<pre><code class="language-text">40 input identifiers + 40 target identifiers
+                  |
+           identical initial models
+              /            \
+        one large graph   smaller graphs
+              \            /
+             one update each
+                  |
+        compare loss and predictions</code></pre>
+<p><code>UmiAiTrainingDecoderConfig</code> describes the model: a vocabulary of 260 identifiers, contexts of eight tokens, eight channels, sixteen hidden channels and two attention heads. A context is the stretch of tokens considered together. A channel is one coordinate in the internal representation. An attention head computes one part of how earlier positions contribute to a prediction. These small dimensions keep the example inspectable on a CPU.</p>
+<h2>Follow the program</h2>
+<ol>
+<li>Find the argument checks. Only <code>1</code>, <code>2</code> and <code>5</code> are accepted as microbatch sequence counts.</li>
+<li>Find the loop that initializes the arrays. Every identifier stays inside the vocabulary.</li>
+<li>Find both <code>UmiAiTrainingDecoderCreate</code> calls. The same seed, 4477, gives both models the same starting point for this comparison.</li>
+<li>Find the two training calls and the later inspection calls. The program observes the service rather than implementing another neural network.</li>
+<li>Find <code>finish</code>. Both owned model objects are destroyed there, including when a service call fails.</li>
+</ol>
+<h2>Try and explain</h2>
+<p>Run the program with <code>--help</code>, then <code>2</code>, then <code>0</code>. Help returns successfully without training. The supported experiment returns zero if its comparisons pass. The unsupported argument returns a nonzero usage result. In PowerShell inspect <code>$LASTEXITCODE</code> immediately; in Bash use <code>echo $?</code>.</p>
+<p>Write a three-sentence explanation of what was supplied, what was changed and what was compared. Do not describe this deterministic numerical fixture as a useful language model: its purpose is to expose the mechanics of one update.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/learning/native-llm/inspect_accumulation.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="086-count-sequences-tokens-and-updates.html">Next: Count sequences, tokens and optimiser updates</a></p>
+</nav><p><a href="../../../lessons/12-distributed-learning/distributed-learning/085-read-the-microbatch-laboratory.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

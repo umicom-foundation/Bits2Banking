@@ -46,3 +46,5 @@ Never solve a permission error by automatically running the whole development wo
 [Course contents](index.md) · [Previous: Your first user-space build](01-your-first-user-space-build.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Follow an exit status to the terminal](03-follow-an-exit-status-to-the-terminal.md)

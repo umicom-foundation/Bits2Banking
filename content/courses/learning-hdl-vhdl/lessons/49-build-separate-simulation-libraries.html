@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/49-build-separate-simulation-libraries.html
+
+PURPOSE:
+Build separate simulation libraries
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build separate simulation libraries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Build separate simulation libraries</h1>
+<p>A CPU is a circuit that changes its internal state according to instructions. This module connects the existing teaching CPU to a stored sequence of instructions. Each lesson explains the terms it uses and follows a real source file from the Framework project template.</p>
+<h2>Prepare the laboratory</h2>
+<p>A terminal is a window in which you type commands. An editor changes text files. GHDL interprets VHDL hardware descriptions; CMake prepares build instructions; Ninja performs the requested build steps; CTest runs the checks recorded by CMake. Install these tools and verify that ghdl --version, cmake --version and ninja --version each identify a program. A missing-command message means the installation or PATH search list needs attention.</p>
+<p>Open a terminal in the Bits2Banking checkout. In PowerShell, enter Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\hardware\vhdl-cpu&quot;. In Bash, enter cd /path/to/Umicom-Bits2Banking/labs/hardware/vhdl-cpu, using your checkout path. Then run the following commands one at a time, stopping after any failure:</p>
+<pre><code class="language-text">cmake --preset simulation
+cmake --build --preset simulation
+ctest --preset simulation -R &quot;^cpu[.]program$&quot;</code></pre>
+<p>The preset is a named set of settings in CMakePresets.json. A successful program check prints Stored program checks passed. An assertion failure describes a behaviour that differs from the specification; a missing executable usually means the build did not finish. No physical board is required. This laboratory simulates a small teaching CPU. For the complete language introduction, explore <a href="../index.html">Learning HDL and VHDL</a>.</p>
+<h2>Understand the intermediate files</h2>
+<p>GHDL analysis records design units in a work library. A design unit is an entity, architecture or related declaration understood by the tool. The work library is not the source directory: it is an intermediate database that later elaboration and simulation use.</p>
+<p>The instruction test and stored-program test are independent build targets. If they wrote the same work database concurrently, one build could interfere with the other's analysis. The CMake project therefore uses ghdl-work for instruction checks and ghdl-program for the composed program. Both directories are inside the build tree.</p>
+<h2>Follow the dependency chain</h2>
+<ol>
+<li>program_sources lists the CPU first, then program memory, then the system that instantiates them, and finally its testbench.</li>
+<li>The analysis command reads this ordered list.</li>
+<li>Elaboration selects tb_learning_system as the top-level design.</li>
+<li>Only after successful commands does CMake touch analysis.stamp.</li>
+<li>DEPENDS names every source and the GHDL executable, so a changed input makes the target out of date.</li>
+</ol>
+<p>A stamp is a file used to record successful completion of a build step. Creating it before analysis succeeded would be misleading. The ALL keyword makes program_analysis part of the normal build, so a learner does not need to guess which hardware target to request.</p>
+<h2>Separate building from testing</h2>
+<p>CTest runs the previously prepared simulation. It does not automatically repair an outdated analysis database. Build after editing a ROM word and before testing. The simulate_program target has an explicit dependency on program_analysis and also requests a waveform file.</p>
+<p>VERBATIM asks CMake to preserve individual command arguments through the build tool. Quoted paths keep a folder such as CPU designs together. It does not validate an arbitrary shell command; this project supplies known tool arguments directly.</p>
+<h2>Exercise</h2>
+<p>Find the four source paths and both work directories. Change one comment in the program source, then inspect the next owner-run build output. The source timestamp can still trigger analysis even though the circuit behaviour is unchanged. Record actual evidence rather than assuming a no-work result. See the <a href="https://ghdl.github.io/ghdl/using/InvokingGHDL.html">GHDL command reference</a> for tool-specific analysis and simulation options.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/hardware/vhdl-cpu/CMakeLists.txt">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="48-handle-unresolved-addresses.html">Previous: Handle unresolved addresses</a> · <a href="50-investigate-a-program-failure.html">Next: Investigate a program failure</a></p>
+</nav><p><a href="../../../lessons/03-native-code/learning-hdl-vhdl/49-build-separate-simulation-libraries.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

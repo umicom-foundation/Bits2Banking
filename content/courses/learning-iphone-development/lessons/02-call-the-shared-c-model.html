@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-iphone-development/lessons/02-call-the-shared-c-model.html
+
+PURPOSE:
+Explain the lesson: Call an existing C model from Swift.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Call an existing C model from Swift | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="01-create-and-run-a-screen.html">Previous lesson</a> · <a href="03-state-feedback-and-accessibility.html">Next lesson</a></nav>
+<h1>Call an existing C model from Swift</h1>
+<h2>Setup recap</h2>
+<p>Create and run a SwiftUI iOS App in Xcode on a Mac. Have the Bits2Banking and Umicom Framework source checkouts available locally. The detailed source-integration steps are in <code>labs/mobile/iphone-framework-activity/README.md</code>.</p>
+<h2>What crosses the boundary</h2>
+<p>Our C function accepts one integer and returns one integer:</p>
+<pre><code class="language-c">int BtbActivityNext(int current);</code></pre>
+<p>A nonnegative return is the updated count. A return of -1 means the update was rejected. No pointer to a Swift object crosses this boundary.</p>
+<p>A bridging header makes C declarations visible to Swift in this target. Apple describes the <a href="https://developer.apple.com/documentation/swift/importing-objective-c-into-swift">bridging-header mechanism</a>.</p>
+<h2>Add the sources</h2>
+<ol>
+<li>Add the supplied ActivityView.swift to the app target.</li>
+<li>Add the existing bridge.c and activity.c from their repository locations. Keep their relative includes intact.</li>
+<li>Set Objective-C Bridging Header to Activity-Bridging-Header.h.</li>
+<li>Add Framework's include directory to Header Search Paths.</li>
+<li>Select the C23 language mode supported by your Xcode compiler.</li>
+<li>Change the generated WindowGroup's view to ActivityView().</li>
+<li>Build for the same simulator used by the unchanged template.</li>
+</ol>
+<p>The two C files use Framework's status declaration. This first exercise does not link a prebuilt desktop SDK archive. A later library integration must use binaries built for the actual iOS target.</p>
+<h2>Follow a value</h2>
+<pre><code class="language-text">Swift CInt 0 -&gt; BtbActivityNext -&gt; BtbActivityAdvance -&gt; UMI_STATUS_OK
+                                                      |
+display 1 &lt;------------ return 1 &lt;---------------------+</code></pre>
+<p>CInt represents the imported C integer type. The C bridge checks signed input before calling the existing rule. Swift does not repeat that rule.</p>
+<h2>Diagnose the layer</h2>
+<p>If Swift cannot see the name, inspect the bridging header. If the linker cannot find the implementation, inspect target membership for the C files. These errors occur at different stages and need different corrections.</p>
+<h2>Exercise</h2>
+<p>Set a breakpoint at BtbActivityNext. Press Complete exercise and observe current. Step into BtbActivityAdvance and locate the return status. Continue to Swift and identify the assignment that updates the screen. Do not infer a native call from a screen change alone.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/iphone-framework-activity/Activity-Bridging-Header.h">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="01-create-and-run-a-screen.html">Previous lesson</a> · <a href="03-state-feedback-and-accessibility.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/15-mobile-development/learning-iphone-development/02-call-the-shared-c-model.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

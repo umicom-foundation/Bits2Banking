@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-algorithms/lessons/02-insertion-sort-and-invariants.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Insertion sort and a promise kept at every step | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Insertion sort and a promise kept at every step</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-linear-search-and-cost.html">Previous: Linear search and counting work</a> · <a href="03-binary-search-and-preconditions.html">Next: Binary search and its sorted-input promise</a></p></nav><h2>Put values in order</h2>
+<p>Sorting rearranges elements according to a rule. Here the rule is ascending integer order. Insertion sort builds a sorted prefix, inserting each next value into its proper place.</p>
+<p>An invariant is a statement that remains true at a particular point in every loop iteration. Here: before iteration i, the elements before i are already sorted.</p>
+<h2>Setup recap</h2>
+<p>Build the collections lab from <a href="../index.html">the course contents</a>. Read the arrays introduction if indices are unfamiliar. Open BtbListSort in collections.c.</p>
+<h2>Follow one example</h2>
+<pre><code class="language-text">[7 | 2 9 2]    first item is a sorted prefix
+[2 7 | 9 2]    insert 2 before 7
+[2 7 9 | 2]    9 already belongs at the end
+[2 2 7 9 |]    move 9 and 7, then insert the final 2</code></pre>
+<p>The implementation saves the next value before moving larger values right. Otherwise those moves could overwrite the value being inserted. The test j &gt; 0 appears before reading j - 1, preventing subtraction below zero.</p>
+<h2>Lab</h2>
+<ol>
+<li>Write down the initial array 7, 2, 9, 2.</li>
+<li>For each outer iteration, record saved and j.</li>
+<li>Mark the sorted prefix after placing saved.</li>
+<li>Run btb-collections. Expect &quot;2 2 7 9&quot; and then &quot;7 is at index 2&quot;.</li>
+<li>Read the test's frequency counts. They check that sorting retains every value, not just that output looks ordered.</li>
+</ol>
+<h2>Stability and cost</h2>
+<p>This implementation shifts only values greater than saved. Equal values keep their relative order, a property called stability. You cannot observe that order using equal bare integers, but it matters when records have equal keys and different identities.</p>
+<p>In a reversed list, insertion sort can move about n times n elements across its iterations: O(n²) growth. It remains useful for small inputs and teaching. Calling an algorithm simple does not make it suitable for every data size.</p>
+<h2>Exercise and worked answer</h2>
+<p>Suppose the input is 1, 1, 1. The inner loop performs no shifts because no earlier value is greater. A comparison using &gt;= would move equal elements and lose the stability argument.</p>
+<h2>Umicom connection and limits</h2>
+<p>Sorted price or event displays must choose explicit key and tie rules. This lab does not sort live market data or replace Framework's catalogue services. It teaches a reasoning technique you can use when reviewing those services.</p>
+<h2>Troubleshooting</h2>
+<p>Never compare integers by subtracting them to decide ordering when extremes are possible; subtraction can overflow. The implementation compares with &gt; directly, and the tests include INT_MIN and INT_MAX.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/collections/collections.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-linear-search-and-cost.html">Previous: Linear search and counting work</a> · <a href="03-binary-search-and-preconditions.html">Next: Binary search and its sorted-input promise</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-android/lessons/03-connect-an-existing-c-model.html
+
+PURPOSE:
+Explain the lesson: Connect an Android screen to an existing C model.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect an Android screen to an existing C model | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="02-state-events-and-checks.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="04-state-lifetime-and-accessibility.html">Next lesson</a></nav>
+<h1>Connect an Android screen to an existing C model</h1>
+<h2>Prepare a working Android project</h2>
+<p>Install Android Studio, an Android SDK, an emulator image, NDK and CMake through SDK Manager. Create an Empty Activity project using Kotlin and Compose, then run the unchanged template. If it does not launch, resolve that setup before adding native code.</p>
+<p>The complete integration steps are in <code>labs/mobile/android-framework-activity/README.md</code>. Keep the Bits2Banking and Framework source checkouts available.</p>
+<h2>Introduce the native boundary</h2>
+<p>Kotlin describes the screen. The existing C activity rule decides whether a count can advance. JNI is the interface connecting a JVM-language declaration to a native function. Here it carries a single integer, so no text buffers or object ownership cross the boundary.</p>
+<pre><code class="language-text">Complete exercise -&gt; NativeActivity.next -&gt; JNI -&gt; BtbActivityNext</code></pre>
+<h2>Add the example</h2>
+<ol>
+<li>Add the supplied Kotlin files while retaining their package name.</li>
+<li>Call <code>ActivityScreen()</code> inside the generated activity's existing content and theme.</li>
+<li>Merge the README's external-native-build settings into the existing Gradle android block.</li>
+<li>Point CMake at the real Framework include directory.</li>
+<li>Sync, build and run.</li>
+</ol>
+<p>The CMake file compiles the existing C implementation directly. Do not paste the rule into a new Kotlin function.</p>
+<h2>Understand a loading failure</h2>
+<p><code>System.loadLibrary(&quot;btb_activity&quot;)</code> requests the library by its logical name. If it cannot be loaded, check the selected ABI and packaged library. If loading succeeds but the native method cannot be found, compare package, class and method names with the C symbol.</p>
+<h2>Check the result</h2>
+<p>Tap once and expect 1. Tap twice more and expect 3. Trace a rejected input through the C bridge tests. The UI should update its count only on an accepted result.</p>
+<p>This example uses Framework status declarations; broader Framework services need their own Android port and dependencies. A working small binding is a starting point for that work, not a claim that the full SDK is already available.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/android-framework-activity/activity_jni.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="04-state-lifetime-and-accessibility.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/15-mobile-development/learning-android/03-connect-an-existing-c-model.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

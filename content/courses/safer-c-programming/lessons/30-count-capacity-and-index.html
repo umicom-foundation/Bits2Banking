@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/30-count-capacity-and-index.html
+
+PURPOSE:
+Understand count, capacity and array indices
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand count, capacity and array indices | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Understand count, capacity and array indices</h1>
+<p>A watchlist is a collection of instruments that a trading screen follows. This module uses the real Framework watchlist to explain how an array, a count and a capacity work together. You can study every example without a broker connection or market data.</p>
+<ol>
+<li>Open PowerShell and run <code>Set-Location C:\umicom\Umicom-Applications\framework</code>. In bash, use <code>cd /path/to/Umicom-Applications/framework</code>.</li>
+<li>Open <code>include/umicom/trading/watchlist.h</code>, <code>src/trading/watchlist.c</code> and <code>tests/trading/test_watchlist_alerts.c</code> in your editor. A header declares the interface; a source file implements it; a test checks observable results.</li>
+<li>No accounts or credentials are needed. Keep experiments in a separate learning copy. If you later run tests, first finish the normal configure and build for your checkout; a previous executable does not contain newly edited source.</li>
+</ol>
+<h2>Three numbers with different jobs</h2>
+<p>An array is a consecutive set of storage slots. <code>UmiWatchlist</code> contains an array of <code>UmiInstrument</code> values and a <code>size_t count</code>. A structure groups these fields into one value. <code>size_t</code> is an unsigned integer type used for sizes and array positions. The capacity comes from <code>UMI_TRADING_MAX_WATCHLIST</code>, currently 64 in <code>trading/types.h</code>.</p>
+<p>Capacity means space exists for that many entries. Count means that many entries have been added. An index identifies one entry, starting at zero. When count is 3, the occupied indices are 0, 1 and 2. Index 3 is the next free slot, provided capacity exceeds 3.</p>
+<pre><code class="language-text">capacity = 6
+slots    = [A][B][C][ ][ ][ ]
+indices  =  0  1  2  3  4  5
+count    = 3</code></pre>
+<p>The essential rule is <code>0 &lt;= count &lt;= capacity</code>. C does not enforce this relationship for a public structure. Code can assign 500 to count even though only 64 slots exist. This assignment alone may be legal C, but using that count as a loop bound can lead to invalid memory access.</p>
+<h2>Read the implementation</h2>
+<ol>
+<li>Find <code>umi_watchlist_init</code>. It sets count to zero. It does not need to erase every unused slot because valid operations read only occupied slots.</li>
+<li>Find <code>watchlist-&gt;instruments[watchlist-&gt;count]</code>. The arrow accesses a member through a pointer. The square brackets select an array element.</li>
+<li>Find the increment after the assignment. The element becomes part of the logical collection only after its value has been written.</li>
+</ol>
+<h2>Try on paper</h2>
+<p>Draw a four-slot array. Add three different instruments, then identify count, last occupied index and next free index. After the fourth insertion there is no free index. The answer is count 4, last index 3; index 4 is outside the array.</p>
+<h2>Check your understanding</h2>
+<p>An empty initialized list has count zero and still has full capacity. It does not contain 64 valid instruments. Keeping this distinction explicit prevents reading uninitialized storage and confusing empty-state UI displays.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/trading/watchlist.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="31-validate-before-search.html">Next: Check the count before searching the array</a></p>
+</nav><p><a href="../../../lessons/03-native-code/safer-c-programming/30-count-capacity-and-index.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

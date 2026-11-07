@@ -119,3 +119,5 @@ For a final paper exercise, list three objects in a Studio workflow: a registry,
 Shared services and application lifetimes · Lesson 1 of 6.
 
 [Next: Inspect application services](12-inspect-application-services.md)
+
+[Previous: Understand skipped tests and host coverage](31-understand-skipped-tests-and-host-coverage.md)

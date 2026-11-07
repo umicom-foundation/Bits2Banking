@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/12-connect-circuits-with-named-ports.html
+
+PURPOSE:
+Explain the lesson: Connect circuits with named ports.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect circuits with named ports | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-detect-a-sampled-rising-edge.html">Previous lesson</a> · <a rel="next" href="13-explain-one-clock-of-latency.html">Next lesson</a></nav>
+<h1>Connect circuits with named ports</h1>
+<p>A larger circuit can be built from smaller circuits with clear contracts. This lesson joins the existing pulse detector and saturating counter. Neither implementation needs to be copied into the other.</p>
+<h2>Setup recap</h2>
+<p>Use the VHDL laboratory and GHDL with VHDL-2008 support. Read the port lists in sampled_pulse.vhd and lesson_counter.vhd. The COMPOSITION.md guide contains the complete simulation commands.</p>
+<h2>1. Identify the connection</h2>
+<p>pulse_counter declares an internal signal called enable_count. The detector writes it. The counter reads it through its enable input. The top-level detected output exposes the same signal so the testbench can observe the connection.</p>
+<p>Named associations such as <code>enable =&gt; enable_count</code> make the relationship explicit. The name before the arrow belongs to the component; the name after it belongs to this containing architecture.</p>
+<h2>2. Explain the generic</h2>
+<p>The top-level width is passed to the counter using <code>generic map(width =&gt; width)</code>. The two occurrences refer to different scopes. The component receives the containing circuit's chosen width.</p>
+<p>For width 2, count contains two bits and can represent 0 through 3. This example saturates at 3. The detector still produces pulses even after the counter is full.</p>
+<h2>3. Simulate the complete circuit</h2>
+<p>Analyze sampled_pulse.vhd, lesson_counter.vhd, pulse_counter.vhd and tb_pulse_counter.vhd in that order. Elaborate and run tb_pulse_counter with the commands in COMPOSITION.md.</p>
+<p>An unknown entity error normally means that a dependency has not been analyzed into the working library. Check filenames and the VHDL standard flag before changing circuit logic.</p>
+<h2>Exercise and explanation</h2>
+<p>Draw three boxes: detector, counter and testbench. Label the clock and reset connections shared by both components. Draw enable_count between them. Finally draw count and detected back to the testbench.</p>
+<p>Change the order of the two instance declarations in a working copy. Their connections should retain the same meaning. VHDL describes concurrent hardware relationships; it is not a list of calls executed from top to bottom.</p>
+<p>Keep the small component tests as well as the composition test. A component can satisfy its own contract while being connected incorrectly in a larger design.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/pulse_counter.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-detect-a-sampled-rising-edge.html">Previous lesson</a> · <a rel="next" href="13-explain-one-clock-of-latency.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/12-connect-circuits-with-named-ports.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,68 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/lessons/19-length-capacity-and-terminators.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Length, capacity and the end of a string | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1 id="length-capacity-and-the-end-of-a-string">Length, capacity and the end of a string</h1>
+<p>An array is a row of elements. Its capacity says how many elements fit. Its current length says how many contain the data you mean to use. Those numbers can differ. A C string adds another rule: a zero-valued character marks its end. Understanding these three facts prevents many out-of-bounds reads and writes.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>You can do the first exercise on paper. For the practical part, install a C23 compiler, CMake and Ninja using <a href="../terminal-lab.html">terminal setup</a>. The Framework exercise also requires the installed SDK described in <a href="../../umicom-development/lessons/37-use-a-framework-function-in-a-lab.html">the hashing lab</a>. That page supplies the complete PowerShell and Bash configure commands. Use a practice copy so experiments do not change your application sources.</p>
+<h2 id="count-the-elements">1. Count the elements</h2>
+<pre><code class="language-c">char name[8] = &quot;Ada&quot;;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Index</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4–7</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stored value</td>
+<td>A</td>
+<td>d</td>
+<td>a</td>
+<td>zero</td>
+<td>zero</td>
+</tr>
+</tbody>
+</table>
+<p>The capacity is eight characters. The string length is three. The terminator is at index three. Initialising an array this way also zero-initialises the remaining elements. You may not write <code>name[8]</code>: the last valid index is seven.</p>
+<p><code>sizeof(name)</code> is eight because <code>name</code> is an array here. <code>strlen(name)</code> is three because it counts characters before the first zero. <code>strlen</code> requires an accessible terminator; it does not know the capacity and cannot make a damaged buffer safe.</p>
+<h2 id="follow-a-real-framework-call">2. Follow a real Framework call</h2>
+<p>In the <code>framework-hash</code> lab, <code>UmiSha256Buffer(&quot;abc&quot;, 3U, hex)</code> reads exactly three bytes. It does not search for a terminator. It can therefore hash binary data containing zero bytes. The output <code>hex</code> needs 65 characters: 64 readable digest digits plus one terminator.</p>
+<p>This distinction is essential when an application imports a media file or reads a protocol message. The bytes of a file are not necessarily a C string. The application must preserve the actual byte count.</p>
+<h2 id="observe-a-one-byte-difference">3. Observe a one-byte difference</h2>
+<p>From the configured <code>framework-hash</code> practice folder:</p>
+<pre><code class="language-powershell">cmake --build build --parallel 2
+&amp; '.\build\btb-framework-hash.exe' known
+</code></pre>
+<p>In Bash, use <code>./build/btb-framework-hash known</code> after the same build command. Read the <code>Known</code> function. Change only <code>3U</code> to <code>4U</code> in your practice copy, rebuild, and run again. The reference comparison should fail: the fourth byte is the zero terminator. Restore the original length and repeat.</p>
+<p>Do not try larger lengths. The string literal has four elements; requesting more would ask the function to read outside that array. A length-taking API still relies on the caller to describe valid storage.</p>
+<h2 id="explain-the-units">4. Explain the units</h2>
+<p>Framework's byte tokeniser accepts a byte count, an output capacity in <code>uint32_t</code> elements, and a pointer receiving the number of tokens. For <code>uint32_t tokens[10]</code>, the capacity is ten tokens, not the number of bytes returned by <code>sizeof(tokens)</code>. Use <code>sizeof(tokens) / sizeof(tokens[0])</code> while the array is still visible to obtain its element count.</p>
+<p>An array parameter in a C function usually becomes a pointer. <code>sizeof</code> that parameter measures the pointer, not the original array. Pass capacity separately rather than trying to recover it inside the function.</p>
+<h2 id="check-your-understanding">Check your understanding</h2>
+<p>How much space does the string <code>Bank</code> need? Five characters: four letters and the terminator. Can a four-byte binary record contain zero? Yes; its explicit length preserves all four bytes. Would <code>strlen</code> reliably measure that record? No; it would stop at its first zero or read beyond the record if none occurs.</p>
+<p>If an output appears truncated, inspect the capacity and result code before changing the display. If a test crashes, check every pointer/length pair, not just the final line. Read the existing <a href="11-bounded-spans-and-rejection.html">bounded span lesson</a>, then continue to <a href="20-allocation-outputs-and-lifetimes.html">allocation outputs and lifetimes</a>. Return to <a href="../index.html">Learning C</a> for the complete sequence.</p>
+
+<section><h2>Exercise and explanation</h2><p>Why do 64 hexadecimal digits need 65 characters of storage?</p><details><summary>Read the explanation</summary><p>The final character stores the zero terminator required by a C string.</p></details></section><nav aria-label="Lesson sequence"><a rel="prev" href="08-connect-to-systems-lessons.html">Previous lesson</a> · <a rel="next" href="20-allocation-outputs-and-lifetimes.html">Next lesson</a> · <a href="../glossary.html">Glossary</a> · <a href="../practical-guide.html">Practical guide</a> · <a href="../../learning-paths.html">Learning map</a></nav></article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>
+

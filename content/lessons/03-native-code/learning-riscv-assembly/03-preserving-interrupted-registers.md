@@ -86,3 +86,5 @@ Continue with [Umicom Kernel from Scratch](../../../courses/umicom-kernel-from-s
 ## Continue learning
 
 [Continue: Trace a leaf function](04-trace-a-leaf-function.md)
+
+[Previous: Understand entry, return and program exit](02-entry-return-and-exit.md)

@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/18-count-latency-from-acceptance.html
+
+PURPOSE:
+Explain the lesson: Count latency from request acceptance.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Count latency from request acceptance | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="17-keep-unknown-signals-visible.html">Previous lesson</a> · <a rel="next" href="19-specify-busy-time-request-policy.html">Next lesson</a></nav>
+<h1>Count latency from request acceptance</h1>
+<p>Latency is the delay between an accepted request and its completion. To measure it, we must identify the acceptance event precisely.</p>
+<h2>Prepare</h2>
+<p>Read request_timer.vhd and TIMING-WORKSHEET.md. The timer has a clock, reset and start input, plus busy and done outputs.</p>
+<p>CYCLES is a positive generic: a configuration value chosen when the circuit instance is elaborated. The default is three.</p>
+<h2>Identify acceptance</h2>
+<p>When the timer is idle and start is one at a rising clock edge, it stores CYCLES in remaining and sets active to one. Call this edge A.</p>
+<p>The countdown begins on subsequent edges while active is one.</p>
+<p>For CYCLES = 3, remaining becomes two at A + 1, one at A + 2 and zero at A + 3. Done becomes one at A + 3.</p>
+<h2>Exercise</h2>
+<p>Fill the worksheet without running a simulator. Then repeat with CYCLES = 1. The request completes at the next rising edge after acceptance.</p>
+<p>Do not count the acceptance edge as the first decrement; that would change the specified latency.</p>
+<h2>Observe the test</h2>
+<p>The test checks busy and done after every relevant edge. These checks detect both early completion and a countdown that was unexpectedly restarted.</p>
+<p>If only the final done state were checked, the timing error could be missed.</p>
+<h2>Relate to a device interface</h2>
+<p>A peripheral may accept a command and finish later. A driver needs to know whether a request was accepted, whether work remains active and how completion is reported.</p>
+<p>This circuit illustrates the timing contract without implementing a physical peripheral. Its inputs must already be synchronous to the clock, and it needs a reset edge before use.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/request_timer.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="17-keep-unknown-signals-visible.html">Previous lesson</a> · <a rel="next" href="19-specify-busy-time-request-policy.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/18-count-latency-from-acceptance.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

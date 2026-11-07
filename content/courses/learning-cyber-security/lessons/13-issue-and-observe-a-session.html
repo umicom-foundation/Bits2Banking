@@ -1,0 +1,41 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/13-issue-and-observe-a-session.html
+
+PURPOSE:
+Issue and observe a session without exposing its handle
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Issue and observe a session without exposing its handle | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Issue and observe a session without exposing its handle</h1>
+<p>An identity names a person or service. Authentication establishes who is requesting access; authorization decides which action that identity may perform. A session lets a program associate later requests with an earlier authentication result. This module follows these ideas using synthetic local records and the existing Umicom Framework C interfaces.</p>
+<p>Open <code>labs/framework/identity-lifecycle/README.md</code> in the Bits2Banking checkout. It contains complete PowerShell and Bash configure, build, run and test commands. Start in that lab directory, use <code>cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/framework-sdk -DBUILD_TESTING=ON</code>, then <code>cmake --build build</code> and <code>ctest --test-dir build --output-on-failure --no-tests=error</code>. The SDK path names your installed Framework. Stop on the first command error. The executable is <code>build/btb-identity-lifecycle.exe</code> on Windows and <code>build/btb-identity-lifecycle</code> on Unix-like systems. The lab creates no accounts or network connections.</p>
+<h2>A session is a temporary association</h2>
+<p>The session registry associates an opaque handle with a principal and a lifetime. Opaque means the caller must not depend on how the handle is formatted. The Framework obtains randomness through its platform service; callers must handle an issuance failure rather than substitute a predictable identifier.</p>
+<p>The production host authenticates the principal before calling <code>umi_session_registry_issue</code>. The registry itself does not verify a password or check whether an identity is enabled.</p>
+<h2>Read the example call</h2>
+<pre><code class="language-c">umi_session_registry_issue(sessions, learner.identity_id,
+                           100U, 50U, &amp;issued);</code></pre>
+<p>The arguments are the registry, principal ID, current clock value, lifetime and destination record. The declared time unit is nanoseconds. The lab uses tiny synthetic values so the arithmetic is easy to inspect; it is not recommending a fifty-nanosecond user session.</p>
+<ol>
+<li>Check the return status.</li>
+<li>Keep the resulting handle private.</li>
+<li>Pass it to <code>umi_session_registry_validate</code> at a later trusted clock value.</li>
+<li>Use the returned principal only after validation succeeds.</li>
+</ol>
+<p>A copied record is an observation, not a permanent permission. A later request must check again.</p>
+<h2>Avoid accidental disclosure</h2>
+<p>The lab prints descriptive milestones but never prints <code>session_id</code>. Logging a valid handle could let someone reuse it. Keep handles out of URLs, screenshots, diagnostics and teaching fixtures that leave your device.</p>
+<h2>Failed outputs</h2>
+<p>Before a negative check, the lab copies the output record to a second object. After refusal it compares all bytes to verify that the failed call did not publish a partial result. This protects the caller from using data left over from an incomplete operation.</p>
+<h2>Exercise</h2>
+<p>Write down the earliest valid time and the first expired time for issuance at 100 with lifetime 50. Then inspect the expiry comparison in the implementation. Explain why accepting a caller-supplied clock from a browser request would defeat a timeout policy.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/security/session.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="12-reference-fields-and-string-bounds.html">Previous: Keep credential references inside their buffers</a> · <a href="14-disabled-identity-and-authorization.html">Next: Check current identity state before a protected action</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/13-issue-and-observe-a-session.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

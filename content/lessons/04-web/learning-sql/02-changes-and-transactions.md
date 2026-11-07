@@ -53,3 +53,5 @@ If `BEGIN` reports an existing transaction, finish that transaction deliberately
 [Course contents](index.md) · [Previous: Tables, rows and questions](01-tables-rows-and-questions.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Read a transaction as one unit of work](03-read-a-transaction-as-a-unit.md)

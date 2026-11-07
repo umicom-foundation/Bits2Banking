@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/09-present-status-without-changing-the-model.html
+
+PURPOSE:
+Explain the lesson: Present status without changing the model.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Present status without changing the model | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-compose-widgets-in-a-container.html">Previous lesson</a> · <a rel="next" href="10-separate-logic-and-window-checks.html">Next lesson</a></nav>
+<h1>Present status without changing the model</h1>
+<h2>Prepare</h2>
+<p>Build the existing Framework activity example with GTK4 enabled using its README. Keep <code>activity.c</code>, <code>activity.h</code> and <code>window.c</code> open side by side. These files separate the rule, its declaration and its presentation.</p>
+<p>A <strong>status</strong> describes whether an operation succeeded and, if not, why it was refused. The window should not infer success merely because a click occurred.</p>
+<h2>Follow the result</h2>
+<p>The callback calls <code>BtbActivityAdvance</code>. On <code>UMI_STATUS_OK</code> it formats the updated count. Otherwise it formats an explanation using Framework's <code>umi_status_text</code>. The label is updated after this decision.</p>
+<p>The destination buffer is a fixed 96-byte local array. <code>g_snprintf</code> receives the buffer's capacity so formatting is bounded. A bounded message can still be truncated, so future longer messages need deliberate presentation requirements.</p>
+<h2>Work through two cases</h2>
+<p>For count 9, the next value is 10 and the label reports it. For count 1000, the model returns capacity exceeded and preserves the count. The window presents a refusal instead of pretending the action succeeded.</p>
+<p><strong>Exercise:</strong> list information useful to a person and information useful to a developer. A person needs the outcome and a next action; a developer may need a status code and source identity. Avoid replacing helpful UI text with raw private logs.</p>
+<h2>Investigate inconsistency</h2>
+<p>If the count changes after failure, inspect the model's output-preservation contract. If the model preserves it but the label claims success, inspect the status branch in the callback. Testing these separately identifies the responsible boundary.</p>
+<h2>Extend</h2>
+<p>Propose a richer screen with a persistent count label and a separate status label. Keep that as a presentation exercise using the same model; do not move capacity rules into the widget code. Record layout and functional observations independently.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-compose-widgets-in-a-container.html">Previous lesson</a> · <a rel="next" href="10-separate-logic-and-window-checks.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/learning-gtk4/09-present-status-without-changing-the-model.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,56 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cmake/lessons/06-register-meaningful-tests.html
+
+PURPOSE:
+Register tests that check observable behaviour
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Register tests that check observable behaviour | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Register tests that check observable behaviour</h1>
+<p>CMake describes how a software project is prepared for building. In this course you will follow a small C project from source files to executables, understand dependencies, run tests and record useful evidence. Every chapter includes the setup needed to enter the exercise directly.</p>
+<h2>Start here</h2>
+<p>A terminal is a window in which you type commands. A folder groups files; a path tells a command where a file or folder is. Source files contain the instructions people edit. A build folder contains the machine-readable results. Keep the two folders separate.</p>
+<p>This course uses the existing labs/native/bounded-ledger-line project in Bits2Banking. It decodes a fictional message such as 1001:+2500: training account 1001, with a change of 2500 pence. It does not connect to a bank.</p>
+<p>On Windows, install MSYS2. In its UCRT64 terminal install the tools:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Open PowerShell. Adjust the repository path if your copy is elsewhere. Run each line separately and stop on an error.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version
+ninja --version
+cmake -S labs/native/bounded-ledger-line -B build/ledger-line -G Ninja -DBUILD_TESTING=ON
+cmake --build build/ledger-line --parallel 2
+ctest --test-dir build/ledger-line --output-on-failure --no-tests=error</code></pre>
+<p>Use CMake 3.24 or newer and a compiler with C23 support. On Linux, install these tools through the distribution's package manager, open Bash in the repository, and use the same three cmake/ctest commands. The small project builds independently of Framework. <a href="../../learning-c/index.html">Learning C</a> gives a slower installation walkthrough.</p>
+<p>The expected test names end in syntax, mutations and example. Missing tools, missing executables and zero selected tests need investigation. For experiments, copy the lab to a separate practice folder and point -S at that folder; preserve the original example.</p>
+<h2>What a test does</h2>
+<p>A test performs an operation and compares the outcome with an expectation. CTest starts programs and reports results; the program's assertions specify correctness.</p>
+<p>Open test_ledger_line.c and locate one accepted message and one refusal. Read the expected status and row. The mutation program exercises many changed inputs; named cases explain individual boundaries.</p>
+<pre><code class="language-powershell">ctest --test-dir build/ledger-line -N
+ctest --test-dir build/ledger-line -R &quot;^bits2banking[.]ledger_line[.]syntax$&quot; --output-on-failure --no-tests=error</code></pre>
+<p>-N lists tests without executing them. -R selects names with a regular expression. ^ and $ require the whole name to match. --no-tests=error refuses an empty selection.</p>
+<h2>Create an informative failure</h2>
+<ol>
+<li>In a practice copy change one expected value in the test.</li>
+<li>Rebuild that test program.</li>
+<li>Run the selected entry and read the assertion location.</li>
+<li>Restore the correct expectation.</li>
+<li>Rebuild and rerun.</li>
+</ol>
+<p>In product development, an expectation comes from the intended contract. Changing it merely to match a broken implementation hides the defect.</p>
+<p>CTest normally runs existing binaries. Editing source and running tests without rebuilding can exercise old code. Record the source revision and successful build before interpreting a pass.</p>
+<h2>Distinguish outcomes</h2>
+<p>A failed assertion differs from a missing executable. A skipped test did not exercise its intended behaviour. An empty selection exercised nothing. Keep these outcomes separate.</p>
+<h2>Checkpoint</h2>
+<p>Why is checking only that an executable exists insufficient? Its existence says nothing about overflow handling, grammar or preservation of output after refusal. Name two observable requirements before adding another test.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/bounded-ledger-line/test_ledger_line.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="05-public-private-usage.html">Previous: Understand PUBLIC and PRIVATE usage requirements</a> · <a href="07-incremental-builds.html">Next: Observe which files an incremental build rebuilds</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cmake/06-register-meaningful-tests.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

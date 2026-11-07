@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/05-inspect-a-riscv-object.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect a RISC-V object before linking | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1 id="inspect-a-risc-v-object-before-linking">Inspect a RISC-V object before linking</h1>
+<p>A cross-compiler runs on one kind of computer and creates code for another. You can inspect RISC-V code on a Windows or Linux development computer without running that code. This lab assembles a small Framework function, reads its symbols and follows its two-instruction calculation.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>Install Clang and LLVM tools with RISC-V target support. Confirm <code>clang --version</code>, <code>llvm-objdump --version</code> and <code>llvm-readelf --version</code>. On Windows these may be provided by your chosen LLVM installation or MSYS2 package; use the PATH for that installation. On Linux install the corresponding packages for your distribution. See <a href="../../learning-c/terminal-lab.html">the terminal setup guide</a> for folders and command basics, and the <a href="../../umicom-kernel-from-scratch/lessons/understand-your-first-boot.html">Kernel first-boot guide</a> for the separate emulator workflow.</p>
+<p>Copy Framework's <code>examples/learning/assembly/add_riscv64.S</code> into a new practice folder. Use <code>Get-Content add_riscv64.S</code> in PowerShell or <code>cat add_riscv64.S</code> in Bash to inspect it. No disk image or real device is involved.</p>
+<p>Here are the complete copy steps. Choose a new practice folder; if it already exists, use another name instead of overwriting earlier work. Adapt the checkout path if yours differs, and stop after any command error.</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell"># Use the LLVM installation already checked above.
+New-Item -ItemType Directory -Path &#39;C:\umicom-learning\riscv-object&#39;
+Copy-Item -LiteralPath &#39;C:\umicom\Umicom-Applications\framework\examples\learning\assembly\add_riscv64.S&#39; -Destination &#39;C:\umicom-learning\riscv-object&#39;
+Set-Location &#39;C:\umicom-learning\riscv-object&#39;
+Get-Content &#39;add_riscv64.S&#39;
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom-learning&quot;
+mkdir &quot;$HOME/umicom-learning/riscv-object&quot;
+cp &quot;$HOME/umicom/Umicom-Applications/framework/examples/learning/assembly/add_riscv64.S&quot; &quot;$HOME/umicom-learning/riscv-object/&quot;
+cd &quot;$HOME/umicom-learning/riscv-object&quot;
+cat add_riscv64.S
+</code></pre>
+<h2 id="produce-a-relocatable-object">1. Produce a relocatable object</h2>
+<p>These commands work in either terminal when LLVM is on PATH:</p>
+<pre><code class="language-text">clang --target=riscv64-unknown-elf -march=rv64imac -mabi=lp64 -c add_riscv64.S -o add_riscv64.o
+llvm-readelf -h add_riscv64.o
+llvm-readelf -s add_riscv64.o
+llvm-objdump -d add_riscv64.o
+</code></pre>
+<p><code>--target</code> chooses the target machine, not the machine running the command. <code>-march</code> selects supported instruction extensions. <code>-mabi</code> selects the calling agreement. <code>-c</code> creates an object without trying to find startup code or a linker script.</p>
+<p>The header should identify RISC-V and a relocatable ELF object. ELF is a file format used for code, data and metadata. The symbol list should contain <code>AddTwoAssembly</code>. If the tools cannot decode RISC-V, check that your LLVM installation includes that target.</p>
+<h2 id="trace-the-calculation">2. Trace the calculation</h2>
+<p>The function receives two values in <code>a0</code> and <code>a1</code>. Its <code>addw a0, a0, a1</code> calculates a 32-bit sum, then sign-extends that word into the 64-bit register. The C caller's declared 32-bit result determines the observable result. <code>ret</code> returns to the address in the return-address register; a disassembler may show its underlying instruction instead of this convenient alias.</p>
+<p>For small inputs 7 and 5, write down <code>a0 = 12</code> after addition. There is no terminal output instruction here. Returning a value and printing a value are different operations.</p>
+<h2 id="connect-a-function-to-a-program">3. Connect a function to a program</h2>
+<p>Read <code>umicom-kernel/programs/diagnostic/entry.S</code>. Its entry routine calls a C main function, then invokes the Kernel exit system call. That file needs the Kernel's ABI definitions and belongs in the Kernel build; do not compile it with the two-line example command and expect a bootable system.</p>
+<pre><code class="language-text">assembly source → object + symbols → linker + other objects → executable
+</code></pre>
+<p>Linking must provide the entry point and resolve references between objects. Booting additionally requires a machine configuration and boot environment. This lab establishes only the object step.</p>
+<h2 id="exercise-and-recovery">Exercise and recovery</h2>
+<p>Identify the exported symbol, executable section and instruction that returns. Explain why running <code>add_riscv64.o</code> directly in PowerShell would not work: it is a relocatable object for another target, without an application's startup contract. If <code>clang</code> reports an unsupported target, install an appropriate toolchain rather than removing the target argument and accidentally producing host code.</p>
+<p>Read the <a href="https://riscv-non-isa.github.io/riscv-elf-psabi-doc/">RISC-V ABI specification</a> beside the <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/examples/learning/assembly/add_riscv64.S">real Framework example</a>. Continue with the <a href="../../umicom-kernel-from-scratch/lessons/16-discover-the-native-program-contract.html">Kernel contract lab</a>, or return to <a href="../index.html">Learning RISC-V Assembly</a>.</p>
+
+
+<p><a rel="next" href="06-explain-a-word-sized-result.html">Next: Explain a word-sized result on RV64</a></p>
+<nav aria-label="Previous lesson"><a rel="prev" href="04-trace-a-leaf-function.html">Previous: Trace a leaf function</a></nav></article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>

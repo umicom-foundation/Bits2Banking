@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/08-standards-that-prevent-memory-bugs.html
+
+PURPOSE:
+Write coding rules that can be checked
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Write coding rules that can be checked | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Write coding rules that can be checked</h1>
+<p>Learn how application inputs, memory ownership and identity checks fit together. The examples use Umicom Framework and a small Bits2Banking consumer. Every chapter explains its vocabulary before the exercise.</p>
+<h2>Start here</h2>
+<p>A source file is readable program text. A compiler turns that text into machine instructions. A library supplies reusable functions; this course calls the security library in Umicom Framework. A terminal accepts commands. You can read and trace every example without installing anything.</p>
+<p>For the practical lab, install Git, a C23 compiler, CMake 3.26 or newer, Ninja, and a matching Framework SDK containing UmiLocalProfileNameBytes. In Windows PowerShell, open the repository with Set-Location and make the UCRT64 tools visible:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/framework/profile-name-boundary -B build/profile-name -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build/profile-name
+ctest --test-dir build/profile-name --output-on-failure --no-tests=error
+&amp; &quot;.\build\profile-name\btb-profile-name.exe&quot;</code></pre>
+<p>Run one command at a time and stop on an error. Change the SDK path to your installation. In bash, use cd to enter your checkout, the same three CMake/CTest commands, and ./build/profile-name/btb-profile-name to launch. The expected line is Canonical name: alice_7. A missing package means the SDK path is wrong or incomplete; a missing symbol means its header and library must be updated together. This lab does not collect credentials or write a password store. The <a href="../../learning-c/index.html">Learning C course</a> explains basic syntax in more depth.</p>
+<h2>Standards and conventions</h2>
+<p>A coding convention makes code predictable to read, for example naming functions consistently. A coding standard also defines required behaviour: checking lengths, returning errors, preserving ownership and avoiding secret logging. A useful rule has a reason and a way to review it.</p>
+<p>Use these rules when extending the lab:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Rule</th><th scope="col">Reason</th><th scope="col">Review evidence</th></tr></thead><tbody><tr><td>Carry source length with borrowed bytes</td><td>A pointer has no allocation length</td><td>Function parameters and call site</td></tr><tr><td>State output capacity in the contract</td><td>Prevent destination overflow</td><td>Header and boundary tests</td></tr><tr><td>Publish output only after validation</td><td>Preserve state on failure</td><td>Write locations and snapshot test</td></tr><tr><td>Name the owner of every resource</td><td>Avoid leaks and dangling pointers</td><td>Create/release paths</td></tr><tr><td>Check every returned status</td><td>Avoid using an absent result</td><td>Branch before result access</td></tr><tr><td>Do not log credentials</td><td>Prevent accidental disclosure</td><td>Diagnostics review</td></tr></tbody></table></div>
+<h2>Apply the rules</h2>
+<ol>
+<li>Open main.c. Explain why canonical is printed only after UMI_STATUS_OK.</li>
+<li>Open test_name.c. Explain why the embedded zero is part of a byte span rather than an ordinary string.</li>
+<li>Find the in-place alias case. Check that the documented overlap guarantee is exercised.</li>
+<li>Read the source header: product, file, purpose, author and licence identify the file without duplicating implementation comments.</li>
+</ol>
+<p>The test's REQUIRE macro returns a nonzero exit status when a condition fails. CTest uses that process result to classify the test. Printing “failed” while returning zero would mislead the test runner.</p>
+<h2>Review exercise</h2>
+<p>A contributor proposes using strcpy(out, name) because it is shorter. List the missing guarantees: an input terminator, destination capacity, naming validation and failure preservation. The problem is not the number of lines; it is the loss of a contract.</p>
+<p>Warnings are evidence to investigate. Do not hide an incompatible pointer warning with a cast without understanding which object type will be accessed. A void pointer can point to many objects, but converting char <strong> to void </strong> does not make writing through the resulting lvalue valid.</p>
+<h2>Summary</h2>
+<p>Keep rules close to enforceable contracts and regression tests. Style consistency helps review; it does not replace bounds checks, lifetime design or security testing.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/profile-name-boundary/test_name.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="07-desktop-mobile-and-broker-login.html">Previous: Keep desktop, mobile and broker identity separate</a> · <a href="09-test-security-failure-paths.html">Next: Test rejection, failure and recovery</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/08-standards-that-prevent-memory-bugs.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

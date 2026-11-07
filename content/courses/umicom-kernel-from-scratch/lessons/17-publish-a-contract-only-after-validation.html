@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/17-publish-a-contract-only-after-validation.html
+
+PURPOSE:
+  Present "Publish a kernel contract only after validation" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish a kernel contract only after validation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Publish a kernel contract only after validation</h1>
+<p>A native program asks a kernel what services and data sizes it supports. Several queries can succeed before a later query fails. This lab follows the code that keeps a partly discovered contract from becoming a caller's accepted result.</p>
+<p>Source to open: <code>umicom-kernel/programs/support/native_contract.c</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath '..\umicom-kernel\programs\support\native_contract.c'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' '../umicom-kernel/programs/support/native_contract.c'</code></pre>
+<h2>Understand the idea</h2>
+<p>An output structure groups several values, such as a version, word size and page size. A caller may already hold a previous result in that structure. Publishing means copying a newly accepted result into the caller's storage. In the discovery function, queried values are checked before the final output fields are written. This gives the caller a clear boundary between success and failure. A compatible version alone is insufficient: the program must also understand data sizes and limits. The details belong to this kernel interface and should be read from the current header and implementation.</p>
+<pre><code class="language-text">query -&gt; validate version -&gt; validate sizes -&gt; validate limits -&gt; publish
+                  |                 |                |
+                  +-- failure ------+----------------+-&gt; keep old output</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Locate the discovery function and its argument checks. Find the queries for version, features, wordBits, byteOrder, pageBytes, copyLimit and callLimit. Draw a box around the final assignments to the output structure.</li><li>Create a paper output structure with distinctive old values. Walk through a version query that succeeds, then a word-size query that reports an unsupported value. Mark the return path and check whether any final assignment has occurred.</li><li>Repeat with compatible size fields but copyLimit equal to zero. Follow the validation branch. Explain why successfully receiving a value does not establish that it is acceptable.</li><li>Trace a fully accepted set of fields to the final assignments. Write a proposed regression case for each rejection: expected status, input response sequence, and an unchanged-output comparison. Keep the fake query mechanism separate from real kernel execution.</li></ol>
+<h2>Expected result</h2>
+<p>Rejected discovery should leave the caller's old output untouched along the paths reviewed here. Accepted discovery publishes the checked fields together. Your exercise should identify the exact validation condition, rather than describing every failure as a boot problem.</p>
+<h2>If the result differs</h2>
+<p>If a test later sees changed output on failure, compare the first write with the first possible failing query. Do not hide the issue by clearing the caller's result before every call. A fake-query test verifies this function's control flow, not privilege transitions or emulator behaviour.</p>
+<h2>Explain it yourself</h2>
+<p>Why is it useful to choose distinctive old output values instead of initialising every field to zero?</p>
+<details><summary>Worked explanation</summary><p>Distinctive values reveal an accidental partial write more clearly. Zero can happen to equal a newly queried value, hiding the mutation. The expected failure result includes both the status and the preserved fields.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Keep kernel contract discovery in the kernel library that defines the interface. Shared application tooling can present the returned status, but should not invent a different compatibility rule. A source-level trace is one part of qualification; execution still needs the matching kernel and native-program builds.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="16-discover-the-native-program-contract.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+<nav aria-label="Next lesson"><a rel="next" href="18-read-a-memory-mapped-timer.html">Next: Read a memory-mapped timer</a></nav></article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>
+

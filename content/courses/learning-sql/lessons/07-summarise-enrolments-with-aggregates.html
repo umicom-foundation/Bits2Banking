@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-sql/lessons/07-summarise-enrolments-with-aggregates.html
+
+PURPOSE:
+Explain the lesson: Summarise enrolments with aggregates.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Summarise enrolments with aggregates | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-connect-related-rows-with-joins.html">Previous lesson</a> · <a rel="next" href="08-change-records-with-rollback.html">Next lesson</a></nav>
+<h1>Summarise enrolments with aggregates</h1>
+<p>An aggregate combines several values into one answer. COUNT counts values, SUM adds them, and GROUP BY defines which rows belong together.</p>
+<h2>Begin with the lab data</h2>
+<p>Open SQLite, read schema.sql and seed.sql, then open summary.sql. The query begins with every course and left-joins its progress rows.</p>
+<h2>Work out the answer by hand</h2>
+<p>Learning C has two enrolments and 13 completed lessons across them. Learning RISC-V has one enrolment with zero completed lessons. Learning HDL has one enrolment with two completed lessons.</p>
+<p>The total of completed lessons is an activity total across learners. It is not a percentage and does not mean the course contains 13 lessons.</p>
+<h2>Count the right thing</h2>
+<p><code>COUNT(p.learner_id)</code> counts matched non-NULL learner IDs. For a course with no progress rows, a LEFT JOIN still produces an unmatched display row. Counting every joined row with COUNT(*) would count that row too.</p>
+<p><code>COALESCE(SUM(p.completed), 0)</code> chooses zero when the sum is NULL. It makes the reporting policy explicit.</p>
+<h2>Exercise</h2>
+<p>In the temporary database, insert a fourth course with no progress. Run summary.sql again. Expect enrolments zero and completed_lessons zero for that course.</p>
+<p>Then compare it with Learning RISC-V: both have zero completed lessons, but one has an enrolment and the other does not.</p>
+<h2>Recovery</h2>
+<p>If totals are larger than expected, inspect the underlying joined rows before adding DISTINCT. DISTINCT can hide a faulty relationship while leaving the underlying question unanswered.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/database/course-progress/summary.sql">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-connect-related-rows-with-joins.html">Previous lesson</a> · <a rel="next" href="08-change-records-with-rollback.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/04-web/learning-sql/07-summarise-enrolments-with-aggregates.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

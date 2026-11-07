@@ -56,3 +56,5 @@ Open `umicom-c/examples/arithmetic.uc` in your Umicom source collection. Read th
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/01-source-and-execution.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Read one token at a time](02-reading-tokens.md)

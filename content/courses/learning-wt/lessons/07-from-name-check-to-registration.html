@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-wt/lessons/07-from-name-check-to-registration.html
+
+PURPOSE:
+Plan registration and login beyond a name checker
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plan registration and login beyond a name checker | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Plan registration and login beyond a name checker</h1>
+<p>Wt is a C++ library for building web applications with server-side widgets. A browser displays the interface while a server process handles application events. This course builds a small local web application that calls the same Umicom Framework C name-validation service as the desktop lab.</p>
+<h2>Before starting</h2>
+<p>Install a C++ compiler, CMake, Ninja, Wt 4 with its HTTP connector, and a matching Umicom Framework SDK containing UmiLocalProfileNameBytes. Open a terminal in the Bits2Banking labs/framework/wt-profile directory. Follow its README for PowerShell or Bash configuration, build and launch commands. The server binds to 127.0.0.1 on port 9090 for this exercise; open http://127.0.0.1:9090/ in a browser on the same computer. Stop the server with Ctrl+C. Reading requires no account. Running requires these development tools.</p>
+<p><a href="../../../../labs/framework/wt-profile/README.md">Open the complete lab guide</a>.</p>
+<h2>Distinguish the operations</h2>
+<p>Validation asks whether input follows a rule. Registration creates an account record. Authentication checks a claimed identity. Authorisation decides whether that identity may perform an operation. A session maintains the result of an interaction over time. These are different responsibilities.</p>
+<pre><code class="language-text">registration -&gt; durable account record
+login        -&gt; verified identity -&gt; session
+request      -&gt; session + permission check -&gt; permitted operation</code></pre>
+<p>The lab implements only the first, narrow input-validation step. It deliberately does not display a fake logged-in state.</p>
+<h2>A registration design exercise</h2>
+<ol>
+<li>Describe the identity being created: local device profile or server-managed account.</li>
+<li>Choose the authoritative account store and its ownership.</li>
+<li>Specify name uniqueness and duplicate handling.</li>
+<li>Use a reviewed password-verifier design or approved identity provider.</li>
+<li>Define verification, recovery and session-expiry workflows.</li>
+<li>Add rate limits, safe error responses and audit events without passwords.</li>
+<li>Define authorisation for every protected action.</li>
+<li>Test failure, cancellation, replay and concurrent requests.</li>
+</ol>
+<p>Umicom's local-profile service has a specific native-backend contract. Its existence does not automatically supply a web account system. Read platform support and storage semantics before deciding whether that service fits a new use case.</p>
+<h2>Why not put credentials in a URL?</h2>
+<p>URLs can appear in browser history, server logs and intermediary records. Credentials need an appropriate protected request path and transport. A production web deployment also needs HTTPS, secure session handling and operational review. This loopback lab does not configure those production controls.</p>
+<h2>Share policy without sharing secrets</h2>
+<p>A desktop, mobile and web interface can reuse a documented account contract. They should not each invent their own password storage. They also must not assume that every frontend can use the same native credential-vault adapter.</p>
+<h2>Exercise</h2>
+<p>Write acceptance criteria for registration without implementing it yet. Include successful creation, duplicate name, invalid input, unavailable storage, cancelled request and a second user's attempt to access the account. For each case state what the user sees and what durable state should remain.</p>
+<p><a href="../../learning-cyber-security/index.html">Learning Cybersecurity</a> develops the boundary and ownership ideas used in this design.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/wt-profile/profile_application.cpp">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="06-test-a-local-web-workflow.html">Previous: Test a local web workflow and record outcomes</a> · <a href="08-share-framework-services-across-frontends.html">Next: Share Framework services across web and desktop</a></p>
+</nav><p><a href="../../../lessons/04-web/learning-wt/07-from-name-check-to-registration.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-pascal/lessons/02-values-functions-and-validation.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Values, functions and input validation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Values, functions and input validation</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-write-and-run-a-program.html">Previous: Write and run a Pascal program</a> · <a href="03-loops-and-checkable-results.html">Next: Loops and checkable results</a></p></nav><h2>The problem</h2>
+<p>A course has five practice items. A learner enters how many are complete. We want to display the remaining count while rejecting impossible values. This introduces a variable, a function, a condition and validation.</p>
+<p>A variable is named storage for a value. A type states what kind of value it can hold. Integer holds whole numbers within the implementation's supported range. A function performs an operation and returns a value.</p>
+<h2>Setup recap</h2>
+<p>Install Free Pascal and build the progress lab using <a href="../index.html">the course setup</a>. Open labs/languages/pascal-progress/progress.pas. Run the built progress executable with argument 2. An argument is text supplied after a program's name in the terminal.</p>
+<h2>Read the function</h2>
+<pre><code class="language-pascal">function RemainingLessons(Total, Done: Integer): Integer;
+begin
+  if (Total &lt; 0) or (Done &lt; 0) or (Done &gt; Total) then
+    RemainingLessons := -1
+  else
+    RemainingLessons := Total - Done;
+end;</code></pre>
+<p>Total and Done are parameters: named inputs supplied by a caller. The result type follows the closing parenthesis. In this example, assigning to the function's name supplies its result. The assignment symbol := stores a value; the comparison symbols ask a question.</p>
+<p>For Total = 5 and Done = 2, all three invalid conditions are false, so the result is 3. Done = 7 makes Done &gt; Total true, producing -1. That negative value is this function's chosen error signal, not a valid remaining count.</p>
+<h2>Convert text before using a number</h2>
+<p>The terminal supplies text. Val attempts to convert it:</p>
+<pre><code class="language-pascal">Val(ParamStr(1), Completed, Code);
+if Code &lt;&gt; 0 then
+begin
+  WriteLn('Enter a whole number.');
+  Halt(1);
+end;</code></pre>
+<p>Code is zero on success. On failure Completed is not a usable result. The program must check Code before passing Completed to RemainingLessons. This separates text conversion from checking the allowed range.</p>
+<p>Free Pascal's Val accepts more numeric forms than these decimal exercises use. A real input format may need stricter rules. Do not describe this example as a universal decimal parser.</p>
+<h2>Try the boundaries</h2>
+<ol>
+<li>Run progress with 0: expect five remaining items.</li>
+<li>Run it with 5: expect zero remaining items.</li>
+<li>Try -1 and 6: expect a range error and an unsuccessful exit.</li>
+<li>Try abc: expect a conversion error.</li>
+<li>Omit the argument: expect the usage message.</li>
+</ol>
+<p>In PowerShell, inspect $LASTEXITCODE immediately after a run. In Bash, use echo $? immediately afterwards. Zero means the program reports success; this example uses one for rejected input.</p>
+<h2>Exercise and explanation</h2>
+<p>Would checking only Done &gt; Total be enough? No. A negative Done also represents an invalid completed count. The function checks both lower and upper bounds before subtraction.</p>
+<h2>Connect to Umicom</h2>
+<p>Validation is useful in every application: learning progress, media clip lengths and account quantities all have rules. Read the C counts.c lab alongside this function and identify the same input checks without assuming the language syntax is identical.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/languages/pascal-progress/progress.pas</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-write-and-run-a-program.html">Previous: Write and run a Pascal program</a> · <a href="03-loops-and-checkable-results.html">Next: Loops and checkable results</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

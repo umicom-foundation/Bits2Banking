@@ -45,3 +45,7 @@ Read [the Kernel system-call lesson](../../06-umicom/umicom-kernel-from-scratch/
 ---
 
 [Read this lesson in HTML](../../../courses/learning-riscv/lessons/02-programs-and-privileges.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next lesson: Trace a short sequence of register changes](03-binary-and-instruction-traces.md)
+
+[Previous lesson: Registers, memory and instructions](01-registers-and-memory.md)

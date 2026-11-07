@@ -1,0 +1,66 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-rabbitmq/lessons/12-local-leases-and-durable-message-effects.html
+
+PURPOSE:
+Connect local work ownership to durable message effects
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect local work ownership to durable message effects | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Connect local work ownership to durable message effects</h1>
+<p>A message is a request to perform work. This module uses a small C program and the Framework messaging service to explain how a worker keeps temporary ownership, how callbacks can become stale, and how to preserve the current work when an old callback arrives.</p>
+<h2>Prepare this lab</h2>
+<p>A terminal accepts typed commands. A source file contains a program's instructions. A compiler translates those instructions into a program. CMake describes the build; Ninja carries out the build steps; CTest runs registered checks. An SDK is a set of headers and libraries used by another program.</p>
+<p>Reading needs no account or broker. To run the exercise, install a C23 compiler, CMake 3.26 or later, Ninja and a compatible Umicom Framework SDK with its messaging component. Use the same compiler family and architecture as that SDK. The SDK must contain the delivery-ticket API described here.</p>
+<ol>
+<li>Locate the Bits2Banking repository and its <strong>labs/framework/delivery-tickets</strong> folder.</li>
+<li>Open PowerShell on Windows or Bash on Linux.</li>
+<li>Run the commands for your platform one at a time, stopping at an error. Replace the checkout and SDK paths if you installed them elsewhere.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\delivery-tickets&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+&amp; &quot;.\build\btb-delivery-tickets.exe&quot;</code></pre>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/framework/delivery-tickets
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+./build/btb-delivery-tickets</code></pre>
+<p>A missing UmicomFramework package means CMake cannot find the SDK. Check the installation prefix. An unknown ticket type or missing ticket symbol usually means the SDK is older than the example, or headers and libraries come from different installations. Select one matching SDK; do not copy individual libraries at random. The exercise uses local, deterministic clock values and performs no broker connection or financial transaction.</p>
+<p>For a fuller introduction to C syntax, use <a href="../../learning-c/index.html">Learning C</a>. You can complete the explanation below without leaving this lesson.</p>
+<h2>What you will learn</h2>
+<p>You will separate a local scheduling decision from a durable business result. This matters for statement preparation, order processing and training jobs where a repeated action may have consequences.</p>
+<h2>Define the terms</h2>
+<p><strong>Durable</strong> means a result survives a process stopping and restarting. A local lease store is held in memory, so it is not durable. <strong>Idempotency</strong> means repeating a request has the same intended effect as processing it once. A <strong>transaction</strong> groups changes so the storage system commits them together or rejects them together.</p>
+<p>An acknowledgement tells a message broker that a delivery has been handled according to the consumer's protocol. It does not by itself prove that a bank ledger, file export or model checkpoint was committed.</p>
+<h2>Examine a dangerous sequence</h2>
+<ol>
+<li>Worker A acquires a local lease.</li>
+<li>A pauses for a long time.</li>
+<li>Its lease expires and worker B acquires the same job.</li>
+<li>B commits a result.</li>
+<li>A resumes and sends its own result to an external service.</li>
+</ol>
+<p>The Framework ticket API can reject A's later renewal or release. It cannot reach into A's external service call and prevent it. Checking local ownership before sending is useful, but time can advance between the check and the effect.</p>
+<h2>Put authority at the commit boundary</h2>
+<p>For a durable application, design the storage or provider boundary to verify the operation's stable identity and any required generation inside the same authoritative operation that commits the result. Do not implement a separate &quot;check then write&quot; race.</p>
+<p>This is a design requirement, not a capability supplied by the in-memory lab. Different providers offer different transaction and idempotency contracts. Inspect the chosen provider's documented guarantees before adopting it.</p>
+<p>A statement job may write a result under a unique export identity. A training job may publish a checkpoint only if the coordinator still accepts its assignment generation. A broker order needs the broker's order-identity and reconciliation rules. Sharing a lease API does not make those domain rules interchangeable.</p>
+<h2>Design exercise</h2>
+<p>Create a four-column table:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Operation</th><th scope="col">Stable identity</th><th scope="col">Authoritative result store</th><th scope="col">Recovery question</th></tr></thead><tbody><tr><td>Prepare a statement</td><td>Statement request ID</td><td>Statement metadata and output record</td><td>Was the result already published?</td></tr><tr><td>Generate a preview</td><td>Asset and revision ID</td><td>Preview catalogue</td><td>Is this still the current asset revision?</td></tr><tr><td>Publish a training checkpoint</td><td>Run, task and attempt IDs</td><td>Coordinator and checkpoint manifest</td><td>Is this attempt still accepted?</td></tr></tbody></table></div>
+<p>These are example designs, not claims that the applications have completed those integrations.</p>
+<p>For each row, add the action required after a timeout. A timeout means the caller did not receive a result in time; it does not prove that the remote operation failed. Query or reconcile before blindly retrying.</p>
+<h2>Summary</h2>
+<p>Use local tickets to coordinate local work. Use a durable authority to decide whether an external result is accepted. Keep acknowledgements, cancellation, idempotency and ownership as explicit parts of the workflow, each with its own evidence.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/delivery-tickets/README.md">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="11-callback-ownership-and-lease-renewal.html">Previous: Keep lease ownership with an asynchronous work item</a> · <a href="13-regression-tests-for-stale-message-workers.html">Next: Test stale workers without sleeps or a broker</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-rabbitmq/12-local-leases-and-durable-message-effects.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

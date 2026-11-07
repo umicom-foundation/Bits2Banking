@@ -1,0 +1,46 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/08-preserve-the-last-good-balance.html
+
+PURPOSE:
+Preserve the last good balance after failure
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve the last good balance after failure | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Preserve the last good balance after failure</h1>
+<p>A bank application presents records about customers, accounts and money. This module builds one small part: a reliable balance view. A customer identifies whose records are selected; an account holds amounts and a state; a currency identifies the unit of money. All examples use invented records kept in the program's memory. No real bank connection or transfer is made.</p>
+<h2>Prepare this laboratory</h2>
+<p>Install a C23 compiler, CMake 3.26 or later and Ninja. A compiler translates C source into machine instructions. CMake describes the build; Ninja performs the required build steps. Install a matching Umicom Framework SDK containing the finance component. An SDK supplies headers, libraries and package information; its compiler and architecture must match this example.</p>
+<p>In PowerShell, run each line separately and stop on errors:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\account-balances&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+&amp; &quot;.\build\btb-account-balances.exe&quot;</code></pre>
+<p>Use your actual SDK path. In Bash, run the same three CMake/CTest commands from the example folder with your native SDK prefix, then run <strong>./build/btb-account-balances</strong>. A package-not-found error points to the SDK installation or prefix. An unknown summary symbol requires a matching updated header and library. The expected report contains two GBP accounts, ledger 12000, available 9500 and reserved 2500 minor units.</p>
+<h2>A failure must not publish half a report</h2>
+<p>Suppose a large book has several valid rows followed by an invalid account. If a screen writes each partial total directly into live state, it may briefly display a misleading result. The summary instead builds a private candidate and publishes it only when every check succeeds.</p>
+<p>The lab copies the completed report into previous, then deliberately damages an unrelated synthetic account. The next summary call returns INVALID_STATE. The report's bytes must still match the saved copy.</p>
+<ol>
+<li>Run the unchanged lab and read its expected totals.</li>
+<li>Locate the deliberate available_minor = 501 assignment.</li>
+<li>Compare that record's ledger of 500.</li>
+<li>Follow the failed summary status.</li>
+<li>Observe the before/after comparison and success message.</li>
+</ol>
+<h2>Integer overflow</h2>
+<p>A signed 64-bit integer has finite limits. Adding one to INT64_MAX cannot be represented in the same type. Framework's money helper checks the bounds before evaluating the addition and returns CAPACITY_EXCEEDED. It does not wrap the amount into a negative balance.</p>
+<p>The regression source covers positive overflow, negative underflow and overflow of the reservation total. Every failure must preserve the caller's previous output. Intermediate sums must fit, even if a later opposite-signed row could reduce the mathematical total.</p>
+<h2>Exercise</h2>
+<p>Read the reserved-overflow case. Its ledger and available totals fit individually, but the sum of reservations does not. Work through both records on paper. Explain why checking only the final ledger total would miss this problem.</p>
+<p>Keep the error visible in a UI; retaining a previous view does not make that view fresh. Mark it as the last successful observation while the current request is refused.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/finance_banking/test_deposit_summary.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="07-project-one-customer-and-currency.html">Previous: Project a complete customer balance view</a> · <a href="09-separate-display-from-spending-authority.html">Next: Separate a balance display from spending authority</a></p>
+</nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/banking-and-payments/08-preserve-the-last-good-balance.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/76-bound-counts-before-reading-sections.html
+
+PURPOSE:
+Bound counts before reading sections
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bound counts before reading sections | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Bound counts before reading sections</h1>
+<p>This lesson explains one boundary between startup software and a kernel. It begins with a small hosted C program, uses synthetic addresses, and links the real Umicom Kernel reader. No previous operating-system course is required.</p>
+<h2>Prepare a small host laboratory</h2>
+<p>A terminal accepts commands as text. A compiler translates C into machine instructions. CMake describes which files form a program; Ninja executes the build steps. Use a C23-capable GCC, CMake 3.24 or later and Ninja. On Windows these commands use an existing MSYS2 UCRT64 installation. Open PowerShell, enter one command at a time, and stop if it fails. Replace the checkout paths if yours differ. No boot disk or administrator access is needed.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/native/boot-handoff -B build/boot-handoff -G Ninja -DUMICOM_KERNEL_SOURCE=C:/umicom/umicom-kernel
+cmake --build build/boot-handoff --parallel 2
+&amp; .\build\boot-handoff\boot-handoff.exe
+ctest --test-dir build/boot-handoff --output-on-failure --no-tests=error</code></pre>
+<p>On Linux, open a Bash terminal and use these equivalent paths:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking
+cmake -S labs/native/boot-handoff -B build/boot-handoff -G Ninja -DUMICOM_KERNEL_SOURCE=&quot;$HOME/umicom/umicom-kernel&quot;
+cmake --build build/boot-handoff --parallel 2
+./build/boot-handoff/boot-handoff
+ctest --test-dir build/boot-handoff --output-on-failure --no-tests=error</code></pre>
+<p>The expected messages begin with <code>Accepted:</code> and <code>Refused:</code>. The latter confirms a deliberate invalid-input exercise. A nonzero exit code indicates the expected result was not obtained. If CMake cannot find the reader, check <code>UMICOM_KERNEL_SOURCE</code>; if a compiler option is unsupported, check the compiler version. These host checks do not establish that a kernel can boot.</p>
+<h2>A count is input too</h2>
+<p>A record can describe several RAM and reserved ranges. The header stores their counts. A count tells a loop how many times to run; an unchecked count can make it walk past an array. Even calculating the required space can overflow if large counts are multiplied first.</p>
+<p>Umicom bounds RAM entries to 32 and reservations to 64 before computing section positions. It then requires the exact total length. The current format has one section order and no offsets chosen by the sender.</p>
+<h2>Work through the size</h2>
+<ol>
+<li>Begin with the 64-byte header.</li>
+<li>Add one 16-byte RAM span and one 16-byte reservation: 96 bytes so far.</li>
+<li>Add the 16-byte firmware descriptor and 32-byte framebuffer descriptor: 144 bytes.</li>
+<li>Add the command text length, zero in the lab.</li>
+<li>Compare both the advertised total and the accessible buffer size to this result.</li>
+</ol>
+<p>The formula is 64 + 16 × (RAM count + reservation count) + 48 + command length. It is evaluated only after the counts have passed their limits.</p>
+<h2>Exercise and expected result</h2>
+<p>In a scratch fixture, advertise two RAM entries without adding another span or increasing the buffer. The input must be refused for length. It must not read a second span from unrelated memory. Review the counts and truncation regression cases for larger and shorter variants.</p>
+<h2>Recovery habit</h2>
+<p>Do not change a test's expected result simply to make it pass. First compare the fixture's intended fields with its length equation. A malformed fixture is useful when the test explicitly expects refusal. A fixture intended to be valid must have every required byte present, including zero-filled absent optional sections.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/boot_handoff.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="75-read-little-endian-fields.html">Previous: Read little-endian fields without alignment assumptions</a> · <a href="77-check-physical-memory-spans.html">Next: Check physical-memory spans without integer wrap</a></p>
+</nav><p><a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/76-bound-counts-before-reading-sections.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

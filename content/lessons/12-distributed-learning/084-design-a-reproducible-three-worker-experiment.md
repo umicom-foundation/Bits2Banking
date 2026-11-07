@@ -57,3 +57,5 @@ The small experiments in this course do not establish a deployed blockchain, sec
 - [Complete study route](../../courses/distributed-learning/anchored-contributions-and-governance.html)
 
 *Service to Many Leads to Greatness.*
+
+[Next: Lab: trace a stable job queue](priority-queue-reading-lab.md)

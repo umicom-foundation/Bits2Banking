@@ -50,3 +50,7 @@ Open `umicom-kernel/CMakePresets.json` in your Umicom source collection. Read th
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/08-architectures-and-boot-media.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Run the interpreter as a native Kernel program](07-a-native-kernel-program.md)
+
+[Next: Design a small programming language in C](09-designing-a-language.md)

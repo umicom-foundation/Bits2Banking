@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-programming/lessons/04-tests-and-debugging.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Describe a result, test it and investigate a failure | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Describe a result, test it and investigate a failure</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="03-loops-and-functions.html">Previous: Repeat work and name a reusable operation</a></p></nav><h2>What a test does</h2>
+<p>A test calls some behaviour, observes a result and compares it with an expectation. A passing test supports that particular example. It does not prove every possible input or every user workflow works.</p>
+<p>A bug is a mismatch between required and actual behaviour. Debugging is the process of finding why that mismatch occurs. An error message is evidence, not an instruction to change random code.</p>
+<h2>Setup recap</h2>
+<p>Use <a href="../index.html">the setup and lab commands</a>. The CMake build creates small example programs and tests. CTest starts the tests; it does not repair source or build missing executables.</p>
+<h2>Write a test table</h2>
+<pre><code class="language-text">total  completed  expected
+5      2          3
+5      5          0
+5      6         -1
+0      0          0</code></pre>
+<p>The first is an ordinary case. The next two sit on either side of a boundary. The last checks an empty case. Expected values should come from the rule, not from copying whatever the current program prints.</p>
+<h2>Lab</h2>
+<ol>
+<li>Open labs/native/first-c-programs/test_counts.c.</li>
+<li>Locate a call to BtbRemainingCount and its expectation.</li>
+<li>Run the course's CTest command after a successful build.</li>
+<li>If a test fails, record the test name, input, expected result, actual result and source revision.</li>
+<li>Rebuild after fixing the cause. Run the affected test again, then related boundary cases.</li>
+</ol>
+<h2>Practise investigation without changing the shared source</h2>
+<p>In a practice copy, deliberately change a correct comparison so completed == total becomes invalid. Predict which row in the table exposes that error. Restore the correct comparison after the experiment. This is a controlled experiment, not a suggested production change.</p>
+<h2>Read diagnostics in stages</h2>
+<pre><code class="language-text">compiler error -&gt; source cannot become an object
+linker error   -&gt; required implementation is missing or inconsistent
+test failure   -&gt; executable ran but violated an expectation
+launch error   -&gt; operating system could not start the executable</code></pre>
+<p>These stages need different evidence. A stale executable can still launch after a compiler failure; its output does not validate the edited source.</p>
+<h2>Exercise and worked answer</h2>
+<p>A test expects 0 but receives -1 for total = 5 and completed = 5. Inspect the input validation before the subtraction. A &gt;= check would wrongly reject the equality case; the intended upper-bound rejection is completed &gt; total.</p>
+<h2>Next projects</h2>
+<p>Follow <a href="../../learning-data-structures/index.html">Learning Data Structures</a> to store several values, then <a href="../../learning-algorithms/index.html">Learning Algorithms</a> to find and order them. <a href="../../building-a-text-editor/index.html">Building a Text Editor in C</a> combines input handling, state changes and tests in a small usable project.</p>
+<h2>Limits</h2>
+<p>This lab teaches console logic. GUI click delivery, accessibility, disk failure and network behaviour need their own tests. Keep skipped tests distinct from passes, and never describe a command you have only written as a completed test run.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/first-c-programs/test_counts.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="03-loops-and-functions.html">Previous: Repeat work and name a reusable operation</a></p></nav><nav aria-label="Next lesson"><a rel="next" href="05-visit-values-in-an-array.html">Next: Visit values in an array</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

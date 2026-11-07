@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/49-understand-a-cross-compiled-build.html
+
+PURPOSE:
+Explain the lesson: Understand a cross-compiled build.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand a cross-compiled build | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="48-share-a-model-with-a-microdevice.html">Previous lesson</a> · <a rel="next" href="50-read-a-button-as-a-sampled-signal.html">Next lesson</a></nav>
+<h1>Understand a cross-compiled build</h1>
+<p>A compiler usually produces programs for the computer on which it runs. A cross-compiler produces programs for a different target. The Pico exercise builds Arm firmware while the development computer may run Windows, Linux or macOS.</p>
+<h2>Setup recap</h2>
+<p>Read labs/microdevices/pico-activity/README.md. It lists the SDK, compiler and Framework header requirements, plus complete PowerShell and Bash commands. Use a separate build directory called build/pico-activity.</p>
+<h2>1. Read the configuration order</h2>
+<p>The SDK import appears before the project declaration. It prepares the toolchain information that CMake needs while detecting languages.</p>
+<p>The SDK project enables C, C++ and Assembly because SDK support code can require them. The exercise's own application and model are written in C. Enabling a language is different from rewriting application behavior in it.</p>
+<h2>2. Inspect the source list</h2>
+<p>The target includes main.c, the shared button adapter and the shared activity model. The include directory points to the chosen Framework headers. pico_stdlib supplies the board-facing functions.</p>
+<p>The explicit PICO_BOARD check accepts pico for this exercise. A wireless Pico uses a different route to control its LED. Removing the check does not implement that route.</p>
+<h2>3. Distinguish the outputs</h2>
+<p>An ELF file contains executable code plus information useful to tools such as debuggers. The UF2 output packages firmware for the board's documented copy-based loading mechanism. These are not interchangeable file extensions.</p>
+<p>The native Windows executable produced by the host model exercise cannot be copied to the Pico as firmware.</p>
+<h2>Exercise and troubleshooting</h2>
+<p>Before compiling, record the compiler version, SDK revision, board name and Framework revision. Predict which source file supplies each of BtbActivityAdvance, BtbActivityButtonSample and gpio_put.</p>
+<p>If C23 is rejected, check the cross-compiler version instead of deleting the language requirement. If the SDK import is missing, check PICO_SDK_PATH. If status.h is missing, check the Framework source root. Resolve the first configuration error before interpreting later missing outputs.</p>
+<p>A successful host check establishes model behavior on that host. A successful firmware build establishes a different result; neither alone proves the physical wiring or button behavior.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/microdevices/pico-activity/CMakeLists.txt">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="48-share-a-model-with-a-microdevice.html">Previous lesson</a> · <a rel="next" href="50-read-a-button-as-a-sampled-signal.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/49-understand-a-cross-compiled-build.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

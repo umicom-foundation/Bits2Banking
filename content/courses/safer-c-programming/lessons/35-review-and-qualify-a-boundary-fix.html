@@ -1,0 +1,46 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/35-review-and-qualify-a-boundary-fix.html
+
+PURPOSE:
+Turn a boundary fix into a repeatable review
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Turn a boundary fix into a repeatable review | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Turn a boundary fix into a repeatable review</h1>
+<p>A watchlist is a collection of instruments that a trading screen follows. This module uses the real Framework watchlist to explain how an array, a count and a capacity work together. You can study every example without a broker connection or market data.</p>
+<ol>
+<li>Open PowerShell and run <code>Set-Location C:\umicom\Umicom-Applications\framework</code>. In bash, use <code>cd /path/to/Umicom-Applications/framework</code>.</li>
+<li>Open <code>include/umicom/trading/watchlist.h</code>, <code>src/trading/watchlist.c</code> and <code>tests/trading/test_watchlist_alerts.c</code> in your editor. A header declares the interface; a source file implements it; a test checks observable results.</li>
+<li>No accounts or credentials are needed. Keep experiments in a separate learning copy. If you later run tests, first finish the normal configure and build for your checkout; a previous executable does not contain newly edited source.</li>
+</ol>
+<h2>A small fix needs a precise claim</h2>
+<p>The watchlist guard repairs one out-of-bounds read path caused by an invalid stored count. It does not establish that an entire trading application is memory-safe. Review the changed contract, the tests and the build that actually contains the fix.</p>
+<h2>Source review checklist</h2>
+<ol>
+<li>Identify the first read or write controlled by each input. Place validation before that operation.</li>
+<li>Check empty, one-item, full and impossible states.</li>
+<li>Preserve documented duplicate and capacity results.</li>
+<li>Verify that refusal leaves caller-owned data unchanged.</li>
+<li>Check pointer lifetime and whether callbacks or other threads can change state.</li>
+<li>Review the actual destination size rather than repeating a numeric constant.</li>
+</ol>
+<h2>Run the focused regression when a build is available</h2>
+<p>From the Framework checkout in PowerShell or bash:</p>
+<pre><code class="language-text">cmake --build build/windows-ucrt64-debug --target umicom-trading-watchlist-alerts-test --parallel 2
+ctest --test-dir build/windows-ucrt64-debug -R &quot;^framework[.]trading_watchlist_alerts$&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Use the build directory created by your own configuration; the example is the standalone Windows directory. In the parent Applications build, use its <code>build/windows-ucrt64-all-debug</code> directory instead. <code>--target</code> requests the named executable and its dependencies. <code>-R</code> selects the exact test name. A nonzero exit code means the command failed. Read the output before continuing.</p>
+<p>A passing result confirms these executed cases on that source and environment. It is not proof about every possible input. Sanitizers are compiler-supported runtime checks that can catch invalid accesses during exercised paths. Use a supported sanitizer configuration as an additional check; enabling one does not replace bounds reasoning or guarantee full coverage.</p>
+<h2>Record a useful result</h2>
+<p>Record the source revision, local changes, compiler, build directory, command and result. Keep a skipped or missing test separate from a pass. If an executable was quarantined or could not launch, investigate that environment failure rather than treating the test as successful.</p>
+<h2>Exercise</h2>
+<p>Write a review note containing the original unsafe ordering, the new ordering, the cases added and what remains unverified. Another contributor should be able to reproduce the check without needing the conversation that led to the fix.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/trading/test_watchlist_alerts.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="34-values-pointers-and-serial-access.html">Previous: Understand what a copied watchlist entry owns</a></p>
+</nav><p><a href="../../../lessons/03-native-code/safer-c-programming/35-review-and-qualify-a-boundary-fix.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

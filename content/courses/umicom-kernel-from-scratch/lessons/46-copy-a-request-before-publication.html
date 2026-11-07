@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/46-copy-a-request-before-publication.html
+
+PURPOSE:
+Explain the lesson: Copy a request before publication.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Copy a request before publication | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="45-reject-extra-storage-image-bytes.html">Previous lesson</a> · <a rel="next" href="47-publish-only-a-prepared-request.html">Next lesson</a></nav>
+<h1>Copy a request before publication</h1>
+<h2>Prepare</h2>
+<p>Read queue.h and queue.c in labs/native/virtqueue-lifetime. Follow its README to prepare a C23 compiler, CMake and Ninja. The lab simulates a device with ordinary function calls; it does not implement DMA or a hardware VirtIO transport.</p>
+<h2>Understand the idea</h2>
+<p>Prepare copies the caller's bytes into an available slot. The slot stores an owner, payload length and generation. Copying separates the caller's temporary buffer from the request retained by the queue.</p>
+<h2>Work through the example</h2>
+<p>Draw caller buffer → slot payload. Prepare the text abc, then change the caller buffer to xyz in the supplied test scenario. Identify which bytes the slot should contain.</p>
+<h2>Check your reasoning</h2>
+<p>The slot still contains abc. Preparation owns its copied payload; it has not yet granted the simulated device access.</p>
+<h2>If something differs</h2>
+<p>If later edits change the queued request, inspect whether a pointer was retained instead of copying bytes. A production zero-copy design needs a different lifetime contract.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/virtqueue-lifetime/queue.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="45-reject-extra-storage-image-bytes.html">Previous lesson</a> · <a rel="next" href="47-publish-only-a-prepared-request.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/46-copy-a-request-before-publication.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,56 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cmake/lessons/10-use-framework-package.html
+
+PURPOSE:
+Use an installed Framework library from a small project
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use an installed Framework library from a small project | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Use an installed Framework library from a small project</h1>
+<p>CMake describes how a software project is prepared for building. In this course you will follow a small C project from source files to executables, understand dependencies, run tests and record useful evidence. Every chapter includes the setup needed to enter the exercise directly.</p>
+<h2>Start here</h2>
+<p>A terminal is a window in which you type commands. A folder groups files; a path tells a command where a file or folder is. Source files contain the instructions people edit. A build folder contains the machine-readable results. Keep the two folders separate.</p>
+<p>This course uses the existing labs/native/bounded-ledger-line project in Bits2Banking. It decodes a fictional message such as 1001:+2500: training account 1001, with a change of 2500 pence. It does not connect to a bank.</p>
+<p>On Windows, install MSYS2. In its UCRT64 terminal install the tools:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Open PowerShell. Adjust the repository path if your copy is elsewhere. Run each line separately and stop on an error.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version
+ninja --version
+cmake -S labs/native/bounded-ledger-line -B build/ledger-line -G Ninja -DBUILD_TESTING=ON
+cmake --build build/ledger-line --parallel 2
+ctest --test-dir build/ledger-line --output-on-failure --no-tests=error</code></pre>
+<p>Use CMake 3.24 or newer and a compiler with C23 support. On Linux, install these tools through the distribution's package manager, open Bash in the repository, and use the same three cmake/ctest commands. The small project builds independently of Framework. <a href="../../learning-c/index.html">Learning C</a> gives a slower installation walkthrough.</p>
+<p>The expected test names end in syntax, mutations and example. Missing tools, missing executables and zero selected tests need investigation. For experiments, copy the lab to a separate practice folder and point -S at that folder; preserve the original example.</p>
+<h2>What a package provides</h2>
+<p>A software package can contain headers, compiled libraries and CMake files describing how consumers use them. An imported target represents a library built elsewhere. The Framework checksum lab demonstrates this boundary with Umicom::base.</p>
+<p>This chapter requires an installed Framework SDK that contains the base component. Reading the source needs no SDK. If the SDK is unavailable, keep the practical step pending instead of replacing it with a different library.</p>
+<h2>Read the real project</h2>
+<p>Open labs/native/framework-checksum/CMakeLists.txt and locate:</p>
+<pre><code class="language-cmake">find_package(UmicomFramework CONFIG REQUIRED COMPONENTS base)
+target_link_libraries(btb-checksum-model PUBLIC Umicom::base)</code></pre>
+<p>find_package searches for a package configuration. CONFIG selects that form of discovery. REQUIRED makes absence a configuration error. COMPONENTS base requests the documented component. The imported target carries usage information supplied by the installed SDK.</p>
+<h2>Configure against your installation</h2>
+<p>In PowerShell at the Bits2Banking repository root, replace the prefix with your actual SDK installation:</p>
+<pre><code class="language-powershell">cmake -S labs/native/framework-checksum -B build/framework-checksum -G Ninja -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build build/framework-checksum
+ctest --test-dir build/framework-checksum --output-on-failure --no-tests=error</code></pre>
+<p>In Bash the same command structure applies; use your platform's installation prefix. A Windows archive cannot be assumed usable by a Linux compiler.</p>
+<h2>Follow the service boundary</h2>
+<p>BtbChecksumStream reads bytes from a caller-owned FILE stream and calls Framework's SHA-256 service. The lab does not implement SHA-256 again. Its wrapper owns the reading policy and publishes a digest only after successful completion. The caller still closes the stream.</p>
+<h2>Diagnose a missing package</h2>
+<p>Check that the prefix contains lib/cmake/UmicomFramework and that the requested component was installed. A prefix is the installation root, not the path to a single header. Do not add random global include or library directories until the error disappears; identify which package and architecture the compiler uses.</p>
+<h2>Exercise and limits</h2>
+<p>Explain why compiling this consumer does not need to rebuild all Framework sources. Then explain why a checksum alone does not authenticate a download. It detects a difference only against a trusted expected digest; an attacker able to replace both file and digest defeats that comparison.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-checksum/checksum.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="09-diagnose-build-stages.html">Previous: Locate a failure in configuration, compilation or linking</a> · <a href="11-generate-files-once.html">Next: Give generated files one owner and complete dependencies</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cmake/10-use-framework-package.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

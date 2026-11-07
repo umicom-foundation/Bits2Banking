@@ -60,3 +60,5 @@ Exercise: explain why “the method is const” and “the method does not write
 ## Continue learning
 
 [Continue: Check a file operation](03-check-a-file-operation.md)
+
+[Previous: Objects and a note journal](01-objects-and-a-note-journal.md)

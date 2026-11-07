@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/03-follow-evidence-through-a-payment.html
+
+PURPOSE:
+  Present "Follow evidence through a payment" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow evidence through a payment | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Follow evidence through a payment</h1>
+<p>A payment instruction, an approval and a completed transfer describe different events. This lab continues the existing treasury introduction using its equipment-payment example. You will build a small evidence table before considering a software implementation.</p>
+<p>Source to open: <code>Umicom-Bits2Banking/content/lessons/09-treasury-tms-calypso/03-how-a-treasury-management-system-helps.md</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath 'content\lessons\09-treasury-tms-calypso\03-how-a-treasury-management-system-helps.md'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' 'content/lessons/09-treasury-tms-calypso/03-how-a-treasury-management-system-helps.md'</code></pre>
+<h2>Understand the idea</h2>
+<p>A status is a named stage in a workflow. Evidence explains why a record entered that stage. In the existing example, PAY-0042 represents a planned £900 equipment payment. An approval records an authorised decision; a sent instruction records a communication; settlement needs appropriate external evidence. Reconciliation compares related records and investigates differences. A stable identifier lets later observations refer to the same payment without creating a new obligation every time a message is received.</p>
+<pre><code class="language-text">PAY-0042
+Draft -&gt; Approved -&gt; Sent -&gt; confirmation reviewed -&gt; Settled
+                        |
+                        +-&gt; rejection recorded -&gt; investigation
+Duplicate observation: same evidence identity; not a second payment.</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Read the existing source lesson and copy the payment identity, amount, currency and due date into a practice table. Add a payee and destination using invented classroom values only.</li><li>Create rows for Draft, Approved, Sent and Settled. For each row, write what event would justify entering it, who or what supplied the observation, and which earlier record it references.</li><li>Add a bank rejection after Sent. Keep the rejection reason and time. Do not replace it with Settled simply because a user clicked an approval button. Then add a duplicate copy of the same confirmation and decide how you would recognise that it is the same observation.</li><li>Write a proposed interface contract in plain language: accept a payment identity and new evidence, validate the allowed transition, preserve prior history, and return the resulting state or a specific refusal. Check the current Framework service before implementing a competing workflow in an application.</li></ol>
+<h2>Expected result</h2>
+<p>Your table should never claim settlement from approval alone. It should retain the rejected or duplicated observation in the investigation record while keeping the business state consistent. This is a teaching workflow, not a claim about a particular bank's integration protocol.</p>
+<h2>If the result differs</h2>
+<p>If two rows disagree, compare identity, amount, currency, timing and the source of each observation. Do not resolve the conflict by deleting the inconvenient row. A missing confirmation is an unknown outcome until the relevant evidence is obtained.</p>
+<h2>Explain it yourself</h2>
+<p>The application times out after sending a payment. Should it create a new payment identity and resend immediately?</p>
+<details><summary>Worked explanation</summary><p>Not without investigating the original outcome and the provider's retry contract. The first instruction may already have been accepted. Stable identity, explicit unknown status and reconciliation help avoid an accidental duplicate.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>The domain model and transition rules belong in shared Framework services; a Bank or TMS screen should present those states and collect authorised actions. This lesson extends the existing treasury material and makes no claim that a real bank transfer was performed.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="02-status-approval-and-evidence.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>

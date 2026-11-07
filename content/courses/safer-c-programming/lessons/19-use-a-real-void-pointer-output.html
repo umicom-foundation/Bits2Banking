@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/19-use-a-real-void-pointer-output.html
+
+PURPOSE:
+Explain the lesson: Receive an allocation through the correct pointer type.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Receive an allocation through the correct pointer type | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="18-preserve-output-on-allocation-failure.html">Previous lesson</a> · <a rel="next" href="20-rewind-a-temporary-allocation-scope.html">Next lesson</a></nav>
+<h1>Receive an allocation through the correct pointer type</h1>
+<h2>Prepare</h2>
+<p>Open main.c in the arena laboratory. It retains an older pointer-to-pointer cast inside a disabled block, followed by the replacement using titleStorage and bodyStorage.</p>
+<p>void * can represent a pointer to an object. void ** points to an actual void * variable. These types describe different levels of access.</p>
+<h2>Trace the replacement</h2>
+<p>The allocation function writes a void * value into titleStorage. After success, main assigns titleStorage to the char * named title.</p>
+<p>The conversion happens to the pointer value. The allocator does not write through a void ** cast that refers to a char * variable.</p>
+<h2>Lab</h2>
+<p>Draw two columns: variable type and function parameter type. Add titleStorage as void *, its address as void **, title as char * and its address as char **.</p>
+<p>Expected: only the address of titleStorage directly matches the allocator's output parameter.</p>
+<h2>Exercise and explanation</h2>
+<p>Why is casting &amp;title insufficient? A cast changes the expression's type; it does not change the declared type of the underlying pointer object. Access through the resulting incompatible pointer-to-pointer lvalue can violate C's rules.</p>
+<h2>Troubleshoot</h2>
+<p>Treat pointer-to-pointer warnings as design clues. Use an intermediate variable of the API's required type, check success, and then convert the returned pointer value.</p>
+<p>The preserved block explains the historical mistake. It is not an alternative exercise to enable. Apply the corrected pattern when studying other allocation interfaces with void ** outputs.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/arena-allocator/main.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="18-preserve-output-on-allocation-failure.html">Previous lesson</a> · <a rel="next" href="20-rewind-a-temporary-allocation-scope.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/19-use-a-real-void-pointer-output.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -38,3 +38,9 @@ The two existing browser lessons remain useful after the detailed reading:
 Sammy Hegab's *Introduction to Treasury Management Systems Development: A Developer's Guide to Calypso Development* provides the foundation: cash management, liquidity, accounts, risk and the purpose of a TMS. The [source guide](../sources-and-licensing.md) identifies the other supplied training manuals and distinguishes original classroom examples from licensed product APIs.
 
 After the financial sequence, continue to [Financial Instruments Pricing Using C, C++ and Java](../../../courses/financial-instruments-pricing/index.html). Read [Learning C](../../../courses/learning-c/index.html) before its programming exercises. The financial reading route itself requires no programming knowledge.
+
+## Continue with a practical source study
+
+A payment instruction, an approval and a completed transfer describe different events. This lab continues the existing treasury introduction using its equipment-payment example. You will build a small evidence table before considering a software implementation.
+
+- [Follow evidence through a payment](03-follow-evidence-through-a-payment.md)

@@ -81,3 +81,7 @@ Continue with [the C lesson on bits and hexadecimal](../../learning-c/17-bits-an
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/14-inspect-binary-files.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Read a file one bounded part at a time](13-read-file-ranges.md)
+
+[Next: Test the boundary between a program and the Kernel](15-test-user-memory-boundaries.md)

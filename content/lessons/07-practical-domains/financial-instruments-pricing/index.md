@@ -30,3 +30,9 @@ These opening lessons do not claim a complete pricing engine, Bitcoin node, bloc
 [Finance and systems learning routes](../../../courses/finance-and-systems.html)
 
 [Browser contents](../../../courses/financial-instruments-pricing/index.html)
+
+## Continue with a practical source study
+
+A pricing function needs a clearly stated model as well as correct arithmetic. This lab reads Framework's small discount calculation, checks a result we can predict exactly and follows its handling of invalid or non-finite values.
+
+- [Follow a discount factor and its failure paths](04-follow-a-discount-factor-and-its-failures.md)

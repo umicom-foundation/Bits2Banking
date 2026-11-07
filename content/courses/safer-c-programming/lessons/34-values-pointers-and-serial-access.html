@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/34-values-pointers-and-serial-access.html
+
+PURPOSE:
+Understand what a copied watchlist entry owns
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand what a copied watchlist entry owns | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Understand what a copied watchlist entry owns</h1>
+<p>A watchlist is a collection of instruments that a trading screen follows. This module uses the real Framework watchlist to explain how an array, a count and a capacity work together. You can study every example without a broker connection or market data.</p>
+<ol>
+<li>Open PowerShell and run <code>Set-Location C:\umicom\Umicom-Applications\framework</code>. In bash, use <code>cd /path/to/Umicom-Applications/framework</code>.</li>
+<li>Open <code>include/umicom/trading/watchlist.h</code>, <code>src/trading/watchlist.c</code> and <code>tests/trading/test_watchlist_alerts.c</code> in your editor. A header declares the interface; a source file implements it; a test checks observable results.</li>
+<li>No accounts or credentials are needed. Keep experiments in a separate learning copy. If you later run tests, first finish the normal configure and build for your checkout; a previous executable does not contain newly edited source.</li>
+</ol>
+<h2>Copying a value is different from borrowing a pointer</h2>
+<p>The assignment <code>watchlist-&gt;instruments[count] = *instrument</code> copies one <code>UmiInstrument</code> value into the array. <code>*instrument</code> means the value at the supplied address. Inspect <code>UmiInstrument</code> in <code>trading/types.h</code>: its identifier, symbol, venue and currency are fixed-size fields rather than separately allocated text pointers. The caller may later change its original instrument variable without changing the stored copy.</p>
+<p>If a structure instead contained <code>char *name</code>, ordinary structure assignment would copy that address, not the characters it points to. Freeing or replacing the pointed-to text could leave a dangling pointer: an address whose former object no longer exists. This is why you must inspect the actual type before claiming a copy is independent.</p>
+<h2>A lifetime exercise</h2>
+<pre><code class="language-text">caller variable: candidate ── value copied ──&gt; watchlist slot
+caller changes candidate.symbol
+stored slot keeps its earlier symbol</code></pre>
+<ol>
+<li>Find every field of <code>UmiInstrument</code>.</li>
+<li>Classify it as an inline value or a pointer.</li>
+<li>Check <code>umi_instrument_valid</code> before assuming a fixed array contains a terminated string.</li>
+<li>Read <code>umi_instrument_same</code>: the identifier determines duplicate identity.</li>
+</ol>
+<h2>Serial access</h2>
+<p>Serial access means one operation uses the collection at a time. The watchlist does not contain a lock. If another thread changes count while an addition is searching, a count check at the beginning does not make the whole sequence safe. A GTK application commonly owns its UI model on the main thread and delivers background results through a controlled message boundary. Document which thread owns the list instead of relying on timing.</p>
+<h2>Application design</h2>
+<p>Trader, Bank or a portfolio viewer can use the same Framework contract. A thin client converts user input into a validated instrument, calls the service, then redraws from the resulting state. It should not duplicate the capacity or identity rules in each button handler.</p>
+<h2>Check your understanding</h2>
+<p>Setting one local pointer to NULL after freeing storage does not clear other aliases to that storage. In this watchlist, inline value storage avoids that particular text-ownership problem, but the caller must still keep the watchlist object itself alive during every operation.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/trading/types.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="33-prove-failure-keeps-state.html">Previous: Verify that rejection leaves the collection unchanged</a> · <a href="35-review-and-qualify-a-boundary-fix.html">Next: Turn a boundary fix into a repeatable review</a></p>
+</nav><p><a href="../../../lessons/03-native-code/safer-c-programming/34-values-pointers-and-serial-access.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

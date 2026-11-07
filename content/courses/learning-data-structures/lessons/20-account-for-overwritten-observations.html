@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/20-account-for-overwritten-observations.html
+
+PURPOSE:
+Explain the lesson: Account for overwritten observations.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Account for overwritten observations | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="19-separate-storage-order-from-reading-order.html">Previous lesson</a> · <a rel="next" href="21-distinguish-sequence-from-time.html">Next lesson</a></nav>
+<h1>Account for overwritten observations</h1>
+<h2>Prepare</h2>
+<p>Read the full-ring branch in BtbDiagnosticPush. A bounded structure needs an explicit policy for the ninth event when only eight slots exist.</p>
+<p>This ring keeps the newest events and counts how many older records were overwritten.</p>
+<h2>Trace the policy</h2>
+<p>At capacity, the insertion offset points to the oldest record. The implementation advances head, increments dropped and replaces that slot. Count remains eight.</p>
+<p>The dropped value is evidence that the retained view is incomplete.</p>
+<h2>Lab</h2>
+<p>Insert thirteen valid events on paper. Record count, dropped and first retained sequence.</p>
+<p>Expected: count is eight, dropped is five and the first retained sequence is six. The existing test checks this boundary.</p>
+<h2>Exercise and explanation</h2>
+<p>Should a user interface label this view “all events”? No. It should describe recent retained events and expose the lost count where completeness matters.</p>
+<h2>Troubleshoot</h2>
+<p>Do not increase the capacity merely to conceal sustained loss. Decide whether the consumer should read faster, whether old events can be discarded, or whether the application requires durable storage.</p>
+<p>The source refuses an insertion if the dropped counter itself cannot be represented. This prevents loss accounting from silently wrapping to a misleading small number.</p>
+<p>A larger array changes the capacity, not the fundamental retention policy. Document that policy before using a similar structure in a Framework diagnostic panel.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/diagnostic-ring/ring.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="19-separate-storage-order-from-reading-order.html">Previous lesson</a> · <a rel="next" href="21-distinguish-sequence-from-time.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/20-account-for-overwritten-observations.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -75,3 +75,5 @@ No. The fixture establishes only its own checks. Studio may have a different own
 Project study: application workspaces · Lesson 4 of 4.
 
 [Previous: Navigate panels with the keyboard](33-follow-keyboard-focus.md) · [Module complete: return to course contents](index.md)
+
+[Next: Read calendar data without inventing values](35-read-calendar-data-without-inventing-values.md)

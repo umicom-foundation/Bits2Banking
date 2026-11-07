@@ -1,0 +1,58 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/35-follow-branches.html
+
+PURPOSE:
+Follow jumps and conditional branches
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow jumps and conditional branches | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Follow jumps and conditional branches</h1>
+<h2>What you will learn</h2>
+<p>A program counter selects the next instruction address. Most operations advance it by one. A branch changes that order. This model has an unconditional JUMP and a conditional JZ, meaning jump if zero.</p>
+<h2>Set up this exercise</h2>
+<p>A terminal is a window in which you type commands. A folder holds the files of a project. Install Git, CMake 3.26 or later, Ninja and GHDL with VHDL-2008 support; make their executable folders available on PATH. PATH is the list of folders the terminal searches for programs. Open a fresh PowerShell or Bash terminal and check:</p>
+<pre><code class="language-text">git --version
+cmake --version
+ninja --version
+ghdl --version</code></pre>
+<p>Each command should print a version. If a command is not found, correct its installation or PATH before continuing. Download the Bits2Banking repository with Git if you do not already have it:</p>
+<pre><code class="language-text">git clone https://github.com/umicom-foundation/Bits2Banking.git
+cd Bits2Banking/labs/hardware/vhdl-cpu</code></pre>
+<p>If you already have the repository, open its labs/hardware/vhdl-cpu folder instead of cloning again. Work in your own practice copy. The following commands are identical in PowerShell and Bash:</p>
+<pre><code class="language-text">cmake --preset simulation
+cmake --build --preset simulation
+ctest --preset simulation</code></pre>
+<p>Configure finds GHDL and writes build instructions. Build analyses the VHDL files. Test runs the simulated circuit and checks its results. Expected: the cpu.instructions test passes. This is a learner check to perform on your computer, not a claim about a supplied binary. To select a GHDL installation outside PATH, configure with a quoted absolute path:</p>
+<pre><code class="language-powershell">cmake --preset simulation &quot;-DGHDL_EXECUTABLE=C:/tools/ghdl/bin/ghdl.exe&quot;</code></pre>
+<p>A simulation predicts the behaviour described by a model. It does not program a physical chip. No hardware board is required for this module.</p>
+<h2>Trace the decision</h2>
+<pre><code class="language-vhdl">when x&quot;5&quot; =&gt;
+  if acc = 0 then pc &lt;= unsigned(instruction(3 downto 0));
+  else pc &lt;= pc + 1; end if;</code></pre>
+<p>The condition reads the accumulator's current value. The selected assignment takes effect after the process suspends. JZ does not change the accumulator.</p>
+<h2>Make a trace table</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Input instruction</th><th scope="col">Accumulator before edge</th><th scope="col">Address before edge</th><th scope="col">Address after edge</th></tr></thead><tbody><tr><td>x&quot;58&quot;</td><td>2</td><td>2</td><td>3</td></tr><tr><td>x&quot;58&quot;</td><td>0</td><td>4</td><td>8</td></tr><tr><td>x&quot;4F&quot;</td><td>1</td><td>10</td><td>15</td></tr></tbody></table></div>
+<p>The first instruction does not take the branch because the accumulator is nonzero. The second takes it. The third is unconditional.</p>
+<h2>Connect the table to the testbench</h2>
+<ol>
+<li>Find LOAD 3 and SUB 1. The accumulator becomes 2.</li>
+<li>Find the following JZ 8 assertion. It checks address 3.</li>
+<li>Find SUB 2. The accumulator becomes zero.</li>
+<li>Find the next JZ 8. It checks address 8.</li>
+<li>Run the tests and compare each assertion with the table.</li>
+</ol>
+<p>The testbench supplies instructions directly. It does not yet fetch an instruction from a program memory using address. This makes each CPU operation easy to isolate.</p>
+<h2>Plan a program memory</h2>
+<p>A future ROM, or read-only memory, can map each address to an instruction. An address of 0 might return LOAD 3, address 1 SUB 1 and address 2 JZ 4. Connecting that ROM adds a timing assumption: the instruction must be stable before the next CPU clock edge.</p>
+<p>Draw address flowing from CPU to ROM and instruction flowing back. Keep this extension separate until you have tested the CPU's operations.</p>
+<h2>Check your understanding</h2>
+<p>Why test both taken and untaken branches? A decoder that always jumps could pass the zero case while still being wrong. The nonzero case checks the other decision.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_cpu.vhd">Open the project source</a>.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="34-check-fixed-width-arithmetic.html">Previous lesson</a> · <a rel="next" href="36-control-pause-halt-reset.html">Next lesson</a></nav><p><a href="../../../lessons/03-native-code/learning-hdl-vhdl/35-follow-branches.md">Markdown edition</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

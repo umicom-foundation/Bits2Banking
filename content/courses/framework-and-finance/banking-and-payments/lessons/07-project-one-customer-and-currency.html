@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/07-project-one-customer-and-currency.html
+
+PURPOSE:
+Project a complete customer balance view
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Project a complete customer balance view | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Project a complete customer balance view</h1>
+<p>A bank application presents records about customers, accounts and money. This module builds one small part: a reliable balance view. A customer identifies whose records are selected; an account holds amounts and a state; a currency identifies the unit of money. All examples use invented records kept in the program's memory. No real bank connection or transfer is made.</p>
+<h2>Prepare this laboratory</h2>
+<p>Install a C23 compiler, CMake 3.26 or later and Ninja. A compiler translates C source into machine instructions. CMake describes the build; Ninja performs the required build steps. Install a matching Umicom Framework SDK containing the finance component. An SDK supplies headers, libraries and package information; its compiler and architecture must match this example.</p>
+<p>In PowerShell, run each line separately and stop on errors:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\account-balances&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+&amp; &quot;.\build\btb-account-balances.exe&quot;</code></pre>
+<p>Use your actual SDK path. In Bash, run the same three CMake/CTest commands from the example folder with your native SDK prefix, then run <strong>./build/btb-account-balances</strong>. A package-not-found error points to the SDK installation or prefix. An unknown summary symbol requires a matching updated header and library. The expected report contains two GBP accounts, ledger 12000, available 9500 and reserved 2500 minor units.</p>
+<h2>One reusable projection</h2>
+<p>A projection is a view computed from source records. UmiBankingDepositAccountBookSummarise produces one without changing the book. Bank, Trader account views and other clients can call a shared contract rather than each writing their own loop.</p>
+<p>The output contains the selected customer and currency, account count, counts for pending/open/blocked/closed states, and ledger/available/reserved totals. All matching statuses contribute to the totals. The status counts let a view explain why some accounts need separate attention.</p>
+<ol>
+<li>Find the temporary UmiBankingDepositSummary called candidate.</li>
+<li>Observe validation of the requested customer and currency.</li>
+<li>Follow the count check before the loop.</li>
+<li>Follow record and duplicate-ID checks, including unselected records.</li>
+<li>Find the customer and currency comparison that selects a row.</li>
+<li>Follow checked additions into private temporary values.</li>
+<li>Find the final output assignment.</li>
+</ol>
+<p>The call rejects a corrupted book even if the damaged row would not be selected. Otherwise a filter could hide damage and make the same book appear valid in one view and invalid in another.</p>
+<h2>Empty is a valid result</h2>
+<p>A valid customer-and-currency request with no matching accounts succeeds with zero counts and totals. That differs from a failed call. A screen should show “No matching accounts” for the first case and a clear load or validation error for the second.</p>
+<h2>Exercise</h2>
+<p>Ask for customer unknown with GBP and inspect the result. Then corrupt the source count beyond capacity. The first call should succeed with an empty summary; the second should fail without changing its output. Explain why both cases should not be rendered as an ordinary zero balance.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/finance/banking/deposit_account_book.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="06-own-a-bounded-account-book.html">Previous: Understand ownership and capacity in an account book</a> · <a href="08-preserve-the-last-good-balance.html">Next: Preserve the last good balance after failure</a></p>
+</nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/banking-and-payments/07-project-one-customer-and-currency.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

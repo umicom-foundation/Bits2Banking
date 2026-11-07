@@ -47,3 +47,32 @@ The small examples are in `labs/native/first-c-programs`. Begin with `hello.c`. 
 Text parsing, ownership, error handling and a complete console project.
 
 [Choose another subject](../../start/course-series.md).
+
+## Step-by-step practical labs
+
+Each lab includes a setup recap, commands, expected results and a repair exercise. Work in a practice folder.
+
+- [Create, compile and run C in a terminal](terminal-lab.md)
+- [Call an Assembly function from C](terminal-assembly-lab.md)
+- [Continue the same project in Visual Studio](terminal-to-visual-studio.md)
+
+## Practical labs: read, change and check
+
+Follow these after the introductory lessons. Each lab includes its own setup recap and explains the expected result.
+
+- [Length, capacity and the end of a string](19-length-capacity-and-terminators.md)
+- [Allocation outputs and lifetimes](20-allocation-outputs-and-lifetimes.md)
+
+## Continue with a practical source study
+
+A function can refuse a request. The caller must know whether a result was produced before using it. This lab follows one small C function from input checks to output assignment, then designs checks for its boundary.
+
+- [Follow a rejected function call](21-follow-a-rejected-call.md)
+
+
+## Further practical lessons
+
+- [Open, read and close a file](22-open-read-and-close-a-file.md)
+- [Read a file in bounded chunks](23-chunks-eof-and-read-errors.md)
+- [Return a status and publish one complete result](24-status-values-and-complete-results.md)
+- [Check a result using known answers and another tool](25-check-file-digests-independently.md)

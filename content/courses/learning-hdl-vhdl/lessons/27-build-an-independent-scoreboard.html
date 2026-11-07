@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/27-build-an-independent-scoreboard.html
+
+PURPOSE:
+Explain the lesson: Check every delivered word with a scoreboard.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check every delivered word with a scoreboard | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="26-latency-and-throughput.html">Previous lesson</a> · <a rel="next" href="28-bound-a-simulation.html">Next lesson</a></nav>
+<h1>Check every delivered word with a scoreboard</h1>
+<h2>Prepare</h2>
+<p>Read the words array, sent counter and received counter in buffer_pipeline_tb.vhd. A scoreboard is a simple reference record of what should emerge from the circuit.</p>
+<p>It records only accepted inputs. It does not infer the internal state of either buffer.</p>
+<h2>Follow the reference model</h2>
+<p>When input_valid and input_ready are both one, the bench stores the offered number in expected(sent) and increments sent.</p>
+<p>When output_valid and output_ready are both one, it compares the delivered byte with expected(received), then increments received.</p>
+<p>The reference array is deliberately simpler than the hardware. It does not reproduce ready propagation or stage replacement rules.</p>
+<h2>Lab</h2>
+<p>Trace accepted inputs 0, 1 and 2 with output sequence 0, 2, 1. Final counts match, but the second output comparison fails. Then try 0, 1, 1: the third comparison detects duplication.</p>
+<p>Expected: both faults are detected even though the output count is three.</p>
+<h2>Capacity check</h2>
+<p>The bench also checks that sent minus received remains at most two. Value order and occupancy are different properties; each catches defects that the other can miss.</p>
+<h2>Troubleshoot</h2>
+<p>A scoreboard can itself be wrong. Check that its list grows only on input handshakes and shrinks only on output handshakes. Recording every cycle with input_valid one would count a stalled word repeatedly.</p>
+<h2>Extend the experiment</h2>
+<p>Change the deterministic readiness pattern, keeping the stimulus bounded. Preserve the original bench and add a separate test if a new pattern exposes a different failure. Record the source revision and waveform for reproducibility; a passing count alone is insufficient evidence.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/buffer_pipeline_tb.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="26-latency-and-throughput.html">Previous lesson</a> · <a rel="next" href="28-bound-a-simulation.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/27-build-an-independent-scoreboard.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

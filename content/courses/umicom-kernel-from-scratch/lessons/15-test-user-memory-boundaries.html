@@ -1,0 +1,83 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/15-test-user-memory-boundaries.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test the boundary between a program and the Kernel | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1 id="test-the-boundary-between-a-program-and-the-kernel">Test the boundary between a program and the Kernel</h1>
+<p>A program can ask a kernel to copy bytes, but an address supplied by that program is not automatically trustworthy. The kernel must check whether the entire range belongs to the caller and permits the requested access. This lab uses Umicom Kernel's existing host checks to study that decision without booting a machine.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>You need Umicom Kernel sources, a C23 compiler, CMake and Ninja. Use <a href="../../learning-c/terminal-lab.html">terminal setup</a> for tool installation and command basics. On Windows, add <code>C:\msys64\ucrt64\bin</code> to the current PowerShell PATH. On Linux, use the native compiler for your host. This exercise runs a test executable on the host, with test-owned memory representing physical pages. It does not boot a guest or prove hardware behaviour.</p>
+<p>A page is a fixed-size region used by the memory manager. A virtual address is the address a program uses; a mapping connects it to backing storage and permissions. Read <a href="01-native-kernel-and-host-models.html">native Kernel and host models</a> if these terms are new.</p>
+<h2 id="find-the-files">1. Find the files</h2>
+<p>In <code>umicom-kernel/tests/user_memory/CMakeLists.txt</code>, inspect the source list and test cases. The executable uses the actual Kernel memory implementation with a controlled fixture. The fixture supplies known pages so each test can change one condition.</p>
+<p>Write this diagram on paper:</p>
+<pre><code class="language-text">request: start + byte count + access
+    → reject overflow
+    → inspect every covered page
+    → check ownership and permissions
+    → copy only after validation
+</code></pre>
+<p>Checking only the first page is insufficient. A range can begin in writable memory and finish in a read-only or unmapped page.</p>
+<h2 id="build-the-isolated-host-check">2. Build the isolated host check</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S 'C:/umicom/umicom-kernel/tests/user_memory' -B 'C:/umicom-learning/kernel-user-memory' -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build 'C:/umicom-learning/kernel-user-memory' --parallel 2
+ctest --test-dir 'C:/umicom-learning/kernel-user-memory' -R '^kernel\.user_boundary\.(cross-page-read|cross-page-write|span-write-readonly-second|range-wrap|partial-destination)$' --output-on-failure --no-tests=error
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">cmake -S &quot;$HOME/umicom/umicom-kernel/tests/user_memory&quot; -B &quot;$HOME/umicom-learning/kernel-user-memory&quot; -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build &quot;$HOME/umicom-learning/kernel-user-memory&quot; --parallel 2
+ctest --test-dir &quot;$HOME/umicom-learning/kernel-user-memory&quot; -R '^kernel\.user_boundary\.(cross-page-read|cross-page-write|span-write-readonly-second|range-wrap|partial-destination)$' --output-on-failure --no-tests=error
+</code></pre>
+<p>The expected selection contains five tests. A refusal test passes when an invalid request is correctly refused; it does not mean the Kernel allowed that request.</p>
+<h2 id="explain-each-outcome">3. Explain each outcome</h2>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Question it investigates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cross-page-read</td>
+<td>Can a valid read cross a page boundary?</td>
+</tr>
+<tr>
+<td>cross-page-write</td>
+<td>Can a valid write cross a page boundary?</td>
+</tr>
+<tr>
+<td>span-write-readonly-second</td>
+<td>Is a request refused when a later page forbids writing?</td>
+</tr>
+<tr>
+<td>range-wrap</td>
+<td>Is arithmetic wrapping around the address range rejected?</td>
+</tr>
+<tr>
+<td>partial-destination</td>
+<td>Is the destination protected from incomplete copying?</td>
+</tr>
+</tbody>
+</table>
+<p>Locate each name in the test source. For one successful and one refused case, record the initial bytes, requested range, expected result and final bytes. This four-part description makes a useful regression test: a test kept to prevent a repaired defect returning.</p>
+<h2 id="exercise-and-troubleshooting">Exercise and troubleshooting</h2>
+<p>Draw two adjacent pages and place a four-byte request two bytes before their boundary. Label the second page read-only. A read may be permitted if ownership and mapping are valid; a write must be refused. Explain why checking the first two bytes alone would be unsafe.</p>
+<p>If no tests match, check the checkout and spelling rather than removing <code>--no-tests=error</code>. A compile failure belongs to the host test build; capture its first diagnostic before trying QEMU. Passing host checks should later be complemented by native boot and fault tests. Continue with <a href="16-discover-the-native-program-contract.html">native program contract discovery</a>, or return to the <a href="../index.html">Kernel course</a>.</p>
+
+<nav aria-label="Previous lesson"><a rel="prev" href="14-inspect-binary-files.html">Previous: Inspect file bytes in hexadecimal</a></nav></article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>

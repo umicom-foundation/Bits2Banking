@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/15-quiesce-then-drain.html
+
+PURPOSE:
+Explain the lesson: Stop admission before draining a service.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stop admission before draining a service | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-budget-a-dispatch-turn.html">Previous lesson</a> · <a rel="next" href="16-count-invariants.html">Next lesson</a></nav>
+<h1>Stop admission before draining a service</h1>
+<h2>Prepare</h2>
+<p>Open BtbDispatchQuiesce and BtbDispatchDrained. The work-dispatch README explains the independent build. Quiescing means refusing new work while allowing work already accepted to finish or be cancelled.</p>
+<h2>Follow shutdown</h2>
+<p>Submit two requests, then call Quiesce. A third submission should return QUIESCING. The first two still belong to the dispatcher.</p>
+<p>Run or cancel them, then receive their terminal notices. Only when the work slots and notices are empty should Drained report true.</p>
+<p>This is different from immediately erasing the dispatcher. Erasure would lose accepted work and pending results.</p>
+<h2>State table</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Stage</th><th scope="col">Accepts submissions?</th><th scope="col">Drained?</th></tr></thead><tbody><tr><td>Two queued requests</td><td>Yes</td><td>No</td></tr><tr><td>After quiesce</td><td>No</td><td>No</td></tr><tr><td>Both executed, receipts pending</td><td>No</td><td>No</td></tr><tr><td>Both receipts received</td><td>No</td><td>Yes</td></tr></tbody></table></div>
+<h2>Exercise</h2>
+<p>Stop after execution but before receiving results. Inspect the queued count: it may be zero. Then inspect pending notices and Drained.</p>
+<p>Expected: zero queued work does not mean shutdown is complete. The caller still has results to collect and slots to release.</p>
+<h2>Troubleshoot</h2>
+<p>If shutdown waits forever, identify which stage owns the outstanding item. Repeatedly asking Drained does not itself process work or receive notices. The caller must perform the allowed progress operations.</p>
+<h2>Connect to applications</h2>
+<p>Closing a media export panel, stopping a build or disconnecting a broker can all involve pending work. Their domain-specific services need explicit shutdown contracts. This lab provides a small state model to reason about the distinction between admission, completion and delivery, not a ready-made replacement for those Framework services.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/work-dispatch/dispatch.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-budget-a-dispatch-turn.html">Previous lesson</a> · <a rel="next" href="16-count-invariants.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/15-quiesce-then-drain.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

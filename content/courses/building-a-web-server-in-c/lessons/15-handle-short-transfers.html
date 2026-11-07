@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/15-handle-short-transfers.html
+
+PURPOSE:
+Explain the lesson: Handle short reads and writes.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Handle short reads and writes | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-register-a-route-and-context.html">Previous lesson</a> · <a rel="next" href="16-distinguish-dispatch-from-delivery.html">Next lesson</a></nav>
+<h1>Handle short reads and writes</h1>
+<p>A read operation may return fewer bytes than requested. A write may accept only part of an output buffer. Neither event automatically means the complete exchange failed.</p>
+<h2>Prepare</h2>
+<p>Open exchange.c in the HTTP contract lab. It uses memory callbacks rather than a real socket. Read supplies one byte per call; Write accepts at most three.</p>
+<p>This deliberate fragmentation makes transport behavior visible and repeatable without depending on a network.</p>
+<h2>Follow the state</h2>
+<p>MemoryWire contains input length, current offset, output length and a handler count.</p>
+<ol>
+<li>Read copies one available byte and advances offset.</li>
+<li>Framework collects enough bytes to frame the request.</li>
+<li>Routing invokes Handle once.</li>
+<li>Framework repeatedly calls Write for the remaining response.</li>
+<li>The result records total received and sent counts.</li>
+</ol>
+<p>Expected: all input bytes are consumed, the handler runs once and the response completes even though no callback transfers the entire message.</p>
+<h2>Exercise</h2>
+<p>Change the successful read adapter to return at most two bytes. Keep its count bounded by both available input and destination capacity. Predict why the application's final response should remain the same.</p>
+<p>Do not return OK with an invented byte count. The count describes bytes actually transferred, not bytes the callback intended to transfer.</p>
+<h2>Recovery</h2>
+<p>If the process appears stuck, look for a callback reporting success without progress. Real callbacks also need bounded waits so cancellation can be observed.</p>
+<p>The memory adapter demonstrates the contract. It does not simulate network latency, authentication or operating-system socket ownership.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/exchange.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-register-a-route-and-context.html">Previous lesson</a> · <a rel="next" href="16-distinguish-dispatch-from-delivery.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-web-server-in-c/15-handle-short-transfers.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

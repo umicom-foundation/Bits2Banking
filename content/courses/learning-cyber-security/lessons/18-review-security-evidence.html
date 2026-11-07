@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/18-review-security-evidence.html
+
+PURPOSE:
+Review security changes with tests and explicit limits
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review security changes with tests and explicit limits | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Review security changes with tests and explicit limits</h1>
+<p>An identity names a person or service. Authentication establishes who is requesting access; authorization decides which action that identity may perform. A session lets a program associate later requests with an earlier authentication result. This module follows these ideas using synthetic local records and the existing Umicom Framework C interfaces.</p>
+<p>Open <code>labs/framework/identity-lifecycle/README.md</code> in the Bits2Banking checkout. It contains complete PowerShell and Bash configure, build, run and test commands. Start in that lab directory, use <code>cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/framework-sdk -DBUILD_TESTING=ON</code>, then <code>cmake --build build</code> and <code>ctest --test-dir build --output-on-failure --no-tests=error</code>. The SDK path names your installed Framework. Stop on the first command error. The executable is <code>build/btb-identity-lifecycle.exe</code> on Windows and <code>build/btb-identity-lifecycle</code> on Unix-like systems. The lab creates no accounts or network connections.</p>
+<h2>Evidence has a scope</h2>
+<p>Reading a function can reveal a missing boundary check. A regression test can demonstrate that specific inputs now produce the intended result on a particular build. Neither establishes that an entire application is secure.</p>
+<p>The credential regression program has named scenarios. Each scenario checks a public contract: malformed fields are rejected, maximum complete strings are accepted, invalid lookups preserve outputs, duplicates do not replace records, and capacity remains bounded.</p>
+<h2>Reproduce a focused check</h2>
+<p>After building the matching Framework source in its configured build directory, run:</p>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-debug -R &quot;^framework.security.credential.boundaries\.&quot; --output-on-failure --no-tests=error</code></pre>
+<p>The build directory must match the configuration you actually used. If testing through Umicom Applications, use that repository's configured build directory instead. <code>--no-tests=error</code> prevents an empty selection from looking like a successful check.</p>
+<h2>Write an engineering record</h2>
+<p>Record the source revision, compiler, build directory, selected tests, exit status and any skipped coverage. Describe the defect in terms of input and state: an unterminated fixed field previously reached string processing. Describe the repair: bounded admission before lookup and storage. Do not put real credentials in the record.</p>
+<h2>Review beyond the happy path</h2>
+<ol>
+<li>Null pointer and empty field.</li>
+<li>Largest accepted field.</li>
+<li>Capacity-sized field with no terminator.</li>
+<li>Existing ID with changed metadata.</li>
+<li>Full registry and another insertion.</li>
+<li>Failed operation followed by retrieval of the original record.</li>
+</ol>
+<p>The Framework regression keeps important setup and checks active in optimized builds; it does not rely on disabled assertions to perform required operations.</p>
+<h2>Exercise</h2>
+<p>Design one additional failure case for the lab without duplicating a scenario already present. State the invariant it protects and the exact observation that would prove the invariant was broken. Keep a passing test distinct from an authored test that has not yet been run.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/security/test_credential_boundaries.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="17-desktop-and-mobile-sign-in.html">Previous: Use the same security boundary from desktop and mobile</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/18-review-security-evidence.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

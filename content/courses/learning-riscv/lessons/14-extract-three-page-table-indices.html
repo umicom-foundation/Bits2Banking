@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/14-extract-three-page-table-indices.html
+
+PURPOSE:
+Explain the lesson: Extract three page-table indices.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Extract three page-table indices | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-split-an-address-into-page-and-offset.html">Previous lesson</a> · <a rel="next" href="15-follow-a-three-level-page-walk.html">Next lesson</a></nav>
+<h1>Extract three page-table indices</h1>
+<h2>Prepare</h2>
+<p>Open <code>labs/native/sv39-address-translation/sv39.h</code>, <code>sv39.c</code> and <code>main.c</code> in a text editor. This lab calculates addresses in ordinary C arrays. It does not change your computer's memory mappings. Hexadecimal uses digits 0–9 and A–F; <code>0x1000</code> is 4096 in decimal.</p>
+<h2>Understand the idea</h2>
+<p>A page table is an array describing mappings. The teaching Sv39 walker chooses an entry from each of three tables. Each index contains nine bits, giving 512 possible entries. The helper <code>Index</code> shifts a selected group to the right and masks away other bits.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Find calls to <code>Index</code> with shifts 30, 21 and 12.</li>
+<li>Use virtual address <code>0x40201120</code>.</li>
+<li>Calculate the root index as <code>(address &gt;&gt; 30) &amp; 511</code>.</li>
+<li>Repeat for the middle and leaf tables.</li>
+<li>Draw three boxes labelled with the resulting indices.</li>
+</ol>
+<h2>Check your reasoning</h2>
+<p>The indices are root 1, middle 1 and leaf 1. The remaining <code>0x120</code> selects the byte inside the mapped page. Index calculations select entries; they do not themselves grant access.</p>
+<h2>If something differs</h2>
+<p>If an index exceeds 511, the mask is missing or applied before shifting. Keep the value unsigned when experimenting with shifts.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/sv39-address-translation/sv39.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-split-an-address-into-page-and-offset.html">Previous lesson</a> · <a rel="next" href="15-follow-a-three-level-page-walk.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/14-extract-three-page-table-indices.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

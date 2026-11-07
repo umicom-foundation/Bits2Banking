@@ -1,0 +1,62 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/18-keep-callback-state-alive.html
+
+PURPOSE:
+Keep callback state alive for the right lifetime
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep callback state alive for the right lifetime | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep callback state alive for the right lifetime</h1>
+<p>This practical module explains how a GTK interface identifies controls, navigates to them and keeps callback state alive. Each lesson includes the setup needed to follow its own example.</p>
+<h2>Start here</h2>
+<p>A graphical application is a program that shows windows and reacts to input. A <strong>widget</strong> is one control, such as a button or a label. A <strong>callback</strong> is a C function GTK calls when an event occurs. The <strong>event loop</strong> waits for input and dispatches those callbacks. You can read this lesson without installing anything. The optional lab needs a C compiler, CMake, Ninja, GTK4 development files and an installed Umicom Framework SDK containing the GTK4 component and the checked named-lookup API.</p>
+<p>In C, a pointer stores an address; it does not automatically keep an object alive. A structure groups related values. The lab's LabWindow structure belongs to one window and holds pointers to controls owned by that window. A return status reports whether an operation completed. Check that status before using its output.</p>
+<h3>Prepare the optional lab</h3>
+<ol>
+<li>Open PowerShell on Windows. A terminal accepts commands; Set-Location changes the folder in which they run. Locate the Bits2Banking checkout and the installed Framework SDK first.</li>
+<li>Put the matching UCRT64 compiler and GTK runtime on Path. Use the SDK built with that same toolchain.</li>
+<li>Configure a separate build folder, then build the small lesson executable. Stop if any command reports an error.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\framework-control-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/applications&quot;
+cmake --build build --parallel 2
+&amp; &quot;.\build\btb-control-inspection.exe&quot;</code></pre>
+<p>On Linux, install your distribution's C compiler, CMake, Ninja, pkg-config and GTK4 development package, and use the path where you installed the Framework GTK4 SDK:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/native/framework-control-inspection
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom-sdk&quot;
+cmake --build build --parallel 2
+./build/btb-control-inspection</code></pre>
+<p>CMake reads CMakeLists.txt and finds the installed libraries. Ninja compiles only what this lab needs. This recipe does not rebuild the Framework. If CMake cannot find UmicomFramework, correct the SDK path. If ui_gtk4 or the checked lookup symbol is missing, install an SDK containing that component and API before continuing. A GTK window needs an interactive desktop session. On Windows, the GTK DLLs must remain reachable through Path.</p>
+<p>For more detail after this lesson, see <a href="../../learning-c/index.html">Learning C</a>, <a href="../../learning-cmake/index.html">Learning CMake</a> and the <a href="../../../../labs/native/framework-control-inspection/README.md">lab guide</a>.</p>
+<h2>What a dangling pointer means</h2>
+<p>A dangling pointer still contains an address after the object at that address has ceased to be valid. Reading or writing through it can produce a crash or corrupt memory. Keeping the number in a C variable does not preserve the object.</p>
+<p>The lab creates LabWindow with g_new0. This allocates zero-initialised storage for the structure. It attaches the structure to the window using g_object_set_data_full and gives g_free as the cleanup function. The window is therefore responsible for releasing the state.</p>
+<h2>Trace ownership</h2>
+<pre><code class="language-text">Window owns LabWindow state
+Window contains the root box
+Root box contains controls
+Callbacks borrow state and control pointers during one call</code></pre>
+<ol>
+<li>Find g_object_set_data_full in activate.</li>
+<li>Find window_state. It retrieves the attached structure; it does not allocate a second one.</li>
+<li>Find each g_signal_connect_object call. The window is the callback's associated object.</li>
+<li>Read confirm_clicked. It uses the state during the callback and returns.</li>
+</ol>
+<p>Object-bound signal connections keep the associated object alive during the callback and disconnect when it is destroyed. This behaviour is documented in <a href="https://docs.gtk.org/gobject/func.signal_connect_object.html">GLib's signal connection reference</a>. It is not permission to destroy GTK objects from an arbitrary worker thread.</p>
+<h2>Apply the rule to lookup</h2>
+<p>The widget returned by Framework lookup is borrowed. Do not store it in a background job or retain it across an event-loop iteration. Reacquire it when you need it, using a live root on the GTK owning thread. Even taking an object reference does not prove that the control still belongs to the current view.</p>
+<h2>Exercise</h2>
+<p>Explain the difference between these claims: the object still exists; it is still the currently selected editor; it is visible; it can be edited. A reference addresses only lifetime. Identity, selection and permissions need their own checks.</p>
+<h2>Recovery</h2>
+<p>When diagnosing a lifetime crash, record who owns the object, which callback releases or replaces it and which later operation uses it. Avoid hiding the fault with an arbitrary delay.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-control-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="17-distinguish-visible-enabled-and-found.html">Previous: Distinguish a found control from a usable control</a> · <a href="19-test-control-lookup-boundaries.html">Next: Test control discovery at its boundaries</a></p>
+</nav><p><a href="../../../lessons/06-umicom/learning-gtk4/18-keep-callback-state-alive.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

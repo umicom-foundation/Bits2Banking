@@ -73,3 +73,9 @@ These additional manuscripts are preserved for further study. They are not extra
 ## Use another format
 
 Each chapter above has a browser counterpart in the [written course catalogue](../../start/written-courses.md). Markdown and HTML remain source material; books, teaching scripts and document editions should select a stated reading route rather than combine every specialist chapter.
+
+## Continue with a practical source study
+
+A faster-looking demonstration is a starting observation, not a finished research result. This lesson uses a real Umicom inference test to show how to write a small research question, choose evidence and separate correctness from performance.
+
+- [Lab: turn a performance claim into an experiment](experiment-observation-lab.md)

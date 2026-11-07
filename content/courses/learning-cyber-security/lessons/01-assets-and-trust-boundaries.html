@@ -1,0 +1,50 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/01-assets-and-trust-boundaries.html
+
+PURPOSE:
+Identify what an application must protect
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Identify what an application must protect | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Identify what an application must protect</h1>
+<p>Learn how application inputs, memory ownership and identity checks fit together. The examples use Umicom Framework and a small Bits2Banking consumer. Every chapter explains its vocabulary before the exercise.</p>
+<h2>Start here</h2>
+<p>A source file is readable program text. A compiler turns that text into machine instructions. A library supplies reusable functions; this course calls the security library in Umicom Framework. A terminal accepts commands. You can read and trace every example without installing anything.</p>
+<p>For the practical lab, install Git, a C23 compiler, CMake 3.26 or newer, Ninja, and a matching Framework SDK containing UmiLocalProfileNameBytes. In Windows PowerShell, open the repository with Set-Location and make the UCRT64 tools visible:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/framework/profile-name-boundary -B build/profile-name -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build/profile-name
+ctest --test-dir build/profile-name --output-on-failure --no-tests=error
+&amp; &quot;.\build\profile-name\btb-profile-name.exe&quot;</code></pre>
+<p>Run one command at a time and stop on an error. Change the SDK path to your installation. In bash, use cd to enter your checkout, the same three CMake/CTest commands, and ./build/profile-name/btb-profile-name to launch. The expected line is Canonical name: alice_7. A missing package means the SDK path is wrong or incomplete; a missing symbol means its header and library must be updated together. This lab does not collect credentials or write a password store. The <a href="../../learning-c/index.html">Learning C course</a> explains basic syntax in more depth.</p>
+<h2>The idea</h2>
+<p>Cyber security means protecting systems and information from unauthorised access, change and disruption. A vulnerability is a weakness that can make one of these outcomes possible. A bug may be a vulnerability, but a compiler warning or a crash alone does not establish how an attacker could exploit it.</p>
+<p>An asset is something valuable: a document, a password, money, a user's time, or the availability of a service. A trust boundary is a point where data arrives from a person or component with different permissions. A text box is a boundary even in a desktop application. A local file may also contain untrusted data.</p>
+<h2>Map the example</h2>
+<pre><code class="language-text">input bytes -&gt; name validation -&gt; canonical name -&gt; profile lookup
+                                  |
+                                  + does not prove identity</code></pre>
+<ol>
+<li>Open main.c in the lab. Find field, an array of seven bytes.</li>
+<li>Find canonical. It is a separate destination with the capacity required by Framework.</li>
+<li>Follow the returned status before printf. Failed validation stops this path.</li>
+<li>List what is absent: password verification, a session and an authorisation decision.</li>
+</ol>
+<p>For Studio, protect unsaved source, chosen paths and build commands. For Bank, protect account records and payment permissions. For Trader, protect orders and the selected broker environment. A username validator protects only one small input boundary in those larger workflows.</p>
+<h2>Make a threat table</h2>
+<p>Write four columns: asset, entry point, unwanted result, control. One row can be “source file; imported project; unexpected overwrite; explicit destination and overwrite policy”. Another can be “order; remote quote; accidental live order; environment-aware confirmation and broker permission checks”. Controls must be implemented and tested, not merely named.</p>
+<h2>Check your understanding</h2>
+<p>Does a lowercase username prove the user owns that account? No. It establishes a consistent spelling after syntax checks. Does hiding a payment button authorise a payment? No. The service processing the request must check permission itself.</p>
+<h2>Troubleshooting and summary</h2>
+<p>If a diagram puts every component in one trusted box, add file imports, network messages and plugin entry points. The useful result of this lesson is a small, testable threat table, not a claim that the entire application is secure.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/profile-name-boundary/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="02-buffers-and-exact-length-input.html">Next: Prevent buffer errors at an input boundary</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/01-assets-and-trust-boundaries.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

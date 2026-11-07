@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/language-basename-and-suffix-matching.html
+
+PURPOSE:
+Separate a filename from its directories
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate a filename from its directories | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate a filename from its directories</h1>
+<p>This module starts with a small command-line program and follows its calls into Umicom Framework. Each lesson includes the setup needed to begin independently. You will inspect real source while learning how document names, memory boundaries and editing capabilities fit together.</p>
+<p>A terminal is a window that runs written commands. PowerShell is one such terminal on Windows; Bash is common on Linux. A compiler translates C into a program your machine can run. CMake describes the build; Ninja performs the work. An SDK supplies the headers that describe a library and the compiled library files.</p>
+<p>Install a C23-capable compiler, CMake and Ninja. Install the Umicom Framework SDK containing the document and editor components. These steps assume Windows tools in C:\msys64\ucrt64\bin and SDK files in C:\umicom\installed\framework; replace those paths if your installation differs. No GTK window or broker connection is needed.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\framework-language-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\language-inspection.exe cpu.vhd app.zig CMakeLists.txt</code></pre>
+<p>On Linux, use the same lab from your checkout and your installed SDK:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/native/framework-language-inspection
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom/installed/framework&quot;
+cmake --build build
+./build/language-inspection cpu.vhd app.zig CMakeLists.txt</code></pre>
+<p>Stop if configure or build reports an error. The first output line should be <code>cpu.vhd: vhdl</code>, followed by its choice, comment style and matching filters. This program examines the name only; the named files need not exist. <a href="../../learning-c/index.html">Learning C</a> and <a href="../../learning-cmake/index.html">Learning CMake</a> provide longer setup explanations.</p>
+<h2>Paths contain more than filenames</h2>
+<p>A path tells a program where something is located. In folder/example.c, folder is a directory and example.c is the basename, the final component. Windows commonly uses backslashes; Unix-style paths use forward slashes. The Framework detector recognises both when examining a name.</p>
+<p>The suffix after the final dot often identifies a language. Searching the entire path for a dot is insufficient: a directory may contain a dot while the final filename has none.</p>
+<h2>Trace the shared implementation</h2>
+<p>Open Framework's src/document/language_detection.c.</p>
+<ol>
+<li>Locate the bounded scan that measures input up to UMI_PATH_CAPACITY.</li>
+<li>Follow the loop that updates base after each directory separator.</li>
+<li>Inspect special-name handling for CMakeLists.txt and Makefile.</li>
+<li>Find strrchr(base, '.'). It searches the basename, not an earlier directory.</li>
+<li>Read the exact-match loops before the case-insensitive fallback.</li>
+</ol>
+<p>The order matters. The exact suffix .C selects C++, while .c selects C in this registry. Folding both to lower case before the exact match would lose that distinction.</p>
+<h2>Run a table of examples</h2>
+<p>Use the names folder.with.dot/readme, main.C, main.c, cpu.SV and CMakeLists.txt. Expected identities are plain, cpp, c, systemverilog and cmake. Quote an argument that contains spaces so the terminal passes it as one name.</p>
+<p>Draw two columns before running: input and predicted identity. Compare each prediction with the first output line for that name. Remaining lines describe the catalogue, comment profile and filters.</p>
+<h2>Extend a mapping carefully</h2>
+<p>A proposed suffix needs a language ID and a regression example. Ask whether it is ambiguous in your project. The .v suffix is used here for Verilog; a project using another language with that suffix needs an explicit language selection or project policy.</p>
+<p>Keep policy in a reusable Framework service. Unknown suffixes remain plain. A name ending in a separator is not a usable file selection and the file-filter matcher rejects it.</p>
+<h2>Troubleshooting</h2>
+<p>If a known ID appears but colours do not, investigate installed syntax descriptions. If compilation fails, inspect the selected build tool and diagnostics. Neither problem is established by suffix mapping alone.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-language-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="language-catalogues-and-borrowed-data.html">Previous: Read a shared language catalogue safely</a> · <a href="language-filters-and-bounded-c-strings.html">Next: Bound a character buffer before reading it</a></p>
+</nav><p><a href="../../../lessons/umicom-development/language-basename-and-suffix-matching.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

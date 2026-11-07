@@ -1,0 +1,46 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-wt/lessons/01-browser-server-and-session.html
+
+PURPOSE:
+Browser, server and session
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Browser, server and session | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Browser, server and session</h1>
+<p>Wt is a C++ library for building web applications with server-side widgets. A browser displays the interface while a server process handles application events. This course builds a small local web application that calls the same Umicom Framework C name-validation service as the desktop lab.</p>
+<h2>Before starting</h2>
+<p>Install a C++ compiler, CMake, Ninja, Wt 4 with its HTTP connector, and a matching Umicom Framework SDK containing UmiLocalProfileNameBytes. Open a terminal in the Bits2Banking labs/framework/wt-profile directory. Follow its README for PowerShell or Bash configuration, build and launch commands. The server binds to 127.0.0.1 on port 9090 for this exercise; open http://127.0.0.1:9090/ in a browser on the same computer. Stop the server with Ctrl+C. Reading requires no account. Running requires these development tools.</p>
+<p><a href="../../../../labs/framework/wt-profile/README.md">Open the complete lab guide</a>.</p>
+<h2>Three different things</h2>
+<p>A browser displays pages and sends user actions. A server is a program that listens for requests and responds. A session groups one user's ongoing interaction so that the server can keep the right state for that interaction.</p>
+<pre><code class="language-text">browser tab -&gt; local HTTP connection -&gt; Wt application session
+                                           |
+                                           v
+                                Framework C validation</code></pre>
+<p>HTTP is a protocol: an agreed format for exchanging requests and responses. A port is a numbered endpoint used by a process that listens for network traffic. The lab uses port 9090. The address 127.0.0.1 is loopback, which refers to the same computer.</p>
+<h2>Follow startup</h2>
+<ol>
+<li>Open main.cpp.</li>
+<li>Find Wt::WRun. It starts the Wt server and uses the supplied application factory.</li>
+<li>Follow CreateProfileApplication into profile_application.cpp.</li>
+<li>Find the creation of WApplication. This owns the session's interface.</li>
+<li>Follow calls through application-&gt;root(). They add controls to that session's root container.</li>
+</ol>
+<p>The browser does not execute the Framework C function directly. An event reaches the server, which calls the function and updates the result shown to that session.</p>
+<h2>First experiment</h2>
+<p>Build and launch using the lab README. Keep the server terminal open. Open the local URL in a browser. Enter Alice_7 and choose Check name. Expect a lower-case accepted name. Stop the server and try another interaction. Observe how the browser behaves when its server is unavailable.</p>
+<p>Do not infer that a page still visible in a browser proves the server is alive. A previously rendered interface can remain visible after the process stops.</p>
+<h2>Recover from a connection failure</h2>
+<p>Check that the server process is running, the chosen port is free and the URL uses the same port. A compiler error cannot be fixed by refreshing a browser. A connection-refused error does not necessarily mean the C validation logic is wrong.</p>
+<h2>Check your understanding</h2>
+<p>Where does the C function run? In the server process. Why use a session? To associate controls and state with the correct interaction. Does a session prove who a person is? No. Authentication is an additional feature with its own rules.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/wt-profile/main.cpp">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="02-build-and-launch-the-server.html">Next: Build and launch the Wt server</a></p>
+</nav><p><a href="../../../lessons/04-web/learning-wt/01-browser-server-and-session.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

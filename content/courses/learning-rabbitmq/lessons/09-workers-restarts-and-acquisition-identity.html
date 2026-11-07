@@ -1,0 +1,68 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-rabbitmq/lessons/09-workers-restarts-and-acquisition-identity.html
+
+PURPOSE:
+Recognise a restarted worker with a delivery ticket
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recognise a restarted worker with a delivery ticket | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Recognise a restarted worker with a delivery ticket</h1>
+<p>A message is a request to perform work. This module uses a small C program and the Framework messaging service to explain how a worker keeps temporary ownership, how callbacks can become stale, and how to preserve the current work when an old callback arrives.</p>
+<h2>Prepare this lab</h2>
+<p>A terminal accepts typed commands. A source file contains a program's instructions. A compiler translates those instructions into a program. CMake describes the build; Ninja carries out the build steps; CTest runs registered checks. An SDK is a set of headers and libraries used by another program.</p>
+<p>Reading needs no account or broker. To run the exercise, install a C23 compiler, CMake 3.26 or later, Ninja and a compatible Umicom Framework SDK with its messaging component. Use the same compiler family and architecture as that SDK. The SDK must contain the delivery-ticket API described here.</p>
+<ol>
+<li>Locate the Bits2Banking repository and its <strong>labs/framework/delivery-tickets</strong> folder.</li>
+<li>Open PowerShell on Windows or Bash on Linux.</li>
+<li>Run the commands for your platform one at a time, stopping at an error. Replace the checkout and SDK paths if you installed them elsewhere.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\delivery-tickets&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+&amp; &quot;.\build\btb-delivery-tickets.exe&quot;</code></pre>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/framework/delivery-tickets
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+./build/btb-delivery-tickets</code></pre>
+<p>A missing UmicomFramework package means CMake cannot find the SDK. Check the installation prefix. An unknown ticket type or missing ticket symbol usually means the SDK is older than the example, or headers and libraries come from different installations. Select one matching SDK; do not copy individual libraries at random. The exercise uses local, deterministic clock values and performs no broker connection or financial transaction.</p>
+<p>For a fuller introduction to C syntax, use <a href="../../learning-c/index.html">Learning C</a>. You can complete the explanation below without leaving this lesson.</p>
+<h2>What you will learn</h2>
+<p>You will distinguish the name of a worker from one particular attempt to do a job. This distinction prevents a delayed callback from changing the ownership of a newer attempt.</p>
+<h2>Begin with a small job</h2>
+<p>Imagine a preview worker preparing an image for a media application. A message says which preview to prepare. The <strong>message identifier</strong> is a number identifying that job. The <strong>owner name</strong> is a readable label such as &quot;preview-worker&quot;. A <strong>lease</strong> allows that worker to own the message until a deadline.</p>
+<p>A callback is a function called later when something happens, such as a file read finishing. It can arrive after the original attempt has expired. The worker name alone cannot tell whether a callback belongs to the current attempt.</p>
+<p>Follow this timeline:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Clock value</th><th scope="col">Event</th><th scope="col">Local owner</th></tr></thead><tbody><tr><td>100</td><td>First attempt acquires message 42 for 20 units</td><td>Ticket generation 1</td></tr><tr><td>119</td><td>First attempt checks ownership</td><td>Still generation 1</td></tr><tr><td>120</td><td>First attempt expires; another attempt acquires message 42</td><td>Generation 2</td></tr><tr><td>121</td><td>Old callback tries to release generation 1</td><td>Rejected; generation 2 remains</td></tr></tbody></table></div>
+<p>The <strong>generation</strong> is an integer that changes on each successful ticket acquisition. The same message number and worker name can appear twice, while their generations differ.</p>
+<h2>Read the public value</h2>
+<pre><code class="language-c">UmiDeliveryLeaseTicket first = {0U, 0U};</code></pre>
+<p>The type contains two fields: message_id and generation. Braces initialise both to zero. The suffix U denotes an unsigned integer constant. Zero is not a valid acquired ticket. The acquire function fills the value only when it succeeds.</p>
+<p>The value is copied into the work item. It does not own the store's memory and is not a pointer into an internal record. A copied old value stays old, which is precisely what lets Framework reject it.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Find the declaration of <strong>first</strong> and <strong>replacement</strong> in main.c.</li>
+<li>Find the first acquisition at time 100.</li>
+<li>Find the acquisition at time 120. Both use &quot;preview-worker&quot;.</li>
+<li>Find the delayed release. It passes <strong>first</strong>, not <strong>replacement</strong>.</li>
+<li>Read the expected result: <strong>UMI_STATUS_PERMISSION_DENIED</strong>.</li>
+<li>Observe that the example then checks the replacement's ownership.</li>
+</ol>
+<p>Expected output includes &quot;Stale release rejected; replacement remains owned.&quot; If it reports another status, stop and check that the matching Framework SDK was installed.</p>
+<h2>Practice and answer</h2>
+<p>Why would keeping one global variable named latest_ticket be unsafe? An old callback might read the new value and release the new attempt. Keep each callback's own acquisition value in its work context instead.</p>
+<p>A ticket is not an authentication token. Any code in the process can see its integers. Its purpose is to detect accidental stale operations within a coordinated caller, not to establish trust in an unknown machine.</p>
+<h2>Summary</h2>
+<p>Message identity tells you which job. Owner identity tells you which worker name. Acquisition identity tells you which attempt. The third piece is essential when names are reused.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/delivery-tickets/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="10-trace-the-delivery-ticket-program.html">Next: Trace a complete Framework delivery-ticket program</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-rabbitmq/09-workers-restarts-and-acquisition-identity.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

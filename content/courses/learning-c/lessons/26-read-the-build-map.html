@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/lessons/26-read-the-build-map.html
+
+PURPOSE:
+Read the map from source to executable
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read the map from source to executable | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read the map from source to executable</h1>
+<p>Follow one real C program through its build stages. Every stage produces a different kind of file; understanding those files makes errors easier to locate.</p>
+<h2>Start here</h2>
+<p>A compiler turns source text into another representation. An executable is a file the operating system can start. A terminal lets you run tools by typing their names. This lab starts with supplied source; no earlier course is required.</p>
+<p>Use a text editor, a C23-capable GCC, CMake 3.26 or newer and Ninja. On Windows these commands use the MSYS2 UCRT64 tools in C:/msys64/ucrt64/bin. Open PowerShell and type:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking/labs/native/c-build-stages&quot;
+$env:Path = &quot;C:/msys64/ucrt64/bin;&quot; + $env:Path
+gcc --version</code></pre>
+<p>On Linux or another Bash environment, change to your checkout's labs/native/c-build-stages directory and run gcc --version. The commands below use forward slashes accepted by GCC on both hosts. Create the output directory once with New-Item -ItemType Directory -Force out in PowerShell, or mkdir -p out in Bash. Stop when a command reports an error.</p>
+<p>Linking needs a matching Umicom C SDK installed at C:/umicom/installed/umicom-c on Windows, or a prefix you choose on Linux. The lab README explains that one-time preparation. Preprocessing and compiling main.c do not need the SDK. <a href="../../learning-c/index.html">Learning C</a> provides a slower introduction to values and functions.</p>
+<h2>What the program does</h2>
+<p>Open main.c in your editor. The function main is where this hosted C program starts. It prepares text describing a second, very small program: int main(void) { return 6 * 7; }. LessonEvaluate compiles and runs that text through Umicom C. The outer program then prints Value: 42.</p>
+<p>There are two different execution layers. GCC builds the outer application for your processor and operating system. At runtime, Umicom C parses the inner text into a bounded instruction array and interprets it. The inner source is data until that explicit call.</p>
+<pre><code class="language-text">main.c + runner.c
+       | GCC and linker
+       v
+native application
+       | starts and calls LessonEvaluate
+       v
+embedded source -&gt; Umicom C instructions -&gt; integer result</code></pre>
+<h2>Follow the files</h2>
+<ol>
+<li>Read runner.h. A declaration tells another source file the function's name, parameter types and return type.</li>
+<li>Read runner.c. The definition contains the instructions that implement that function.</li>
+<li>Find #include &quot;runner.h&quot; in both C files. A shared declaration helps the compiler check their agreement.</li>
+<li>Find target_link_libraries in CMakeLists.txt. This connects the consumer to the existing compiler library.</li>
+<li>Build and run the lab using its README. Record the command, exit status and printed value separately.</li>
+</ol>
+<p>A header is not the compiled function body. Including runner.h lets main.c be compiled, but the linker still needs the object produced from runner.c. That object needs the Umicom C libraries in turn.</p>
+<h2>Investigate a change</h2>
+<p>Change only LESSON_FACTOR from 6 to 5 in a private copy of main.c. Predict Value: 35, then rebuild and run. If the result remains 42, check that you rebuilt the same directory and launched that output. Do not assume every executable with the same name contains the latest code.</p>
+<h2>Check your understanding</h2>
+<p>Explain which program GCC compiles and which text Umicom C compiles. Then identify the file that owns printing and the file that owns the compiler calls. Keeping those responsibilities separate is the same principle used by thin applications that call Framework services.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/c-build-stages/README.md">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="27-inspect-preprocessed-source.html">Next: Inspect the source after preprocessing</a></p>
+</nav><p><a href="../../../lessons/learning-c/26-read-the-build-map.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

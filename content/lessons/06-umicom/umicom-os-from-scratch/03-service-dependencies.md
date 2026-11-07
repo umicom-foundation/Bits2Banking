@@ -37,3 +37,7 @@ A later invalid line could leave the system partly started. Validating the whole
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/03-service-dependencies.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Build one real OS component](02-build-the-parser.md)
+
+[Next: Keep rejected state separate from recovery](04-failure-and-recovery.md)

@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/02-stacks-and-undo.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Stacks and the order of undo | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Stacks and the order of undo</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-arrays-length-and-capacity.html">Previous: Arrays, length and capacity</a> · <a href="03-queues-and-wraparound.html">Next: Queues and wraparound storage</a></p></nav><h2>Last in, first out</h2>
+<p>A stack removes the most recently added element first. This rule is called last in, first out. Imagine recording edits A, B and C: undo should first reverse C. The rule concerns ordering, not a particular screen layout.</p>
+<h2>Setup recap</h2>
+<p>Build the collections lab from <a href="../index.html">the course contents</a>. A list is an array plus a count. BtbListAppend adds at the end; BtbStackPop removes from that same end. Read <a href="../../introduction-to-programming/index.html">the programming course</a> if function parameters or return values are unfamiliar.</p>
+<h2>Work through the transitions</h2>
+<pre><code class="language-text">start        []
+append 4     [4]
+append 8     [4,8]
+pop -&gt; 8     [4]
+pop -&gt; 4     []
+pop -&gt; empty []</code></pre>
+<p>Pop has two results: a status saying whether it succeeded, and an output value supplied through a pointer. A pointer identifies storage owned by the caller.</p>
+<pre><code class="language-c">int value = 99;
+BtbResult result = BtbStackPop(&amp;list, &amp;value);</code></pre>
+<p>The &amp; operator obtains the address of an object. The caller must inspect result before using value as a popped item. On an empty stack, the implementation leaves value unchanged.</p>
+<h2>Lab</h2>
+<ol>
+<li>Read the empty check in BtbStackPop.</li>
+<li>Find where count decreases and where the previous last value is read.</li>
+<li>In test_collections.c, follow the test that pops all eight values in reverse order.</li>
+<li>Run the boundary tests after building. Check both ordering and the empty result.</li>
+<li>Draw a second stack containing 10, 20 and 30 and predict all three successful outputs.</li>
+</ol>
+<h2>Exercise and worked answer</h2>
+<p>Why must the empty check precede --count? count is unsigned. Decreasing zero wraps to a very large value, which cannot identify an array element. The status check prevents that operation rather than trying to repair it afterwards.</p>
+<h2>From stack to editor</h2>
+<p><a href="../../building-a-text-editor/index.html">The text editor project</a> starts with one saved snapshot. Extending it to many undo operations requires a history policy: maximum memory, what an entry owns, how redo behaves after a new edit, and whether large operations are grouped. Adding a stack alone does not answer those questions.</p>
+<h2>Troubleshooting and limits</h2>
+<p>BTB_EMPTY is a normal condition when no history remains. Do not display the unchanged 99 as if it were a real result. This integer stack teaches ordering; it does not own text buffers or allocate undo records. Framework's document coordinator is the production place to investigate richer editor ownership.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/collections/collections.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-arrays-length-and-capacity.html">Previous: Arrays, length and capacity</a> · <a href="03-queues-and-wraparound.html">Next: Queues and wraparound storage</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

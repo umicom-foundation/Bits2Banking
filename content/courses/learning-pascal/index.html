@@ -1,0 +1,69 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-pascal/index.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Learning Pascal | Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Courses</a><a href="../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><section id="ordered-course-modules"><h1>Learning Pascal</h1><p>Start with the first module and follow its lessons in order. Later project modules build on the earlier ideas. Each exercise identifies the source files, setup, expected result and recovery steps; keep your practice work in a separate folder.</p><p><a href="../learning-paths.html">Find prerequisite courses</a></p><section><h2>Values, records and units</h2><p>Compile a first programme, then group values and share checked functions.</p><ol><li><a href="lessons/01-write-and-run-a-program.html">Write and run a Pascal program</a></li><li><a href="lessons/02-values-functions-and-validation.html">Values, functions and input validation</a></li><li><a href="lessons/03-loops-and-checkable-results.html">Loops and checkable results</a></li><li><a href="lessons/04-group-values-in-records.html">Group related values in a record</a></li><li><a href="lessons/05-share-a-unit-and-preserve-state.html">Share a unit and preserve state on failure</a></li></ol></section><section><h2>Project: a course notebook</h2><p>Apply bounded arrays, text validation and reusable units to independent course records.</p><ol><li><a href="lessons/06-build-a-course-notebook.html">Build a small course notebook</a></li><li><a href="lessons/07-distinguish-capacity-from-count.html">Distinguish array capacity from occupied entries</a></li><li><a href="lessons/08-translate-public-course-numbers.html">Translate a public number into an array index</a></li><li><a href="lessons/09-validate-text-before-storage.html">Validate a name before bounded storage</a></li><li><a href="lessons/10-reuse-a-unit-through-composition.html">Reuse progress arithmetic through a unit</a></li><li><a href="lessons/11-preserve-results-on-refusal.html">Preserve caller state when an operation is refused</a></li><li><a href="lessons/12-check-each-course-independently.html">Check that one course cannot change another</a></li><li><a href="lessons/13-design-the-next-persistence-step.html">Design saving before adding file writes</a></li></ol></section></section><!-- The ordered module guide is the primary navigation. Earlier explanations and links remain available below so existing reading routes and references are retained. --><details><summary>Additional explanations and reference links</summary><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Learning Pascal</h1><h2>About this course</h2>
+<p>Write, compile and check Pascal console programs using values, decisions, functions and loops.</p>
+<h2>Before you begin</h2>
+<p>No knowledge of Pascal or another programming language is assumed.</p>
+<h2>Reading order</h2>
+<ol>
+<li><a href="lessons/01-write-and-run-a-program.html">Write and run a Pascal program</a></li>
+<li><a href="lessons/02-values-functions-and-validation.html">Values, functions and input validation</a></li>
+<li><a href="lessons/03-loops-and-checkable-results.html">Loops and checkable results</a></li>
+<li><a href="lessons/04-group-values-in-records.html">Group related values in a record</a></li>
+<li><a href="lessons/05-share-a-unit-and-preserve-state.html">Share a unit and preserve state on failure</a></li><li><a href="lessons/06-build-a-course-notebook.html">Build a small course notebook</a></li><li><a href="lessons/07-distinguish-capacity-from-count.html">Distinguish array capacity from occupied entries</a></li><li><a href="lessons/08-translate-public-course-numbers.html">Translate a public number into an array index</a></li><li><a href="lessons/09-validate-text-before-storage.html">Validate a name before bounded storage</a></li><li><a href="lessons/10-reuse-a-unit-through-composition.html">Reuse progress arithmetic through a unit</a></li><li><a href="lessons/11-preserve-results-on-refusal.html">Preserve caller state when an operation is refused</a></li><li><a href="lessons/12-check-each-course-independently.html">Check that one course cannot change another</a></li><li><a href="lessons/13-design-the-next-persistence-step.html">Design saving before adding file writes</a></li>
+</ol>
+<h2>Install and check the tools</h2>
+<ol>
+<li>Download Free Pascal for your operating system from <a href="https://www.freepascal.org/download.html">the official download page</a>. Follow the installation notes for that package.</li>
+<li>Open PowerShell on Windows or a terminal on Linux. Type fpc -iV. Expect a compiler version. If the command is missing, locate the installed fpc executable and add its containing bin directory to PATH using the installation instructions. Do not guess another machine's installation path.</li>
+<li>Obtain Bits2Banking in a folder you choose. With Git installed, a Windows example is:</li>
+</ol>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force &quot;C:\umicom&quot;
+Set-Location &quot;C:\umicom&quot;
+git clone https://github.com/umicom-foundation/Bits2Banking.git Umicom-Bits2Banking</code></pre>
+<p>Skip cloning if your checkout already exists. The examples live in labs/languages/pascal-progress. Open hello.pas and progress.pas in a plain text editor.</p>
+<h2>Compile without another build tool</h2>
+<p>Make a new practice directory and copy the two Pascal files there. Compile from that directory so object files do not appear beside your learning sources.</p>
+<pre><code class="language-powershell">fpc -Mobjfpc -Cr -Co hello.pas
+.\hello.exe
+fpc -Mobjfpc -Cr -Co progress.pas
+.\progress.exe 2
+$LASTEXITCODE</code></pre>
+<p>In Bash the compiler commands are identical; launch with ./hello and ./progress 2, then inspect echo $?. Stop if compilation fails. -Cr enables range checks and -Co enables overflow checks. These checks aid diagnosis; they do not prove all program behaviour correct.</p>
+<p>Expect Welcome to Learning Pascal. from hello. progress 2 prints Remaining: 3 and three numbered practice lines.</p>
+<h2>Build and check the complete lab</h2>
+<p>Install CMake 3.24 or newer and Ninja for your operating system. They organise the examples and process checks; Free Pascal remains the language compiler. From the Bits2Banking repository in PowerShell:</p>
+<pre><code class="language-powershell">cmake -S labs/languages/pascal-progress -B build/pascal-progress -G Ninja -DBUILD_TESTING=ON
+cmake --build build/pascal-progress --parallel 2
+ctest --test-dir build/pascal-progress --output-on-failure --no-tests=error
+&amp; &quot;.\build\pascal-progress\progress.exe&quot; 2</code></pre>
+<p>In Bash:</p>
+<pre><code class="language-bash">cmake -S labs/languages/pascal-progress -B build/pascal-progress -G Ninja -DBUILD_TESTING=ON
+cmake --build build/pascal-progress --parallel 2
+ctest --test-dir build/pascal-progress --output-on-failure --no-tests=error
+./build/pascal-progress/progress 2</code></pre>
+<p>Run commands separately. CMake must find fpc on PATH. A failed configuration does not produce a usable build. A test failure needs investigation even when compilation succeeded.</p>
+<h2>Reference and recovery</h2>
+<p>The <a href="https://www.freepascal.org/docs.html">Free Pascal manuals</a> explain the compiler and language. The <a href="https://www.freepascal.org/docs-html/rtl/system/val.html">Val documentation</a> defines conversion results and supported numeric formats. Our exercises use decimal counts. A rejected abc input is expected; an unexpected crash is not.</p>
+<p>This course uses Pascal to teach Pascal concepts. Shared application engines remain in Umicom Framework. No Pascal runtime is being introduced into those applications.</p>
+<h2>What to practise next</h2>
+<p>Extend the progress program with named practice items after learning arrays. Use the existing examples to keep conversion, validation and presentation separate.</p>
+<h2>Scope</h2>
+<p>These are introductory chapters and practical labs. Further topics remain to be developed. Successful reading or compilation alone does not establish runtime correctness; compare expected results with your own checks.</p>
+</article></details>
+<section id="offline-course"><h2>Read this course in Umicom Studio IDE</h2><p>The <a href="../../../learning-packs/learning-pascal.json">offline course manifest</a> identifies the HTML lessons and their Markdown manuscripts. Keep the Bits2Banking folder intact, then choose this manifest in the learning catalogue. The reader checks the files before opening them.</p><p><a href="../../../learning-packs/index.html">Follow the offline course setup guide</a> for the folder, manifest path and version checks.</p></section>
+</main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/16-check-assembly-with-a-c-oracle.html
+
+PURPOSE:
+Explain the lesson: Check Assembly with a C reference.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check Assembly with a C reference | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-inspect-unresolved-call-symbols.html">Previous lesson</a></nav>
+<h1>Check Assembly with a C reference</h1>
+<p>A reference implementation provides an expected result against which another implementation can be compared. It is useful when the two implementations are simple enough to inspect independently.</p>
+<h2>Prepare</h2>
+<p>Read check.c. The README gives a RISC-V Linux cross-build and QEMU user-mode command. The harness uses a C library to print failed checks, so it needs the matching Linux toolchain and libraries.</p>
+<p>The object-only route does not provide that runtime.</p>
+<h2>Read the expectations</h2>
+<p>The harness checks zero-length summation, unsigned wrap, signed and unsigned minima, rotations and parity.</p>
+<p>For rotation it tries several revealing words and distances from zero through 129. This crosses two full 64-bit rotation periods and their boundaries.</p>
+<p>For parity, the C reference counts set bits rather than copying the Assembly's toggle loop.</p>
+<h2>Exercise</h2>
+<p>Choose one test and explain why it would fail after a specific defect. For example, replacing a logical right shift with an arithmetic shift can change behavior for values with the highest bit set.</p>
+<p>Then identify something the test does not establish. Returning correct values does not prove memory safety for invalid pointers outside the stated contract.</p>
+<h2>Run and record</h2>
+<p>After building successfully, run the harness. Expected success text is RISC-V sequence checks passed. Preserve the exit status, compiler version, emulator version and source revision with your result.</p>
+<p>These are authored checks; their existence is not evidence that they have run.</p>
+<h2>Recover thoughtfully</h2>
+<p>If a comparison fails, trace the smallest failing input. Check the reference too: two implementations can share a mistake, and a reference can be wrong.</p>
+<p>Use explicit boundary values and paper traces alongside comparison tests. Each provides different evidence about the same function contract.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/check.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-inspect-unresolved-call-symbols.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv-assembly/16-check-assembly-with-a-c-oracle.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cpp/lessons/06-test-a-language-boundary.html
+
+PURPOSE:
+Explain the lesson: Check a language boundary with explicit cases.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check a language boundary with explicit cases | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-call-a-framework-c-boundary.html">Previous lesson</a></nav>
+<h1>Check a language boundary with explicit cases</h1>
+<h2>The same declaration must work for every caller</h2>
+<p>A boundary test checks the contract seen from the consuming language. The activity model already has C checks. This C++ test adds a different observation: C++ can include the bridge header, link the C implementation and interpret its results correctly.</p>
+<h2>Setup recap</h2>
+<p>Open the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/cpp-activity-client/README.md">C++ activity lab</a>. Use matching C/C++ compilers and the Framework SDK. Configure with BUILD_TESTING=ON. If you only want to read the exercise, no compiler is required.</p>
+<h2>Read the case table</h2>
+<p>Each Case stores a current count and the expected returned value. The table includes zero, the last successful increment, a full model, a negative value and the largest and smallest int values.</p>
+<p>These cases explain the boundary:</p>
+<ul>
+<li>0 becomes 1.</li>
+<li>999 becomes 1000.</li>
+<li>1000 cannot be incremented by this model.</li>
+<li>Negative values are rejected before conversion to the unsigned model representation.</li>
+<li>Extreme representable values must not wrap into a valid-looking count.</li>
+</ul>
+<p>A range-based for loop visits every Case. The loop compares the actual result with the expected result and returns failure when they differ.</p>
+<h2>Lab</h2>
+<ol>
+<li>Build the lab.</li>
+<li>Run <code>ctest --test-dir build --output-on-failure --no-tests=error</code>.</li>
+<li>Identify the case that proves zero is accepted.</li>
+<li>Identify the case that rejects capacity exhaustion.</li>
+<li>Compare test_client.cpp with the C adapter test.</li>
+<li>In a practice copy, omit the C library from the link command. Observe that a header can compile while the final executable fails to link. Restore the original build definition.</li>
+</ol>
+<p>Keep deliberate experiments outside the source used for a delivery.</p>
+<h2>Why explicit limits matter</h2>
+<p>An integer's range is finite. <code>INT_MIN</code> and <code>INT_MAX</code> describe the limits of this implementation's int type. Using those names avoids assuming a decimal width in the C++ source.</p>
+<p>The adapter accepts only the activity range even when int can represent much more. Representation and business rules are different checks, and both must hold.</p>
+<h2>Exercise and explanation</h2>
+<p>Does this test prove Android JNI integration works? No. It tests the C++ boundary. JNI adds its own function naming, library loading and platform requirements. Reuse the model tests, then qualify each adapter.</p>
+<h2>Record evidence</h2>
+<p>Save the compiler versions, Framework SDK revision, command and result. A passing test against one SDK does not automatically qualify a different SDK or a mobile build. The source here is authored coverage until those commands are executed.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/cpp-activity-client/test_client.cpp">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-call-a-framework-c-boundary.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-cpp/06-test-a-language-boundary.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

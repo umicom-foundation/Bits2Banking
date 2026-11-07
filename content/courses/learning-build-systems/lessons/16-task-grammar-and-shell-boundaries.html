@@ -1,0 +1,61 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/16-task-grammar-and-shell-boundaries.html
+
+PURPOSE:
+Understand the task grammar and the shell boundary
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand the task grammar and the shell boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Understand the task grammar and the shell boundary</h1>
+<p>A build button must translate a developer's request into a precise program and a list of arguments. This module follows that translation through Umicom Framework, using a small C exercise to examine spaces, quotation marks, empty arguments and rejected edits.</p>
+<h2>Prepare the exercise</h2>
+<p>A terminal is a window that accepts typed commands. A compiler translates C source into an executable program. CMake describes the build, Ninja carries out the build steps, and CTest runs the checks registered by that build. An SDK supplies the headers and compiled libraries that a program uses.</p>
+<p>Reading requires no installation. For the practical work, use a C23 compiler, CMake 3.26 or newer, Ninja, and a matching Umicom Framework SDK that exports the developer component and the exact-span command parser. Use the same architecture and compiler family as the SDK.</p>
+<ol>
+<li>Find the Bits2Banking checkout and open its <strong>labs/framework/command-arguments</strong> folder.</li>
+<li>Open PowerShell on Windows or Bash on Linux.</li>
+<li>Run one command at a time. Stop and read the message if a command fails.</li>
+<li>Replace the example paths with the locations you chose for the checkout and SDK.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\command-arguments&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+&amp; &quot;.\build\btb-command-arguments.exe&quot;</code></pre>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/framework/command-arguments
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+./build/btb-command-arguments</code></pre>
+<p>If CMake cannot find UmicomFramework, check the SDK prefix. If the compiler cannot find the parser declaration, or the linker cannot find its symbol, select one SDK containing the new header and its matching library. Do not combine files from different SDK installations. This exercise prints a plan; it does not start a compiler or execute text entered by a user.</p>
+<p>For a longer introduction to functions and strings, see <a href="../../learning-c/index.html">Learning C</a>. The concepts needed for this exercise are explained below.</p>
+<h2>Two interpreters with different jobs</h2>
+<p>A <strong>shell</strong> is a command interpreter such as PowerShell or Bash. It can perform operations beyond starting one program: variables, pipelines and redirection are examples. A task parser can instead produce a literal list of arguments without performing those operations.</p>
+<p>Framework's compatibility task format groups text with single or double quotes. A backslash escapes another backslash, either quote, or whitespace. Other backslashes are literal, which is useful in ordinary Windows paths. This is the established Framework task grammar; do not assume every PowerShell or Bash quoting rule applies.</p>
+<h2>Work through the examples</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Task text</th><th scope="col">Result</th></tr></thead><tbody><tr><td>compiler &quot;source file.c&quot;</td><td>One argument containing a space</td></tr><tr><td>compiler source\ file.c</td><td>The escaped space stays in the argument</td></tr><tr><td>compiler before&quot;&quot;after</td><td>One argument: beforeafter</td></tr><tr><td>compiler &quot;a</td><td>b&quot;</td><td>One literal argument containing a vertical bar</td></tr><tr><td>compiler a</td><td>b</td><td>Parse error</td></tr><tr><td>compiler &quot;$HOME&quot;</td><td>Literal dollar sign and letters; no variable expansion</td></tr></tbody></table></div>
+<p>The quotation marks in this table belong to the task text. When writing that text as a C string literal, escape embedded double quotes for the C compiler.</p>
+<h2>A parser is not an authorization system</h2>
+<p>Rejecting unquoted operators prevents accidental interpretation of task text as a shell expression. It does not make every executable or every argument safe. A task could explicitly name a shell, a downloader or a destructive tool.</p>
+<p>Before execution, the application still needs to establish what the user authorized, which executable will run, its working directory, its environment and its permissions. Do not place passwords or access tokens in task text: process arguments and diagnostic logs may expose them.</p>
+<h2>Follow the next boundary</h2>
+<ol>
+<li>Open Framework's platform process source.</li>
+<li>On POSIX hosts, find where argument pointers are assembled into an array ending with a null pointer.</li>
+<li>On Windows, read <strong>process_windows_arguments.inc</strong>. It quotes the literal arguments for the Windows C runtime convention, including an empty string.</li>
+<li>Keep parsing separate from encoding for the operating system. Parsing decides what the arguments are; encoding transports those already chosen values.</li>
+</ol>
+<p>The platform adapter supports specific process-launch paths. Review the selected path when introducing a new tool, especially a script interpreter. Do not rebuild a shell command by concatenating the parsed strings in application code.</p>
+<h2>Check your understanding</h2>
+<p>Why does a quoted vertical bar not create a pipeline here? It remains data passed to a program. Could that program interpret the data itself? Yes. Each receiving component needs an explicit contract.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../../Umicom-Applications/framework/src/developer/command_line.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="15-transactional-command-edits.html">Previous: Keep the previous plan when a command edit is invalid</a> · <a href="17-command-planning-regression-lab.html">Next: Investigate command failures through focused regression checks</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-build-systems/16-task-grammar-and-shell-boundaries.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

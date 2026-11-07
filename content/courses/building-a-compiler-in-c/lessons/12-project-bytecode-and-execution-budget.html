@@ -1,0 +1,52 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/12-project-bytecode-and-execution-budget.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Project: inspect bytecode and bound execution | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Project: inspect bytecode and bound execution</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="11-project-a-small-language.html">Previous: Project: specify and run a small language</a></p></nav><h2>Store the result of compilation</h2>
+<p>Bytecode is a file representation of instructions for a virtual machine. Saving it separates compilation from execution. This lesson uses a four-instruction program so that the execution limit is easy to reason about.</p>
+<h2>Prepare</h2>
+<p>Build Umicom C using its docs/execution-guide.md. Review <a href="../index.html">the compiler course</a> if tokens or stacks are unfamiliar. Open labs/languages/umicom-c-project/budget.uc:</p>
+<pre><code class="language-c">int main(void) { return 6 * 7; }</code></pre>
+<p>Use a new output filename in a practice folder. Compilation refuses an existing output path, so a repeat attempt needs another name.</p>
+<h2>Predict the instructions</h2>
+<pre><code class="language-text">instruction       temporary values
+push 6            [6]
+push 7            [6, 7]
+multiply          [42]
+return            result 42</code></pre>
+<p>A stack stores temporary values with the most recently pushed value available first. Multiplication consumes two operands and produces one value.</p>
+<h2>Compile, inspect and execute</h2>
+<p>From the Umicom C checkout in PowerShell, after creating your practice directory:</p>
+<pre><code class="language-powershell">&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; compile &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\umicom-c-project\budget.uc&quot; &quot;C:\umicom\practice\budget-first.umcb&quot;
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; disassemble &quot;C:\umicom\practice\budget-first.umcb&quot;
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; exec &quot;C:\umicom\practice\budget-first.umcb&quot; --max-steps 4</code></pre>
+<p>Disassembly displays instructions in readable form. Compare the displayed operations with the four-step trace. Successful execution should print Result: 42 and Instructions: 4.</p>
+<p>Bash uses the same subcommands:</p>
+<pre><code class="language-bash">./build/native-debug/bin/umicom-c compile ../Umicom-Bits2Banking/labs/languages/umicom-c-project/budget.uc ./budget-first.umcb
+./build/native-debug/bin/umicom-c disassemble ./budget-first.umcb
+./build/native-debug/bin/umicom-c exec ./budget-first.umcb --max-steps 4</code></pre>
+<p>Stop if a command fails; later commands should not accidentally use an older file.</p>
+<h2>Observe a deliberate failure</h2>
+<p>Run exec again with --max-steps 3. The machine can calculate 42 but cannot execute the return instruction within that budget. Expect a failed execution. Inspect $LASTEXITCODE in PowerShell or echo $? in Bash immediately afterwards.</p>
+<p>An instruction budget is a limit on counted operations. It is not a complete security sandbox, a wall-clock deadline or proof that all host resources are bounded.</p>
+<h2>Exercise and answer</h2>
+<p>Why must three steps fail even though 42 is on the stack? Returning is part of the program's defined completion. Stopping early cannot be reported as a completed run.</p>
+<h2>Compare the two routes</h2>
+<p>Run budget.uc directly and execute its compiled file. Both should produce the same result under a sufficient budget. The compiler repository's round-trip tests exercise that relationship across more examples.</p>
+<h2>Extend the project responsibly</h2>
+<p>Before adding a language feature, specify its syntax, value rules, invalid cases and expected instructions. Add focused tests, then update the parser and execution support. Keep one language implementation in Umicom C and share its integration through the existing Framework interfaces.</p>
+<h2>Source map</h2>
+<p>Read <code>umicom-c/src/bytecode.c</code> in the Umicom C checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="11-project-a-small-language.html">Previous: Project: specify and run a small language</a></p></nav><nav aria-label="Next lesson"><a rel="next" href="13-build-an-instruction-viewer.html">Next: Build an instruction viewer</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

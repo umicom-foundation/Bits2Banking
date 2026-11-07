@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/16-check-canonical-virtual-addresses.html
+
+PURPOSE:
+Explain the lesson: Check canonical virtual addresses.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check canonical virtual addresses | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-follow-a-three-level-page-walk.html">Previous lesson</a> · <a rel="next" href="17-model-read-write-and-execute-permissions.html">Next lesson</a></nav>
+<h1>Check canonical virtual addresses</h1>
+<h2>Prepare</h2>
+<p>Open <code>labs/native/sv39-address-translation/sv39.h</code>, <code>sv39.c</code> and <code>main.c</code> in a text editor. This lab calculates addresses in ordinary C arrays. It does not change your computer's memory mappings. Hexadecimal uses digits 0–9 and A–F; <code>0x1000</code> is 4096 in decimal.</p>
+<h2>Understand the idea</h2>
+<p>The model checks that the high bits of a 64-bit address agree with bit 38. This makes some bit patterns valid addresses and others invalid before any table lookup. The check is in <code>CanonicalSv39</code>; it is separate from whether a valid address actually has a mapping.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Trace <code>0x0000000040201000</code>: bit 38 and the upper bits are zero.</li>
+<li>Trace <code>0xffffffc000201000</code>: bit 38 and the upper bits are one.</li>
+<li>Trace <code>0x0000008000000000</code>: the upper group is nonzero while bit 38 is zero.</li>
+<li>Read the corresponding cases in <code>test_sv39.c</code>.</li>
+</ol>
+<p>The architectural reference is the <a href="https://docs.riscv.org/reference/isa/_attachments/riscv-privileged.pdf">RISC-V privileged specification</a>.</p>
+<h2>Check your reasoning</h2>
+<p>The first two patterns are canonical; the third is refused as an invalid address. Canonical does not mean mapped or permitted.</p>
+<h2>If something differs</h2>
+<p>Do not repair an invalid address by silently masking its high bits. That could turn a bad input into access to a different address.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/sv39-address-translation/sv39.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-follow-a-three-level-page-walk.html">Previous lesson</a> · <a rel="next" href="17-model-read-write-and-execute-permissions.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/16-check-canonical-virtual-addresses.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/17-refuse-a-partial-statement-import.html
+
+PURPOSE:
+Refuse a partial statement import
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Refuse a partial statement import | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Refuse a partial statement import</h1>
+<p>Learn how a banking client turns imported observations into a review that can be explained, checked and reopened. Follow one small program that calls the shared Framework services.</p>
+<p>This laboratory is a small C program. A compiler translates its source into an executable; CMake describes the build and Ninja runs the required build steps. Use an installed Umicom Framework SDK containing the bank_feed component, a C23 compiler, CMake and Ninja from the same toolchain. On Windows, open PowerShell and use the UCRT64 tools. An SDK is a set of headers and libraries used by another program; these commands consume it rather than rebuild Framework.</p>
+<ol>
+<li>Open PowerShell.</li>
+<li>Enter the commands below, using your installed SDK directory if it differs.</li>
+<li>Read the configure result before building. If CMake cannot find UmicomFrameworkConfig.cmake or the bank_feed component, install the matching SDK first; do not replace the library with a local imitation.</li>
+<li>Run the executable, then the registered laboratory check. A failing check prints its source line and exits with a nonzero status.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\statement-review&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/applications&quot; -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+&amp; &quot;.\build\btb-statement-review.exe&quot;
+ctest --test-dir build --output-on-failure --no-tests=error</code></pre>
+<p>On Linux, use the same source and an SDK built for Linux. In Bash, run cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/your/sdk/path -DBUILD_TESTING=ON, then cmake --build build, ./build/btb-statement-review and ctest --test-dir build --output-on-failure --no-tests=error. Replace /your/sdk/path with the actual installation directory. Windows libraries cannot be linked into a Linux executable.</p>
+<p>Open main.c in a text editor to follow the calls. The program uses fictional observations held in memory; it does not connect to a bank or change any account. The <a href="../../../learning-c/index.html">Learning C course</a> explains declarations and control flow in more depth.</p>
+<h2>A later bad row must not become a quiet omission</h2>
+<p>A parser may read several valid records before reaching an invalid one. Returning the earlier records as though the whole statement succeeded would hide missing evidence. The Framework CSV import contract refuses the complete import and clears its output handle when a record is invalid.</p>
+<p>The lab copies its character array into damaged. sizeof(observations) gives the full array size, including its final zero. memcpy copies exactly that many bytes into an array of the same size. The original observations stay unchanged.</p>
+<p>strstr finds the text PDNG in this known teaching fixture. It returns a pointer to the match or NULL when absent. The code checks the pointer before writing. It then replaces those four bytes with FAIL, a deliberately unsupported status value. This use of strstr is a fixture mutation, not a CSV parser for production input.</p>
+<h2>Read the failure checks</h2>
+<ol>
+<li>Import damaged with the same explicit byte length as the original.</li>
+<li>Require a status other than UMI_STATUS_OK.</li>
+<li>Require rejected to remain NULL.</li>
+<li>Continue using the separate, valid copy retained earlier.</li>
+</ol>
+<p>The failed import must not destroy or mutate another object the caller already owns. This separation allows an application to keep a currently reviewed statement while reporting why a newly selected file could not be imported.</p>
+<h2>Output preservation and user experience</h2>
+<p>A failure message should identify the failed operation and, when available, the logical record and column. Quoted CSV records can span physical lines, so a record number is not always a text editor line number. Some whole-input checks, such as invalid UTF-8 or forbidden control bytes, happen before row parsing and may have no specific record coordinate.</p>
+<p>Do not print confidential row contents into a general diagnostic log. A useful log can record the status, coordinates, import size and a user-approved evidence identity without copying account descriptions or balances.</p>
+<h2>Exercise</h2>
+<p>Change the malformed status back to PDNG in your exercise copy. Import should then succeed, so the deliberate-failure check should fail. This confirms that the check actually distinguishes its intended bad input from valid data.</p>
+<p>For an application regression, also retain a known valid review, attempt a malformed replacement, and verify that the user can still inspect the original review. Clearing the entire screen on any import error would discard useful working context.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../../labs/framework/statement-review/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="16-own-and-reopen-a-review.html">Previous: Own and reopen a review</a> · <a href="18-qualify-the-statement-client.html">Next: Qualify the statement client</a></p>
+</nav><p><a href="../../../lessons/07-practical-domains/framework-and-finance/banking-and-payments/17-refuse-a-partial-statement-import.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,84 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/index.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Building a Text Editor in C | Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Courses</a><a href="../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Building a Text Editor in C</h1><h2>About this course</h2>
+<p>Build a small console editor from a text buffer through insertion, deletion, undo and saving to a chosen path.</p>
+<h2>Before you begin</h2>
+<p>You should recognise C variables and functions. The project introduces arrays, byte positions and file operations as they are needed.</p>
+<h2>Reading order</h2>
+<ol>
+<li><a href="lessons/01-plan-a-small-editor.html">Plan a small editor with a testable model</a></li>
+<li><a href="lessons/02-insert-and-erase-text.html">Insert and erase text without losing the tail</a></li>
+<li><a href="lessons/03-undo-and-save-to-a-chosen-path.html">Undo and save to a chosen path</a></li>
+<li><a href="lessons/04-test-the-whole-editing-session.html">Test the model and the whole editing session</a></li><li><a href="lessons/05-open-an-existing-document.html">Open an existing document without losing work</a></li><li><a href="lessons/06-load-into-a-private-candidate.html">Load into a private candidate before replacing state</a></li><li><a href="lessons/07-recognise-line-endings-and-eof.html">Recognise line endings and end of file</a></li><li><a href="lessons/08-check-failure-state-and-command-results.html">Check failure state and command results</a></li>
+</ol>
+<h2>Prepare a development environment</h2>
+<p>A compiler translates C source. CMake describes which files belong to a program. Ninja performs the build work. CTest runs registered checks. An editor changes the source text. You may use a plain text editor before learning an IDE.</p>
+<h3>Windows with PowerShell</h3>
+<ol>
+<li>Install MSYS2 from <a href="https://www.msys2.org/">its official installation guide</a>. Use the UCRT64 environment described in <a href="https://www.msys2.org/docs/environments/">the environment guide</a>.</li>
+<li>In the MSYS2 UCRT64 terminal, follow its update instructions, then install the C tools:</li>
+</ol>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja git</code></pre>
+<ol>
+<li>Obtain the Bits2Banking repository. If it is already present, use that checkout; do not clone into it again. In the MSYS2 terminal, an example new location is:</li>
+</ol>
+<pre><code class="language-bash">mkdir -p /c/umicom
+git clone https://github.com/umicom-foundation/Bits2Banking.git /c/umicom/Umicom-Bits2Banking</code></pre>
+<ol>
+<li>Open PowerShell and add the tools to that terminal's PATH. PATH is the list of directories searched for commands.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+gcc --version
+cmake --version
+ninja --version</code></pre>
+<ol>
+<li>Read the files under labs/native/text-editor. Run one command at a time and stop on an error. Check $LASTEXITCODE immediately after a native command; zero reports success.</li>
+</ol>
+<pre><code class="language-powershell">cmake -S labs/native/text-editor -B build/text-editor -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/text-editor --parallel 2
+ctest --test-dir build/text-editor --output-on-failure --no-tests=error
+&amp; &quot;.\build\text-editor\btb-text-editor.exe&quot;</code></pre>
+<h3>Linux with Bash</h3>
+<ol>
+<li>Install Git, a C compiler with the required C23 mode, CMake 3.24 or newer, and Ninja using your distribution's documented package manager. Package names and compiler versions vary.</li>
+<li>Clone into a new folder if needed:</li>
+</ol>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom&quot;
+cd &quot;$HOME/umicom&quot;
+git clone https://github.com/umicom-foundation/Bits2Banking.git Umicom-Bits2Banking
+cd Umicom-Bits2Banking</code></pre>
+<ol>
+<li>Check cc --version, cmake --version and ninja --version. If you choose a different compiler, configure a new build directory with -DCMAKE_C_COMPILER set to that compiler.</li>
+<li>Run each command separately and stop on a failure. echo $? immediately afterwards displays the previous result.</li>
+</ol>
+<pre><code class="language-bash">cmake -S labs/native/text-editor -B build/text-editor -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/text-editor --parallel 2
+ctest --test-dir build/text-editor --output-on-failure --no-tests=error
+./build/text-editor/btb-text-editor</code></pre>
+<h2>Understand the result</h2>
+<p>The editor prints its command summary and waits for input. Type append Hello, then show, then discard on separate lines. Expect TEXT: Hello. This is a bounded ASCII console lab with one-level undo, not a graphical production editor. The -S argument selects source; -B selects a separate build directory. Building again in that same directory normally updates changed inputs and their dependencies. Testing is a separate step. A successful compile does not establish that the tests or a user workflow passed.</p>
+<h2>If setup fails</h2>
+<p>A missing command means its tool is not installed or not on PATH. A compiler-mode error means you need a compiler that supports the requested C mode. A missing build.ninja file means configuration did not finish successfully. Read the first diagnostic before repeating later commands. Keep source separate from generated build files.</p>
+<p>For a slower explanation, use <a href="../learning-c/index.html">Learning C</a>. The <a href="https://cmake.org/cmake/help/latest/manual/cmake.1.html">CMake command manual</a> explains configuration and build options.</p>
+<h2>What to practise next</h2>
+<p>Use <a href="../safer-c-programming/index.html">Safer C Programming</a> to review the buffer and file-operation boundaries. Then return to chapter 3 to trace the Framework document APIs before planning a graphical editor. The <a href="../building-a-compiler-in-c/index.html">compiler course</a> offers a separate language project when you are ready to study parsing.</p>
+<h2>Scope</h2>
+<p>These are introductory chapters and practical labs. Further topics remain to be developed. Successful reading or compilation alone does not establish runtime correctness; compare expected results with your own checks.</p>
+</article>
+<section id="offline-course"><h2>Read this course in Umicom Studio IDE</h2><p>The <a href="../../../learning-packs/building-a-text-editor.json">offline course manifest</a> identifies the HTML lessons and their Markdown manuscripts. Keep the Bits2Banking folder intact, then choose this manifest in the learning catalogue. The reader checks the files before opening them.</p><p><a href="../../../learning-packs/index.html">Follow the offline course setup guide</a> for the folder, manifest path and version checks.</p></section>
+</main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

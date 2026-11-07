@@ -124,3 +124,5 @@ The host application still needs to identify the correct previous run and enviro
 Build, test and investigate a change · Lesson 1 of 5.
 
 [Next: Read build and test evidence](08-read-build-and-test-evidence.md)
+
+[Previous: Introduction to GTK4](05-introduction-to-gtk4.md)

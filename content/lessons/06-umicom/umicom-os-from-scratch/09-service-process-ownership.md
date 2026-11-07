@@ -54,3 +54,7 @@ The tests are intended to check rejection of automatic reaping, read-only or clo
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/09-service-process-ownership.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Understand why a process ID is not ownership](10-understand-why-a-process-id-is-not-ownership.md)
+
+[Previous: Verify the guest environment](08-guest-environment.md)

@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/04-check-a-ledger-invariant.html
+
+PURPOSE:
+  Present "Check a ledger invariant" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check a ledger invariant | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Check a ledger invariant</h1>
+<p>An invariant is a rule expected to remain true while a program works. The Java ledger example checks one such rule: total debits equal total credits. We will find what that check proves and what additional validation it needs.</p>
+<p>Source to open: <code>Umicom-Bits2Banking/content/labs/java-ledger/LedgerDemo.java</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath 'content\labs\java-ledger\LedgerDemo.java'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' 'content/labs/java-ledger/LedgerDemo.java'</code></pre>
+<h2>Understand the idea</h2>
+<p>A Posting record groups an account name, debit and credit. BigDecimal represents decimal values with explicit precision and scale; adding values produces another value. IsBalanced accumulates both sides and uses compareTo so numerical equality does not depend on whether a value was written as 25.1 or 25.10. Arithmetic balance is only one part of a valid journal.</p>
+<pre><code class="language-text">postings → sum debit / sum credit → numerical equality
+                  ↑
+       account and currency admission are separate checks</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Read the two postings in main. Write debit and credit columns on paper and add them independently.</li><li>Change only one credit in your paper example from 25.10 to 25.09. Compute the difference before predicting the result.</li><li>Consider an empty list, two negative matching amounts, and an unknown account name. Follow IsBalanced to see which cases it can reject.</li><li>Write a validation checklist for a future adapter: recognised accounts, one currency or an explicit conversion, permitted signs, nonempty journal and balanced totals. Keep this separate from the simple addition rule.</li></ol>
+<h2>Expected result</h2>
+<p>The supplied example balances at 25.10 on each side. The changed-credit example does not. The addition loop alone can accept an empty list because both totals begin at zero.</p>
+<h2>If the result differs</h2>
+<p>If a learner uses binary floating-point for decimal money, small representation differences may confuse comparisons. Retain BigDecimal and inspect how input values are constructed. A balanced result still requires business validation.</p>
+<h2>Explain it yourself</h2>
+<p>Could two equal but incorrectly assigned amounts pass IsBalanced?</p>
+<details><summary>Worked explanation</summary><p>Yes. Equal totals do not prove the right accounts were used, that a payment occurred, or that an entry was authorised. Tests should cover each rule independently and then the full posting workflow.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="03-values-methods-and-checks.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+<nav aria-label="Continue this course"><a rel="next" href="05-compare-value-and-representation.html">Next lesson: Compare a decimal value and its representation</a></nav></article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>

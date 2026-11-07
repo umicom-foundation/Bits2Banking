@@ -1,4 +1,17 @@
-/* Bits2Banking | Umicom Foundation | bounded diagnostic ring regression test | MIT */
+/*-----------------------------------------------------------------------------
+ * Umicom Bits2Banking
+ * File: labs/native/diagnostic-ring/test_ring.c
+ *
+ * PURPOSE:
+ *   Verify bounded diagnostic snapshots, loss accounting and refusal invariants.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
 #include "ring.h"
 #include <stdio.h>
 #include <string.h>
@@ -23,7 +36,14 @@ int main(void)
     BtbDiagnosticRing invalidCopy = ring;
     BtbDiagnosticSnapshot unchanged;
     memset(&unchanged, 0xa5, sizeof(unchanged));
+    /* Byte-preservation checks need an exact object-representation snapshot.
+     * Structure assignment preserves values but need not copy padding bytes.
+     * Retain the former capture for review of this regression's original oracle. */
+#if 0
     BtbDiagnosticSnapshot old = unchanged;
+#endif
+    unsigned char old[sizeof(unchanged)];
+    memcpy(old, &unchanged, sizeof(old));
     CHECK(BtbDiagnosticRead(&invalidCopy, &unchanged) == BTB_DIAGNOSTIC_BAD_STATE);
     CHECK(memcmp(&unchanged, &old, sizeof(old)) == 0);
     ring.nextSequence = UINT64_MAX;

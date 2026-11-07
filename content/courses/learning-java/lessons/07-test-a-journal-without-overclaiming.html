@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/07-test-a-journal-without-overclaiming.html
+
+PURPOSE:
+Explain the lesson: Test a journal without overclaiming its validity.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test a journal without overclaiming its validity | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-make-rounding-an-explicit-decision.html">Previous lesson</a> · <a rel="next" href="08-read-a-test-failure-and-recompile.html">Next lesson</a></nav>
+<h1>Test a journal without overclaiming its validity</h1>
+<p>A useful test has a precise claim. LedgerDemo.IsBalanced answers whether total debits equal total credits. It does not answer every question needed before a financial system accepts an entry.</p>
+<h2>Setup recap</h2>
+<p>Use Java 17 or later and the three files in content/labs/java-ledger. In a terminal in that directory, run <code>javac -d out LedgerDemo.java LedgerChecks.java DecimalChecks.java</code>, then <code>java -cp out LedgerChecks</code>. Create out first if necessary. These commands work in PowerShell and bash.</p>
+<h2>1. Read one record</h2>
+<p>A Posting groups an account label, a debit value and a credit value. LedgerChecks creates a debit of 25.10 and a credit of 25.1. It passes a list containing both records to the existing function.</p>
+<p>The word list means an ordered collection. <code>List.of(debit, credit)</code> constructs the collection used for this call; it does not send a transaction anywhere.</p>
+<h2>2. Change one fact at a time</h2>
+<p>Read the checks in order and make a prediction table:</p>
+<pre><code class="language-text">debit, credit        -&gt; balanced
+debit alone          -&gt; unbalanced
+debit, credit, debit -&gt; unbalanced
+credit, debit        -&gt; balanced</code></pre>
+<p>Removing an entry and duplicating an entry should change the result. Reordering valid entries should not change their sum. These are different properties, not four versions of the same successful example.</p>
+<h2>3. Examine the boundary of the claim</h2>
+<p>The last cases use an empty list and equal negative totals. Both are numerically balanced. That observation exposes the function's scope. Separate rules would be needed for valid account identifiers, accepted signs, currency and authorisation.</p>
+<p>Do not change the teaching function to conceal that distinction. When developing a real Umicom application, find and use the relevant Framework financial service and its contract.</p>
+<h2>Exercise and explanation</h2>
+<p>Create a debit of 25.10 and credit of 25.09. Predict false, add a requirement, compile and run. If it unexpectedly passes, inspect which objects were actually put in the list.</p>
+<p>The test prints an arithmetic success message with its limitation. This evidence supports numeric balancing only; it is not proof that a bank or general ledger is ready for use.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/java-ledger/LedgerChecks.java">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-make-rounding-an-explicit-decision.html">Previous lesson</a> · <a rel="next" href="08-read-a-test-failure-and-recompile.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-java/07-test-a-journal-without-overclaiming.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

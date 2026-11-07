@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/06-call-return-and-stack.html
+
+PURPOSE:
+Explain the lesson: Follow a function call and its saved return address.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow a function call and its saved return address | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="05-branches-and-counted-loops.html">Previous lesson</a></nav>
+<h1>Follow a function call and its saved return address</h1>
+<h2>Setup recap</h2>
+<p>This is a source-reading and paper lab. You need the existing Assembly functions example. A function call transfers execution to another operation and provides a way to return. A calling convention assigns responsibilities to the caller and callee.</p>
+<h2>Follow the return address</h2>
+<p>The return address identifies where execution should continue after a function. A leaf function makes no further calls. A function that calls another function must preserve any information it still needs after that nested call, including its own return path.</p>
+<pre><code class="language-text">caller -&gt; helper -&gt; nested helper
+          needs its original return address after nested helper returns</code></pre>
+<h2>Source exercise</h2>
+<ol>
+<li>Open add_riscv64.S.</li>
+<li>Find the exported symbol and the return instruction.</li>
+<li>Check whether the function calls another function.</li>
+<li>Identify the argument registers it consumes.</li>
+<li>Identify the register holding the returned value.</li>
+<li>Read the accompanying C declaration and compare types.</li>
+</ol>
+<p>Do not invent a stack frame when the source does not need one. Conversely, do not assume a leaf function remains safe after inserting another call.</p>
+<h2>Understand the stack</h2>
+<p>A stack is a memory region used for temporary call-related storage. Its pointer identifies the current position according to the platform convention. Allocating a frame, storing values, restoring them and releasing the frame must agree. Alignment is part of the convention too.</p>
+<h2>Practical reasoning task</h2>
+<p>Draw two return addresses for a caller that invokes a helper which invokes another helper. Mark which value must survive each call. Explain why a single overwritten return-address register cannot represent both return paths at once.</p>
+<h2>Connect to Umicom C</h2>
+<p>A compiler's generated calls must follow the same convention as the libraries they call. A program may assemble successfully and still fail if parameters, saved registers or stack alignment disagree.</p>
+<h2>Limits and recovery</h2>
+<p>Consult the selected target ABI before writing a real call frame. Processor architecture alone does not specify every operating-system ABI detail. A crash on return should prompt inspection of saved state, not only the arithmetic result.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/assembly-functions/add_riscv64.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="05-branches-and-counted-loops.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/06-call-return-and-stack.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="07-read-an-instruction-contract.html">Next: Read an instruction contract</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

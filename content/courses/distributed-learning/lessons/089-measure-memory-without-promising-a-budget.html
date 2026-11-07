@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/distributed-learning/lessons/089-measure-memory-without-promising-a-budget.html
+
+PURPOSE:
+Measure memory without confusing a plan with a limit
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Measure memory without confusing a plan with a limit | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Measure memory without confusing a plan with a limit</h1>
+<p>Training adjusts numbers called model parameters so that predictions better match examples. A batch is a group of examples used for one adjustment. This module follows a small, local Framework experiment. It assumes no previous machine-learning course and introduces each term before using it. A local experiment is the first measurement needed when designing work for several computers.</p>
+<h2>Set up this laboratory</h2>
+<ol>
+<li>Install a C23 compiler, CMake and Ninja. On Windows, open PowerShell and make the installed UCRT64 tools available with <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code>. On Linux, open a terminal and ensure <code>cc</code>, <code>cmake</code> and <code>ninja</code> are installed through your distribution.</li>
+<li>Use a checkout of Umicom Framework containing <code>learning/native-llm/inspect_accumulation.c</code>. The examples below use the Framework child of Umicom Applications.</li>
+<li>Configure a separate laboratory directory. This prepares build instructions; it does not train a model.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Applications\framework
+cmake -S learning/native-llm -B build/learning-accumulation -G Ninja -DBUILD_TESTING=ON
+cmake --build build/learning-accumulation --target umicom-native-llm-accumulation
+&amp; .\build\learning-accumulation\umicom-native-llm-accumulation.exe 2</code></pre>
+<p>In Bash, change to the Framework directory, run the same two <code>cmake</code> commands, then run <code>./build/learning-accumulation/umicom-native-llm-accumulation 2</code>. Stop if configuration or compilation fails; inspect the first diagnostic before proceeding. Expected successful output includes <code>Effective tokens: 40</code> and <code>Comparison: within tolerance</code>. Numerical values and memory observations must be recorded from your actual run. These are instructions to execute, not a claim that a particular environment has passed.</p>
+<h2>What a capacity plan describes</h2>
+<p>Memory holds parameters, gradients and intermediate results. <code>UmiAiTrainingCapacityPlanCompute</code> reports selected logical payload sizes from the decoder's authoritative shapes. A payload is the data portion of an allocation. Metadata, allocator bookkeeping and other temporary objects also consume memory.</p>
+<p>The field <code>minimumRetainedPayloadBytes</code> deliberately describes a lower bound on selected data. It is not a safe whole-process memory budget. Scheduling a worker with exactly that much available memory could still fail.</p>
+<h2>Read two observations together</h2>
+<p>The demonstration prints the microbatch token capacity from the plan and the peak bytes recorded by the model's training tape. The tape manages computation-graph allocations. Its peak is useful for comparing graphs, but it is not the operating system's measurement of all process memory.</p>
+<ol>
+<li>Run with argument <code>5</code> and record the reference and accumulated tape peaks.</li>
+<li>Run with argument <code>1</code> and record them again.</li>
+<li>Explain which temporary graph became smaller.</li>
+<li>State which quantities the program did not measure, such as total process resident memory or energy consumption.</li>
+</ol>
+<p>Do not infer that every microbatch choice has identical runtime. Smaller groups can reduce memory at the cost of extra repeated work and scheduling overhead.</p>
+<h2>Explore a real guard</h2>
+<p>The decoder offers <code>UmiAiTrainingDecoderSetMemoryBudget</code>. Its budget applies to tape-managed committed graph storage. Zero restores the unlimited setting for that particular accounting mechanism. The existing accumulated-limits regression sets a budget near the current allocation, attempts training and checks that rejection preserves the model.</p>
+<p>Read that test before changing it. A budget rejection is an expected result when a requested operation cannot fit. Catching it is safer than assuming a planned number guarantees success.</p>
+<h2>Exercise</h2>
+<p>Design a worker-capacity record with separate fields for supported tensor shape, observed tape peak, observed process peak and available host memory. Include units and the tool used for every measurement. A single label such as 'powerful machine' does not provide enough information to admit a task.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/ai/training/capacity_plan.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="088-compare-results-with-numerical-tolerances.html">Previous: Compare floating-point results with explicit tolerances</a> · <a href="090-preserve-a-model-after-rejected-training.html">Next: Check that rejected training preserves the model</a></p>
+</nav><p><a href="../../../lessons/12-distributed-learning/distributed-learning/089-measure-memory-without-promising-a-budget.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

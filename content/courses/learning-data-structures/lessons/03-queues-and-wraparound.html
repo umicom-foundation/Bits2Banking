@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/03-queues-and-wraparound.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Queues and wraparound storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Queues and wraparound storage</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-stacks-and-undo.html">Previous: Stacks and the order of undo</a></p></nav><h2>First in, first out</h2>
+<p>A queue gives the oldest waiting item to the next consumer. This is first in, first out. A stack would serve the newest item first. Choosing the order is part of the required behaviour.</p>
+<h2>Setup recap</h2>
+<p>Use <a href="../index.html">the collections setup</a>. Open BtbQueue in collections.h and QueuePush/QueuePop in collections.c. An array is indexed storage; a count records occupied elements; head identifies the next item to remove.</p>
+<h2>Reuse space without shifting every item</h2>
+<p>The queue stores eight integers. Removing an item advances head. Adding an item uses:</p>
+<pre><code class="language-c">tail = (head + count) % BTB_COLLECTION_CAPACITY;</code></pre>
+<p>The % operator computes the remainder. For capacity 8, index 8 wraps to 0, and 9 wraps to 1. The operands here are already bounded, so the addition cannot overflow size_t.</p>
+<pre><code class="language-text">head=6, count=3
+logical order: slot 6 -&gt; slot 7 -&gt; slot 0
+next insertion: (6 + 3) % 8 = slot 1</code></pre>
+<p>The array is physically unchanged in shape. The logical order moves around it.</p>
+<h2>Lab</h2>
+<ol>
+<li>Initialise BtbQueue queue = {0}.</li>
+<li>Read the test that pushes values 0 through 7.</li>
+<li>Follow four repetitions of pop then push. Draw head and count after each.</li>
+<li>Predict why the remaining removal order is 4 through 11.</li>
+<li>Run the collection tests and compare their result with your trace.</li>
+</ol>
+<h2>Exercise and worked answer</h2>
+<p>A queue has head = 7, count = 1. After one successful pop, head becomes 0 and count becomes 0. The next push writes slot 0. An empty queue does not have to return its head to the original starting point.</p>
+<h2>Connect to larger systems</h2>
+<p>Umicom jobs and kernel messages need explicit queue ownership, cancellation and capacity rules. This model explains wraparound only. Before using a queue across threads, study how the production service synchronises producers and consumers; adding a shared global array is not enough.</p>
+<h2>Troubleshooting</h2>
+<p>A corrupted head equal to 8 is invalid even when count is zero. The implementation refuses it. A full queue returns BTB_FULL and keeps all items. Decide whether a real caller should wait, reject or apply backpressure; silently overwriting an old job would change the contract.</p>
+<h2>Next step</h2>
+<p><a href="../../learning-algorithms/index.html">Learning Algorithms</a> uses the same collection source to teach search and sorting, so you can concentrate on the operation rather than learning another storage model.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/collections/collections.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-stacks-and-undo.html">Previous: Stacks and the order of undo</a></p></nav><nav aria-label="Continue the course"><a rel="next" href="04-queue-backpressure.html">Continue: Handle a full queue without losing work</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

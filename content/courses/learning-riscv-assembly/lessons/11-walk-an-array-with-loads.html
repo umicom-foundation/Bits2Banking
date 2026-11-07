@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/11-walk-an-array-with-loads.html
+
+PURPOSE:
+Explain the lesson: Walk an array with loads.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Walk an array with loads | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-restore-state-at-a-controlled-return.html">Previous lesson</a> · <a rel="next" href="12-read-branches-without-subtraction.html">Next lesson</a></nav>
+<h1>Walk an array with loads</h1>
+<p>An array walk combines a memory address, an element count and a rule for advancing to the next element.</p>
+<h2>Prepare</h2>
+<p>Open sequences.h, sum.S and TRACE.md in the RISC-V sequences lab. The README gives object-assembly commands and a separate executable-check route.</p>
+<p>Assume three readable uint64_t values 2, 5 and 9 begin at address A.</p>
+<h2>Trace the registers</h2>
+<p>At entry, a0 holds A and a1 holds 3. The function copies A to t0, then reuses a0 for the sum.</p>
+<p>After one iteration, a0 is 2, t0 is A + 8 and a1 is 2. After three, the sum is 16 and the count is zero.</p>
+<p>ld reads the current element. addi advances the address and decreases the count. bnez repeats only while work remains.</p>
+<h2>Check the empty case</h2>
+<p>Before the first load, beqz checks the count. For count zero, even a null pointer produces zero without a memory access.</p>
+<p>This is a narrow permission. A null pointer with a positive count violates the interface contract.</p>
+<h2>Exercise</h2>
+<p>Copy the worksheet and trace one element equal to UINT64_MAX. Then trace zero elements. Mark every executed memory instruction.</p>
+<p>If your empty trace includes ld, you have followed a path the branch should prevent.</p>
+<h2>Connect to Kernel</h2>
+<p>Kernel code often walks tables using counts, addresses and element sizes. The same questions apply: is the region readable, is the count bounded and does the stride match the element representation?</p>
+<p>This routine borrows memory and never writes it. It does not discover whether an arbitrary address is valid. That responsibility remains with its caller.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/sum.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-restore-state-at-a-controlled-return.html">Previous lesson</a> · <a rel="next" href="12-read-branches-without-subtraction.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv-assembly/11-walk-an-array-with-loads.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

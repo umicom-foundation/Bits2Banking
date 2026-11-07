@@ -94,3 +94,7 @@ Return to [Learning C](../../../courses/learning-c/index.html) for pointers, str
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/12-ownership-and-cleanup.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Test storage boundaries without changing a disk](11-testing-storage-boundaries.md)
+
+[Next: Read a file one bounded part at a time](13-read-file-ranges.md)

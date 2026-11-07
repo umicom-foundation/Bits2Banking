@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/42-desktop-events-and-state.html
+
+PURPOSE:
+Explain the lesson: Connect a desktop event to owned state.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect a desktop event to owned state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="41-signed-values-at-a-platform-boundary.html">Previous lesson</a> · <a href="43-call-c-from-a-browser.html">Next lesson</a></nav>
+<h1>Connect a desktop event to owned state</h1>
+<h2>Before you begin</h2>
+<p>This lab uses the existing GTK4 activity window. A window is a visible container. A widget is a component such as a button or label. An event reports an interaction. A callback is a function called when that event occurs.</p>
+<p>For execution, prepare a C toolchain, CMake, GTK4 development files and a matching installed Framework SDK. The activity README contains the configure and build commands. Start with its unchanged console example before the window.</p>
+<h2>Read the path</h2>
+<p>Open <code>window.c</code> and find the Record one exercise button, its signal connection, the callback and the displayed count. Follow the callback to <code>BtbActivityAdvance</code>.</p>
+<pre><code class="language-text">click -&gt; callback -&gt; checked rule -&gt; update owned count -&gt; refresh label</code></pre>
+<p>The callback receives access to window state. That state must remain alive for every callback that uses it. The example attaches its state lifetime to the window and uses a connection that is tied to the receiving object.</p>
+<h2>Perform a focused review</h2>
+<ol>
+<li>Find where the state is allocated.</li>
+<li>Find where the initial count is set.</li>
+<li>Find the object responsible for releasing state.</li>
+<li>Find which connection prevents a destroyed receiver from being called later.</li>
+<li>Trace the successful and rejected status paths.</li>
+</ol>
+<p>A pointer is an address, not a promise that the object still exists. Keeping the lifetime visible is part of making events reliable.</p>
+<h2>Lab and expected result</h2>
+<p>Build the example using its README. Open the window, press the button three times and expect 3. Open a second independent window if you extend the launcher; it should own its own state unless sharing is an explicit requirement. Close a window and check that no later callback refers to its released state.</p>
+<p>Record compiler output and observed UI behavior separately. A passing model test does not prove that the button was connected.</p>
+<h2>If a button appears inactive</h2>
+<p>Check that the widget is sensitive, the signal is connected, the callback is reached and the returned status is handled. Also check the event loop is not blocked by long synchronous work. Change one condition at a time so the explanation remains testable.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="41-signed-values-at-a-platform-boundary.html">Previous lesson</a> · <a href="43-call-c-from-a-browser.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/42-desktop-events-and-state.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

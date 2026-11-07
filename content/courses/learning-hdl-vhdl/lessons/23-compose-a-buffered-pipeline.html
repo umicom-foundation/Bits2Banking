@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/23-compose-a-buffered-pipeline.html
+
+PURPOSE:
+Explain the lesson: Compose existing circuits into a pipeline.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compose existing circuits into a pipeline | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="22-read-waveforms-as-evidence.html">Previous lesson</a> · <a rel="next" href="24-read-a-transfer-at-the-clock-edge.html">Next lesson</a></nav>
+<h1>Compose existing circuits into a pipeline</h1>
+<h2>Prepare</h2>
+<p>Open the VHDL laboratory's PIPELINES guide. It contains the GHDL commands for PowerShell and Bash. You need only the source files to complete the first drawing exercise.</p>
+<p>A component is a reusable circuit. An instance is one occurrence of that circuit inside a larger design. This example has two instances of lesson_buffer, called first_stage and second_stage. Each instance has its own stored byte and full flag.</p>
+<h2>Read the connections</h2>
+<p>The first stage receives the external input. Its output becomes the second stage's input. Three internal signals connect them: middle_word, middle_valid and middle_ready.</p>
+<p>Named port associations make each relationship visible:</p>
+<pre><code class="language-vhdl">output_valid =&gt; middle_valid,
+output_ready =&gt; middle_ready,
+output_word =&gt; middle_word</code></pre>
+<p>The names on the left belong to the component; names on the right belong to the surrounding design.</p>
+<h2>Lab</h2>
+<p>Draw two boxes and copy every connection from the source. Mark the external ports at the outside edges. Trace a byte from input_word to output_word, then trace readiness backwards.</p>
+<p>Expected: data and validity move towards the consumer; readiness returns towards the producer. No extra data storage exists in the connecting signals.</p>
+<h2>Why reuse matters</h2>
+<p>Changing the buffer's ownership contract should require reviewing one implementation and both instances' integration. Copying the buffer process twice into the pipeline would create independent implementations that could drift apart.</p>
+<h2>Troubleshoot</h2>
+<p>If GHDL cannot find the entity, analyse lesson_buffer.vhd before buffer_pipeline.vhd in the same working directory. The complete commands are in PIPELINES.md. Correct source ordering resolves a missing design unit; changing signal names will not.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/buffer_pipeline.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="22-read-waveforms-as-evidence.html">Previous lesson</a> · <a rel="next" href="24-read-a-transfer-at-the-clock-edge.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/23-compose-a-buffered-pipeline.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/80-reject-nonfinite-gradient-input.html
+
+PURPOSE:
+Explain the lesson: Reject nonfinite gradient input.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reject nonfinite gradient input | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="79-leave-small-gradients-unchanged.html">Previous lesson</a> · <a rel="next" href="81-avoid-overflow-while-measuring.html">Next lesson</a></nav>
+<h1>Reject nonfinite gradient input</h1>
+<h2>Prepare</h2>
+<p>Open Framework's <code>src/ai/training/gradient_clipping.c</code> and its header. A gradient is a collection of numbers describing how a model's error changes when its parameters change. A norm is one number summarising their combined size. Use a calculator or paper; no model training is needed.</p>
+<h2>Understand the idea</h2>
+<p>Floating-point values include infinities and NaN, meaning not a number. Allowing them through arithmetic can make later results unusable while ordinary comparisons behave unexpectedly.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Locate the checks on <code>maxNorm</code> and each absolute gradient.</li>
+<li>Consider a NaN in the last array.</li>
+<li>Identify whether a candidate report is published.</li>
+</ol>
+<h2>Check your reasoning</h2>
+<p>The call refuses nonfinite inputs before publishing the report. The same policy rejects a zero or negative maximum norm.</p>
+<h2>If something differs</h2>
+<p>Do not silently replace NaN with zero during a diagnostic investigation. Find the earlier operation that produced it and retain enough non-sensitive evidence to reproduce the cause.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/ai/training/gradient_clipping.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="79-leave-small-gradients-unchanged.html">Previous lesson</a> · <a rel="next" href="81-avoid-overflow-while-measuring.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/80-reject-nonfinite-gradient-input.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

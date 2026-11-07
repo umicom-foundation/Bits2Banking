@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/lessons/24-status-values-and-complete-results.html
+
+PURPOSE:
+Explain the lesson: Return a status and publish one complete result.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Return a status and publish one complete result | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="23-chunks-eof-and-read-errors.html">Previous lesson</a> · <a rel="next" href="25-check-file-digests-independently.html">Next lesson</a></nav>
+<h1>Return a status and publish one complete result</h1>
+<h2>Separate the answer from the outcome</h2>
+<p>A function may be unable to produce an answer. A status value tells the caller whether the operation completed. The checksum is a separate output. This is useful when an empty or zero-like answer could otherwise be confused with failure.</p>
+<h2>Setup recap</h2>
+<p>Open the checksum lab in a text editor. The <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-checksum/README.md">lab guide</a> explains compiler setup, the required Framework SDK, configuration, building and tests. You can trace this chapter on paper before installing tools.</p>
+<h2>Read the contract first</h2>
+<pre><code class="language-c">UmiStatus BtbChecksumStream(FILE *stream,
+    char output[UMI_SHA256_HEX_CAPACITY]);</code></pre>
+<p><code>UmiStatus</code> is Framework's shared result type. <code>UMI_STATUS_OK</code> means success. The caller supplies a writable buffer of 65 characters: 64 hexadecimal digits and one terminating zero.</p>
+<p>The array notation in a C parameter does not check the caller's buffer size at runtime. It documents a requirement; the caller still has to allocate enough space. Both <code>main.c</code> and the tests use the named capacity rather than guessing.</p>
+<h2>Trace the publication point</h2>
+<p>The adapter calculates into local storage. After reading and finalising succeed, it copies the complete result into the caller's buffer. An earlier return leaves that output untouched.</p>
+<pre><code class="language-text">caller output: &quot;unchanged&quot;
+invalid input -&gt; return INVALID_ARGUMENT -&gt; output still &quot;unchanged&quot;
+valid input   -&gt; calculate locally       -&gt; copy result -&gt; return OK</code></pre>
+<p>This promise applies to the output, not every object involved. The stream may already have advanced. Good contracts say exactly which state is preserved.</p>
+<h2>Lab</h2>
+<ol>
+<li>Find each return in <code>checksum.c</code>.</li>
+<li>Mark which returns occur before the output copy.</li>
+<li>Inspect the test that passes a null stream and a buffer containing <code>unchanged</code>.</li>
+<li>Explain why that test checks both the status and the buffer.</li>
+<li>Build and run the checks from the lab guide.</li>
+<li>Add an exercise assertion that the successful string has length 64.</li>
+</ol>
+<p>Do not remove status checks merely because the happy path works. An invalid SDK context or file error still needs a meaningful outcome.</p>
+<h2>Troubleshooting</h2>
+<p>A linker error for <code>umi_status_text</code> means the declaration was visible but its implementation was not linked correctly. Check the Framework base library and SDK revision. A compiler warning about incompatible pointers is not fixed by an arbitrary cast; compare the declaration with the actual argument.</p>
+<h2>Connect to applications</h2>
+<p>A desktop label, a web response or a command line can display the same model result. The presentation decides how to explain the status. Reusable result semantics belong to Framework; interfaces should not invent different meanings for the same error.</p>
+<h2>Exercise and explanation</h2><p>A file read fails after one chunk. The output buffer still contains its old value. Can the caller retry from the same position without seeking? No. The promise preserves the output buffer, but reading may already have advanced the stream. A retry needs a deliberate stream-position policy and another error check.</p><h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-checksum/checksum.h">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="23-chunks-eof-and-read-errors.html">Previous lesson</a> · <a rel="next" href="25-check-file-digests-independently.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/learning-c/24-status-values-and-complete-results.md">Markdown edition</a></p><nav aria-label="Course references"><a href="../glossary.html">Glossary</a> · <a href="../practical-guide.html">Practical guide</a> · <a href="../../learning-paths.html">Learning map</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

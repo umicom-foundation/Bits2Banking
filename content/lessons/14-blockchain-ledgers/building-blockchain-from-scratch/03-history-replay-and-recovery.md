@@ -51,3 +51,5 @@ The next modules will add a bounded decoder and integrate Framework hashing, fol
 ## Read the related Umicom source
 
 [Source and context](https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/include/umicom/base/sha256.h). This public revision matches the source inspected for this lesson.
+
+[Next: Link records with Framework hashes](04-link-records-with-framework-hashes.md)

@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/59-publish-event-and-reply-together.html
+
+PURPOSE:
+Explain the lesson: Publish an event and its reply.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish an event and its reply | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="58-bound-and-validate-service-text.html">Previous lesson</a> · <a rel="next" href="60-report-full-capacity-without-overwriting.html">Next lesson</a></nav>
+<h1>Publish an event and its reply</h1>
+<h2>Prepare</h2>
+<p>Open <code>labs/native/syscall-dispatch/dispatch.h</code> and <code>dispatch.c</code>. A request asks a service to do work; a reply carries its result. This is a hosted teaching model with ordinary function calls, not an actual processor trap. Read the header's ownership rules before changing an example.</p>
+<h2>Understand the idea</h2>
+<p>Successful publication updates several related values: the event bytes, event count, revision and reply. These should describe one completed operation. The code performs all refusal checks before this group of assignments.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Start with count 0 and revision 1.</li>
+<li>Follow a successful publication of <code>ready</code>.</li>
+<li>Record the bytes stored in slot 0.</li>
+<li>Record count 1 and revision 2.</li>
+<li>Record the reply's value and revision.</li>
+</ol>
+<h2>Check your reasoning</h2>
+<p>The reply reports one stored event at revision 2. The text is copied into service-owned storage, so later changes to the caller's buffer do not change this event.</p>
+<h2>If something differs</h2>
+<p>The example is serial. Grouping assignments after validation does not make it safe for multiple threads without an additional synchronisation design.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/syscall-dispatch/dispatch.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="58-bound-and-validate-service-text.html">Previous lesson</a> · <a rel="next" href="60-report-full-capacity-without-overwriting.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/59-publish-event-and-reply-together.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

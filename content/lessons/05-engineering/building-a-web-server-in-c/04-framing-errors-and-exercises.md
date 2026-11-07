@@ -85,3 +85,5 @@ Continue with [Umicom Framework Development](../../../courses/umicom-development
 ## Next lesson
 
 Continue with [Requests are bytes, not packets](05-requests-are-bytes-not-packets.md).
+
+[Previous: Start and stop a local service safely](03-own-the-server-lifetime.md)

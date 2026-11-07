@@ -60,3 +60,5 @@ A route handler owns the version response. Shared connection/parser code enforce
 [Source and context](https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/examples/web/local_service.c). This public revision matches the source inspected for this lesson.
 
 [Primary reference](https://www.rfc-editor.org/rfc/rfc9112.html).
+
+[Next: Reject an invalid port before starting a server](08-reject-an-invalid-port-before-launch.md)

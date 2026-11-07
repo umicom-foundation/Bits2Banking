@@ -19,3 +19,9 @@ The examples use the same arithmetic and loop ideas as the existing [Learning C]
 [Browser edition](../../../courses/learning-68000-assembly/index.html) · [All subjects](../../../start/course-series.md) · [Computer architecture](../../../courses/learning-computer-architecture/index.html)
 
 Sammy Hegab · Umicom Foundation. Original teaching material: MIT. Linked processor documentation retains its own licence.
+
+## Continue with a practical source study
+
+You can understand a short 68000 routine by keeping a written record of each register. This lesson uses the idea of a bounded counter from the existing C repetition example, then expresses a small counter using 68000 instructions.
+
+- [Draw registers before writing memory](04-draw-registers-before-writing-memory.md)

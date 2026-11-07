@@ -1,4 +1,17 @@
-# Umicom Foundation / Bits2Banking — test-only native C23 structural gate.
+#-----------------------------------------------------------------------------
+# Umicom Bits2Banking
+# File: tests/content_integrity/CMakeLists.txt
+#
+# PURPOSE:
+#   Register native C23 content integrity gates and course navigation checks.
+#
+# AUTHOR AND ORGANISATION:
+# Sammy Hegab
+# Umicom Foundation
+#
+# LICENCE:
+# MIT
+#-----------------------------------------------------------------------------
 # No new runtime; never modifies any source, lessons or generated website.
 cmake_minimum_required(VERSION 3.22)
 project(umicom_bits2banking_content_integrity C)
@@ -10,6 +23,16 @@ if(MSVC)
     target_compile_options(btb-content-inventory-test PRIVATE /W4)
 else()
     target_compile_options(btb-content-inventory-test PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror)
+endif()
+
+# Course pairing and setup checks cover published routes without claiming
+# that an Android device, a language compiler or a Flutter UI has been run.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.mobile_native_courses
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_mobile_native_courses.cmake")
+    set_tests_properties(btb.education.mobile_native_courses PROPERTIES
+        TIMEOUT 60 LABELS "education;navigation;mobile")
 endif()
 if(BUILD_TESTING)
     add_test(NAME btb.education.inventory
@@ -39,6 +62,13 @@ endif()
 
 # Source relationships are checked without building or executing the website.
 if(BUILD_TESTING)
+    # Verify standalone browser routes as well as paired manuscripts; this
+    # catches source-tree links that would disappear from a published course.
+    add_test(NAME btb.education.systems_practical_labs
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_systems_practical_labs.cmake")
+    set_tests_properties(btb.education.systems_practical_labs PROPERTIES
+        TIMEOUT 30 LABELS "education;framework;navigation")
     add_test(NAME btb.education.learning_paths
         COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
             -P "${CMAKE_CURRENT_LIST_DIR}/check_learning_paths.cmake")
@@ -59,4 +89,24 @@ if(BUILD_TESTING)
             -P "${CMAKE_CURRENT_LIST_DIR}/check_framework_course.cmake")
     set_tests_properties(btb.education.framework_course PROPERTIES
         TIMEOUT 10 LABELS "education;framework;navigation")
+endif()
+
+# Keep both lesson editions, their sequence and project references connected.
+# This validates authored navigation, not executable laboratory behaviour.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.programming_projects
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_programming_projects.cmake")
+    set_tests_properties(btb.education.programming_projects PROPERTIES
+        TIMEOUT 60 LABELS "education;navigation;programming")
+endif()
+
+# Platform chapters share stable identities across browser and manuscript
+# editions. This gate checks the route graph, not toolchain or device behaviour.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.connected_platform_courses
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_connected_platform_courses.cmake")
+    set_tests_properties(btb.education.connected_platform_courses PROPERTIES
+        TIMEOUT 60 LABELS "education;navigation;platforms")
 endif()

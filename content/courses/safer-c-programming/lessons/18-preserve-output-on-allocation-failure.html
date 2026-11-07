@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/18-preserve-output-on-allocation-failure.html
+
+PURPOSE:
+Explain the lesson: Preserve results when allocation fails.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve results when allocation fails | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="17-subtract-only-after-checking.html">Previous lesson</a> · <a rel="next" href="19-use-a-real-void-pointer-output.html">Next lesson</a></nav>
+<h1>Preserve results when allocation fails</h1>
+<h2>Prepare</h2>
+<p>Read the sentinel checks in test_arena.c. A sentinel here is an ordinary known value placed in an output variable before an operation.</p>
+<p>The test asks for more storage than the arena contains, then checks that both the output pointer and used count retain their previous values.</p>
+<h2>Why this matters</h2>
+<p>A caller can recover from a refusal only if the API clearly defines what remains valid. BtbArenaAllocate publishes its output and advances used after all checks succeed.</p>
+<p>A failing request therefore does not consume a partial allocation.</p>
+<h2>Lab</h2>
+<p>Write a trace with a successful seven-byte allocation followed by a 1,024-byte request in the 128-byte test arena. Record used before the second call and after it.</p>
+<p>Expected: the second result is BTB_ARENA_NO_SPACE and used is unchanged. The output variable still contains its sentinel.</p>
+<h2>Exercise and explanation</h2>
+<p>May the caller use that output as the newly allocated block after refusal? No. Unchanged means no new result was published. Always branch on the returned status.</p>
+<h2>Troubleshoot</h2>
+<p>If a failure changes used, inspect where state is assigned relative to validation. If only the output changes, look for an early output assignment.</p>
+<p>Preserving a result on refusal is a useful API contract for Framework services too. It makes error handling predictable, but the caller must still check the status rather than interpreting an old pointer as success.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/arena-allocator/arena.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="17-subtract-only-after-checking.html">Previous lesson</a> · <a rel="next" href="19-use-a-real-void-pointer-output.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/18-preserve-output-on-allocation-failure.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

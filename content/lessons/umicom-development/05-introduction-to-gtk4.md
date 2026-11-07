@@ -75,3 +75,5 @@ Return to [the development course contents](index.md) or explore [Umicom OS from
 First application: one example from source to a window · Lesson 6 of 6.
 
 [Previous: Umicom Framework Development](04-framework-development.md) · [Module complete: return to course contents](index.md)
+
+[Next: Build only what changed](07-build-only-what-changed.md)

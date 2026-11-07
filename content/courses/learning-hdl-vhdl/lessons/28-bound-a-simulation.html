@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/28-bound-a-simulation.html
+
+PURPOSE:
+Explain the lesson: Make a stalled simulation finish with evidence.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Make a stalled simulation finish with evidence | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="27-build-an-independent-scoreboard.html">Previous lesson</a> · <a rel="next" href="29-reset-a-composed-system.html">Next lesson</a></nav>
+<h1>Make a stalled simulation finish with evidence</h1>
+<h2>Prepare</h2>
+<p>Find the loop from cycle 0 to 199 in the pipeline bench. It supplies up to 64 words while the consumer alternates between ready and waiting.</p>
+<p>The loop has a finite budget. A broken design that never delivers its final word must fail with a useful message instead of running forever.</p>
+<h2>Understand the two exits</h2>
+<p>The normal exit happens when received reaches 64. After the loop, an assertion requires both sent and received to equal 64.</p>
+<p>If the normal exit never occurs, the loop ends after its budget and the same assertion reports incomplete delivery.</p>
+<h2>Lab</h2>
+<p>On paper, suppose input_ready remains zero throughout. What values remain in sent and received? Both remain zero. The final assertion fails; it does not describe the run as successful merely because simulated time advanced.</p>
+<p>Now suppose only 63 words emerge. The assertion again fails and distinguishes incomplete work from a complete drain.</p>
+<h2>Choose a budget</h2>
+<p>The supplied readiness pattern accepts downstream work on three of every five cycles. Two hundred cycles gives this small test room to fill, wait and drain. It is a test budget, not a universal performance guarantee.</p>
+<h2>Troubleshoot</h2>
+<p>Increasing a timeout can conceal a deadlock. First determine whether any handshake continues to occur. Preserve the last accepted input and last delivered output numbers.</p>
+<h2>Connect to applications</h2>
+<p>A build runner, media export service or network request also needs a completion condition and a bounded waiting policy. A timeout should leave evidence about incomplete work. It must not silently convert an unfinished operation into a success result.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/buffer_pipeline_tb.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="27-build-an-independent-scoreboard.html">Previous lesson</a> · <a rel="next" href="29-reset-a-composed-system.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/28-bound-a-simulation.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

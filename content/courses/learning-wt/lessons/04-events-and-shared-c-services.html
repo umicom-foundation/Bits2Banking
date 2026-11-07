@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-wt/lessons/04-events-and-shared-c-services.html
+
+PURPOSE:
+Connect web controls to the shared C service
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect web controls to the shared C service | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Connect web controls to the shared C service</h1>
+<p>Wt is a C++ library for building web applications with server-side widgets. A browser displays the interface while a server process handles application events. This course builds a small local web application that calls the same Umicom Framework C name-validation service as the desktop lab.</p>
+<h2>Before starting</h2>
+<p>Install a C++ compiler, CMake, Ninja, Wt 4 with its HTTP connector, and a matching Umicom Framework SDK containing UmiLocalProfileNameBytes. Open a terminal in the Bits2Banking labs/framework/wt-profile directory. Follow its README for PowerShell or Bash configuration, build and launch commands. The server binds to 127.0.0.1 on port 9090 for this exercise; open http://127.0.0.1:9090/ in a browser on the same computer. Stop the server with Ctrl+C. Reading requires no account. Running requires these development tools.</p>
+<p><a href="../../../../labs/framework/wt-profile/README.md">Open the complete lab guide</a>.</p>
+<h2>Trace one action</h2>
+<p>The check button emits a clicked signal. The input emits an enterPressed signal. Both connect to the same validate callback. The callback converts the current text to UTF-8, invokes UmiLocalProfileNameBytes and sets the result text.</p>
+<pre><code class="language-text">button click --+
+               +-&gt; validate -&gt; Framework -&gt; status -&gt; result
+Enter key -----+</code></pre>
+<p>A callback is code saved for a later event. The const auto validate declaration lets the compiler infer the callback's C++ type. The capture [input, result] provides access to this session's controls.</p>
+<h2>Step through the source</h2>
+<ol>
+<li>Locate the callback's std::string bytes variable.</li>
+<li>Find bytes.data() and bytes.size(). They pass an address and exact byte count.</li>
+<li>Find canonical, the fixed-capacity output array.</li>
+<li>Find the UMI_STATUS_OK branch.</li>
+<li>Locate the two connect calls after the callback.</li>
+</ol>
+<p>The frontend does not repeat the lower-casing rule or length check. If the Framework contract changes, all consumers must use the updated contract and tests rather than maintaining divergent copies.</p>
+<h2>Verify two event routes</h2>
+<p>Enter Alice_7 and click the button. Expect Accepted name: alice_7. Enter ../../other and press Enter. Expect a rejection message. Repeat with an empty input. The result must reflect the new input, not an earlier accepted value.</p>
+<p>If one route works and the other does not, inspect the relevant signal connection. If both reach the callback but report unexpected results, inspect the Framework status and SDK revision. If the callback is slow because future work adds network requests, investigate the operation's scheduling and cancellation model instead of hiding the delay with a misleading success message.</p>
+<h2>Add a view-only feature</h2>
+<p>In a practice copy, add a Clear button. It should empty the input and reset the result text. It must not create or delete a profile. Keep this presentation behaviour in the Wt adapter. Keep any reusable account or storage policy in Framework.</p>
+<h2>Check your understanding</h2>
+<p>Why are two signals connected to one callback? To keep equivalent actions consistent. Why is canonical read only after success? Because the function publishes valid output only on success. Why is this still not registration? No durable profile is created by the callback.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/wt-profile/profile_application.cpp">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="03-session-owned-widget-trees.html">Previous: Keep each session’s widgets and state separate</a> · <a href="05-input-boundaries-and-plain-text-output.html">Next: Validate input boundaries and display plain text</a></p>
+</nav><p><a href="../../../lessons/04-web/learning-wt/04-events-and-shared-c-services.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

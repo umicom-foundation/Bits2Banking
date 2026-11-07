@@ -44,3 +44,5 @@ Exercise: change only the second amount on paper to 24.10. Which total changes a
 ---
 
 [Read this lesson in HTML](../../../courses/learning-java/lessons/01-records-and-a-journal.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Decimal values and checks](02-decimal-values-and-checks.md)

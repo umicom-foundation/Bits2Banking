@@ -1,0 +1,60 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cmake/lessons/07-incremental-builds.html
+
+PURPOSE:
+Observe which files an incremental build rebuilds
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Observe which files an incremental build rebuilds | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Observe which files an incremental build rebuilds</h1>
+<p>CMake describes how a software project is prepared for building. In this course you will follow a small C project from source files to executables, understand dependencies, run tests and record useful evidence. Every chapter includes the setup needed to enter the exercise directly.</p>
+<h2>Start here</h2>
+<p>A terminal is a window in which you type commands. A folder groups files; a path tells a command where a file or folder is. Source files contain the instructions people edit. A build folder contains the machine-readable results. Keep the two folders separate.</p>
+<p>This course uses the existing labs/native/bounded-ledger-line project in Bits2Banking. It decodes a fictional message such as 1001:+2500: training account 1001, with a change of 2500 pence. It does not connect to a bank.</p>
+<p>On Windows, install MSYS2. In its UCRT64 terminal install the tools:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Open PowerShell. Adjust the repository path if your copy is elsewhere. Run each line separately and stop on an error.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version
+ninja --version
+cmake -S labs/native/bounded-ledger-line -B build/ledger-line -G Ninja -DBUILD_TESTING=ON
+cmake --build build/ledger-line --parallel 2
+ctest --test-dir build/ledger-line --output-on-failure --no-tests=error</code></pre>
+<p>Use CMake 3.24 or newer and a compiler with C23 support. On Linux, install these tools through the distribution's package manager, open Bash in the repository, and use the same three cmake/ctest commands. The small project builds independently of Framework. <a href="../../learning-c/index.html">Learning C</a> gives a slower installation walkthrough.</p>
+<p>The expected test names end in syntax, mutations and example. Missing tools, missing executables and zero selected tests need investigation. For experiments, copy the lab to a separate practice folder and point -S at that folder; preserve the original example.</p>
+<h2>What incremental means</h2>
+<p>An incremental build reuses outputs whose recorded inputs have not changed. An object file is the compiler's result for one source file. The linker combines object files and libraries into an executable. Ninja follows a dependency graph: an arrow from an input to an output means that changing the input may require rebuilding that output.</p>
+<p>Our lab has one library source, three executable sources and a shared header. That small graph makes the decisions visible.</p>
+<h2>Investigate the graph</h2>
+<ol>
+<li>Complete the setup below and build once.</li>
+<li>Run the same build command again. With unchanged inputs and commands, expect no compilation work.</li>
+<li>In a personal exercise copy, add a comment to main.c. Save it and run the build with verbose output:</li>
+</ol>
+<pre><code class="language-powershell">cmake --build build/ledger-line --verbose</code></pre>
+<ol>
+<li>The demo source should compile and the demo executable should link. Changing only this executable's source should not compile the parser or mutation test.</li>
+<li>Edit ledger_line.h in the exercise copy and build again. Sources that include it may rebuild, even when the edit is only a comment.</li>
+<li>Restore the exercise content using your editor's undo function and rebuild.</li>
+</ol>
+<p>The exact displayed command count depends on generator and toolchain. Explain the input relationship rather than memorising a count.</p>
+<h2>Why a comment can trigger work</h2>
+<p>Most ordinary compiler build rules use file timestamps and recorded header dependencies. They do not prove that a source edit has the same meaning. Compiler definitions, include files, generated files and command options can all affect output. A tool that ignores comments must still preserve diagnostics, line information and preprocessing behaviour. A content cache is a separate optimisation, not permission to omit dependencies.</p>
+<h2>Connect this to Studio</h2>
+<p>A Studio Build command should request the selected project's build graph. It should not invoke a clean operation every time. Framework's developer-project service supplies project identity and build information; the build tool then determines required compilation.</p>
+<h2>Check your understanding</h2>
+<p>If test_ledger_line.c changes, which executable should need a new object? If the parser's public header changes, why can several executables rebuild? The first change belongs to one target; the second changes a shared input.</p>
+<h2>When results are surprising</h2>
+<p>Check timestamps, generated headers and verbose compiler commands. A constantly rewritten generated header can cause repeated work. Do not remove dependency declarations to make a build appear faster.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/bounded-ledger-line/CMakeLists.txt">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="06-register-meaningful-tests.html">Previous: Register tests that check observable behaviour</a> · <a href="08-tests-after-a-change.html">Next: Choose tests using evidence about a change</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cmake/07-incremental-builds.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

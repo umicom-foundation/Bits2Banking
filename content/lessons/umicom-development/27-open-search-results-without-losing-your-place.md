@@ -116,3 +116,5 @@ Next: [Understand waiting and timeouts](28-understand-waiting-and-timeouts.md).
 Project study: an offline learning reader · Lesson 13 of 13.
 
 [Previous: Search verified learning resources](26-search-verified-learning-resources.md) · [Module complete: return to course contents](index.md)
+
+[Next: Remember projects without deleting their files](29-remember-projects-without-deleting-files.md)

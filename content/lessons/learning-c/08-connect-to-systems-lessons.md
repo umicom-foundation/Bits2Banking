@@ -61,7 +61,9 @@ You can choose a next lesson and describe what its checks would and would not es
 
 **Previous:** [Check a function at its boundaries](18-check-a-function-at-its-boundaries.md).
 
-**Next:** [Choose your next learning path](index.md).
+<!-- The former course-ending route is retained for review: **Next:** [Choose your next learning path](index.md). The memory labs now continue the sequence. -->
+
+**Next:** [Length, capacity and the end of a string](19-length-capacity-and-terminators.md).
 
 Sammy Hegab · Umicom Foundation · MIT. Original learning material.
 
@@ -69,4 +71,5 @@ Sammy Hegab · Umicom Foundation · MIT. Original learning material.
 
 Further study: systems programming · Lesson 7 of 7.
 
-[Previous: Check a function at its boundaries](18-check-a-function-at-its-boundaries.md) · [Course complete: return to contents](index.md)
+[Previous: Check a function at its boundaries](18-check-a-function-at-its-boundaries.md) · [Module complete: return to contents](index.md)
+

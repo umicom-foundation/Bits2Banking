@@ -204,3 +204,5 @@ Return to the source and trace the create, format, decision and destroy calls. C
 Build, test and investigate a change · Lesson 5 of 5.
 
 [Previous: Keep test data separate from your work](30-keep-test-data-separate.md) · [Module complete: return to course contents](index.md)
+
+[Next: Register shared application services](11-register-shared-services.md)

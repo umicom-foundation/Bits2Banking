@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-wt/lessons/08-share-framework-services-across-frontends.html
+
+PURPOSE:
+Share Framework services across web and desktop
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Share Framework services across web and desktop | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Share Framework services across web and desktop</h1>
+<p>Wt is a C++ library for building web applications with server-side widgets. A browser displays the interface while a server process handles application events. This course builds a small local web application that calls the same Umicom Framework C name-validation service as the desktop lab.</p>
+<h2>Before starting</h2>
+<p>Install a C++ compiler, CMake, Ninja, Wt 4 with its HTTP connector, and a matching Umicom Framework SDK containing UmiLocalProfileNameBytes. Open a terminal in the Bits2Banking labs/framework/wt-profile directory. Follow its README for PowerShell or Bash configuration, build and launch commands. The server binds to 127.0.0.1 on port 9090 for this exercise; open http://127.0.0.1:9090/ in a browser on the same computer. Stop the server with Ctrl+C. Reading requires no account. Running requires these development tools.</p>
+<p><a href="../../../../labs/framework/wt-profile/README.md">Open the complete lab guide</a>.</p>
+<h2>One contract, different interfaces</h2>
+<p>The Qt and Wt labs collect the same name and call UmiLocalProfileNameBytes. Qt displays a desktop window. Wt serves a browser interface. Neither adapter owns the validation rule. This is a small example of a thin client: presentation code delegates reusable behaviour to a shared engine.</p>
+<h2>Compare the implementations</h2>
+<ol>
+<li>Open profile_application.cpp in this lab.</li>
+<li>Open profile_window.cpp in labs/framework/qt-profile.</li>
+<li>Find the Framework call in each file.</li>
+<li>Compare how each toolkit obtains UTF-8 bytes.</li>
+<li>Compare ownership: a Qt window tree and a Wt session tree.</li>
+<li>Compare event connections: click and Enter in both interfaces.</li>
+<li>Compare status handling and plain-text result presentation.</li>
+</ol>
+<pre><code class="language-text">shared: input contract, canonical output, error status
+specific: controls, event binding, layout, application lifetime</code></pre>
+<p>A shared service should expose enough information for each frontend to explain a failure. It should not embed the geometry of a desktop dialog or depend on a particular browser session.</p>
+<h2>Extend toward a larger application</h2>
+<p>Start with one complete user journey. For example, validate a project name, choose a destination, create files through an existing rooted service and show a result. Each step should have a real implementation and a tested failure path. Do not advertise a finished project creator when only the name checker is wired.</p>
+<p>For long-running work, define an operation identity, progress, cancellation and a safe completion handoff. The user may close a view while the service is still running. A callback must not access a destroyed widget just because the underlying job completed successfully.</p>
+<h2>Review questions</h2>
+<p>Which code changes if the permitted name length changes? The authoritative Framework contract and its tests, with consumers rebuilt against it. Which code changes if a web button moves? The web presentation. Which code changes if a database is introduced? The relevant service/backend boundary, not a hidden database call inside every frontend button.</p>
+<h2>Continue learning</h2>
+<p>Use <a href="../../learning-qt/index.html">Learning Qt</a> for the desktop event lab, <a href="../../learning-cmake/index.html">Learning CMake</a> for package and target concepts, and the Umicom development course for offline learning-module integration. Keep the implementations small enough that you can trace a user action from input to service to visible outcome.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/wt-profile/profile_application.cpp">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="07-from-name-check-to-registration.html">Previous: Plan registration and login beyond a name checker</a></p>
+</nav><p><a href="../../../lessons/04-web/learning-wt/08-share-framework-services-across-frontends.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

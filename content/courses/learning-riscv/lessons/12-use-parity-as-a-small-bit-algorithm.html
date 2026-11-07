@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/12-use-parity-as-a-small-bit-algorithm.html
+
+PURPOSE:
+Explain the lesson: Use parity as a small bit algorithm.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use parity as a small bit algorithm | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-explain-bit-rotation.html">Previous lesson</a></nav>
+<h1>Use parity as a small bit algorithm</h1>
+<p>Parity reports whether a bit pattern contains an even or odd number of set bits. It returns zero for even and one for odd.</p>
+<h2>Prepare</h2>
+<p>Read BtbParity64 in bits.S. Then read the C Parity function in check.c. Both compute the same property using different steps.</p>
+<p>A set bit has value one. A clear bit has value zero.</p>
+<h2>Trace the Assembly loop</h2>
+<p>The function copies the input into t0 and starts the result at zero.</p>
+<ol>
+<li>If t0 is zero, return.</li>
+<li>Extract the low bit using AND with 1.</li>
+<li>Combine that bit with the result using XOR.</li>
+<li>Shift t0 right by one.</li>
+<li>Repeat.</li>
+</ol>
+<p>XOR toggles the result when the extracted bit is one. A zero leaves it unchanged.</p>
+<h2>Try three inputs</h2>
+<p>Zero has no set bits, so its parity is zero. The value one has one set bit, so parity is one. The value three is binary 11 and has parity zero.</p>
+<p>For the highest bit alone, the loop shifts many times before reaching it. The result is still one.</p>
+<h2>Exercise</h2>
+<p>Trace binary 10110. Record extracted bits from right to left and the running result. There are three set bits, so the final parity is one.</p>
+<p>Compare this trace with the C reference, which counts all 64 bit positions and takes the remainder after division by two.</p>
+<h2>Understand the limit</h2>
+<p>Parity can detect a single changed bit, but two changed bits may leave parity unchanged. It cannot identify where damage occurred or establish authenticity.</p>
+<p>Use the example to learn loops and bit operations. For production integrity or authentication, use the appropriate reviewed Framework service and its documented threat model.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/bits.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-explain-bit-rotation.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/12-use-parity-as-a-small-bit-algorithm.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="13-split-an-address-into-page-and-offset.html">Next: Split an address into a page and an offset</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

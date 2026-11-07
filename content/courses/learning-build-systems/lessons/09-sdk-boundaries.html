@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/09-sdk-boundaries.html
+
+PURPOSE:
+Use an SDK without rebuilding its source in every application
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use an SDK without rebuilding its source in every application | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Use an SDK without rebuilding its source in every application</h1>
+<p>A build system records how source files become programs and when work must be repeated. This course begins with a small existing Notes library and follows dependencies, generated configuration, tests and evidence into the shared Umicom build architecture.</p>
+<h2>Start here</h2>
+<p>A terminal is a window that accepts commands. A directory is a folder. This course uses a small teaching project in the Bits2Banking checkout; it does not rebuild the complete Framework. You need a C23 compiler, CMake 3.26 or newer, and Ninja. On Windows, open the installed MSYS2 UCRT64 terminal and install the packages below if they are missing:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Close that terminal and open PowerShell. Adjust the checkout path if yours is elsewhere:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S &quot;labs/native/build-dependency-graph&quot; -B &quot;build/dependency-graph&quot; -G Ninja -DBUILD_TESTING=ON
+cmake --build &quot;build/dependency-graph&quot; --parallel 2
+ctest --test-dir &quot;build/dependency-graph&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Run each command separately and stop if it reports an error. For a Linux Bash terminal with GCC, CMake and Ninja installed, change to the Bits2Banking checkout with <code>cd</code>, then use the same three <code>cmake</code>/<code>ctest</code> commands. These are learner exercises; the guide does not assert that a particular machine has passed them. See <a href="../../learning-cmake/index.html">Learning CMake</a> for a longer setup and command walkthrough.</p>
+<p>Package names can be checked in the official <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-gcc">MSYS2 GCC</a>, <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-cmake">CMake</a> and <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-ninja">Ninja</a> listings.</p>
+<h2>What an SDK contains</h2>
+<p>A software development kit supplies declarations, libraries and build metadata for another program to consume. Headers explain what callers may use. Libraries provide implementations. A package configuration tells a build system where compatible targets and their required dependencies can be found.</p>
+<h2>Trace an existing consumer</h2>
+<ol>
+<li>Open the Framework checksum lab's <code>CMakeLists.txt</code> linked below. Locate <code>find_package</code> and the imported target used in <code>target_link_libraries</code>.</li>
+<li>Read the checksum source. Identify the Framework function call and the caller-owned input bytes.</li>
+<li>Locate the installed SDK path on your computer. Do not substitute a source directory for an installation unless that package explicitly supports it.</li>
+<li>Follow that lab's README to configure a separate consumer build. The small dependency-graph lab in this course does not require an SDK, so finish its basic setup first if the SDK is unavailable.</li>
+<li>Record the installed package identity alongside the consumer result.</li>
+</ol>
+<h2>What changes after an SDK update</h2>
+<p>An application's own source may be unchanged while its library dependency changes. Relinking may be necessary. If public headers or compile options changed, recompilation can also be necessary. If runtime libraries are loaded dynamically, launching an old executable may load a new library, so a previously recorded pass cannot automatically be reused.</p>
+<h2>Architectural lesson</h2>
+<p>A thin Umicom application selects product workflows and presentation. Framework owns reusable behaviour. An SDK boundary helps enforce that separation only when dependencies are declared accurately. Copying Framework source into the application gives two owners and makes future updates harder to reason about.</p>
+<h2>Diagnose carefully</h2>
+<p>“Package not found” belongs to discovery/configuration. “Undefined reference” belongs to linking. A runtime load failure happens after an executable exists. Check architecture, configuration and installed component availability at the appropriate stage. Do not add random include paths until a compiler happens to accept the build; that can combine incompatible versions.</p>
+<p>The official <a href="https://cmake.org/cmake/help/latest/command/target_link_libraries.html">target linking documentation</a> describes how usage requirements propagate between CMake targets. The local lab shows the concrete target names used by this checkout.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-checksum/CMakeLists.txt">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="08-record-build-identity.html">Previous: Record enough evidence to understand a build result</a> · <a href="10-host-and-target.html">Next: Distinguish the computer building a program from its target</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-build-systems/09-sdk-boundaries.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

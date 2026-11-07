@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/15-combine-bits-with-xor.html
+
+PURPOSE:
+Explain the lesson: Combine bits with XOR.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Combine bits with XOR | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-reset-a-pending-event.html">Previous lesson</a> · <a rel="next" href="16-enumerate-all-byte-inputs.html">Next lesson</a></nav>
+<h1>Combine bits with XOR</h1>
+<p>XOR compares two bits and produces one when they differ. Repeating XOR across a word can tell us whether it contains an odd number of one bits.</p>
+<h2>Prepare</h2>
+<p>Open word_parity.vhd. The input word_in has eight positions, numbered seven down to zero. The output odd is a single std_logic signal.</p>
+<p>The lab's PARITY-AND-TIMING.md explains how to install the required simulator and run this example. You can complete the first trace on paper.</p>
+<h2>Follow the temporary value</h2>
+<p>Inside process(all), folded begins at zero. The loop visits every position in word_in'range. Each bit is combined with folded using XOR.</p>
+<p>For input 00000101, the two one bits toggle the temporary value twice. It returns to zero, indicating even parity.</p>
+<p>The process assigns folded to odd after the loop.</p>
+<h2>Distinguish variables and signals</h2>
+<p>folded is a process variable. Its assignment uses := and the next loop iteration sees the updated value immediately.</p>
+<p>odd is a signal. Its assignment uses &lt;= and schedules an update. This difference explains why the loop can accumulate a result in a variable before publishing one signal value.</p>
+<h2>Exercise</h2>
+<p>Trace 00000111, writing folded after each bit. Expect one because there are three one bits.</p>
+<p>Then change the input on paper to all zeroes. The initial assignment to folded is essential: it makes each evaluation start independently instead of retaining the previous computation.</p>
+<h2>Relate to software</h2>
+<p>The RISC-V sequences lab computes the same parity property with a loop over register bits. Both examples help explain the operation, but synthesis determines the hardware structure produced from this VHDL.</p>
+<p>Parity is a small integrity check. It does not authenticate a message or locate an error.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/word_parity.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-reset-a-pending-event.html">Previous lesson</a> · <a rel="next" href="16-enumerate-all-byte-inputs.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/15-combine-bits-with-xor.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-rust/lessons/05-link-a-rust-client-to-c.html
+
+PURPOSE:
+Explain the lesson: Link a Rust client to C.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Link a Rust client to C | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-review-a-c-language-boundary.html">Previous lesson</a> · <a rel="next" href="06-test-boundaries-and-independent-calls.html">Next lesson</a></nav>
+<h1>Link a Rust client to C</h1>
+<p>Compilation translates a source file into machine-level instructions and references. Linking joins those references to the implementations they name. A Rust client can compile successfully yet fail to link when its C bridge is absent.</p>
+<h2>Setup recap</h2>
+<p>Use the exact PowerShell or Bash sequence in labs/languages/rust-activity/README.md. It first builds the existing C activity-adapters library with CMake and then links the Rust program.</p>
+<p>On Windows, the example selects the GNU Rust target to match the UCRT64 GCC toolchain. A default MSVC Rust installation and a GNU archive are not automatically an interchangeable pair.</p>
+<h2>1. Build the dependency</h2>
+<p>The CMake project finds the Framework base package and compiles bridge.c with the activity model. Its output is a static library: an archive of compiled object files.</p>
+<p>The README's SDK path is an example. Replace it with your actual installed Framework location. Stop if configuration or compilation fails.</p>
+<h2>2. Read the Rust command</h2>
+<p>The command's native-library search directory points at the CMake build output. Its static-library option names btb-activity-adapters. The final output option names the executable.</p>
+<p>These options tell the linker where to resolve BtbActivityNext. They do not copy the C algorithm into the Rust source.</p>
+<p>For this small model, the objects use a Framework status type without calling additional Framework functions. Larger services can require further libraries and runtime dependencies.</p>
+<h2>3. Run only after linking succeeds</h2>
+<p>The expected output includes three successful counts and one refusal. It is a prediction to compare with your own run, not evidence of a run on your machine.</p>
+<p>Record the Rust version, C compiler version and source revision beside the output. Keep build logs separate from the source files.</p>
+<h2>Troubleshooting exercise</h2>
+<p>Match each symptom to its first check:</p>
+<ul>
+<li>Unknown external symbol: confirm the bridge library is included.</li>
+<li>Incompatible object format: compare the Rust target and C compiler target.</li>
+<li>Package not found: inspect the Framework SDK location.</li>
+<li>Executable missing: inspect the preceding build result.</li>
+</ul>
+<p>Changing the current count cannot solve any of those toolchain problems. Diagnose the failing stage before editing application behavior.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/rust-activity/README.md">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-review-a-c-language-boundary.html">Previous lesson</a> · <a rel="next" href="06-test-boundaries-and-independent-calls.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-rust/05-link-a-rust-client-to-c.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

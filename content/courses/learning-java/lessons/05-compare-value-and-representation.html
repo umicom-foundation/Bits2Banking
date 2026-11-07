@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/05-compare-value-and-representation.html
+
+PURPOSE:
+Explain the lesson: Compare a decimal value and its representation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare a decimal value and its representation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a rel="prev" href="04-check-a-ledger-invariant.html">Previous lesson: Check a ledger invariant</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="06-make-rounding-an-explicit-decision.html">Next lesson</a></nav>
+<h1>Compare a decimal value and its representation</h1>
+<p>A number can have more than one written form. The strings 25.1 and 25.10 describe the same numeric amount, but one keeps an extra decimal place. A program must choose which question it is asking: equal value, or equal representation?</p>
+<h2>Setup recap</h2>
+<p>Install a JDK version 17 or later and check <code>java --version</code> and <code>javac --version</code> in PowerShell or bash. Open <code>content/labs/java-ledger</code> in the Bits2Banking checkout. The course's first chapter explains installation; the laboratory README gives the complete commands. No banking account is used.</p>
+<h2>1. Predict two comparisons</h2>
+<p>Read the first two requirements in DecimalChecks.java. <code>new BigDecimal(&quot;25.10&quot;)</code> constructs a decimal from characters. The quotation marks matter: they pass text to the constructor. The variable <code>amount</code> refers to that decimal value.</p>
+<pre><code class="language-text">amount:  25.10
+shorter: 25.1
+numeric comparison: equal
+representation comparison: different</code></pre>
+<p><code>compareTo</code> returns zero for equal numeric values. <code>equals</code> also considers the scale. In this example the scales are two and one.</p>
+<h2>2. Run the checked example</h2>
+<p>From the laboratory directory:</p>
+<pre><code class="language-text">mkdir out
+javac -d out LedgerDemo.java LedgerChecks.java DecimalChecks.java
+java -cp out DecimalChecks</code></pre>
+<p>Skip mkdir if the directory already exists. Stop if compilation fails. The expected final line says the decimal representation and rounding checks passed.</p>
+<h2>3. Follow an immutable value</h2>
+<p>Find <code>amount.add(...)</code>. The method produces a result; it does not replace the original amount. The following requirement confirms that <code>amount.toPlainString()</code> still produces 25.10. To keep a calculated value, store the returned object in a variable.</p>
+<h2>Exercise and explanation</h2>
+<p>Predict the numeric comparison of 2.00 and 2.000, then add a requirement. Their values compare equal, while their scales differ. A journal total uses numeric comparison, as the existing LedgerDemo demonstrates. A file format may also need a specified representation.</p>
+<p>If the result surprises you, inspect the constructor argument and the comparison method before changing the expected result. A passing arithmetic check does not establish that a journal has valid accounts or permissions.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/java-ledger/DecimalChecks.java">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="next" href="06-make-rounding-an-explicit-decision.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-java/05-compare-value-and-representation.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

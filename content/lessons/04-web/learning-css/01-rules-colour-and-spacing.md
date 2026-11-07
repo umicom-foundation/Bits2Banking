@@ -67,3 +67,5 @@ Expected result: presentation changes while the same words and headings remain. 
 ---
 
 [Read this lesson in HTML](../../../courses/learning-css/lessons/01-rules-colour-and-spacing.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Responsive and keyboard-friendly pages](02-responsive-and-keyboard-friendly-pages.md)

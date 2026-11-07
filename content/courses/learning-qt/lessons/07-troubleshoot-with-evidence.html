@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/07-troubleshoot-with-evidence.html
+
+PURPOSE:
+Troubleshoot a desktop adapter with evidence
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Troubleshoot a desktop adapter with evidence | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Troubleshoot a desktop adapter with evidence</h1>
+<p>Qt is a library for building applications. A widget is a visible control, such as a text box or button. This course builds a small desktop interface that calls a C function in Umicom Framework. The interface uses C++ because Qt Widgets exposes a C++ API; the reusable validation policy stays in Framework C.</p>
+<h2>Before starting</h2>
+<p>Use a development copy of Umicom Bits2Banking and an installed Umicom Framework SDK containing the security component and UmiLocalProfileNameBytes. Install a matching Qt 6 development kit, C++ compiler, CMake and Ninja. A kit groups tools and libraries compiled to work together. Do not combine libraries from different compiler families. Open a terminal in labs/framework/qt-profile. The lab README contains complete PowerShell and Bash commands and explains how to choose installation prefixes. The exercises check names only; they do not create an account or contact a broker.</p>
+<p><a href="../../../../labs/framework/qt-profile/README.md">Open the lab setup guide</a>.</p>
+<h2>Classify the failure first</h2>
+<p>Different stages need different evidence. A package lookup failure occurs before compilation. A compiler error refers to source code. A linker error refers to missing or incompatible compiled definitions. A runtime error happens after the executable starts. A usability defect may occur even when all those stages succeed.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Observation</th><th scope="col">First check</th></tr></thead><tbody><tr><td>Qt package not found</td><td>Installed kit and CMake prefix</td></tr><tr><td>Framework function undeclared</td><td>SDK header revision</td></tr><tr><td>Undefined reference</td><td>Matching SDK library and link target</td></tr><tr><td>DLL or plugin missing</td><td>Runtime search path and deployment</td></tr><tr><td>Click has no visible effect</td><td>Event connection and status handling</td></tr><tr><td>Text clipped</td><td>Layout, font size and window dimensions</td></tr></tbody></table></div>
+<h2>Keep a useful record</h2>
+<ol>
+<li>Write the source revision or exact files used.</li>
+<li>Record compiler, Qt and SDK versions.</li>
+<li>Copy the full failing command and its exit status.</li>
+<li>Save the first diagnostic and the nearby context.</li>
+<li>For UI failures, write the exact input and action sequence.</li>
+<li>Record the expected result and the actual result separately.</li>
+</ol>
+<p>For example: 'Type Alice_7, press Enter, expected Accepted name: alice_7, result label unchanged' is actionable. 'Qt is broken' is not a reproducible observation.</p>
+<h2>Compare like with like</h2>
+<p>A new header with an old library is not a valid comparison of source changes. A test launched from one build directory may use a different executable from the desktop shortcut. Inspect the actual executable path and dependency environment before repeatedly editing the callback.</p>
+<p>If a test passes offscreen but a real window fails, retain both observations. Investigate host input, focus, modal windows, event filters and toolkit versions. Do not report the offscreen test as proof that the user's native workflow works.</p>
+<h2>A repair checklist</h2>
+<p>Make the smallest change that addresses a supported cause. Add or strengthen a regression check for the observed failure. Re-run the relevant checks when execution is available. Preserve the evidence of both the failure and the repaired result.</p>
+<p>For a changed SDK service, qualify the C contract and each affected adapter. For a changed label or layout, inspect the window at different sizes. Neither a large test count nor a successful compile substitutes for testing the affected behaviour.</p>
+<h2>Exercise</h2>
+<p>Write a defect report for a deliberately removed click connection in a practice copy. Another learner should be able to reproduce the failure using only your report.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/qt-profile/README.md">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="06-widget-event-tests.html">Previous: Test the real widget event path</a> · <a href="08-extend-the-view-without-duplicating-policy.html">Next: Extend the view while keeping Framework authoritative</a></p>
+</nav><p><a href="../../../lessons/03-native-code/learning-qt/07-troubleshoot-with-evidence.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

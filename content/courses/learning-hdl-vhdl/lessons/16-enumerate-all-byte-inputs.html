@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/16-enumerate-all-byte-inputs.html
+
+PURPOSE:
+Explain the lesson: Enumerate all byte inputs.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Enumerate all byte inputs | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-combine-bits-with-xor.html">Previous lesson</a> · <a rel="next" href="17-keep-unknown-signals-visible.html">Next lesson</a></nav>
+<h1>Enumerate all byte inputs</h1>
+<p>An eight-bit binary word has 256 possible values. This is small enough for a test bench to check every binary input.</p>
+<h2>Prepare</h2>
+<p>Open tb_word_parity.vhd beside word_parity.vhd. The test bench creates input signals, connects the circuit and checks observations. It is simulation code, not the circuit intended for synthesis.</p>
+<p>Use the commands in PARITY-AND-TIMING.md when ready to run.</p>
+<h2>Read the input loop</h2>
+<p>The outer loop counts from zero through 255. to_unsigned converts the number into an eight-bit unsigned vector. std_logic_vector then gives it the signal type expected by the circuit.</p>
+<p>The test computes an expected count of one bits using integer division and remainder. This differs from the circuit's XOR reduction, helping avoid a direct copy of the implementation.</p>
+<h2>Observe after settling</h2>
+<p>After assigning word_in, the test waits one nanosecond. It then compares odd with the parity of the counted one bits.</p>
+<p>The wait allows simulated signal updates to settle. It does not add a one-nanosecond delay component to the circuit.</p>
+<h2>Exercise</h2>
+<p>Explain why checking only zero and 255 is insufficient: both have even parity. Add a short table showing one, two and three, whose expected outputs are one, one and zero.</p>
+<p>The exhaustive loop already includes these values, but the table makes the expectation understandable.</p>
+<h2>Interpret a result</h2>
+<p>A successful run checks all binary byte inputs for this model. It does not cover every std_logic value, physical timing or a synthesized board.</p>
+<p>The test separately supplies an X input because binary enumeration cannot represent unknown simulation states. Keep these two coverage claims distinct in your notes.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/tb_word_parity.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-combine-bits-with-xor.html">Previous lesson</a> · <a rel="next" href="17-keep-unknown-signals-visible.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/16-enumerate-all-byte-inputs.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

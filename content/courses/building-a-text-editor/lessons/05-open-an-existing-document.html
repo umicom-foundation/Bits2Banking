@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/05-open-an-existing-document.html
+
+PURPOSE:
+Explain the lesson: Open an existing document without losing work.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Open an existing document without losing work | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a rel="prev" href="04-test-the-whole-editing-session.html">Previous lesson: Test the model and the whole editing session</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="06-load-into-a-private-candidate.html">Next lesson</a></nav>
+<h1>Open an existing document without losing work</h1>
+<p>Opening a file replaces the text displayed by an editor. That replacement must have a clear rule when the current text contains unsaved changes.</p>
+<h2>Setup recap</h2>
+<p>The example is in labs/native/text-editor. Its OPENING.md gives complete CMake, Ninja and terminal commands. You need a C23 compiler. This lesson can also be followed by reading editor.c and tracing the model on paper.</p>
+<p>A document is represented by a BtbEditor value. The dirty field records whether the model contains changes that have not been saved through its current save operation.</p>
+<h2>1. Follow the guard</h2>
+<p>BtbEditorLoadFile checks the editor, the path and the dirty field before opening a stream. If dirty is nonzero, it returns BTB_EDIT_DIRTY. It does not silently discard the current document.</p>
+<p>The command-line front end reports that refusal. It asks the learner to save to a new path before opening another file. The model does not invent a storage directory.</p>
+<h2>2. Try a short session</h2>
+<p>After building the example, enter these commands at its own command prompt:</p>
+<p>``<code>text append First document open existing.txt show </code>``</p>
+<p>The open request is expected to be refused because the appended text is unsaved. The show command should still display First document. A failed command makes the session's final exit status nonzero even if later commands succeed.</p>
+<p>Choose a new filename that does not already exist and use save followed by that path. The example deliberately refuses overwriting an existing destination.</p>
+<h2>3. Load only after a successful save</h2>
+<p>After saving, open a small plain ASCII file using its full path. Spaces inside the path are accepted directly by this example prompt; shell quotation marks are not interpreted there.</p>
+<p>A successful load begins a new undo history. Undo does not restore the document that was open before loading.</p>
+<h2>Exercise and recovery</h2>
+<p>Write down the expected dirty flag after append, successful save, failed open and successful open. Explain why failed open must preserve both the visible text and its undo state.</p>
+<p>If a path cannot be opened, check that it names a readable file. If content is refused, inspect its encoding and size. This bounded teaching editor supports printable ASCII, tabs and line endings; it is not a Unicode editor.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/text-editor/editor.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="next" href="06-load-into-a-private-candidate.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-text-editor/05-open-an-existing-document.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

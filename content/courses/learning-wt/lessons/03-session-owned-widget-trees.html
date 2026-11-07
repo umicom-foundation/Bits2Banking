@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-wt/lessons/03-session-owned-widget-trees.html
+
+PURPOSE:
+Keep each session’s widgets and state separate
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep each session’s widgets and state separate | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep each session’s widgets and state separate</h1>
+<p>Wt is a C++ library for building web applications with server-side widgets. A browser displays the interface while a server process handles application events. This course builds a small local web application that calls the same Umicom Framework C name-validation service as the desktop lab.</p>
+<h2>Before starting</h2>
+<p>Install a C++ compiler, CMake, Ninja, Wt 4 with its HTTP connector, and a matching Umicom Framework SDK containing UmiLocalProfileNameBytes. Open a terminal in the Bits2Banking labs/framework/wt-profile directory. Follow its README for PowerShell or Bash configuration, build and launch commands. The server binds to 127.0.0.1 on port 9090 for this exercise; open http://127.0.0.1:9090/ in a browser on the same computer. Stop the server with Ctrl+C. Reading requires no account. Running requires these development tools.</p>
+<p><a href="../../../../labs/framework/wt-profile/README.md">Open the complete lab guide</a>.</p>
+<h2>Ownership in a web interface</h2>
+<p>The application factory returns a std::unique_ptr to WApplication. A unique pointer owns one object and releases it when its ownership ends. Wt's root container owns the controls added to it. The local raw pointers input, check and result refer to those owned controls; they are used to connect behaviour.</p>
+<pre><code class="language-text">session A application -&gt; A input, A button, A result
+session B application -&gt; B input, B button, B result
+shared code            -&gt; stateless C name validator</code></pre>
+<p>Sharing code is useful. Sharing one user's editable input object with every other session would be a defect.</p>
+<h2>Inspect the example</h2>
+<ol>
+<li>Find std::make_unique&lt;Wt::WApplication&gt;.</li>
+<li>Find root()-&gt;addNew for each control.</li>
+<li>Check that input and result are local variables inside the factory.</li>
+<li>Search the file for global mutable input or result objects. The example does not need them.</li>
+<li>Follow the callback capture. It retains pointers to controls in this session's tree.</li>
+</ol>
+<p>The C validator accepts input bytes and produces an output name. It does not need a global current-user variable. This makes it easier to call from independent interfaces.</p>
+<h2>Two-session experiment</h2>
+<p>Start the lab server. Open the page in a normal browser window and in a private browser window. Enter Alice_7 in the first and Bob_8 in the second. Check both. The first should still show alice_7 and the second bob_8. Refresh one and observe how the application starts a fresh interaction under the current session behaviour.</p>
+<p>Different browser contexts are useful here because ordinary tabs can share cookies and authentication state. This exercise is an observation of the lab, not a general guarantee about all session configurations.</p>
+<h2>A dangerous shortcut</h2>
+<p>Moving a mutable result string to a process-wide variable may seem convenient for a demonstration. It can cause one user's request to overwrite another user's result. Protecting that variable with a mutex would prevent some simultaneous access problems, but it would not fix the incorrect ownership model.</p>
+<h2>Exercise</h2>
+<p>Draw the object tree for two active sessions. Mark which objects are owned by a session and which code can be reused. Explain why the validation function can be shared while the result widget cannot.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/wt-profile/profile_application.cpp">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="02-build-and-launch-the-server.html">Previous: Build and launch the Wt server</a> · <a href="04-events-and-shared-c-services.html">Next: Connect web controls to the shared C service</a></p>
+</nav><p><a href="../../../lessons/04-web/learning-wt/03-session-owned-widget-trees.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

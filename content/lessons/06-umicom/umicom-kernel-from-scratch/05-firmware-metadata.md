@@ -35,3 +35,7 @@ Reference: [Devicetree Specification](https://devicetree-specification.readthedo
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/05-firmware-metadata.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Never execute a damaged prefix](04-damaged-console-lines.md)
+
+[Next: Keep firmware-owned pages out of the allocator](06-reserved-pages.md)

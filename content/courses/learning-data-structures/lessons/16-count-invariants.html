@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/16-count-invariants.html
+
+PURPOSE:
+Explain the lesson: Use conservation rules to check a pipeline.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use conservation rules to check a pipeline | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-quiesce-then-drain.html">Previous lesson</a> · <a rel="next" href="17-digests-and-meaning.html">Next lesson</a></nav>
+<h1>Use conservation rules to check a pipeline</h1>
+<h2>Prepare</h2>
+<p>Read BtbDispatchInvariants. An invariant is a relationship that should remain true after every allowed public operation. It helps detect states that no valid operation sequence should produce.</p>
+<p>The dispatcher records accepted, succeeded, cancelled and delivered counts. It also has occupied work records and terminal notices.</p>
+<h2>Read two equations</h2>
+<pre><code class="language-text">accepted = delivered + occupied records
+succeeded + cancelled = delivered + terminal records</code></pre>
+<p>The first accounts for every accepted request. It is either delivered or still occupies storage. The second accounts for every terminal result. It is either delivered or awaiting delivery.</p>
+<h2>Work through an example</h2>
+<p>Accept three requests. Execute one, cancel one, leave the third queued. Before receiving:</p>
+<ul>
+<li>accepted = 3;</li>
+<li>succeeded = 1;</li>
+<li>cancelled = 1;</li>
+<li>delivered = 0;</li>
+<li>occupied = 3;</li>
+<li>terminal = 2.</li>
+</ul>
+<p>Both equations hold. Receive one result: delivered becomes one, occupied two, terminal one. The equations still hold.</p>
+<h2>Exercise</h2>
+<p>Continue by executing and receiving the remaining requests. Check both equations after each operation. Use separate columns rather than calculating only the final totals.</p>
+<h2>Beyond counters</h2>
+<p>Equal totals are necessary but not sufficient. The invariant checker also verifies notice-to-record mappings, generations, slot indices and duplicate notices. Two incorrect notices could preserve the same total.</p>
+<h2>Troubleshoot</h2>
+<p>The checker reports inconsistent state; it does not silently repair it. When it fails, find the first operation after which the invariant changed. A bounded operation trace is more informative than overwriting counters until the equation looks correct. In a production service, record enough context to reproduce the transition without exposing sensitive request contents.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/work-dispatch/dispatch.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-quiesce-then-drain.html">Previous lesson</a> · <a rel="next" href="17-digests-and-meaning.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/16-count-invariants.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

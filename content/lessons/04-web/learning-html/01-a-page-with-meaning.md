@@ -60,3 +60,5 @@ Exercise: add a second-level heading called “Return value” and a paragraph e
 ---
 
 [Read this lesson in HTML](../../../courses/learning-html/lessons/01-a-page-with-meaning.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Links, illustrations and access](02-links-images-and-access.md)

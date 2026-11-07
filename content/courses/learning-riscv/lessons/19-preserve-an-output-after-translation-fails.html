@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/19-preserve-an-output-after-translation-fails.html
+
+PURPOSE:
+Explain the lesson: Preserve an output after translation fails.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve an output after translation fails | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="18-construct-a-mapping-before-publishing-it.html">Previous lesson</a> · <a rel="next" href="20-plan-page-walker-evidence.html">Next lesson</a></nav>
+<h1>Preserve an output after translation fails</h1>
+<h2>Prepare</h2>
+<p>Open <code>labs/native/sv39-address-translation/sv39.h</code>, <code>sv39.c</code> and <code>main.c</code> in a text editor. This lab calculates addresses in ordinary C arrays. It does not change your computer's memory mappings. Hexadecimal uses digits 0–9 and A–F; <code>0x1000</code> is 4096 in decimal.</p>
+<h2>Understand the idea</h2>
+<p>Output parameters are caller-owned variables used to receive a result. A refusal should not replace a useful previous value with a partial calculation. The walker assigns <code>*outPhysical</code> only after validating the complete route and permissions.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Set an output marker to <code>0xdeadbeef</code>.</li>
+<li>Request an unmapped next page.</li>
+<li>Request an unsupported permission on the mapped page.</li>
+<li>Find the return reached in each case.</li>
+<li>Check that neither path reaches the output assignment.</li>
+</ol>
+<h2>Check your reasoning</h2>
+<p>Both refused operations leave the marker unchanged. The caller must still check the return status; an unchanged marker is not a successful translated address.</p>
+<h2>If something differs</h2>
+<p>If a caller uses the output despite failure, repair the caller's status handling rather than choosing a marker that happens to look invalid.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/sv39-address-translation/sv39.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="18-construct-a-mapping-before-publishing-it.html">Previous lesson</a> · <a rel="next" href="20-plan-page-walker-evidence.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/19-preserve-an-output-after-translation-fails.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

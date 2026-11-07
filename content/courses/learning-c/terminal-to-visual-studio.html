@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/terminal-to-visual-studio.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab: move a working C program into Visual Studio | Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../course-series.html"><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="lab-move-a-working-c-program-into-visual-studio">Lab: move a working C program into Visual Studio</h1>
+<p>An IDE combines an editor, navigation, build controls and debugging facilities. It should make the workflow easier to see. The compiler still translates the program, and saving a file still does not build it.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>This Windows lab starts with GCC, CMake, Ninja and GDB installed through MSYS2 UCRT64. Confirm their <code>--version</code> commands in PowerShell. If you have not installed them, use <a href="terminal-lab.html">the terminal setup lab</a>. Obtain a local Bits2Banking source checkout and choose a practice folder. The source example used here is independent of the full Umicom Applications build.</p>
+<h2 id="install-the-ide">1. Install the IDE</h2>
+<p>Follow <a href="https://learn.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=visualstudio">Microsoft's Visual Studio installation guide</a>. Select <strong>Desktop development with C++</strong>, which includes native development and CMake integration. Choose an edition appropriate to your licence. This course uses Visual Studio IDE on Windows; Linux users can continue with the same CMake commands in bash and a local editor.</p>
+<h2 id="copy-and-open-the-existing-lab">2. Copy and open the existing lab</h2>
+<p>In PowerShell:</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force 'C:\umicom-learning'
+Copy-Item -Recurse 'C:\umicom\Umicom-Bits2Banking\labs\native\first-c-programs' 'C:\umicom-learning\first-c-programs'
+Set-Location 'C:\umicom-learning\first-c-programs'
+</code></pre>
+<p>Use the copy command only when its destination does not already exist. In Visual Studio choose <strong>File → Open → Folder</strong> and open this practice folder. Open <code>greeting.c</code> from the folder view. Keep any automatic IDE configuration separate from the <code>build-ucrt</code> folder used below; a build cache belongs to one compiler and source location.</p>
+<h2 id="configure-build-and-test-in-the-ide-terminal">3. Configure, build and test in the IDE terminal</h2>
+<p>Choose <strong>View → Terminal</strong> and select PowerShell. Enter each command separately and stop on errors:</p>
+<pre><code class="language-powershell">Set-Location 'C:\umicom-learning\first-c-programs'
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build-ucrt -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-ucrt --target btb-first-greeting
+.\build-ucrt\btb-first-greeting.exe
+ctest --test-dir build-ucrt -R '^bits2banking\.first_c\.greeting$' --output-on-failure --no-tests=error
+</code></pre>
+<p><code>-S</code> identifies source, <code>-B</code> a separate generated build directory. The generator <code>Ninja</code> schedules work. The explicit compiler preserves this lab's UCRT64 toolchain. <code>--target</code> names one executable. <code>-R</code> selects the named test using a regular expression; the anchors require its complete name. Expect <code>Hello, learner.</code> from the executable and one executed passing test if the unmodified lab builds correctly.</p>
+<p>Do not assume the IDE's toolbar is using this same compiler. Before switching to toolbar builds, configure a matching preset and verify its output. <a href="https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170">Microsoft's CMake documentation</a> describes that integration.</p>
+<h2 id="make-a-visible-change">4. Make a visible change</h2>
+<p>Change the greeting string in <code>greeting.c</code> to a sentence of your choice. Save with Ctrl+S. Rebuild the same target and run it. The old output test should fail because its expected text remains in <code>expected/greeting.txt</code>. Decide whether the changed output was intended. Either restore the original source or update the expected file deliberately to describe the intended result. Rebuild and rerun the selected test.</p>
+<h2 id="pause-in-a-compatible-debugger">5. Pause in a compatible debugger</h2>
+<p>The executable built above contains GCC debug information. Use its matching GDB in the terminal:</p>
+<pre><code class="language-text">gdb .\build-ucrt\btb-first-greeting.exe
+break main
+run
+next
+continue
+quit
+</code></pre>
+<p><code>break main</code> requests a pause at the entry function. <code>run</code> starts it, <code>next</code> advances over a source line, and <code>continue</code> resumes. Exact line numbers depend on the file. An IDE's default Microsoft debugger is not automatically a debugger for this GCC build. Configure compatible integration explicitly before relying on its debug button.</p>
+<h2 id="broaden-the-check-when-needed">6. Broaden the check when needed</h2>
+<p>Build the remaining lab targets with <code>cmake --build build-ucrt</code>, then run <code>ctest --test-dir build-ucrt --output-on-failure --no-tests=error</code>. The current lab registers eight output checks and two contract checks: ten total. A failure or skip is not a pass. The focused greeting check is useful after a greeting-only change; a shared counting-rule change requires its affected contract checks too.</p>
+<p>Continue with <a href="../learning-visual-studio/index.html">the existing Visual Studio product guide</a> for opening a real Umicom repository, or <a href="../umicom-development/sdk-practical-lab.html">the Framework SDK consumer lab</a> to build a small client using installed shared libraries.</p>
+<p><a href="index.html">Learning C contents</a></p>
+
+<nav aria-label="Course navigation"><a href="index.html">Course contents</a> · <a href="../course-series.html">Subject guide</a></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

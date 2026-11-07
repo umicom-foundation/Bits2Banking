@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/04-validate-before-retaining-orders.html
+
+PURPOSE:
+Validate a request before retaining it
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate a request before retaining it | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Validate a request before retaining it</h1>
+<p>This module starts with a local program and synthetic orders. No trading knowledge, broker account or market subscription is required. You will learn how a request becomes a retained order and how a caller checks each result.</p>
+<h2>Start here</h2>
+<p>A terminal is a window for entering commands. A compiler translates C source into a program; CMake prepares its build instructions and Ninja carries them out. Open the <a href="../../../../../labs/framework/order-lifecycle/README.md">order lifecycle laboratory</a> for complete PowerShell and Bash commands, expected output and installation troubleshooting. Read main.c before running it. Each lesson below names the specific source to inspect and a small exercise. All work stays in local memory; no real orders are placed.</p>
+<h2>Validation establishes a boundary</h2>
+<p>Validation checks whether values satisfy a contract before another component relies on them. umi_order_request_validate checks identifiers, instrument fields, enum choices and finite positive quantity. It checks prices when the selected order type needs them. A valid record is still not a credit, risk or trading-permission approval.</p>
+<ol>
+<li>Find the validation call in sim_submit. It occurs before the local order is added.</li>
+<li>Follow a failure return: no accepted order is created on that path.</li>
+<li>Change quantity to zero in the lab and predict which REQUIRE fails.</li>
+<li>Restore the valid quantity before the next experiment.</li>
+</ol>
+<h2>Why finite matters</h2>
+<p>Floating-point arithmetic can represent infinity and a special not-a-number value. Comparing only quantity &lt;= 0 can miss a not-a-number input. The canonical validator uses isfinite as well as a positive-value check. Applications should call this shared validator instead of writing a weaker second version.</p>
+<h2>Exercise</h2>
+<p>List four invalid requests: an empty identifier, zero quantity, unsupported type and missing required price. For each, describe the state that must remain unchanged. A test should inspect both the returned status and the book count.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/trading/order_request.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="03-read-a-local-order-request.html">Previous: Read the fields of a local order request</a> · <a href="05-own-a-broker-session.html">Next: Own a broker session and borrow its results</a></p>
+</nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/04-validate-before-retaining-orders.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

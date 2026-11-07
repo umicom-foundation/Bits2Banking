@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/01-signals-bits-and-circuits.html
+
+PURPOSE:
+Explain the lesson: Describe a circuit with signals.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Describe a circuit with signals | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="02-first-simulation.html">Next lesson</a></nav>
+<h1>Describe a circuit with signals</h1>
+<h2>Before you begin</h2>
+<p>You need a text editor and paper. No circuit board is required. A bit is a value with two possible binary states, written 0 and 1. In a physical circuit those values are represented by electrical ranges; in this lesson they are symbols that we can trace.</p>
+<h2>What an HDL describes</h2>
+<p>HDL means hardware description language. VHDL is one such language. A signal names a connection. An input enters a component; an output leaves it. Several connections can respond to changes without waiting for a C-style loop to visit each one. A simulator calculates those responses.</p>
+<p>Our first component chooses one of two input bits:</p>
+<pre><code class="language-text">A -----------+
+             | selector ---- result
+B -----------+
+                 |
+              choose_b</code></pre>
+<p>When choose_b is 0, result follows A. When it is 1, result follows B. This sentence is the specification: the promise our implementation must keep.</p>
+<h2>Read the source</h2>
+<p>Open <code>labs/hardware/vhdl-foundations/select_bit.vhd</code> in your Bits2Banking checkout. The entity declares the component's ports. The architecture describes its behaviour. The names a and b are arbitrary; their direction and type give them meaning.</p>
+<p><code>std_logic</code> can also represent simulation states such as unknown X. An uninitialized or conflicting signal is useful evidence. It must not silently become a known binary value in our reasoning.</p>
+<h2>Paper lab</h2>
+<ol>
+<li>Draw the selector and label all four connections.</li>
+<li>Set A to 0 and B to 1.</li>
+<li>Predict result with choose_b set to 0, then 1.</li>
+<li>Change both A and B to 1. Predict both results again.</li>
+<li>Explain why the selector does not need to remember its previous output.</li>
+</ol>
+<p>Expected results are 0, 1, 1 and 1. This component is combinational: its current output is determined by its current inputs.</p>
+<h2>Connect to Umicom</h2>
+<p>A processor chooses among inputs throughout its data path. In Umicom Kernel, software chooses operations and handles results; a circuit designer specifies hardware that carries out those operations. This course builds small components before attempting a processor.</p>
+<h2>Check your understanding</h2>
+<p>Does a selector add A and B? No: it chooses one. If your drawing has no control connection, it cannot describe which input should be selected. Add that connection before writing code.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/select_bit.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-first-simulation.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/01-signals-bits-and-circuits.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

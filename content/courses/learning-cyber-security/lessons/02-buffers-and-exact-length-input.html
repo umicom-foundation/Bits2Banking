@@ -1,0 +1,49 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/02-buffers-and-exact-length-input.html
+
+PURPOSE:
+Prevent buffer errors at an input boundary
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prevent buffer errors at an input boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Prevent buffer errors at an input boundary</h1>
+<p>Learn how application inputs, memory ownership and identity checks fit together. The examples use Umicom Framework and a small Bits2Banking consumer. Every chapter explains its vocabulary before the exercise.</p>
+<h2>Start here</h2>
+<p>A source file is readable program text. A compiler turns that text into machine instructions. A library supplies reusable functions; this course calls the security library in Umicom Framework. A terminal accepts commands. You can read and trace every example without installing anything.</p>
+<p>For the practical lab, install Git, a C23 compiler, CMake 3.26 or newer, Ninja, and a matching Framework SDK containing UmiLocalProfileNameBytes. In Windows PowerShell, open the repository with Set-Location and make the UCRT64 tools visible:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/framework/profile-name-boundary -B build/profile-name -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build/profile-name
+ctest --test-dir build/profile-name --output-on-failure --no-tests=error
+&amp; &quot;.\build\profile-name\btb-profile-name.exe&quot;</code></pre>
+<p>Run one command at a time and stop on an error. Change the SDK path to your installation. In bash, use cd to enter your checkout, the same three CMake/CTest commands, and ./build/profile-name/btb-profile-name to launch. The expected line is Canonical name: alice_7. A missing package means the SDK path is wrong or incomplete; a missing symbol means its header and library must be updated together. This lab does not collect credentials or write a password store. The <a href="../../learning-c/index.html">Learning C course</a> explains basic syntax in more depth.</p>
+<h2>Bytes, buffers and lengths</h2>
+<p>A byte is a small storage unit. A buffer is a region reserved for several bytes. In C, an array of 49 char elements has 49 positions, numbered 0 through 48. Accessing position 49 is outside that array. A buffer overflow writes beyond the destination; an over-read reads beyond the source. Both violate the program's memory contract.</p>
+<p>A C string ends with a zero byte, written '\0'. A network field does not automatically have that terminator. strlen and %s expect strings, so they cannot safely discover the length of an arbitrary packet field.</p>
+<h2>Follow the actual API</h2>
+<pre><code class="language-c">const char field[] = {'A', 'l', 'i', 'c', 'e', '_', '7'};
+char out[UMI_LOCAL_PROFILE_NAME_CAPACITY];
+UmiStatus status = UmiLocalProfileNameBytes(field, sizeof(field), out);</code></pre>
+<p>The first argument points to readable bytes. The second says how many belong to the field. The third points to space for the complete result. sizeof(field) is seven here because field is an array in this scope. Applying sizeof to a pointer would measure the pointer, not the data it references.</p>
+<ol>
+<li>Locate the length rejection before the loop in local_profile.c.</li>
+<li>Observe that each loop iteration reads name[i] only while i is less than length.</li>
+<li>Find the temporary value array. It leaves space for the trailing zero.</li>
+<li>Find the final copy. It occurs only after all bytes are accepted.</li>
+</ol>
+<p>A correct length cannot be guessed from an untrusted claim. The caller must compare a packet's stated length with the bytes actually received before calling this function. The validator cannot inspect the size of the allocation behind an arbitrary pointer.</p>
+<h2>Lab and expected result</h2>
+<p>Run the boundaries test using the setup commands. Read the invalid array containing an embedded zero. The exact-length interface rejects it; it does not silently accept the prefix. Change a copy of that test to expect success and observe that the assertion should fail. Restore the test afterwards.</p>
+<h2>Summary</h2>
+<p>Carry length and capacity separately. Validate both before access. Use string operations only after establishing a terminator within readable storage. For larger text, do not assume the small username policy is appropriate: use the contract for that data type.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/security/local_profile.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="01-assets-and-trust-boundaries.html">Previous: Identify what an application must protect</a> · <a href="03-dangling-pointers-and-ownership.html">Next: Recognise dangling pointers and define ownership</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/02-buffers-and-exact-length-input.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

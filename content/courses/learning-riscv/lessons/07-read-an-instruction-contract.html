@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/07-read-an-instruction-contract.html
+
+PURPOSE:
+Explain the lesson: Read an instruction contract.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read an instruction contract | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-call-return-and-stack.html">Previous lesson</a> · <a rel="next" href="08-distinguish-register-width-and-data-width.html">Next lesson</a></nav>
+<h1>Read an instruction contract</h1>
+<p>A processor executes instructions that move or transform values. To understand an instruction, identify its inputs, its output and any memory it accesses.</p>
+<h2>Prepare</h2>
+<p>Open sum.S in the RISC-V sequences lab. Its README separates reading, assembling and running. Start by reading; an emulator is not required for this exercise.</p>
+<p>The function receives an array address in a0 and an element count in a1. It returns a sum in a0.</p>
+<h2>Read three operations</h2>
+<p>mv t0, a0 copies the address into a temporary register. It does not copy the whole array.</p>
+<p>ld t1, 0(t0) loads an eight-byte value from the address in t0.</p>
+<p>add a0, a0, t1 adds that value to the running sum. The destination and one source can be the same register.</p>
+<h2>Trace one element</h2>
+<p>Suppose the first array element is 2. Before the load, write t0 = A and a0 = 0. After the load, t1 = 2. After the addition, a0 = 2.</p>
+<p>A is a symbolic address. It is not the value stored at that address.</p>
+<h2>Exercise</h2>
+<p>For each line in the loop, mark R for register access, M for memory access and C for control flow. Some lines have more than one role.</p>
+<p>Then explain why moving t0 by eight advances by one element. The declaration uses uint64_t, which occupies eight bytes on this target.</p>
+<h2>Recovery</h2>
+<p>If a trace becomes confusing, give addresses and stored values different notation. Write A + 8 for an address and [A + 8] = 5 for its contents.</p>
+<p>The lab's functions are ordinary callable routines. Umicom Kernel uses the same instruction vocabulary inside a larger environment that also manages privilege, traps and devices.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/sum.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-call-return-and-stack.html">Previous lesson</a> · <a rel="next" href="08-distinguish-register-width-and-data-width.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/07-read-an-instruction-contract.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

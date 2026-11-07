@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-linux-development/lessons/03-follow-an-exit-status-to-the-terminal.html
+
+PURPOSE:
+  Present "Follow an exit status to the terminal" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow an exit status to the terminal | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Follow an exit status to the terminal</h1>
+<p>A command can print a useful sentence and still fail. This lesson separates a program's displayed output from its exit status, then shows how a terminal can report the status of the command that just finished.</p>
+<p>Source to open: <code>Umicom-Bits2Banking/labs/native/framework-activity/console.c</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath 'labs\native\framework-activity\console.c'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' 'labs/native/framework-activity/console.c'</code></pre>
+<h2>Understand the idea</h2>
+<p>A command-line program has several ways to communicate. Standard output normally carries ordinary results; standard error carries diagnostics. An exit status is a small result value that the surrounding shell can inspect. Conventionally zero indicates success and a nonzero value indicates a failure or other condition documented by the command. The terminal does not turn a printed word such as success into proof that a build worked. When a later command runs, the shell's most-recent-status value may change.</p>
+<pre><code class="language-text">native program exits -&gt; shell records its status -&gt; record it immediately
+                                                   |
+                                        then run another command</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Open console.c and find its calls into the activity rule. Identify the successful and failing returns from main. Copy the actual messages into two columns labelled result and diagnostic; do not invent an output string.</li><li>In the existing lab setup guide, locate the command that runs the console executable. In your own notes, place printf 'status=%s\n' &quot;$?&quot; immediately after that command in Bash. In PowerShell, place $LASTEXITCODE immediately after the native executable call.</li><li>Explain what happens if you run another native program before recording the status. Draw the command-to-status sequence below. Keep the status next to the program and source revision it describes.</li><li>Prepare a small observation table with command, exit status, standard output and standard error. Use it when you later run the authorised lab. A source reading can predict the outcome, but only execution supplies the observation.</li></ol>
+<h2>Expected result</h2>
+<p>A useful record includes the exit status as well as text output. You should be able to tell a predicted return path from an observed process result and explain why a later successful command does not erase an earlier failure in the evidence.</p>
+<h2>If the result differs</h2>
+<p>If the recorded status seems unrelated, check which command ran immediately before it. With pipelines, inspect the shell's pipeline rules; the last stage may be a logger rather than the program of interest. Do not conclude that an empty log means success.</p>
+<h2>Explain it yourself</h2>
+<p>A compiler reports an error, then a log-writing command succeeds. Which result determines whether compilation succeeded?</p>
+<details><summary>Worked explanation</summary><p>The compiler's result determines compilation success. The logger's result only tells you whether logging succeeded. Record both where needed, and do not continue to tests against an incomplete build as though compilation had passed.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="02-processes-output-and-exit-status.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>
+

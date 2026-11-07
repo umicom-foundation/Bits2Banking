@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/15-validate-stack-shape-before-execution.html
+
+PURPOSE:
+Explain the lesson: Validate stack shape before execution.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate stack shape before execution | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-admit-decimal-literals-without-overflow.html">Previous lesson</a> · <a rel="next" href="16-budget-execution-and-publish-results.html">Next lesson</a></nav>
+<h1>Validate stack shape before execution</h1>
+<p>Before executing a program, Umicom C checks whether its instructions can use the stack correctly. This is structural validation: it concerns instruction arrangement before numeric results are calculated.</p>
+<h2>Setup recap</h2>
+<p>Open umc_validate in src/vm.c. For executable exercises, use the compiler-experiments lab and its test_validation.c file.</p>
+<p>A stack stores values in order. A depth of three means three values are currently available.</p>
+<h2>1. Track depth without computing values</h2>
+<p>PUSH adds one value, so depth increases. ADD needs two values and replaces them with one, so depth decreases by one. NEGATE needs one value but leaves depth unchanged.</p>
+<p>These rules can be checked using only instruction kinds. There is no need to know whether the values are 2 and 3 or 200 and 300.</p>
+<h2>2. Check RETURN precisely</h2>
+<p>RETURN requires exactly one stack value and must be the final instruction. Otherwise the program is rejected.</p>
+<p>Allowing unexamined instructions after RETURN would make the accepted representation ambiguous. Full validation keeps the entire declared program accountable.</p>
+<p>The validator also rejects unknown opcodes and nonzero operand fields on instructions that do not use an operand.</p>
+<h2>3. Separate shape from arithmetic</h2>
+<p>PUSH 8, PUSH 0, DIVIDE, RETURN has a valid stack shape. Execution must still refuse division by zero.</p>
+<p>Validation therefore does not mean every accepted program will calculate a result. It establishes the structural preconditions needed to attempt execution safely.</p>
+<h2>Exercise</h2>
+<p>Draw depths for these sequences:</p>
+<p>``<code>text PUSH, PUSH, ADD, RETURN ADD, RETURN PUSH, PUSH, RETURN PUSH, RETURN, PUSH </code>``</p>
+<p>Only the first has the required shape. Explain the first failing rule for each other sequence.</p>
+<h2>Recovery and limits</h2>
+<p>Run the validation group through the lab commands when ready. A refusal must preserve the caller's result fields, which the tests initialise to recognisable values.</p>
+<p>The VM has no jump or host-call instruction in this subset. More complex bytecode would require additional reasoning about control-flow paths and capabilities; the current linear check is not a general validator for arbitrary languages.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-c/blob/main/src/vm.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-admit-decimal-literals-without-overflow.html">Previous lesson</a> · <a rel="next" href="16-budget-execution-and-publish-results.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-compiler-in-c/15-validate-stack-shape-before-execution.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

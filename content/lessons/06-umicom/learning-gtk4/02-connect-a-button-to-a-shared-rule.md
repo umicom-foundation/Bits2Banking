@@ -44,3 +44,5 @@ The existing callback holds a window reference while using its state and release
 [Course contents](index.md) · [Previous: Widgets and the event loop](01-widgets-and-the-event-loop.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Own state for the lifetime of a window](03-own-state-for-a-window.md)

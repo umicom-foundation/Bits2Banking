@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/31-dispatch-in-ready-queue-order.html
+
+PURPOSE:
+Explain the lesson: Dispatch in ready-queue order.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dispatch in ready-queue order | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="30-model-ready-running-and-waiting.html">Previous lesson</a> · <a rel="next" href="32-require-an-idle-processor-before-dispatch.html">Next lesson</a></nav>
+<h1>Dispatch in ready-queue order</h1>
+<h2>Prepare</h2>
+<p>Read Queue and BtbRoundRobinNext in round_robin.c. FIFO means first in, first out: the task that has waited longest in this ready queue is selected first.</p>
+<p>The queue stores slot indices, while callers receive task handles.</p>
+<h2>Trace the queue</h2>
+<p>Admit A, B and C. The ready order is A, B, C. Next removes A from the head and marks it running. Yield appends A to the end, producing B, C, A.</p>
+<p>The array wraps using modulo BTB_RR_TASK_LIMIT.</p>
+<h2>Lab</h2>
+<p>Continue this sequence through six dispatch-and-yield pairs. Write the expected running task each time before checking the source.</p>
+<p>Expected: A, B, C, A, B, C while all three remain runnable and each yields once.</p>
+<h2>Exercise and explanation</h2>
+<p>Does FIFO imply that every task receives equal elapsed CPU time? No. The model has no time slice or execution-duration measurement. It specifies selection order under the operations supplied.</p>
+<h2>Troubleshoot</h2>
+<p>If a task runs twice before another ready task, inspect queue insertion and head advancement. Do not add a special case based on task names.</p>
+<p>The reusable lesson is to separate policy from mechanism. FIFO is the ordering policy; the bounded ring is its storage mechanism. A native scheduler additionally needs a safe way to save and restore execution state.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/round-robin-scheduler/round_robin.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="30-model-ready-running-and-waiting.html">Previous lesson</a> · <a rel="next" href="32-require-an-idle-processor-before-dispatch.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/31-dispatch-in-ready-queue-order.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

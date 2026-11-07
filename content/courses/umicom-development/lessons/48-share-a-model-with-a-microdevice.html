@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/48-share-a-model-with-a-microdevice.html
+
+PURPOSE:
+Explain the lesson: Share a C model with a microdevice.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Share a C model with a microdevice | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="47-test-adapters-and-user-journeys.html">Previous lesson</a> · <a rel="next" href="49-understand-a-cross-compiled-build.html">Next lesson</a></nav>
+<h1>Share a C model with a microdevice</h1>
+<p>A microdevice often has a small processor, limited memory and physical inputs instead of desktop windows. The same application rule can still be shared when it does not depend on a windowing system.</p>
+<p>This lab connects the existing activity model to an original non-wireless RP2040 Pico. A sampled button increases a bounded count. The LED shows whether the count is odd.</p>
+<h2>Setup recap</h2>
+<p>Use the complete README and WIRING.md in labs/microdevices/pico-activity. You need the Pico SDK, a compatible Arm cross-compiler with C23 support, CMake, Ninja and the matching Framework headers. The host activity-adapter checks are a separate exercise.</p>
+<h2>1. Locate the shared rule</h2>
+<p>The build includes activity.c from the Framework activity laboratory and button.c from activity-adapters. main.c contains the hardware loop. It does not introduce another copy of the counting rule.</p>
+<p>The teaching model uses Framework's UmiStatus contract. This small firmware does not link the entire desktop Framework or claim that every Framework service is available on the board.</p>
+<h2>2. Translate the input</h2>
+<p>The button connects GP15 to ground. The input has an internal pull-up, so an open button reads high and a pressed button reads low. The expression <code>!gpio_get(15)</code> translates that electrical reading into the application's pressed value.</p>
+<p>BtbActivityButtonSample remembers the last sample and counts a sampled rise. It is not a physical-button debounce algorithm.</p>
+<h2>3. Translate the output</h2>
+<p>The expression <code>completed &amp; 1U</code> selects the least significant bit. It is 1 for odd counts and 0 for even counts. gpio_put sends that value to the onboard LED.</p>
+<p>The LED is a limited display. It does not show the complete count or identify saturation. Use that limitation when deciding what the interface can communicate.</p>
+<h2>Exercise and recovery</h2>
+<p>Trace samples false, true, true, false, true. Starting from zero, the count should end at 2 and the LED should be off. Explain why the held true sample does not add another event.</p>
+<p>If the LED changes more than once per press on a physical board, investigate contact bounce. Keep the model, sampling policy and electrical observation separate while diagnosing the result.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/microdevices/pico-activity/main.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="47-test-adapters-and-user-journeys.html">Previous lesson</a> · <a rel="next" href="49-understand-a-cross-compiled-build.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/48-share-a-model-with-a-microdevice.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

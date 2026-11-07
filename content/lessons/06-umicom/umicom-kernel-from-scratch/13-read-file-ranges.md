@@ -67,3 +67,7 @@ Continue with [Learning C: counts, offsets and progress](../../learning-c/16-cou
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/13-read-file-ranges.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Keep results separate from the memory they describe](12-ownership-and-cleanup.md)
+
+[Next: Inspect file bytes in hexadecimal](14-inspect-binary-files.md)

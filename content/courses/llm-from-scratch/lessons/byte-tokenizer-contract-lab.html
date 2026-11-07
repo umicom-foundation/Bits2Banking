@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/byte-tokenizer-contract-lab.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab: turn bytes into tokens and recover them | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1 id="lab-turn-bytes-into-tokens-and-recover-them">Lab: turn bytes into tokens and recover them</h1>
+<p>A language model processes numbers. A tokeniser converts input into those numbers using a defined vocabulary. Framework's byte tokeniser is deliberately simple: each possible byte has one token. This lab studies its exact input/output contract before attempting training.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>Install a C23 compiler, CMake and Ninja using <a href="../../learning-c/terminal-lab.html">terminal setup</a>. Obtain Umicom Framework sources under <code>Umicom-Applications/framework</code>, or adapt the paths to a standalone checkout. The existing <code>learning/native-llm</code> project builds the real training service independently of application windows. No model download, account, GPU or market data is required for these checks.</p>
+<p>If starting the course here, read <a href="first-next-token-model.html">one next-token prediction</a> for the meaning of a prediction and <a href="first-training-run.html">the first training run</a> for the broader experiment. Tokenisation prepares input; it does not train a model.</p>
+<h2 id="read-the-vocabulary">1. Read the vocabulary</h2>
+<p>Open <code>include/umicom/ai/training/byte_tokenizer.h</code>. Tokens 0–3 are reserved for padding, beginning, end and unknown markers. Ordinary bytes map to IDs 4–259. The encode function adds four to each byte value; it does not automatically insert beginning or end markers.</p>
+<table>
+<thead>
+<tr>
+<th>Input byte</th>
+<th>Token ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>zero</td>
+<td>4</td>
+</tr>
+<tr>
+<td>capital A, byte 65</td>
+<td>69</td>
+</tr>
+<tr>
+<td>maximum byte, 255</td>
+<td>259</td>
+</tr>
+</tbody>
+</table>
+<p>A byte is not always a whole written character. UTF-8 can encode one character using several bytes. This tokeniser preserves those bytes; it does not claim to recognise words or language meaning.</p>
+<h2 id="build-only-the-contract-target">2. Build only the contract target</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S 'C:/umicom/Umicom-Applications/framework/learning/native-llm' -B 'C:/umicom-learning/native-llm' -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build 'C:/umicom-learning/native-llm' --target umicom-ai-training-byte-tokenizer-test --parallel 2
+ctest --test-dir 'C:/umicom-learning/native-llm' -R '^framework\.ai\.training\.byte_tokenizer$' --output-on-failure --no-tests=error
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">cmake -S &quot;$HOME/umicom/Umicom-Applications/framework/learning/native-llm&quot; -B &quot;$HOME/umicom-learning/native-llm&quot; -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build &quot;$HOME/umicom-learning/native-llm&quot; --target umicom-ai-training-byte-tokenizer-test --parallel 2
+ctest --test-dir &quot;$HOME/umicom-learning/native-llm&quot; -R '^framework\.ai\.training\.byte_tokenizer$' --output-on-failure --no-tests=error
+</code></pre>
+<p>The expected selection is one test. Use <code>ctest -V</code> with the same directory and expression if you need the success text: <code>PASS: byte tokenizer round-trip and rejection</code>.</p>
+<h2 id="explain-the-round-trip">3. Explain the round trip</h2>
+<p>Read <code>tests/ai_training/test_training_byte_tokenizer.c</code>. It creates every possible byte value, encodes them and decodes the result. A round trip should reproduce the original bytes exactly, including zero. The test also supplies too little output space and an invalid token, then checks that failure preserves the specified outputs.</p>
+<p>The output capacity is measured in elements. For an array of 256 <code>uint32_t</code> tokens, pass 256, not its storage size in bytes. <a href="../../learning-c/lessons/19-length-capacity-and-terminators.html">Length and capacity</a> explains this distinction.</p>
+<h2 id="exercise-and-recovery">Exercise and recovery</h2>
+<p>Manually encode the three bytes A, zero and B. The answer is 69, 4 and 70. Would passing token 1 to this byte decoder represent an ordinary byte? No: it is a reserved marker, and the decoder refuses that input. Higher-level sequence logic must handle markers according to its own contract.</p>
+<p>If the test name is absent, check <code>BUILD_TESTING</code> and the source directory. If a build fails, retain the first compiler diagnostic; changing the vocabulary to silence a test would change the data format. Continue with <a href="sequence-split-contract-lab.html">training/evaluation partitions</a>, then return to <a href="../index.html">LLM from Scratch</a>.</p>
+
+</article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>

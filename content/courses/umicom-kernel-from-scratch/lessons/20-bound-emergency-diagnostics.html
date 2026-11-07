@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/20-bound-emergency-diagnostics.html
+
+PURPOSE:
+Explain the lesson: Bound emergency diagnostics.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bound emergency diagnostics | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="19-distinguish-a-deadline-from-a-delay.html">Previous lesson</a> · <a rel="next" href="21-format-a-register-without-allocation.html">Next lesson</a></nav>
+<h1>Bound emergency diagnostics</h1>
+<p>Diagnostics are the messages used to explain a failure. A diagnostic path can fail too. An emergency handler must avoid waiting forever for a device that may no longer respond.</p>
+<h2>Setup recap</h2>
+<p>Read platform/qemu-riscv64/trap_emergency.c. UART is a serial communication device. In this adapter, a status register indicates when the transmitter can accept a byte.</p>
+<p>This is a source-reading exercise. The QEMU-specific memory addresses must not be dereferenced by a normal desktop application.</p>
+<h2>1. Find the loop limit</h2>
+<p>UmicomTrapEmergencyByte checks the transmitter at most 10,000 times. If it becomes ready, the function writes one byte and returns. Otherwise the function reaches the end without writing that byte.</p>
+<p>The count bounds loop iterations. It does not specify 10,000 milliseconds or guarantee a wall-clock deadline. A hardware access itself still depends on the platform responding.</p>
+<h2>2. Bound the text too</h2>
+<p>UmicomTrapEmergencyText limits a message to 128 characters and stops at a terminating zero. Its inputs are local immutable literals, not pointers supplied by a failing user program.</p>
+<p>The emergency path avoids an allocator and formatted-output library. That reduces dependencies when ordinary program state may already be damaged.</p>
+<h2>3. Explain the tradeoff</h2>
+<p>The report can be incomplete when the transmitter is unavailable. That is preferable to an unbounded loop that prevents the handler from attempting its final stop operation.</p>
+<p>The source explicitly keeps a normal emergency as failure. A separate fault-test build may recognise a precise injected failure, but this does not make unexpected production faults successful.</p>
+<h2>Exercise and explanation</h2>
+<p>Create a table for a transmitter ready immediately, ready on the final permitted poll and never ready. State whether a byte is written and whether the loop can continue indefinitely through its own logic.</p>
+<p>Now estimate the maximum number of polls for a 20-character literal when every byte is refused. The bound is 20 multiplied by 10,000. Do not convert it to time without measurements.</p>
+<p>A missing transcript is a limit of this diagnostic channel. It is not evidence that no fault occurred or that crash information was stored durably.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/platform/qemu-riscv64/trap_emergency.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="19-distinguish-a-deadline-from-a-delay.html">Previous lesson</a> · <a rel="next" href="21-format-a-register-without-allocation.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/20-bound-emergency-diagnostics.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

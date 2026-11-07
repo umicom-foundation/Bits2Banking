@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/01-install-and-run.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Install D and compile a first program | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../course-series.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="install-d-and-compile-a-first-program">Install D and compile a first program</h1>
+<p>D is a programming language that can compile to a native executable. An executable is a file the operating system can start. This lesson creates a small text program without requiring an IDE. An IDE is an application that combines editing, building and debugging tools; understanding the commands first makes those tools easier to use.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>You need a Windows or Linux computer, permission to install a compiler, and a writable practice folder. No D or C knowledge is assumed. Download the reference compiler, DMD, from the <a href="https://dlang.org/download.html">official D downloads page</a>. Choose the installer or package for your operating system and follow its instructions, including any linker prerequisites it names. Open a fresh terminal and enter <code>dmd --version</code>. Continue only when it prints compiler information.</p>
+<p>On Windows use PowerShell; on Linux use bash. A terminal displays input and output; a shell reads commands. For a longer explanation, use <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/08-system-administration/03-open-powershell-or-linux-terminal.md">Open a terminal</a>. This course uses DMD command options; another D compiler may use different options.</p>
+<h2 id="write-the-file">1. Write the file</h2>
+<p>In PowerShell, choose a new folder:</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Path 'C:\umicom-learning\d-first'
+Set-Location 'C:\umicom-learning\d-first'
+@'
+import std.stdio : writeln;
+
+void main() {
+    writeln(&quot;Welcome to Umicom learning.&quot;);
+}
+'@ | Set-Content -Encoding utf8 hello.d
+Get-Content hello.d
+</code></pre>
+<p><code>New-Item</code> creates a directory and <code>Set-Location</code> enters it. The here-string contains literal source text. <code>Set-Content</code> saves the text, replacing an existing file of that name, so use a new practice folder. <code>Get-Content</code> displays the file for review.</p>
+<p>In bash:</p>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom-learning/d-first&quot;
+cd &quot;$HOME/umicom-learning/d-first&quot;
+cat &gt; hello.d &lt;&lt;'EOF'
+import std.stdio : writeln;
+
+void main() {
+    writeln(&quot;Welcome to Umicom learning.&quot;);
+}
+EOF
+cat hello.d
+</code></pre>
+<p><code>cat</code> with the quoted delimiter reads literal lines into the file. <code>&gt;</code> replaces that file's contents. Neither set of shell commands is part of the D program.</p>
+<h2 id="read-the-program">2. Read the program</h2>
+<p><code>import std.stdio : writeln;</code> makes the named output function available from D's standard library. A library is a collection of reusable functionality. A semicolon ends this statement. <code>void main()</code> declares the entry function; <code>void</code> means it does not return a value. Braces enclose its body. <code>writeln</code> writes the quoted string and a newline.</p>
+<p>The path through the tools is <strong>hello.d → compiler and linker → executable → terminal output</strong>. The linker combines compiled code with required library code or references.</p>
+<h2 id="build-and-run">3. Build and run</h2>
+<p>Windows PowerShell:</p>
+<pre><code class="language-powershell">dmd -g hello.d -of=hello.exe
+$LASTEXITCODE
+.\hello.exe
+</code></pre>
+<p>Linux bash:</p>
+<pre><code class="language-bash">dmd -g hello.d -of=hello
+echo $?
+./hello
+</code></pre>
+<p><code>-g</code> requests debug information, useful for relating execution to source. <code>-of=</code> names the output. A zero compiler completion code means the command succeeded; run the executable only then. <code>./</code> or <code>.\</code> means the current folder. Expected program output is <code>Welcome to Umicom learning.</code> followed by a newline.</p>
+<h2 id="diagnose-a-small-error">4. Diagnose a small error</h2>
+<p>Save a separate copy, remove the semicolon after <code>writeln(...)</code>, and compile that copy. Read the first diagnostic, restore the semicolon and compile again. A compiler can identify where it became unable to understand the text; the actual mistake can be just before that position. If the build fails, do not run an older executable and mistake its output for the new source.</p>
+<p>If <code>dmd</code> cannot be found, correct the compiler's PATH entry and reopen the terminal. If compilation succeeds but linking fails, read the DMD installer documentation for the required platform linker and libraries. These are environment problems, not reasons to change the teaching program.</p>
+<h2 id="exercise-and-answer">Exercise and answer</h2>
+<p>Change the text to <code>My first D program.</code> Recompile and run. Only the sentence changes; the source still has one import, one entry function and one output call. Next, use a function with inputs and executable checks in <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/d-first-program/progress.d">the progress example</a>.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-contracts-and-unit-tests.html">Next: contracts and unit tests</a></p>
+
+<nav aria-label="Course navigation"><a href="../index.html">Course contents</a> · <a href="../../course-series.html">Subject guide</a></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

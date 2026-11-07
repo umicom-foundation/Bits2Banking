@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/17-keep-unknown-signals-visible.html
+
+PURPOSE:
+Explain the lesson: Keep unknown signals visible.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep unknown signals visible | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="16-enumerate-all-byte-inputs.html">Previous lesson</a> · <a rel="next" href="18-count-latency-from-acceptance.html">Next lesson</a></nav>
+<h1>Keep unknown signals visible</h1>
+<p>Simulation can represent a signal whose value is not known. This helps expose missing initialization, conflicting drivers or incomplete assumptions.</p>
+<h2>Prepare</h2>
+<p>Read the final stimulus in tb_word_parity.vhd. It assigns 0000000X to word_in and expects odd to become X.</p>
+<p>X is a std_logic value used to represent an unknown result. It is not a third stable voltage that this lesson asks you to generate on a board.</p>
+<h2>Trace uncertainty</h2>
+<p>The seven known zero bits do not affect parity. The remaining bit could be zero or one, so the parity cannot be determined.</p>
+<p>XOR preserves that uncertainty. Replacing unknown inputs with zero would produce a confident answer without sufficient information.</p>
+<h2>Exercise</h2>
+<p>Write the two possible binary replacements for X. Compute their parity separately. Since the answers differ, a single known output is unjustified.</p>
+<p>Now consider two unknown bits. Do not assume they are equal merely because both are displayed as X; each represents missing knowledge.</p>
+<h2>Use the diagnostic</h2>
+<p>If a waveform shows X unexpectedly, inspect initialization, reset, driver ownership and input timing. Find the earliest unknown rather than only the final incorrect output.</p>
+<p>For a clocked circuit, verify that the intended reset edge actually occurred before observations began.</p>
+<h2>Connect to application debugging</h2>
+<p>An absent field, uninitialized variable or unknown network outcome should also remain distinguishable from a valid zero or a successful operation. The representation differs, but the reasoning principle is similar.</p>
+<p>The test's X check is a simulation expectation. Physical-device qualification still requires electrical and timing analysis; an X-free simulation is not proof of a reliable board.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/tb_word_parity.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="16-enumerate-all-byte-inputs.html">Previous lesson</a> · <a rel="next" href="18-count-latency-from-acceptance.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/17-keep-unknown-signals-visible.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

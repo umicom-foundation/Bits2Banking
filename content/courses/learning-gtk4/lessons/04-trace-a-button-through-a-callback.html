@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/04-trace-a-button-through-a-callback.html
+
+PURPOSE:
+Explain the lesson: Trace a button through a C callback.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trace a button through a C callback | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-own-state-for-a-window.html">Previous lesson</a> · <a href="05-window-state-and-independent-instances.html">Next lesson</a></nav>
+<h1>Trace a button through a C callback</h1>
+<h2>From gesture to function</h2>
+<p>A GTK signal reports an event such as a button being activated. A callback is the function registered to receive that signal. Its parameters must match the signal's expected signature; a cast does not make an incompatible function safe.</p>
+<p>The activity window uses a button named Record one exercise. Its clicked signal reaches Completed, which calls the same C model used by the console exercise.</p>
+<h2>Setup recap</h2>
+<p>Use the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/README.md">Framework activity lab</a>. Install GTK4 development files, a C23 compiler, CMake, Ninja and a matching Framework SDK. Configure the lab with BTB_ACTIVITY_GTK4=ON. Follow its complete commands rather than enabling GUI options in an unrelated build directory.</p>
+<h2>Follow four stages</h2>
+<ol>
+<li>Activate creates a GtkApplicationWindow and a vertical GtkBox.</li>
+<li>The code creates the label and button and appends them to the box.</li>
+<li>g_signal_connect_object connects clicked to Completed with the window as callback data.</li>
+<li>Completed asks BtbActivityAdvance to update the count, then changes the label.</li>
+</ol>
+<pre><code class="language-text">button activation -&gt; Completed -&gt; BtbActivityAdvance
+                                  |
+                         status + count
+                                  |
+                            label text</code></pre>
+<p>The model does not know which mouse button was used or how the window is arranged. Those are interface concerns.</p>
+<h2>Lab</h2>
+<ol>
+<li>Build and launch the optional window.</li>
+<li>Click Record one exercise and expect the displayed count to increase.</li>
+<li>Use keyboard focus and activation to repeat the action.</li>
+<li>Compare the callback with the console caller.</li>
+<li>Locate the error branch and explain its message.</li>
+<li>Close the window and confirm the process exits when no application work remains.</li>
+</ol>
+<p>A compilation pass alone does not prove the signal was delivered. Record the action and visible result.</p>
+<h2>Troubleshooting</h2>
+<p>If the window opens but clicking does nothing, check the actual signal registration, the callback data and whether the button is sensitive. If the process becomes unresponsive, investigate work blocking the main event loop. Do not add a busy waiting loop to make a callback arrive.</p>
+<h2>Exercise and explanation</h2>
+<p>Why can both the console and GTK window call the same model? The model's inputs and outputs are ordinary C values and a Framework status. It has no dependency on the widget tree. That separation makes the rule reusable and directly testable.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-own-state-for-a-window.html">Previous lesson</a> · <a href="05-window-state-and-independent-instances.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/learning-gtk4/04-trace-a-button-through-a-callback.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

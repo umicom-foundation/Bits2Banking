@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/distributed-learning/lessons/086-count-sequences-tokens-and-updates.html
+
+PURPOSE:
+Count sequences, tokens and optimiser updates
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Count sequences, tokens and optimiser updates | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Count sequences, tokens and optimiser updates</h1>
+<p>Training adjusts numbers called model parameters so that predictions better match examples. A batch is a group of examples used for one adjustment. This module follows a small, local Framework experiment. It assumes no previous machine-learning course and introduces each term before using it. A local experiment is the first measurement needed when designing work for several computers.</p>
+<h2>Set up this laboratory</h2>
+<ol>
+<li>Install a C23 compiler, CMake and Ninja. On Windows, open PowerShell and make the installed UCRT64 tools available with <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code>. On Linux, open a terminal and ensure <code>cc</code>, <code>cmake</code> and <code>ninja</code> are installed through your distribution.</li>
+<li>Use a checkout of Umicom Framework containing <code>learning/native-llm/inspect_accumulation.c</code>. The examples below use the Framework child of Umicom Applications.</li>
+<li>Configure a separate laboratory directory. This prepares build instructions; it does not train a model.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Applications\framework
+cmake -S learning/native-llm -B build/learning-accumulation -G Ninja -DBUILD_TESTING=ON
+cmake --build build/learning-accumulation --target umicom-native-llm-accumulation
+&amp; .\build\learning-accumulation\umicom-native-llm-accumulation.exe 2</code></pre>
+<p>In Bash, change to the Framework directory, run the same two <code>cmake</code> commands, then run <code>./build/learning-accumulation/umicom-native-llm-accumulation 2</code>. Stop if configuration or compilation fails; inspect the first diagnostic before proceeding. Expected successful output includes <code>Effective tokens: 40</code> and <code>Comparison: within tolerance</code>. Numerical values and memory observations must be recorded from your actual run. These are instructions to execute, not a claim that a particular environment has passed.</p>
+<h2>Three different counts</h2>
+<p>A sequence is one complete context, here eight tokens. The effective batch contains five sequences, so it contains <code>5 × 8 = 40</code> token positions. A microbatch is the part processed by one temporary computation graph. An optimiser update is the final change to all trainable parameters. These quantities have different units.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Argument</th><th scope="col">Sequences per graph</th><th scope="col">Token positions per graph</th><th scope="col">Final group</th><th scope="col">Optimiser updates</th></tr></thead><tbody><tr><td><code>1</code></td><td>1</td><td>8</td><td>8</td><td>1</td></tr><tr><td><code>2</code></td><td>2</td><td>16</td><td>8</td><td>1</td></tr><tr><td><code>5</code></td><td>5</td><td>40</td><td>40</td><td>1</td></tr></tbody></table></div>
+<p>A graph records intermediate calculations needed to compute gradients. A gradient describes how a small parameter change would affect the loss, the model's prediction error. Framework collects gradients from all groups, then updates the parameters once.</p>
+<h2>Calculate before running</h2>
+<ol>
+<li>Divide forty by sixteen. Two full groups use thirty-two token positions.</li>
+<li>Subtract thirty-two from forty. Eight positions remain.</li>
+<li>Record the actual sequence of work as <code>16, 16, 8</code>.</li>
+<li>Run the laboratory with argument <code>2</code> and compare its token-capacity and step-count output with your calculations.</li>
+</ol>
+<p>The final group must contain whole contexts. The API rejects a token count that is not divisible by the configured context length. This is a shape rule: it ensures that a sequence is never silently cut in half.</p>
+<h2>Understand the public contract</h2>
+<p>The parameters <code>inputIds</code> and <code>targetIds</code> point to caller-owned arrays. <code>tokenCount</code> counts elements, not bytes. <code>microbatchSequences</code> limits how many complete sequences one graph handles. <code>learningRate</code> controls the scale of the update. <code>outLoss</code> points to a float where the service writes the resulting mean loss on success.</p>
+<h2>Check your understanding</h2>
+<p>For seven sequences of eight tokens and a microbatch size of three, write the group sizes in tokens. The answer is <code>24, 24, 8</code>; there is still one optimiser update. Seven separate optimiser calls would be a different experiment because each later call would see already modified weights.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/ai/training/gradient_accumulation.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="085-read-the-microbatch-laboratory.html">Previous: Read the microbatch laboratory from input to result</a> · <a href="087-weight-a-short-final-microbatch.html">Next: Weight a shorter final microbatch correctly</a></p>
+</nav><p><a href="../../../lessons/12-distributed-learning/distributed-learning/086-count-sequences-tokens-and-updates.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

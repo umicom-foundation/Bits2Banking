@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/10-separate-logic-and-window-checks.html
+
+PURPOSE:
+Explain the lesson: Separate model checks from window checks.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate model checks from window checks | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-present-status-without-changing-the-model.html">Previous lesson</a> · <a rel="next" href="11-follow-the-application-event-loop.html">Next lesson</a></nav>
+<h1>Separate model checks from window checks</h1>
+<h2>Prepare the tools</h2>
+<p>Install CMake, Ninja, a C23 compiler and a matching Framework SDK. Configure the activity lab using its README, with GTK4 enabled if graphical checks are available. CTest runs the registered model checks:</p>
+<pre><code class="language-powershell">ctest --test-dir build/activity-window --output-on-failure --no-tests=error</code></pre>
+<p>This is a command to execute after a successful build, not evidence that a run has already passed.</p>
+<h2>Read the cases</h2>
+<p>The test program selects a case from its command-line argument. The registered cases cover first success, last success, full capacity, invalid input, a null output and an in-place update.</p>
+<p>Notice the sentinel <code>result = 77U</code>. Failure checks require it to remain 77. That verifies an observable contract beyond merely returning an error.</p>
+<h2>Add the UI dimension</h2>
+<p>A model test never clicks the real button. Write a separate window checklist:</p>
+<ol>
+<li>Launch and locate Record one exercise.</li>
+<li>Activate with the pointer.</li>
+<li>Activate with keyboard navigation.</li>
+<li>Observe the displayed count.</li>
+<li>Resize and close the window.</li>
+</ol>
+<p><strong>Exercise:</strong> a model test passes but the button is unwired. Which check detects it? Expected answer: the window workflow, because the model function itself remains correct.</p>
+<h2>Record accurately</h2>
+<p>Keep source revision, build configuration, test name and observed result. Mark graphical checks skipped if no display is available. A skipped check is not a pass.</p>
+<h2>Recovery</h2>
+<p>If CTest reports no tests, inspect the build directory and <code>BUILD_TESTING</code> configuration. If a test fails, reproduce its named case and inspect its assertion. If the process crashes before a test runs, preserve that distinction. The purpose of these layers is to locate failures, not to inflate a passing-test total.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/test_activity.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-present-status-without-changing-the-model.html">Previous lesson</a> · <a rel="next" href="11-follow-the-application-event-loop.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/learning-gtk4/10-separate-logic-and-window-checks.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

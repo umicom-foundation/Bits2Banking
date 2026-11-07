@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/distributed-learning/lessons/093-distinguish-publisher-trust-and-model-quality.html
+
+PURPOSE:
+Distinguish publisher verification from model quality
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish publisher verification from model quality | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish publisher verification from model quality</h1>
+<p>Training adjusts numbers called model parameters so that predictions better match examples. A batch is a group of examples used for one adjustment. This module follows a small, local Framework experiment. It assumes no previous machine-learning course and introduces each term before using it. A local experiment is the first measurement needed when designing work for several computers.</p>
+<h2>Set up this laboratory</h2>
+<ol>
+<li>Install a C23 compiler, CMake and Ninja. On Windows, open PowerShell and make the installed UCRT64 tools available with <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code>. On Linux, open a terminal and ensure <code>cc</code>, <code>cmake</code> and <code>ninja</code> are installed through your distribution.</li>
+<li>Use a checkout of Umicom Framework containing <code>learning/native-llm/inspect_accumulation.c</code>. The examples below use the Framework child of Umicom Applications.</li>
+<li>Configure a separate laboratory directory. This prepares build instructions; it does not train a model.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Applications\framework
+cmake -S learning/native-llm -B build/learning-accumulation -G Ninja -DBUILD_TESTING=ON
+cmake --build build/learning-accumulation --target umicom-native-llm-accumulation
+&amp; .\build\learning-accumulation\umicom-native-llm-accumulation.exe 2</code></pre>
+<p>In Bash, change to the Framework directory, run the same two <code>cmake</code> commands, then run <code>./build/learning-accumulation/umicom-native-llm-accumulation 2</code>. Stop if configuration or compilation fails; inspect the first diagnostic before proceeding. Expected successful output includes <code>Effective tokens: 40</code> and <code>Comparison: within tolerance</code>. Numerical values and memory observations must be recorded from your actual run. These are instructions to execute, not a claim that a particular environment has passed.</p>
+<h2>Two questions require different evidence</h2>
+<p>'Who approved these bytes?' is a provenance question. 'Does this model perform the task well?' is a quality question. A valid signature can help answer the first under an approved key policy. It does not answer the second.</p>
+<p>Framework's training-trust batch verifier checks several signed publications using existing signature and policy services. It returns a deterministic JSON receipt only when every publication satisfies its verification rules. The receipt itself is unsigned. The header also states that reading several files sequentially is not one atomic filesystem snapshot.</p>
+<h2>Read the boundaries</h2>
+<ol>
+<li>Find the maximum batch size of eight publications.</li>
+<li>Find the independently approved policy-file argument. Trust should not be selected by an untrusted candidate model.</li>
+<li>Find the explicit evaluation time shared by the whole batch.</li>
+<li>Find the duplicate-receipt rejection and unchanged-output-on-failure contract.</li>
+<li>List the services the verifier does not perform: model execution, training, weight parsing and network access.</li>
+</ol>
+<h2>Add a separate quality review</h2>
+<p>Use reviewed held-out examples that were not used to optimise the candidate. Define the metric, baseline and rejection threshold before seeing the candidate result. Keep evaluation data confidential when necessary. Check for overlap between training and evaluation sources, because memorised examples can make a weak model appear successful.</p>
+<p>For untrusted workers, replicated computations may detect some errors but agreement alone does not prove honesty. Several workers can share a failure or malicious objective. Worker admission, independence assumptions and the cost of verification require explicit design.</p>
+<h2>Exercise</h2>
+<p>Classify these observations: a matching digest, an approved signature, a lower held-out loss and ten matching worker replies. Explain what each supports and what it leaves unknown. A complete report retains all four as different evidence types rather than collapsing them into a single 'trusted' badge.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/ai/training/training_trust_batch.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="092-plan-distributed-work-from-a-local-baseline.html">Previous: Plan a distributed experiment from a local baseline</a> · <a href="094-write-a-reproducible-training-lab-report.html">Next: Write a reproducible training laboratory report</a></p>
+</nav><p><a href="../../../lessons/12-distributed-learning/distributed-learning/093-distinguish-publisher-trust-and-model-quality.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/39-explain-a-dirty-marker.html
+
+PURPOSE:
+Explain the lesson: Explain a dirty marker.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Explain a dirty marker | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="38-distinguish-staged-and-stable-sectors.html">Previous lesson</a> · <a rel="next" href="40-flush-with-a-limited-budget.html">Next lesson</a></nav>
+<h1>Explain a dirty marker</h1>
+<h2>Prepare</h2>
+<p>Open block_store.c and block_store.h in labs/native/writeback-sector-store. Its README gives the C23, CMake and Ninja commands for PowerShell and bash. This four-sector model runs in memory; no physical disk is accessed by staging or crash simulation.</p>
+<h2>Understand the idea</h2>
+<p>The dirty array records which sectors have pending changes. It is metadata: information describing the data. A zero marker selects stable content; a nonzero marker selects staged content.</p>
+<h2>Work through the example</h2>
+<p>Stage sector one twice, first with A and then B, without flushing. Draw its staged bytes and dirty marker after each call. Ask how many versions the model retains.</p>
+<h2>Check your reasoning</h2>
+<p>Only B remains staged. The dirty marker is still one. The model is a pending-write cache, not a history of every edit.</p>
+<h2>If something differs</h2>
+<p>If you need undo or revision history, a dirty bit is insufficient. Use a separate history service rather than interpreting the marker as a version number.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/writeback-sector-store/block_store.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="38-distinguish-staged-and-stable-sectors.html">Previous lesson</a> · <a rel="next" href="40-flush-with-a-limited-budget.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/39-explain-a-dirty-marker.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

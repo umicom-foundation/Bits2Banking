@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/47-test-adapters-and-user-journeys.html
+
+PURPOSE:
+Explain the lesson: Test both the shared rule and the user journey.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test both the shared rule and the user journey | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="46-build-targets-and-platform-evidence.html">Previous lesson</a></nav>
+<h1>Test both the shared rule and the user journey</h1>
+<h2>Before you begin</h2>
+<p>A test compares an observation with an expected result. The host bridge and button tests are ordinary C programs. The browser and phone exercises also need interface checks. Prepare only the platform you will execute; each lab README explains its tools.</p>
+<h2>Use two levels of evidence</h2>
+<p>A model test can call the function directly with unusual inputs. A user-journey check follows the actual button, binding, rule and displayed result. Neither replaces the other.</p>
+<pre><code class="language-text">model check:    input -&gt; C function -&gt; expected output
+journey check:  tap -&gt; binding -&gt; C function -&gt; visible feedback</code></pre>
+<h2>Build a small matrix</h2>
+<p>For the shared bridge, check 0, 999, 1000, a negative value and a large value. For the sampled button, check held input, release, another press and two independent states. For each UI, check startup, one accepted action, repeated actions, refusal feedback and closing or reloading.</p>
+<h2>Lab</h2>
+<ol>
+<li>Read each assertion in <code>test_bridge.c</code>.</li>
+<li>State what fault it would detect.</li>
+<li>Trace the same case through one UI.</li>
+<li>Identify a failure the C test cannot see, such as a button with no event connection.</li>
+<li>Write an expected visible result before performing the UI check.</li>
+</ol>
+<h2>Record useful failures</h2>
+<p>A report saying “button broken” lacks the stage of failure. Record the source revision, platform, exact steps, expected result, observed result and relevant log excerpt. Keep credentials and personal content out of shared reports.</p>
+<p>If the model passes but the UI fails, inspect the adapter and event wiring. If both fail, inspect their common rule and source identity before making platform-specific changes.</p>
+<h2>Repeat after a fix</h2>
+<p>Run the failing case and nearby boundary cases. A fix for negative input should not break zero or the maximum accepted count. Keep the original regression case as evidence of the behavior that must remain protected.</p>
+<h2>Completion check</h2>
+<p>Explain why a test called “opens window” cannot establish that saving, editing or compilation works. A useful test name and assertion describe the actual behavior exercised.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/activity-adapters/test_bridge.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="46-build-targets-and-platform-evidence.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/47-test-adapters-and-user-journeys.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="48-share-a-model-with-a-microdevice.html">Next: Share a C model with a microdevice</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

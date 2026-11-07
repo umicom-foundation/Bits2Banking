@@ -55,3 +55,7 @@ Open `umicom-c/tests/test_roundtrip_corpus.c` in your Umicom source collection. 
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/06-errors-and-tests.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Store a program as portable bytes](05-portable-bytecode.md)
+
+[Next: Run the interpreter as a native Kernel program](07-a-native-kernel-program.md)

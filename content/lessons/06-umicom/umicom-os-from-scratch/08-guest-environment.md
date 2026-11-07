@@ -47,3 +47,5 @@ No. It checks specific properties of one packaged service at one instant. It doe
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/08-guest-environment.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Make recovery decisions testable](07-boot-admission.md)

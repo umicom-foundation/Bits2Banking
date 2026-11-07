@@ -207,3 +207,7 @@ Continue with [Umicom C's execution guide](https://github.com/umicom-foundation/
 then [Umicom Kernel's first session](https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/FIRST_SYSTEM_SESSION.md).
 Source links describe the matching repository edition; if a new page is not
 published yet, read the same relative path in your local checkout.
+
+## Continue from a terminal exercise
+
+The [terminal-to-Visual-Studio lab](../learning-c/terminal-to-visual-studio.md) starts with one small C program, keeps its compiler explicit, and follows configure, build, test and debugger commands. Its setup recap lets you begin without completing another course first.

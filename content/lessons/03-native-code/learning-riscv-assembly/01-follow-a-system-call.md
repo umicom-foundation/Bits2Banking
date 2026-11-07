@@ -60,3 +60,5 @@ Compare `programs/diagnostic/entry.S` with `include/umicom/kernel/user_abi.h`. T
 ---
 
 [Read this lesson in HTML](../../../courses/learning-riscv-assembly/lessons/01-follow-a-system-call.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Understand entry, return and program exit](02-entry-return-and-exit.md)

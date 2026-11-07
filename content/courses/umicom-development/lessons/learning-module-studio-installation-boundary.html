@@ -1,0 +1,49 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/learning-module-studio-installation-boundary.html
+
+PURPOSE:
+Understand how Studio opens a bundled learning module
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand how Studio opens a bundled learning module | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Understand how Studio opens a bundled learning module</h1>
+<p>A learning module is a collection of lessons and examples that an application can read. This module follows the same C services used by Umicom Studio IDE. A manifest is the small JSON document that identifies the collection and records which files belong to it. JSON is a text format made of named values, lists and objects.</p>
+<h2>Prepare for this lesson</h2>
+<ol>
+<li>Open PowerShell on Windows, or a terminal on Linux. A terminal runs the commands you type; PowerShell and Bash are two command interpreters.</li>
+<li>Choose a practice directory that you can find again. Keep the original course files unchanged.</li>
+<li>Locate your built <code>umicom</code> program. The examples use <code>C:\umicom\Umicom-Applications\build\windows-ucrt64-all-debug\bin\umicom.exe</code>. Use the corresponding path on your computer.</li>
+<li>Run <code>umicom learning-pack --help</code> using the full executable path if it is not on PATH. If the command is unavailable, your executable predates this feature; rebuild it before continuing.</li>
+</ol>
+<p>The exercises use a content pack compatible with reader version <code>0.9.0</code>. A host version identifies the application reading the pack. Check your product and manifest compatibility before substituting another version. Nothing in these lessons requires a remote marketplace or an account.</p>
+<h2>From an executable to its content</h2>
+<p>Studio defines known content modules, including its guide, Bits2Banking and the Framework wiki. Framework resolves a module folder relative to the executable rather than guessing from the directory in which the user started the program. This makes a desktop shortcut and a terminal launch use the same location.</p>
+<pre><code class="language-text">bin/
+  umicom-studio-ide.exe
+  learning-modules/
+    bits2banking/
+      learning-pack.json
+      ...declared content...</code></pre>
+<p>The installed module must have the pack identity and entry resource expected by Studio. Copying an unrelated manifest into this directory is not a valid installation. Keep course authoring and product packaging separate.</p>
+<h2>Follow the call</h2>
+<p><code>UmiLearningModuleRoot</code> builds the path. <code>UmiLearningModuleOpen</code> prepares a shelf and reader using the pack ID, product ID, entry resource, compatible version and maximum bytes. A shelf is an in-memory collection of admitted packs. A reader carries the selected lesson and navigation state.</p>
+<ol>
+<li>Framework clones the existing shelf. A clone is an independent copy.</li>
+<li>It loads missing module metadata, or uses an already admitted pack.</li>
+<li>It checks identity and verifies the entry resource.</li>
+<li>It returns a complete candidate shelf and reader.</li>
+<li>The application publishes both together after success.</li>
+</ol>
+<p>If any step fails, the current shelf and reading session stay available. A missing module should therefore produce a useful diagnostic rather than erase another open lesson. Disk access belongs on a worker, leaving the GUI thread free to process input. A worker is a separate execution context for work that may take time.</p>
+<h2>Exercise</h2>
+<p>Locate <code>runtime_learning_modules</code> in Studio source and write down the Bits2Banking module name, pack ID, product and entry ID. These values are different kinds of identity. Keep them separate when preparing content. This content-module interface reads material; it does not load executable extension code.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/teacher/learning_module.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="learning-module-prepare-reviewed-revision.html">Previous: Prepare a new revision without replacing the previous manifest</a> · <a href="learning-module-copy-example-safely.html">Next: Copy an example into a learner-chosen file</a></p>
+</nav><p><a href="../../../lessons/umicom-development/learning-module-studio-installation-boundary.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

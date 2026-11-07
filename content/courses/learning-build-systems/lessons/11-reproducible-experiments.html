@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/11-reproducible-experiments.html
+
+PURPOSE:
+Compare builds as controlled experiments
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare builds as controlled experiments | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Compare builds as controlled experiments</h1>
+<p>A build system records how source files become programs and when work must be repeated. This course begins with a small existing Notes library and follows dependencies, generated configuration, tests and evidence into the shared Umicom build architecture.</p>
+<h2>Start here</h2>
+<p>A terminal is a window that accepts commands. A directory is a folder. This course uses a small teaching project in the Bits2Banking checkout; it does not rebuild the complete Framework. You need a C23 compiler, CMake 3.26 or newer, and Ninja. On Windows, open the installed MSYS2 UCRT64 terminal and install the packages below if they are missing:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Close that terminal and open PowerShell. Adjust the checkout path if yours is elsewhere:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S &quot;labs/native/build-dependency-graph&quot; -B &quot;build/dependency-graph&quot; -G Ninja -DBUILD_TESTING=ON
+cmake --build &quot;build/dependency-graph&quot; --parallel 2
+ctest --test-dir &quot;build/dependency-graph&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Run each command separately and stop if it reports an error. For a Linux Bash terminal with GCC, CMake and Ninja installed, change to the Bits2Banking checkout with <code>cd</code>, then use the same three <code>cmake</code>/<code>ctest</code> commands. These are learner exercises; the guide does not assert that a particular machine has passed them. See <a href="../../learning-cmake/index.html">Learning CMake</a> for a longer setup and command walkthrough.</p>
+<p>Package names can be checked in the official <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-gcc">MSYS2 GCC</a>, <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-cmake">CMake</a> and <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-ninja">Ninja</a> listings.</p>
+<h2>Repeatable questions</h2>
+<p>A controlled experiment changes one factor while recording the others. Build performance and reproducibility both benefit from this discipline. “Reproducible” can mean identical output bytes under stated conditions; “same visible behaviour” is a different claim.</p>
+<h2>Compare two configurations</h2>
+<ol>
+<li>Configure the lab into <code>build/dependency-heading</code> with the heading enabled and <code>build/dependency-plain</code> with it disabled. Keep the source directory the same.</li>
+<li>Build each directory separately and run its registered tests.</li>
+<li>Run both previews. Explain the intended output difference using the generated header.</li>
+<li>Compare the capacity programs' visible output. Equal output does not by itself establish byte-identical executables.</li>
+<li>Record compiler version and options before comparing hashes or timings.</li>
+</ol>
+<h2>Sources of variation</h2>
+<p>Debug information may include paths. Tool versions, timestamps embedded by tools, environment settings and library versions can change outputs. Concurrent work can change elapsed time without changing program content. Some programs intentionally use random values; controlled tests need a documented seed or a property that remains true across seeds.</p>
+<h2>What the test actually proves</h2>
+<p><code>check_preview.cmake</code> starts one executable, checks that it exits successfully and compares its text against the configured expectation. It normalises the Windows newline sequence for the comparison. It does not strip arbitrary whitespace or ignore unexpected lines, because those changes could hide a real output regression.</p>
+<h2>Exercise</h2>
+<p>Write three separate conclusions: the output is correct, the executable hash matches, and this build is faster. State the evidence needed for each. Do not use one measurement as proof of all three.</p>
+<p>This applies to LLM lessons too. A fixed training seed, dataset identity and batch plan make an experiment easier to interpret. A model improving on one example is not the same as a validated model release. Build evidence and model evidence share the need for explicitly scoped claims.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/build-dependency-graph/check_preview.cmake">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="10-host-and-target.html">Previous: Distinguish the computer building a program from its target</a> · <a href="12-design-a-build-service.html">Next: Connect an IDE to one shared build service</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-build-systems/11-reproducible-experiments.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

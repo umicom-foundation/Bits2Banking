@@ -34,3 +34,7 @@ The current normal bootstrap applies the firmware reservation table. Parsing eve
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/06-reserved-pages.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Read firmware bytes without following their addresses](05-firmware-metadata.md)
+
+[Next: How a program asks the Kernel for a service](07-native-system-calls.md)

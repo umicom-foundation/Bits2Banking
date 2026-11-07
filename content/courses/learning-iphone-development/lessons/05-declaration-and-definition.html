@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-iphone-development/lessons/05-declaration-and-definition.html
+
+PURPOSE:
+Explain the lesson: Connect a C declaration to its implementation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect a C declaration to its implementation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-simulator-device-and-evidence.html">Previous lesson</a> · <a rel="next" href="06-cint-and-result-checks.html">Next lesson</a></nav>
+<h1>Connect a C declaration to its implementation</h1>
+<h2>Prepare on a Mac</h2>
+<p>Install Xcode and an iOS Simulator runtime. Create an iOS App using SwiftUI and run the unchanged template. Make the Bits2Banking and Framework source checkouts available. Follow the iPhone activity lab README to add its Swift view and the two existing C sources.</p>
+<p>A <strong>declaration</strong> describes a function's name and parameter/result types. A <strong>definition</strong> contains the instructions that implement it. Swift needs the declaration while compiling; the final application also needs the definition while linking.</p>
+<h2>Follow the header</h2>
+<ol>
+<li>Open <code>Activity-Bridging-Header.h</code>.</li>
+<li>Follow its include to the shared <code>bridge.h</code>.</li>
+<li>Find <code>int BtbActivityNext(int current);</code>.</li>
+<li>Open <code>bridge.c</code> to see the implementation.</li>
+<li>Confirm that both <code>bridge.c</code> and <code>activity.c</code> belong to the application target.</li>
+</ol>
+<p>The bridging-header build setting tells Swift which C declarations to import. Adding only a header does not compile the C implementation.</p>
+<h2>Diagnose by stage</h2>
+<p>If Swift says the function is unavailable, inspect the bridging-header setting and header search paths. If compilation succeeds but linking cannot find the symbol, inspect C source target membership. Do not “fix” either failure by adding another copy of the count algorithm to Swift.</p>
+<p><strong>Exercise:</strong> draw two arrows from <code>bridge.h</code>: one to the Swift compiler and one to the C compiler. Then draw <code>bridge.c</code> into the linker. Label which arrow explains each failure above.</p>
+<h2>Check the result</h2>
+<p>Build for the selected simulator, launch, and press Complete exercise. Expected result: 0 becomes 1. Record the actual result and source revision. The exercise establishes this specific source integration; it does not imply that a desktop Framework binary can run on iOS.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/iphone-framework-activity/Activity-Bridging-Header.h">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-simulator-device-and-evidence.html">Previous lesson</a> · <a rel="next" href="06-cint-and-result-checks.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/15-mobile-development/learning-iphone-development/05-declaration-and-definition.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

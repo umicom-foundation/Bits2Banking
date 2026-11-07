@@ -30,3 +30,7 @@ The first explicit-firmware contract is for RISC-V QEMU `virt` direct-kernel run
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/05-image-and-firmware-identity.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Keep rejected state separate from recovery](04-failure-and-recovery.md)
+
+[Next: Separate a check from a release claim](06-read-qualification-evidence.md)

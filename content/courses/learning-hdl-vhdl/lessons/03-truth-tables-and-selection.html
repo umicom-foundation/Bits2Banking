@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/03-truth-tables-and-selection.html
+
+PURPOSE:
+Explain the lesson: Turn a truth table into a selector.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Turn a truth table into a selector | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="02-first-simulation.html">Previous lesson</a> · <a href="04-width-and-arithmetic.html">Next lesson</a></nav>
+<h1>Turn a truth table into a selector</h1>
+<h2>Setup recap</h2>
+<p>Open the VHDL foundations lab in an editor. For simulation install GHDL and use the three selector commands from the previous chapter. You can complete the table exercise with paper only.</p>
+<h2>Enumerate the possibilities</h2>
+<p>A truth table lists every allowed input combination and its expected output. Three binary inputs have eight combinations because 2 × 2 × 2 = 8.</p>
+<pre><code class="language-text">A B choose_b | result
+0 0    0    |   0
+0 0    1    |   0
+0 1    0    |   0
+0 1    1    |   1
+1 0    0    |   1
+1 0    1    |   0
+1 1    0    |   1
+1 1    1    |   1</code></pre>
+<p>The output column is derived from the specification, not copied from the implementation.</p>
+<h2>Read the complete assignment</h2>
+<pre><code class="language-vhdl">with choose_b select
+    result_bit &lt;= a when '0',
+                  b when '1',
+                  'X' when others;</code></pre>
+<p><code>&lt;=</code> schedules a signal assignment. The alternatives cover every control value. The final alternative makes an unknown selection visible in simulation.</p>
+<h2>Follow the bench</h2>
+<p>Open <code>select_bit_tb.vhd</code>. Two loops choose A and B. Inside the loops the bench checks both selection values. The <code>wait for 1 ns</code> gives the scheduled changes time to propagate before observation. The design itself has no delay expression; the wait belongs to the testbench.</p>
+<h2>Practical task</h2>
+<ol>
+<li>Add a column to your paper table stating which input is selected.</li>
+<li>Locate the corresponding assertion for each row.</li>
+<li>Run the selector bench.</li>
+<li>Save the tool version, command and result in your practice notebook.</li>
+<li>Write a ninth case for choose_b = X and explain why it is outside the binary truth table.</li>
+</ol>
+<h2>A useful design habit</h2>
+<p>Give every combinational output a defined assignment for every intended input path. In a process, an omitted assignment can imply storage. Storage is appropriate for a register, but accidental storage changes the circuit.</p>
+<h2>Review</h2>
+<p>If A changes while choose_b selects B, result should continue to follow B. This independence is a useful additional check. Think of it when testing Umicom interfaces: changing an unrelated field should not unexpectedly change the selected result.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/select_bit.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-first-simulation.html">Previous lesson</a> · <a href="04-width-and-arithmetic.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/03-truth-tables-and-selection.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

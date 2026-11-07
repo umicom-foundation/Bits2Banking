@@ -1,16 +1,32 @@
 /*-----------------------------------------------------------------------------
  * Bits2Banking — Physical Frame Ownership Laboratory
  * File: frame_pool.c
- * PURPOSE: Teach frame allocation, reservation and double-release guards.
- * AUTHOR AND ORGANISATION: Sammy Hegab, Umicom Foundation
- * LICENCE: MIT
+ *
+ * PURPOSE:
+ *   Teach frame allocation, reservation and double-release guards.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include "frame_pool.h"
 #include <string.h>
 
 BtbFrameResult BtbFramePoolInit(BtbFramePool *pool, uint64_t startAddress)
 {
+    /* The public teaching contract excludes zero as a pool base. Check it
+     * before preparing state, so every rejected initialization preserves the
+     * caller's existing inventory. The old alignment-only guard is retained
+     * for review because zero satisfies alignment but violates that contract. */
+#if 0
     if (pool == NULL || (startAddress & (BTB_FRAME_SIZE - 1U)) != 0U)
+        return BTB_FRAME_INVALID;
+#endif
+    if (pool == NULL || startAddress == 0U ||
+        (startAddress & (BTB_FRAME_SIZE - 1U)) != 0U)
         return BTB_FRAME_INVALID;
     if (startAddress > UINT64_MAX - BTB_FRAME_SIZE * BTB_FRAME_COUNT)
         return BTB_FRAME_OVERFLOW;

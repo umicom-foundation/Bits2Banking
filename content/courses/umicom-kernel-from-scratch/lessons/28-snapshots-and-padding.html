@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/28-snapshots-and-padding.html
+
+PURPOSE:
+Explain the lesson: Compare unchanged storage with a reliable snapshot.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare unchanged storage with a reliable snapshot | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="27-exhaustion-and-output-preservation.html">Previous lesson</a> · <a rel="next" href="29-address-overflow-and-pool-boundaries.html">Next lesson</a></nav>
+<h1>Compare unchanged storage with a reliable snapshot</h1>
+<h2>Prepare</h2>
+<p>Open the physical-frame-pool regression. This lesson uses only standard C byte copying and comparison. Build and test commands are in the lab README.</p>
+<p>A C structure contains named members and may also contain padding bytes inserted for alignment. A structure assignment copies the member values, but it is not the best basis for a requirement that every storage byte remain unchanged.</p>
+<h2>Make the observation precise</h2>
+<p>For a refusal-atomic test, save the original representation:</p>
+<pre><code class="language-c">unsigned char before[sizeof pool];
+memcpy(before, &amp;pool, sizeof pool);
+/* Perform a call that must refuse without modifying pool. */
+CHECK(memcmp(before, &amp;pool, sizeof pool) == 0);</code></pre>
+<p><code>sizeof pool</code> is the complete storage size. memcpy copies that many bytes; memcmp compares them. The test does not interpret padding as a field.</p>
+<h2>Distinguish two questions</h2>
+<p>“Do these independently created pools have equal member values?” is a semantic comparison. Compare their named fields and states.</p>
+<p>“Did this call modify any byte in this one existing object?” is a representation-preservation check. A direct byte snapshot is suitable.</p>
+<p>Do not use memcmp as a universal equality operation for arbitrary structures.</p>
+<h2>Lab</h2>
+<p>Take a snapshot of a valid pool, attempt the documented invalid zero-base initialization, and compare afterwards. Expected: INVALID and unchanged bytes. Then allocate successfully and observe that the same preservation condition should no longer hold.</p>
+<h2>Troubleshoot</h2>
+<p>If a test changes from a value snapshot to a byte snapshot, document why. The old version may look simpler but can include padding assumptions unrelated to the contract being tested. Keep the assertion active in release builds rather than relying solely on assert, which may be disabled by NDEBUG.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-pool/test_frame_pool.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="27-exhaustion-and-output-preservation.html">Previous lesson</a> · <a rel="next" href="29-address-overflow-and-pool-boundaries.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/28-snapshots-and-padding.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

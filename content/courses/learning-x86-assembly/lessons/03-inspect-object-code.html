@@ -1,0 +1,82 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-x86-assembly/lessons/03-inspect-object-code.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect the object code produced from Assembly | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1 id="inspect-the-object-code-produced-from-assembly">Inspect the object code produced from Assembly</h1>
+<p>An assembler turns instruction names into machine bytes. An object file contains those bytes plus information the linker needs to join files together. This lab lets you inspect that intermediate result before running a complete program. It extends the existing C-to-Assembly addition exercise.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>Use an x86-64 Windows or Linux machine with GCC and GNU Binutils. On Windows, put <code>C:\msys64\ucrt64\bin</code> first on the current PowerShell PATH. On Linux, install the compiler and Binutils packages for your distribution. Check <code>gcc --version</code> and <code>objdump --version</code>. The <a href="../../learning-c/terminal-assembly-lab.html">C and Assembly terminal lab</a> explains the installation and complete executable build.</p>
+<p>Copy the existing <code>add_x86_64.S</code> from <code>Umicom-Applications/framework/examples/learning/assembly</code> into an empty practice folder. Use <code>Copy-Item</code> in PowerShell or <code>cp</code> in Bash. Read it before compiling. The capital <code>.S</code> tells GCC to preprocess the file, so its platform conditions can select the correct argument registers.</p>
+<p>Here are the complete copy steps. Choose a new practice folder; if it already exists, use another name instead of overwriting earlier work. Adapt the checkout path if yours differs, and stop after any command error.</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+New-Item -ItemType Directory -Path &#39;C:\umicom-learning\x86-object&#39;
+Copy-Item -LiteralPath &#39;C:\umicom\Umicom-Applications\framework\examples\learning\assembly\add_x86_64.S&#39; -Destination &#39;C:\umicom-learning\x86-object&#39;
+Set-Location &#39;C:\umicom-learning\x86-object&#39;
+Get-Content &#39;add_x86_64.S&#39;
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom-learning&quot;
+mkdir &quot;$HOME/umicom-learning/x86-object&quot;
+cp &quot;$HOME/umicom/Umicom-Applications/framework/examples/learning/assembly/add_x86_64.S&quot; &quot;$HOME/umicom-learning/x86-object/&quot;
+cd &quot;$HOME/umicom-learning/x86-object&quot;
+cat add_x86_64.S
+</code></pre>
+<h2 id="assemble-one-file">1. Assemble one file</h2>
+<p>Run these commands from the practice folder in either shell:</p>
+<pre><code class="language-text">gcc -c add_x86_64.S -o add_x86_64.o
+objdump -t add_x86_64.o
+objdump -d add_x86_64.o
+</code></pre>
+<p><code>-c</code> stops before linking. The symbol table printed by <code>-t</code> should contain <code>AddTwoAssembly</code>, the function name used by C. <code>-d</code> prints decoded instructions from executable sections. Your output's addresses, spacing and object format can differ from another platform's output.</p>
+<h2 id="read-the-instructions-as-a-trace">2. Read the instructions as a trace</h2>
+<p>On Windows x64, this example receives the two integer arguments in <code>ecx</code> and <code>edx</code>. It copies the first into <code>eax</code>, adds the second, and returns. On the common Linux x86-64 ABI, the corresponding incoming registers are <code>edi</code> and <code>esi</code>; the result still uses <code>eax</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Moment</th>
+<th>Example value in result register</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>After copying the first argument, 7</td>
+<td>7</td>
+</tr>
+<tr>
+<td>After adding the second argument, 5</td>
+<td>12</td>
+</tr>
+<tr>
+<td>At <code>ret</code></td>
+<td>12 is available to the caller</td>
+</tr>
+</tbody>
+</table>
+<p>These names describe 32-bit parts of processor registers. The function's C declaration determines how the caller interprets those bits. The ABI is the agreement between separately compiled code, including argument locations and which registers must be preserved.</p>
+<h2 id="compare-source-and-object">3. Compare source and object</h2>
+<p>Find the copy, addition and return instructions in the disassembly. You may also see metadata or toolchain-specific formatting. Explain what each instruction changes. Then inspect <code>objdump -h add_x86_64.o</code>: the executable section contains code; other sections can carry metadata.</p>
+<p>An object file is not yet a complete application. It has no C runtime startup or terminal printing. Link it with the existing C example by following the terminal lab, then compare the program's result with your register trace.</p>
+<h2 id="a-small-experiment">4. A small experiment</h2>
+<p>In a practice copy only, replace the addition instruction with subtraction. Assemble and inspect again. Predict the result for 7 and 5 before running the linked example. Restore the addition and rebuild. This exercise connects one source change to one instruction change, rather than treating Assembly as an unexplained block of text.</p>
+<p>If the assembler rejects register names, confirm you are using an x86-64 compiler. If the linker reports a missing symbol, compare the C declaration and exported symbol exactly, including capital letters. Do not fix that problem by changing unrelated Framework APIs.</p>
+<h2 id="references-and-route">References and route</h2>
+<p>Read the <a href="https://sourceware.org/binutils/docs/binutils/objdump.html">GNU objdump manual</a> for inspection options and Microsoft's <a href="https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170">x64 calling convention</a> for the Windows ABI. The real source is <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/examples/learning/assembly/add_x86_64.S"><code>add_x86_64.S</code></a>. Return to <a href="../index.html">Learning x86 Assembly</a>.</p>
+
+
+<p><a rel="next" href="04-follow-arguments-through-a-function.html">Next: Follow arguments through an Assembly function</a></p>
+</article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>

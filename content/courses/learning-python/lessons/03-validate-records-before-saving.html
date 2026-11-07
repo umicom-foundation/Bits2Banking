@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-python/lessons/03-validate-records-before-saving.html
+
+PURPOSE:
+  Present "Validate records before saving" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate records before saving | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Validate records before saving</h1>
+<p>A JSON file can be valid text and still contain unusable records. This lesson continues the existing Python notes lab by tracing its validation before storage. We will use the existing program; no extra script is needed.</p>
+<p>Source to open: <code>Umicom-Bits2Banking/content/labs/python-notes/notes.py</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath 'content\labs\python-notes\notes.py'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' 'content/labs/python-notes/notes.py'</code></pre>
+<h2>Understand the idea</h2>
+<p>Parsing turns JSON text into values such as lists, dictionaries and numbers. Validation asks whether those values satisfy the application's rules. validate_notes requires a bounded list of dictionaries with unique positive integer identifiers and nonblank text. It deliberately checks type(identifier) is int because Python also treats booleans as instances of int in some type checks.</p>
+<pre><code class="language-text">file bytes → size limit → UTF-8 decode → JSON parse → record validation
+records → validation → serialization + byte limit → write</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Open validate_notes. Make columns headed shape, identifier, text and duplicate. Place each rejection condition in a column.</li><li>On paper trace [{&quot;id&quot;:1,&quot;text&quot;:&quot;Read C&quot;}]. Then trace two records sharing id 1, a record using true as its id, and a record with spaces as text.</li><li>Follow save_notes. Notice validation and the serialized byte-size check occur before write_text opens the destination.</li><li>Find the loader's MAX_FILE_BYTES + 1 read. Explain how one extra byte lets it detect oversized input without reading the entire file.</li></ol>
+<h2>Expected result</h2>
+<p>The first paper record is admitted; the duplicate identifier, boolean identifier and blank text cases are refused. Unknown extra fields in otherwise valid records are retained.</p>
+<h2>If the result differs</h2>
+<p>A character count and UTF-8 byte count can differ. If a file is rejected after serialization, inspect byte size rather than shortening an unrelated field. The lab writes directly to one file and is not a concurrent or atomic database.</p>
+<h2>Explain it yourself</h2>
+<p>Why should a failed validation leave the previous file unopened for writing?</p>
+<details><summary>Worked explanation</summary><p>Opening a replacement file too early can truncate good data before discovering that the new records are invalid. This ordering protects against that specific error; atomic replacement and crash recovery require additional storage design.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="02-json-files-and-error-boundaries.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+<nav aria-label="Next lesson"><a rel="next" href="04-inspect-a-record-before-reading-it.html">Next: Inspect a record before reading it</a></nav></article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>

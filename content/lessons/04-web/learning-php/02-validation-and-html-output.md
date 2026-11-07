@@ -48,3 +48,5 @@ Answer: browser rules guide entry, server rules enforce acceptance for arbitrary
 ---
 
 [Read this lesson in HTML](../../../courses/learning-php/lessons/02-validation-and-html-output.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Count text at the right boundary](03-count-text-at-the-right-boundary.md)

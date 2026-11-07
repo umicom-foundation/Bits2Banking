@@ -46,3 +46,7 @@ Open `umicom-c/src/vm.c` in your Umicom source collection. Read the named functi
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/04-checked-execution.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Give expressions an unambiguous meaning](03-expression-order.md)
+
+[Next: Store a program as portable bytes](05-portable-bytecode.md)

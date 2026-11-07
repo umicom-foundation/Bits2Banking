@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/08-reserve-undo-before-changing-state.html
+
+PURPOSE:
+Explain the lesson: Reserve undo history before changing state.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reserve undo history before changing state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-separate-slot-and-job-identity.html">Previous lesson</a> · <a rel="next" href="09-design-a-container-caller-contract.html">Next lesson</a></nav>
+<h1>Reserve undo history before changing state</h1>
+<p>An undo command needs enough information to restore an earlier state. In this exercise the state is a single integer, so one previous integer is a complete undo record.</p>
+<h2>Prepare</h2>
+<p>Open undo_trace.c. Change accepts a history stack, a pointer to the current value and a proposed replacement. A pointer lets the function update the caller's value.</p>
+<p>Start with current equal to 10 and an empty history.</p>
+<h2>Follow one edit</h2>
+<ol>
+<li>Append 10 to history.</li>
+<li>Check the append result.</li>
+<li>Only when it succeeds, replace current with 11.</li>
+</ol>
+<p>This order matters. Changing current first would lose the old value if the history append then failed.</p>
+<p>Write the state after replacements 11 and 12: current is 12, and history contains 10 followed by 11.</p>
+<h2>Undo</h2>
+<p>BtbStackPop removes the most recently saved value. The first undo restores 11. The next restores 10.</p>
+<p>Undo follows the reverse order of successful edits. A queue would return the oldest value first and would be the wrong structure for this simple history.</p>
+<h2>Reach the boundary</h2>
+<p>The program performs eight edits. Current becomes 18 and history is full. An attempted change to 99 must return BTB_FULL while current stays 18.</p>
+<p>Build and run the example using WORKFLOWS.md. The expected restoration output runs from 17 down to 10.</p>
+<h2>Exercise</h2>
+<p>Add a printed line before the rejected edit showing current and history.count, then print them afterward. They must be unchanged.</p>
+<p>An empty pop must also preserve current. This lets callers distinguish “nothing to undo” from a successful edit to zero.</p>
+<p>A complete Studio editor needs records for text ranges, selections and document identity. The example teaches the ordering rule before introducing those larger records; it does not replace Framework's document history.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/collections/undo_trace.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-separate-slot-and-job-identity.html">Previous lesson</a> · <a rel="next" href="09-design-a-container-caller-contract.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/08-reserve-undo-before-changing-state.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

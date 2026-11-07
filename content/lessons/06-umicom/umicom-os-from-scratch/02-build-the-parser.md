@@ -37,3 +37,7 @@ A configuration error about `UMICOM_OS_SOURCE` means the source path is missing 
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-os-from-scratch/lessons/02-build-the-parser.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: A system has several layers](01-system-boundaries.md)
+
+[Next: Plan startup before executing it](03-service-dependencies.md)

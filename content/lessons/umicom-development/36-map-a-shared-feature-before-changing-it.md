@@ -49,3 +49,5 @@ Keep a short engineering explanation of the change and a regression check. That 
 [Course contents](index.md) · [Previous: Read calendar data without inventing values](35-read-calendar-data-without-inventing-values.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Use a Framework function in a practical lab](37-use-a-framework-function-in-a-lab.md)

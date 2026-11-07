@@ -24,3 +24,7 @@ This input policy is useful beyond an educational shell, but it does not turn th
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/04-damaged-console-lines.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Reject overflow before multiplying](03-overflow-and-ownership.md)
+
+[Next: Read firmware bytes without following their addresses](05-firmware-metadata.md)

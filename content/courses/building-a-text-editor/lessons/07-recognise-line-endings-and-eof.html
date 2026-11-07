@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/07-recognise-line-endings-and-eof.html
+
+PURPOSE:
+Explain the lesson: Recognise line endings and end of file.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recognise line endings and end of file | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-load-into-a-private-candidate.html">Previous lesson</a> · <a rel="next" href="08-check-failure-state-and-command-results.html">Next lesson</a></nav>
+<h1>Recognise line endings and end of file</h1>
+<p>Text files may represent a line ending with one line-feed byte or with carriage return followed by line feed. The editor loads both forms into one internal representation.</p>
+<h2>Setup recap</h2>
+<p>Read the loading loop in editor.c and the fixtures in test_load.c. A fixture is controlled input created for a check. These fixtures are written into a dedicated build-directory folder when the test runs.</p>
+<p>The loader opens files in binary mode so the C runtime does not translate line endings before the code observes them.</p>
+<h2>1. Keep the input result as int</h2>
+<p>fgetc returns either an unsigned-character value represented as int, or EOF. EOF indicates that no next character was obtained. It does not belong in the text buffer.</p>
+<p>The variable byte is therefore an int. Converting it to char before comparing with EOF could lose the distinction between a byte and the end marker.</p>
+<h2>2. Follow the carriage-return case</h2>
+<p>When byte is carriage return, the loader reads one more byte. That next byte must be line feed. The pair becomes a single line feed in the candidate.</p>
+<p>``<code>text file bytes:   a b CR LF c model bytes:  a b LF    c </code>``</p>
+<p>A lone carriage return, including one immediately before EOF, is refused. The function does not silently guess what it means.</p>
+<h2>3. Separate end from failure</h2>
+<p>EOF can result from reaching the end or from a read error. After the loop, ferror distinguishes an error indication from an ordinary completed read.</p>
+<p>The insertion validator also rejects embedded zero bytes and bytes outside the example's accepted ASCII range. An embedded zero would otherwise make string-based display stop before the recorded document length.</p>
+<h2>Exercise and expected results</h2>
+<p>Prepare a table for LF text, CRLF text, lone CR, embedded zero, a file exactly at capacity and a file one byte too large. Record success or refusal and whether the previous document should change.</p>
+<p>Exactly-at-capacity content succeeds because the model reserves another byte for its terminating zero. The capacity describes document bytes, not the total size of its storage array.</p>
+<p>A non-ASCII character being refused is an intentional limitation of this lab. Supporting Unicode requires an explicit encoding and cursor policy, not removal of arbitrary checks.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/text-editor/test_load.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-load-into-a-private-candidate.html">Previous lesson</a> · <a rel="next" href="08-check-failure-state-and-command-results.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-text-editor/07-recognise-line-endings-and-eof.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

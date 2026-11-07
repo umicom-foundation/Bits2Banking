@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/65-decode-with-a-count-not-a-terminator.html
+
+PURPOSE:
+Explain the lesson: Decode with a count, not a terminator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Decode with a count, not a terminator | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="64-validate-every-id-before-decoding.html">Previous lesson</a> · <a rel="next" href="66-round-trip-a-multibyte-character.html">Next lesson</a></nav>
+<h1>Decode with a count, not a terminator</h1>
+<h2>Prepare</h2>
+<p>Open Framework's <code>src/ai/training/byte_tokenizer.c</code> and <code>include/umicom/ai/training/byte_tokenizer.h</code>. A byte holds a number from 0 to 255. A token ID is a number used by a model to represent an input unit. These exercises need a text editor and paper; no training run or downloaded model is required.</p>
+<h2>Understand the idea</h2>
+<p>The decoder writes the requested bytes and publishes their count. It does not append a C string terminator. That is appropriate for binary data but matters when a later API expects a string.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Decode IDs <code>69, 70</code> into a two-byte buffer.</li>
+<li>Draw the two occupied positions.</li>
+<li>Explain why printing that buffer with <code>%s</code> is unsafe without additional preparation.</li>
+</ol>
+<h2>Check your reasoning</h2>
+<p>The output contains bytes 65 and 66 and count 2. There is no third position promised for a zero terminator.</p>
+<h2>If something differs</h2>
+<p>For text display, validate the intended encoding and provide properly terminated or length-aware input to the display API. Never read beyond the returned byte count.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/ai/training/byte_tokenizer.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="64-validate-every-id-before-decoding.html">Previous lesson</a> · <a rel="next" href="66-round-trip-a-multibyte-character.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/65-decode-with-a-count-not-a-terminator.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/04-content-and-timestamps.html
+
+PURPOSE:
+Understand content changes and timestamp limits
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand content changes and timestamp limits | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Understand content changes and timestamp limits</h1>
+<p>A build system records how source files become programs and when work must be repeated. This course begins with a small existing Notes library and follows dependencies, generated configuration, tests and evidence into the shared Umicom build architecture.</p>
+<h2>Start here</h2>
+<p>A terminal is a window that accepts commands. A directory is a folder. This course uses a small teaching project in the Bits2Banking checkout; it does not rebuild the complete Framework. You need a C23 compiler, CMake 3.26 or newer, and Ninja. On Windows, open the installed MSYS2 UCRT64 terminal and install the packages below if they are missing:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Close that terminal and open PowerShell. Adjust the checkout path if yours is elsewhere:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S &quot;labs/native/build-dependency-graph&quot; -B &quot;build/dependency-graph&quot; -G Ninja -DBUILD_TESTING=ON
+cmake --build &quot;build/dependency-graph&quot; --parallel 2
+ctest --test-dir &quot;build/dependency-graph&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Run each command separately and stop if it reports an error. For a Linux Bash terminal with GCC, CMake and Ninja installed, change to the Bits2Banking checkout with <code>cd</code>, then use the same three <code>cmake</code>/<code>ctest</code> commands. These are learner exercises; the guide does not assert that a particular machine has passed them. See <a href="../../learning-cmake/index.html">Learning CMake</a> for a longer setup and command walkthrough.</p>
+<p>Package names can be checked in the official <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-gcc">MSYS2 GCC</a>, <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-cmake">CMake</a> and <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-ninja">Ninja</a> listings.</p>
+<h2>Two descriptions of a file</h2>
+<p>A file has bytes, which are its content, and metadata such as a modification time. These are different observations. Copying a file can preserve its old time while changing bytes; touching a file can change its time without changing bytes.</p>
+<p>A <strong>digest</strong> is a fixed-size summary computed from bytes. SHA-256 is useful for comparing exact content. It does not tell us whether two different programs have the same meaning. A comment edit and a logic edit both change a raw content digest.</p>
+<h2>Study without corrupting a project</h2>
+<ol>
+<li>Create a separate scratch copy of the dependency lab if you want to experiment with timestamps. Keep its build folder separate too.</li>
+<li>Read the source file and record its digest with <code>Get-FileHash -Algorithm SHA256</code> in PowerShell, or <code>sha256sum</code> in Bash.</li>
+<li>Add a comment and compute the digest again. The values should differ because the bytes differ.</li>
+<li>Compare this with the dry-run result from the incremental lesson. The build driver can decide to compile again without first determining whether C semantics changed.</li>
+<li>Read Framework's public-contract fingerprint implementation linked below. Identify the inputs it observes. Do not disable it as a shortcut to fewer build jobs.</li>
+</ol>
+<h2>Why ignoring comments needs care</h2>
+<p>A language-aware analyser must understand preprocessing, string literals, line continuations and compiler options. Text that looks like a comment delimiter inside a string is data. Preprocessor line information can affect diagnostics and macros. Generated files and build rules may also depend on exact source bytes for reasons unrelated to compilation.</p>
+<h2>A sound optimisation exercise</h2>
+<p>Design a checklist with cases for a used public header, an unused header, a private include, a comment, a compiler flag and changed content with a preserved timestamp. Record the expected affected artifacts separately from observed jobs. An optimisation is credible only when it preserves correctness for these cases.</p>
+<p>The Umicom learning-pack verifier provides a simpler comparison: a lesson resource is accepted against an exact declared digest. It is not trying to determine equivalent prose. The dependency system and the learning system use content identity for different purposes.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../../Umicom-Applications/framework/cmake/UmicomPublicContractFingerprint.cmake">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="03-observe-incremental-work.html">Previous: Observe incremental work before changing the build</a> · <a href="05-generated-configuration.html">Next: Give generated configuration one owner</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-build-systems/04-content-and-timestamps.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

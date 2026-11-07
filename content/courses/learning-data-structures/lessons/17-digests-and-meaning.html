@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/17-digests-and-meaning.html
+
+PURPOSE:
+Explain the lesson: Understand what a diagnostic digest proves.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand what a diagnostic digest proves | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="16-count-invariants.html">Previous lesson</a></nav>
+<h1>Understand what a diagnostic digest proves</h1>
+<h2>Prepare</h2>
+<p>Open BtbDiagnosticDigest and the receipt definition in the work-dispatch lab. The README includes build instructions and explicitly describes this as a deterministic teaching operation.</p>
+<p>A digest reduces a byte sequence to a smaller value. This example uses FNV-1a with a 64-bit unsigned accumulator: each byte is XORed into the value, then the result is multiplied by a fixed constant.</p>
+<h2>Trace the input boundary</h2>
+<p>Submission copies the requested bytes and records their length. Step reads that copy. The digest therefore describes the bytes accepted by the dispatcher, even if the original caller buffer changes afterwards.</p>
+<p>It does not establish that a banking request is valid, that a trade was executed, or that an adversary did not alter data elsewhere. This algorithm is for diagnostics, not cryptographic proof.</p>
+<h2>Lab</h2>
+<ol>
+<li>Submit a mutable buffer containing ABC with length three.</li>
+<li>Change the original buffer to XYZ after submission.</li>
+<li>Process and receive the first request.</li>
+<li>Compare it with a separate request that submitted ABC unchanged.</li>
+</ol>
+<p>Expected diagnostic digests match because submission copied ABC. The receipt length should be three in both cases.</p>
+<h2>Check a limit</h2>
+<p>Different inputs can share a finite digest: there are more possible messages than 64-bit results. A matching digest alone is not universal equality proof. When exact equality matters in a small test, compare the original bytes as well.</p>
+<h2>Connect to Framework</h2>
+<p>For cryptographic hashing, inspect Framework's documented hash APIs and their tests. For financial validity, inspect domain rules and execution acknowledgements. Naming a field “integrity” would not make this diagnostic operation provide either guarantee. Accurate terminology helps a learner choose the correct service.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/work-dispatch/dispatch.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="16-count-invariants.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/17-digests-and-meaning.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="18-store-recent-events-in-a-ring.html">Next: Store recent events in a fixed ring</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

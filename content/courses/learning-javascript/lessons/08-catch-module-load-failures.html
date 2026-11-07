@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-javascript/lessons/08-catch-module-load-failures.html
+
+PURPOSE:
+Explain the lesson: Keep module loading inside the error boundary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep module loading inside the error boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-wait-for-a-native-module.html">Previous lesson</a> · <a rel="next" href="09-translate-results-into-dom-updates.html">Next lesson</a></nav>
+<h1>Keep module loading inside the error boundary</h1>
+<h2>Set up</h2>
+<p>Use the browser activity lab with its compiled outputs and a local HTTP server. Open developer tools before reloading. The README explains both compilation and serving; a text editor suffices to follow the control flow.</p>
+<p>An <strong>exception</strong> interrupts the ordinary path of execution. A <code>try</code> block identifies work whose errors will be handled by the associated <code>catch</code>.</p>
+<h2>Inspect the preserved implementation</h2>
+<p>The source retains a former static import as an explanatory comment. The active code uses a dynamic import inside <code>try</code>. This means a missing generated module can be handled by the page's visible recovery path.</p>
+<p>The <code>catch</code> displays guidance but does not claim that the module is ready. The button began disabled, so an unsuccessful setup leaves the action unavailable.</p>
+<h2>Make a failure table</h2>
+<p>List these cases:</p>
+<ul>
+<li>Generated JavaScript missing.</li>
+<li>WebAssembly companion missing.</li>
+<li>Server returns an HTML error document.</li>
+<li>Initialization succeeds.</li>
+</ul>
+<p>For each case predict whether the button should be enabled. Only the last has enough evidence to offer the action.</p>
+<h2>Exercise</h2>
+<p>Why is a text message more useful than a silent loading spinner forever? Expected answer: it explains that progress stopped and identifies a recovery action.</p>
+<h2>Diagnose accurately</h2>
+<p>Check the detailed browser console message and failed request URL. The short page message is for the person using the lab; the developer tools help identify the cause. Do not log credentials or arbitrary project content to make the message more detailed.</p>
+<p>After repairing the server root or generated outputs, reload and observe again. A successful import alone does not prove that the button listener or C function behaves correctly; check the full press-to-result path afterward.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/web/framework-activity/page.js">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-wait-for-a-native-module.html">Previous lesson</a> · <a rel="next" href="09-translate-results-into-dom-updates.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/04-web/learning-javascript/08-catch-module-load-failures.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

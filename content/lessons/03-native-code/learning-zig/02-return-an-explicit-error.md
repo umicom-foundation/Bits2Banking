@@ -54,3 +54,5 @@ Compare this result with Framework's status-based interfaces. Different language
 [Course contents](index.md) · [Previous: Types and a small check](01-types-and-a-small-check.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Call the shared C model](03-call-the-shared-c-model.md)

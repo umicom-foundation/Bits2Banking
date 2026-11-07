@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/43-export-the-stable-view.html
+
+PURPOSE:
+Explain the lesson: Export the stable view.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Export the stable view | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="42-simulate-loss-of-unflushed-data.html">Previous lesson</a> · <a rel="next" href="44-import-into-a-candidate-first.html">Next lesson</a></nav>
+<h1>Export the stable view</h1>
+<h2>Prepare</h2>
+<p>Open block_store.c and block_store.h in labs/native/writeback-sector-store. Its README gives the C23, CMake and Ninja commands for PowerShell and bash. This four-sector model runs in memory; no physical disk is accessed by staging or crash simulation.</p>
+<h2>Understand the idea</h2>
+<p>ExportStable writes only stable sectors to a FILE stream, checks each write length and calls fflush. A FILE stream is the C library's file interface. fflush moves buffered data through that interface, not necessarily to persistent hardware.</p>
+<h2>Work through the example</h2>
+<p>Stage an edit without flushing the model. Predict whether it appears in an export. Then identify the two kinds of output errors checked by ExportStable.</p>
+<h2>Check your reasoning</h2>
+<p>The pending edit is absent. Short fwrite results and a failed fflush produce IO_ERROR. The caller must still manage opening and closing the stream.</p>
+<h2>If something differs</h2>
+<p>If the exported image looks old, inspect the model's dirty state before export. Do not change export to include staged data while retaining the name stable.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/writeback-sector-store/block_store.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="42-simulate-loss-of-unflushed-data.html">Previous lesson</a> · <a rel="next" href="44-import-into-a-candidate-first.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/43-export-the-stable-view.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

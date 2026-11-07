@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/11-follow-the-application-event-loop.html
+
+PURPOSE:
+Explain the lesson: Follow the application event loop.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow the application event loop | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-separate-logic-and-window-checks.html">Previous lesson</a></nav>
+<h1>Follow the application event loop</h1>
+<h2>Prepare</h2>
+<p>Open the GTK4 activity lab's <code>window.c</code>. For a practical run, follow its README to install the native tools, locate the Framework SDK and enable the optional GTK4 target.</p>
+<p>An <strong>event loop</strong> waits for events and dispatches them to handlers. A program that creates widgets and immediately exits cannot provide an interactive window.</p>
+<h2>Read main in order</h2>
+<ol>
+<li><code>gtk_application_new</code> creates the application object.</li>
+<li>The activate signal is connected to <code>Activate</code>.</li>
+<li><code>g_application_run</code> runs the application.</li>
+<li>After it returns, the application reference is released.</li>
+<li>The result is returned to the operating system.</li>
+</ol>
+<p>Inside <code>Activate</code>, the window is assembled and presented. Later button events invoke <code>Completed</code>. These callbacks run at different times; local variables from a completed function cannot be assumed to remain available.</p>
+<h2>Draw the time line</h2>
+<pre><code class="language-text">main -&gt; run
+          -&gt; Activate -&gt; return
+          -&gt; click -&gt; Completed -&gt; return
+          -&gt; close / application finishes
+        run returns -&gt; release -&gt; exit</code></pre>
+<p>This is a conceptual trace; actual event ordering depends on the window system.</p>
+<p><strong>Exercise:</strong> where would a long, blocking file conversion inside <code>Completed</code> delay user interaction? Expected answer: while that handler occupies the event-loop thread. Moving work to a worker also requires a safe result-delivery and lifetime design.</p>
+<h2>Troubleshoot</h2>
+<p>A frozen-looking screen may have an unwired action, a disabled control, a modal input owner or a blocked event loop. Collect evidence before choosing a cause. Avoid adding repeated event-loop calls as an unexplained repair; reentrant callbacks can make ownership harder.</p>
+<p>Keep reusable asynchronous jobs and workbench behaviour in Framework when moving from this teaching window to a real Umicom application.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-separate-logic-and-window-checks.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/learning-gtk4/11-follow-the-application-event-loop.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

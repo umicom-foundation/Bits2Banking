@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/18-follow-a-framework-project-recipe.html
+
+PURPOSE:
+Follow a Framework project recipe
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow a Framework project recipe | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Follow a Framework project recipe</h1>
+<p>A compiler reads a program and translates it into another representation. An IDE adds editing, project navigation and commands around that compiler. In this module, Umicom C accepts a deliberately small arithmetic language. Umicom Framework supplies the project recipe and Studio presents it. We follow the connection between those three responsibilities.</p>
+<h2>Prepare the tools</h2>
+<ol>
+<li>Open PowerShell on Windows or a terminal running bash on Linux. A terminal accepts written commands; each command below starts an existing program.</li>
+<li>Find your Umicom C executable. Run <code>umicom-c --version</code>. If it is not found, add its actual installation directory to PATH for this terminal or use its full path. PATH is the list of folders searched for program names.</li>
+<li>Run <code>cmake --version</code> and <code>ninja --version</code>. CMake prepares a build description; Ninja follows that description. Install any missing tool through your platform's normal package manager.</li>
+<li>Choose a practice destination, such as <code>C:\umicom\examples\arithmetic-preview</code>. The Studio starter requires a new folder: choose its parent first and do not create the final folder in advance.</li>
+<li>In a Studio build containing the new Framework recipe, use <strong>File → New Project</strong>, choose <strong>Umicom C Arithmetic Preview</strong>, enter project details and the new destination, then create it. Generation creates text files only. It does not install dependencies or run the program.</li>
+</ol>
+<p>The terminal exercises use that generated project independently of Studio's interface. See <a href="../../learning-cmake/index.html">Learning CMake</a> for a longer introduction.</p>
+<h2>One owner for generated projects</h2>
+<p>A recipe describes the files a new project needs. A generator combines that recipe with values such as a project name and destination. Studio requests that shared operation rather than maintaining another copy of every starter.</p>
+<p>The Umicom C preview recipe supplies eight files: <code>CMakeLists.txt</code>, <code>CMakePresets.json</code>, the main source, two deliberately invalid sources, a CMake test driver, a README and <code>.gitignore</code>. The last file tells Git which generated build products should remain outside source history.</p>
+<ol>
+<li>Read the file table in Framework's <code>src/developer_project/templates/umicom_c_preview.c</code>. Each entry pairs a relative destination with text to write.</li>
+<li>Follow registration in <code>builtin_templates.c</code>. Registration makes a recipe discoverable; a menu does not need another hard-coded list.</li>
+<li>Read <code>UmiGtk4NewProjectDialogPrepare</code> in the GTK adapter. It lists CMake recipes from the catalogue. The dialog owns fields and selection; Framework owns generation.</li>
+<li>Read <code>UmiDeveloperProjectCreateNew</code>. It rejects an already existing destination, preventing a starter from replacing another project's source.</li>
+<li>Compare your generated files with the recipe. Inspect text; do not copy Framework's implementation into an application.</li>
+</ol>
+<p>A path such as <code>src/main.uc</code> is relative to the project root. An absolute path starts at a filesystem root. Relative recipe paths make a starter usable in a folder selected by the learner.</p>
+<h2>Experiment</h2>
+<p>Try creating another project in the same destination. Expect a refusal, with existing source unchanged. Cancel and choose another new folder. If your build behaves differently, retain the folder and report the exact steps.</p>
+<h2>Check your understanding</h2>
+<p>Adding a catalogue entry makes a recipe selectable. It does not install a compiler, establish trust in arbitrary project commands or prove that tests pass. Those are separate responsibilities.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/developer_project/generator.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="17-open-an-arithmetic-project-in-studio.html">Previous: Open an arithmetic project in Studio</a> · <a href="19-select-the-preview-build-profile.html">Next: Select the preview build profile</a></p>
+</nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/18-follow-a-framework-project-recipe.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

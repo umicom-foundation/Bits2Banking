@@ -50,3 +50,7 @@ Open `umicom-c/src/bytecode.c` in your Umicom source collection. Read the named 
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/05-portable-bytecode.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Execute instructions with checked arithmetic](04-checked-execution.md)
+
+[Next: Explain failures and test the boundaries](06-errors-and-tests.md)

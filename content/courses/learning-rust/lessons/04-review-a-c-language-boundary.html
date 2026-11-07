@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-rust/lessons/04-review-a-c-language-boundary.html
+
+PURPOSE:
+Explain the lesson: Review a C language boundary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review a C language boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-represent-success-and-refusal.html">Previous lesson</a> · <a rel="next" href="05-link-a-rust-client-to-c.html">Next lesson</a></nav>
+<h1>Review a C language boundary</h1>
+<p>An interface between languages is often called a foreign function interface, or FFI. Both sides must agree on the function name, argument types, result type and calling convention.</p>
+<h2>Setup recap</h2>
+<p>Open labs/languages/rust-activity/activity.rs and labs/native/activity-adapters/bridge.h. No broker, network service or device is involved. This example passes one integer by value and receives one integer.</p>
+<p>The lab uses Rust edition 2024. See the <a href="https://doc.rust-lang.org/edition-guide/rust-2024/unsafe-extern.html">Rust edition guide</a> for external declarations.</p>
+<h2>1. Compare the declarations</h2>
+<p>The C declaration takes int and returns int. The Rust declaration uses c_int for each. The external block names the C calling convention.</p>
+<p>Do not replace c_int with a type merely because it is the same size on your computer. Interface compatibility is a contract between the two compilers.</p>
+<p>A correct-looking declaration cannot prove that the library linked later contains the expected implementation.</p>
+<h2>2. Locate the unsafe operation</h2>
+<p>Rust cannot inspect the C implementation through this declaration. Calling it therefore requires an unsafe block. The nearby safety comment explains this particular call: the signature agrees, there are no borrowed pointers, and the C bridge checks every integer input.</p>
+<p>The public advance function then provides a Result-based interface.</p>
+<p>Unsafe does not mean that an error is known to occur. It identifies obligations the programmer must justify. Moving the call into a wrapper concentrates that review in one place.</p>
+<h2>3. Follow the actual rule</h2>
+<p>Open bridge.c and then framework-activity/activity.c. The bridge rejects negative input before converting to unsigned. The model checks its limit and writes the next value only on success.</p>
+<p>This is a shared educational model using Framework status conventions. A production feature should call the relevant Framework service rather than recreate its policy in each language.</p>
+<h2>Exercise and recovery</h2>
+<p>Write the interface contract in four lines: symbol, parameter, result and refusal encoding. Then explain why adding a pointer parameter would introduce new lifetime and length questions.</p>
+<p>If linking fails, check the library and target architecture. Changing unsafe annotations cannot repair a missing or incompatible library.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/rust-activity/activity.rs">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-represent-success-and-refusal.html">Previous lesson</a> · <a rel="next" href="05-link-a-rust-client-to-c.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-rust/04-review-a-c-language-boundary.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

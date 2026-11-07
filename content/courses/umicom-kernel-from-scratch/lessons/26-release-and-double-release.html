@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/26-release-and-double-release.html
+
+PURPOSE:
+Explain the lesson: Reject invalid and repeated frame releases.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reject invalid and repeated frame releases | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="25-first-fit-and-reuse.html">Previous lesson</a> · <a rel="next" href="27-exhaustion-and-output-preservation.html">Next lesson</a></nav>
+<h1>Reject invalid and repeated frame releases</h1>
+<h2>Prepare</h2>
+<p>Use the host physical-frame-pool project. Open its header to see the result names. An owner is the component currently responsible for a resource. Release gives that resource back to the pool.</p>
+<h2>Convert address to index</h2>
+<p>The release function first checks that the address is not below the pool base. Only then does it subtract the base. This order prevents unsigned subtraction from wrapping a smaller address into a huge positive distance.</p>
+<p>It next checks alignment and the upper boundary. Dividing the validated distance by 4,096 produces the array index. The function accepts release only when that entry is OWNED and the owned count is nonzero.</p>
+<h2>Paper trace</h2>
+<p>For a pool at 0x80000000:</p>
+<ul>
+<li>releasing 0x80000000 targets reserved frame 0: NOT_OWNED;</li>
+<li>releasing 0x80008001 is misaligned: INVALID;</li>
+<li>releasing 0x80080000 is immediately beyond the inventory: INVALID;</li>
+<li>releasing a successfully allocated 0x80008000 succeeds once;</li>
+<li>releasing it again returns NOT_OWNED.</li>
+</ul>
+<p>The last case is a double release. Without the state check, a counter could be decremented twice and the inventory would stop describing reality.</p>
+<h2>Lab</h2>
+<p>Allocate one frame. Copy its address into two local variables. Release through the first variable, then try the second. Both variables contain the same number; copying a number did not create a second ownership right.</p>
+<p>Expected: the second call refuses and the owned count remains zero.</p>
+<h2>Review</h2>
+<p>This model does not identify individual processes, so it cannot distinguish two callers who possess the same address. Real ownership integration needs additional contracts. Use the lab to understand state transitions, then inspect the Kernel's process and physical-memory interfaces before designing extensions.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-pool/frame_pool.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="25-first-fit-and-reuse.html">Previous lesson</a> · <a rel="next" href="27-exhaustion-and-output-preservation.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/26-release-and-double-release.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

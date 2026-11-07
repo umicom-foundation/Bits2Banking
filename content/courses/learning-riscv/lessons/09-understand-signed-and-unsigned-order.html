@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/09-understand-signed-and-unsigned-order.html
+
+PURPOSE:
+Explain the lesson: Understand signed and unsigned order.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand signed and unsigned order | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-distinguish-register-width-and-data-width.html">Previous lesson</a> · <a rel="next" href="10-understand-word-arithmetic-wrap.html">Next lesson</a></nav>
+<h1>Understand signed and unsigned order</h1>
+<p>Ordering asks which value comes first. Signed integers include negative values; unsigned integers start at zero. A processor needs an instruction that matches the intended interpretation.</p>
+<h2>Prepare</h2>
+<p>Open minimum.S and sequences.h. Two functions have similar bodies but different declared types.</p>
+<p>BtbMinSigned64 uses bge. BtbMinUnsigned64 uses bgeu. The u marks unsigned comparison.</p>
+<h2>Read the branch</h2>
+<p>Both functions begin with the left value in a0 and right value in a1. If the right value is greater than or equal to the left, a0 already contains the minimum.</p>
+<p>Otherwise the function copies a1 into a0 before returning.</p>
+<h2>Use a revealing example</h2>
+<p>Compare -1 and 1 with signed ordering: -1 is smaller.</p>
+<p>Now compare UINT64_MAX and 1 with unsigned ordering: 1 is smaller. The all-one pattern must not be treated as a negative number in this interface.</p>
+<p>check.c includes these cases so an accidental branch substitution can be detected.</p>
+<h2>Exercise</h2>
+<p>Trace equal inputs, then reverse the argument order of unequal inputs. Explain why the returned minimum is unchanged when the arguments swap.</p>
+<p>Write down the expected result before reading the test condition.</p>
+<h2>Apply the idea</h2>
+<p>An account balance might require signed values because it can be negative. A byte count or array length usually needs a nonnegative range. Choosing an unsigned type does not remove the need to check bounds.</p>
+<p>When reading Umicom source, inspect declarations and conversions alongside instructions. A comparison that looks correct locally may still receive a value converted under a different rule.</p>
+<p>The example computes a minimum only. It does not validate a financial model or authorize a transaction.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/minimum.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-distinguish-register-width-and-data-width.html">Previous lesson</a> · <a rel="next" href="10-understand-word-arithmetic-wrap.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/09-understand-signed-and-unsigned-order.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

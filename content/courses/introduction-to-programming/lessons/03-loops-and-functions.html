@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-programming/lessons/03-loops-and-functions.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Repeat work and name a reusable operation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Repeat work and name a reusable operation</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-values-and-decisions.html">Previous: Values, variables and decisions</a> · <a href="04-tests-and-debugging.html">Next: Describe a result, test it and investigate a failure</a></p></nav><h2>Two ways to reduce repetition</h2>
+<p>A loop repeats instructions while a condition permits it. A function groups an operation under a name so callers can use it. A loop decides how many times to work; a function defines the work.</p>
+<h2>Setup recap</h2>
+<p>Build the first-c-programs lab using <a href="../index.html">the course setup</a>. Read repetition.c, functions.c, counts.h and counts.c. A header, ending in .h, declares the operation callers can use; the .c implementation supplies its behaviour.</p>
+<h2>Trace a small loop</h2>
+<pre><code class="language-c">for (int item = 1; item &lt;= 3; ++item) {
+    printf(&quot;Practice item %d\n&quot;, item);
+}</code></pre>
+<p>Read the three parts in order: initialise item to 1; continue while item is at most 3; increase item by one after each body. The body runs with 1, then 2, then 3. The next test sees 4 and stops.</p>
+<pre><code class="language-text">check 1 -&gt; print 1 -&gt; increment
+check 2 -&gt; print 2 -&gt; increment
+check 3 -&gt; print 3 -&gt; increment
+check 4 -&gt; stop</code></pre>
+<p>If you replace &lt;= with &lt;, the last printed item becomes 2. A one-character edit can change the meaning.</p>
+<h2>Call a function</h2>
+<p>The repository functions.c calls BtbRemainingCount(5, 2). The values inside parentheses are arguments: inputs supplied by the caller. The result is a returned value.</p>
+<pre><code class="language-c">const int remaining = BtbRemainingCount(5, 2);</code></pre>
+<p>The function's contract reserves -1 for invalid input. Its caller checks for that result before printing a count. A contract is a promise about accepted inputs, outputs and errors.</p>
+<h2>Lab</h2>
+<ol>
+<li>Run btb-first-functions. Expect &quot;Remaining: 3&quot;.</li>
+<li>Follow its include to counts.h, then open counts.c.</li>
+<li>Locate the rejection check. Explain why -1 cannot also be a valid remaining count.</li>
+<li>Read test_counts.c to see independent callers checking the promise.</li>
+<li>Write down expected loop output before running repetition.c; compare with that source's actual loop bounds.</li>
+</ol>
+<h2>Exercise and worked answer</h2>
+<p>A function receives total = 3 and completed = 3. Its valid result is 0, not -1. A caller must not treat every nonpositive value as failure. It should distinguish the reserved negative error from a legitimate empty remainder.</p>
+<h2>Connect to Framework</h2>
+<p>Framework-owned services let different applications call the same implementation. The small counts library demonstrates the shape of that arrangement without requiring a large build. A production service also needs ownership, concurrency and persistence decisions appropriate to its job.</p>
+<h2>Troubleshooting</h2>
+<p>An &quot;undefined reference&quot; during linking often means the declaration was found but the implementation was not linked. Build this lab through its CMakeLists.txt so counts.c accompanies functions.c. Compiling functions.c alone cannot supply BtbRemainingCount.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/first-c-programs/functions.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-values-and-decisions.html">Previous: Values, variables and decisions</a> · <a href="04-tests-and-debugging.html">Next: Describe a result, test it and investigate a failure</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

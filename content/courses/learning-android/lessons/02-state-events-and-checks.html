@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-android/lessons/02-state-events-and-checks.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect a button to visible Android screen state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../course-series.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="connect-a-button-to-visible-android-screen-state">Connect a button to visible Android screen state</h1>
+<p>A screen has state: information needed to describe what it displays now. An event is something that happens, such as a button click. We will connect an event to a state change and observe the resulting text.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>Install Android Studio and its SDK, create an <strong>Empty Activity</strong> Compose project with package <code>org.umicom.learning</code>, and launch the template on a virtual or connected Android device. The <a href="01-install-and-launch.html">setup lesson</a> explains each step. This lesson introduces the Kotlin syntax it uses; <a href="../../learning-kotlin/index.html">Learning Kotlin</a> provides slower terminal exercises.</p>
+<h2 id="add-the-example-without-losing-the-template">1. Add the example without losing the template</h2>
+<ol>
+<li>Copy the generated <code>MainActivity.kt</code> into a notes folder <strong>outside</strong> <code>app/src</code>, naming the copy <code>MainActivity.template.txt</code>. This keeps the template for comparison without compiling a duplicate class.</li>
+<li>Open <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/android-lesson-counter/MainActivity.kt">the complete learning example</a> and replace the active file's contents with it. Retain its header.</li>
+<li>Confirm that the first package declaration is <code>package org.umicom.learning</code>, matching the project created in this course. If you selected a different package, adapt that declaration to your project.</li>
+<li>Build and run. The first screen should show <code>Completed: 0 of 3</code>, an enabled completion button and a disabled reset button.</li>
+</ol>
+<p>The example uses the Compose and Material dependencies supplied by the template. Do not paste arbitrary dependency versions from another project if imports fail; first confirm that the project uses the Compose Empty Activity template and that its synchronisation succeeded.</p>
+<h2 id="read-the-activity">2. Read the activity</h2>
+<p><code>class MainActivity : ComponentActivity()</code> declares a class based on Android's activity support. Android calls <code>onCreate</code> when it creates this activity. The call to <code>super.onCreate(savedInstanceState)</code> lets the base implementation perform its work. <code>setContent</code> supplies the Compose screen. <code>MaterialTheme</code> provides consistent text and control styling within that screen.</p>
+<p><code>@Composable</code> marks <code>LessonCounter</code> as a function that describes Compose UI. <code>Column</code> arranges its children vertically. <code>Text</code> displays a string. <code>Modifier.padding(...)</code> requests space around the contents. The <code>dp</code> unit expresses density-independent spacing, so a value represents a similar physical size across different screen densities.</p>
+<h2 id="read-the-state-and-event-together">3. Read the state and event together</h2>
+<pre><code class="language-kotlin">var completed by rememberSaveable { mutableStateOf(0) }
+Button(onClick = { if (completed &lt; 3) completed += 1 }, enabled = completed &lt; 3) {
+    Text(&quot;Complete a practice lesson&quot;)
+}
+</code></pre>
+<p><code>var</code> permits changes. <code>mutableStateOf(0)</code> creates observable state initially holding zero. With <code>by</code>, Kotlin's property delegation lets reads and assignments use the contained value directly. <code>rememberSaveable</code> retains a saveable value across supported activity recreation. It is not a durable course-progress database.</p>
+<p><code>onClick</code> receives a block of work to run later. <code>completed += 1</code> adds one and stores the result. When observed state changes, Compose can run the screen description again, called recomposition. The new text is based on the new count. <code>enabled = completed &lt; 3</code> disables completion at the limit; the callback checks the limit as well. The reset callback assigns zero.</p>
+<p>Follow the sequence: <strong>tap → callback → count changes → screen updates</strong>. Creating a button without a callback would stop this sequence at the first step.</p>
+<h2 id="check-visible-behaviour">4. Check visible behaviour</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Expected observation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fresh launch</td>
+<td>Count 0; reset disabled</td>
+</tr>
+<tr>
+<td>Tap completion once</td>
+<td>Count 1; reset enabled</td>
+</tr>
+<tr>
+<td>Tap completion twice more</td>
+<td>Count 3; completion disabled</td>
+</tr>
+<tr>
+<td>Tap disabled completion</td>
+<td>Count stays 3</td>
+</tr>
+<tr>
+<td>Rotate device at count 2</td>
+<td>Count remains 2 after recreation</td>
+</tr>
+<tr>
+<td>Tap reset</td>
+<td>Count 0; completion enabled; reset disabled</td>
+</tr>
+</tbody>
+</table>
+<p>Record actual results. A screenshot of the initial screen does not establish that these events work. After clearing app data or uninstalling, expect a new practice state. Do not depend on this demonstration for permanent learner records.</p>
+<h2 id="trace-the-related-umicom-design">5. Trace the related Umicom design</h2>
+<p>In <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/activity.c">Framework activity.c</a>, a shared C function owns a counting contract; console and GTK4 frontends use it. In a future Android Umicom client, reusable production rules and persistence belong in Framework, accessed through an explicit service or native binding. The present counter is a local teaching example so that the event sequence can be studied without that extra infrastructure.</p>
+<h2 id="exercise-and-answer">Exercise and answer</h2>
+<p>Change the practice limit from 3 to 5 consistently in the displayed text, the <code>enabled</code> condition and the callback guard. After five taps the count should stop at 5. If only the text changes, the old condition still stops at 3. This is a reason to centralise a repeated rule in a named value or shared service as an example grows.</p>
+<p><a href="01-install-and-launch.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="https://developer.android.com/develop/ui/compose/state">Compose state reference</a></p>
+
+<nav aria-label="Course navigation"><a href="../index.html">Course contents</a> · <a href="../../course-series.html">Subject guide</a></nav><p><a href="03-connect-an-existing-c-model.html">Next lesson: Connect an Android screen to an existing C model</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

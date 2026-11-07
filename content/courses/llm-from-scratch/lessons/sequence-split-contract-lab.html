@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/sequence-split-contract-lab.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab: keep training and evaluation sequences separate | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1 id="lab-keep-training-and-evaluation-sequences-separate">Lab: keep training and evaluation sequences separate</h1>
+<p>Training changes a model using examples. Evaluation measures it on examples reserved for assessment. If the model has already seen the assessment answers, a good score can be misleading. This lab follows Framework's deterministic sequence partitioner and then examines what that function cannot detect.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>You need a C23 compiler, CMake, Ninja and Framework sources. <a href="byte-tokenizer-contract-lab.html">The byte tokeniser lab</a> explains the existing <code>learning/native-llm</code> project. The commands below configure that project with <code>BUILD_TESTING=ON</code> and build one selected check. No training run or downloaded dataset is required here. See <a href="../../learning-c/terminal-lab.html">terminal setup</a> if the compiler or CMake is unavailable.</p>
+<h2 id="describe-the-partition-before-coding">1. Describe the partition before coding</h2>
+<p>Suppose there are 12 sequences, identified by numbers 0–11. Reserve three for evaluation. Framework's <code>UmiAiTrainingSplitSequences</code> returns a permutation: all 12 IDs in a reordered list, without omissions or repetitions. The first nine belong to training; the remaining three belong to evaluation.</p>
+<pre><code class="language-text">12 complete sequence IDs → seeded permutation → first 9 train | last 3 evaluate
+</code></pre>
+<p>The seed selects a repeatable ordering. It is a parameter used to reproduce an experiment, not a password. The function keeps whole sequence IDs intact; it does not inspect the text those IDs represent.</p>
+<h2 id="build-and-run-the-selected-check">2. Build and run the selected check</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S &#39;C:/umicom/Umicom-Applications/framework/learning/native-llm&#39; -B &#39;C:/umicom-learning/native-llm&#39; -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build 'C:/umicom-learning/native-llm' --target umicom-ai-training-dataset-split-test --parallel 2
+ctest --test-dir 'C:/umicom-learning/native-llm' -R '^framework\.ai\.training\.dataset_split$' --output-on-failure --no-tests=error
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">cmake -S &quot;$HOME/umicom/Umicom-Applications/framework/learning/native-llm&quot; -B &quot;$HOME/umicom-learning/native-llm&quot; -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build &quot;$HOME/umicom-learning/native-llm&quot; --target umicom-ai-training-dataset-split-test --parallel 2
+ctest --test-dir &quot;$HOME/umicom-learning/native-llm&quot; -R '^framework\.ai\.training\.dataset_split$' --output-on-failure --no-tests=error
+</code></pre>
+<p>One case should run. Its success text is <code>Whole-sequence split: passed</code>, visible with verbose CTest output. These commands build the selected test and its dependencies, not every application.</p>
+<h2 id="read-the-evidence">3. Read the evidence</h2>
+<p>Open <code>tests/ai_training/test_training_dataset_split.c</code> beside <code>include/umicom/ai/training/dataset_split.h</code>. The test first provides capacity 11 for 12 IDs and verifies refusal without changing its sentinel-filled output. It rejects evaluation groups of zero or all 12 sequences. It then checks that repeated calls with the same seed produce the same ordering, all IDs are in range, and none appear twice.</p>
+<p>For the particular seeds in this test, it also checks that the order changes. Do not generalise that into a promise that every distinct seed always produces a distinct permutation; a finite set of permutations cannot provide that guarantee for arbitrarily many seeds.</p>
+<h2 id="find-the-remaining-data-problem">4. Find the remaining data problem</h2>
+<p>Imagine sequence 2 and sequence 9 contain copies of the same paragraph. They have different IDs, so disjoint ID groups can still leak content across the split. Overlapping windows cut from one source file can create a similar problem.</p>
+<p>Before training, group related examples by their original document, remove inappropriate duplicates, then reserve evaluation groups. Record the corpus revision, split method, seed and evaluation policy. Never repeatedly tune a model on the final held-out set and continue calling it unseen evaluation.</p>
+<h2 id="exercise-and-recovery">Exercise and recovery</h2>
+<p>Write six invented document IDs on paper, with two IDs representing copies of the same document. Partition by ID, then by source document. Explain which method protects the assessment better and why. No private documents are required.</p>
+<p>If a test fails, inspect the contract and input counts before changing the expected result. Passing this test establishes partition properties, not model quality, data rights or freedom from contamination. Continue with <a href="first-training-run.html">the first training experiment</a>, or return to the <a href="../index.html">LLM course</a>.</p>
+
+
+<p><a rel="next" href="checkpoint-observation-lab.html">Next: Lab: measure a model without changing its checkpoint</a></p>
+</article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>

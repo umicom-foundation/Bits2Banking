@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/15-request-space-for-a-terminator.html
+
+PURPOSE:
+Explain the lesson: Reserve space for the end of a string.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reserve space for the end of a string | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-borrow-storage-for-a-report.html">Previous lesson</a> · <a rel="next" href="16-understand-alignment-padding.html">Next lesson</a></nav>
+<h1>Reserve space for the end of a string</h1>
+<h2>Prepare</h2>
+<p>Open the arena report example and find strlen(heading) + 1U. A C string ends with a zero-valued character. strlen counts the characters before that terminator.</p>
+<p>The extra byte is part of the required storage, even though it does not appear in the printed report.</p>
+<h2>Work a small example</h2>
+<p>For the text Note, draw five cells: N, o, t, e and zero. Four visible characters need five bytes in this ASCII example.</p>
+<p>The source uses strcpy only after allocating the measured length plus the terminator. The source text is a fixed string that does not change between measuring and copying.</p>
+<h2>Lab</h2>
+<p>Replace the heading with a short ASCII sentence in your exercise copy. Count the visible characters and predict the requested bytes. Compare that prediction with strlen plus one.</p>
+<p>Expected: the destination has room for all characters and the final zero. Do not deliberately remove the extra byte and execute an overflowing copy.</p>
+<h2>Exercise and explanation</h2>
+<p>Why is measuring an untrusted input pointer dangerous? strlen needs an accessible terminating zero. A pointer and no bound cannot prove that one exists. Bounded inputs need a separate length contract before they can be treated as strings.</p>
+<h2>Troubleshoot</h2>
+<p>If the example refuses a very small workspace, inspect both strings and alignment padding. The allocation result must be checked before copying. A refusal is an expected boundary result, not permission to continue with an unchanged destination pointer.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/arena-allocator/main.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-borrow-storage-for-a-report.html">Previous lesson</a> · <a rel="next" href="16-understand-alignment-padding.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/15-request-space-for-a-terminator.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

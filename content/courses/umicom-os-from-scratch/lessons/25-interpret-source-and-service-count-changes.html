@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/25-interpret-source-and-service-count-changes.html
+
+PURPOSE:
+Interpret source and service-count changes
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Interpret source and service-count changes | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Interpret source and service-count changes</h1>
+<p>Follow captured startup observations from bytes to a checked comparison. Use the real Framework parser, then inspect the OS command that consumes it.</p>
+<p>You need a text editor, a terminal, CMake 3.24 or newer, Ninja and a C23-capable C compiler. A terminal accepts commands as text. CMake describes how a program is assembled; Ninja carries out the necessary compilation commands. A compiler translates C source into machine instructions. This lab runs on the current computer; it does not install or boot an operating system.</p>
+<p>On Windows, install MSYS2 from its official installer, open its UCRT64 terminal and install the toolchain with the following command. Accept the package manager's prompts. If it requests a restart during a system update, complete that update first.</p>
+<pre><code class="language-sh">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Obtain the Bits2Banking and Framework source checkouts. In these examples they are located at C:\umicom\Umicom-Bits2Banking and C:\umicom\Umicom-Applications\framework. Adjust the paths if you use another folder. Open PowerShell and enter each line separately, stopping if a command fails:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+cmake -S labs/framework/boot-report-comparison -B build/boot-report-learning -G Ninja -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/boot-report-learning --parallel 2
+ctest --test-dir build/boot-report-learning --output-on-failure --no-tests=error
+&amp; .\build\boot-report-learning\bin\boot-report-learning.exe</code></pre>
+<p>On a Linux system with GCC, CMake and Ninja installed, place the checkouts beneath ~/umicom, open Bash, and use:</p>
+<pre><code class="language-sh">cd ~/umicom/Umicom-Bits2Banking
+cmake -S labs/framework/boot-report-comparison -B build/boot-report-learning -G Ninja -DUMICOM_FRAMEWORK_SOURCE=&quot;$HOME/umicom/Umicom-Applications/framework&quot;
+cmake --build build/boot-report-learning --parallel 2
+ctest --test-dir build/boot-report-learning --output-on-failure --no-tests=error
+./build/boot-report-learning/bin/boot-report-learning</code></pre>
+<p>The expected output includes state: starting -&gt; ready, completed: 1 -&gt; 2 and Malformed report refused; previous comparison preserved. If CMake cannot find boot_report.c, check the source path. If comparison symbols are missing, the header and source must both contain the comparison API. Do not combine files from unrelated revisions. The build folder stores generated files; the labs folder contains the source you edit.</p>
+<p>Two observations are comparable only when their context is understood. Imagine one build plans two services and another plans six. A completed count of three in the second build cannot be interpreted using the first build's expected total.</p>
+<p>The comparator reports planned and completed separately. It also exposes a source identity change. Its job is to show the facts; deciding whether they indicate a regression requires the relevant configuration and logs.</p>
+<ol>
+<li>Make a table containing capture label, source identity, mode, state, planned, completed and reason.</li>
+<li>Copy each value from the accepted reports.</li>
+<li>If source identities differ, inspect the matching boot plans before comparing progress.</li>
+<li>If the later report entered recovery, follow its reason into the corresponding serial log.</li>
+</ol>
+<p>A reason such as service-timeout narrows the investigation to a deadline. It does not tell you whether the service was slow, the deadline was unreasonable, a dependency was missing or a clock behaved incorrectly. Avoid changing the timeout merely to make the report look successful.</p>
+<p>Requested recovery is also different from an unexpected startup failure. A user may deliberately choose recovery to inspect a machine. The mode field preserves that intent. The validator refuses impossible combinations, but it cannot prove the report's description is true.</p>
+<p><strong>Exercise.</strong> Describe the next evidence you would collect for two cases: matching source identities with a changed reason, and different identities with changed service totals. Include build revision, capture time and service configuration. Do not infer a successful physical-machine boot from a host-side parser test. Each layer answers a different engineering question.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/platform/boot_report.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="24-run-the-os-report-comparison-command.html">Previous: Run the OS report-comparison command</a> · <a href="26-design-repeatable-boot-evidence-checks.html">Next: Design repeatable boot-evidence checks</a></p>
+</nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/25-interpret-source-and-service-count-changes.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

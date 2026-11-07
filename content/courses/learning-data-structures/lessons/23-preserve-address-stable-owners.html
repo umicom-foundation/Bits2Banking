@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/23-preserve-address-stable-owners.html
+
+PURPOSE:
+Explain the lesson: Preserve an address-stable owner.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve an address-stable owner | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="22-treat-sequence-exhaustion-explicitly.html">Previous lesson</a> · <a rel="next" href="24-publish-a-snapshot-after-validation.html">Next lesson</a></nav>
+<h1>Preserve an address-stable owner</h1>
+<h2>Prepare</h2>
+<p>Read Valid and BtbDiagnosticRingInit in ring.c. The live ring stores its own address in self. Later operations require self to equal the address of the object being used.</p>
+<p>This is an address-stability contract: initialise the object in its final location and do not copy the live owner.</p>
+<h2>Trace a copy</h2>
+<p>Suppose ring is initialised at address A. Copying its fields to another object at address B also copies self as A. The new object's own address is B, so validation refuses it.</p>
+<p>The existing regression exercises that case.</p>
+<h2>Lab</h2>
+<p>Draw the two objects and arrows from their self fields. Explain why copying a snapshot is permitted while copying the live ring is not.</p>
+<p>Expected: a snapshot contains observation values and no ownership marker. The live ring represents a specific owner.</p>
+<h2>Exercise and explanation</h2>
+<p>Does this self check prevent every misuse? No. It is a useful guard within a documented single-threaded API, not memory isolation or protection against arbitrary memory corruption.</p>
+<h2>Troubleshoot</h2>
+<p>If an operation unexpectedly returns BAD_STATE after moving a structure, inspect whether a container relocation or assignment copied the live owner. Keep its storage stable, or redesign ownership through a separate stable allocation.</p>
+<p>Do not “repair” a copied ring by manually changing self. That bypasses the intended lifecycle instead of establishing a supported transfer operation.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/diagnostic-ring/ring.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="22-treat-sequence-exhaustion-explicitly.html">Previous lesson</a> · <a rel="next" href="24-publish-a-snapshot-after-validation.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/23-preserve-address-stable-owners.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-operating-systems/lessons/07-files-and-persistence.html
+
+PURPOSE:
+Distinguish a file interface from durable storage
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish a file interface from durable storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish a file interface from durable storage</h1>
+<p>An operating system coordinates programs, memory, devices and access to resources. This course introduces each idea using a small Umicom example. It assumes no previous operating-system or C experience. Definitions and setup are repeated where a lesson can be read independently.</p>
+<h2>Prepare this lesson</h2>
+<p>You need a text editor to read the examples. A terminal is a window in which a typed command asks a program to do something. PowerShell is the Windows terminal language used below; Bash is the Linux alternative. A path names a file or folder. Replace C:\umicom with your checkout location if it differs.</p>
+<p>For the optional C lab, install a C23 compiler, CMake and Ninja, and a matching Umicom Framework SDK that includes the platform component. On Windows, open PowerShell and enter:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\boot-report&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version</code></pre>
+<p>Read the lab README before configuring it. Run commands separately and stop on a nonzero exit status. Reading a report does not boot an operating system. QEMU exercises use the separate Kernel guide linked in the relevant lesson; no physical disk is attached. You can complete the prediction and source-reading exercises without executing programs.</p>
+<h2>A name and a sequence of bytes</h2>
+<p>A filesystem organizes named data. A path describes where a file sits in that organization. The root is the starting directory of that filesystem. A guest path such as /notes/first.txt belongs to the guest's view, not automatically to C:\umicom on the host.</p>
+<p>RAM-backed files are kept in memory. They can be useful and fully functional during a session, while disappearing when that session ends. Durable storage survives a specified failure or restart boundary. Durability requires more than a function called save: writes, buffering, errors and recovery all matter.</p>
+<h2>Explore the documented guest</h2>
+<p>After following the Kernel's first-session setup and diskless launch, type:</p>
+<pre><code class="language-text">create /notes/first.txt
+write /notes/first.txt &quot;First note&quot;
+cat /notes/first.txt
+append /notes/first.txt &quot; and more&quot;
+cat /notes/first.txt</code></pre>
+<p>Predict First note and more after the append. Now replace the file with write and predict only the replacement text. Keep these commands inside the guest terminal. They are not PowerShell commands.</p>
+<h2>Follow the implementation</h2>
+<p>Read console_shell.c to find the command dispatch, then ramfs.c for the storage operation. Separate argument parsing from filesystem behaviour. A parser rejecting a damaged line should never execute its valid-looking prefix.</p>
+<p>Shut down the diskless guest and start it again. The note is not promised to persist. Record this as expected RAM behaviour, not a failed disk save. Adding disk-backed storage later needs a different test: write, flush through the documented boundary, restart, read and compare exact bytes, including cases where a write fails partway through.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/ramfs.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="06-interrupts-and-device-events.html">Previous: Understand interrupts and device events</a> · <a href="08-system-calls-and-framework.html">Next: Locate the boundary between kernel services and Framework</a></p>
+</nav><p><a href="../../../lessons/08-system-administration/introduction-to-operating-systems/07-files-and-persistence.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

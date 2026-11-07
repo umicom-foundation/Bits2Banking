@@ -1,0 +1,70 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/19-test-control-lookup-boundaries.html
+
+PURPOSE:
+Test control discovery at its boundaries
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test control discovery at its boundaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Test control discovery at its boundaries</h1>
+<p>This practical module explains how a GTK interface identifies controls, navigates to them and keeps callback state alive. Each lesson includes the setup needed to follow its own example.</p>
+<h2>Start here</h2>
+<p>A graphical application is a program that shows windows and reacts to input. A <strong>widget</strong> is one control, such as a button or a label. A <strong>callback</strong> is a C function GTK calls when an event occurs. The <strong>event loop</strong> waits for input and dispatches those callbacks. You can read this lesson without installing anything. The optional lab needs a C compiler, CMake, Ninja, GTK4 development files and an installed Umicom Framework SDK containing the GTK4 component and the checked named-lookup API.</p>
+<p>In C, a pointer stores an address; it does not automatically keep an object alive. A structure groups related values. The lab's LabWindow structure belongs to one window and holds pointers to controls owned by that window. A return status reports whether an operation completed. Check that status before using its output.</p>
+<h3>Prepare the optional lab</h3>
+<ol>
+<li>Open PowerShell on Windows. A terminal accepts commands; Set-Location changes the folder in which they run. Locate the Bits2Banking checkout and the installed Framework SDK first.</li>
+<li>Put the matching UCRT64 compiler and GTK runtime on Path. Use the SDK built with that same toolchain.</li>
+<li>Configure a separate build folder, then build the small lesson executable. Stop if any command reports an error.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\framework-control-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/applications&quot;
+cmake --build build --parallel 2
+&amp; &quot;.\build\btb-control-inspection.exe&quot;</code></pre>
+<p>On Linux, install your distribution's C compiler, CMake, Ninja, pkg-config and GTK4 development package, and use the path where you installed the Framework GTK4 SDK:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/native/framework-control-inspection
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom-sdk&quot;
+cmake --build build --parallel 2
+./build/btb-control-inspection</code></pre>
+<p>CMake reads CMakeLists.txt and finds the installed libraries. Ninja compiles only what this lab needs. This recipe does not rebuild the Framework. If CMake cannot find UmicomFramework, correct the SDK path. If ui_gtk4 or the checked lookup symbol is missing, install an SDK containing that component and API before continuing. A GTK window needs an interactive desktop session. On Windows, the GTK DLLs must remain reachable through Path.</p>
+<p>For more detail after this lesson, see <a href="../../learning-c/index.html">Learning C</a>, <a href="../../learning-cmake/index.html">Learning CMake</a> and the <a href="../../../../labs/native/framework-control-inspection/README.md">lab guide</a>.</p>
+<h2>A regression test protects a behaviour</h2>
+<p>A regression is a previously working behaviour that stops working after a change. A useful regression test checks the contract that was broken, including failure paths. It should not merely repeat the implementation's exact internal steps.</p>
+<p>Framework's named-lookup tests construct small widget trees and ask observable questions. A unique control must be returned. A missing name must clear the output. Duplicate names must be rejected. A collapsed section must remain collapsed after read-only inspection.</p>
+<h2>Understand the boundary cases</h2>
+<ul>
+<li>unique: one explicit name inside the requested root.</li>
+<li>missing: no matching name and a null result.</li>
+<li>duplicate: two matches, so no arbitrary selection.</li>
+<li>collapsed and expanded: discovery preserves the section state.</li>
+<li>isolated: another root cannot contribute a match.</li>
+<li>invalid: unusable inputs report INVALID_ARGUMENT.</li>
+<li>depth: a tree beyond the supported depth yields CAPACITY_EXCEEDED.</li>
+<li>tag-separation: a matching automation ID is not a matching GTK name.</li>
+</ul>
+<p>The tests also count actions. Inspection must leave that count at zero. This catches a search that accidentally activates the found widget.</p>
+<h2>Follow a test manually</h2>
+<ol>
+<li>Open Framework's tests/gui_control_checks/test_named_lookup_status_gtk4.c.</li>
+<li>Locate the selected case name.</li>
+<li>Read the setup, operation and assertions as three separate parts.</li>
+<li>State the expected output before reading the assertion.</li>
+<li>Check the cleanup path: both owned roots must be released.</li>
+</ol>
+<h2>Qualification commands</h2>
+<p>After the Framework tests have been configured and built by the project maintainer, run the focused group from the configured build directory:</p>
+<pre><code class="language-powershell">ctest --test-dir &quot;C:/umicom/Umicom-Applications/build/windows-ucrt64-all-debug&quot; -R &quot;^framework[.]gui_control_checks[.]named_lookup[.]&quot; --output-on-failure --no-tests=error</code></pre>
+<p>This command selects tests; it does not compile missing executables. A no-tests result can mean the build configuration does not include the group. Exit code 77 in the fixture represents unavailable GTK display coverage. Keep that separate from an executed pass.</p>
+<h2>Exercise</h2>
+<p>Design a test for a late duplicate: put the first matching widget near the start and the second near the end. Explain why returning immediately on the first match would fail the intended uniqueness contract.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-control-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="18-keep-callback-state-alive.html">Previous: Keep callback state alive for the right lifetime</a> · <a href="20-diagnose-a-button-journey.html">Next: Diagnose a button journey from click to result</a></p>
+</nav><p><a href="../../../lessons/06-umicom/learning-gtk4/19-test-control-lookup-boundaries.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

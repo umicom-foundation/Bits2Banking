@@ -1,0 +1,58 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/26-count-execution-budgets-and-wire-bytes.html
+
+PURPOSE:
+Count execution budgets and encoded bytes
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Count execution budgets and encoded bytes | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Count execution budgets and encoded bytes</h1>
+<p>This module follows one small program from text to an inspectable instruction sequence. Each lesson defines its terms, shows a concrete operation and gives an exercise with an expected observation. Inspection describes the program; execution attempts its arithmetic. A compiler, an IDE and a teaching tool can all use the same library contracts.</p>
+<p>A terminal is a window in which commands are typed. A compiler translates source text into instructions; CMake describes a build and Ninja carries out its steps. Install Git and the MSYS2 UCRT64 GCC, CMake and Ninja packages if these tools are not available. The <a href="../../learning-build-systems/index.html">Learning Build Systems course</a> explains their roles in more depth.</p>
+<ol>
+<li>Keep the Umicom C and Bits2Banking checkouts beside each other in a folder you choose. The examples use C:\umicom. Replace that location consistently if yours differs.</li>
+<li>In the MSYS2 UCRT64 terminal, install the tools with the following command. Complete the package manager's normal update instructions first if it requests them.</li>
+</ol>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<ol>
+<li>Open PowerShell and build the small compiler. Run each line separately. If a command reports an error, stop and read it before continuing.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicom-c&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --preset windows-ucrt64-debug -DBUILD_TESTING=ON
+cmake --build --preset windows-ucrt64-debug --parallel 2
+ctest --preset windows-ucrt64-debug --output-on-failure --no-tests=error
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; inspect &quot;.\examples\inspection.uc&quot;</code></pre>
+<p>On Linux, install a C23-capable C compiler, CMake and Ninja with your distribution's package manager. From the umicom-c checkout use the native-debug preset:</p>
+<pre><code class="language-bash">cmake --preset native-debug -DBUILD_TESTING=ON
+cmake --build --preset native-debug --parallel 2
+ctest --preset native-debug --output-on-failure --no-tests=error
+./build/native-debug/bin/umicom-c inspect ./examples/inspection.uc</code></pre>
+<p>The inspection example should report 7 instructions, a peak stack of 3 values, 3 constants, 3 arithmetic operations and 71 encoded bytes. These are expected results to check on your machine. The language currently supports one integer-returning main function with arithmetic; it does not compile the full C language. If inspect is an unknown command, check that the binary was rebuilt from source containing umc_inspect. Keep any previous logs when investigating a failure.</p>
+<h2>An execution budget is a count</h2>
+<p>A budget limits how much work a caller permits. In the current Umicom C virtual machine, fuel counts instructions, including RETURN. The language has no branch or loop instructions, so a successful run executes each instruction once. Seven instructions therefore require a fuel allowance of seven.</p>
+<ol>
+<li>Run the example with --max-steps 6. Expect fuel exhaustion before RETURN.</li>
+<li>Run it with --max-steps 7. Expect -14 and seven executed instructions.</li>
+<li>Remember that structural validation happens first. The fuel allowance does not skip validation or make malformed input acceptable.</li>
+</ol>
+<p>Fuel is not a duration in milliseconds. A slow device can take more time for the same instruction count. If a future language adds loops, its execution-bound analysis will need a new design; the current straight-line count is not a general loop bound.</p>
+<h2>Stored bytes have a separate unit</h2>
+<p>A byte is a unit of storage containing eight bits. The portable bytecode format uses an eight-byte header followed by nine bytes for each instruction. For seven instructions:</p>
+<pre><code class="language-text">encoded bytes = header + instructions * record size
+              = 8 + 7 * 9
+              = 71</code></pre>
+<p>The inspection report's bytecode_size uses this wire format. It is not sizeof(UmcInstruction). A C structure may contain padding and a machine-sized source offset. Encoding writes a defined byte layout so different hosts can exchange the same supported format.</p>
+<h2>Exercise</h2>
+<p>Compile the example to a new filename, such as inspection-study.umcb, then inspect-bytecode that file. The report should match source inspection. Use a fresh output name for a second compilation: the CLI deliberately refuses to overwrite an existing output.</p>
+<p>For a two-instruction program that pushes one value and returns it, calculate the encoded size before checking it. The answer is 26 bytes. For the maximum accepted 256 instructions, the size is 2,312 bytes. These bounded quantities keep size calculations simple and reviewable. They do not describe the memory used by the entire application, compiler or operating system.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../../umicom-c/include/umicom_c/umicom_c.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="25-distinguish-structure-from-arithmetic-safety.html">Previous: Distinguish structure from arithmetic safety</a> · <a href="27-embed-the-inspector-in-a-c-application.html">Next: Embed the inspector in a C application</a></p>
+</nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/26-count-execution-budgets-and-wire-bytes.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

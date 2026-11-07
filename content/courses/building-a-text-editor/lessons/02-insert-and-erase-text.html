@@ -1,0 +1,49 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/02-insert-and-erase-text.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Insert and erase text without losing the tail | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Insert and erase text without losing the tail</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-plan-a-small-editor.html">Previous: Plan a small editor with a testable model</a> · <a href="03-undo-and-save-to-a-chosen-path.html">Next: Undo and save to a chosen path</a></p></nav><h2>Think in positions</h2>
+<p>The three-byte text acd has positions 0, 1 and 2. Inserting b at position 1 gives abcd. The tail cd must move one place to the right. Positions identify insertion boundaries as well: position 3 is the end of acd.</p>
+<h2>Prepare</h2>
+<p>Use <a href="../index.html">the course build commands</a> and open editor.c. Read BtbEditorInsert before running the following session:</p>
+<pre><code class="language-text">append acd
+insert 1 b
+show
+erase 2 1
+show
+discard</code></pre>
+<p>Expect TEXT: abcd followed later by TEXT: abd. The erase command takes a starting position and a count, not an ending position.</p>
+<h2>Trace insertion</h2>
+<pre><code class="language-text">before:  a c d zero
+move:    a _ c d zero
+insert:  a b c d zero</code></pre>
+<p>The implementation checks the requested position, available capacity and input bytes. It copies the input to temporary storage, captures undo state, then uses memmove for the overlapping tail shift. The move includes the zero terminator.</p>
+<p>A C string requires that terminator. It is not part of the visible length and must remain within the array.</p>
+<h2>Trace erasing</h2>
+<p>Removing one byte at position 2 from abcd shifts the tail d and the terminator left. The new length is three. Removing zero bytes makes no change and creates no new undo entry.</p>
+<p>The check uses count &lt;= length - position after proving position &lt;= length. This avoids forming an unchecked position + count expression.</p>
+<h2>Run a rejected edit</h2>
+<p>Enter erase 99 1 in a document containing abd. Expect an error. Then show must still print abd. The command parser accepts 99 as a number; the model rejects it as an invalid document position. These are different checks.</p>
+<h2>Exercise and worked answer</h2>
+<p>Starting from abcdef, what does erase 1 3 produce? It removes b, c and d, leaving aef. Try it in a new session. Undo should restore abcdef.</p>
+<h2>Read the tests</h2>
+<p>test_editor.c checks insertion at the middle, erasure, exact capacity, oversized requests and input that aliases the editor's own text. These cases are chosen because different mistakes can hide behind the same ordinary append example.</p>
+<h2>From this lab to a real editor</h2>
+<p>A graphical editor additionally tracks selection, cursor movement, line endings and character boundaries. A byte index cannot automatically represent a visible character in general Unicode text. Learn those requirements before extending the model; Framework's document APIs are the production integration point.</p>
+<h2>Recovery</h2>
+<p>If a test changes text but reports failure, preserve both the before and after values. Correcting the status alone does not repair a damaged buffer. Return to the smallest insertion or erasure that demonstrates the problem.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/text-editor/editor.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-plan-a-small-editor.html">Previous: Plan a small editor with a testable model</a> · <a href="03-undo-and-save-to-a-chosen-path.html">Next: Undo and save to a chosen path</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

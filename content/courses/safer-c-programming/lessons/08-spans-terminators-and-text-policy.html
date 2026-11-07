@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/08-spans-terminators-and-text-policy.html
+
+PURPOSE:
+Explain the lesson: Separate a byte span from a terminated string.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate a byte span from a terminated string | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-allocator-context-and-test-doubles.html">Previous lesson</a> · <a rel="next" href="09-revisions-and-stale-writers.html">Next lesson</a></nav>
+<h1>Separate a byte span from a terminated string</h1>
+<h2>Prepare</h2>
+<p>Read <code>Validate</code> and <code>CopyPair</code> in the fault-injection lab. A byte span is an address plus a count of readable bytes. A C string ends at a zero byte, written <code>'\0'</code>. These are different contracts.</p>
+<p>The lab accepts an explicit span, checks its contents, then makes an owned terminated copy.</p>
+<h2>Walk through a short title</h2>
+<p>For the title <code>Plan</code>, titleBytes is 4. CopyPair requests 5 bytes. Four bytes hold P, l, a and n; the final byte holds the terminator.</p>
+<pre><code class="language-text">Index:     0   1   2   3    4
+Stored:    P   l   a   n   \0
+Span size: 4
+Allocation size: 5</code></pre>
+<p>The input itself need not contain a terminator within its readable span. The caller must still provide at least the stated number of readable bytes.</p>
+<h2>Explain the checks</h2>
+<p>The lab refuses a null pointer, even for an empty body. It refuses an empty title, allows a zero-length body with a valid pointer, and limits either span to 80 bytes. It uses <code>memchr</code> to reject an embedded zero byte because the saved representation promises ordinary C strings.</p>
+<p>The bound of 80 makes adding one representable. A general-purpose routine accepting arbitrary size_t values would need an overflow check before adding terminator space.</p>
+<h2>Exercise</h2>
+<p>Predict the result for:</p>
+<ol>
+<li>title <code>&quot;A&quot;</code>, length 1;</li>
+<li>title <code>&quot;A&quot;</code>, length 0;</li>
+<li>body <code>&quot;&quot;</code>, length 0;</li>
+<li>title bytes A, zero, B with length 3;</li>
+<li>a valid readable span with length 81.</li>
+</ol>
+<p>Expected statuses are OK, INVALID, OK, INVALID and LIMIT, assuming all other arguments are valid. For rejected input, allocation attempts should not increase.</p>
+<h2>Diagnose safely</h2>
+<p>Never claim a small array has a longer readable span merely to test a boundary that is accepted. For the rejected length 81, the implementation checks the limit before reading; the test relies on that specified ordering. Use valid live pointers and inspect the contract before constructing cases. Bytes and displayed characters also differ for UTF-8; this lab has a byte limit, not a complete Unicode editing policy.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/fault-injection/note.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-allocator-context-and-test-doubles.html">Previous lesson</a> · <a rel="next" href="09-revisions-and-stale-writers.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/08-spans-terminators-and-text-policy.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

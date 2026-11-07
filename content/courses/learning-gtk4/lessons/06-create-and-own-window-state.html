@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/06-create-and-own-window-state.html
+
+PURPOSE:
+Explain the lesson: Create and own a window's state.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create and own a window's state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-window-state-and-independent-instances.html">Previous lesson</a> · <a rel="next" href="07-wire-a-signal-to-a-callback.html">Next lesson</a></nav>
+<h1>Create and own a window's state</h1>
+<h2>Prepare</h2>
+<p>Install a C23 compiler, CMake, Ninja, GTK4 development files and a matching installed Framework SDK. From the Bits2Banking checkout, configure the existing activity example:</p>
+<pre><code class="language-powershell">cmake -S labs/native/framework-activity -B build/activity-window -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/applications&quot; -DBTB_ACTIVITY_GTK4=ON
+cmake --build build/activity-window</code></pre>
+<p>On Bash use the same commands with the actual SDK prefix. Stop if configure or build fails.</p>
+<h2>Understand the data</h2>
+<p><code>ActivityWindow</code> stores the completed count and a pointer to the label. A pointer identifies an object; it does not by itself explain who releases that object. The code attaches the allocated state to the window:</p>
+<pre><code class="language-c">g_object_set_data_full(G_OBJECT(window), &quot;activity&quot;, state, g_free);</code></pre>
+<p>The final argument supplies the release operation for that attached data. GTK's widget hierarchy owns the label once it is added to its container. The state borrows access to the label rather than separately freeing it.</p>
+<h2>Trace the lifetime</h2>
+<p>Draw three boxes: application, window and state. Add the label beneath the window's container. Mark allocation, attachment, use in a click, and final release. The count must remain alive throughout every callback that uses it.</p>
+<p><strong>Exercise:</strong> why would a pointer to an automatic local <code>ActivityWindow</code> inside <code>Activate</code> be unsuitable after that function returns? Expected answer: the automatic object's lifetime ends on return; later clicks would use invalid storage.</p>
+<h2>Check and diagnose</h2>
+<p>Launch the built activity window and record a count. Close it and repeat with a fresh window. If a crash occurs during close, investigate ownership and callbacks before changing visual style. Do not free an attached state twice.</p>
+<p>This lab's build and window checks are separate from reading the lifetime diagram. Keep actual observations distinct from the expected behaviour.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-window-state-and-independent-instances.html">Previous lesson</a> · <a rel="next" href="07-wire-a-signal-to-a-callback.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/learning-gtk4/06-create-and-own-window-state.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

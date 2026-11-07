@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-android/lessons/04-state-lifetime-and-accessibility.html
+
+PURPOSE:
+Explain the lesson: Check Android screen lifetime and accessible feedback.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check Android screen lifetime and accessible feedback | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="03-connect-an-existing-c-model.html">Previous lesson</a></nav>
+<h1>Check Android screen lifetime and accessible feedback</h1>
+<h2>Before you begin</h2>
+<p>Use the native activity screen from the previous lesson or follow its README from a fresh Empty Activity project. Run it once on an emulator. A screen can be recreated when the system changes configuration, so displayed state needs a clear owner.</p>
+<h2>Identify each kind of state</h2>
+<p>The count is the application's current value. A status message explains the last action. A saved-state mechanism can help restore a small value during screen recreation. Long-term persistence is a separate responsibility.</p>
+<p>The example uses <code>rememberSaveable</code> for screen values. Do not infer that it is a database or that it preserves every session indefinitely. An intentionally cleared app, a new installation and a recreated activity are different events.</p>
+<h2>Follow an update</h2>
+<pre><code class="language-text">old count -&gt; native request -&gt; result
+                          -&gt; accepted: replace count
+                          -&gt; refused: keep count, show explanation</code></pre>
+<p>A failed request should not erase useful progress. The message explains the refusal without presenting a negative number as completed work.</p>
+<h2>Lab</h2>
+<ol>
+<li>Start a fresh activity and record its count.</li>
+<li>Tap three times and expect three accepted increments.</li>
+<li>Rotate the emulator and observe whether saved state is restored.</li>
+<li>Close and relaunch using the same steps each time; record how that differs from rotation.</li>
+<li>Enable the platform screen reader and find the button by its label.</li>
+<li>Increase system font size and check that the count and action remain readable.</li>
+</ol>
+<h2>What a model test misses</h2>
+<p>The C bridge tests do not inspect touch targets, text clipping, focus order or screen-reader output. Those require interface evidence. Conversely, tapping a few times does not cover every invalid C input.</p>
+<h2>Debug one boundary at a time</h2>
+<p>If rotation loses progress, inspect state ownership and restoration. If a tap does nothing, inspect the event handler and native call. If the library fails to load, investigate packaging before changing the UI layout.</p>
+<h2>Extension exercise</h2>
+<p>Design an explicit Save progress feature. Choose its location and lifecycle, define recovery after a failed write, and keep the reusable persistence service in Framework. Do not hide that policy inside a button callback.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/android-framework-activity/ActivityScreen.kt">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="03-connect-an-existing-c-model.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/15-mobile-development/learning-android/04-state-lifetime-and-accessibility.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="05-follow-the-call-across-jni.html">Next: Follow one button press across JNI</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

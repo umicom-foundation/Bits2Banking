@@ -206,3 +206,5 @@ earlier failure without losing the learner's place.</p>
 Project study: an offline learning reader · Lesson 1 of 13.
 
 [Next: Copy examples without overwriting your work](14-copy-examples-without-overwriting.md)
+
+[Previous: Validate a tool connection](25-validate-a-tool-connection.md)

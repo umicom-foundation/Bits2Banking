@@ -61,3 +61,5 @@ Read the treasury lesson index in order, then complete its Stage 1 workbook. The
 [Course contents](index.md) · [Previous: Cash, timing and a treasury system](01-cash-timing-and-a-system.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Follow evidence through a payment](03-follow-evidence-through-a-payment.md)

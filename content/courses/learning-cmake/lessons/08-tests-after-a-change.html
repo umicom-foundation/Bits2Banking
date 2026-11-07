@@ -1,0 +1,63 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cmake/lessons/08-tests-after-a-change.html
+
+PURPOSE:
+Choose tests using evidence about a change
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose tests using evidence about a change | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Choose tests using evidence about a change</h1>
+<p>CMake describes how a software project is prepared for building. In this course you will follow a small C project from source files to executables, understand dependencies, run tests and record useful evidence. Every chapter includes the setup needed to enter the exercise directly.</p>
+<h2>Start here</h2>
+<p>A terminal is a window in which you type commands. A folder groups files; a path tells a command where a file or folder is. Source files contain the instructions people edit. A build folder contains the machine-readable results. Keep the two folders separate.</p>
+<p>This course uses the existing labs/native/bounded-ledger-line project in Bits2Banking. It decodes a fictional message such as 1001:+2500: training account 1001, with a change of 2500 pence. It does not connect to a bank.</p>
+<p>On Windows, install MSYS2. In its UCRT64 terminal install the tools:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Open PowerShell. Adjust the repository path if your copy is elsewhere. Run each line separately and stop on an error.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version
+ninja --version
+cmake -S labs/native/bounded-ledger-line -B build/ledger-line -G Ninja -DBUILD_TESTING=ON
+cmake --build build/ledger-line --parallel 2
+ctest --test-dir build/ledger-line --output-on-failure --no-tests=error</code></pre>
+<p>Use CMake 3.24 or newer and a compiler with C23 support. On Linux, install these tools through the distribution's package manager, open Bash in the repository, and use the same three cmake/ctest commands. The small project builds independently of Framework. <a href="../../learning-c/index.html">Learning C</a> gives a slower installation walkthrough.</p>
+<p>The expected test names end in syntax, mutations and example. Missing tools, missing executables and zero selected tests need investigation. For experiments, copy the lab to a separate practice folder and point -S at that folder; preserve the original example.</p>
+<h2>Builds and tests answer different questions</h2>
+<p>A successful build means the selected compilation and link steps completed. A test checks an expected behaviour. CTest does not automatically infer every behaviour affected by a source edit. A selection policy must consider the changed implementation, its consumers and previous failures.</p>
+<p>For this lab, changing ledger_line.c can affect every parser test and the demonstration. Changing only a README does not alter those binaries, although documentation examples may still need review.</p>
+<h2>Inspect before selecting</h2>
+<ol>
+<li>Configure and build using the setup below.</li>
+<li>List registered tests without running them:</li>
+</ol>
+<pre><code class="language-powershell">ctest --test-dir build/ledger-line -N</code></pre>
+<ol>
+<li>Inspect their commands in CMakeLists.txt. Identify the syntax tests, mutation tests and demonstration.</li>
+<li>Run the complete small lab:</li>
+</ol>
+<pre><code class="language-powershell">ctest --test-dir build/ledger-line --output-on-failure --no-tests=error</code></pre>
+<ol>
+<li>After investigating a failure and rebuilding its affected targets, use:</li>
+</ol>
+<pre><code class="language-powershell">ctest --test-dir build/ledger-line --rerun-failed --output-on-failure</code></pre>
+<p>Rerunning failures is useful confirmation for those tests. It does not cover a previously passing test newly affected by the same fix. Keep the prior failure evidence before a later run changes the current CTest results.</p>
+<h2>Plan an affected-test record</h2>
+<p>For each selected test, record its name, executable, source revision, toolchain, relevant inputs and last result. A cached pass is applicable only to the inputs and environment it identifies. Missing ownership information should widen the selection, not silently count as a pass. Shared public-header changes can affect several applications.</p>
+<h2>An exercise in selection</h2>
+<p>Imagine fixing rejection of embedded zero bytes in BtbLedgerLineParse. Select tests with byte-count inputs, malformed inputs, output-preservation checks and ordinary valid records. A test that merely launches the demo does not exercise all those cases. Write down why each test belongs.</p>
+<h2>Troubleshooting</h2>
+<p>“No tests were found” can mean the wrong build directory or BUILD_TESTING=OFF. It is not a success for a required suite. A missing executable can mean the test target was not built. A timeout needs investigation of the child process and its inputs before increasing a deadline.</p>
+<h2>Further reading</h2>
+<p>The official CTest manual documents selection flags and result files. This course's selection exercise uses the local parser graph; it is not a claim that CTest supplies a complete change-impact engine.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/bounded-ledger-line/CMakeLists.txt">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="07-incremental-builds.html">Previous: Observe which files an incremental build rebuilds</a> · <a href="09-diagnose-build-stages.html">Next: Locate a failure in configuration, compilation or linking</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cmake/08-tests-after-a-change.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

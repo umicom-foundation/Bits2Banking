@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/25-first-fit-and-reuse.html
+
+PURPOSE:
+Explain the lesson: Follow first-fit allocation and reuse.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow first-fit allocation and reuse | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="24-reserve-a-range-before-allocation.html">Previous lesson</a> · <a rel="next" href="26-release-and-double-release.html">Next lesson</a></nav>
+<h1>Follow first-fit allocation and reuse</h1>
+<h2>Prepare</h2>
+<p>Open <code>BtbFramePoolAllocate</code> and <code>BtbFramePoolRelease</code>. The physical-frame-pool README explains how to compile the independent host lab. You do not need to boot a kernel for this exercise.</p>
+<p>First-fit here means scanning from index zero and selecting the first FREE entry. Reserved and owned entries are skipped. This makes the result deterministic for a given inventory.</p>
+<h2>Walk an allocation</h2>
+<p>Starting with only frames 0–7 reserved:</p>
+<ol>
+<li>The scan skips eight entries.</li>
+<li>It changes frame 8 to OWNED.</li>
+<li>It increments ownedCount.</li>
+<li>It writes base + 8 × 4096 into the caller's output.</li>
+</ol>
+<p>The output is written only on success. It identifies a modeled physical range; never cast it to a host pointer and dereference it.</p>
+<h2>Reuse exercise</h2>
+<p>Allocate three frames and record their addresses: base + 0x8000, +0x9000 and +0xA000. Release the middle address. Allocate again.</p>
+<p>Expected: the new allocation reuses the middle address because it is now the lowest free entry. The pool does not remember that higher entries were visited in a previous scan.</p>
+<h2>Discuss the cost</h2>
+<p>In the worst case the loop inspects all 128 entries. This is acceptable for a small teaching inventory. A larger allocator may use bitmaps or other structures, but the choice must preserve the ownership rules.</p>
+<h2>Troubleshoot</h2>
+<p>If an address repeats while the earlier allocation is still owned, inspect state transitions and accidental pool reinitialization. A repeated address after a valid release is expected. Keep these two situations separate in tests: “same number” alone does not prove either correctness or a double allocation.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-pool/frame_pool.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="24-reserve-a-range-before-allocation.html">Previous lesson</a> · <a rel="next" href="26-release-and-double-release.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/25-first-fit-and-reuse.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

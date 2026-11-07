@@ -1,0 +1,58 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/20-borrowed-profiles-and-observation-copies.html
+
+PURPOSE:
+Compare a borrowed profile with a saved observation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare a borrowed profile with a saved observation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Compare a borrowed profile with a saved observation</h1>
+<p>This lesson starts with a small C program using synthetic identity metadata. It explains the terms needed for the exercise before following the corresponding Framework operation.</p>
+<h2>Set up this lab</h2>
+<p>A terminal is an application where you type commands. A compiler translates C source into machine instructions; CMake prepares the build rules; Ninja carries out those rules. This lab also needs an installed Umicom Framework SDK containing its security library. You can read the lesson without installing anything.</p>
+<ol>
+<li>Open the Bits2Banking checkout and find <code>labs/framework/governed-identities</code>. Read <code>main.c</code> and <code>CMakeLists.txt</code>.</li>
+<li>In PowerShell on Windows, use your UCRT64 C23 compiler with CMake 3.26 or newer and Ninja. Set the SDK path below to your actual installation; it must match the compiler and architecture.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\governed-identities&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+ctest --test-dir build --output-on-failure
+&amp; &quot;.\build\btb-governed-identities.exe&quot;</code></pre>
+<ol>
+<li>In Bash, change into the same lab and supply your SDK location.</li>
+</ol>
+<pre><code class="language-bash">cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/your/framework-sdk
+cmake --build build
+ctest --test-dir build --output-on-failure
+./build/btb-governed-identities</code></pre>
+<p>Stop at a failed command. A missing <code>UmicomFrameworkConfig.cmake</code> means CMake cannot locate the installed SDK. A link error means the SDK may not match the headers or compiler; do not replace Framework calls with local copies. Successful execution ends with <code>Governed identity lab passed.</code> The lab uses synthetic metadata and does not create operating-system users or login sessions.</p>
+<h2>Two ways to read the same record</h2>
+<p>A pointer holds an address. A borrowed pointer lets a function's caller inspect storage owned elsewhere. It does not transfer ownership. A copied structure stores another value in different storage.</p>
+<p>The lab asks Framework for <code>borrowed</code>, then copies <code>*borrowed</code> into <code>observed</code>. The star operator reads the object at an address. At this moment both observations show an enabled identity, but they have different lifetimes and different behaviour after an edit.</p>
+<h2>Trace the edit</h2>
+<ol>
+<li>Locate <code>const UmiSecurityIdentityProfile *borrowed</code>. Here <code>const</code> prevents this pointer from being used to modify the profile directly. It does not prevent the directory owner from modifying the same storage.</li>
+<li>Locate <code>const UmiSecurityIdentityProfile observed = *borrowed</code>. This captures the earlier field values.</li>
+<li>Follow <code>umi_security_identity_directory_set_enabled</code> with <code>false</code>. Framework changes its stored row.</li>
+<li>Read the next check: <code>borrowed-&gt;enabled</code> is now false, while <code>observed.enabled</code> remains true. The arrow follows a pointer; the dot accesses a structure value.</li>
+<li>At <code>finish</code>, <code>free(directory)</code> releases the row storage. No later statement may dereference <code>borrowed</code>. Such a pointer would be dangling: it still holds an address but no longer names a live owned object.</li>
+</ol>
+<h2>Apply this to application commands</h2>
+<p>A Bank transfer or Studio extension command should check current identity state when the operation is authorised. A saved enabled flag can become stale. It is useful for comparing observations, not as permanent permission to perform future work.</p>
+<p>The directory does not synchronise threads. One thread reading while another writes can cause a data race. Put both access paths behind the application's existing service or lock. Copying a value without coordinating concurrent access is not a substitute for that rule.</p>
+<h2>Exercise</h2>
+<p>Draw two boxes labelled directory row and observation copy. Draw <code>borrowed</code> as an arrow to the first box. Cross out the directory box at <code>free</code>, then mark which values remain readable. The observation copy lives until its own scope ends, but it remains an old observation.</p>
+<h2>Check your understanding</h2>
+<p>Does <code>const</code> keep the observed identity enabled forever? No. It restricts access through one expression. Ownership, lifetime, synchronisation and current authorisation each require their own checks.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/governed-identities/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="19-validate-a-public-identity-table.html">Previous: Validate a public identity table before using its rows</a> · <a href="21-revisions-and-all-or-nothing-edits.html">Next: Keep revision exhaustion from partly changing an identity</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/20-borrowed-profiles-and-observation-copies.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

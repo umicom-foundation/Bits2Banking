@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/ai-research/lessons/experiment-observation-lab.html
+
+PURPOSE:
+  Present "Lab: turn a performance claim into an experiment" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab: turn a performance claim into an experiment | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Lab: turn a performance claim into an experiment</h1>
+<p>A faster-looking demonstration is a starting observation, not a finished research result. This lesson uses a real Umicom inference test to show how to write a small research question, choose evidence and separate correctness from performance.</p>
+<p>Source to open: <code>Umicom-Applications/framework/tests/ai_training/test_training_inference_checkpoint.c</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath '..\Umicom-Applications\framework\tests\ai_training\test_training_inference_checkpoint.c'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' '../Umicom-Applications/framework/tests/ai_training/test_training_inference_checkpoint.c'</code></pre>
+<h2>Understand the idea</h2>
+<p>A research question states what you want to find out. A hypothesis is a proposed answer you can test. A controlled comparison changes one intended factor while recording other factors that might influence the result. For inference, the model, input tokens, configuration, compiler, hardware and background work can matter. Correctness asks whether the results meet the contract. Performance asks how much time or other resource the work consumes. The source deliberately compares deterministic counts and state while leaving CPU-time values as measurements rather than equality assertions.</p>
+<pre><code class="language-text">Question -&gt; fixed workload -&gt; correctness checks -&gt; repeated observations
+                                                       |
+                                    report variation and limitations</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Write the question: does this profiling operation preserve the checkpoint while reporting the same structural work after restoration? Identify which assertions in the existing test answer it.</li><li>Write a separate speed question about a reference path and an optimised path. Define the workload first: same checkpoint, input sequence, output requirements and machine. A smaller workload must not be presented as an algorithm improvement.</li><li>Design an observation sheet with source revision, compiler options, machine, workload, warm-up policy, individual timings and correctness result. Retain every planned run rather than selecting only the fastest outcome.</li><li>Explain how you would investigate an unusual slow run. Record it and its environment; repeat under the same declared procedure. An exclusion requires a reason recorded before reporting an aggregate, not merely an inconvenient result.</li></ol>
+<h2>Expected result</h2>
+<p>You should finish with two clearly separated claims: one about preserved behaviour and one about measured performance. A successful equality assertion cannot establish a speed improvement; a fast timing cannot establish correct output.</p>
+<h2>If the result differs</h2>
+<p>If the comparison changes several things at once, describe it as a whole-system comparison instead of attributing the difference to one cause. If a test fails, retain that failure beside timing evidence and investigate it before calling the implementation equivalent.</p>
+<h2>Explain it yourself</h2>
+<p>One implementation is faster because it processes half the tokens. Does that answer a question about faster processing of the same workload?</p>
+<details><summary>Worked explanation</summary><p>No. The workload changed. Either restore equal work or explicitly ask a different question about the reduced workload and its quality trade-off. A useful result states exactly what was compared.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="056-measure-governance-value-before-introducing-tokens.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>

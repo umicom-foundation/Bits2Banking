@@ -1,0 +1,46 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/10-qualify-and-extend-the-balance-lab.html
+
+PURPOSE:
+Qualify and extend the account-balance laboratory
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify and extend the account-balance laboratory | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Qualify and extend the account-balance laboratory</h1>
+<p>A bank application presents records about customers, accounts and money. This module builds one small part: a reliable balance view. A customer identifies whose records are selected; an account holds amounts and a state; a currency identifies the unit of money. All examples use invented records kept in the program's memory. No real bank connection or transfer is made.</p>
+<h2>Prepare this laboratory</h2>
+<p>Install a C23 compiler, CMake 3.26 or later and Ninja. A compiler translates C source into machine instructions. CMake describes the build; Ninja performs the required build steps. Install a matching Umicom Framework SDK containing the finance component. An SDK supplies headers, libraries and package information; its compiler and architecture must match this example.</p>
+<p>In PowerShell, run each line separately and stop on errors:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\account-balances&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+&amp; &quot;.\build\btb-account-balances.exe&quot;</code></pre>
+<p>Use your actual SDK path. In Bash, run the same three CMake/CTest commands from the example folder with your native SDK prefix, then run <strong>./build/btb-account-balances</strong>. A package-not-found error points to the SDK installation or prefix. An unknown summary symbol requires a matching updated header and library. The expected report contains two GBP accounts, ledger 12000, available 9500 and reserved 2500 minor units.</p>
+<h2>Three levels of evidence</h2>
+<p>Reading source can show how a function is intended to behave. Compiling checks whether the code and dependencies form a valid program for a toolchain. Running checks observes actual behavior. Keep these levels distinct when recording progress.</p>
+<p>The lab's CTest case runs the executable and requires a successful exit. The main function independently checks its expected totals and failure preservation, so merely printing a plausible report is insufficient.</p>
+<ol>
+<li>Configure against an installed SDK that contains the summary API.</li>
+<li>Build the example.</li>
+<li>Run CTest with output on failure.</li>
+<li>Launch the executable directly to read the report.</li>
+<li>Record the SDK revision, compiler version and result.</li>
+<li>If a check fails, preserve its output before changing the input or expectation.</li>
+</ol>
+<p>Framework's regression target is umicom-banking-deposit-summary-test. Its test names begin framework.banking.deposit.summary. The cases cover empty results, invalid arguments, mixed scope, all account states, full capacity, corrupt counts, invalid unselected rows, duplicate IDs and three overflow paths.</p>
+<h2>Extension project</h2>
+<p>Add a second report for the learner's USD account while retaining the GBP report. Print each on its own labelled line. Predict the USD result as ledger 400, available 300, reserved 100 and one open account. Use the same Framework summary call twice; do not duplicate the aggregation implementation.</p>
+<p>Next, add a user-selectable customer field in a learning UI only after defining a synthetic authorization policy. Preserve the original console scenario as a reproducible baseline.</p>
+<p>A complete Bank application still needs durable storage, authorization, transaction workflows and UI qualification. This lab supplies a small reusable part and a way to check it; it does not establish readiness for real banking.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../../labs/framework/account-balances/README.md">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="09-separate-display-from-spending-authority.html">Previous: Separate a balance display from spending authority</a></p>
+</nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/banking-and-payments/10-qualify-and-extend-the-balance-lab.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/10-check-reset-hold-and-saturation.html
+
+PURPOSE:
+Explain the lesson: Check reset priority, holds and saturation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check reset priority, holds and saturation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-count-clock-edges-with-a-generic.html">Previous lesson</a></nav>
+<h1>Check reset priority, holds and saturation</h1>
+<h2>Test transitions, not only final values</h2>
+<p>A sequential circuit's result depends on its previous state and the sequence of clocked inputs. A useful test therefore checks transitions: reset to zero, enabled increments, disabled holds and behaviour at capacity.</p>
+<p>The counter testbench instantiates two widths and drives the same control signals. Assertions compare each observation with a stated promise.</p>
+<h2>Setup recap</h2>
+<p>Follow the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/COUNTERS.md">counter simulation guide</a>. Install GHDL and select VHDL-2008. Keep the design and testbench in the same practice directory. The commands analyze source, elaborate the testbench and run assertions.</p>
+<h2>Understand the observation time</h2>
+<p>The testbench waits for a rising edge, then waits one nanosecond before checking outputs. This gives scheduled signal updates time to become visible. The extra interval is a testbench observation choice, not a required delay in the circuit.</p>
+<pre><code class="language-text">clock edge -&gt; clocked process schedules count
+                         |
+                  signal update settles
+                         |
+                 test reads the outputs</code></pre>
+<p>Reading too early can compare the old value and produce a misleading failure.</p>
+<h2>Lab</h2>
+<ol>
+<li>Run the original checks and read the report.</li>
+<li>Find the case where reset and enable are both asserted.</li>
+<li>Confirm that reset wins.</li>
+<li>Find the interval between asserting reset and the next edge. The previous count must remain visible during that interval.</li>
+<li>Find disabled holds at zero and one.</li>
+<li>In a practice copy, replace the saturation guard with unconditional enabled increment. Expect the full-count check to fail, then restore the guard.</li>
+</ol>
+<p>Save the failing assertion and waveform when making this deliberate experiment.</p>
+<h2>Why two widths?</h2>
+<p>A design that accidentally assumes four bits might work with its default generic but fail with one bit. Instantiating widths one and three checks that the implementation follows its declared width. It does not prove every possible generic value.</p>
+<h2>Exercise and explanation</h2>
+<p>Does reaching the stop-time without an error prove the test completed? No. A test could stop waiting before reaching its checks. Look for the explicit success report and the expected stop, as well as the process status.</p>
+<h2>Extend the evidence</h2>
+<p>For a physical board, review synthesis reports, timing constraints, reset behaviour and electrical connections separately. A passing simulator does not establish the board pin mapping or the clock frequency. Keep those results attached to their actual hardware and source revision.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/tb_lesson_counter.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-count-clock-edges-with-a-generic.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/10-check-reset-hold-and-saturation.md">Markdown edition</a></p><nav aria-label="Continue this course"><a rel="next" href="11-detect-a-sampled-rising-edge.html">Next lesson: Detect a sampled rising edge</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

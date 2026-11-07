@@ -200,3 +200,5 @@ Sammy Hegab · Umicom Foundation · MIT
 Shared services and application lifetimes · Lesson 6 of 6.
 
 [Previous: Follow protocol message boundaries](22-follow-protocol-message-boundaries.md) · [Module complete: return to course contents](index.md)
+
+[Next: Build an offline learning reader](13-build-an-offline-learning-reader.md)

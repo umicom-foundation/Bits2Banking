@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/63-separate-special-tokens-from-text.html
+
+PURPOSE:
+Explain the lesson: Separate special tokens from text.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate special tokens from text | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="62-measure-token-buffer-capacity.html">Previous lesson</a> · <a rel="next" href="64-validate-every-id-before-decoding.html">Next lesson</a></nav>
+<h1>Separate special tokens from text</h1>
+<h2>Prepare</h2>
+<p>Open Framework's <code>src/ai/training/byte_tokenizer.c</code> and <code>include/umicom/ai/training/byte_tokenizer.h</code>. A byte holds a number from 0 to 255. A token ID is a number used by a model to represent an input unit. These exercises need a text editor and paper; no training run or downloaded model is required.</p>
+<h2>Understand the idea</h2>
+<p>Reserved IDs can indicate padding or sequence boundaries elsewhere in a model. The byte decoder refuses them because silently turning them into text would hide a caller-policy decision.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Identify PAD, BOS, EOS and UNK in the header.</li>
+<li>Trace decoding IDs 4, 69 and 2.</li>
+<li>Mark which ID cannot be converted by this function.</li>
+</ol>
+<h2>Check your reasoning</h2>
+<p>ID 2 is reserved and causes refusal. IDs 4 and 69 alone would represent bytes 0 and 65, but the whole supplied sequence must pass validation first.</p>
+<h2>If something differs</h2>
+<p>If generated output includes an end marker, the generation layer must apply an explicit policy before byte decoding. Do not subtract 4 from a reserved unsigned ID.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/ai/training/byte_tokenizer.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="62-measure-token-buffer-capacity.html">Previous lesson</a> · <a rel="next" href="64-validate-every-id-before-decoding.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/63-separate-special-tokens-from-text.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

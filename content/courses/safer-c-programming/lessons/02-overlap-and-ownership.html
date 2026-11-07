@@ -1,0 +1,52 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/02-overlap-and-ownership.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Overlapping memory and ownership | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Overlapping memory and ownership</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-bounds-and-failure-preservation.html">Previous: Bounds and preserving state on failure</a> · <a href="03-numbers-files-and-checks.html">Next: Numbers, file writes and useful checks</a></p></nav><h2>The hidden complication</h2>
+<p>Suppose an editor contains abc and a caller asks it to insert its own first two bytes at position 1. The input and output share storage. This is called aliasing: more than one reference reaches the same memory.</p>
+<p>The desired result is aabbc. Moving existing text before reading the supplied bytes can change the input. Correct code must account for the overlap.</p>
+<h2>Prepare the source</h2>
+<p>Follow <a href="../index.html">the course setup</a>. Open editor.c and test_editor.c in labs/native/text-editor. You can trace the arrays on paper before building.</p>
+<h2>Give every byte a job</h2>
+<pre><code class="language-text">before:       a b c zero
+input span:   a b
+insert at:      ^
+after:        a a b b c zero</code></pre>
+<p>The model first validates and copies the input to a temporary array. It then remembers the old text for undo, moves the tail, and writes the temporary input into the gap.</p>
+<p>The temporary array belongs to this function call. The editor structure belongs to its caller. Ownership here describes who is responsible for keeping storage alive and updating it correctly.</p>
+<h2>Choose the right operation</h2>
+<p>memcpy copies bytes between non-overlapping regions. memmove supports overlapping source and destination regions. Shifting a tail within one buffer needs memmove. Copying from the separate temporary array can use memcpy.</p>
+<p>The tail move includes the terminating zero. Otherwise an insertion could leave a character sequence with no valid string terminator.</p>
+<h2>Inspect the order</h2>
+<ol>
+<li>Check that the editor's length and terminator agree.</li>
+<li>Check the position and available capacity.</li>
+<li>Validate each input byte and copy the span to temporary storage.</li>
+<li>Capture the old state for undo.</li>
+<li>Move the tail and insert the copied bytes.</li>
+<li>Update length and mark the editor dirty.</li>
+</ol>
+<p>Dirty means the current document may contain changes that have not been saved. It is a state flag, not a statement that the data is corrupt.</p>
+<h2>Exercise and explanation</h2>
+<p>Would switching memcpy to memmove everywhere be sufficient? No. memmove protects one copy operation from overlap, but an earlier operation may already have changed the input. Saving the input before modifying the editor preserves the meaning of the whole edit.</p>
+<h2>The useful test</h2>
+<p>Find the insertion whose source points inside editor.text. Verify the resulting text and then undo it. A test that inserts only unrelated string literals would miss this case.</p>
+<h2>Connection to Framework</h2>
+<p>Studio document views and shared models can reference related data with different lifetimes. Framework's public document interfaces define those relationships. When extending them, state who owns each buffer and when callbacks may use it; do not infer lifetime from a pointer being non-null.</p>
+<h2>Limits</h2>
+<p>This lab accepts printable ASCII plus tab and newline. Byte positions are therefore simple for the demonstrated input. Supporting general Unicode needs character-boundary and encoding decisions before adopting the same editing rules.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/text-editor/test_editor.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-bounds-and-failure-preservation.html">Previous: Bounds and preserving state on failure</a> · <a href="03-numbers-files-and-checks.html">Next: Numbers, file writes and useful checks</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/10-borrowed-pointers-after-replacement.html
+
+PURPOSE:
+Explain the lesson: Know when a borrowed pointer stops being valid.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Know when a borrowed pointer stops being valid | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-revisions-and-stale-writers.html">Previous lesson</a> · <a rel="next" href="11-destruction-and-idempotence.html">Next lesson</a></nav>
+<h1>Know when a borrowed pointer stops being valid</h1>
+<h2>Prepare</h2>
+<p>Read the comment above <code>BtbNoteTitle</code> and <code>BtbNoteBody</code>. The returned pointers are borrowed: the note owns the strings, and the caller may read them during their stated lifetime.</p>
+<p>Borrowing does not transfer responsibility to release memory. Calling <code>free</code> on one of these pointers would break the note's ownership.</p>
+<h2>Draw the ownership</h2>
+<pre><code class="language-text">note ──owns──&gt; title allocation
+     └─owns──&gt; body allocation
+reader ─borrows─&gt; title bytes</code></pre>
+<p>After a successful replacement, the old allocations are released. The reader's old pointer must no longer be dereferenced, even if a debugger still displays familiar bytes at that address. Memory contents remaining visible is not proof of a live object.</p>
+<p>After a rejected replacement, the old note remains valid under this lab's contract. After destruction, both borrowed fields are invalid.</p>
+<h2>Plan a safe reader</h2>
+<p>For immediate display, read the pointer and use it before any operation that can replace or destroy the note. If text must survive those operations, make an independently owned copy while the borrow is valid, then release that copy according to its own ownership.</p>
+<p>Do not hide this decision inside a long-lived UI callback that assumes a pointer lasts forever.</p>
+<h2>Exercise</h2>
+<p>For each event, decide whether an earlier borrow can still be used:</p>
+<ul>
+<li>a revision-conflict rejection;</li>
+<li>a successful replacement;</li>
+<li>reading the revision;</li>
+<li>destroying the note.</li>
+</ul>
+<p>The answer is yes, no, yes, no, provided no other actor mutates the note. The original pointer's numerical value does not change these answers.</p>
+<h2>Check without invoking undefined behaviour</h2>
+<p>Write tests that inspect the new note through fresh accessor calls. Track release counts in the allocator. Do not “test” a released pointer by dereferencing it and expecting a crash; undefined behaviour has no reliable required result.</p>
+<p>In Framework applications, read the actual API's borrow/retain/copy documentation. Similar-looking accessor names can have different lifetime contracts. Record the lifetime next to the field in a design diagram so UI and worker code share the same understanding.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/fault-injection/note.h">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-revisions-and-stale-writers.html">Previous lesson</a> · <a rel="next" href="11-destruction-and-idempotence.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/10-borrowed-pointers-after-replacement.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

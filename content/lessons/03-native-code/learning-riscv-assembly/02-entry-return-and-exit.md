@@ -56,3 +56,7 @@ After preparing the Kernel tools, run its `kernel.riscv64.executable_loading` te
 ---
 
 [Read this lesson in HTML](../../../courses/learning-riscv-assembly/lessons/02-entry-return-and-exit.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Follow a system call from C into Assembly](01-follow-a-system-call.md)
+
+[Next: Preserve register values when execution is interrupted](03-preserving-interrupted-registers.md)

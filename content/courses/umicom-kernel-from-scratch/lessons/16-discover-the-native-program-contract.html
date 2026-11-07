@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/16-discover-the-native-program-contract.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Discover the contract a native program needs | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1 id="discover-the-contract-a-native-program-needs">Discover the contract a native program needs</h1>
+<p>A native program and its kernel need an agreement about calls, data widths and limits. This agreement is an application binary interface, or ABI. A program must discover whether the running kernel supports what it needs before attempting those operations. This lab follows Umicom's existing discovery client and its refusal cases.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>Use a C23 host compiler, CMake, Ninja and an Umicom Kernel checkout. The <a href="../../learning-c/terminal-lab.html">terminal setup guide</a> explains installation. The <a href="15-test-user-memory-boundaries.html">memory-boundary lab</a> explains host tests. You do not need an emulator for this exercise. Test callbacks provide kernel replies so both valid and invalid responses can be examined safely.</p>
+<h2 id="read-the-client-not-just-the-test-name">1. Read the client, not just the test name</h2>
+<p>Open <code>programs/support/native_contract.c</code>. <code>UmicomUserContractDiscover</code> receives an invocation callback and an output structure. A callback is a function supplied by the caller; here it represents the path used to ask the kernel questions.</p>
+<p>The client checks the version, available features, machine word width, byte order, page size, copy limit and call limit. Byte order describes how a multi-byte value is stored. A copy limit bounds how much data one call may transfer. A call budget limits repeated requests.</p>
+<p>The function gathers replies into local values before publishing a complete output. This prevents a caller mistaking a partially filled contract for a usable one. Follow its early returns and identify which invalid condition each one handles.</p>
+<h2 id="run-selected-discovery-checks">2. Run selected discovery checks</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S 'C:/umicom/umicom-kernel/tests/native_contract' -B 'C:/umicom-learning/kernel-native-contract' -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build 'C:/umicom-learning/kernel-native-contract' --parallel 2
+ctest --test-dir 'C:/umicom-learning/kernel-native-contract' -R '^kernel\.native_contract\.(current|future-major|word-width|copy-zero|copy-too-large)$' --output-on-failure --no-tests=error
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">cmake -S &quot;$HOME/umicom/umicom-kernel/tests/native_contract&quot; -B &quot;$HOME/umicom-learning/kernel-native-contract&quot; -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build &quot;$HOME/umicom-learning/kernel-native-contract&quot; --parallel 2
+ctest --test-dir &quot;$HOME/umicom-learning/kernel-native-contract&quot; -R '^kernel\.native_contract\.(current|future-major|word-width|copy-zero|copy-too-large)$' --output-on-failure --no-tests=error
+</code></pre>
+<p>Five cases should be selected. <code>current</code> exercises an accepted contract. The other cases deliberately supply incompatible values. Success means the client recognises them and returns the expected refusal.</p>
+<h2 id="separate-availability-from-a-programs-requirements">3. Separate availability from a program's requirements</h2>
+<p>Discovery tells a program what exists. <code>UmicomUserContractCheck</code>, in the same source file, compares those capabilities against the program's requirements. A valid kernel contract can still be insufficient for a particular program.</p>
+<pre><code class="language-text">kernel replies → validated contract
+program requirements + validated contract → allow or refuse startup
+</code></pre>
+<p>Inspect <code>tests/native_contract/requirements_tests.c</code>. Find <code>missing-feature</code>, <code>copy-too-large</code> and <code>sum-overflow</code>. The first concerns a capability, the second a limit, and the third safe arithmetic. A version string alone cannot replace these checks.</p>
+<h2 id="exercise">Exercise</h2>
+<p>Make a table with three columns: required feature, available feature, decision. Try a program needing two features when only one is advertised. Then try a program requesting a copy exactly at the limit and one byte above it. Write the expected decision before reading the corresponding test.</p>
+<p>If discovery fails, retain the reason rather than guessing new constants. If a test executable is missing, build its configured host directory first. A host callback test validates the client against controlled replies; it does not establish that a real booted kernel returns those replies correctly. That needs the separate native qualification route.</p>
+<p>Connect the result to <a href="../../learning-riscv-assembly/lessons/05-inspect-a-riscv-object.html">RISC-V object inspection</a>, where code becomes an object before linking. Return to <a href="../index.html">Umicom Kernel from Scratch</a> for the earlier boot and system-call lessons.</p>
+
+
+<p><a rel="next" href="17-publish-a-contract-only-after-validation.html">Next: Publish a kernel contract only after validation</a></p>
+</article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>

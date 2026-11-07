@@ -1,0 +1,63 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-rabbitmq/lessons/13-regression-tests-for-stale-message-workers.html
+
+PURPOSE:
+Test stale workers without sleeps or a broker
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test stale workers without sleeps or a broker | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Test stale workers without sleeps or a broker</h1>
+<p>A message is a request to perform work. This module uses a small C program and the Framework messaging service to explain how a worker keeps temporary ownership, how callbacks can become stale, and how to preserve the current work when an old callback arrives.</p>
+<h2>Prepare this lab</h2>
+<p>A terminal accepts typed commands. A source file contains a program's instructions. A compiler translates those instructions into a program. CMake describes the build; Ninja carries out the build steps; CTest runs registered checks. An SDK is a set of headers and libraries used by another program.</p>
+<p>Reading needs no account or broker. To run the exercise, install a C23 compiler, CMake 3.26 or later, Ninja and a compatible Umicom Framework SDK with its messaging component. Use the same compiler family and architecture as that SDK. The SDK must contain the delivery-ticket API described here.</p>
+<ol>
+<li>Locate the Bits2Banking repository and its <strong>labs/framework/delivery-tickets</strong> folder.</li>
+<li>Open PowerShell on Windows or Bash on Linux.</li>
+<li>Run the commands for your platform one at a time, stopping at an error. Replace the checkout and SDK paths if you installed them elsewhere.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\delivery-tickets&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+&amp; &quot;.\build\btb-delivery-tickets.exe&quot;</code></pre>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/framework/delivery-tickets
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+./build/btb-delivery-tickets</code></pre>
+<p>A missing UmicomFramework package means CMake cannot find the SDK. Check the installation prefix. An unknown ticket type or missing ticket symbol usually means the SDK is older than the example, or headers and libraries come from different installations. Select one matching SDK; do not copy individual libraries at random. The exercise uses local, deterministic clock values and performs no broker connection or financial transaction.</p>
+<p>For a fuller introduction to C syntax, use <a href="../../learning-c/index.html">Learning C</a>. You can complete the explanation below without leaving this lesson.</p>
+<h2>What you will learn</h2>
+<p>You will turn a failure scenario into deterministic checks and understand what those checks can and cannot establish.</p>
+<h2>Start with a claim</h2>
+<p>A useful regression test states a behaviour that should remain true. Here the claim is: &quot;An old ticket cannot release a replacement acquisition, even when the message identifier and owner name match.&quot;</p>
+<p>A regression test keeps that claim executable after later changes. A passing result only covers the tested implementation, environment and cases.</p>
+<h2>Choose controlled inputs</h2>
+<p>Use clock values 100, 119, 120 and 121. The lease lasts 20 units from 100. Its deadline is exclusive, so 119 is owned and 120 is expired. Passing time as an input removes the need for sleeping, thread timing or a running broker.</p>
+<p>Keep the original and replacement tickets as separate values. Check not only the rejected old operation but also that the new lease remains owned. Otherwise a function might return an error after already damaging the current state.</p>
+<h2>Build a case table</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Operation to reject</th><th scope="col">State to preserve</th></tr></thead><tbody><tr><td>Same owner after expiry</td><td>Release using old generation</td><td>Replacement remains owned</td></tr><tr><td>Release then reacquire</td><td>Renew using earlier ticket</td><td>New deadline remains</td></tr><tr><td>Slot reused for another message</td><td>Release old message</td><td>Other message remains</td></tr><tr><td>Full store</td><td>Acquire another message</td><td>Output ticket is unchanged</td></tr><tr><td>Overflowing renewal</td><td>Add duration beyond integer range</td><td>Previous deadline remains</td></tr><tr><td>Legacy call on protected record</td><td>Release using only owner name</td><td>Ticketed record remains</td></tr></tbody></table></div>
+<p>Framework's <strong>tests/test_delivery_lease_ticket.c</strong> implements these categories and additional identity checks. The lab's CTest registration runs its complete example as one smaller consumer check.</p>
+<h2>Read a CTest registration</h2>
+<pre><code class="language-cmake">add_test(NAME learning.messaging.delivery-tickets
+         COMMAND btb-delivery-tickets)</code></pre>
+<p>NAME gives the check a stable name. COMMAND names the built executable to run. CTest does not build the executable first; run the build command before ctest.</p>
+<p>The program returns a nonzero exit code on a wrong result. An additional expected-output expression identifies the successful stale-release scenario. Output text alone is not a substitute for checking state inside the program.</p>
+<h2>Exercise</h2>
+<p>In a practice copy, make the delayed release use the replacement ticket. Run the build and CTest commands. The example should fail. Restore the original call and rerun. This deliberate change checks whether the regression can detect the specific mistake.</p>
+<h2>What remains outside the test</h2>
+<p>This lab does not test multiple processes, real broker reconnection, payment execution or hostile network participants. It also does not prove that every callback's memory lifetime is correct. Those require separate integration and ownership tests.</p>
+<h2>Summary</h2>
+<p>Control the inputs, assert the refusal, and inspect the state that must survive. Record failures precisely and rerun the relevant checks after a fix.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/delivery-tickets/CMakeLists.txt">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="12-local-leases-and-durable-message-effects.html">Previous: Connect local work ownership to durable message effects</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-rabbitmq/13-regression-tests-for-stale-message-workers.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

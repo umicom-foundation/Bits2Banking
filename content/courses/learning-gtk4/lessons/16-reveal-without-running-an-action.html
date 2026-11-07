@@ -1,0 +1,59 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/16-reveal-without-running-an-action.html
+
+PURPOSE:
+Reveal a panel without running its action
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reveal a panel without running its action | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Reveal a panel without running its action</h1>
+<p>This practical module explains how a GTK interface identifies controls, navigates to them and keeps callback state alive. Each lesson includes the setup needed to follow its own example.</p>
+<h2>Start here</h2>
+<p>A graphical application is a program that shows windows and reacts to input. A <strong>widget</strong> is one control, such as a button or a label. A <strong>callback</strong> is a C function GTK calls when an event occurs. The <strong>event loop</strong> waits for input and dispatches those callbacks. You can read this lesson without installing anything. The optional lab needs a C compiler, CMake, Ninja, GTK4 development files and an installed Umicom Framework SDK containing the GTK4 component and the checked named-lookup API.</p>
+<p>In C, a pointer stores an address; it does not automatically keep an object alive. A structure groups related values. The lab's LabWindow structure belongs to one window and holds pointers to controls owned by that window. A return status reports whether an operation completed. Check that status before using its output.</p>
+<h3>Prepare the optional lab</h3>
+<ol>
+<li>Open PowerShell on Windows. A terminal accepts commands; Set-Location changes the folder in which they run. Locate the Bits2Banking checkout and the installed Framework SDK first.</li>
+<li>Put the matching UCRT64 compiler and GTK runtime on Path. Use the SDK built with that same toolchain.</li>
+<li>Configure a separate build folder, then build the small lesson executable. Stop if any command reports an error.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\framework-control-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/applications&quot;
+cmake --build build --parallel 2
+&amp; &quot;.\build\btb-control-inspection.exe&quot;</code></pre>
+<p>On Linux, install your distribution's C compiler, CMake, Ninja, pkg-config and GTK4 development package, and use the path where you installed the Framework GTK4 SDK:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/native/framework-control-inspection
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom-sdk&quot;
+cmake --build build --parallel 2
+./build/btb-control-inspection</code></pre>
+<p>CMake reads CMakeLists.txt and finds the installed libraries. Ninja compiles only what this lab needs. This recipe does not rebuild the Framework. If CMake cannot find UmicomFramework, correct the SDK path. If ui_gtk4 or the checked lookup symbol is missing, install an SDK containing that component and API before continuing. A GTK window needs an interactive desktop session. On Windows, the GTK DLLs must remain reachable through Path.</p>
+<p>For more detail after this lesson, see <a href="../../learning-c/index.html">Learning C</a>, <a href="../../learning-cmake/index.html">Learning CMake</a> and the <a href="../../../../labs/native/framework-control-inspection/README.md">lab guide</a>.</p>
+<h2>Separate navigation from an operation</h2>
+<p>Navigation changes which part of an interface is visible. An operation changes application state, such as saving a file or confirming an order. Keeping them separate lets a user inspect a destination before performing an action.</p>
+<p>The lab's Reveal button calls umi_gtk4_automation_reveal_tagged_widget. The service can expand the section and select existing pages on the route to the tagged control. It does not click Confirm, enable a disabled control or present a new window.</p>
+<h2>Follow the journey</h2>
+<ol>
+<li>Start with Review collapsed and Confirmations: 0.</li>
+<li>Click Reveal review section. Expect Review to expand.</li>
+<li>Read the message. It asks you to click Confirm yourself.</li>
+<li>Click Confirm once. Expect the callback count to become 1.</li>
+<li>Click Collapse review section, then Reveal again. Expect the count to remain 1.</li>
+</ol>
+<h2>Read the code</h2>
+<p>reveal_clicked checks the reveal status, then performs a fresh checked lookup by ID. Why a second lookup? Revealing can emit notifications. Application code reacting to them might rebuild a page. A pointer captured before that work might no longer identify the current destination.</p>
+<p>The shared service returns CANCELLED if the destination changes during the operation. Partial navigation can remain visible after cancellation; no action has been run. A caller should report the changed view and let the user choose again.</p>
+<h2>Apply the idea</h2>
+<p>In Studio, revealing an output panel should not start a build. In Trader, revealing an order ticket should not send an order. In Media, opening an export panel should not overwrite a file. The same separation is reusable across these products.</p>
+<h2>Check your understanding</h2>
+<p>Does successful reveal prove the button is mapped, enabled and ready for a real mouse event? No. Visibility, mapping and sensitivity are separate conditions. The next lesson explains how to examine them.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-control-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="15-find-ambiguous-controls.html">Previous: Detect duplicate names and keep searches scoped</a> · <a href="17-distinguish-visible-enabled-and-found.html">Next: Distinguish a found control from a usable control</a></p>
+</nav><p><a href="../../../lessons/06-umicom/learning-gtk4/16-reveal-without-running-an-action.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

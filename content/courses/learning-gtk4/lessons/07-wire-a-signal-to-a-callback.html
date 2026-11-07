@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/07-wire-a-signal-to-a-callback.html
+
+PURPOSE:
+Explain the lesson: Wire a GTK signal to a C callback.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wire a GTK signal to a C callback | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-create-and-own-window-state.html">Previous lesson</a> · <a rel="next" href="08-compose-widgets-in-a-container.html">Next lesson</a></nav>
+<h1>Wire a GTK signal to a C callback</h1>
+<h2>Prepare</h2>
+<p>Use the Framework activity lab with its GTK4 option enabled. Its README and CMake lesson describe the SDK prefix, compiler and GTK dependencies. Begin with a successful build of the unchanged lab.</p>
+<p>A <strong>signal</strong> is a notification emitted by an object. A <strong>callback</strong> is a function supplied to receive that notification. A visible button alone does not establish that useful application work is connected.</p>
+<h2>Locate the connection</h2>
+<p>Find:</p>
+<pre><code class="language-c">g_signal_connect_object(button, &quot;clicked&quot;, G_CALLBACK(Completed), window, 0);</code></pre>
+<p>The connection identifies the emitting button, the clicked signal, the receiving C function and the window supplied as callback data. In <code>Completed</code>, the button parameter is deliberately unused; the window identifies the state to update.</p>
+<p>The object-aware connection manages the callback association with the supplied object's lifetime. GTK documents its behaviour in <a href="https://docs.gtk.org/gobject/func.signal_connect_object.html">signal_connect_object</a>; it is not permission to manipulate widgets from arbitrary worker threads.</p>
+<h2>Trace a press</h2>
+<ol>
+<li>The button emits clicked.</li>
+<li><code>Completed</code> obtains the window's activity state.</li>
+<li>The shared C rule attempts an increment.</li>
+<li>The callback formats the result.</li>
+<li>The label receives the new text.</li>
+</ol>
+<p><strong>Exercise:</strong> place a paper marker at each step for the first press. Expected count: 1. Then identify which steps still happen when the model reports full capacity.</p>
+<h2>Troubleshooting</h2>
+<p>For a control that appears inert, check whether the signal reaches its handler before editing business logic. A temporarily added diagnostic should name the event and status, not expose file contents or credentials. Record whether the widget is enabled and whether another window or modal operation owns input.</p>
+<p>Do not replace a functioning C rule with a second implementation inside the callback. The callback's role is coordination and presentation.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-create-and-own-window-state.html">Previous lesson</a> · <a rel="next" href="08-compose-widgets-in-a-container.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/learning-gtk4/07-wire-a-signal-to-a-callback.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -16,3 +16,9 @@ Read the first C program and command-line lessons. Practical work uses a Linux u
 Files, processes, permissions, libraries, debugging and packaging.
 
 Read one topic at a time. The list above links to available lessons; the outline describes further study. Each practical lesson gives its own tool requirements.
+
+## Continue with a practical source study
+
+A command can print a useful sentence and still fail. This lesson separates a program's displayed output from its exit status, then shows how a terminal can report the status of the command that just finished.
+
+- [Follow an exit status to the terminal](03-follow-an-exit-status-to-the-terminal.md)

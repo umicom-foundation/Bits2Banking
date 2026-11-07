@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/06-load-into-a-private-candidate.html
+
+PURPOSE:
+Explain the lesson: Load into a private candidate before replacing state.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Load into a private candidate before replacing state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-open-an-existing-document.html">Previous lesson</a> · <a rel="next" href="07-recognise-line-endings-and-eof.html">Next lesson</a></nav>
+<h1>Load into a private candidate before replacing state</h1>
+<p>A file can fail halfway through reading. If each arriving byte were placed directly into the current document, that failure could leave half of one document mixed with another.</p>
+<h2>Setup recap</h2>
+<p>Open BtbEditorLoadFile in labs/native/text-editor/editor.c and BtbEditor in editor.h. No additional library is required for this source-reading exercise. OPENING.md contains commands for building the executable when a C23 toolchain is available.</p>
+<h2>1. Identify the two models</h2>
+<p>The caller passes the existing editor. The loading function creates a separate zero-initialised BtbEditor named candidate. This value is temporary storage owned by the function.</p>
+<p>Each accepted character is inserted into candidate. The existing editor is untouched while reading continues.</p>
+<p>``<code>text current document ─────────────── stays visible file → validation → candidate                          │                     all steps succeed                          ↓                   replace current document </code>``</p>
+<h2>2. Include closing in the operation</h2>
+<p>A successful loop is not the only condition for success. The function checks ferror and the return value of fclose. It returns the failure status before assigning candidate if either indicates an error.</p>
+<p>The stream is closed even when a byte is refused or the capacity is exceeded. Returning early from inside the loop would need equivalent cleanup.</p>
+<h2>3. Publish one complete result</h2>
+<p>Before assignment, the function clears the candidate's intermediate undo snapshots and marks it clean. Those snapshots came from validating incoming bytes; they are not editing commands the user issued.</p>
+<p>The final assignment copies the model's arrays and scalar fields. This works because this particular structure owns fixed arrays and contains no heap pointers. Copying a structure with owning pointers would require a different ownership design.</p>
+<h2>Exercise and explanation</h2>
+<p>Trace a file containing three valid characters followed by a zero byte. At the failure, candidate contains a valid prefix, but the caller's editor retains its original content.</p>
+<p>Now trace a valid empty file. It replaces a clean document with an empty clean document. Empty content is a successful result, not evidence that a read failed.</p>
+<p>This example uses a small fixed capacity. Repeated insertion also copies undo data, so it is a teaching implementation, not a recommendation for loading large production documents byte by byte.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/text-editor/editor.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-open-an-existing-document.html">Previous lesson</a> · <a rel="next" href="07-recognise-line-endings-and-eof.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-text-editor/06-load-into-a-private-candidate.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/44-mobile-bindings-without-duplicated-rules.html
+
+PURPOSE:
+Explain the lesson: Connect mobile screens without copying the rule.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect mobile screens without copying the rule | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="43-call-c-from-a-browser.html">Previous lesson</a> · <a href="45-sampled-buttons-on-small-devices.html">Next lesson</a></nav>
+<h1>Connect mobile screens without copying the rule</h1>
+<h2>Before you begin</h2>
+<p>This is an architecture lab with two optional platform exercises. Android execution needs Android Studio, an SDK, NDK, CMake and an emulator or device. iPhone execution needs a Mac, Xcode and an iOS Simulator runtime. Each platform lab README starts with an unchanged template application.</p>
+<h2>Compare the boundaries</h2>
+<p>On Android, Kotlin calls a native declaration through the Java Native Interface, usually called JNI. On iPhone, Swift calls a C declaration exposed by a bridging header. Both paths end at <code>BtbActivityNext</code>, which calls the existing activity rule.</p>
+<pre><code class="language-text">Kotlin -&gt; JNI function -&gt; C bridge -&gt; activity model
+Swift  -&gt; C declaration ---------&gt; C bridge -&gt; activity model</code></pre>
+<p>The native language owns the screen. C owns the shared operation. This avoids translating and maintaining the same rule independently in Kotlin and Swift.</p>
+<h2>Inspect the Android adapter</h2>
+<p>Its function name identifies a package, class and method. Renaming only the Kotlin package breaks that connection. The JNI environment pointer is valid for its calling context; this example neither saves it nor sends it to another thread.</p>
+<h2>Inspect the iPhone adapter</h2>
+<p>The bridging header makes the declaration visible to Swift. Compiling <code>bridge.c</code> and <code>activity.c</code> into the target supplies the implementation. Seeing a declaration is not the same as linking a function body.</p>
+<h2>Lab</h2>
+<ol>
+<li>Draw each platform's call path.</li>
+<li>Mark where the input representation changes.</li>
+<li>Find the single file deciding the activity limit.</li>
+<li>List platform-specific files and shared files separately.</li>
+<li>Choose one platform and follow its README before attempting the other.</li>
+</ol>
+<h2>Expected result and limits</h2>
+<p>Each screen should show one accepted increment per tap. A host C test checks the rule but not the mobile packaging or lifecycle. An emulator result does not establish behavior on every physical device.</p>
+<p>When integration fails, first identify whether the error happened while compiling, linking, loading the library or calling the function. That distinction gives a much smaller place to investigate.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/android-framework-activity/activity_jni.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="43-call-c-from-a-browser.html">Previous lesson</a> · <a href="45-sampled-buttons-on-small-devices.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/44-mobile-bindings-without-duplicated-rules.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-pascal/lessons/03-loops-and-checkable-results.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Loops and checkable results | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Loops and checkable results</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-values-functions-and-validation.html">Previous: Values, functions and input validation</a></p></nav><h2>Repeat an operation deliberately</h2>
+<p>A loop repeats instructions according to a rule. The progress program prints one practice-item line for each remaining item. The loop counter Item tells us which repetition is happening.</p>
+<h2>Prepare and run</h2>
+<p>Use <a href="../index.html">the course setup</a> to build the Pascal lab. The complete program is labs/languages/pascal-progress/progress.pas. Run progress with argument 2 and read:</p>
+<pre><code class="language-text">Remaining: 3
+Practice item 1
+Practice item 2
+Practice item 3</code></pre>
+<p>The three practice lines are produced by:</p>
+<pre><code class="language-pascal">for Item := 1 to Remaining do
+  WriteLn('Practice item ', Item);</code></pre>
+<p>The lower bound is 1 and the upper bound is Remaining. WriteLn receives a string and an integer; it formats them in order. The loop increments Item as it proceeds.</p>
+<h2>Trace before running</h2>
+<ol>
+<li>Set the input on paper to 4.</li>
+<li>Calculate Remaining = 5 - 4 = 1.</li>
+<li>Predict one iteration with Item = 1.</li>
+<li>Run progress 4 and compare the actual output.</li>
+<li>Repeat with input 5. Remaining is zero, so the upward loop has no iterations.</li>
+</ol>
+<p>The empty case matters. Printing one practice line when nothing remains would be a logic error even though the program compiled.</p>
+<h2>What a test checks</h2>
+<p>The lab's check_progress.cmake starts the executable with several inputs. It checks successful output and checks that rejected input produces an error exit. This tests the boundary between terminal text and program behaviour.</p>
+<p>A test is an executable question about behaviour. It does not prove every possible property. The supplied checks cover valid counts, a completed course and selected invalid input. They do not prove that every compiler or terminal behaves identically.</p>
+<p>Use the course's ctest command after a successful build. If it reports a failure, read the named check, the command result and the output. Fix the source that caused the mismatch; do not change the expected answer merely to obtain a green result.</p>
+<h2>Extend the exercise</h2>
+<p>In your practice copy, display both the completed and remaining totals. Write the expected output for inputs 0, 2 and 5 first. Keep the invalid-input behaviour. Then add a check for the new line.</p>
+<p>Worked answer for input 2: completed is 2, remaining is 3, and there are three practice-item lines. The sum of the two counts should be 5.</p>
+<h2>Read the Umicom connection</h2>
+<p>The C first-programs/test_counts.c file checks the same boundary values without launching a terminal program. Comparing the two styles introduces a unit test, which calls a function directly, and a process test, which starts an executable.</p>
+<h2>Recovery</h2>
+<p>A timeout means the process did not finish within the check's limit. An unexpected exit means it finished but reported a different result. Neither is a passing test. Preserve the diagnostic and reproduce the smallest failing input before editing.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/languages/pascal-progress/check_progress.cmake</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-values-functions-and-validation.html">Previous: Values, functions and input validation</a></p></nav><nav aria-label="Next lesson"><a rel="next" href="04-group-values-in-records.html">Continue: Group related values in a record</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

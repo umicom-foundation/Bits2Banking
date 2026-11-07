@@ -45,3 +45,5 @@ Compare this with the x86 lesson's ABI table. The useful common idea is an expli
 [Course contents](index.md) · [Previous: Preserve register values when execution is interrupted](03-preserving-interrupted-registers.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Inspect a RISC-V object before linking](05-inspect-a-riscv-object.md)

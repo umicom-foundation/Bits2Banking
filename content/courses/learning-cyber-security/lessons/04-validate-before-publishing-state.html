@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/04-validate-before-publishing-state.html
+
+PURPOSE:
+Keep failed input from changing valid state
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep failed input from changing valid state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep failed input from changing valid state</h1>
+<p>Learn how application inputs, memory ownership and identity checks fit together. The examples use Umicom Framework and a small Bits2Banking consumer. Every chapter explains its vocabulary before the exercise.</p>
+<h2>Start here</h2>
+<p>A source file is readable program text. A compiler turns that text into machine instructions. A library supplies reusable functions; this course calls the security library in Umicom Framework. A terminal accepts commands. You can read and trace every example without installing anything.</p>
+<p>For the practical lab, install Git, a C23 compiler, CMake 3.26 or newer, Ninja, and a matching Framework SDK containing UmiLocalProfileNameBytes. In Windows PowerShell, open the repository with Set-Location and make the UCRT64 tools visible:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/framework/profile-name-boundary -B build/profile-name -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build/profile-name
+ctest --test-dir build/profile-name --output-on-failure --no-tests=error
+&amp; &quot;.\build\profile-name\btb-profile-name.exe&quot;</code></pre>
+<p>Run one command at a time and stop on an error. Change the SDK path to your installation. In bash, use cd to enter your checkout, the same three CMake/CTest commands, and ./build/profile-name/btb-profile-name to launch. The expected line is Canonical name: alice_7. A missing package means the SDK path is wrong or incomplete; a missing symbol means its header and library must be updated together. This lab does not collect credentials or write a password store. The <a href="../../learning-c/index.html">Learning C course</a> explains basic syntax in more depth.</p>
+<h2>A transaction in a small function</h2>
+<p>A transaction is a group of operations whose changes become visible together. The profile-name validator uses this idea without a database. It builds a candidate result in local storage, validates every character, then copies the complete result to the caller.</p>
+<p>Suppose a destination initially contains the last valid name. If a function writes the first two accepted letters and then rejects a slash, the caller receives an error and a partially changed destination. That makes recovery harder and may accidentally alter which record another operation uses.</p>
+<h2>Read the sequence</h2>
+<pre><code class="language-text">check pointers and length
+validate each byte into a temporary array
+if any byte is invalid: return an error
+copy the complete candidate to the output
+return success</code></pre>
+<ol>
+<li>Find the first return in UmiLocalProfileNameBytes. It rejects impossible sizes before reading bytes.</li>
+<li>Find the return inside the loop. No destination write precedes it.</li>
+<li>Find memcpy after the loop. It is the publication point.</li>
+<li>Explain why input and output may overlap: all input reads finish before that copy.</li>
+</ol>
+<p>The temporary array is a small fixed allocation on the current call's stack. This approach is appropriate for a 49-byte result. Large media projects require a different storage plan; copying an entire video into a stack array would be inappropriate.</p>
+<h2>Regression exercise</h2>
+<p>The test fills result with Q, copies all of it to saved, then submits invalid input. memcmp compares every destination byte with the snapshot. Checking only result[0] would miss a write farther into the array.</p>
+<p>Add a rejected space at the final position in a test input. Keep the whole-output comparison. Then add a valid name with both '-' and '_'. The two cases distinguish rejection from an overly strict implementation that rejects every name.</p>
+<h2>Review question</h2>
+<p>Should a failed registration erase a previously valid account record? No. The same principle applies at the backend boundary: create-if-absent must not overwrite an existing verifier. Its implementation must enforce that rule even when two requests race.</p>
+<h2>Summary</h2>
+<p>Name the point where state changes. Before that point, prepare and validate. On failure, preserve the documented state. Tests should compare the full affected state rather than infer correctness from an error code alone.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/security/local_profile.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="03-dangling-pointers-and-ownership.html">Previous: Recognise dangling pointers and define ownership</a> · <a href="05-passwords-and-local-profiles.html">Next: Understand local password verification</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/04-validate-before-publishing-state.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

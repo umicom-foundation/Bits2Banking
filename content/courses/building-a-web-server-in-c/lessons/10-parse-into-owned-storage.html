@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/10-parse-into-owned-storage.html
+
+PURPOSE:
+Explain the lesson: Parse into owned storage.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parse into owned storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-observe-a-complete-http-message.html">Previous lesson</a> · <a rel="next" href="11-reject-ambiguous-framing.html">Next lesson</a></nav>
+<h1>Parse into owned storage</h1>
+<p>Parsing gives meaning to received bytes: a method, path, headers and body. The parser needs somewhere to put those results.</p>
+<h2>Prepare</h2>
+<p>Complete the HTTP contract lab setup in its README. Open framing.c beside Framework's include/umicom/web/connection.h. Locate UmiWebRequestParseStrict.</p>
+<p>The destination belongs to the caller. The parser promises to leave it unchanged if parsing fails. That promise helps an application keep a previously valid value instead of exposing a half-written replacement.</p>
+<h2>Follow the allocation</h2>
+<ol>
+<li>malloc requests enough storage for one UmiWebRequest.</li>
+<li>A null result means storage was not obtained.</li>
+<li>Only after checking the pointer does the example call the parser.</li>
+<li>The example compares body_length and all three body bytes.</li>
+<li>free releases the allocation after the last inspection.</li>
+</ol>
+<p>The value can be large because it contains bounded arrays. Heap allocation avoids placing that entire value on a small thread stack. Allocation is still fallible, so its result must be checked.</p>
+<h2>Read bytes with a length</h2>
+<p>memcmp compares a stated number of bytes. It is appropriate here because a body may contain zero. A C text function that stops at zero would describe a different value.</p>
+<p>Expected: the parsed body length is three and memcmp finds A, zero, B unchanged.</p>
+<h2>Exercise</h2>
+<p>On paper, move free before the comparison. Identify the resulting lifetime error: the pointer value may remain, but its allocation no longer belongs to the program.</p>
+<p>Keep parsing inside Framework. A platform adapter should supply bytes and manage ownership, rather than introducing a different HTTP parser for each application.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/framing.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-observe-a-complete-http-message.html">Previous lesson</a> · <a rel="next" href="11-reject-ambiguous-framing.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-web-server-in-c/10-parse-into-owned-storage.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

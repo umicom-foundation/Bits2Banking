@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/09-test-security-failure-paths.html
+
+PURPOSE:
+Test rejection, failure and recovery
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test rejection, failure and recovery | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Test rejection, failure and recovery</h1>
+<p>Learn how application inputs, memory ownership and identity checks fit together. The examples use Umicom Framework and a small Bits2Banking consumer. Every chapter explains its vocabulary before the exercise.</p>
+<h2>Start here</h2>
+<p>A source file is readable program text. A compiler turns that text into machine instructions. A library supplies reusable functions; this course calls the security library in Umicom Framework. A terminal accepts commands. You can read and trace every example without installing anything.</p>
+<p>For the practical lab, install Git, a C23 compiler, CMake 3.26 or newer, Ninja, and a matching Framework SDK containing UmiLocalProfileNameBytes. In Windows PowerShell, open the repository with Set-Location and make the UCRT64 tools visible:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/framework/profile-name-boundary -B build/profile-name -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build/profile-name
+ctest --test-dir build/profile-name --output-on-failure --no-tests=error
+&amp; &quot;.\build\profile-name\btb-profile-name.exe&quot;</code></pre>
+<p>Run one command at a time and stop on an error. Change the SDK path to your installation. In bash, use cd to enter your checkout, the same three CMake/CTest commands, and ./build/profile-name/btb-profile-name to launch. The expected line is Canonical name: alice_7. A missing package means the SDK path is wrong or incomplete; a missing symbol means its header and library must be updated together. This lab does not collect credentials or write a password store. The <a href="../../learning-c/index.html">Learning C course</a> explains basic syntax in more depth.</p>
+<h2>A test is an executable question</h2>
+<p>A positive test asks whether a valid request works. A negative test asks whether an invalid or unavailable operation is rejected correctly. Security-sensitive code needs both, including what happens to state after rejection.</p>
+<p>Framework's profile tests use a fixture: a controllable replacement backend. It can report a read error, random-source failure, derivation failure or creation conflict. This makes rare failure paths repeatable without corrupting a real credential vault.</p>
+<h2>Trace three cases</h2>
+<ol>
+<li>Duplicate registration: a record already exists. The test expects ALREADY_EXISTS and checks that the original record was not changed.</li>
+<li>Wrong password: verification must fail and removal must leave the record present.</li>
+<li>Removal conflict: another change is represented between read and remove. The operation must reject the stale comparison rather than erase the newer record.</li>
+</ol>
+<p>For the new name-bytes case, inspect empty input, short input, excessive length, a non-terminated three-byte array, embedded zero, high bytes and overlapping storage. Each case asks a different question about the boundary.</p>
+<h2>Run the consumer lab</h2>
+<pre><code class="language-powershell">ctest --test-dir build/profile-name -R &quot;^btb\.profile_name\.&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Read the test names and final exit status. A zero-test result is not evidence of safety, which is why the command rejects it. If a test cannot start because its executable is missing, build the target first; do not alter an assertion to hide a missing executable.</p>
+<h2>Record evidence</h2>
+<p>Keep source revision, compiler, platform, command, timestamp and result together. Mark skipped checks separately. If the source changes after a passing run, that run belongs to the previous source identity.</p>
+<h2>Summary</h2>
+<p>Test failures at each boundary and inspect the resulting state. Passing a deterministic policy test does not prove the absence of all vulnerabilities or replace review of cryptographic and platform components. A useful regression test encodes the condition that caused the defect, so a later change can expose its return.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/local_profile/test_local_profile.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="08-standards-that-prevent-memory-bugs.html">Previous: Write coding rules that can be checked</a> · <a href="10-security-review-of-an-application-feature.html">Next: Review a complete feature from input to effect</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/09-test-security-failure-paths.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

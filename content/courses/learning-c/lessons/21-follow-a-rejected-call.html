@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/lessons/21-follow-a-rejected-call.html
+
+PURPOSE:
+  Present "Follow a rejected function call" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow a rejected function call | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Follow a rejected function call</h1>
+<p>A function can refuse a request. The caller must know whether a result was produced before using it. This lab follows one small C function from input checks to output assignment, then designs checks for its boundary.</p>
+<p>Source to open: <code>Umicom-Bits2Banking/labs/native/framework-activity/activity.c</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath 'labs\native\framework-activity\activity.c'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' 'labs/native/framework-activity/activity.c'</code></pre>
+<h2>Understand the idea</h2>
+<p>BtbActivityAdvance receives current by value: changing that local parameter would not change the caller's variable. Its second parameter points to storage supplied by the caller. Writing through *next changes that storage. A status value reports success or explains why no result was produced. The number 1000 is a policy limit, not the largest value an unsigned integer can hold.</p>
+<pre><code class="language-text">input + caller's result → argument check → capacity check → write result → success
+                              ↓ reject         ↓ reject
+                         result unchanged  result unchanged</code></pre>
+<h2>Read the exact check</h2>
+<pre><code class="language-c">CHECK(BtbActivityAdvance(1000U, &amp;result) == UMI_STATUS_CAPACITY_EXCEEDED &amp;&amp; result == 77U);</code></pre>
+<p>This line is already in test_activity.c; do not add a duplicate. CHECK is the example's small test macro. It reports an error and returns a failing exit status when the expression is false. == compares values; &amp;&amp; requires both comparisons to be true and evaluates the right side only when the left side is true. &amp;result passes the address of caller-owned storage. The U suffix makes 1000U and 77U unsigned integer constants. The case begins with result set to 77U, so an accidental write is visible. Your additional 1001U exercise checks the first invalid count as well as the existing largest-unsigned-value example.</p>
+<h2>Work through the lab</h2>
+<ol><li>Open activity.c and underline every return. Circle the only assignment through next. Read the conditions in order; the first matching return ends the call.</li><li>On paper, set result to 77. Trace BtbActivityAdvance(0, &amp;result), then repeat from result = 77 with current equal to 999, 1000 and 1001.</li><li>For each trace, record status and result separately. Now trace a null output pointer: the first check returns before any dereference.</li><li>Open test_activity.c beside activity.c. Find the existing full case, which already checks both refusal and preservation. In a practice copy, extend the invalid case with current = 1001 and a fresh result = 77 before the existing UINT_MAX case. Predict both statuses before running anything.</li></ol>
+<h2>Expected result</h2>
+<p>The four non-null traces produce OK/1, OK/1000, CAPACITY_EXCEEDED/77 and INVALID_ARGUMENT/77. A null result pointer returns INVALID_ARGUMENT.</p>
+<h2>If the result differs</h2>
+<p>If result changes on refusal, look for an assignment before validation. If the result is correct but the test fails, compare the status as well: a capacity limit and an invalid argument express different problems.</p>
+<h2>Explain it yourself</h2>
+<p>Would checking only that result is nonzero detect every defect? Explain using the starting value 77.</p>
+<details><summary>Worked explanation</summary><p>No. An unchanged 77 is nonzero even when the function refused. The test needs the status and the exact expected output. Keeping an unmistakable starting value helps reveal accidental writes.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="20-allocation-outputs-and-lifetimes.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="../glossary.html">Glossary</a> · <a href="../practical-guide.html">Practical guide</a> · <a href="../../learning-paths.html">Learning map</a></nav>
+<nav aria-label="Continue the course"><a rel="next" href="22-open-read-and-close-a-file.html">Continue: Open, read and close a file</a></nav></article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>

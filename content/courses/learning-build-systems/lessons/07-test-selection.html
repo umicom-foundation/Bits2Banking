@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/07-test-selection.html
+
+PURPOSE:
+Separate failed-test retries from affected-test selection
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate failed-test retries from affected-test selection | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate failed-test retries from affected-test selection</h1>
+<p>A build system records how source files become programs and when work must be repeated. This course begins with a small existing Notes library and follows dependencies, generated configuration, tests and evidence into the shared Umicom build architecture.</p>
+<h2>Start here</h2>
+<p>A terminal is a window that accepts commands. A directory is a folder. This course uses a small teaching project in the Bits2Banking checkout; it does not rebuild the complete Framework. You need a C23 compiler, CMake 3.26 or newer, and Ninja. On Windows, open the installed MSYS2 UCRT64 terminal and install the packages below if they are missing:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Close that terminal and open PowerShell. Adjust the checkout path if yours is elsewhere:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S &quot;labs/native/build-dependency-graph&quot; -B &quot;build/dependency-graph&quot; -G Ninja -DBUILD_TESTING=ON
+cmake --build &quot;build/dependency-graph&quot; --parallel 2
+ctest --test-dir &quot;build/dependency-graph&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Run each command separately and stop if it reports an error. For a Linux Bash terminal with GCC, CMake and Ninja installed, change to the Bits2Banking checkout with <code>cd</code>, then use the same three <code>cmake</code>/<code>ctest</code> commands. These are learner exercises; the guide does not assert that a particular machine has passed them. See <a href="../../learning-cmake/index.html">Learning CMake</a> for a longer setup and command walkthrough.</p>
+<p>Package names can be checked in the official <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-gcc">MSYS2 GCC</a>, <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-cmake">CMake</a> and <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-ninja">Ninja</a> listings.</p>
+<h2>A test is a question</h2>
+<p>The Notes boundary test asks whether bounded updates preserve their contract. The preview test asks whether a configured program prints the correct visible result. Passing one does not answer the other's question.</p>
+<p>A failed-test retry selects tests by the result of a previous run. Affected-test selection selects tests because their relevant inputs changed. These sets can overlap, but they are not identical.</p>
+<h2>Try both deliberately</h2>
+<ol>
+<li>Build the complete lab before running tests. CTest does not automatically compile missing executables.</li>
+<li>List tests with <code>ctest --test-dir build/dependency-graph -N</code>. Listing is not executing.</li>
+<li>Run the whole small suite with the setup command and inspect both names.</li>
+<li>After a failure and a fix, <code>ctest --test-dir build/dependency-graph --rerun-failed --output-on-failure</code> can retry recorded failures. It does not select previously passing tests affected by the same fix.</li>
+<li>For this lab, run the full two-test suite after changing Notes logic or generated configuration. It is small enough that the relevant contract checks remain clear.</li>
+</ol>
+<h2>What a reusable result must describe</h2>
+<p>Record the test name, executable identity, runtime libraries, fixtures, configuration and outcome. A pass from a different binary is historical evidence, not a current pass. A skipped test and a missing executable must remain distinguishable from success.</p>
+<h2>Studio and Framework</h2>
+<p>A Studio button should ask the shared Framework build/test service for a plan and show why tests were selected. It should not invent a separate cache of successful results. Unknown dependency relationships require a broader plan or an explicit unresolved state. This is especially important for plugins and runtime-loaded resources whose dependencies are not all in a compiler's include list.</p>
+<h2>Exercise</h2>
+<p>Make a table of three changes: heading option, Notes capacity, and test expectation. For each, identify which artifact changes and which test questions must be answered again. Explain why changing an expected value merely to obtain green results is not a repair when the implementation violates its documented behaviour.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/build-dependency-graph/check_preview.cmake">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="06-parallel-jobs.html">Previous: Run independent build jobs in parallel</a> · <a href="08-record-build-identity.html">Next: Record enough evidence to understand a build result</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-build-systems/07-test-selection.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

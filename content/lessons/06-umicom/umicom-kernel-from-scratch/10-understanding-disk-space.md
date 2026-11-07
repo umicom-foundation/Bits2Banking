@@ -91,3 +91,7 @@ Next, learn why a failed read must leave a result unchanged and why matching tab
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/10-understanding-disk-space.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Check what a native program needs](09-program-requirements.md)
+
+[Next: Test storage boundaries without changing a disk](11-testing-storage-boundaries.md)

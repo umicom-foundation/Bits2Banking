@@ -58,3 +58,7 @@ The second. The UI state and the persistence result must be reported separately.
 ---
 
 [Read this lesson in HTML](../../../courses/learning-javascript/lessons/02-local-storage-and-untrusted-data.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Separate visible state from saved state](03-separate-visible-state-from-saved-state.md)
+
+[Previous: Events and visible state](01-events-and-visible-state.md)

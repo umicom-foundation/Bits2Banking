@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/22-physical-frames-as-an-inventory.html
+
+PURPOSE:
+Explain the lesson: Represent physical frames as an inventory.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Represent physical frames as an inventory | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="21-format-a-register-without-allocation.html">Previous lesson</a> · <a rel="next" href="23-alignment-and-address-validation.html">Next lesson</a></nav>
+<h1>Represent physical frames as an inventory</h1>
+<h2>Prepare</h2>
+<p>Open the physical-frame-pool lab in a complete Bits2Banking checkout. Its README provides PowerShell configure, build and test commands. A compiler translates the C files into a host program; the program models ownership without touching physical RAM.</p>
+<p>A byte is one addressable storage unit in this model. A frame contains 4,096 consecutive bytes. The inventory holds 128 frames, so it describes 524,288 bytes. An address identifies the beginning of a range.</p>
+<h2>Read the representation</h2>
+<p><code>BtbFramePool</code> stores a starting address, one state byte per frame, and two counters. The state is FREE, OWNED or RESERVED. These words describe permission to use the range, not what bytes it contains.</p>
+<p>Draw 16 boxes for the first 16 entries. Mark entries 0–7 RESERVED and 8–15 FREE. Initialization reserves eight entries for fictional boot structures. It has not loaded firmware or allocated host memory.</p>
+<h2>Calculate an address</h2>
+<p>With start address <code>0x80000000</code>, frame 8 begins at:</p>
+<pre><code class="language-text">0x80000000 + 8 × 4096 = 0x80008000</code></pre>
+<p>Hexadecimal uses sixteen digits, 0–9 then A–F. Here 4096 is 0x1000. Adding eight frames therefore adds 0x8000.</p>
+<h2>Lab</h2>
+<ol>
+<li>Record the initialized counters: reserved 8, owned 0.</li>
+<li>Predict the first successful allocation.</li>
+<li>Run the README's demo when your toolchain is ready.</li>
+<li>Compare the printed address with your calculation.</li>
+</ol>
+<p>Expected first address is 0x80008000. If it differs, inspect the base and reserved entries before assuming the allocation loop is wrong.</p>
+<h2>Connect to Kernel work</h2>
+<p>Read Umicom Kernel's physical-memory guide linked in the lab README. The teaching inventory omits platform discovery, locking and process ownership. Keep those limits visible when using the example to understand the larger implementation.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-pool/frame_pool.h">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="21-format-a-register-without-allocation.html">Previous lesson</a> · <a rel="next" href="23-alignment-and-address-validation.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/22-physical-frames-as-an-inventory.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

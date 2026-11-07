@@ -1,0 +1,68 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/37-use-a-framework-function-in-a-lab.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use a Framework function in a practical lab | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Use a Framework function in a practical lab</h1>
+<p>A library is compiled code that another program can call. A header describes the names, types and rules of those calls. This lab uses Framework's SHA-256 service to calculate a digest: a fixed-size description of some bytes. It teaches how to read a contract, link a small consumer and check the result. It does not build a second hashing engine.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>Use a C23 compiler, CMake 3.24 or newer, Ninja, Bits2Banking sources and an installed Umicom Framework SDK containing the <code>base</code> component. On Windows, use matching MSYS2 UCRT64 tools and SDK. On Linux, use a native SDK built for that computer's architecture. See <a href="../../learning-c/terminal-lab.html">terminal setup</a> for installation and <a href="06-use-an-installed-sdk.html">using an installed SDK</a> for the package layout. Run <code>gcc --version</code>, <code>cmake --version</code> and <code>ninja --version</code> to confirm the tools are on PATH.</p>
+<p>Choose an empty practice location. The examples below use <code>C:\umicom-learning</code> or <code>$HOME/umicom-learning</code>. Change the source and SDK paths if your installations differ. Stop after a failed command and read its error before continuing.</p>
+<h2 id="copy-the-small-consumer">1. Copy the small consumer</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+New-Item -ItemType Directory -Force 'C:\umicom-learning'
+Copy-Item -Recurse 'C:\umicom\Umicom-Bits2Banking\labs\native\framework-hash' 'C:\umicom-learning\framework-hash'
+Set-Location 'C:\umicom-learning\framework-hash'
+Get-Content main.c
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom-learning&quot;
+cp -R &quot;$HOME/umicom/Umicom-Bits2Banking/labs/native/framework-hash&quot; &quot;$HOME/umicom-learning/framework-hash&quot;
+cd &quot;$HOME/umicom-learning/framework-hash&quot;
+cat main.c
+</code></pre>
+<p>Do this copy once into a new destination. Repeating a recursive copy into an existing folder can create an unintended nested folder.</p>
+<h2 id="understand-the-call-before-compiling">2. Understand the call before compiling</h2>
+<pre><code class="language-c">char hex[UMI_SHA256_HEX_CAPACITY];
+UmiStatus status = UmiSha256Buffer(&quot;abc&quot;, 3U, hex);
+</code></pre>
+<p><code>hex</code> is space owned by this program. The capacity is 65 characters: 64 hexadecimal digits and the zero character ending the C string. <code>3U</code> says to read three bytes. The zero character after <code>abc</code> in the string literal is not included. <code>UmiStatus</code> is a result code; check it before using the output. The lab uses <code>REQUIRE</code> to print a failed condition and return an error to the terminal.</p>
+<p>The path from the application to the engine is:</p>
+<pre><code class="language-text">main.c → sha256.h contract → Umicom::base library → Framework implementation
+</code></pre>
+<p>In <code>CMakeLists.txt</code>, <code>find_package</code> locates the installed SDK, while <code>target_link_libraries</code> connects this executable to its <code>base</code> library. Neither line copies the engine into the lab.</p>
+<h2 id="configure-build-and-run">3. Configure, build and run</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -DCMAKE_PREFIX_PATH='C:/umicom/installed/framework'
+cmake --build build --parallel 2
+&amp; '.\build\btb-framework-hash.exe' known
+ctest --test-dir build --output-on-failure --no-tests=error
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom-sdk&quot;
+cmake --build build --parallel 2
+./build/btb-framework-hash known
+ctest --test-dir build --output-on-failure --no-tests=error
+</code></pre>
+<p>The expected digest is <code>ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</code>. The executable then prints <code>PASS known</code>. CTest registers five cases: <code>known</code>, <code>chunks</code>, <code>changed</code>, <code>rejected</code> and <code>chain</code>. These are expected outcomes to check on your machine, not a substitute for running them.</p>
+<h2 id="make-a-controlled-mistake">4. Make a controlled mistake</h2>
+<p>In your practice copy, change the length in <code>Known</code> from <code>3U</code> to <code>4U</code>. Rebuild and run <code>known</code> again. It should fail its comparison because you now hash the terminating zero as well. Restore <code>3U</code>, rebuild and repeat. This demonstrates why an input's length is part of its contract.</p>
+<p>If CMake cannot find <code>UmicomFramework</code>, check the SDK's <code>lib/cmake/UmicomFramework/UmicomFrameworkConfig.cmake</code>. If the linker cannot find <code>UmiSha256Buffer</code>, check that the headers and library belong to the same SDK revision. Do not copy a newer header over an older library.</p>
+<h2 id="source-map-and-next-steps">Source map and next steps</h2>
+<p>Read Framework's <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/base/sha256.h"><code>sha256.h</code></a>, then <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/base/sha256.c"><code>sha256.c</code></a>. The consumer is <code>labs/native/framework-hash/main.c</code> in Bits2Banking. Continue with <a href="38-incremental-functions-and-failure-contracts.html">incremental calls and failure contracts</a>, or return to the <a href="../index.html">Framework course</a>.</p>
+
+<nav aria-label="Previous lesson"><a rel="prev" href="36-map-a-shared-feature-before-changing-it.html">Previous: Map a shared feature before changing it</a></nav></article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>

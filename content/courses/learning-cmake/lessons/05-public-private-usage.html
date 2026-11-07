@@ -1,0 +1,55 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cmake/lessons/05-public-private-usage.html
+
+PURPOSE:
+Understand PUBLIC and PRIVATE usage requirements
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand PUBLIC and PRIVATE usage requirements | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Understand PUBLIC and PRIVATE usage requirements</h1>
+<p>CMake describes how a software project is prepared for building. In this course you will follow a small C project from source files to executables, understand dependencies, run tests and record useful evidence. Every chapter includes the setup needed to enter the exercise directly.</p>
+<h2>Start here</h2>
+<p>A terminal is a window in which you type commands. A folder groups files; a path tells a command where a file or folder is. Source files contain the instructions people edit. A build folder contains the machine-readable results. Keep the two folders separate.</p>
+<p>This course uses the existing labs/native/bounded-ledger-line project in Bits2Banking. It decodes a fictional message such as 1001:+2500: training account 1001, with a change of 2500 pence. It does not connect to a bank.</p>
+<p>On Windows, install MSYS2. In its UCRT64 terminal install the tools:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Open PowerShell. Adjust the repository path if your copy is elsewhere. Run each line separately and stop on an error.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version
+ninja --version
+cmake -S labs/native/bounded-ledger-line -B build/ledger-line -G Ninja -DBUILD_TESTING=ON
+cmake --build build/ledger-line --parallel 2
+ctest --test-dir build/ledger-line --output-on-failure --no-tests=error</code></pre>
+<p>Use CMake 3.24 or newer and a compiler with C23 support. On Linux, install these tools through the distribution's package manager, open Bash in the repository, and use the same three cmake/ctest commands. The small project builds independently of Framework. <a href="../../learning-c/index.html">Learning C</a> gives a slower installation walkthrough.</p>
+<p>The expected test names end in syntax, mutations and example. Missing tools, missing executables and zero selected tests need investigation. For experiments, copy the lab to a separate practice folder and point -S at that folder; preserve the original example.</p>
+<h2>Begin with a header</h2>
+<p>ledger_line.h declares BtbLedgerLineParse. main.c includes it so the compiler knows the function's inputs and result. The compiler needs a directory in which to find that header.</p>
+<p>target_include_directories(btb_ledger_line PUBLIC &quot;${CMAKE_CURRENT_SOURCE_DIR}&quot;) applies the directory to the library and its linked consumers. PRIVATE would apply only to the library itself. INTERFACE would apply only to consumers.</p>
+<p>The demo links the library PRIVATE because the executable uses the library internally; it does not publish a library interface for other targets.</p>
+<h2>Trace the information</h2>
+<ol>
+<li>Find the include in main.c.</li>
+<li>Find the library's PUBLIC include directory.</li>
+<li>Find the demo's link to the library.</li>
+<li>Draw an arrow showing the include requirement travelling with that link.</li>
+<li>Repeat for the test program.</li>
+</ol>
+<h2>Controlled experiment</h2>
+<p>In a practice copy move the public header into an include subfolder and update the library's PUBLIC include directory. Reconfigure and build all three programs. Each consumer should receive the directory through the target link.</p>
+<p>If only the library compiles, check whether the path was incorrectly made PRIVATE. If unrelated targets receive directories they never use, inspect directory-wide settings.</p>
+<h2>Framework connection</h2>
+<p>The framework-checksum lab links Umicom::base. This imported target describes an installed Framework component. Its package supplies include and link requirements. Copying headers into a consumer does not supply the corresponding compiled implementations.</p>
+<h2>Question</h2>
+<p>If a public header uses a type from another library, do consumers need that dependency's include requirements? Usually yes: they must compile the header. Decide from the interface rather than making every dependency PUBLIC by habit.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-checksum/CMakeLists.txt">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="04-target-dependencies.html">Previous: Build a target and its required dependencies</a> · <a href="06-register-meaningful-tests.html">Next: Register tests that check observable behaviour</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cmake/05-public-private-usage.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

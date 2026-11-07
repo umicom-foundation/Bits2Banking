@@ -54,3 +54,7 @@ The focused checks live in `tests/native_contract/requirements_tests.c`. They co
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/09-program-requirements.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Create a file and run a program at the Kernel console](08-files-at-the-console.md)
+
+[Next: Understand how the Kernel counts disk space](10-understanding-disk-space.md)

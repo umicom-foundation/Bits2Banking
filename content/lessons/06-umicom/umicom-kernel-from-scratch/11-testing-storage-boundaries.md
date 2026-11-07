@@ -79,3 +79,7 @@ Connect this to [Learning C](../../../courses/learning-c/index.html): pointers n
 ---
 
 [Read this lesson in HTML](../../../courses/umicom-kernel-from-scratch/lessons/11-testing-storage-boundaries.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Understand how the Kernel counts disk space](10-understanding-disk-space.md)
+
+[Next: Keep results separate from the memory they describe](12-ownership-and-cleanup.md)

@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/25-capacity-and-backpressure.html
+
+PURPOSE:
+Explain the lesson: Follow backpressure through two stages.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow backpressure through two stages | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="24-read-a-transfer-at-the-clock-edge.html">Previous lesson</a> · <a rel="next" href="26-latency-and-throughput.html">Next lesson</a></nav>
+<h1>Follow backpressure through two stages</h1>
+<h2>Prepare</h2>
+<p>Use the existing lesson_buffer and buffer_pipeline sources. The pipeline can retain two bytes, one per stage. Backpressure is the consumer's way of asking upstream stages to wait because it cannot accept more work.</p>
+<h2>Fill the pipeline</h2>
+<p>Start from reset and keep output_ready zero. Offer 17, then 34, advancing only after each input handshake.</p>
+<p>After two accepted bytes, stage two holds 17 and stage one holds 34. Neither may overwrite its word. The first stage therefore lowers input_ready.</p>
+<p>The producer may offer 51, but it still owns that unaccepted byte. Counting an offered word as accepted would lose it when the pipeline fills.</p>
+<h2>Lab</h2>
+<p>Make a table with columns for offered byte, input handshake, first stored byte, second stored byte and output handshake. Continue the trace while output_ready stays zero for three more edges.</p>
+<p>Expected: stored bytes remain 34 and 17, and no additional input is accepted.</p>
+<h2>Release capacity</h2>
+<p>Raise output_ready. The second stage can deliver 17 and accept 34 at the same edge. That permits the first stage to accept 51. Readiness propagates through the combinational connection; storage changes at the edge.</p>
+<h2>Connect to software</h2>
+<p>A bounded software queue also refuses admission when full. In the work-dispatch example, the caller receives a status value. In this circuit, readiness expresses the admission condition. In both designs, the caller must retain an item until acceptance is established.</p>
+<h2>Troubleshoot</h2>
+<p>If output changes while valid is one and ready is zero, inspect the buffer's hold condition. The pipeline scoreboard explicitly checks this requirement after every stalled edge.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/buffer_pipeline.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="24-read-a-transfer-at-the-clock-edge.html">Previous lesson</a> · <a rel="next" href="26-latency-and-throughput.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/25-capacity-and-backpressure.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

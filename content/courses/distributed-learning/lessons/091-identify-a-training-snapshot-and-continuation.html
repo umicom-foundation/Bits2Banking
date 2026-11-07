@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/distributed-learning/lessons/091-identify-a-training-snapshot-and-continuation.html
+
+PURPOSE:
+Identify source data and continuation settings
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Identify source data and continuation settings | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Identify source data and continuation settings</h1>
+<p>Training adjusts numbers called model parameters so that predictions better match examples. A batch is a group of examples used for one adjustment. This module follows a small, local Framework experiment. It assumes no previous machine-learning course and introduces each term before using it. A local experiment is the first measurement needed when designing work for several computers.</p>
+<h2>Set up this laboratory</h2>
+<ol>
+<li>Install a C23 compiler, CMake and Ninja. On Windows, open PowerShell and make the installed UCRT64 tools available with <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code>. On Linux, open a terminal and ensure <code>cc</code>, <code>cmake</code> and <code>ninja</code> are installed through your distribution.</li>
+<li>Use a checkout of Umicom Framework containing <code>learning/native-llm/inspect_accumulation.c</code>. The examples below use the Framework child of Umicom Applications.</li>
+<li>Configure a separate laboratory directory. This prepares build instructions; it does not train a model.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Applications\framework
+cmake -S learning/native-llm -B build/learning-accumulation -G Ninja -DBUILD_TESTING=ON
+cmake --build build/learning-accumulation --target umicom-native-llm-accumulation
+&amp; .\build\learning-accumulation\umicom-native-llm-accumulation.exe 2</code></pre>
+<p>In Bash, change to the Framework directory, run the same two <code>cmake</code> commands, then run <code>./build/learning-accumulation/umicom-native-llm-accumulation 2</code>. Stop if configuration or compilation fails; inspect the first diagnostic before proceeding. Expected successful output includes <code>Effective tokens: 40</code> and <code>Comparison: within tolerance</code>. Numerical values and memory observations must be recorded from your actual run. These are instructions to execute, not a claim that a particular environment has passed.</p>
+<h2>A filename is not a training identity</h2>
+<p>A file named <code>model.bin</code> can contain different bytes tomorrow. A path tells a program where to look; a content digest identifies a particular byte sequence. SHA-256 produces a fixed-size digest used to detect changes to reviewed bytes. An unsigned digest does not establish who supplied those bytes.</p>
+<p>A continuation resumes training from an earlier state. To interpret it, retain the model parameters, optimiser state where applicable, source-data identity and relevant training settings. A seed alone is insufficient when data ordering or optimiser state changes.</p>
+<h2>Inspect the Framework records</h2>
+<p>The source-lock API binds checkpoint bytes to the dataset loader's imported source-snapshot identity. The run lock covers training settings. Gradient-clipping policy has its own companion record. The source-lock header explicitly requires checking the relevant records together for strict continuation.</p>
+<ol>
+<li>Read the <code>Format</code> and <code>Verify</code> signatures. Both receive bytes already supplied by the caller and a loaded dataset.</li>
+<li>Notice that formatting a source lock does not decode the checkpoint. The checkpoint codec has that responsibility.</li>
+<li>Read <code>SaveNewFile</code>: an occupied destination is refused.</li>
+<li>Note that publishing several companion files is not one atomic filesystem action.</li>
+</ol>
+<h2>Design a review folder</h2>
+<p>Keep an immutable source manifest, exact input snapshot, checkpoint, applicable policy records and run report together. Record the source revision and build environment. Store private documents in a location chosen by their owner and retain permission to use them. Do not publish personal training material merely because a hash has been computed.</p>
+<h2>Exercise</h2>
+<p>Consider two checkpoints with equal filenames and different bytes. A source-lock verification must distinguish them. Next consider unchanged checkpoint bytes with an altered training document. The dataset identity must distinguish that case too. Finally consider identical bytes signed by an unknown party: byte equality still does not supply trust in the publisher.</p>
+<p>These distinctions are necessary before distributing tasks. Every worker assignment needs an unambiguous base snapshot and authorised data scope.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/ai/training/training_source_lock.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="090-preserve-a-model-after-rejected-training.html">Previous: Check that rejected training preserves the model</a> · <a href="092-plan-distributed-work-from-a-local-baseline.html">Next: Plan a distributed experiment from a local baseline</a></p>
+</nav><p><a href="../../../lessons/12-distributed-learning/distributed-learning/091-identify-a-training-snapshot-and-continuation.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

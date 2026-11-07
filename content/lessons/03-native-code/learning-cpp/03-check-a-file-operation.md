@@ -48,3 +48,5 @@ Explain why the caller checks the Boolean returned by `Save`: otherwise the inte
 [Course contents](index.md) · [Previous: Streams and file lifetime](02-streams-and-file-lifetime.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Understand append and repeated saves](04-understand-append-and-repeated-save.md)

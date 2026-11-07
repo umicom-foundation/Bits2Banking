@@ -51,3 +51,5 @@ Compare the real `LedgerDemo.java` with this exercise. Its decimal-value lesson 
 [Course contents](index.md) · [Previous: Decimal values and checks](02-decimal-values-and-checks.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next: Check a ledger invariant](04-check-a-ledger-invariant.md)

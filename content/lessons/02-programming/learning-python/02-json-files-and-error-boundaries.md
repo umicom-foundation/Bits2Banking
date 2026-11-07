@@ -83,3 +83,7 @@ Classify three files: `[]`, `{}` and `[{"id":1,"text":"Read a guide"}]`. All are
 ---
 
 [Read this lesson in HTML](../../../courses/learning-python/lessons/02-json-files-and-error-boundaries.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Validate records before saving](03-validate-records-before-saving.md)
+
+[Previous: Names, lists and note functions](01-names-lists-and-note-functions.md)

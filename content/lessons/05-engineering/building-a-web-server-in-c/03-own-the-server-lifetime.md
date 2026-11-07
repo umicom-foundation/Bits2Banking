@@ -74,3 +74,7 @@ The server borrows the service while dispatching. Finish serving first, then rel
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-web-server-in-c/lessons/03-own-the-server-lifetime.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: Connect routes to ordinary C functions](02-routes-and-handlers.md)
+
+[Next: Recognise complete requests and honest results](04-framing-errors-and-exercises.md)

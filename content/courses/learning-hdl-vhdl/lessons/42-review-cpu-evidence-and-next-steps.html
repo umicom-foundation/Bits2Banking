@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/42-review-cpu-evidence-and-next-steps.html
+
+PURPOSE:
+Review CPU evidence and plan the next extension
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review CPU evidence and plan the next extension | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Review CPU evidence and plan the next extension</h1>
+<h2>What you will learn</h2>
+<p>A useful project report states what was checked and what remains outside the model. You will assemble evidence from source, tests and waveforms, then choose an extension with a clear acceptance condition.</p>
+<h2>Set up this exercise</h2>
+<p>A terminal is a window in which you type commands. A folder holds the files of a project. Install Git, CMake 3.26 or later, Ninja and GHDL with VHDL-2008 support; make their executable folders available on PATH. PATH is the list of folders the terminal searches for programs. Open a fresh PowerShell or Bash terminal and check:</p>
+<pre><code class="language-text">git --version
+cmake --version
+ninja --version
+ghdl --version</code></pre>
+<p>Each command should print a version. If a command is not found, correct its installation or PATH before continuing. Download the Bits2Banking repository with Git if you do not already have it:</p>
+<pre><code class="language-text">git clone https://github.com/umicom-foundation/Bits2Banking.git
+cd Bits2Banking/labs/hardware/vhdl-cpu</code></pre>
+<p>If you already have the repository, open its labs/hardware/vhdl-cpu folder instead of cloning again. Work in your own practice copy. The following commands are identical in PowerShell and Bash:</p>
+<pre><code class="language-text">cmake --preset simulation
+cmake --build --preset simulation
+ctest --preset simulation</code></pre>
+<p>Configure finds GHDL and writes build instructions. Build analyses the VHDL files. Test runs the simulated circuit and checks its results. Expected: the cpu.instructions test passes. This is a learner check to perform on your computer, not a claim about a supplied binary. To select a GHDL installation outside PATH, configure with a quoted absolute path:</p>
+<pre><code class="language-powershell">cmake --preset simulation &quot;-DGHDL_EXECUTABLE=C:/tools/ghdl/bin/ghdl.exe&quot;</code></pre>
+<p>A simulation predicts the behaviour described by a model. It does not program a physical chip. No hardware board is required for this module.</p>
+<h2>Capture an identifiable result</h2>
+<p>Record the repository revision, your local modifications, GHDL version, CMake version and complete test command. A pass belongs to those source files and that environment. Keep failed runs too; they explain why later changes were made.</p>
+<p>The supplied checks cover reset, LOAD, ADD, SUB, JUMP, both JZ outcomes, pause, halt, invalid opcode and arithmetic/address wraparound. Inspect the assertions before claiming that an operation was exercised.</p>
+<h2>Read a waveform</h2>
+<p>Run the simulate target. Open cpu.ghw with a compatible waveform viewer. Add clock, reset, enable, instruction, address, accumulator, halted and fault to the view.</p>
+<ol>
+<li>Locate the first rising edge during reset.</li>
+<li>Locate LOAD 3.</li>
+<li>Find the disabled cycle and verify that state stays constant.</li>
+<li>Find the taken branch to address 8.</li>
+<li>Find the final invalid instruction and its fault output.</li>
+</ol>
+<p>The waveform helps explain a result; assertions remain the repeatable automated checks.</p>
+<h2>Choose one extension</h2>
+<p>A program ROM is a useful next project. Define its address-to-instruction table, connect its output to the CPU, and check that an entire small program reaches an expected result. Other extensions include a store instruction, memory interface, status flags or a wider immediate encoding.</p>
+<p>For each extension write the interface, timing rule, failure behaviour and test before changing the circuit. Keep the original instruction tests so a new feature does not erase earlier coverage.</p>
+<h2>Connect to Umicom development</h2>
+<p>Framework's VHDL template gives Studio a reusable project recipe. The document language catalogue recognises .vhd and .vhdl files, and the editor's line-comment catalogue supplies the -- prefix. Those services are separate: recognising a filename does not itself provide a language server or hardware debugger.</p>
+<p>Read the related Framework source alongside the generated project to see how a thin application consumes shared capabilities.</p>
+<h2>Check your understanding</h2>
+<p>Does a simulation pass mean this CPU can boot Umicom OS on an FPGA? No. That requires a processor architecture, memory and device interfaces, a toolchain, firmware and board qualification beyond this small model. Use the model to learn instruction execution and build evidence before adding those systems.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/README.md">Open the project source</a>.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="41-understand-the-vhdl-build-graph.html">Previous lesson</a></nav><p><a href="../../../lessons/03-native-code/learning-hdl-vhdl/42-review-cpu-evidence-and-next-steps.md">Markdown edition</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

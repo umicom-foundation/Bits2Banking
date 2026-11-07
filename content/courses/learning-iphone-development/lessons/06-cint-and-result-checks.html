@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-iphone-development/lessons/06-cint-and-result-checks.html
+
+PURPOSE:
+Explain the lesson: Use CInt and check the returned value.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use CInt and check the returned value | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-declaration-and-definition.html">Previous lesson</a> · <a rel="next" href="07-view-identity-and-state.html">Next lesson</a></nav>
+<h1>Use CInt and check the returned value</h1>
+<h2>Set up</h2>
+<p>Use Xcode on a Mac with an iOS Simulator runtime. Integrate the iPhone activity lab's SwiftUI view, bridging header, C bridge and activity source following its README. The reading trace can be completed without running Xcode.</p>
+<p><code>CInt</code> is the Swift spelling used here for the C <code>int</code> boundary. Choosing a compatible type makes the interface easier to understand; it does not eliminate the need to validate values.</p>
+<h2>Read the action</h2>
+<pre><code class="language-swift">let next = BtbActivityNext(completed)
+if next &gt;= 0 {
+    completed = next
+    message = &quot;Exercise recorded&quot;
+}</code></pre>
+<p>The full source also handles a negative result. The bridge returns -1 when the request is refused. The screen must preserve its previous count on that path.</p>
+<h2>Trace before running</h2>
+<p>Write these cases on paper:</p>
+<ul>
+<li>0 becomes 1.</li>
+<li>999 becomes 1000.</li>
+<li>1000 cannot advance.</li>
+<li>A negative input is rejected before an unsigned conversion.</li>
+</ul>
+<p>For each case, write the returned value and the visible value. They are not always the same: -1 is a failure signal, not the new activity count.</p>
+<h2>Extend the interface</h2>
+<p><strong>Exercise:</strong> propose how the screen could distinguish “activity full” from “invalid input.” Describe a typed result with a status and count. Keep the underlying decision in shared C/Framework behaviour; a thin Swift adapter should translate it for presentation.</p>
+<h2>Troubleshoot</h2>
+<p>If the number changes unexpectedly, inspect the argument and return value before investigating colours or view spacing. If no C call occurs, return to the declaration/linking lesson. When logging, use these harmless integers; do not generalise the exercise into logging private application data.</p>
+<p>Simulator execution, device execution and host bridge tests cover different boundaries. Keep their results separate and label a paper trace as a prediction.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/iphone-framework-activity/ActivityView.swift">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-declaration-and-definition.html">Previous lesson</a> · <a rel="next" href="07-view-identity-and-state.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/15-mobile-development/learning-iphone-development/06-cint-and-result-checks.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

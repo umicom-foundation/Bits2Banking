@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/04-distinguish-a-slice-from-independent-storage.html
+
+PURPOSE:
+Explain the lesson: Distinguish a slice from independent storage.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish a slice from independent storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-apply-a-function-to-a-sequence.html">Previous lesson</a></nav>
+<h1>Distinguish a slice from independent storage</h1>
+<p>When two variables describe the same elements, changing an element through one variable can be visible through the other. Understanding this relationship helps prevent accidental changes to input data.</p>
+<h2>Setup recap</h2>
+<p>Use DMD and both files from labs/languages/d-first-program. Compile with <code>dmd -unittest -of=progress-checks progress.d batches.d</code>. Run the resulting program using the operating-system command in the laboratory README.</p>
+<h2>1. Draw the ownership</h2>
+<p>A dynamic array value describes a length and a reference to elements. Draw a box for the variable and a separate row for the elements. A second slice may point at that same row.</p>
+<p>In remainingBatch, <code>new int[totals.length]</code> creates a new result row. The input views are const through the function. The caller still owns the input values and must not assume every slice copy creates new elements.</p>
+<h2>2. Follow the mutation check</h2>
+<p>The unittest builds totals [4, 0, 6] and completed [1, 0, 6], calls remainingBatch, then changes result[0] to 2. The next assertion checks that the two input arrays remain unchanged.</p>
+<p>This is a meaningful independence check. Merely checking the original result [3, 0, 0] would not reveal an implementation that accidentally reused input storage.</p>
+<h2>3. Follow a rejected batch</h2>
+<p>The call with totals [4, 2] and completed [1, 3] fails on the second pair. A partly filled internal array may exist briefly, but no result is returned to the caller. The exception is the outcome of the whole call.</p>
+<p>That behavior should be stated before a caller relies on it. A streaming interface might instead publish partial results and would need a different contract.</p>
+<h2>Exercise and explanation</h2>
+<p>Add an invalid final pair to a three-element batch. Check that an exception occurs, then inspect the original input arrays. Neither should have changed. Explain why the test must inspect values as well as the failure path.</p>
+<p>An @safe function can still contain incorrect arithmetic or rules. The annotation does not replace the explicit count and length checks. Keep both the language guarantees and the application contract visible.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/d-first-program/batches.d">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-apply-a-function-to-a-sequence.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-d/04-distinguish-a-slice-from-independent-storage.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="05-name-a-module-and-import-a-function.html">Next: Name a module and import a function</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

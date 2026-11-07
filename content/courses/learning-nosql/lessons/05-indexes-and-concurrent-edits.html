@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-nosql/lessons/05-indexes-and-concurrent-edits.html
+
+PURPOSE:
+Indexes, duplicate identities and concurrent edits
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Indexes, duplicate identities and concurrent edits | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Indexes, duplicate identities and concurrent edits</h1>
+<p>Learn how applications store documents, find records and manage database connections. Start with an invented lesson catalogue, then inspect the real Umicom Framework connector boundary. Each lesson includes its own setup summary and a small exercise.</p>
+<h2>Before you begin</h2>
+<p>A database keeps organised information. A document is a group of named values, such as a lesson identifier, title and list of topics. A collection groups documents. A query asks the database to find information. A terminal is a window where typed commands start programs. This course explains the commands before asking you to use them.</p>
+<p>For the database exercises, install MongoDB Community Server using its <a href="https://www.mongodb.com/docs/manual/installation/">official platform instructions</a> and install the <a href="https://www.mongodb.com/docs/mongodb-shell/install/">mongosh command-line client</a>. Choose a local training installation. Keep it reachable only from your own computer while learning. Use invented course records, never customer accounts or credentials. A shared or remote server needs authentication, transport security and explicit access control before use.</p>
+<ol>
+<li>Open PowerShell on Windows, or a terminal running Bash on Linux.</li>
+<li>Type <code>mongosh --version</code>. A version means the client can be found. If it is not recognised, finish the client installation and reopen the terminal.</li>
+<li>Start your local server using the instructions for its installed service. The client and server are separate programs.</li>
+<li>Connect with <code>mongosh &quot;mongodb://127.0.0.1:27017&quot;</code>. Here <code>127.0.0.1</code> means this computer, and <code>27017</code> is the default local port. Use your configured port if different.</li>
+<li>At the mongosh prompt type <code>use bits2banking_learning</code>. All database examples below belong to this disposable training database. Do not select a production database.</li>
+</ol>
+<p>A connection refusal means there is no reachable server at that address; check the service and port. Do not fix it by exposing the server to the public network. Type <code>exit</code> to leave mongosh. Each practical lesson creates its own named record, so you may start there without running an earlier lesson.</p>
+<p>The native C lab later in the course uses the existing Umicom Framework data SDK. It does not connect to MongoDB; its purpose is to make adapter ownership visible before a real driver is introduced.</p>
+<h2>Why an index exists</h2>
+<p>An index is an additional structure that helps a database locate data using selected fields. It uses storage and adds work when those fields change. A unique index also enforces a uniqueness rule. Existing duplicate values can prevent creation of a unique index. <a href="https://www.mongodb.com/docs/manual/core/index-unique/">Unique index behaviour</a>.</p>
+<p>For a fresh local exercise, use the separate lesson_identity collection:</p>
+<pre><code class="language-javascript">db.lesson_identity.createIndex({ catalogue_key: 1 }, { unique: true })
+db.lesson_identity.updateOne({ _id: &quot;one&quot; },
+  { $set: { catalogue_key: &quot;intro-c&quot;, title: &quot;Learning C&quot;, revision: 1 } },
+  { upsert: true })
+db.lesson_identity.updateOne({ _id: &quot;two&quot; },
+  { $set: { catalogue_key: &quot;intro-c&quot;, title: &quot;Another title&quot;, revision: 1 } },
+  { upsert: true })</code></pre>
+<p>The final command deliberately attempts a duplicate catalogue key. Expect a duplicate-key error. This is a designed negative exercise, not a reason to disable uniqueness. If the collection already has other data, inspect it first rather than deleting records to make this lab pass.</p>
+<h2>Two editors can disagree</h2>
+<p>Imagine two people read revision 1. One changes the title, while another changes a summary. A blind replacement can erase the first person's change. A revision condition makes the conflict visible:</p>
+<pre><code class="language-javascript">db.lesson_identity.updateOne({ _id: &quot;one&quot;, revision: 1 },
+  { $set: { title: &quot;Introduction to C&quot;, revision: 2 } })</code></pre>
+<p>A first matching update changes the record; repeating it should match zero documents because the revision is now 2. Read the returned matchedCount. Do not tell the user their edit was saved when nothing matched. <a href="https://www.mongodb.com/docs/manual/reference/method/db.collection.updateOne/">Conditional update operations</a>.</p>
+<h2>Application exercise</h2>
+<p>Design a conflict message with three facts: the stored record changed, the local draft is preserved, and the user can review both. Umicom editing workflows should keep an unsaved draft while a conflict is resolved. A revision check does not merge text automatically, and a database uniqueness rule does not decide which of two differing drafts is correct.</p>
+<p>Write down why an identifier and a revision solve different problems: the identifier chooses the record; the revision chooses the version the editor intended to change.</p>
+<h2>Read the source</h2>
+<p><a href="https://www.mongodb.com/docs/manual/core/index-unique/">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="04-validation-and-stable-identity.html">Previous: Validate records and keep identity stable</a> · <a href="06-adapter-lifetime-in-c.html">Next: Follow a database adapter lifetime in C</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-nosql/05-indexes-and-concurrent-edits.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

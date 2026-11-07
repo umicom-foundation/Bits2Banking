@@ -1,0 +1,85 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-android/lessons/01-install-and-launch.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Set up Android development and launch a small app | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../course-series.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="set-up-android-development-and-launch-a-small-app">Set up Android development and launch a small app</h1>
+<p>An Android application is a program that runs in the Android operating system. In this course you will build a screen that records practice-lesson clicks. You will learn how a project becomes an app before studying more complex features.</p>
+<p>No previous Android course is required. You need a Windows or Linux computer supported by Android Studio, internet access for tools and dependencies, and enough free disk space for the Android SDK and an emulator image. An SDK is a software development kit: libraries and tools for a platform. An emulator runs a virtual Android device on your development computer. Reading these lessons does not require installation.</p>
+<h2 id="setup-recap-install-and-verify-the-environment">Setup recap: Install and verify the environment</h2>
+<ol>
+<li>Download Android Studio from its official site and follow <a href="https://developer.android.com/studio/install">the installation instructions</a>. Check the current hardware requirements before downloading an emulator image.</li>
+<li>Start Android Studio and complete its setup wizard. Install the recommended Android SDK tools and platform. Use the bundled Java runtime initially; changing Java versions is unnecessary for this first project.</li>
+<li>Open <strong>Device Manager</strong>. Create a virtual device, choose a supported phone profile, download an appropriate system image, and start the device. Hardware virtualisation must be available for an accelerated emulator. If the computer cannot run one, follow the official connected-device guide to use your own Android phone with USB debugging enabled.</li>
+<li>Wait for the Android home screen. A device entry alone does not mean that the emulator has started.</li>
+</ol>
+<p>The longer <a href="https://developer.android.com/courses/android-basics-compose/course">Android beginner learning route</a> explains the tools. For command-line basics in this library, see <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/08-system-administration/03-open-powershell-or-linux-terminal.md">Open a terminal</a>.</p>
+<h2 id="create-a-project-in-a-folder-you-choose">2. Create a project in a folder you choose</h2>
+<ol>
+<li>Select <strong>New Project</strong>, then <strong>Empty Activity</strong>, the template using Jetpack Compose. Compose describes a screen using Kotlin functions.</li>
+<li>Name the project <code>Umicom Learning Practice</code>. Set the package name to <code>org.umicom.learning</code> and choose your own save folder, for example <code>C:\umicom-learning\android-practice</code> on Windows.</li>
+<li>Keep the template's supported minimum SDK and build settings. Note the minimum SDK you selected; your virtual device must support it.</li>
+<li>Finish and allow the initial Gradle synchronisation to complete. Gradle is the build tool. Synchronisation resolves the project's configuration and dependencies.</li>
+<li>Find <code>app/src/main/java/org/umicom/learning/MainActivity.kt</code> in the project. Some templates organise source under <code>kotlin</code> instead of <code>java</code>; use the path actually created.</li>
+</ol>
+<p>Do not create a second <code>MainActivity</code> in another source folder. One activity class is the Android entry point for this example.</p>
+<h2 id="run-the-unchanged-template-first">3. Run the unchanged template first</h2>
+<p>Choose the virtual device in the device selector and click <strong>Run</strong> for the <code>app</code> configuration. The template's greeting should appear on that device. This establishes that installation, the SDK and the initial project can work together. If the build fails, open Build Output and read the first error before changing application source.</p>
+<p>To build from the project's terminal without launching a device, use:</p>
+<pre><code class="language-powershell"># PowerShell, in the project folder containing gradlew.bat
+.\gradlew.bat assembleDebug
+</code></pre>
+<pre><code class="language-bash"># bash, in the project folder containing gradlew
+./gradlew assembleDebug
+</code></pre>
+<p>The wrapper downloads the project's declared Gradle version when required. <code>assembleDebug</code> builds a debug package; it does not install or launch it. The generated project supplies this wrapper. There is no need to write a separate shell script for the lesson.</p>
+<h2 id="understand-the-project-map">4. Understand the project map</h2>
+<table>
+<thead>
+<tr>
+<th>File or folder</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MainActivity.kt</code></td>
+<td>Activity and initial screen code</td>
+</tr>
+<tr>
+<td><code>AndroidManifest.xml</code></td>
+<td>Declares application components and permissions</td>
+</tr>
+<tr>
+<td><code>app/build.gradle.kts</code></td>
+<td>Module build settings and dependencies</td>
+</tr>
+<tr>
+<td><code>app/src/main/res</code></td>
+<td>Android resources such as text and images</td>
+</tr>
+<tr>
+<td><code>gradlew</code> / <code>gradlew.bat</code></td>
+<td>Starts the project's build-tool version</td>
+</tr>
+</tbody>
+</table>
+<p>The sequence is <strong>source and resources → Gradle build → app package → device installation → activity → visible screen</strong>. A successful build and a working screen are separate observations.</p>
+<h2 id="exercise-and-recovery">Exercise and recovery</h2>
+<p>Close the app on the virtual device, then use Run again. Confirm that the expected app launches. If the device list is empty, start or connect a device. If the first build cannot download dependencies, check connectivity and the first Gradle error. If Android Studio points to an unavailable SDK, correct the SDK location through its settings rather than copying another computer's build cache.</p>
+<p>The next lesson replaces the greeting with <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/android-lesson-counter/MainActivity.kt">Umicom's learning counter</a>. This is an educational frontend example, not an Android release of Umicom Studio or a connection to a production learning database.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-state-events-and-checks.html">Next: screen state and button events</a></p>
+
+<nav aria-label="Course navigation"><a href="../index.html">Course contents</a> · <a href="../../course-series.html">Subject guide</a></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

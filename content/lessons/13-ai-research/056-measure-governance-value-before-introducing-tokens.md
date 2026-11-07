@@ -58,3 +58,5 @@ The small experiments in this course do not establish a deployed blockchain, sec
 - [Complete study route](../../courses/ai-research/verifiable-learning-research-methods.html)
 
 *Service to Many Leads to Greatness.*
+
+[Next: Lab: turn a performance claim into an experiment](experiment-observation-lab.md)

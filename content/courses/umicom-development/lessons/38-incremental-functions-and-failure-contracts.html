@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/38-incremental-functions-and-failure-contracts.html
+
+PURPOSE:
+Present a connected practical lesson with setup, source reading and exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Incremental functions and failure contracts | Bits to Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="190" height="52"></a><nav class="site-nav" aria-label="Learning navigation"><a href="../index.html">Course overview</a><a href="../../course-series.html">All courses</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Incremental functions and failure contracts</h1>
+<p>Some work arrives in pieces. A file reader might receive a few kilobytes at a time; a network connection might deliver parts of one message. An incremental function keeps state between calls so it can process those pieces in order. This lab follows Framework's digest context and checks what happens when callers break a rule.</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>You need C23, CMake, Ninja, a compatible Framework <code>base</code> SDK and the <code>framework-hash</code> practice folder. <a href="37-use-a-framework-function-in-a-lab.html">The preceding SDK lab</a> gives every installation link and command. If starting here, complete its copy and configure steps, then run the <code>known</code> case. It establishes a reference result before you investigate state. No blockchain account, network service or GPU is needed.</p>
+<h2 id="draw-the-life-of-one-context">1. Draw the life of one context</h2>
+<pre><code class="language-text">uninitialised → Init → Update(&quot;a&quot;) → Update(&quot;bc&quot;) → Final → finished
+                         ↑ repeated updates allowed ↑
+finished → Init → ready for a different digest
+</code></pre>
+<p><code>UmiSha256</code> holds the working state. The caller owns that object. <code>UmiSha256Init</code> starts it; <code>UmiSha256Update</code> adds bytes; <code>UmiSha256Final</code> writes the 32 digest bytes. <code>UmiSha256Hex</code> converts those bytes into readable characters. The conversion uses a separate output array so the input and output do not overlap.</p>
+<p>Open <code>Chunks</code> in <code>main.c</code>. Notice that its two updates add three bytes in total, in the same order as <code>abc</code>. Splitting a stream into pieces does not insert separators. Reversing those pieces changes the input.</p>
+<h2 id="exercise-the-incremental-path">2. Exercise the incremental path</h2>
+<p>PowerShell, from the configured practice folder:</p>
+<pre><code class="language-powershell">cmake --build build --parallel 2
+&amp; '.\build\btb-framework-hash.exe' chunks
+ctest --test-dir build -R '^bits2banking\.framework_hash\.(chunks|rejected)$' --output-on-failure --no-tests=error
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">cmake --build build --parallel 2
+./build/btb-framework-hash chunks
+ctest --test-dir build -R '^bits2banking\.framework_hash\.(chunks|rejected)$' --output-on-failure --no-tests=error
+</code></pre>
+<p>The expected message says that ordered pieces produce the same digest. The selected CTest run should contain two cases. An empty selection is an error because <code>--no-tests=error</code> is present.</p>
+<h2 id="read-the-refusal-checks">3. Read the refusal checks</h2>
+<p>In <code>Rejected</code>, passing a null address with a nonzero length must return <code>UMI_STATUS_INVALID_ARGUMENT</code>. There are no bytes at that address to read. The program then hashes <code>abc</code> using the same context and checks the reference digest. This verifies that the refused update did not corrupt the context.</p>
+<p>Next the program fills an output array with <code>0xA5</code>, retains a copy, and calls <code>Final</code> a second time. A second finish is invalid. Comparing the arrays checks that failure did not overwrite the caller's output. The value <code>0xA5</code> is a recognisable test pattern, not a secret or a real digest.</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Evidence to inspect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Did the operation succeed?</td>
+<td>Returned <code>UmiStatus</code></td>
+</tr>
+<tr>
+<td>Did a refused update damage later work?</td>
+<td>A subsequent known digest</td>
+</tr>
+<tr>
+<td>Did failure modify output?</td>
+<td>Byte comparison against the retained pattern</td>
+</tr>
+<tr>
+<td>Can this context be used for a new message?</td>
+<td>Explicitly call <code>Init</code> again</td>
+</tr>
+</tbody>
+</table>
+<h2 id="extend-the-contract-exercise">4. Extend the contract exercise</h2>
+<p>In a practice copy, add a zero-length update between the two chunks using <code>NULL, 0U</code>. The header permits this; the final digest should remain unchanged. Then swap the chunks. The reference check should fail. Restore the order before finishing.</p>
+<p>A compiler error about an unknown function usually means the header or SDK is wrong. A failing digest comparison means the input, order or implementation needs investigation. Do not replace the expected digest with whatever the program prints: that would remove the independent check.</p>
+<h2 id="apply-the-idea-elsewhere">Apply the idea elsewhere</h2>
+<p>The same questions apply when an editor saves a document or a media job accepts a clip: who owns state, which operation advances it, and what remains unchanged after refusal? Look up each service's own contract; do not assume every Framework function shares SHA-256's failure behaviour.</p>
+<p>Read <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/base/sha256.h"><code>sha256.h</code></a> beside the consumer. Continue through the <a href="functionality-lab-map.html">functionality learning map</a> or return to the <a href="../index.html">Framework course</a>.</p>
+
+
+<p><a rel="next" href="39-trace-an-event-to-a-framework-rule.html">Next: Trace an event to a shared Framework rule</a></p>
+</article></main><footer><p>Bits to Banking · Umicom Foundation</p></footer></body></html>

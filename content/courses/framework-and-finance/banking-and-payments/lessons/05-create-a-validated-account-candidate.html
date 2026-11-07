@@ -1,0 +1,46 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/05-create-a-validated-account-candidate.html
+
+PURPOSE:
+Create a validated account before publishing it
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create a validated account before publishing it | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Create a validated account before publishing it</h1>
+<p>A bank application presents records about customers, accounts and money. This module builds one small part: a reliable balance view. A customer identifies whose records are selected; an account holds amounts and a state; a currency identifies the unit of money. All examples use invented records kept in the program's memory. No real bank connection or transfer is made.</p>
+<h2>Prepare this laboratory</h2>
+<p>Install a C23 compiler, CMake 3.26 or later and Ninja. A compiler translates C source into machine instructions. CMake describes the build; Ninja performs the required build steps. Install a matching Umicom Framework SDK containing the finance component. An SDK supplies headers, libraries and package information; its compiler and architecture must match this example.</p>
+<p>In PowerShell, run each line separately and stop on errors:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\account-balances&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+&amp; &quot;.\build\btb-account-balances.exe&quot;</code></pre>
+<p>Use your actual SDK path. In Bash, run the same three CMake/CTest commands from the example folder with your native SDK prefix, then run <strong>./build/btb-account-balances</strong>. A package-not-found error points to the SDK installation or prefix. An unknown summary symbol requires a matching updated header and library. The expected report contains two GBP accounts, ledger 12000, available 9500 and reserved 2500 minor units.</p>
+<h2>A temporary object is a private draft</h2>
+<p>The helper add_account creates a local UmiBankingDepositAccount called candidate. The word local means its storage belongs to this function call. The initializer receives the candidate's address so it can fill the record. An address is a location in memory; C uses a pointer to refer to that location.</p>
+<p>The initializer first builds its own temporary record, validates it and copies it to the caller only after success. This prevents a partially updated account from becoming visible after a bad currency or balance.</p>
+<ol>
+<li>Read the UmiStatus returned by umi_banking_deposit_account_init.</li>
+<li>Follow the call to umi_banking_id_assign for each required identifier.</li>
+<li>Find the currency validation.</li>
+<li>Find the check that available_minor must not exceed ledger_minor.</li>
+<li>Find the final assignment to the output record.</li>
+</ol>
+<h2>Ledger, available and reserved</h2>
+<p>The ledger amount represents the recorded balance in this model. The available amount is the amount recorded as available by the account state. Reserved equals ledger minus available. For 10000 and 8500, the reservation is 1500. These numbers are an observation, not a complete payment policy.</p>
+<p>Negative balances are supported when their difference is representable. For example, ledger -100 and available -200 imply a reservation of 100. The implementation also prevents an overflowing subtraction.</p>
+<h2>Exercise</h2>
+<p>Change one account to ledger 100 and available 101. The initializer must refuse it. In the lab, the failed status stops insertion and prints Account refused. Do not “repair” the example by ignoring the status. Restore the valid values and explain which layer rejected the input and why the book was not given an invalid candidate.</p>
+<p>A UI can use the same status to show a field-level error while retaining the user's draft for correction.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/finance/banking/deposit_account.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="04-store-money-as-labelled-integer-units.html">Previous: Store money as labelled integer units</a> · <a href="06-own-a-bounded-account-book.html">Next: Understand ownership and capacity in an account book</a></p>
+</nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/banking-and-payments/05-create-a-validated-account-candidate.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

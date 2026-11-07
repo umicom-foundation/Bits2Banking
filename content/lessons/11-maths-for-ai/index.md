@@ -162,3 +162,7 @@ The introductory units explain calculations used later in the C23-based lessons.
 For a complete [native checkpoint and restart study route](../10-native-ai/native-checkpoint-and-resume-learning-path.md), continue from Unit 33 into the optional C23 laboratory.
 
 The [formula dictionary](../../courses/maths-for-ai/formulas.html) supplies further definitions. The classroom examples are illustrative mathematics, not investment advice or a source of real transaction statistics.
+
+## Connect vector length to a C implementation
+
+The [global gradient norm lesson](../umicom-development/76-measure-a-gradient-vector.md) leads into a small real-source client. Use the [Framework AI contract lab](../umicom-development/84-build-the-framework-ai-contract-lab.md) to predict the length of the vector (3, 4), then compare the returned length and scale. The lab measures a scale; it does not change the gradient array.

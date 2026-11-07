@@ -1,0 +1,49 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/language-comments-syntax-and-build-tools.html
+
+PURPOSE:
+Separate editing rules from compiler support
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate editing rules from compiler support | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate editing rules from compiler support</h1>
+<p>This module starts with a small command-line program and follows its calls into Umicom Framework. Each lesson includes the setup needed to begin independently. You will inspect real source while learning how document names, memory boundaries and editing capabilities fit together.</p>
+<p>A terminal is a window that runs written commands. PowerShell is one such terminal on Windows; Bash is common on Linux. A compiler translates C into a program your machine can run. CMake describes the build; Ninja performs the work. An SDK supplies the headers that describe a library and the compiled library files.</p>
+<p>Install a C23-capable compiler, CMake and Ninja. Install the Umicom Framework SDK containing the document and editor components. These steps assume Windows tools in C:\msys64\ucrt64\bin and SDK files in C:\umicom\installed\framework; replace those paths if your installation differs. No GTK window or broker connection is needed.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\framework-language-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\language-inspection.exe cpu.vhd app.zig CMakeLists.txt</code></pre>
+<p>On Linux, use the same lab from your checkout and your installed SDK:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/native/framework-language-inspection
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom/installed/framework&quot;
+cmake --build build
+./build/language-inspection cpu.vhd app.zig CMakeLists.txt</code></pre>
+<p>Stop if configure or build reports an error. The first output line should be <code>cpu.vhd: vhdl</code>, followed by its choice, comment style and matching filters. This program examines the name only; the named files need not exist. <a href="../../learning-c/index.html">Learning C</a> and <a href="../../learning-cmake/index.html">Learning CMake</a> provide longer setup explanations.</p>
+<h2>A language has independent capabilities</h2>
+<p>Recognising a filename, colouring text, toggling comments, compiling and debugging are different operations. An identifier helps connect them but does not implement them.</p>
+<p>The lab prints an identity, display name and line-comment profile. The installed editor can also load syntax descriptions. A project separately describes compiler and debugger commands.</p>
+<h2>Explore comment profiles</h2>
+<p>Run with cpu.vhd, app.zig, page.php and program.pas. VHDL uses a double-hyphen line prefix in the shared profile; Zig and PHP have double-slash profiles. Pascal has no shared line-comment profile here because syntax and compatibility depend on the selected dialect.</p>
+<p>A missing profile is an explicit result. An editor should not insert a C-style prefix into every unfamiliar language. Users can still edit text manually.</p>
+<h2>Read the lookup</h2>
+<p>In src/editor/comment_style.c, a table connects language IDs to prefixes. UmiEditorLineCommentStyleFind returns a borrowed immutable description on success. The lab handles UMI_STATUS_NOT_FOUND with a clear message rather than dereferencing an absent result.</p>
+<p>The prefix is only part of an editing operation. A command also needs selection bounds, indentation policy and an undo record. Those belong to document-editing services rather than another list inside each application.</p>
+<h2>Understand syntax descriptions</h2>
+<p>GtkSourceView uses language-description files for highlighting. Framework passes a language ID to that system. If an installed description is absent, the buffer may remain plain text. The <a href="https://gnome.pages.gitlab.gnome.org/gtksourceview/gtksourceview5/class.LanguageManager.html">GtkSourceView language manager documentation</a> describes lookup and search paths.</p>
+<h2>Plan a complete workflow</h2>
+<p>Make a checklist: filename recognition, explicit selection, highlighting, comment command, project template, build command, diagnostics and debugging. Record each separately.</p>
+<p>For VHDL, a simulator checks hardware behaviour. A synthesis tool translates supported designs towards hardware implementation. These are distinct from the C compiler that builds Studio. Adding the VHDL choice does not turn Studio into a synthesis tool.</p>
+<h2>Exercise</h2>
+<p>Explain why a coloured editor buffer can contain invalid code, and why valid source can remain uncoloured. Both answers follow from keeping the language layers separate.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-language-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="language-filter-categories-and-open-dialogs.html">Previous: Share file-opening categories between applications</a> · <a href="language-support-regression-and-source-map.html">Next: Trace language support from a command to an outcome</a></p>
+</nav><p><a href="../../../lessons/umicom-development/language-comments-syntax-and-build-tools.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

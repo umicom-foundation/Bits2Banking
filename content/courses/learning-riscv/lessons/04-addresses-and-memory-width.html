@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/04-addresses-and-memory-width.html
+
+PURPOSE:
+Explain the lesson: Read bytes and words at memory addresses.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read bytes and words at memory addresses | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="03-binary-and-instruction-traces.html">Previous lesson</a> · <a href="05-branches-and-counted-loops.html">Next lesson</a></nav>
+<h1>Read bytes and words at memory addresses</h1>
+<h2>Setup recap</h2>
+<p>Use paper and an editor. No emulator is needed for the trace. An address identifies a location in memory. A byte contains eight bits; a word's width depends on the operation being discussed.</p>
+<h2>A memory picture</h2>
+<pre><code class="language-text">address   byte in hexadecimal
+0x1000    0x34
+0x1001    0x12
+0x1002    0x00
+0x1003    0x00</code></pre>
+<p>For a little-endian interpretation of these four bytes, the least significant byte comes first. A 32-bit load gives 0x00001234. The same bytes viewed one at a time remain four separate values.</p>
+<h2>Distinguish three questions</h2>
+<p>What address is used? How many bytes are accessed? How is the loaded bit pattern extended into a register? A signed load and an unsigned load can produce different register values from the same high-bit-set byte.</p>
+<h2>Practical trace</h2>
+<ol>
+<li>Draw four adjacent boxes and label their addresses.</li>
+<li>Place the bytes shown above into the boxes.</li>
+<li>Write the result of reading only the byte at 0x1000.</li>
+<li>Write the little-endian four-byte value.</li>
+<li>Replace the first byte with 0xFF. Explain what changes before deciding whether it is signed.</li>
+</ol>
+<p>Expected original byte value is 0x34; expected original four-byte value is 0x1234.</p>
+<h2>Read a real boundary</h2>
+<p>Open Umicom Kernel's diagnostic entry Assembly. Identify which values are moved in registers before a service request. Do not assume every register value is a pointer: the service contract determines whether it means an address, length, selector or ordinary number.</p>
+<h2>Link to safer C</h2>
+<p>A pointer plus a length is a common way to describe a byte range. The length must describe valid storage. Seeing an address in a register does not prove the program owns that memory or may access it.</p>
+<h2>Troubleshooting</h2>
+<p>When a value looks reversed, inspect the individual bytes and the intended width before blaming arithmetic. When an access traps, inspect the target platform's alignment and memory-access rules; do not assume every board handles a misaligned access identically.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/programs/diagnostic/entry.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="03-binary-and-instruction-traces.html">Previous lesson</a> · <a href="05-branches-and-counted-loops.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/04-addresses-and-memory-width.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

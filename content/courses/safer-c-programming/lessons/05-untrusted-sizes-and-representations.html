@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/05-untrusted-sizes-and-representations.html
+
+PURPOSE:
+Explain the lesson: Check representations before crossing a platform boundary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check representations before crossing a platform boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-borrowed-streams-and-failure-boundaries.html">Previous lesson</a></nav>
+<h1>Check representations before crossing a platform boundary</h1>
+<h2>One value, several representations</h2>
+<p>An Android or iPhone screen calls a small C adapter in this lab. The screen represents its count as a signed integer; the shared activity model uses an unsigned count. Signed integers can represent negative values. Unsigned values cannot represent them in the same way.</p>
+<h2>Setup recap</h2>
+<p>The <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/activity-adapters/README.md">adapter lab</a> can be built as a host C project with the Framework base SDK. You do not need a phone to inspect its model checks. Actual mobile execution also needs the platform setup in the Android or iPhone course.</p>
+<h2>Reject before converting</h2>
+<p>Read <code>BtbActivityNext</code>. It checks for a negative input before converting to the unsigned model representation. Casting first would change a negative value into a large unsigned value and conceal why the input was invalid.</p>
+<pre><code class="language-text">signed input -&gt; reject negatives -&gt; call bounded model
+             -&gt; accept only valid result -&gt; return signed answer</code></pre>
+<p>The shared model permits counts from zero to one thousand and refuses another increment at the limit. The adapter uses a negative return to indicate refusal. It never returns a wrapped count as progress.</p>
+<h2>Lab</h2>
+<ol>
+<li>Trace inputs -1, 0, 999 and 1000 through the adapter.</li>
+<li>Predict outputs -1, 1, 1000 and -1.</li>
+<li>Inspect tests for the smallest and largest signed integers.</li>
+<li>Read the Android JNI wrapper's range check before its conversion to C <code>int</code>.</li>
+<li>Build and run the host adapter tests using the guide.</li>
+<li>Record mobile behaviour separately if you later run a device build.</li>
+</ol>
+<p>Host tests establish the adapter behaviour for that host build. They do not prove that a mobile library loads or that its method names match.</p>
+<h2>Troubleshooting</h2>
+<p>If a screen displays a negative progress count, it probably treated the error sentinel as a valid answer. Check the result before updating visible state. If the native function is never reached, investigate library loading or the binding name first; changing arithmetic will not repair a missing binding.</p>
+<h2>Exercise</h2>
+<p>Would changing the C model limit to a value larger than a signed mobile integer be just a UI adjustment? No. The boundary contract and tests would need review. The accepted range must be representable on both sides.</p>
+<h2>Connect to Framework</h2>
+<p>Keep the domain limit in the shared model. Each adapter checks its incoming representation and translates the outcome. Do not reproduce the entire progress rule independently in Kotlin, Swift and JavaScript.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/activity-adapters/bridge.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-borrowed-streams-and-failure-boundaries.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/05-untrusted-sizes-and-representations.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="06-two-fields-one-commit.html">Next: Replace two fields as one complete change</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

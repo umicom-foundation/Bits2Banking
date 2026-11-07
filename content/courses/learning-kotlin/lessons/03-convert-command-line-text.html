@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-kotlin/lessons/03-convert-command-line-text.html
+
+PURPOSE:
+Explain the lesson: Convert command-line text into checked values.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Convert command-line text into checked values | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-values-functions-and-checks.html">Previous lesson</a> · <a rel="next" href="04-test-valid-and-invalid-input.html">Next lesson</a></nav>
+<h1>Convert command-line text into checked values</h1>
+<h2>Text is not yet a number</h2>
+<p>A terminal passes arguments to a program as text. In <code>InputKt 4 1</code>, the two values arrive as strings. Before subtracting them, the program must answer two questions: do they represent integers, and are those integers allowed by the progress rule?</p>
+<p><code>remainingFromArguments</code> is an adapter: a small function that translates the terminal's representation into the model's inputs. It does not change the existing <code>remainingLessons</code> rule.</p>
+<h2>Setup recap</h2>
+<p>Install a JDK, the Kotlin command-line compiler, CMake and Ninja. In a new terminal run <code>java -version</code> and <code>kotlinc -version</code>. Choose your practice folder and follow the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/kotlin-first-program/README.md">complete lab commands</a>. Keep Progress.kt, Input.kt and InputChecks.kt together.</p>
+<h2>Read the conversion</h2>
+<pre><code class="language-kotlin">val total = arguments[0].toIntOrNull() ?: return null</code></pre>
+<p><code>val</code> declares a value that this function does not reassign. The array subscript selects the first argument. <code>toIntOrNull</code> attempts a decimal integer conversion. If conversion fails, it returns <code>null</code>, which means no integer result. The <code>?:</code> operator uses its right-hand expression only when the left side is null.</p>
+<p>An <code>Int?</code> return type allows either an integer or null. Zero is a real result; it must not mean failure.</p>
+<p>The function checks the array length before reading its elements. After conversion it calls the original model. That model rejects a negative total, a negative completed count, or completed greater than total.</p>
+<h2>Lab</h2>
+<ol>
+<li>Build the lab and run <code>java -cp build/progress-input.jar InputKt 4 1</code>. Expect Remaining lessons: 3.</li>
+<li>Run with <code>4 4</code>. Expect zero remaining.</li>
+<li>Run with <code>4 word</code>. Expect a usage message and nonzero exit status.</li>
+<li>Run with <code>4 5</code>. Conversion succeeds, but the model rejects the values.</li>
+<li>Read the status immediately: <code>$LASTEXITCODE</code> in PowerShell or <code>echo $?</code> in bash.</li>
+<li>Compare the parsing branch with the model-validation branch.</li>
+</ol>
+<p>A program has two output streams. Ordinary results go to standard output; diagnostic messages go to standard error. This example sends usage information to the latter.</p>
+<h2>Exercise and explanation</h2>
+<p>Why not return zero after invalid input? Zero also means a completed course. A separate null result prevents invalid input from looking successful.</p>
+<h2>Troubleshooting</h2>
+<p>A class-not-found error usually means the class path or entry-point name is wrong. This lab contains several entry points, so use the explicit class name shown above. Do not replace it with an assumed executable-jar command.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/kotlin-first-program/Input.kt">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-values-functions-and-checks.html">Previous lesson</a> · <a rel="next" href="04-test-valid-and-invalid-input.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-kotlin/03-convert-command-line-text.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

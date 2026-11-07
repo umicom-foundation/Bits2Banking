@@ -1,0 +1,58 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/24-trace-the-stack-with-a-table.html
+
+PURPOSE:
+Trace the evaluation stack with a table
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trace the evaluation stack with a table | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Trace the evaluation stack with a table</h1>
+<p>This module follows one small program from text to an inspectable instruction sequence. Each lesson defines its terms, shows a concrete operation and gives an exercise with an expected observation. Inspection describes the program; execution attempts its arithmetic. A compiler, an IDE and a teaching tool can all use the same library contracts.</p>
+<p>A terminal is a window in which commands are typed. A compiler translates source text into instructions; CMake describes a build and Ninja carries out its steps. Install Git and the MSYS2 UCRT64 GCC, CMake and Ninja packages if these tools are not available. The <a href="../../learning-build-systems/index.html">Learning Build Systems course</a> explains their roles in more depth.</p>
+<ol>
+<li>Keep the Umicom C and Bits2Banking checkouts beside each other in a folder you choose. The examples use C:\umicom. Replace that location consistently if yours differs.</li>
+<li>In the MSYS2 UCRT64 terminal, install the tools with the following command. Complete the package manager's normal update instructions first if it requests them.</li>
+</ol>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<ol>
+<li>Open PowerShell and build the small compiler. Run each line separately. If a command reports an error, stop and read it before continuing.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicom-c&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --preset windows-ucrt64-debug -DBUILD_TESTING=ON
+cmake --build --preset windows-ucrt64-debug --parallel 2
+ctest --preset windows-ucrt64-debug --output-on-failure --no-tests=error
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; inspect &quot;.\examples\inspection.uc&quot;</code></pre>
+<p>On Linux, install a C23-capable C compiler, CMake and Ninja with your distribution's package manager. From the umicom-c checkout use the native-debug preset:</p>
+<pre><code class="language-bash">cmake --preset native-debug -DBUILD_TESTING=ON
+cmake --build --preset native-debug --parallel 2
+ctest --preset native-debug --output-on-failure --no-tests=error
+./build/native-debug/bin/umicom-c inspect ./examples/inspection.uc</code></pre>
+<p>The inspection example should report 7 instructions, a peak stack of 3 values, 3 constants, 3 arithmetic operations and 71 encoded bytes. These are expected results to check on your machine. The language currently supports one integer-returning main function with arithmetic; it does not compile the full C language. If inspect is an unknown command, check that the binary was rebuilt from source containing umc_inspect. Keep any previous logs when investigating a failure.</p>
+<h2>A stack holds temporary values</h2>
+<p>A stack is a collection where the most recently added value is the first one removed. Here it holds temporary integers while an expression is evaluated. PUSH adds a value. A binary operation removes two values and puts their result back. NEGATE changes the top value. RETURN requires exactly one value.</p>
+<p>For the example, the stack can be followed without running a computer:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Instruction</th><th scope="col">Stack after the instruction</th><th scope="col">Depth</th></tr></thead><tbody><tr><td>PUSH 2</td><td>2</td><td>1</td></tr><tr><td>PUSH 3</td><td>2, 3</td><td>2</td></tr><tr><td>PUSH 4</td><td>2, 3, 4</td><td>3</td></tr><tr><td>MULTIPLY</td><td>2, 12</td><td>2</td></tr><tr><td>ADD</td><td>14</td><td>1</td></tr><tr><td>NEGATE</td><td>-14</td><td>1</td></tr><tr><td>RETURN</td><td>returns -14</td><td>1</td></tr></tbody></table></div>
+<p>Depth means the number of values currently present. Peak depth means the largest depth seen at any point. The final depth is one, while the peak is three. These answer different questions.</p>
+<h2>Read the shared implementation</h2>
+<ol>
+<li>Open src/vm.c and find inspect_program, below the preserved earlier validator.</li>
+<li>Find depth and peak. Both start at zero.</li>
+<li>Follow PUSH: the function checks the stack limit before increasing depth, then updates peak.</li>
+<li>Follow ADD, SUBTRACT, MULTIPLY and DIVIDE: each requires two values and reduces depth by one.</li>
+<li>Follow RETURN: it rejects an incorrect depth and any instructions after the return.</li>
+</ol>
+<p>The inspection walk does not need actual temporary integer values. It only needs how each operation changes the number of them. The execution function separately computes the values with overflow and division checks.</p>
+<h2>Try another expression</h2>
+<p>Trace (2 + 3) * 4. Its sequence pushes 2 and 3, adds them, pushes 4, multiplies and returns. The peak is two. Compare that with 2 + 3 * 4, whose peak is three. Count the operations carefully before checking your answer with inspect.</p>
+<p>A smaller peak does not by itself prove a program is faster. The inspector reports properties of this interpreter's instruction sequence, not processor cache use or elapsed time. If your table disagrees with the report, use disassemble on a compiled bytecode file to inspect the actual operation order.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../../umicom-c/src/vm.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="23-inspect-a-program-before-running-it.html">Previous: Inspect a program before running it</a> · <a href="25-distinguish-structure-from-arithmetic-safety.html">Next: Distinguish structure from arithmetic safety</a></p>
+</nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/24-trace-the-stack-with-a-table.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

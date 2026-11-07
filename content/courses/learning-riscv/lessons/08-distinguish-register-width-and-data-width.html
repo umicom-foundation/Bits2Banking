@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/08-distinguish-register-width-and-data-width.html
+
+PURPOSE:
+Explain the lesson: Distinguish register width and data width.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish register width and data width | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-read-an-instruction-contract.html">Previous lesson</a> · <a rel="next" href="09-understand-signed-and-unsigned-order.html">Next lesson</a></nav>
+<h1>Distinguish register width and data width</h1>
+<p>RV64 provides 64-bit integer registers. A program still needs to specify the meaning and size of values passed between functions.</p>
+<h2>Prepare</h2>
+<p>Read sequences.h and check.c. The header uses uint64_t for unsigned 64-bit values and int64_t for signed 64-bit values. size_t represents an object count or size and is checked to occupy eight bytes in this lab.</p>
+<p>A type is part of the agreement between C and Assembly.</p>
+<h2>Follow the array</h2>
+<p>Each data element occupies eight bytes. BtbSum64 loads eight bytes and advances its pointer by eight. Those choices must agree with the declaration.</p>
+<p>If the header described 32-bit elements while the Assembly still loaded eight bytes, one access could combine adjacent elements and the loop could read beyond the array.</p>
+<h2>Interpret the same bits</h2>
+<p>The all-one bit pattern represents the largest uint64_t value. Interpreted as a signed two's-complement 64-bit value, it represents -1.</p>
+<p>The bits alone do not choose signed or unsigned ordering. The selected instruction and interface contract do.</p>
+<h2>Exercise</h2>
+<p>Draw two adjacent eight-byte elements. Label their starting addresses A and A + 8. Mark the address after three elements.</p>
+<p>Next explain why a count of zero permits no loads, even if the address is null.</p>
+<h2>Check a build mismatch</h2>
+<p>The C harness contains a static assertion for size_t. A failed assertion is a compile-time indication that the selected data model does not match the lesson.</p>
+<p>Do not remove it to make another target compile. Choose the documented RV64 toolchain or deliberately design a separate interface for that target.</p>
+<p>This boundary discipline is also necessary when a Framework C API calls an architecture-specific optimization.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/sequences.h">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-read-an-instruction-contract.html">Previous lesson</a> · <a rel="next" href="09-understand-signed-and-unsigned-order.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/08-distinguish-register-width-and-data-width.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

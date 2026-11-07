@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/learning-module-regression-design.html
+
+PURPOSE:
+Test a learning module through observable outcomes
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test a learning module through observable outcomes | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Test a learning module through observable outcomes</h1>
+<p>A learning module is a collection of lessons and examples that an application can read. This module follows the same C services used by Umicom Studio IDE. A manifest is the small JSON document that identifies the collection and records which files belong to it. JSON is a text format made of named values, lists and objects.</p>
+<h2>Prepare for this lesson</h2>
+<ol>
+<li>Open PowerShell on Windows, or a terminal on Linux. A terminal runs the commands you type; PowerShell and Bash are two command interpreters.</li>
+<li>Choose a practice directory that you can find again. Keep the original course files unchanged.</li>
+<li>Locate your built <code>umicom</code> program. The examples use <code>C:\umicom\Umicom-Applications\build\windows-ucrt64-all-debug\bin\umicom.exe</code>. Use the corresponding path on your computer.</li>
+<li>Run <code>umicom learning-pack --help</code> using the full executable path if it is not on PATH. If the command is unavailable, your executable predates this feature; rebuild it before continuing.</li>
+</ol>
+<p>The exercises use a content pack compatible with reader version <code>0.9.0</code>. A host version identifies the application reading the pack. Check your product and manifest compatibility before substituting another version. Nothing in these lessons requires a remote marketplace or an account.</p>
+<h2>Decide what must remain true</h2>
+<p>A regression test detects a behaviour that changes unexpectedly after an edit. For authoring, important outcomes include refusing an existing output, preserving the old manifest, detecting missing resources and accepting a complete reviewed revision. Checking only that a function was called does not prove these outcomes.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Situation</th><th scope="col">Required observation</th></tr></thead><tbody><tr><td>One lesson changes</td><td>Old manifest verification fails</td></tr><tr><td>Candidate is prepared</td><td>Revision increases and new bytes verify</td></tr><tr><td>Candidate already exists</td><td>Existing candidate bytes remain unchanged</td></tr><tr><td>Resource is missing</td><td>No candidate is published</td></tr><tr><td>Output uses a parent-directory path</td><td>Operation refuses it</td></tr><tr><td>Revision reaches its maximum</td><td>It never wraps to an older value</td></tr></tbody></table></div>
+<h2>Read the test structure</h2>
+<ol>
+<li>Open <code>tests/learning_pack/authoring_fixture.h</code>. A fixture is a known starting set of data used by a test. This one writes resources into an isolated test directory.</li>
+<li>Read <code>test_authoring_cli.c</code>. It calls the actual command adapter, including argument handling.</li>
+<li>Find the comparison of original manifest bytes at the end. That comparison protects a promise made to users.</li>
+<li>Read <code>test_authoring.c</code> for binary, empty and changed resources. Binary means arbitrary bytes, which may contain zero values; <code>strlen</code> cannot measure such data.</li>
+</ol>
+<h2>Qualification commands</h2>
+<p>After configuring the owning build, build the authoring test targets and run their registered CTest cases. From an Applications checkout:</p>
+<pre><code class="language-powershell">cmake --build --preset windows-ucrt64-all-debug --target umicom-learning-pack-authoring-test umicom-learning-pack-authoring-cli-test
+ctest --preset windows-ucrt64-all-debug -R &quot;^framework[.]learning_pack[.]authoring[.]&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Expected result is that every selected case passes. This expectation is not evidence of an executed run. Save the actual output, source revision and compiler identity when you run it. If no tests are found, stop and check the configure preset and <code>BUILD_TESTING</code> setting.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/learning_pack/test_authoring_cli.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="learning-module-copy-example-safely.html">Previous: Copy an example into a learner-chosen file</a> · <a href="learning-module-publication-and-limits.html">Next: Review content, accessibility and publication separately</a></p>
+</nav><p><a href="../../../lessons/umicom-development/learning-module-regression-design.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,60 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/04-test-the-whole-editing-session.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Test the model and the whole editing session | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Test the model and the whole editing session</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="03-undo-and-save-to-a-chosen-path.html">Previous: Undo and save to a chosen path</a></p></nav><h2>Two kinds of evidence</h2>
+<p>A model test calls editing functions directly. A session test starts the actual editor program and sends commands through its input. Both are useful: a correct model can still be unreachable through a broken command parser.</p>
+<h2>Setup recap</h2>
+<p>Use <a href="../index.html">the course setup</a> to build with BUILD_TESTING=ON. Read test_editor.c and check_session.cmake before running ctest. The expected results below describe the checks; they are not evidence that your local build has passed.</p>
+<h2>Model checks</h2>
+<p>The C tests exercise:</p>
+<ol>
+<li>Inserting at the middle and at full capacity.</li>
+<li>Copying text from within the editor's own buffer.</li>
+<li>Erasing and undoing.</li>
+<li>Rejecting invalid positions without changing text or history.</li>
+<li>Handling empty operations and missing undo state.</li>
+</ol>
+<p>The CHECK helper reports a failed condition and returns a failure result. It remains active in builds where the standard assert macro might be disabled.</p>
+<h2>Session checks</h2>
+<p>The CMake check creates a unique directory under the build tree. It sends this meaningful sequence to the executable:</p>
+<pre><code class="language-text">append ac
+insert 1 b
+erase 1 1
+undo
+show
+save [a new path chosen by the check]
+quit</code></pre>
+<p>It checks the process exit, the displayed abc and the file's exact contents. A second session attempts to overwrite that file and must fail while leaving abc intact. Another session uses a negative position and must preserve its text.</p>
+<p>The check uses separate temporary input and output files. It retains these files for investigation instead of erasing evidence after a failure.</p>
+<h2>Read a failure systematically</h2>
+<ol>
+<li>Find the failed test name.</li>
+<li>Read its command output.</li>
+<li>Determine whether configuration, compilation, launching, a model check or file comparison failed.</li>
+<li>Reproduce the smallest relevant input.</li>
+<li>Fix the implementation and rerun the affected check.</li>
+</ol>
+<p>A timeout says the process did not complete within the limit. It is not equivalent to a successful test with no output.</p>
+<h2>Exercise</h2>
+<p>Add a practice check for an empty undo. Predict BTB_EDIT_NO_UNDO and an unchanged empty document. Then add a second check showing that an invalid edit does not consume a previously valid undo state.</p>
+<p>Worked reasoning: history belongs to successful edits. If a rejected edit consumed history, an error would unexpectedly prevent recovery from earlier work.</p>
+<h2>Plan the next project stage</h2>
+<p>Opening an existing file, Unicode selection and multiple undo levels need new contracts and tests. A graphical frontend also needs interaction checks for focus, keyboard input and window lifetime. None of those behaviours is established by these console tests.</p>
+<h2>Connect to Umicom Studio</h2>
+<p>Use the same evidence distinction when reviewing Studio: source compilation, document model tests and native menu/editor interaction are different checks. Shared production behaviour belongs in Framework; application tests must also show that the interface reaches it.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/text-editor/check_session.cmake</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="03-undo-and-save-to-a-chosen-path.html">Previous: Undo and save to a chosen path</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

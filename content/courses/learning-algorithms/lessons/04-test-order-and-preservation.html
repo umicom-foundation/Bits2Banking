@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-algorithms/lessons/04-test-order-and-preservation.html
+
+PURPOSE:
+Explain the lesson: Test sorting without trusting another sort.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test sorting without trusting another sort | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a rel="prev" href="03-binary-search-and-preconditions.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="05-choose-search-for-a-workload.html">Next lesson</a></nav>
+<h1>Test sorting without trusting another sort</h1>
+<h2>A sorted answer can still be wrong</h2>
+<p>Sorting should put values in order without losing or inventing them. A program that returns only zeros produces a nondecreasing sequence, but it has not correctly sorted most inputs. We need to check both order and preservation.</p>
+<h2>Setup recap</h2>
+<p>Use the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/collections/README.md">collections lab guide</a> to prepare the C23 tools and build the example. An array holds values in numbered positions. A test oracle is the rule used to decide whether an observed answer is correct.</p>
+<h2>Two independent properties</h2>
+<p>First, compare each neighbouring pair: the left value must be less than or equal to the right value. Second, count how often each value occurred before and after. Both counts must agree.</p>
+<pre><code class="language-text">input:  2, 7, 2, 9
+output: 2, 2, 7, 9
+
+value     input occurrences    output occurrences
+2                 2                    2
+7                 1                    1
+9                 1                    1</code></pre>
+<p>This checks a property of the result without calling a second copy of the same sorting algorithm.</p>
+<p>The existing test enumerates four-element inputs using -1, 0 and 1. There are 3 × 3 × 3 × 3 = 81 combinations. This includes duplicates and different orders. It is exhaustive for that small domain, not for every integer list.</p>
+<h2>Lab</h2>
+<ol>
+<li>Locate the frequency-count check in <code>test_collections.c</code>.</li>
+<li>Explain how it would detect output <code>-1,0,0,1</code> for input <code>-1,-1,0,1</code>.</li>
+<li>Check whether an empty list is accepted.</li>
+<li>Build and run the tests.</li>
+<li>In a separate exercise copy, deliberately replace one sorted value with another value.</li>
+<li>Confirm the preservation check catches the change, then restore the exercise copy.</li>
+</ol>
+<p>A deliberate fault is useful only if the test is expected to reject it. Never leave the fault in the original lab.</p>
+<h2>Why several checks help</h2>
+<p>Comparison with linear search checks the binary-search result after sorting. It does not replace the sort's order and frequency properties. Each check answers a specific question.</p>
+<h2>Troubleshooting</h2>
+<p>If a test is occasionally different, inspect whether the input generator uses randomness. This lab's finite enumeration should be repeatable. If a failure is hard to understand, print the input, output and failing property in a temporary exercise diagnostic.</p>
+<h2>Next connection</h2>
+<p>A Framework transformation may reorder documents, trades or queued jobs. Its tests should define what may change and what must be preserved. An apparently tidy display is not enough evidence of correctness.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/collections/test_collections.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a rel="prev" href="03-binary-search-and-preconditions.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="05-choose-search-for-a-workload.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-algorithms/04-test-order-and-preservation.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

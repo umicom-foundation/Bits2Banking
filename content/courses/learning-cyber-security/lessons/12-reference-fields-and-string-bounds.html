@@ -1,0 +1,40 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/12-reference-fields-and-string-bounds.html
+
+PURPOSE:
+Keep credential references inside their buffers
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep credential references inside their buffers | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep credential references inside their buffers</h1>
+<p>An identity names a person or service. Authentication establishes who is requesting access; authorization decides which action that identity may perform. A session lets a program associate later requests with an earlier authentication result. This module follows these ideas using synthetic local records and the existing Umicom Framework C interfaces.</p>
+<p>Open <code>labs/framework/identity-lifecycle/README.md</code> in the Bits2Banking checkout. It contains complete PowerShell and Bash configure, build, run and test commands. Start in that lab directory, use <code>cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/framework-sdk -DBUILD_TESTING=ON</code>, then <code>cmake --build build</code> and <code>ctest --test-dir build --output-on-failure --no-tests=error</code>. The SDK path names your installed Framework. Stop on the first command error. The executable is <code>build/btb-identity-lifecycle.exe</code> on Windows and <code>build/btb-identity-lifecycle</code> on Unix-like systems. The lab creates no accounts or network connections.</p>
+<h2>Bytes and text</h2>
+<p>A C character array has a fixed number of bytes. A C string uses a zero byte, written <code>'\0'</code>, to mark its end. An array can contain nonzero bytes in every position; that array is not a complete C string.</p>
+<p>The credential record has four arrays: credential ID, principal ID, provider ID and secret reference. The reference describes where a separate provider would look up a secret. Do not put the password itself in that field.</p>
+<h2>Follow the boundary check</h2>
+<p>The Framework checks that a field is non-empty and finds a terminator before reaching its capacity. It performs this check before looking for duplicate IDs or storing the record. Checking only the first byte would accept an unterminated array and leave later string operations without a safe stopping point.</p>
+<p>In the lab:</p>
+<ol>
+<li>Copy the valid reference to <code>malformed</code>.</li>
+<li>Fill its complete <code>secret_reference</code> array with <code>'x'</code> using <code>memset</code>.</li>
+<li>Register it and require <code>UMI_STATUS_INVALID_ARGUMENT</code>.</li>
+<li>Check the registry count remains one.</li>
+</ol>
+<p><code>sizeof malformed.secret_reference</code> obtains the array's byte capacity. It does not measure how many characters were typed. The failure must preserve the existing registry.</p>
+<h2>Try the accepted boundary</h2>
+<p>Make a separate reference with exactly capacity minus one text bytes and a final zero byte. Give it a distinct valid ID. Registration should accept the complete fields if other constraints are satisfied. Use synthetic data and never print real secret references into shared logs.</p>
+<h2>Readable memory still matters</h2>
+<p>A length check cannot make an arbitrary pointer safe. The caller must provide readable storage. For a malformed lookup test, supply the whole declared identifier-capacity array, not a pointer to a smaller unterminated allocation.</p>
+<h2>Review question</h2>
+<p>Would truncating two different long IDs into the same shorter string preserve their identity? It would not. Reject values that cannot fit the contract instead of silently changing the key. Read the Framework regression file <code>tests/security/test_credential_boundaries.c</code> to compare empty, maximum, unterminated and duplicate cases.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/security/credential.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="11-read-an-identity-lifecycle.html">Previous: Read an identity lifecycle from start to finish</a> · <a href="13-issue-and-observe-a-session.html">Next: Issue and observe a session without exposing its handle</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-cyber-security/12-reference-fields-and-string-bounds.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

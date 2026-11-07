@@ -1,0 +1,49 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/06-parallel-jobs.html
+
+PURPOSE:
+Run independent build jobs in parallel
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Run independent build jobs in parallel | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Run independent build jobs in parallel</h1>
+<p>A build system records how source files become programs and when work must be repeated. This course begins with a small existing Notes library and follows dependencies, generated configuration, tests and evidence into the shared Umicom build architecture.</p>
+<h2>Start here</h2>
+<p>A terminal is a window that accepts commands. A directory is a folder. This course uses a small teaching project in the Bits2Banking checkout; it does not rebuild the complete Framework. You need a C23 compiler, CMake 3.26 or newer, and Ninja. On Windows, open the installed MSYS2 UCRT64 terminal and install the packages below if they are missing:</p>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Close that terminal and open PowerShell. Adjust the checkout path if yours is elsewhere:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S &quot;labs/native/build-dependency-graph&quot; -B &quot;build/dependency-graph&quot; -G Ninja -DBUILD_TESTING=ON
+cmake --build &quot;build/dependency-graph&quot; --parallel 2
+ctest --test-dir &quot;build/dependency-graph&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Run each command separately and stop if it reports an error. For a Linux Bash terminal with GCC, CMake and Ninja installed, change to the Bits2Banking checkout with <code>cd</code>, then use the same three <code>cmake</code>/<code>ctest</code> commands. These are learner exercises; the guide does not assert that a particular machine has passed them. See <a href="../../learning-cmake/index.html">Learning CMake</a> for a longer setup and command walkthrough.</p>
+<p>Package names can be checked in the official <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-gcc">MSYS2 GCC</a>, <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-cmake">CMake</a> and <a href="https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-ninja">Ninja</a> listings.</p>
+<h2>Jobs and dependencies</h2>
+<p>A job is one unit of build work, such as compiling a source file. Two jobs can run together if neither needs the other's output. A link must wait for its required objects. Increasing parallelism does not remove this ordering.</p>
+<h2>Read before tuning</h2>
+<ol>
+<li>Count independent source compilations in the lab. The preview, capacity and Notes implementation can often compile concurrently.</li>
+<li>Find the two executable link steps. Each needs its own object and the library.</li>
+<li>Build with <code>--parallel 2</code>. This limits the number of concurrent jobs requested by CMake from the build driver.</li>
+<li>Compare a later build with a larger value only when the machine has enough memory and you are measuring real work. A no-op build cannot tell you how quickly compilation scales.</li>
+<li>Record elapsed time, peak memory if available, and the number of jobs. Do not compare different source revisions as if they were the same experiment.</li>
+</ol>
+<h2>Why more is sometimes slower</h2>
+<p>Compilers use memory, CPU time and storage bandwidth. If too many run at once, the operating system may move memory pages to disk or jobs may compete for the same resource. A large link can also dominate the total even when compilation is fast.</p>
+<p>A <strong>race</strong> occurs when work depends on timing that has not been made explicit. Two jobs writing the same generated file are an example. Parallel execution often reveals such bugs; forcing one job may only conceal them.</p>
+<h2>Build concurrency and test concurrency</h2>
+<p>Building with several jobs and running several tests together are separate decisions. A GUI test, a test using a shared port, or a test writing one fixture may require isolation. A test is not safe to run concurrently merely because its source compiled in parallel.</p>
+<h2>Lab extension</h2>
+<p>Sketch a third consumer that needs only the Notes header and library. Explain which edges must be added. Do not create another implementation of <code>UmicomNoteSet</code>. In Umicom, shared services belong in Framework and application targets declare their dependency on those services.</p>
+<p>For an unexpected parallel-only failure, preserve the first failing command and inspect shared outputs before changing scheduling. Repeat measurements only after the dependency model is understood.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/build-dependency-graph/CMakeLists.txt">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="05-generated-configuration.html">Previous: Give generated configuration one owner</a> · <a href="07-test-selection.html">Next: Separate failed-test retries from affected-test selection</a></p>
+</nav><p><a href="../../../lessons/05-engineering/learning-build-systems/06-parallel-jobs.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

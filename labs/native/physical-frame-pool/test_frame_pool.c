@@ -1,4 +1,17 @@
-/* Bits2Banking physical frame ownership regression tests, C23. */
+/*-----------------------------------------------------------------------------
+ * Bits2Banking
+ * File: labs/native/physical-frame-pool/test_frame_pool.c
+ *
+ * PURPOSE:
+ *   Verify C23 physical frame ownership and refusal-atomic initialization.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
 #include "frame_pool.h"
 #include <stdio.h>
 #include <string.h>
@@ -12,7 +25,19 @@ int main(void)
     CHECK(pool.reservedCount == 8U && pool.ownedCount == 0U);
     CHECK(BtbFramePoolReserve(&pool, 12U, 4U) == BTB_FRAME_OK);
     CHECK(pool.reservedCount == 12U);
+    /* Preserve the former value snapshot for review. Byte-for-byte refusal
+     * checks now copy the complete representation, including padding. */
+#if 0
     BtbFramePool old = pool;
+#endif
+    BtbFramePool old;
+    memcpy(&old, &pool, sizeof old);
+    /* Snapshot bytes directly: structure assignment need not preserve padding
+     * bytes. The rejected call must not alter any byte in existing storage. */
+    unsigned char beforeZero[sizeof pool];
+    memcpy(beforeZero, &pool, sizeof pool);
+    CHECK(BtbFramePoolInit(&pool, UINT64_C(0)) == BTB_FRAME_INVALID);
+    CHECK(memcmp(beforeZero, &pool, sizeof pool) == 0);
     CHECK(BtbFramePoolReserve(&pool, 10U, 4U) == BTB_FRAME_NOT_AVAILABLE);
     CHECK(memcmp(&old, &pool, sizeof old) == 0);
     CHECK(BtbFramePoolReserve(&pool, 127U, 2U) == BTB_FRAME_INVALID);

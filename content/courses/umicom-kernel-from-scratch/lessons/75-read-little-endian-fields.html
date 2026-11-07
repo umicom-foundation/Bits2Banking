@@ -1,0 +1,50 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/75-read-little-endian-fields.html
+
+PURPOSE:
+Read little-endian fields without alignment assumptions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read little-endian fields without alignment assumptions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read little-endian fields without alignment assumptions</h1>
+<p>This lesson explains one boundary between startup software and a kernel. It begins with a small hosted C program, uses synthetic addresses, and links the real Umicom Kernel reader. No previous operating-system course is required.</p>
+<h2>Prepare a small host laboratory</h2>
+<p>A terminal accepts commands as text. A compiler translates C into machine instructions. CMake describes which files form a program; Ninja executes the build steps. Use a C23-capable GCC, CMake 3.24 or later and Ninja. On Windows these commands use an existing MSYS2 UCRT64 installation. Open PowerShell, enter one command at a time, and stop if it fails. Replace the checkout paths if yours differ. No boot disk or administrator access is needed.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/native/boot-handoff -B build/boot-handoff -G Ninja -DUMICOM_KERNEL_SOURCE=C:/umicom/umicom-kernel
+cmake --build build/boot-handoff --parallel 2
+&amp; .\build\boot-handoff\boot-handoff.exe
+ctest --test-dir build/boot-handoff --output-on-failure --no-tests=error</code></pre>
+<p>On Linux, open a Bash terminal and use these equivalent paths:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking
+cmake -S labs/native/boot-handoff -B build/boot-handoff -G Ninja -DUMICOM_KERNEL_SOURCE=&quot;$HOME/umicom/umicom-kernel&quot;
+cmake --build build/boot-handoff --parallel 2
+./build/boot-handoff/boot-handoff
+ctest --test-dir build/boot-handoff --output-on-failure --no-tests=error</code></pre>
+<p>The expected messages begin with <code>Accepted:</code> and <code>Refused:</code>. The latter confirms a deliberate invalid-input exercise. A nonzero exit code indicates the expected result was not obtained. If CMake cannot find the reader, check <code>UMICOM_KERNEL_SOURCE</code>; if a compiler option is unsupported, check the compiler version. These host checks do not establish that a kernel can boot.</p>
+<h2>Bytes and numbers</h2>
+<p>A byte has eight bits and can represent a value from 0 through 255. A larger integer uses several bytes. Endianness describes their order. Little endian stores the least significant byte first. The two bytes 0x40 and 0x00 represent 64 in this format.</p>
+<p>The wire format is a sequence of specified bytes. A C structure has a layout chosen by the compiler, including possible padding between members. Directly casting incoming bytes to a structure would assume its layout and alignment match the producer. Alignment is a requirement that some objects begin at particular address multiples.</p>
+<h2>Follow the reader</h2>
+<ol>
+<li>Find Read16 in kernel/boot_handoff.c.</li>
+<li>It reads p[0] and p[1] separately, shifts the second byte left eight bits and combines them with bitwise OR.</li>
+<li>Read32 repeats the idea for four bytes. Read64 combines two four-byte values after widening the upper half to 64 bits.</li>
+<li>The laboratory Put helper reverses the process when creating a fixture.</li>
+<li>In the regression file, find the unaligned case. It moves a complete record one byte into a larger array and still expects acceptance.</li>
+</ol>
+<h2>Exercise</h2>
+<p>Calculate the bytes representing version 1 and header size 64. They are 01 00 and 40 00. Change only the version bytes to 02 00 in a scratch copy of the lab and rebuild. The reader must refuse the unsupported version. Restore 1 afterwards.</p>
+<h2>Why this matters</h2>
+<p>A byte-wise reader is usable even when a record begins at an address unsuitable for a multi-byte integer load. This does not make an arbitrary address accessible: the caller still supplies a real buffer. If a test crashes before reporting refusal, inspect buffer allocation and the supplied length first. Endianness handling cannot repair an invalid pointer.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/boot_handoff.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="74-describe-the-startup-handoff.html">Previous: Describe the startup handoff</a> · <a href="76-bound-counts-before-reading-sections.html">Next: Bound counts before reading sections</a></p>
+</nav><p><a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/75-read-little-endian-fields.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

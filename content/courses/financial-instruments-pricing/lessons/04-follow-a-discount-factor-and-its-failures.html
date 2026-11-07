@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/financial-instruments-pricing/lessons/04-follow-a-discount-factor-and-its-failures.html
+
+PURPOSE:
+  Present "Follow a discount factor and its failure paths" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow a discount factor and its failure paths | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Follow a discount factor and its failure paths</h1>
+<p>A pricing function needs a clearly stated model as well as correct arithmetic. This lab reads Framework's small discount calculation, checks a result we can predict exactly and follows its handling of invalid or non-finite values.</p>
+<p>Source to open: <code>Umicom-Applications/framework/src/finance/quant/discount_curve.c</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath '..\Umicom-Applications\framework\src\finance\quant\discount_curve.c'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' '../Umicom-Applications/framework/src/finance/quant/discount_curve.c'</code></pre>
+<h2>Understand the idea</h2>
+<p>A future amount is money associated with a later time. In the model used by this function, the discount factor is exp(-r × d / 365), where r is a continuously compounded annual rate written as a decimal and d is a number of days. exp is the exponential function. Present value is future amount multiplied by the factor. These assumptions are part of the calculation: another day-count convention or compounding rule changes the model. This exercise teaches the inspected function, not instrument-specific market quotation rules.</p>
+<pre><code class="language-text">rate and days -&gt; checked exponent -&gt; finite factor -&gt; amount × factor
+                                                           |
+                                                finite result -&gt; output
+Model: factor = exp(-rate × days / 365)</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Locate the argument checks and the expression that computes the exponent. Write units next to each input: decimal annual rate, days and amount. A rate of 0.05 means five percent; 5 would mean a very different rate.</li><li>Choose an amount of 100, rate zero and 365 days. The exponent is zero, exp(0) is one, and the expected present value is 100. Repeat with zero days and a finite rate; explain the same factor.</li><li>Trace a negative days argument to its rejection path. Then find the finite-value checks after the exponent, exponential and amount multiplication. Identify where the final output is written and whether each failure occurs before that point.</li><li>Create a case table with ordinary success, zero time, negative days, non-finite input and an extreme finite calculation that cannot be represented. Use an unchanged output sentinel for rejected cases. Do not assume one exact floating-point status without reading the relevant branch.</li></ol>
+<h2>Expected result</h2>
+<p>The exact zero-rate and zero-time examples give a factor of one. Rejected inputs or non-finite results should follow the documented status path without publishing an invalid value. The inspected finite check does not by itself reject every underflow to zero, so representational limits remain part of the model review.</p>
+<h2>If the result differs</h2>
+<p>If results differ by a large factor, check rate units and day-count assumptions first. For small differences, inspect precision and the chosen tolerance. Do not adjust an expected number until a failing test passes without explaining the model and numeric error.</p>
+<h2>Explain it yourself</h2>
+<p>Why is a zero-rate case useful before trying a realistic-looking market example?</p>
+<details><summary>Worked explanation</summary><p>It gives a simple independently predictable result. If a zero-rate factor is not one, the problem is not hidden in a difficult market convention. More complex examples can then test the stated assumptions and numerical behaviour.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="03-framework-pricing-and-evidence.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>

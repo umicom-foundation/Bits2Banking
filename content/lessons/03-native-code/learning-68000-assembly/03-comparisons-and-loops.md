@@ -51,3 +51,5 @@ Continue with the existing [Learning C boundary exercise](../../../courses/learn
 Reference: [Motorola programmer's manual, ADDQ, CMP and Bcc](https://www.nxp.com/docs/en/reference-manual/M68000PRM.pdf). The loop and trace are original teaching examples.
 
 Sammy Hegab · Umicom Foundation · MIT for original teaching material.
+
+[Next: Draw registers before writing memory](04-draw-registers-before-writing-memory.md)

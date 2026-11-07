@@ -1,0 +1,70 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/terminal-assembly-lab.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab: build C and Assembly together | Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../course-series.html"><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="lab-build-c-and-assembly-together">Lab: build C and Assembly together</h1>
+<p>A processor executes machine instructions. Assembly gives readable names to those instructions. C and Assembly can cooperate when they agree how arguments and results move between functions. That agreement is a calling convention, part of an application binary interface (ABI).</p>
+<h2 id="setup-recap">Setup recap</h2>
+<p>This lab uses the existing Umicom x86-64 addition example. It requires an x86-64 Windows or Linux computer and GCC. You do not need an IDE. Install GCC, CMake, Ninja and GDB using <a href="terminal-lab.html">the terminal setup lab</a>, confirm <code>gcc --version</code>, and obtain a local Bits2Banking checkout or downloaded source archive. Choose your own practice folder.</p>
+<h2 id="create-working-files-from-the-real-example">1. Create working files from the real example</h2>
+<p>These commands assume the checkout is <code>C:\umicom\Umicom-Bits2Banking</code> on Windows or <code>$HOME/umicom/Umicom-Bits2Banking</code> on Linux. Change that source path if yours differs. Use a new practice folder; do not overwrite work there.</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+New-Item -ItemType Directory -Path 'C:\umicom-learning\assembly-call'
+Set-Location 'C:\umicom-learning\assembly-call'
+Get-Content 'C:\umicom\Umicom-Bits2Banking\labs\native\assembly-functions\main.c' -Raw | Set-Content -Encoding ascii main.c
+Get-Content 'C:\umicom\Umicom-Bits2Banking\labs\native\assembly-functions\add_x86_64.S' -Raw | Set-Content -Encoding ascii add_x86_64.S
+Get-Content add_x86_64.S
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom-learning/assembly-call&quot;
+cd &quot;$HOME/umicom-learning/assembly-call&quot;
+cp &quot;$HOME/umicom/Umicom-Bits2Banking/labs/native/assembly-functions/main.c&quot; .
+cp &quot;$HOME/umicom/Umicom-Bits2Banking/labs/native/assembly-functions/add_x86_64.S&quot; .
+cat add_x86_64.S
+</code></pre>
+<p>You have created a <code>.c</code> source and a <code>.S</code> source in your own folder. The uppercase <code>.S</code> tells GCC to run its preprocessor before assembling, allowing the file to select the host's calling convention.</p>
+<h2 id="trace-one-call">2. Trace one call</h2>
+<p>The C declaration is <code>extern uint32_t AddTwoAssembly(uint32_t left, uint32_t right);</code>. A declaration describes a function without providing its body. <code>uint32_t</code> is an unsigned 32-bit integer type. The body resides in the Assembly file.</p>
+<p>On Windows x64, this function receives the first two integer arguments in the <code>ECX</code> and <code>EDX</code> registers. On Linux x86-64 using the System V ABI, they arrive in <code>EDI</code> and <code>ESI</code>. Registers are small named storage locations in the processor. Both variants place the result in <code>EAX</code>.</p>
+<pre><code class="language-text">C caller with (27, 15)
+  -&gt; argument registers
+  -&gt; movl: copy first argument to EAX
+  -&gt; addl: add second argument to EAX
+  -&gt; ret: return to the caller
+  -&gt; C receives 42
+</code></pre>
+<p>GNU Assembly notation here writes source before destination: <code>movl %ecx, %eax</code> copies ECX into EAX. <code>addl %edx, %eax</code> adds EDX to EAX. The <code>l</code> suffix selects a 32-bit operation. <code>.globl AddTwoAssembly</code> makes the symbol available for linking. <code>ret</code> returns using the return address established by the call.</p>
+<h2 id="compile-assemble-and-link">3. Compile, assemble and link</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -g main.c add_x86_64.S -o assembly-call.exe
+.\assembly-call.exe
+$LASTEXITCODE
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">gcc -std=c23 -Wall -Wextra -g main.c add_x86_64.S -o assembly-call
+./assembly-call
+echo $?
+</code></pre>
+<p>Stop if compilation fails. Expected output includes <code>Payment IDs 27 and 15 combine to 42.</code> and <code>C and Assembly agree on 100 value pairs.</code> These are arithmetic labels in a teaching program, not a payment operation. The C program compares ten possible left values with ten right values, including unsigned wraparound boundaries.</p>
+<h2 id="investigate-linking">4. Investigate linking</h2>
+<p>In a separate output attempt, omit <code>add_x86_64.S</code> from the compiler command. The linker should report an unresolved <code>AddTwoAssembly</code> reference. The declaration told the C compiler how a call looks; it did not provide the implementation. Add the Assembly source back and rebuild.</p>
+<h2 id="exercise-and-answer">Exercise and answer</h2>
+<p>For inputs 7 and 25, the result is 32. Trace the two register operations before running. For the largest unsigned 32-bit value plus one, the low 32 bits are zero; the existing test checks this wraparound deliberately. Do not generalise that result to signed C overflow, which has different rules.</p>
+<p>Read <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/assembly-functions/README.md">the complete example</a> for CMake registration and the separate RISC-V implementation. A host x86-64 run validates this host path only.</p>
+<p><a href="index.html">Course contents</a> · <a href="terminal-to-visual-studio.html">Next: use an IDE</a></p>
+
+<nav aria-label="Course navigation"><a href="index.html">Course contents</a> · <a href="../course-series.html">Subject guide</a></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-html/lessons/10-relative-resources-and-http.html
+
+PURPOSE:
+Explain the lesson: Resolve relative resources over HTTP.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resolve relative resources over HTTP | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-status-messages-and-page-language.html">Previous lesson</a></nav>
+<h1>Resolve relative resources over HTTP</h1>
+<h2>Prepare the server</h2>
+<p>Build the browser activity example using its README. From the Bits2Banking checkout, an already-installed PHP interpreter can serve this folder:</p>
+<pre><code class="language-powershell">php -S 127.0.0.1:8088 -t labs/web/framework-activity</code></pre>
+<p>Open <code>http://127.0.0.1:8088/</code>. The same command works in Bash. Stop the server with Ctrl+C. This is a local learning server, not a public deployment recipe.</p>
+<p>A <strong>relative URL</strong> is resolved against the current document or module's location. The page loads <code>./page.js</code>; that module imports <code>./activity.js</code>.</p>
+<h2>Follow a request</h2>
+<ol>
+<li>Inspect the page's script element.</li>
+<li>Find <code>type=&quot;module&quot;</code>.</li>
+<li>Open the browser Network panel.</li>
+<li>Reload and locate the JavaScript and WebAssembly requests.</li>
+<li>Check their status and response type.</li>
+</ol>
+<p>A server can return an HTML error page under a filename ending in <code>.js</code>. The spelling alone does not make the content executable JavaScript.</p>
+<h2>Exercise</h2>
+<p>Draw a folder containing <code>index.html</code>, <code>page.js</code>, generated <code>activity.js</code> and its generated WebAssembly companion. Label which files are authored and which are build outputs.</p>
+<p>Expected conclusion: copying only the HTML cannot carry the entire interactive application. Keep generated outputs together when running the lab, and do not mistake them for source changes to commit.</p>
+<h2>Diagnose</h2>
+<p>Opening a file directly with a <code>file:</code> URL may encounter module-loading restrictions. Use the documented HTTP route before changing the source. If one request fails, verify its exact resolved URL and server root. A correct relative path depends on where the server exposes the folder.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/web/framework-activity/index.html">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-status-messages-and-page-language.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/04-web/learning-html/10-relative-resources-and-http.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

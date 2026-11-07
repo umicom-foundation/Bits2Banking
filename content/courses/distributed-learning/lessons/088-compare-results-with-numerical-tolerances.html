@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/distributed-learning/lessons/088-compare-results-with-numerical-tolerances.html
+
+PURPOSE:
+Compare floating-point results with explicit tolerances
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare floating-point results with explicit tolerances | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Compare floating-point results with explicit tolerances</h1>
+<p>Training adjusts numbers called model parameters so that predictions better match examples. A batch is a group of examples used for one adjustment. This module follows a small, local Framework experiment. It assumes no previous machine-learning course and introduces each term before using it. A local experiment is the first measurement needed when designing work for several computers.</p>
+<h2>Set up this laboratory</h2>
+<ol>
+<li>Install a C23 compiler, CMake and Ninja. On Windows, open PowerShell and make the installed UCRT64 tools available with <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code>. On Linux, open a terminal and ensure <code>cc</code>, <code>cmake</code> and <code>ninja</code> are installed through your distribution.</li>
+<li>Use a checkout of Umicom Framework containing <code>learning/native-llm/inspect_accumulation.c</code>. The examples below use the Framework child of Umicom Applications.</li>
+<li>Configure a separate laboratory directory. This prepares build instructions; it does not train a model.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Applications\framework
+cmake -S learning/native-llm -B build/learning-accumulation -G Ninja -DBUILD_TESTING=ON
+cmake --build build/learning-accumulation --target umicom-native-llm-accumulation
+&amp; .\build\learning-accumulation\umicom-native-llm-accumulation.exe 2</code></pre>
+<p>In Bash, change to the Framework directory, run the same two <code>cmake</code> commands, then run <code>./build/learning-accumulation/umicom-native-llm-accumulation 2</code>. Stop if configuration or compilation fails; inspect the first diagnostic before proceeding. Expected successful output includes <code>Effective tokens: 40</code> and <code>Comparison: within tolerance</code>. Numerical values and memory observations must be recorded from your actual run. These are instructions to execute, not a claim that a particular environment has passed.</p>
+<h2>Why two correct calculations can differ slightly</h2>
+<p>Computers store a finite selection of real-number approximations. Adding small contributions in a different order can change the last few represented digits. Splitting a graph into groups can therefore change rounding without changing the intended mathematics.</p>
+<p>The demonstration compares two observations. Loss is one average prediction-error number. Logits are the model's raw prediction scores before conversion to probabilities. Comparing only loss could miss a difference in individual output scores, so the program also inspects all 2,080 logits for one eight-token context.</p>
+<h2>Read the criteria</h2>
+<ol>
+<li>Confirm both models have exactly one completed optimiser step.</li>
+<li>Confirm their losses are finite and differ by less than <code>1e-5</code>.</li>
+<li>Compare corresponding logits and take the largest absolute difference.</li>
+<li>Require that difference to be below <code>3e-5</code> and finite.</li>
+</ol>
+<p>These limits match the existing educational regression's comparison scale. They are not universal tolerances for every model, device or optimisation. A later change to computation order needs evidence that an appropriate tolerance still detects meaningful regressions.</p>
+<h2>Run a controlled comparison</h2>
+<p>Run arguments <code>1</code>, <code>2</code> and <code>5</code> separately. Record the compiler, source revision, argument, losses and largest difference. Keep the seed, input arrays and learning rate fixed. Changing several variables together makes a failure harder to explain.</p>
+<p>If a comparison fails, check the first nonzero service result and confirm both models used the same configuration. Next inspect changes to reduction order, gradient scaling and parameter-update timing. Do not loosen a tolerance simply to make the program exit successfully.</p>
+<h2>Exercise</h2>
+<p>Imagine the losses differ by 0.000001 but one logit differs by 0.4. Explain why a loss-only check is insufficient. Then imagine the output is NaN, meaning 'not a number'. The finite-value check is necessary because some ordinary comparisons with NaN are false in surprising ways. A useful test states both its numerical domain and its accepted error.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/ai_training/test_training_gradient_accumulation.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="087-weight-a-short-final-microbatch.html">Previous: Weight a shorter final microbatch correctly</a> · <a href="089-measure-memory-without-promising-a-budget.html">Next: Measure memory without confusing a plan with a limit</a></p>
+</nav><p><a href="../../../lessons/12-distributed-learning/distributed-learning/088-compare-results-with-numerical-tolerances.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

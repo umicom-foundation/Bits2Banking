@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/04-borrowed-streams-and-failure-boundaries.html
+
+PURPOSE:
+Explain the lesson: Define a failure boundary for a borrowed stream.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Define a failure boundary for a borrowed stream | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a rel="prev" href="03-numbers-files-and-checks.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="05-untrusted-sizes-and-representations.html">Next lesson</a></nav>
+<h1>Define a failure boundary for a borrowed stream</h1>
+<h2>Start with ownership</h2>
+<p>Ownership answers who must release a resource. Borrowing lets another function use it temporarily. In this lab, <code>main</code> opens and closes a file stream. <code>BtbChecksumStream</code> borrows it and never closes it. This makes success and failure paths easier to reason about.</p>
+<h2>Setup recap</h2>
+<p>Use the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-checksum/README.md">checksum lab guide</a>. It names the C23 tools, Framework SDK and separate configure, build and test commands for PowerShell and Bash. Review pointers as addresses of objects; a null pointer identifies no object.</p>
+<h2>Three different state promises</h2>
+<p>The local digest context is private to one call. The caller's output is changed only after success. The borrowed stream can advance even when a later step fails. These are three different promises.</p>
+<pre><code class="language-text">resource          owner       after failure
+stream            caller      may be advanced; caller still closes
+digest context    adapter     local object expires on return
+output buffer     caller      unchanged</code></pre>
+<p>The output pointer must identify enough writable memory and must not overlap the stream object. Checking for null does not prove every other pointer is valid. The caller remains responsible for the documented memory contract.</p>
+<h2>Lab: inspect every exit</h2>
+<ol>
+<li>Find the invalid-argument return.</li>
+<li>Find the read-error return.</li>
+<li>Find the finalisation-error return.</li>
+<li>Confirm none closes the borrowed stream.</li>
+<li>Find the caller's close after the adapter returns.</li>
+<li>Run the checks from the guide, including invalid arguments.</li>
+</ol>
+<p>Now imagine a reader that closes the stream on failure. The caller would close it again. That is a lifetime defect. Conversely, a caller that returns immediately without closing its successfully opened stream can leak the resource.</p>
+<h2>Error-handling exercise</h2>
+<p>Suppose reading fails and closing also fails. Which result should be reported? In this example, the earlier read failure is retained. If reading succeeds but closing fails, the result becomes an I/O error. The command prints no success digest in either case.</p>
+<h2>Recovery and limitations</h2>
+<p>Retry by reopening the chosen file, not by assuming the failed stream is at its original position. A file changed by another program during reading can produce a digest of observed bytes without representing a stable file revision. Production file workflows need a separate snapshot or change-detection policy.</p>
+<h2>Application connection</h2>
+<p>The same ownership discipline applies to Framework documents, sockets and task handles. Read each API's lifetime contract before wrapping it in a GUI callback. A reusable service should keep its failure promises consistent across every interface.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-checksum/checksum.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a rel="prev" href="03-numbers-files-and-checks.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="05-untrusted-sizes-and-representations.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/04-borrowed-streams-and-failure-boundaries.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

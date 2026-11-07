@@ -53,3 +53,7 @@ Open `umicom-c/docs/language.md` in your Umicom source collection. Read the name
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/09-designing-a-language.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Read past a comment without crossing the input](10-read-past-a-comment-safely.md)
+
+[Previous: Understand architectures, firmware and boot media](08-architectures-and-boot-media.md)

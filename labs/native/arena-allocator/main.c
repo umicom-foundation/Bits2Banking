@@ -1,9 +1,16 @@
 /*-----------------------------------------------------------------------------
  * Bits to Banking — Native Learning
  * File: labs/native/arena-allocator/main.c
- * PURPOSE: Assemble a short, temporary Notes report in caller-owned storage.
- * AUTHOR AND ORGANISATION: Sammy Hegab, Umicom Foundation
- * LICENCE: MIT
+ *
+ * PURPOSE:
+ *   Assemble a short, temporary Notes report in caller-owned storage.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include "arena.h"
 #include <stddef.h>
@@ -21,9 +28,20 @@ int main(void)
     const char *detail = "3 notes reviewed; 0 notes lost.";
     char *title = NULL, *body = NULL;
     size_t checkpoint = BtbArenaCheckpoint(&arena);
+    /* The original pointer-to-pointer casts are retained for review. Writing a
+     * char pointer through a void-pointer lvalue violates C's access rules.
+     * The replacement receives actual void pointers, then converts their values. */
+#if 0
     if (BtbArenaAllocate(&arena, strlen(heading) + 1U, 1U, (void **)&title) != BTB_ARENA_OK ||
         BtbArenaAllocate(&arena, strlen(detail) + 1U, 1U, (void **)&body) != BTB_ARENA_OK)
         return 1;
+#endif
+    void *titleStorage = NULL, *bodyStorage = NULL;
+    if (BtbArenaAllocate(&arena, strlen(heading) + 1U, 1U, &titleStorage) != BTB_ARENA_OK ||
+        BtbArenaAllocate(&arena, strlen(detail) + 1U, 1U, &bodyStorage) != BTB_ARENA_OK)
+        return 1;
+    title = titleStorage;
+    body = bodyStorage;
     (void)strcpy(title, heading);
     (void)strcpy(body, detail);
     printf("%s\n%s\nTemporary bytes used: %zu\n", title, body, arena.used);

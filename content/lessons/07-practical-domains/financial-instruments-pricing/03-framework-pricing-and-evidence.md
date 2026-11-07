@@ -78,3 +78,5 @@ Before coupon bonds, add a schedule of dated payments. Before options, learn pay
 ## Read the related Umicom source
 
 [Earlier source for comparison](https://github.com/umicom-foundation/umicom-framework/blob/f00aa3eb0c165ab0ac0107f81e84e4602d79c170/src/finance/quant/discount_curve.c). This historical revision predates the finite-result checks described above. In your Framework checkout, read `src/finance/quant/discount_curve.c`, `discounting_engine.c` and their matching public headers. Compare the implementation and tests together for the revision you are studying.
+
+[Next: Follow a discount factor and its failure paths](04-follow-a-discount-factor-and-its-failures.md)

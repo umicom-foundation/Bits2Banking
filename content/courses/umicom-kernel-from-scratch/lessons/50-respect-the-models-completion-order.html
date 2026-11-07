@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/50-respect-the-models-completion-order.html
+
+PURPOSE:
+Explain the lesson: Respect the model's completion order.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Respect the model's completion order | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="49-record-cancellation-without-freeing-memory.html">Previous lesson</a> · <a rel="next" href="51-validate-completed-byte-counts.html">Next lesson</a></nav>
+<h1>Respect the model's completion order</h1>
+<h2>Prepare</h2>
+<p>Read queue.h and queue.c in labs/native/virtqueue-lifetime. Follow its README to prepare a C23 compiler, CMake and Ninja. The lab simulates a device with ordinary function calls; it does not implement DMA or a hardware VirtIO transport.</p>
+<h2>Understand the idea</h2>
+<p>SimulateComplete requires the token at the head of the available ring. This deliberately simplified model completes requests in FIFO order. The same requirement applies when collecting from the used ring.</p>
+<h2>Work through the example</h2>
+<p>Publish A then B. Attempt to complete B first, then A, then B. Write each expected status without removing requests manually.</p>
+<h2>Check your reasoning</h2>
+<p>The first attempt is WRONG_ORDER. Completing A permits B next. The exercise's policy is stricter than some real devices, which can complete out of order.</p>
+<h2>If something differs</h2>
+<p>If adapting to hardware, read that transport's ordering contract. Do not assume the teaching queue's FIFO restriction is a universal device guarantee.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/virtqueue-lifetime/queue.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="49-record-cancellation-without-freeing-memory.html">Previous lesson</a> · <a rel="next" href="51-validate-completed-byte-counts.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/50-respect-the-models-completion-order.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

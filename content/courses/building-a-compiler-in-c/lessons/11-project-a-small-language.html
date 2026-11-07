@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/11-project-a-small-language.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Project: specify and run a small language | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Project: specify and run a small language</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="10-read-past-a-comment-safely.html">Previous: Read past a comment safely</a> · <a href="12-project-bytecode-and-execution-budget.html">Next: Project: inspect bytecode and bound execution</a></p></nav><h2>Build a language in understandable stages</h2>
+<p>A language project starts with a promise about accepted source and its meaning. This guided project uses the existing Umicom C compiler rather than introducing a second compiler implementation.</p>
+<p>You will write a short program, trace its tokens and verify its result. The preceding compiler lessons explain the lexer, expression parser and virtual machine in more detail.</p>
+<h2>Set up</h2>
+<p>You need the Bits2Banking and umicom-c repositories on your development computer. Follow umicom-c/docs/execution-guide.md to install the C23 toolchain, configure, build and test the current compiler. The Windows executable is build/windows-ucrt64-debug/bin/umicom-c.exe within that repository. The Linux native-debug build produces build/native-debug/bin/umicom-c.</p>
+<p>Use a terminal, a plain text editor and a folder you choose for outputs. Check that --version runs before diagnosing your example.</p>
+<h2>State the supported contract</h2>
+<p>The project program contains one int main(void) function returning integer arithmetic. This exercise needs numeric literals, parentheses, addition and multiplication. It does not require variables, strings, loops or classes.</p>
+<p>Open labs/languages/umicom-c-project/answer.uc in Bits2Banking:</p>
+<pre><code class="language-c">int main(void) { return (8 + 2) * 3; }</code></pre>
+<p>Its result is 30. Parentheses make the addition happen before multiplication. Without the parentheses, 8 + 2 * 3 would produce 14.</p>
+<h2>Trace the pipeline</h2>
+<pre><code class="language-text">source characters -&gt; tokens -&gt; expression structure -&gt; instructions -&gt; result
+(8 + 2) * 3          + and *    multiply(add(8,2),3)     stack work     30</code></pre>
+<p>A token is a recognised piece of source, such as a number or operator. Expression structure records which operands belong to each operator. The virtual machine executes the emitted instructions.</p>
+<h2>Run the project</h2>
+<p>From C:\umicom\umicom-c in PowerShell:</p>
+<pre><code class="language-powershell">&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; check &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\umicom-c-project\answer.uc&quot;
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; run &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\umicom-c-project\answer.uc&quot;</code></pre>
+<p>Replace the checkout root if yours differs. Expect Result: 30. The check command examines the program without claiming its intended result is correct; compare execution with your independent calculation.</p>
+<p>On Linux, from the umicom-c checkout:</p>
+<pre><code class="language-bash">./build/native-debug/bin/umicom-c run ../Umicom-Bits2Banking/labs/languages/umicom-c-project/answer.uc</code></pre>
+<h2>Exercise</h2>
+<p>Create another practice source returning (4 + 5) * 2. Predict 18 before running. Then remove one closing parenthesis. Expect a source diagnostic and a failure result, not a guessed execution.</p>
+<h2>Read the real implementation</h2>
+<p>Follow src/lexer.c, src/compiler.c and src/vm.c in umicom-c. Locate the handling of numbers, precedence and multiplication. Describe each stage in your own words before attempting to extend the grammar.</p>
+<h2>Completion checkpoint</h2>
+<p>You can explain the accepted syntax, predict a result, identify a malformed program and locate the implementation stages. This is a first language project; Umicom C remains a prototype and does not replace the C23 toolchain used to build Framework.</p>
+<h2>Trace the parser by hand</h2>
+<p>A parser recognises how tokens fit together. Open <a href="https://github.com/umicom-foundation/umicom-c/blob/main/src/compiler.c">src/compiler.c</a> and locate expression, product and unary. expression handles addition and subtraction. It calls product to obtain operands. product handles multiplication and division, and obtains its operands from unary. This call structure gives multiplication tighter binding than addition.</p>
+<ol><li>Trace 8 + 2 * 3. The first product is 8. The second product is 2 * 3. expression adds 8 and 6, giving 14.</li><li>Trace (8 + 2) * 3. Parentheses request an expression inside unary. That inner expression produces 10 before the outer product multiplies by 3.</li><li>Find emit. An emitted instruction is a request for later execution, not the arithmetic result itself.</li><li>Find umc_compile. Identify the output capacity check and the diagnostic result before trying to add another operator.</li></ol>
+<p>A useful extension exercise is to specify a remainder operator: define the token, precedence, behaviour for negative operands and rejection of a zero divisor before writing code. This lesson does not claim that extension is already implemented.</p>
+<h2>Source map</h2>
+<p>Read <code>umicom-c/src/compiler.c</code> in the Umicom C checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="10-read-past-a-comment-safely.html">Previous: Read past a comment safely</a> · <a href="12-project-bytecode-and-execution-budget.html">Next: Project: inspect bytecode and bound execution</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/sdk-practical-lab.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab: build a small application with the Framework SDK | Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../course-series.html"><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="lab-build-a-small-application-with-the-framework-sdk">Lab: build a small application with the Framework SDK</h1>
+<p>An SDK is a software development kit: headers describe available functions, compiled libraries supply implementations, and package files explain how to use them. This lab builds the existing Bits2Banking activity counter against an installed Umicom Framework SDK. A consumer is an application using that SDK. It does not need to compile the whole Framework for every edit.</p>
+<h2 id="setup-recap-prepare-a-development-folder-and-tools">Setup recap: Prepare a development folder and tools</h2>
+<p>You need a C23 compiler, CMake 3.24 or later, Ninja, a Bits2Banking checkout and a compatible installed Framework SDK. On Windows install the MSYS2 UCRT64 tools and add <code>C:\msys64\ucrt64\bin</code> to the current PowerShell PATH. On Linux use a C23 compiler and the CMake and Ninja packages for your distribution. Check <code>gcc --version</code>, <code>cmake --version</code> and <code>ninja --version</code> before continuing. The <a href="../learning-c/terminal-lab.html">terminal setup lab</a> explains installation, folders, command prompts and exit codes in detail.</p>
+<p>Use an SDK built for the same operating system, processor and compatible compiler runtime as your consumer. The commands below assume a Windows UCRT64 SDK at <code>C:\umicom\installed\framework</code>, or a Linux SDK at <code>$HOME/umicom-sdk</code>. Replace the location with your actual installation. An SDK directory must contain <code>lib/cmake/UmicomFramework/UmicomFrameworkConfig.cmake</code>; an empty folder does not provide an SDK. See <a href="lessons/06-use-an-installed-sdk.html">Using an installed SDK</a> before continuing if it is not installed.</p>
+<p>In PowerShell, check the package file:</p>
+<pre><code class="language-powershell">Get-Item 'C:\umicom\installed\framework\lib\cmake\UmicomFramework\UmicomFrameworkConfig.cmake'
+New-Item -ItemType Directory -Force 'C:\umicom-learning'
+Copy-Item -Recurse 'C:\umicom\Umicom-Bits2Banking\labs\native\framework-activity' 'C:\umicom-learning\framework-activity'
+Set-Location 'C:\umicom-learning\framework-activity'
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+</code></pre>
+<p>Copy only when the destination does not already exist. In bash, with the repository under <code>$HOME/Umicom-Bits2Banking</code>:</p>
+<pre><code class="language-bash">ls &quot;$HOME/umicom-sdk/lib/cmake/UmicomFramework/UmicomFrameworkConfig.cmake&quot;
+mkdir -p &quot;$HOME/umicom-learning&quot;
+cp -R &quot;$HOME/Umicom-Bits2Banking/labs/native/framework-activity&quot; &quot;$HOME/umicom-learning/framework-activity&quot;
+cd &quot;$HOME/umicom-learning/framework-activity&quot;
+</code></pre>
+<h2 id="read-the-project-before-building">2. Read the project before building</h2>
+<p>Open <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/CMakeLists.txt">the activity lab</a>. Each file has one responsibility:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>activity.h</code></td>
+<td>Declares the shared teaching function and its result type.</td>
+</tr>
+<tr>
+<td><code>activity.c</code></td>
+<td>Checks the count and advances it once.</td>
+</tr>
+<tr>
+<td><code>console.c</code></td>
+<td>Calls the function and prints the result.</td>
+</tr>
+<tr>
+<td><code>window.c</code></td>
+<td>Connects a button and label to the same function.</td>
+</tr>
+<tr>
+<td><code>test_activity.c</code></td>
+<td>Checks valid values, boundaries and unchanged output on failure.</td>
+</tr>
+<tr>
+<td><code>CMakeLists.txt</code></td>
+<td>Describes targets, dependencies and test registration.</td>
+</tr>
+</tbody>
+</table>
+<p><code>find_package(UmicomFramework CONFIG REQUIRED COMPONENTS base)</code> loads package instructions. <code>target_link_libraries(... Umicom::base)</code> supplies the shared base dependency. Including a header alone does not link an implementation. The activity rule is an educational example; production rules reused by Umicom products belong in Framework.</p>
+<h2 id="configure-and-build-just-this-consumer">3. Configure and build just this consumer</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">cmake -S . -B build-ucrt -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build-ucrt --parallel 2
+.\build-ucrt\btb-activity-console.exe
+ctest --test-dir build-ucrt -R '^bits2banking\.framework_activity\.' --output-on-failure --no-tests=error
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom-sdk&quot; -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+./build/btb-activity-console
+ctest --test-dir build -R '^bits2banking\.framework_activity\.' --output-on-failure --no-tests=error
+</code></pre>
+<p>Run one command at a time and stop on errors. Expect <code>Completed exercises: 1</code> and six passing tests for the unmodified example. These are expected results, not a report of execution on your machine. <code>CMAKE_PREFIX_PATH</code> tells package discovery where to search. The generated build directory records this source location and compiler; do not copy it between computers or toolchains.</p>
+<h2 id="understand-the-function-contract">4. Understand the function contract</h2>
+<p>The input <code>current</code> is an unsigned count. <code>next</code> points to caller-owned output memory. Counts 0 through 999 advance by one. At 1000 the function returns <code>UMI_STATUS_CAPACITY_EXCEEDED</code>. An input above 1000 or a null output pointer returns <code>UMI_STATUS_INVALID_ARGUMENT</code>. Rejected calls leave a supplied output value unchanged.</p>
+<p>Trace <code>BtbActivityAdvance(999U, &amp;result)</code> on paper. <code>&amp;result</code> means the address of the result variable. The checks succeed, the function writes 1000 and returns success. With input 1000, it returns before the assignment. The tests deliberately start output at 77 to make an accidental write visible.</p>
+<h2 id="add-the-window-after-the-console-works">5. Add the window after the console works</h2>
+<p>Install GTK4 development files for the same toolchain. Confirm <code>pkg-config --modversion gtk4</code> works. Reconfigure the same Windows consumer with <code>cmake -S . -B build-ucrt -DBTB_ACTIVITY_GTK4=ON</code>, build target <code>btb-activity-window</code>, then run <code>.\build-ucrt\btb-activity-window.exe</code>. In bash substitute <code>build</code> and <code>./build/btb-activity-window</code>. Read <a href="lessons/05-introduction-to-gtk4.html">Introduction to GTK4</a> for signals, widgets and callbacks. The window uses the same activity function; it does not need a second copy of the counting rule.</p>
+<h2 id="investigate-a-controlled-change">6. Investigate a controlled change</h2>
+<p>In the practice copy, change the increment from <code>+ 1U</code> to <code>+ 2U</code>. Rebuild the consumer and run its six tests. The first, last and in-place cases should expose the changed behaviour. Restore the increment and repeat. If package discovery fails, correct the SDK path. If linking fails, check target dependencies and toolchain compatibility before editing unrelated code.</p>
+<p><a href="index.html">Framework course contents</a> · <a href="event-deadline-lab.html">Lab: keep an event deadline observable</a></p>
+
+<nav aria-label="Course navigation"><a href="index.html">Course contents</a> · <a href="../course-series.html">Subject guide</a></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/13-build-an-instruction-viewer.html
+
+PURPOSE:
+Explain the lesson: Build an instruction viewer.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build an instruction viewer | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="14-admit-decimal-literals-without-overflow.html">Next lesson</a></nav>
+<h1>Build an instruction viewer</h1>
+<p>An instruction viewer makes the boundary between compilation and execution visible. It asks the existing Umicom C compiler to translate source, then displays the instructions it produced.</p>
+<h2>Setup recap</h2>
+<p>Follow labs/native/compiler-experiments/README.md. You need the Bits2Banking and Umicom C checkouts, a C23 compiler, CMake and Ninja. The guide includes PowerShell and Bash commands and explains every build stage.</p>
+<p>The lab reuses UmicomC::Compiler. It does not contain a second parser.</p>
+<h2>1. Supply one source argument</h2>
+<p>Pass this complete program as one quoted argument:</p>
+<p>``<code>c int main(void) { return 2 + 3 * 4; } </code>``</p>
+<p>The shell's quotes keep spaces and punctuation together. They are not part of the language source passed to the compiler.</p>
+<h2>2. Admit the compiled result</h2>
+<p>inspect.c supplies a fixed instruction array and a count output. It checks umc_compile before reading the array.</p>
+<p>On failure, count is zero, but some array entries may already have been written. The success status is therefore essential; observing nonzero bytes is not permission to execute them.</p>
+<h2>3. Read the emitted sequence</h2>
+<p>Predict PUSH 2, PUSH 3, PUSH 4, MULTIPLY, ADD, RETURN. Draw a stack after each instruction: [2], [2,3], [2,3,4], [2,12], [14].</p>
+<p>RETURN publishes the result. Six instructions are expected, including RETURN.</p>
+<p>The viewer also prints each instruction's source offset. An offset is a position measured from the beginning of the source, starting at zero.</p>
+<h2>Exercise</h2>
+<p>Change the expression to (2 + 3) * 4. Predict how the instruction order differs before running it. Then compare both listings.</p>
+<p>Explain why displaying instructions is useful even when execution later refuses division by zero.</p>
+<h2>Recovery</h2>
+<p>A configuration error concerns locating and building the consumer. A compiler diagnostic printed by the viewer concerns its input program. Keep those failures distinct.</p>
+<p>The language accepts a deliberately small arithmetic subset. This viewer does not demonstrate variables, loops, arbitrary C libraries or native machine-code generation.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/compiler-experiments/inspect.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="next" href="14-admit-decimal-literals-without-overflow.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-compiler-in-c/13-build-an-instruction-viewer.md">Markdown edition</a></p><nav aria-label="Previous lesson"><a rel="prev" href="12-project-bytecode-and-execution-budget.html">Previous: Project: inspect bytecode and bound execution</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

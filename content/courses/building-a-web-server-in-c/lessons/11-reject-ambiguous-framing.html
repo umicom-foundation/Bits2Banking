@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/11-reject-ambiguous-framing.html
+
+PURPOSE:
+Explain the lesson: Reject ambiguous request framing.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reject ambiguous request framing | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-parse-into-owned-storage.html">Previous lesson</a> · <a rel="next" href="12-format-get-and-head-responses.html">Next lesson</a></nav>
+<h1>Reject ambiguous request framing</h1>
+<p>Two pieces of software must agree on where a request ends. An ambiguous length can cause one component to process bytes that another considers a separate message.</p>
+<h2>Prepare</h2>
+<p>Read the final case in framing.c after setting up the HTTP contract lab. It contains two Content-Length headers, both with value zero.</p>
+<p>The example deliberately refuses even matching duplicate lengths. The public Framework contract permits at most one length header. This gives the small server one clear admission rule.</p>
+<h2>Trace the refusal</h2>
+<ol>
+<li>Identify the request line.</li>
+<li>Find Host, which identifies the requested host.</li>
+<li>Count the two length headers.</li>
+<li>Locate the expected PARSE_ERROR.</li>
+<li>Confirm that this example never calls an application handler.</li>
+</ol>
+<p>A parser error is different from a missing route. A missing route is a valid request for a path the application does not provide. A framing error prevents the request from reaching routing at all.</p>
+<h2>Extend the case carefully</h2>
+<p>Create one experimental request without Host. Keep all other bytes unchanged. Predict its refusal using connection.h, then add a separate expectation.</p>
+<p>Do not combine five malformed changes into one input. If it fails, you would not know which rule rejected it.</p>
+<h2>Recover and explain</h2>
+<p>If your added case accidentally lacks the final blank line, the result may be BUSY rather than the refusal you intended to study. Count the CR and LF bytes first.</p>
+<p>This lesson studies admission at a byte boundary. Authentication and permission checks are later layers; correct framing does not establish who a user is.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/framing.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-parse-into-owned-storage.html">Previous lesson</a> · <a rel="next" href="12-format-get-and-head-responses.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-web-server-in-c/11-reject-ambiguous-framing.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

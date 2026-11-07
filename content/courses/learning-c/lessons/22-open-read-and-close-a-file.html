@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/lessons/22-open-read-and-close-a-file.html
+
+PURPOSE:
+Explain the lesson: Open, read and close a file.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Open, read and close a file | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a rel="prev" href="21-follow-a-rejected-call.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="23-chunks-eof-and-read-errors.html">Next lesson</a></nav>
+<h1>Open, read and close a file</h1>
+<h2>What you will make</h2>
+<p>You will run a small command that reads a file and prints a checksum. A file is stored data identified by a path. A stream is the C library object through which a program reads that data. A checksum is calculated from the file's bytes; it helps compare two copies.</p>
+<h2>Prepare the tools</h2>
+<p>Use a text editor, a C23 compiler, CMake, Ninja and an installed Umicom Framework base SDK. The <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-checksum/README.md">checksum lab guide</a> gives separate PowerShell and Bash commands. Start in the Bits2Banking checkout, configure its checksum lab, build it, and stop if either step reports an error. Nothing in this lesson requires the Studio IDE.</p>
+<h2>Read one lifetime</h2>
+<p>Open <code>main.c</code>. The program expects one filename after the command name. C includes the command itself in <code>argc</code>, so the required count is two. It opens the chosen file in binary read mode:</p>
+<pre><code class="language-c">FILE *stream = fopen(argv[1], &quot;rb&quot;);
+if (stream == NULL) {
+    perror(&quot;Cannot open input file&quot;);
+    return EXIT_FAILURE;
+}</code></pre>
+<p>A pointer identifies an object; <code>NULL</code> means opening did not provide one. Never call the reader through a failed open. The letter <code>b</code> requests binary mode so Windows text translation does not change the bytes being compared.</p>
+<pre><code class="language-text">argument -&gt; open -&gt; read/check -&gt; close -&gt; print
+              failure -&gt; report and stop</code></pre>
+<p>The same function that opens the stream closes it. The checksum adapter borrows it temporarily. Closing releases the stream; the pointer must not be used afterwards.</p>
+<h2>Lab</h2>
+<ol>
+<li>Open the lab's README in an editor and save it.</li>
+<li>Run the checksum executable with that README's path, in quotes.</li>
+<li>Expect one line containing 64 hexadecimal characters.</li>
+<li>Run with no path. Expect a usage message and a nonzero exit code.</li>
+<li>Run with a nonexistent path. Expect an open error and no checksum.</li>
+<li>Add one character to a disposable copy of the README and compare both digests.</li>
+</ol>
+<p>Do not edit the input while the program reads it. This reader does not freeze a filesystem snapshot.</p>
+<h2>Troubleshooting</h2>
+<p>If a path contains spaces, quote the whole argument. A missing file is different from a missing executable: check which path the message names. If Windows shows a permissions error, choose a file you own. This exercise needs read access, not administrator access.</p>
+<h2>Exercise and explanation</h2>
+<p>Why is the digest printed after <code>fclose</code>? Closing can itself fail. The caller waits until its complete file operation succeeds before reporting success. Framework provides the hash calculation; this small caller is responsible for the user's path and the stream lifetime.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-checksum/main.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a rel="prev" href="21-follow-a-rejected-call.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="23-chunks-eof-and-read-errors.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/learning-c/22-open-read-and-close-a-file.md">Markdown edition</a></p><nav aria-label="Course references"><a href="../glossary.html">Glossary</a> · <a href="../practical-guide.html">Practical guide</a> · <a href="../../learning-paths.html">Learning map</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

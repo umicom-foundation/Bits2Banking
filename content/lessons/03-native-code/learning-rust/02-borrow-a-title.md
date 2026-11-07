@@ -51,3 +51,5 @@ Read `activity.h` again. Its output pointer refers to caller-owned storage. C re
 [Course contents](index.md) · [Previous: Values and a first program](01-values-and-a-first-program.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+[Next lesson: Represent success and refusal](03-represent-success-and-refusal.md)

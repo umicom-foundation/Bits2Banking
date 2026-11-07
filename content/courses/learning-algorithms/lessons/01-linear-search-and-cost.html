@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-algorithms/lessons/01-linear-search-and-cost.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Linear search and counting work | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Linear search and counting work</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-insertion-sort-and-invariants.html">Next: Insertion sort and a promise kept at every step</a></p></nav><h2>A procedure for finding a value</h2>
+<p>An algorithm is a precise sequence of steps for solving a problem. Linear search compares elements from the beginning until it finds a match or reaches the end. It works without sorting.</p>
+<h2>Setup recap</h2>
+<p>Follow <a href="../index.html">the collections setup</a>. An array stores values at numbered indices, starting at zero. A loop repeats a comparison. The course <a href="../../learning-data-structures/index.html">Learning Data Structures</a> explains the storage if you need a recap.</p>
+<h2>Trace before running</h2>
+<pre><code class="language-text">values: 7 2 9 2
+target 9: compare 7, compare 2, compare 9 -&gt; index 2
+target 4: compare every value -&gt; not found
+target 2: compare 7, compare 2 -&gt; index 1</code></pre>
+<p>The contract returns the first match. That decision matters when values repeat.</p>
+<h2>Read BtbListFind</h2>
+<p>The loop condition is i &lt; list-&gt;count. -&gt; accesses a field through a pointer. A successful comparison writes the index and returns BTB_OK. Reaching the end returns BTB_NOT_FOUND without changing the output index.</p>
+<h2>Lab</h2>
+<ol>
+<li>Open collections.c and locate BtbListFind.</li>
+<li>Count comparisons for finding the first, last and absent value in four elements.</li>
+<li>Read the tests where the output index begins at 42.</li>
+<li>Explain why 42 should remain unchanged when the value is absent.</li>
+<li>Build and run the tests through the course commands.</li>
+</ol>
+<h2>Understanding O(n)</h2>
+<p>If there are n elements, an unsuccessful search performs n comparisons. Doubling the input can double the work. O(n), read &quot;order n&quot;, describes that growth for large inputs. It is not a timing measurement and does not say each comparison takes one second.</p>
+<p>An empty list needs no element comparisons. Finding the first element needs one. Worst-case and best-case descriptions refer to different inputs.</p>
+<h2>Exercise and worked answer</h2>
+<p>A list has 100 elements and the requested value is absent. Linear search compares 100 elements. If the value is first, it compares one. Both behaviours belong to the same algorithm.</p>
+<h2>Connect to Umicom</h2>
+<p>A small selection list can be searched linearly without adding an index structure. For large document or asset catalogues, Framework services may maintain indexes. Choose using measured workloads and required behaviour, including duplicates and updates.</p>
+<h2>Troubleshooting</h2>
+<p>A &quot;not found&quot; status is not an instruction to read index 42. Check the status before accessing an element. The lab's capacity is eight to keep traces readable; the reasoning applies to longer lists.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/collections/collections.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-insertion-sort-and-invariants.html">Next: Insertion sort and a promise kept at every step</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

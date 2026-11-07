@@ -65,3 +65,5 @@ Another way to refer to an existing object; it does not create ownership by itse
 ---
 
 [Read this lesson in HTML](../../../courses/learning-cpp/lessons/01-objects-and-a-note-journal.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Streams and file lifetime](02-streams-and-file-lifetime.md)

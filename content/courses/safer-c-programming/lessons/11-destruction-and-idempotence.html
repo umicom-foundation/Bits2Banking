@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/11-destruction-and-idempotence.html
+
+PURPOSE:
+Explain the lesson: Make repeated cleanup harmless.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Make repeated cleanup harmless | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-borrowed-pointers-after-replacement.html">Previous lesson</a> · <a rel="next" href="12-failure-matrix-and-sentinels.html">Next lesson</a></nav>
+<h1>Make repeated cleanup harmless</h1>
+<h2>Prepare</h2>
+<p>Open <code>BtbNoteDestroy</code> and the final assertions in the fault-injection test. Cleanup releases resources that an object owns. Idempotent cleanup means repeating the cleanup operation has the same resource state as performing it once.</p>
+<p>The lab starts with <code>BtbNote note = {0};</code>. Zero initialization establishes the empty representation expected by Init and Destroy.</p>
+<h2>Follow destruction</h2>
+<p>Destroy first accepts a null note pointer as a no-op. For a real note it checks whether a release callback exists, releases each non-null owned field, then assigns a zero-valued structure to the object.</p>
+<p>The final assignment is important: it clears the pointers, revision and allocator together. A second destruction sees empty state and releases nothing.</p>
+<h2>Trace the counts</h2>
+<p>After successful Init, live is 2. After successful Replace, live is still 2: two new allocations replaced two old ones. After Destroy, live is 0. After another Destroy, live remains 0.</p>
+<p>These counts alone do not prove the correct allocations were released; the test combines them with field contents and revision checks. A more advanced allocator double can track individual allocation identities.</p>
+<h2>Exercise</h2>
+<p>Draw the object after each of those four operations. Include title pointer, body pointer, revision and callback context. Explain why Init is allowed again after destruction but refused while the original initialized object still owns fields.</p>
+<p>Expected reasoning: the empty representation can accept new ownership; reinitializing a live object would otherwise lose its existing allocations.</p>
+<h2>Diagnose a cleanup failure</h2>
+<p>If live becomes negative or a release aborts, inspect whether two paths release the same ownership. If live stays positive, inspect every early return after an allocation. Do not “fix” a leak by resetting the live counter.</p>
+<p>Only call Destroy for objects obeying the documented initialization contract. Random uninitialized storage may contain arbitrary pointer values. Production Framework objects may use explicit Create/Destroy handles or reference counts instead; follow their actual lifecycle rather than assuming this teaching structure's rules apply everywhere.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/fault-injection/note.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-borrowed-pointers-after-replacement.html">Previous lesson</a> · <a rel="next" href="12-failure-matrix-and-sentinels.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/11-destruction-and-idempotence.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

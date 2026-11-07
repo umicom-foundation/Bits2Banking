@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv/lessons/11-explain-bit-rotation.html
+
+PURPOSE:
+Explain the lesson: Explain bit rotation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Explain bit rotation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-understand-word-arithmetic-wrap.html">Previous lesson</a> · <a rel="next" href="12-use-parity-as-a-small-bit-algorithm.html">Next lesson</a></nav>
+<h1>Explain bit rotation</h1>
+<p>A shift moves bits toward one end of a register. A rotation also moves bits, but the bits leaving one end reappear at the other.</p>
+<h2>Prepare</h2>
+<p>Open BtbRotateLeft64 in bits.S and the Rotate reference in check.c. The input value is in a0 and the requested distance in a1.</p>
+<p>The function uses only base operations: shifts, subtraction, OR and a branch.</p>
+<h2>Follow a one-bit rotation</h2>
+<p>Start with only bit 63 set. Shifting left by one loses that top bit from the 64-bit result. Shifting the original value right by 63 produces a one at bit zero.</p>
+<p>OR combines the two parts. The rotated result is 1.</p>
+<h2>Normalize the distance</h2>
+<p>The function keeps only the low six bits of distance, giving a value from zero through 63. Rotating by 64 has the same result as rotating by zero.</p>
+<p>The zero case returns directly. The C reference also separates zero so it never shifts by the full type width.</p>
+<h2>Exercise</h2>
+<p>Use an eight-box drawing to understand the movement, then return to the 64-bit contract. Mark where bits zero and 63 move when rotating left once.</p>
+<p>Predict results for distances 0, 1, 63, 64 and 65. The harness also checks distances beyond one complete rotation.</p>
+<h2>Review the boundary</h2>
+<p>The reference uses unsigned values. A right shift must bring in zeroes for this construction; a signed arithmetic shift would have a different meaning.</p>
+<p>Bit operations appear in binary formats, checksums and machine interfaces. A correct rotation alone does not establish the correctness or security of a larger algorithm that uses it.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/riscv-sequences/bits.S">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-understand-word-arithmetic-wrap.html">Previous lesson</a> · <a rel="next" href="12-use-parity-as-a-small-bit-algorithm.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-riscv/11-explain-bit-rotation.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

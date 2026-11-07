@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/04-store-money-as-labelled-integer-units.html
+
+PURPOSE:
+Store money as labelled integer units
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store money as labelled integer units | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Store money as labelled integer units</h1>
+<p>A bank application presents records about customers, accounts and money. This module builds one small part: a reliable balance view. A customer identifies whose records are selected; an account holds amounts and a state; a currency identifies the unit of money. All examples use invented records kept in the program's memory. No real bank connection or transfer is made.</p>
+<h2>Prepare this laboratory</h2>
+<p>Install a C23 compiler, CMake 3.26 or later and Ninja. A compiler translates C source into machine instructions. CMake describes the build; Ninja performs the required build steps. Install a matching Umicom Framework SDK containing the finance component. An SDK supplies headers, libraries and package information; its compiler and architecture must match this example.</p>
+<p>In PowerShell, run each line separately and stop on errors:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\account-balances&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+&amp; &quot;.\build\btb-account-balances.exe&quot;</code></pre>
+<p>Use your actual SDK path. In Bash, run the same three CMake/CTest commands from the example folder with your native SDK prefix, then run <strong>./build/btb-account-balances</strong>. A package-not-found error points to the SDK installation or prefix. An unknown summary symbol requires a matching updated header and library. The expected report contains two GBP accounts, ledger 12000, available 9500 and reserved 2500 minor units.</p>
+<h2>Understand the unit</h2>
+<p>An integer is a whole-number value. The lab stores GBP amounts in pennies, so 10000 means £100.00. The number has meaning only with its currency and unit convention. A bare 10000 printed without a label could be pounds, pennies, dollars or an unrelated count.</p>
+<p>Framework's UmiMoney combines an integer amount, a decimal scale and a currency. The deposit records used here already store minor-unit counts. The summary adds these counts through umi_money_add; it does not perform currency conversion or choose a visual decimal format.</p>
+<ol>
+<li>Locate ledger_minor and available_minor in the account record.</li>
+<li>Note the int64_t type: a signed integer with exactly 64 bits.</li>
+<li>Locate the GBP currency passed to the summary.</li>
+<li>Read the output labels: each explicitly says minor units.</li>
+<li>Explain why the USD account cannot be added directly to the GBP total.</li>
+</ol>
+<h2>Do not invent a conversion</h2>
+<p>Adding 100 GBP and 100 USD into a number labelled GBP loses information. Conversion requires a rate, rate direction, date, rounding policy and evidence of the rate source. This lab deliberately keeps separate summaries; it supplies none of those conversion services.</p>
+<p>The rule “divide everything by 100” is also too broad for a general application. A display must obtain the applicable currency and scale convention instead of guessing from a number's size.</p>
+<h2>Exercise</h2>
+<p>Change the selected currency object to USD. The existing main function's expected-value checks will then need deliberate updates. Predict ledger 400, available 300, reserved 100 and one account. Do not alter only the label: change the selection and its expected results together. A failing check after the change is useful evidence that the scenario's old expectation no longer matches its input.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/finance/money.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="03-follow-customer-account-and-currency.html">Previous: Follow customer, account and currency identities</a> · <a href="05-create-a-validated-account-candidate.html">Next: Create a validated account before publishing it</a></p>
+</nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/banking-and-payments/04-store-money-as-labelled-integer-units.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

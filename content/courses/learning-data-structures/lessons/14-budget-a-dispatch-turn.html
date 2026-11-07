@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/14-budget-a-dispatch-turn.html
+
+PURPOSE:
+Explain the lesson: Give one dispatch turn a finite work budget.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Give one dispatch turn a finite work budget | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-own-a-receipt-after-release.html">Previous lesson</a> · <a rel="next" href="15-quiesce-then-drain.html">Next lesson</a></nav>
+<h1>Give one dispatch turn a finite work budget</h1>
+<h2>Prepare</h2>
+<p>Read BtbDispatchRun and its public comment. Configure the work-dispatch lab using its README when you are ready to execute the exercises. A budget limits how much work one call may attempt.</p>
+<p>The accepted budget range is one through eight. Run invokes Step at most that many times and stops sooner when Step cannot proceed.</p>
+<h2>Separate progress from stopping</h2>
+<p>Suppose three requests are queued and Run receives budget eight. It executes three, then observes EMPTY. Because progress occurred, Run returns OK and reports three through outRun.</p>
+<p>With no queued work at entry, it reports EMPTY and zero. With a full completion queue and queued work, it reports BACKPRESSURE and zero.</p>
+<p>The status answers whether this call made progress or why it could not. The count tells how much work actually ran.</p>
+<h2>Trace and record</h2>
+<p>Prepare independent cases:</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Work available</th><th scope="col">Notice capacity</th><th scope="col">Budget</th><th scope="col">Expected count</th></tr></thead><tbody><tr><td>3</td><td>4</td><td>2</td><td>2</td></tr><tr><td>3</td><td>4</td><td>8</td><td>3</td></tr><tr><td>3</td><td>0</td><td>2</td><td>0</td></tr></tbody></table></div>
+<p>Check the associated status as well as the count.</p>
+<h2>Invalid calls</h2>
+<p>Budget zero and a null output pointer are invalid. A rejected argument must leave an existing output count unchanged. Use SIZE_MAX as a sentinel in a test, then expect INVALID and the same sentinel.</p>
+<h2>Application lesson</h2>
+<p>A finite turn gives the caller a chance to service other work between turns. It does not by itself make a long-running individual operation responsive. For production UI work, inspect Framework's scheduling and cancellation facilities rather than running an unbounded task inside a click handler.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/work-dispatch/dispatch.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-own-a-receipt-after-release.html">Previous lesson</a> · <a rel="next" href="15-quiesce-then-drain.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/14-budget-a-dispatch-turn.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

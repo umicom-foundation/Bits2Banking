@@ -1,0 +1,46 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/05-text-bytes-and-c-boundaries.html
+
+PURPOSE:
+Pass text safely from Qt to a C function
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pass text safely from Qt to a C function | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Pass text safely from Qt to a C function</h1>
+<p>Qt is a library for building applications. A widget is a visible control, such as a text box or button. This course builds a small desktop interface that calls a C function in Umicom Framework. The interface uses C++ because Qt Widgets exposes a C++ API; the reusable validation policy stays in Framework C.</p>
+<h2>Before starting</h2>
+<p>Use a development copy of Umicom Bits2Banking and an installed Umicom Framework SDK containing the security component and UmiLocalProfileNameBytes. Install a matching Qt 6 development kit, C++ compiler, CMake and Ninja. A kit groups tools and libraries compiled to work together. Do not combine libraries from different compiler families. Open a terminal in labs/framework/qt-profile. The lab README contains complete PowerShell and Bash commands and explains how to choose installation prefixes. The exercises check names only; they do not create an account or contact a broker.</p>
+<p><a href="../../../../labs/framework/qt-profile/README.md">Open the lab setup guide</a>.</p>
+<h2>Characters and bytes</h2>
+<p>Text shown on screen is not necessarily one byte per visible character. UTF-8 represents some characters using several bytes. The Framework name contract deliberately accepts a small ASCII set, so the adapter passes the actual UTF-8 byte count and lets Framework enforce that rule.</p>
+<p>The expression input-&gt;text().toUtf8() creates a QByteArray. That object owns the bytes for the duration of the callback. bytes.constData() points to them; bytes.size() reports their count. The pointer must not be stored for use after bytes is destroyed.</p>
+<h2>Read the call</h2>
+<pre><code class="language-cpp">const QByteArray bytes = input-&gt;text().toUtf8();
+char canonical[UMI_LOCAL_PROFILE_NAME_CAPACITY];
+const UmiStatus status = UmiLocalProfileNameBytes(
+    bytes.constData(), static_cast&lt;size_t&gt;(bytes.size()), canonical);</code></pre>
+<p>The array has capacity for the maximum accepted name plus its terminating zero byte. The function validates an exact span instead of searching beyond that span for a terminator. The output is valid for display only when the status is OK.</p>
+<h2>Boundary experiment</h2>
+<ol>
+<li>Enter a three-letter ASCII name. Expect acceptance.</li>
+<li>Enter two letters. Expect rejection.</li>
+<li>Enter 48 letters. Expect acceptance and lower-case output.</li>
+<li>Enter 49 letters. Expect rejection.</li>
+<li>Enter a name beginning with a digit. Expect rejection.</li>
+<li>Enter a name containing an accented character. Expect rejection under this particular name contract.</li>
+</ol>
+<p>A product may later choose a broader international name policy. That would be a change to the shared contract, its storage rules and its tests, not a silent workaround in one frontend.</p>
+<h2>Output must be treated as data</h2>
+<p>The result label uses Qt::PlainText. It should display text rather than interpret input as rich markup. Input validation and safe presentation are separate responsibilities: a future service may accept text with angle brackets, so the view should still choose the correct rendering mode.</p>
+<h2>Check your understanding</h2>
+<p>Why pass a length? It identifies the readable input boundary. Why not display canonical after failure? The service promises not to publish a valid result on failure; using an uninitialised output array would be a separate bug. Why keep bytes alive during the call? The C function reads memory owned by that object.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/qt-profile/profile_window.cpp">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="04-connect-clicks-to-framework.html">Previous: Connect clicks and keyboard actions to Framework</a> · <a href="06-widget-event-tests.html">Next: Test the real widget event path</a></p>
+</nav><p><a href="../../../lessons/03-native-code/learning-qt/05-text-bytes-and-c-boundaries.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

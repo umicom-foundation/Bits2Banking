@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/15-recover-before-retrying-a-revision.html
+
+PURPOSE:
+Explain the lesson: Recover before retrying a revision.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recover before retrying a revision | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-fault-without-replacing-the-last-result.html">Previous lesson</a> · <a rel="next" href="16-keep-revisions-moving-forward.html">Next lesson</a></nav>
+<h1>Recover before retrying a revision</h1>
+<h2>Prepare</h2>
+<p>Open <code>labs/native/service-recovery/recovery.c</code> and its README in the Bits2Banking checkout. This is an in-memory model: a small program that demonstrates decisions without changing the operating system. A revision is a positive number identifying a proposed change. Use a three-column paper table: operation, in-flight revision, committed revision.</p>
+<h2>Understand the idea</h2>
+<p>Recovery clears the failed in-flight operation only after its ownership transition succeeds. It does not pretend the failed work was accepted. A new Begin is an explicit retry decision.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Continue the faulted revision-5 trace.</li>
+<li>Find the successful recovery assignment to <code>inFlight</code>.</li>
+<li>Compare revision 5 with committed revision 4.</li>
+<li>Explain why a later Begin of 5 can be meaningful.</li>
+</ol>
+<h2>Check your reasoning</h2>
+<p>After successful recovery, in-flight becomes 0 and committed remains 4. Revision 5 is still newer than 4, so it can be proposed again.</p>
+<h2>If something differs</h2>
+<p>If recovery returns an error, do not clear the caller's display of unfinished work as though recovery succeeded. Preserve the error and inspect the ownership state.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/service-recovery/recovery.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-fault-without-replacing-the-last-result.html">Previous lesson</a> · <a rel="next" href="16-keep-revisions-moving-forward.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-os-from-scratch/15-recover-before-retrying-a-revision.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/52-wait-for-reset-acknowledgement.html
+
+PURPOSE:
+Explain the lesson: Wait for reset acknowledgement.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wait for reset acknowledgement | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="51-validate-completed-byte-counts.html">Previous lesson</a> · <a rel="next" href="53-retire-a-slot-before-generation-wrap.html">Next lesson</a></nav>
+<h1>Wait for reset acknowledgement</h1>
+<h2>Prepare</h2>
+<p>Read queue.h and queue.c in labs/native/virtqueue-lifetime. Follow its README to prepare a C23 compiler, CMake and Ninja. The lab simulates a device with ordinary function calls; it does not implement DMA or a hardware VirtIO transport.</p>
+<h2>Understand the idea</h2>
+<p>RequestReset sets resetPending and freezes new operations. It retains outstanding slots. SimulateResetAcknowledged is a separate event that clears rings and slots after the model observes confirmation.</p>
+<h2>Work through the example</h2>
+<p>Create a timeline with a published request, reset request, attempted new Prepare and reset acknowledgement. Mark where BUSY is expected and when reuse becomes possible.</p>
+<h2>Check your reasoning</h2>
+<p>Admission remains blocked while reset is pending. Only acknowledgement makes the retained slots reusable. The two calls must not be collapsed into one unverified assumption.</p>
+<h2>If something differs</h2>
+<p>If real hardware never acknowledges reset, keep ownership unresolved and report it. Calling the simulation helper is not hardware evidence.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/virtqueue-lifetime/queue.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="51-validate-completed-byte-counts.html">Previous lesson</a> · <a rel="next" href="53-retire-a-slot-before-generation-wrap.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/52-wait-for-reset-acknowledgement.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

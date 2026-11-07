@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/24-read-a-transfer-at-the-clock-edge.html
+
+PURPOSE:
+Explain the lesson: Decide exactly when a transfer happens.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Decide exactly when a transfer happens | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="23-compose-a-buffered-pipeline.html">Previous lesson</a> · <a rel="next" href="25-capacity-and-backpressure.html">Next lesson</a></nav>
+<h1>Decide exactly when a transfer happens</h1>
+<h2>Prepare</h2>
+<p>Read the pipeline testbench beside PIPELINES.md. A clock edge is the instant at which the sequential circuits sample their inputs. Between edges, combinational outputs can settle without accepting a new byte.</p>
+<p>The transfer rule is:</p>
+<pre><code class="language-text">accepted at this rising edge = valid is one AND ready is one</code></pre>
+<p>Neither signal alone is an acknowledgement.</p>
+<h2>Work through a table</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Valid</th><th scope="col">Ready</th><th scope="col">Meaning at the edge</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>No word offered and no capacity advertised</td></tr><tr><td>0</td><td>1</td><td>Capacity exists, but nothing transfers</td></tr><tr><td>1</td><td>0</td><td>A word waits</td></tr><tr><td>1</td><td>1</td><td>One word transfers</td></tr></tbody></table></div>
+<p>A waiting producer must keep the pending word and valid signal stable until acceptance. Our bench derives input_word from sent, and increments sent only after an accepting handshake.</p>
+<h2>Lab</h2>
+<p>Temporarily sketch a consumer that keeps ready low for three edges. Write the producer's byte beneath each edge. All three entries must show the same byte. At the first accepting edge, the producer may advance to the next byte afterwards.</p>
+<h2>Observe before and after</h2>
+<p>The testbench snapshots the handshake before the rising edge. After that edge, output_word may already describe the next stored byte. Comparing that new value with the old transfer would report a false failure.</p>
+<h2>Troubleshoot</h2>
+<p>A mismatch that is always one word ahead often indicates that the test observes the wrong side of the edge. Check observation timing before modifying the circuit. The supplied bench waits for settling after changing inputs, then samples the handshake and finally advances the clock.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/buffer_pipeline_tb.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="23-compose-a-buffered-pipeline.html">Previous lesson</a> · <a rel="next" href="25-capacity-and-backpressure.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/24-read-a-transfer-at-the-clock-edge.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

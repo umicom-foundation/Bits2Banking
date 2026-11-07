@@ -73,3 +73,5 @@ No. The edit belongs to the child working tree. First review and record the chil
 ---
 
 [Read this lesson in HTML](../../../courses/introduction-to-version-control/lessons/04-submodules-and-application-dependencies.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Next: Read a parent pin and a child checkout](05-read-a-parent-pin-and-a-child-checkout.md)

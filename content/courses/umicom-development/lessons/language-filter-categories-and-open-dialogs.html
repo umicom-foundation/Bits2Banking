@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/language-filter-categories-and-open-dialogs.html
+
+PURPOSE:
+Share file-opening categories between applications
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Share file-opening categories between applications | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Share file-opening categories between applications</h1>
+<p>This module starts with a small command-line program and follows its calls into Umicom Framework. Each lesson includes the setup needed to begin independently. You will inspect real source while learning how document names, memory boundaries and editing capabilities fit together.</p>
+<p>A terminal is a window that runs written commands. PowerShell is one such terminal on Windows; Bash is common on Linux. A compiler translates C into a program your machine can run. CMake describes the build; Ninja performs the work. An SDK supplies the headers that describe a library and the compiled library files.</p>
+<p>Install a C23-capable compiler, CMake and Ninja. Install the Umicom Framework SDK containing the document and editor components. These steps assume Windows tools in C:\msys64\ucrt64\bin and SDK files in C:\umicom\installed\framework; replace those paths if your installation differs. No GTK window or broker connection is needed.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\framework-language-inspection&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\language-inspection.exe cpu.vhd app.zig CMakeLists.txt</code></pre>
+<p>On Linux, use the same lab from your checkout and your installed SDK:</p>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Bits2Banking/labs/native/framework-language-inspection
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom/installed/framework&quot;
+cmake --build build
+./build/language-inspection cpu.vhd app.zig CMakeLists.txt</code></pre>
+<p>Stop if configure or build reports an error. The first output line should be <code>cpu.vhd: vhdl</code>, followed by its choice, comment style and matching filters. This program examines the name only; the named files need not exist. <a href="../../learning-c/index.html">Learning C</a> and <a href="../../learning-cmake/index.html">Learning CMake</a> provide longer setup explanations.</p>
+<h2>A filter is a browsing aid</h2>
+<p>An Open dialog can show a subset of filenames, such as C sources or hardware descriptions. A filter describes that subset. It does not validate contents, grant permission or install a toolchain.</p>
+<p>Framework supplies default categories. The first five entries keep their existing positions; Programming Languages, Hardware Description Languages and Build Files follow them.</p>
+<h2>Inspect the categories</h2>
+<ol>
+<li>Run the lab with cpu.vhd, app.dart, main.uc and CMakeLists.txt.</li>
+<li>Read each name's Filter lines.</li>
+<li>Notice that a file can match a specialised category and All Files.</li>
+<li>Try cpu.vhd.backup. Its final suffix is backup, so the hardware filter does not match.</li>
+<li>Try a path ending in a directory separator. It is rejected as a filename.</li>
+</ol>
+<p>The helper supports all-files wildcards, suffix patterns such as *.vhd, and literal basenames such as CMakeLists.txt. It is not a complete shell-pattern interpreter. Arbitrary question marks or bracket expressions have no special meaning here.</p>
+<h2>Follow the data into a GUI</h2>
+<p>The GTK adapter creates toolkit file filters from Framework descriptions. This is a presentation responsibility: it displays shared choices. The matching helper lets non-GUI consumers inspect the same description without opening a window.</p>
+<p>Toolkit matching rules may differ from this helper's ASCII case handling. An adapter needs review on each supported platform, especially for uppercase suffixes. Keep All Files available for legitimate files outside specialised categories.</p>
+<h2>Test observable behaviour</h2>
+<p>A UI test should open the chooser, observe categories, select a fixture and confirm that the document loader receives its path. A catalogue test alone cannot prove that a menu click opens the chooser.</p>
+<p>Keep separate checks for command dispatch, chooser presentation, cancellation, accepted selection and document editing. A failure in each layer needs a diagnostic that identifies that layer.</p>
+<h2>Practice</h2>
+<p>Propose a useful category with three patterns. Check each text capacity and the set's remaining capacity. Explain why the grouping helps a user. Add it through the shared description API rather than hard-coding a second filter implementation in an application.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/native/framework-language-inspection/main.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="language-filter-results-and-failure-atomicity.html">Previous: Keep an object unchanged when an operation fails</a> · <a href="language-comments-syntax-and-build-tools.html">Next: Separate editing rules from compiler support</a></p>
+</nav><p><a href="../../../lessons/umicom-development/language-filter-categories-and-open-dialogs.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

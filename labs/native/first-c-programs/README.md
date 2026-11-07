@@ -1,6 +1,6 @@
 # First C programs: read, build and check
 
-This lab builds seven small hosted C23 programs and two contract tests. You may read the source and predict output without executing anything. The commands below describe expected behaviour; a published source file is not evidence that these commands passed on your computer.
+This lab builds eight small hosted C23 programs and two contract tests. You may read the source and predict output without executing anything. The commands below describe expected behaviour; a published source file is not evidence that these commands passed on your computer.
 
 ## What you need
 
@@ -49,7 +49,7 @@ The expected displayed line is Hello, learner. The following echo reports the pr
 
 ## Build and check all examples
 
-After the single-target exercise works, build the remaining programs and run the registered checks. The expected selection contains nine tests: seven output checks, one count-contract test with thirteen input rows, and one borrowed-memory contract test.
+After the single-target exercise works, build the remaining programs and run the registered checks. The expected selection contains ten tests: eight output checks, one count-contract test with thirteen input rows, and one borrowed-memory contract test.
 
 Windows:
 
@@ -65,7 +65,7 @@ cmake --build ./build/first-c-programs --parallel 2
 ctest --test-dir ./build/first-c-programs --output-on-failure --no-tests=error
 ```
 
-The expected result is nine executed passing tests with no skips. Record your actual result. The test runner does not build missing executables. --output-on-failure prints failed-test details; --no-tests=error rejects an empty selection.
+The expected result is ten executed passing tests with no skips. Record your actual result. The test runner does not build missing executables. --output-on-failure prints failed-test details; --no-tests=error rejects an empty selection.
 
 ## Make a small change
 

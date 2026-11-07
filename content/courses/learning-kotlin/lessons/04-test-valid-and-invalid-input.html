@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-kotlin/lessons/04-test-valid-and-invalid-input.html
+
+PURPOSE:
+Explain the lesson: Test valid and invalid terminal input.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test valid and invalid terminal input | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-convert-command-line-text.html">Previous lesson</a></nav>
+<h1>Test valid and invalid terminal input</h1>
+<h2>A check needs an observable promise</h2>
+<p>A test supplies input and compares the actual result with a stated expectation. The expectation must describe the useful behaviour, not merely repeat the implementation.</p>
+<p>This lab promises that valid progress produces a remaining count and invalid terminal input produces no result. It also promises that the command-line program reports failure to the operating system.</p>
+<h2>Setup recap</h2>
+<p>Use a JDK and Kotlin compiler with the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/kotlin-first-program/README.md">input lab</a>. Its CMake project compiles the three Kotlin source files into one jar. Read the command-line conversion chapter if <code>null</code>, an array or an exit status is unfamiliar.</p>
+<h2>Divide the inputs</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Group</th><th scope="col">Example</th><th scope="col">Expected observation</th></tr></thead><tbody><tr><td>Ordinary success</td><td>4 and 1</td><td>3</td></tr><tr><td>Empty course</td><td>0 and 0</td><td>0</td></tr><tr><td>Completed course</td><td>4 and 4</td><td>0</td></tr><tr><td>Missing argument</td><td>4 alone</td><td>null</td></tr><tr><td>Invalid text</td><td>4 and word</td><td>null</td></tr><tr><td>Too large for Int</td><td>2147483648 and 0</td><td>null</td></tr><tr><td>Invalid model range</td><td>4 and 5</td><td>null</td></tr></tbody></table></div>
+<p>The last two failures happen for different reasons. The first cannot be represented by Kotlin's Int. The second is representable but violates the course-progress rule.</p>
+<h2>Lab</h2>
+<ol>
+<li>Open InputChecks.kt and find a case from each row.</li>
+<li>Build the lab using the README commands.</li>
+<li>Run <code>java -cp build/progress-input.jar InputChecksKt</code>.</li>
+<li>Run the registered checks with <code>ctest --test-dir build --output-on-failure</code>.</li>
+<li>In a separate practice copy, change one expected answer from 3 to 2. Rebuild and expect the check to fail.</li>
+<li>Restore the expectation and rerun the same check.</li>
+</ol>
+<p>The deliberate failure establishes that the check can detect that wrong answer. It does not establish every other property of the program.</p>
+<h2>Exceptions and process results</h2>
+<p>The adapter catches IllegalArgumentException from the existing model. It does not catch every possible exception: a programming fault should not quietly become ordinary invalid input.</p>
+<p>CTest also starts the command-line entry point. Its valid case checks visible output. Its invalid case expects a failing process status. These observations complement the direct function checks; a correct function can still be wired to a broken entry point.</p>
+<h2>Exercise and explanation</h2>
+<p>Would one successful test with 4 and 1 establish safe array indexing? No. Missing and extra arguments exercise the length check. They belong in the input table because real terminal users can supply them.</p>
+<h2>Troubleshooting</h2>
+<p>Check failures should name the input and expected outcome. If a test times out, distinguish compiler startup from a running program that never exits. Save the command, output and source revision before changing the test timeout.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/kotlin-first-program/InputChecks.kt">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-convert-command-line-text.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-kotlin/04-test-valid-and-invalid-input.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="05-read-function-inputs-and-results.html">Next: Read function inputs and results</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

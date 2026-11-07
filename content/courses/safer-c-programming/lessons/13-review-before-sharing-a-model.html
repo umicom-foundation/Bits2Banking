@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/13-review-before-sharing-a-model.html
+
+PURPOSE:
+Explain the lesson: Review a teaching model before using a Framework service.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review a teaching model before using a Framework service | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-failure-matrix-and-sentinels.html">Previous lesson</a></nav>
+<h1>Review a teaching model before using a Framework service</h1>
+<h2>Prepare</h2>
+<p>Read the complete fault-injection lab and the Framework memory interface linked in its README. A teaching model deliberately has a small contract so its behaviour can be traced. A shared product service must also address the needs of all its consumers.</p>
+<h2>Inventory the contract</h2>
+<p>The lab supports one in-memory note with two byte-limited fields, allocator callbacks, a revision and explicit destruction. It does not provide durable storage, Unicode editing, concurrent access, authorization, history or a graphical editor.</p>
+<p>Write these limits alongside the supported operations. Clear limits make the model useful; hidden assumptions make integration unreliable.</p>
+<h2>Map to an application</h2>
+<p>Imagine an editor wants to change a document title and body. The application should ask the existing Framework document service to perform that operation. Its UI supplies intent and presents the result. It should not copy the lab's allocation code into every button callback.</p>
+<p>Follow the same reasoning for Web, desktop and mobile frontends. The state-changing contract belongs in a reusable core; platform-specific code handles events, presentation and the necessary language boundary.</p>
+<h2>Exercise</h2>
+<p>Create a three-column table: product need, existing Framework service to inspect, missing evidence. Include editing, conflict detection, persistence and ownership. Leave a cell marked “not yet located” when you have not found a matching API.</p>
+<p>Expected result is a source-backed map, not a claim that similarly named functions provide equivalent behaviour.</p>
+<h2>Review an extension</h2>
+<p>Before adding a new reusable operation:</p>
+<ol>
+<li>inspect the existing header and examples;</li>
+<li>write its input, output, lifetime and failure contract;</li>
+<li>identify callers affected by the change;</li>
+<li>author a meaningful regression;</li>
+<li>document how a thin frontend calls it.</li>
+</ol>
+<p>Keep old implementations available for review when replacing logic under the project's preservation policy.</p>
+<h2>Diagnose duplication</h2>
+<p>Two copies often begin identically and then receive different fixes. Prefer a shared service and clear ownership over keeping copied implementations synchronized by hand. This lesson's lab remains an isolated exercise; its value is understanding the transaction and lifetime reasoning before working on the larger production API.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/fault-injection/note.h">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-failure-matrix-and-sentinels.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/safer-c-programming/13-review-before-sharing-a-model.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="14-borrow-storage-for-a-report.html">Next: Borrow storage for a temporary report</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/08-reject-an-invalid-port-before-launch.html
+
+PURPOSE:
+  Present "Reject an invalid port before starting a server" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reject an invalid port before starting a server | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Reject an invalid port before starting a server</h1>
+<p>Before a server opens a socket, it needs a valid port number. The Framework example parses a chosen port without trusting the input text. We will trace its arithmetic and publish-on-success behaviour.</p>
+<p>Source to open: <code>Umicom-Applications/framework/examples/web/local_service.c</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath '..\Umicom-Applications\framework\examples\web\local_service.c'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' '../Umicom-Applications/framework/examples/web/local_service.c'</code></pre>
+<h2>Understand the idea</h2>
+<p>A decimal parser builds a number one digit at a time: multiply the previous value by ten, then add the new digit. Doing that before checking bounds can overflow. ParsePort instead tests whether port is greater than (65535 - digit) / 10 before multiplication. The accepted policy range is 1024 through 65535.</p>
+<pre><code class="language-text">port text → digit check → checked decimal accumulation → policy range → publish port</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Read ParsePort. Mark the checks for missing text, nondigits, upper bound and lower bound. Find the only assignment through out.</li><li>Trace 8765 on paper: 8, 87, 876, 8765. Then trace 65536 and identify the digit that makes the guard reject.</li><li>Trace 80, an empty string, 87x5 and -1. Give each a refusal reason. Notice that a sign is not part of this parser's accepted grammar.</li><li>Follow main's failed-parse branch. It prints guidance and returns before creating the service. Write a test plan that checks no server is started on invalid input.</li></ol>
+<h2>Expected result</h2>
+<p>8765 and the boundary 65535 are accepted. 80, 65536, empty text, signs and nondigits are rejected. On refusal, the parser does not assign the output.</p>
+<h2>If the result differs</h2>
+<p>If a rejected input still starts a server, inspect the caller's handling of ParsePort's result. If an accepted port cannot bind, that is a later socket/environment failure; a valid number does not guarantee availability.</p>
+<h2>Explain it yourself</h2>
+<p>Why is checking port &lt;= 65535 only after multiplication weaker?</p>
+<details><summary>Worked explanation</summary><p>The intermediate arithmetic may already have overflowed before the comparison. The precondition guard proves that the next multiply-and-add fits, preserving the intended number.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>Record inputs, expected outputs and refusal cases before extending the example. Reusable production behaviour belongs in Umicom Framework; applications translate user actions and show the service result. A traced example explains a contract. It does not establish that every application using a similar idea has been integrated or tested.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="07-run-and-explain-a-framework-service.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+<nav aria-label="Next lesson"><a rel="next" href="09-observe-a-complete-http-message.html">Next: Observe a complete HTTP message</a></nav></article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>
+

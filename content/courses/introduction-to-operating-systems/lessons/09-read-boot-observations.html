@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-operating-systems/lessons/09-read-boot-observations.html
+
+PURPOSE:
+Read a boot observation without overstating its meaning
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read a boot observation without overstating its meaning | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read a boot observation without overstating its meaning</h1>
+<p>An operating system coordinates programs, memory, devices and access to resources. This course introduces each idea using a small Umicom example. It assumes no previous operating-system or C experience. Definitions and setup are repeated where a lesson can be read independently.</p>
+<h2>Prepare this lesson</h2>
+<p>You need a text editor to read the examples. A terminal is a window in which a typed command asks a program to do something. PowerShell is the Windows terminal language used below; Bash is the Linux alternative. A path names a file or folder. Replace C:\umicom with your checkout location if it differs.</p>
+<p>For the optional C lab, install a C23 compiler, CMake and Ninja, and a matching Umicom Framework SDK that includes the platform component. On Windows, open PowerShell and enter:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\boot-report&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version</code></pre>
+<p>Read the lab README before configuring it. Run commands separately and stop on a nonzero exit status. Reading a report does not boot an operating system. QEMU exercises use the separate Kernel guide linked in the relevant lesson; no physical disk is attached. You can complete the prediction and source-reading exercises without executing programs.</p>
+<h2>A report is evidence with a limited scope</h2>
+<p>The first line UMICOM_BOOT_REPORT 1 identifies a format and version. Each following line names one field. planned is the number of startup checks; completed is the number successfully completed so far. state describes this boot phase, while reason explains a recovery outcome.</p>
+<p>The source field is a hexadecimal fingerprint of recorded inputs. A fingerprint helps compare bytes. It does not prove who created them or whether a machine is trustworthy. Authentication requires an additional trust mechanism.</p>
+<h2>Inspect the three fixtures</h2>
+<ol>
+<li>Open ready.report. Find planned=2 and completed=2.</li>
+<li>Open recovery.report. It records one completed check and service-exit as the reason.</li>
+<li>Open invalid.report. It says ready despite incomplete checks.</li>
+<li>Run the lab client against each absolute path using the README commands.</li>
+<li>Record the process status and accepted fields separately.</li>
+</ol>
+<p>A successfully parsed recovery report should still display recovery. Returning success from a file reader means the record was read correctly; it is not permission to display a green healthy-system badge.</p>
+<h2>Why bounded text matters</h2>
+<p>The parser accepts at most 512 bytes and requires a final LF. It rejects duplicate and unknown fields. Those choices prevent an older reader from silently ignoring a new field that changes the meaning of the record. A changed format needs a documented version policy.</p>
+<p>These teaching files contain an illustrative source ID. Do not publish their contents as real boot results. For a guest run, preserve the actual report, console output, process status and source identity together. They answer different questions and should not be collapsed into one pass label.</p>
+<h2>Read the source</h2>
+<p><a href="../../../../labs/framework/boot-report/fixtures/ready.report">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="08-system-calls-and-framework.html">Previous: Locate the boundary between kernel services and Framework</a> · <a href="10-build-the-observer.html">Next: Build a small OS observation application</a></p>
+</nav><p><a href="../../../lessons/08-system-administration/introduction-to-operating-systems/09-read-boot-observations.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/40-one-model-several-interfaces.html
+
+PURPOSE:
+Explain the lesson: Plan one C model for several interfaces.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plan one C model for several interfaces | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="39-trace-an-event-to-a-framework-rule.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="41-signed-values-at-a-platform-boundary.html">Next lesson</a></nav>
+<h1>Plan one C model for several interfaces</h1>
+<h2>Before you begin</h2>
+<p>You need a text editor and the Bits2Banking checkout. Read <code>labs/native/framework-activity/activity.h</code>, then <code>activity.c</code>. A function declaration tells a caller how to ask for work. Its contract also explains which inputs are accepted and what changes on success or failure.</p>
+<h2>Separate the decisions</h2>
+<p>Our activity records completed exercises. A button, browser page and phone screen can all request the next count. The rule accepts a count below 1000 and writes the next value. A null result pointer or an excessive count is rejected. The caller must inspect the returned status before presenting success.</p>
+<p>The screen chooses labels and receives input. The model decides whether the update is valid. Framework supplies the shared status vocabulary. The small activity rule belongs to this educational application; a production service shared by multiple Umicom products belongs in Framework.</p>
+<pre><code class="language-text">Desktop button ─┐
+Browser click ──┼─&gt; input adapter ─&gt; activity rule ─&gt; result ─&gt; screen
+Phone tap ──────┘</code></pre>
+<p>An adapter translates between representations. It should not quietly invent a different maximum or accept a failure as success.</p>
+<h2>Make a boundary map</h2>
+<ol>
+<li>Write the input: an existing count.</li>
+<li>Write the output: a status and, on success, a next count.</li>
+<li>Write the unchanged state on failure.</li>
+<li>Name the UI state owner. Each window or page owns its displayed value.</li>
+<li>Identify the files used by every interface: the same <code>activity.c</code> and header.</li>
+</ol>
+<h2>Trace a refusal</h2>
+<p>Suppose the screen shows 1000. The user presses Complete exercise. The rule returns a capacity status. The screen keeps 1000 and explains that the limit has been reached. It must not show 1001 first and try to repair the display later.</p>
+<h2>Practice and check</h2>
+<p>Draw the path for a keyboard shortcut. It should reach the same rule as the button. Then propose a Reset action. Specify its input, output, ownership and tests before adding a second operation. Reset is a new rule, not a reason to bypass validation in the UI.</p>
+<h2>When results disagree</h2>
+<p>If two screens show different answers, compare the actual compiled source and adapter conversions. Sharing a filename is insufficient when each project copied and changed its own file. Keep a source revision and build configuration with the result.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/activity.h">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="41-signed-values-at-a-platform-boundary.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/umicom-development/40-one-model-several-interfaces.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

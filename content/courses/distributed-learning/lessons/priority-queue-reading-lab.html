@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/distributed-learning/lessons/priority-queue-reading-lab.html
+
+PURPOSE:
+  Present "Lab: trace a stable job queue" with source-based exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab: trace a stable job queue | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="180" alt="Umicom"> · Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1>Lab: trace a stable job queue</h1>
+<p>Distributed work begins with deciding which task is considered next. This lesson traces a small existing Framework queue used for financial jobs, then identifies what additional contracts a learning-work scheduler would need.</p>
+<p>Source to open: <code>Umicom-Applications/framework/src/finance/enterprise/distributed_job_queue.c</code>.</p>
+<h2>Setup recap</h2>
+<p>Use a text editor, this course and a checkout of the named source. A checkout is a folder containing a repository's files. This is a source-reading and reasoning lab; it needs no running service or account. Choose your own practice folder and keep the original example unchanged. The commands below display source rather than compile or execute it. Replace the example directory with your checkout location. The detailed terminal and editor guide explains how to obtain a checkout, open a terminal and prepare later executable exercises.</p>
+<p>A terminal accepts commands. Set-Location (PowerShell) and cd (Bash) choose the folder in which subsequent commands work. Get-Content and sed display text. If a path is missing, locate the repository first instead of creating an empty replacement file.</p>
+<h3>PowerShell</h3>
+<pre><code class="language-powershell">Set-Location 'C:\umicom\Umicom-Bits2Banking'
+Get-Content -LiteralPath '..\Umicom-Applications\framework\src\finance\enterprise\distributed_job_queue.c'</code></pre>
+<h3>Bash</h3>
+<pre><code class="language-bash">cd /path/to/umicom/Umicom-Bits2Banking
+sed -n '1,200p' '../Umicom-Applications/framework/src/finance/enterprise/distributed_job_queue.c'</code></pre>
+<h2>Understand the idea</h2>
+<p>A queue stores work until a consumer asks for an item. A priority queue chooses by a priority value instead of simply taking the oldest entry. Stable ordering means that items with equal priority retain their relative insertion order. This implementation stores both the job and an insertion number. Pop scans for the highest priority and uses the earlier insertion number for a tie, then shifts the remaining entries. It is a bounded in-memory helper. Its source does not establish a durable network scheduler, worker trust or validation of learning results.</p>
+<pre><code class="language-text">Insertion: A(priority 2, #1), B(priority 5, #2), C(priority 5, #3)
+Pop order: B -&gt; C -&gt; A -&gt; NOT_FOUND
+Tie rule: equal priority chooses the earlier insertion number.</code></pre>
+<h2>Work through the lab</h2>
+<ol><li>Read init and note the empty count and first insertion number. Create three paper jobs: A with priority 2, B with priority 5, C with priority 5. Push them in that order and record their insertion numbers.</li><li>Follow pop's best variable through the comparison loop. First B outranks A. C has the same priority as B, so compare insertion numbers. Record which job is returned and which entries shift.</li><li>Repeat until the queue is empty. Then follow one more pop and record UMI_STATUS_NOT_FOUND. For push at capacity, locate the check before the copy and count increment.</li><li>Write a separate design list for distributing learning work: task identity, required memory, worker capability, lease expiry, retry policy, result verification and durable records. Mark every item as a proposed scheduler requirement unless a separately inspected implementation provides it.</li></ol>
+<h2>Expected result</h2>
+<p>Your trace returns B, C and A. It demonstrates priority and tie handling for this bounded example. It does not establish fairness under an endless stream of higher-priority jobs, behaviour after insertion-counter exhaustion, or correctness of results received from another machine.</p>
+<h2>If the result differs</h2>
+<p>If C is selected before B in your trace, reread the less-than comparison on insertion numbers. If your design equates priority with trust, separate scheduling urgency from independent verification of a result. A job selected first is not automatically a valid result.</p>
+<h2>Explain it yourself</h2>
+<p>What could happen to A if new priority-5 jobs keep arriving before each pop?</p>
+<details><summary>Worked explanation</summary><p>A may wait indefinitely. Stable ordering only orders equal-priority jobs; it does not guarantee service for a lower-priority class. A production scheduler needs an explicit fairness policy if that guarantee is required.</p></details>
+<h2>Use the idea in Umicom</h2>
+<p>The inspected queue is a shared Framework component, not a new learning-network implementation. Reuse it only after checking capacity, concurrency and lifetime requirements. Worker admission and result validation need their own reviewed contracts.</p>
+<p><a href="../../learning-c/terminal-to-visual-studio.html">Terminal and editor setup guide</a></p>
+<nav aria-label="Lesson sequence"><a rel="prev" href="084-design-a-reproducible-three-worker-experiment.html">Previous lesson</a> · <a href="../index.html">Course contents</a></nav>
+</article></main><footer>Sammy Hegab · Umicom Foundation · Original educational material · MIT.</footer></body></html>

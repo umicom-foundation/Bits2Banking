@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/05-window-state-and-independent-instances.html
+
+PURPOSE:
+Explain the lesson: Keep window state independent.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep window state independent | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html">Umicom · Bits2Banking</a></div></header><main id="main" class="simple-page"><article><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="04-trace-a-button-through-a-callback.html">Previous lesson</a></nav>
+<h1>Keep window state independent</h1>
+<h2>State belongs somewhere</h2>
+<p>A state object contains values that must survive between callbacks. A local variable inside a callback disappears when that call returns. A global variable survives, but can accidentally make unrelated windows share one value.</p>
+<p>The activity example allocates an ActivityWindow for each created window. It contains the completed count and a label pointer. GTK keeps that state attached to the window and releases it through the registered destroy function.</p>
+<h2>Setup recap</h2>
+<p>Read and build the optional GTK4 target using the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/README.md">Framework activity guide</a>. Work in a disposable practice checkout for source experiments. Reading the ownership trace needs only window.c and the ability to recognise a pointer as a reference to an object.</p>
+<h2>Draw the ownership</h2>
+<pre><code class="language-text">application -&gt; window -&gt; widget tree -&gt; label
+                  |
+                  +-&gt; ActivityWindow state
+                      count
+                      borrowed label pointer</code></pre>
+<p>The state does not independently own the label. The window's widget tree does. The callback temporarily holds a reference to the window while updating its label, then releases it. The source explains why notifications and object lifetime must be considered together.</p>
+<p>g_signal_connect_object also associates the signal connection with the target window's lifetime. A raw callback data pointer without a lifetime plan would require separate disconnection management.</p>
+<h2>Lab</h2>
+<ol>
+<li>Launch two independent processes of the teaching application.</li>
+<li>Click the first window twice and the second once.</li>
+<li>Expect separate counts.</li>
+<li>Close one process and continue using the other.</li>
+<li>Read the allocation and release code together.</li>
+<li>In your notes, distinguish the state owner from the pointer borrowed by the state.</li>
+</ol>
+<p>Two processes are an initial independence check, not a complete test of several windows within one process. If you add a New Window command later, test that case separately.</p>
+<h2>Exercise and explanation</h2>
+<p>Should the callback free the ActivityWindow after each click? No. Later clicks still need it. The registered window-data cleanup releases it when its owner is finalized.</p>
+<h2>Extend carefully</h2>
+<p>A background worker must not use a widget after its window closes. It needs cancellation, a valid reference or weak-reference strategy, and a main-thread handoff for GTK updates. This synchronous example does not establish those additional guarantees.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="04-trace-a-button-through-a-callback.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/learning-gtk4/05-window-state-and-independent-instances.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="06-create-and-own-window-state.html">Next: Create and own a window&#39;s state</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

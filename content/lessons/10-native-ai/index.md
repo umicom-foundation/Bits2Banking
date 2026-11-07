@@ -592,3 +592,20 @@ not execute generated code, and does not establish a performance speedup.
 - [Lesson 68 — Benchmark Full-Context and Streaming Generation with Real Evidence](../../courses/llm-from-scratch/lessons/68-qualify-native-generation-performance.html)
 
 The optional Framework C23 workload estimator uses the existing KV-cache allocation planner and records the work implied by learned absolute positions. The paired execution comparison checks exact token parity and observed row counts before publishing CPU-time observations. A process CPU-time measurement is neither a wall-clock latency figure nor proof that the cache is faster. Training behaviour, checkpoint structure and existing inference interfaces are unchanged.
+
+## Practical labs: read, change and check
+
+Follow these after the introductory lessons. Each lab includes its own setup recap and explains the expected result.
+
+- [Lab: turn bytes into tokens and recover them](byte-tokenizer-contract-lab.md)
+- [Lab: keep training and evaluation sequences separate](sequence-split-contract-lab.md)
+
+## Continue with a practical source study
+
+A measurement should help us understand a model, not silently change it. In this lab you will follow an existing Framework test that saves a trained model's checkpoint before and after profiling, then compares the exact bytes.
+
+- [Lab: measure a model without changing its checkpoint](checkpoint-observation-lab.md)
+
+## Build a small client of the real AI services
+
+The [Framework AI contract lab](../umicom-development/84-build-the-framework-ai-contract-lab.md) compiles the original tokenizer and gradient-measurement source into a small client. Continue with [boundary cases](../umicom-development/85-check-real-ai-client-boundaries.md) to check insufficient buffers, reserved tokens and non-finite gradients. Follow the setup recap in the first lab before running any command.

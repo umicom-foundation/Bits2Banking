@@ -1,0 +1,64 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/39-keep-failed-output-unchanged.html
+
+PURPOSE:
+Keep caller output unchanged when a request fails
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep caller output unchanged when a request fails | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep caller output unchanged when a request fails</h1>
+<p>Learn how two valid pointers can still describe conflicting output storage. The exercise follows the Umicom Framework corpus service from a small caller through its contract, boundary checks and regression coverage.</p>
+<h2>Prepare the laboratory</h2>
+<p>A corpus is a collection of example data. A token is a number that represents a piece of that data. This laboratory turns six bytes into pairs of tokens. It does not train a model or use the network.</p>
+<p>Read the lesson without installing anything. To run the example, use a C23 compiler, CMake 3.24 or newer, Ninja, and the Umicom Framework checkout containing the corpus-range laboratory. A terminal accepts typed commands. The compiler translates C into machine code; CMake describes targets; Ninja builds them; CTest runs registered checks.</p>
+<ol>
+<li>Find the Framework folder in your checkout.</li>
+<li>Open PowerShell or Bash. Substitute your chosen checkout location below.</li>
+<li>Configure a separate learning build. It does not replace your application build.</li>
+<li>Build the two named targets, then run only the two named checks.</li>
+<li>Stop on an error and read the first diagnostic before continuing.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Applications\framework&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S learning/native-llm -B build/corpus-ranges -G Ninja -DBUILD_TESTING=ON
+cmake --build build/corpus-ranges --target umicom-native-llm-corpus-ranges umicom-ai-training-corpus-ranges-test --parallel 2
+ctest --test-dir build/corpus-ranges -R &quot;^framework\.ai\.training\.corpus_ranges(_demo)?$&quot; --output-on-failure --no-tests=error
+&amp; &quot;.\build\corpus-ranges\umicom-native-llm-corpus-ranges.exe&quot;</code></pre>
+<pre><code class="language-bash">cd ~/umicom/Umicom-Applications/framework
+cmake -S learning/native-llm -B build/corpus-ranges -G Ninja -DBUILD_TESTING=ON
+cmake --build build/corpus-ranges --target umicom-native-llm-corpus-ranges umicom-ai-training-corpus-ranges-test --parallel 2
+ctest --test-dir build/corpus-ranges -R '^framework\.ai\.training\.corpus_ranges(_demo)?$' --output-on-failure --no-tests=error
+./build/corpus-ranges/umicom-native-llm-corpus-ranges</code></pre>
+<p>If CMake cannot find the C compiler, check its installation and PATH. If the target is unknown, confirm that the learning source and its CMakeLists.txt are from the same checkout. A missing executable means the build has not produced it. Test success must come from the commands on your machine; the expected output below is not an execution record.</p>
+<p>For a longer language introduction, see <a href="../../learning-c/index.html">Learning C</a>. This lesson explains the concepts it uses.</p>
+<h2>Why a refusal needs a state contract</h2>
+<p>A result code answers whether an operation succeeded. The caller also needs to know what happened to its previous data. A rejected corpus window must leave the output arrays unchanged. This lets an editor or training inspector keep its previous valid view after an invalid request.</p>
+<p>The function validates every precondition before entering the loop that writes tokens. There are no failure-return branches inside that final loop. This design makes the publication boundary clear: checks first, then writes.</p>
+<h2>Observe the state, not only the code</h2>
+<p>The regression fills a real array with known values and copies it before calling the function. After the call it checks both the result and every byte of the array.</p>
+<pre><code class="language-c">memcpy(before, slots, sizeof(slots));
+status = UmiAiCorpusWindow(corpus, 0U, 4U, slots + 1U, slots + 3U, 4U);
+/* Check INVALID_ARGUMENT, then compare the complete array. */
+if (memcmp(before, slots, sizeof(slots)) != 0) {
+    /* A failed request changed caller-owned storage. */
+}</code></pre>
+<p>memcpy copies a specified number of bytes between nonoverlapping regions. Here before and slots are separate arrays. memcmp compares their object bytes and returns zero when they match. Comparing the full array also catches accidental writes to guard elements outside the requested region.</p>
+<h2>Practise reviewing the boundary</h2>
+<ol>
+<li>Find the first assignment to inputs[i] in the active implementation.</li>
+<li>List all conditions checked before it.</li>
+<li>Confirm that insufficient capacity is handled before any writes.</li>
+<li>Find the overlap checks and confirm they also precede the writes.</li>
+<li>Locate each failure check in the regression.</li>
+</ol>
+<p>This contract does not make the operation atomic between threads. Another thread writing the same array can still cause a data race. Give each operation exclusive access or use an appropriate synchronization policy. Unchanged-on-error and concurrency safety are different properties, and both need explicit designs.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/ai_training/test_training_corpus_ranges.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="38-recognise-overlapping-output-ranges.html">Previous: Recognise overlap between distinct pointers</a> · <a href="40-own-the-corpus-and-borrow-the-window.html">Next: Follow corpus and output lifetimes</a></p>
+</nav><p><a href="../../../lessons/03-native-code/safer-c-programming/39-keep-failed-output-unchanged.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

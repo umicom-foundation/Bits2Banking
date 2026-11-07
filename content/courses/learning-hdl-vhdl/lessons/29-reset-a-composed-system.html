@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-hdl-vhdl/lessons/29-reset-a-composed-system.html
+
+PURPOSE:
+Explain the lesson: Reset every stage of a composed system.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset every stage of a composed system | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="28-bound-a-simulation.html">Previous lesson</a> · <a rel="next" href="30-review-a-hardware-boundary.html">Next lesson</a></nav>
+<h1>Reset every stage of a composed system</h1>
+<h2>Prepare</h2>
+<p>Open buffer_pipeline_reset_tb.vhd. Its edge procedure waits for a rising clock edge and then allows one nanosecond for outputs to settle.</p>
+<p>This exercise fills both storage stages before reset. Resetting an empty design would not prove that pending data is discarded.</p>
+<h2>Read the scenario</h2>
+<ol>
+<li>Reset to an empty pipeline.</li>
+<li>Offer byte 17, then byte 34, with the consumer stopped.</li>
+<li>Confirm the output presents 17 and input_ready is zero.</li>
+<li>Assert reset and make the consumer ready.</li>
+<li>Check that no transfer is advertised during reset.</li>
+<li>Apply a rising edge to clear stored state.</li>
+<li>Send byte 51 and verify it is the only result.</li>
+</ol>
+<p>The test distinguishes suppression of visible handshakes from clearing internal registers.</p>
+<h2>Lab</h2>
+<p>Draw the two stored bytes immediately before reset and immediately after the reset edge. Then draw the path of 51 through the empty pipeline.</p>
+<p>Expected: neither 17 nor 34 appears in the new sequence.</p>
+<h2>Why both stages matter</h2>
+<p>If only the first stage were reset, the second could still expose an old word. If only the second were reset, the first could forward an old word after reset ended. Shared reset wiring is part of the composition contract.</p>
+<h2>Troubleshoot</h2>
+<p>A test that deasserts reset before a rising edge has not necessarily reset synchronous storage. Keep reset asserted across an active edge as the bench does.</p>
+<h2>Scope</h2>
+<p>This reset policy intentionally discards pending work. A software service that promises to finish accepted requests may need draining instead. Document the policy before treating reset as a universal shutdown mechanism.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-foundations/buffer_pipeline_reset_tb.vhd">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="28-bound-a-simulation.html">Previous lesson</a> · <a rel="next" href="30-review-a-hardware-boundary.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-hdl-vhdl/29-reset-a-composed-system.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

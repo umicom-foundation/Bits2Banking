@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-programming/lessons/02-values-and-decisions.html
+
+PURPOSE:
+Teach a connected practical learning route through original examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Values, variables and decisions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body>
+<a class="skip" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span class="brand-course">Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a><a href="../../learning-paths.html">Learning paths</a></nav></div></header><main id="main" class="container page-pad"><article style="max-width:80ch;margin:auto;overflow-wrap:anywhere"><h1>Values, variables and decisions</h1><nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-instructions-source-and-results.html">Previous: Instructions, source files and results</a> · <a href="03-loops-and-functions.html">Next: Repeat work and name a reusable operation</a></p></nav><h2>The idea</h2>
+<p>A value is one piece of information, such as the number 5. A variable is a named place for a value. A type describes the kind of value permitted. In C, int represents whole numbers within the implementation's integer range.</p>
+<p>A course progress screen might know there are five activities and two are finished. Its remaining count is three. Before subtracting, it must reject impossible counts.</p>
+<h2>Setup recap</h2>
+<p>Use <a href="../index.html">the course setup</a> to install the compiler and build the first-c-programs lab. Open values.c and decisions.c in a text editor. These are small console examples; no account, network or Framework installation is needed.</p>
+<h2>Read the rule before the code</h2>
+<pre><code class="language-text">total = 5, completed = 2 -&gt; remaining = 3
+total = 5, completed = 7 -&gt; invalid progress</code></pre>
+<p>The symbol = assigns a value in C. Equality testing uses ==. The expression completed &gt; total is a question whose answer is true or false.</p>
+<pre><code class="language-c">const int total = 5;
+const int completed = 7;
+if (completed &gt; total) {
+    puts(&quot;Counts do not fit the rule.&quot;);
+} else {
+    printf(&quot;Remaining: %d\n&quot;, total - completed);
+}</code></pre>
+<p>This is a fragment from the decision idea, not a complete file. Use the repository's complete decisions.c when compiling; it also rejects negative and excessive totals. const means this variable cannot be reassigned through that name. %d is a placeholder for a signed integer; \n ends the output line.</p>
+<h2>Lab</h2>
+<ol>
+<li>Run btb-first-decisions using the course build directory. The repository example uses completed = 7.</li>
+<li>Expect &quot;Counts do not fit the rule.&quot; Rejection is the intended outcome for these values.</li>
+<li>In your own practice copy, change completed to 2 and predict &quot;Remaining: 3&quot;.</li>
+<li>Compile that copy and compare the result.</li>
+<li>Try total = 0 and completed = 0. Zero is a valid count; the answer is zero.</li>
+</ol>
+<h2>Trace a branch</h2>
+<pre><code class="language-text">read counts -&gt; valid?
+                yes -&gt; subtract -&gt; display remaining
+                no  -&gt; explain the invalid counts</code></pre>
+<p>Only one branch runs. The display is a consequence of the rule, not a substitute for checking it.</p>
+<h2>Exercise</h2>
+<p>What should happen for total = 5, completed = -1? Write the expectation before editing the program.</p>
+<h2>Worked answer</h2>
+<p>The full example refuses negative completed counts. Subtracting first would produce 6, an answer that looks plausible but represents invalid input. Validation must happen before using the values.</p>
+<h2>Umicom connection</h2>
+<p>The shared count function in labs/native/first-c-programs/counts.c separates the rule from display. Framework services use this separation too: the same validated result can support a desktop window, terminal or web interface.</p>
+<h2>Troubleshooting and limits</h2>
+<p>A source edit in the repository changes the exercise for later lessons; keep experiments in your own copy or record the change. This program uses fixed numbers, not keyboard input. Input conversion is a separate problem covered in <a href="../../learning-pascal/index.html">Learning Pascal</a> and <a href="../../safer-c-programming/index.html">Safer C Programming</a>.</p>
+<h2>Source map</h2>
+<p>Read <code>labs/native/first-c-programs/decisions.c</code> in the Bits2Banking checkout. The lesson names the specific functions to study; you do not need to understand every file at once.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="01-instructions-source-and-results.html">Previous: Instructions, source files and results</a> · <a href="03-loops-and-functions.html">Next: Repeat work and name a reusable operation</a></p></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></div></footer></body></html>

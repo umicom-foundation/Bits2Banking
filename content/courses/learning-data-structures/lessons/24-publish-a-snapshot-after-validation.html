@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/24-publish-a-snapshot-after-validation.html
+
+PURPOSE:
+Explain the lesson: Publish a snapshot after validation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish a snapshot after validation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="23-preserve-address-stable-owners.html">Previous lesson</a> · <a rel="next" href="25-design-a-diagnostic-view-contract.html">Next lesson</a></nav>
+<h1>Publish a snapshot after validation</h1>
+<h2>Prepare</h2>
+<p>Open BtbDiagnosticRead. A snapshot is a copy of the retained observation values at one point in this single-threaded model.</p>
+<p>The function validates the owner, builds a local candidate and assigns the caller's output only after the candidate is complete.</p>
+<h2>Trace publication</h2>
+<p>The candidate starts zero-initialised. It receives count, dropped and each retained record in reading order. One final assignment publishes it.</p>
+<p>This arrangement keeps unused candidate fields predictable and avoids partially replacing the caller's result.</p>
+<h2>Lab</h2>
+<p>Choose an invalid copied owner and a previously populated output snapshot. Trace the return path without executing undefined memory access.</p>
+<p>Expected: validation returns BAD_STATE before the output assignment. The previous snapshot remains available to the caller.</p>
+<h2>Exercise and explanation</h2>
+<p>Should the interface show the previous snapshot as freshly collected after refusal? No. Preserved data must retain its old status and age. A failed refresh is not a new observation.</p>
+<h2>Troubleshoot</h2>
+<p>When testing byte preservation of a structure, remember that C structures may contain padding. Capture bytes with memcpy if the intended assertion concerns the exact object representation; compare fields when the contract concerns values.</p>
+<p>The model does not lock a concurrently changing ring. A multithreaded implementation would need synchronisation or an explicitly designed snapshot protocol before claiming a consistent view.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/diagnostic-ring/ring.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="23-preserve-address-stable-owners.html">Previous lesson</a> · <a rel="next" href="25-design-a-diagnostic-view-contract.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/24-publish-a-snapshot-after-validation.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-programming/lessons/09-name-results-with-an-enumeration.html
+
+PURPOSE:
+Explain the lesson: Give results meaningful names.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Give results meaningful names | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-observe-output-and-completion.html">Previous lesson</a> · <a rel="next" href="10-model-a-clock-with-a-record.html">Next lesson</a></nav>
+<h1>Give results meaningful names</h1>
+<h2>Prepare</h2>
+<p>Open deadline.h in labs/native/monotonic-deadlines. The directory's README gives independent CMake build commands. For the reading exercise, no compiler is required.</p>
+<p>An enumeration gives names to a set of integer values. BtbTimerResult includes OK, INVALID, STATE, OVERFLOW, NOT_DUE and DUE, each prefixed with BTB_TIMER_.</p>
+<h2>Read a decision</h2>
+<p>BtbDeadlineStatus returns DUE when a finite pending deadline has been reached. DUE is a successful observation, even though its numeric value is not zero.</p>
+<p>A caller should compare the named result it expects. Treating every nonzero result as the same error would lose this distinction.</p>
+<h2>Lab</h2>
+<p>Write a switch statement on paper with separate cases for DUE and NOT_DUE. DUE can enable a “run task” action; NOT_DUE can leave the task waiting. Other results require explaining invalid input or state.</p>
+<p>Expected: the decision uses meaning rather than assuming that every result follows a Boolean convention.</p>
+<h2>Connect to code</h2>
+<p>Search deadline.c for BtbDeadlineFire. It asks Status first, then accepts only DUE before changing state to FIRED. The name of each result makes the condition readable.</p>
+<h2>Troubleshoot</h2>
+<p>If a program fires too early, inspect whether it checked for DUE specifically. A condition such as “result is not INVALID” accepts several states that do not permit firing.</p>
+<h2>Check understanding</h2>
+<p>An enumeration describes possible values; it does not automatically enforce the entire timer lifecycle. Functions still validate which operation is allowed in the current state. Read both the names and their documented contracts.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/monotonic-deadlines/deadline.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-observe-output-and-completion.html">Previous lesson</a> · <a rel="next" href="10-model-a-clock-with-a-record.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/introduction-to-programming/09-name-results-with-an-enumeration.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/13-own-a-receipt-after-release.html
+
+PURPOSE:
+Explain the lesson: Keep a delivered receipt independent of queue storage.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep a delivered receipt independent of queue storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-cancellation-is-a-result.html">Previous lesson</a> · <a rel="next" href="14-budget-a-dispatch-turn.html">Next lesson</a></nav>
+<h1>Keep a delivered receipt independent of queue storage</h1>
+<h2>Prepare</h2>
+<p>Open dispatch.h and BtbDispatchReceive. The lab's README contains setup and build commands. A borrowed pointer refers to storage another component owns. An owned value is copied into storage whose lifetime the caller controls.</p>
+<p>BtbDispatchReceipt contains identity, connection ID, request length, digest and result. It contains no borrowed payload pointer.</p>
+<h2>Follow the delivery order</h2>
+<p>Receive inspects the next notice, locates its record and constructs a local receipt value. It then consumes the notice and releases the original work slot. Finally it clears the record, increments delivered and writes the receipt to the caller.</p>
+<p>The caller can retain the receipt after another request reuses that slot. The old request bytes themselves are not part of the receipt.</p>
+<h2>Exercise</h2>
+<p>Receive a completed request into receiptA. Save its request ID, length and digest. Submit and complete enough later work to reuse slots, then inspect receiptA again.</p>
+<p>Expected: those saved fields remain unchanged. A new receipt should be stored separately if the caller needs both histories.</p>
+<h2>Failure boundary</h2>
+<p>An EMPTY receive leaves the output unchanged. Initialize a receipt with recognizable values, call Receive on an empty dispatcher, and check both EMPTY and preservation.</p>
+<p>Do not use uninitialized values as your expected result. The sentinel must be deliberately written before the call.</p>
+<h2>Product connection</h2>
+<p>A user interface may need to display a completed job after the worker queue has moved on. Copy stable result data into a suitable model rather than keeping pointers into temporary queue slots. Durable history requires an additional storage service; this receipt alone is an in-memory value, not an audit database.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/work-dispatch/dispatch.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-cancellation-is-a-result.html">Previous lesson</a> · <a rel="next" href="14-budget-a-dispatch-turn.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/13-own-a-receipt-after-release.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

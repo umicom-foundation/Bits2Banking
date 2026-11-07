@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-kotlin/lessons/01-tools-and-first-program.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Install Kotlin and run a first program | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../course-series.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="install-kotlin-and-run-a-first-program">Install Kotlin and run a first program</h1>
+<p>Kotlin is a programming language. A source file is a text file containing instructions written in that language. In this lesson a compiler translates those instructions into a form that the Java runtime can execute. The result will be one line of text in a terminal.</p>
+<p>You need no previous Kotlin or Java experience. You need permission to install software, an internet connection for the downloads, and a folder in which you can save files. Reading this lesson needs only a browser. A terminal is a window for entering commands; the shell interprets those commands. The examples below use PowerShell on Windows and bash on Linux.</p>
+<h2 id="setup-recap-prepare-the-tools">Setup recap: Prepare the tools</h2>
+<ol>
+<li>Install a supported Java Development Kit (JDK), such as an OpenJDK distribution from its official distributor. A JDK contains the Java runtime and development tools. Follow its installer instructions for your operating system.</li>
+<li>Follow the <a href="https://kotlinlang.org/docs/command-line.html">Kotlin command-line compiler installation guide</a>. On Windows, extract the compiler archive into a folder you choose, for example <code>C:\Tools\kotlin</code>, and add its <code>bin</code> directory to your user PATH. PATH is the list of directories searched for commands. Use the guide's Linux instructions on Linux.</li>
+<li>Open a <strong>new</strong> PowerShell or bash window after changing PATH. Enter <code>java -version</code>, followed by <code>kotlinc -version</code>. Both should print version information. The numbers depend on the packages installed.</li>
+<li>If either command is unrecognised, locate that installation and correct PATH before continuing. Installing a compiler does not automatically update an already-open terminal.</li>
+</ol>
+<p>For more practice with commands and folders, see <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/08-system-administration/03-open-powershell-or-linux-terminal.md">Open a terminal</a>. You can return here without completing another course.</p>
+<h2 id="create-a-practice-folder-and-source-file">2. Create a practice folder and source file</h2>
+<p>Choose an empty folder so that these commands do not overwrite existing work. On Windows:</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Path 'C:\umicom-learning\kotlin-first'
+Set-Location 'C:\umicom-learning\kotlin-first'
+@'
+fun main() {
+    println(&quot;Welcome to Umicom learning.&quot;)
+}
+'@ | Set-Content -Encoding utf8 Main.kt
+Get-Content Main.kt
+</code></pre>
+<p><code>New-Item</code> creates a folder. <code>Set-Location</code> makes it the current folder. The single-quoted here-string, from <code>@'</code> to <code>'@</code>, holds several lines of literal text. <code>Set-Content</code> writes that text to a file; it replaces a file if one already exists. <code>Get-Content</code> displays what was saved.</p>
+<p>On Linux, use this equivalent in bash:</p>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom-learning/kotlin-first&quot;
+cd &quot;$HOME/umicom-learning/kotlin-first&quot;
+cat &gt; Main.kt &lt;&lt;'EOF'
+fun main() {
+    println(&quot;Welcome to Umicom learning.&quot;)
+}
+EOF
+cat Main.kt
+</code></pre>
+<p><code>mkdir -p</code> creates the folder and any missing parents. <code>cd</code> changes folder. The quoted <code>EOF</code> delimiter keeps the text literal, and <code>&gt;</code> writes it to the named file. These are terminal commands; they are not Kotlin statements.</p>
+<h2 id="understand-every-line">3. Understand every line</h2>
+<ul>
+<li><code>fun</code> starts a function declaration. A function is a named group of instructions.</li>
+<li><code>main</code> is the entry point: the runtime begins this program there.</li>
+<li><code>()</code> is the parameter list. It is empty because this function accepts no arguments.</li>
+<li><code>{</code> and <code>}</code> enclose the function body.</li>
+<li><code>println</code> prints a value and ends the line. Text between double quotes is a string.</li>
+</ul>
+<p>The flow is <strong>Main.kt → Kotlin compiler → main.jar → Java runtime → terminal text</strong>. A JAR is an archive containing compiled classes and, with the option below, the Kotlin runtime libraries used by this example.</p>
+<h2 id="compile-then-run">4. Compile, then run</h2>
+<p>These commands work in either shell:</p>
+<pre><code class="language-text">kotlinc Main.kt -include-runtime -d main.jar
+java -jar main.jar
+</code></pre>
+<p><code>-d</code> names the output archive. <code>-include-runtime</code> includes Kotlin's runtime; you still need Java installed. Run the second command only after compilation succeeds. Expected program output:</p>
+<pre><code class="language-text">Welcome to Umicom learning.
+</code></pre>
+<p>In PowerShell, inspect <code>$LASTEXITCODE</code> immediately after a native command; in bash use <code>echo $?</code>. Zero normally means successful completion. If compilation fails, an older JAR can still exist: running it would run an older program.</p>
+<h2 id="practice-and-worked-answer">Practice and worked answer</h2>
+<p>Change the sentence to <code>My first Kotlin program.</code> Save, compile again, then run again. The output should change to that sentence. If it does not, check the current folder and compilation result. Editing a source file does not change the previously compiled archive.</p>
+<h2 id="continue-with-real-source">Continue with real source</h2>
+<p>The next lesson uses <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/kotlin-first-program/Progress.kt">Progress.kt</a>, an Umicom learning example. Its calculation is deliberately small. Later mobile clients can call reusable Framework services rather than embedding production rules in every screen.</p>
+<p><a href="../index.html">Course contents</a> · <a href="02-values-functions-and-checks.html">Next: values, functions and checks</a></p>
+
+<nav aria-label="Course navigation"><a href="../index.html">Course contents</a> · <a href="../../course-series.html">Subject guide</a></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

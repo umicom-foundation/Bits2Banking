@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-sql/lessons/08-change-records-with-rollback.html
+
+PURPOSE:
+Explain the lesson: Change records with rollback.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Change records with rollback | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-summarise-enrolments-with-aggregates.html">Previous lesson</a> · <a rel="next" href="09-use-savepoints-for-a-local-experiment.html">Next lesson</a></nav>
+<h1>Change records with rollback</h1>
+<p>A transaction groups work into a unit that can be committed or abandoned. BEGIN starts the unit. COMMIT accepts it. ROLLBACK abandons it.</p>
+<h2>Prepare</h2>
+<p>Use a new temporary database and read the lab schema and seed. Learner A has completed three lessons in Learning C.</p>
+<h2>Observe an uncommitted edit</h2>
+<p>Read rollback.sql. The UPDATE has two conditions:</p>
+<p>``<code>sql WHERE learner_id = 1 AND course_id = 1 </code>``</p>
+<p>Together they identify one progress row. Without the WHERE clause, the statement would change every row in that table.</p>
+<p>The SELECT inside the transaction reads 4. After ROLLBACK the following SELECT reads 3. Reading your own temporary change does not prove it has been committed.</p>
+<h2>Explain the boundary</h2>
+<p>This lesson concerns the database connection and its statements. It does not claim that printing a message, sending an email or changing another file is automatically undone by SQL rollback.</p>
+<p>Framework's transaction handle API makes begin, commit, rollback and disposal explicit for its data service. Use that shared API in a Framework application instead of spreading connection ownership across buttons.</p>
+<h2>Exercise</h2>
+<p>Repeat the statements interactively, pausing before rollback. Predict the value at each step. Then start a fresh transaction and update a nonexistent learner. A successful UPDATE statement can affect zero rows; success alone does not prove the intended record existed.</p>
+<h2>Recovery</h2>
+<p>If an error leaves you uncertain about an open transaction in this disposable session, issue ROLLBACK and inspect the data. Do not continue issuing dependent changes while guessing the state.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/database/course-progress/rollback.sql">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-summarise-enrolments-with-aggregates.html">Previous lesson</a> · <a rel="next" href="09-use-savepoints-for-a-local-experiment.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/04-web/learning-sql/08-change-records-with-rollback.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

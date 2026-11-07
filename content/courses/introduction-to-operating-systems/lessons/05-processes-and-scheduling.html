@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-operating-systems/lessons/05-processes-and-scheduling.html
+
+PURPOSE:
+Understand processes and taking turns on a processor
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand processes and taking turns on a processor | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Understand processes and taking turns on a processor</h1>
+<p>An operating system coordinates programs, memory, devices and access to resources. This course introduces each idea using a small Umicom example. It assumes no previous operating-system or C experience. Definitions and setup are repeated where a lesson can be read independently.</p>
+<h2>Prepare this lesson</h2>
+<p>You need a text editor to read the examples. A terminal is a window in which a typed command asks a program to do something. PowerShell is the Windows terminal language used below; Bash is the Linux alternative. A path names a file or folder. Replace C:\umicom with your checkout location if it differs.</p>
+<p>For the optional C lab, install a C23 compiler, CMake and Ninja, and a matching Umicom Framework SDK that includes the platform component. On Windows, open PowerShell and enter:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\framework\boot-report&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --version
+gcc --version</code></pre>
+<p>Read the lab README before configuring it. Run commands separately and stop on a nonzero exit status. Reading a report does not boot an operating system. QEMU exercises use the separate Kernel guide linked in the relevant lesson; no physical disk is attached. You can complete the prediction and source-reading exercises without executing programs.</p>
+<h2>Running more than one task</h2>
+<p>A process combines a program with its execution state and owned resources. A scheduler chooses which eligible task receives processor time. On one processor, tasks take turns. Saving enough state allows a task to continue later as though its work had merely paused.</p>
+<p>A time slice is a bounded turn. Preemption interrupts a running task at a controlled boundary. Cooperative yielding is a task voluntarily returning control. These mechanisms require different machine support and must not be treated as interchangeable names.</p>
+<h2>Read the current native contract</h2>
+<p>The Kernel scheduler has a bounded task table. Its header documents stable storage, task states, saved trap frames and explicit reaping. Reaping releases a terminal task's retained resources; a task reaching an exit state does not mean its bookkeeping has already disappeared.</p>
+<ol>
+<li>Find UmicomUserScheduler and its task array.</li>
+<li>Read the state enumeration. Distinguish ready, running, paused and terminal states.</li>
+<li>Find RunOne's contract and the meaning of idle.</li>
+<li>Find the cancel and reap functions. Record which states each accepts.</li>
+<li>Inspect the generation field in a handle. A reused table position must not make an old handle refer to a new task.</li>
+</ol>
+<h2>Work through a paper trace</h2>
+<p>List tasks A and B as ready. Give A one turn, pause it, then give B one turn. Mark the next eligible task. Now block A while it waits for a resource. The next selection must respect eligibility rather than blindly running every occupied slot.</p>
+<p>The header's active flag serializes the current service; it is not an atomic lock for multiple physical processors. Extending to several cores needs an explicit concurrency design and tests. A small host scheduler check cannot establish hardware timer correctness.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/include/umicom/kernel/user_scheduler.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="04-memory-and-ownership.html">Previous: Understand memory, addresses and ownership</a> · <a href="06-interrupts-and-device-events.html">Next: Understand interrupts and device events</a></p>
+</nav><p><a href="../../../lessons/08-system-administration/introduction-to-operating-systems/05-processes-and-scheduling.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

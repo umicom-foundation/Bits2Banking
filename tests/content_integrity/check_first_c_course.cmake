@@ -172,7 +172,10 @@ set(_identities
     16-counts-offsets-and-progress
     17-bits-and-hexadecimal
     18-check-a-function-at-its-boundaries
-    08-connect-to-systems-lessons)
+    08-connect-to-systems-lessons
+    19-length-capacity-and-terminators
+    20-allocation-outputs-and-lifetimes
+    21-follow-a-rejected-call)
 set(_sources
     labs/native/first-c-programs/hello.c
     NONE
@@ -191,7 +194,23 @@ set(_sources
     umicom-kernel/kernel/console_file_range.inc
     umicom-kernel/kernel/console_file_range.inc
     labs/native/framework-activity/activity.c
+    NONE
+    NONE
+    NONE
     NONE)
+# Extend the reviewed syllabus explicitly. These chapters reuse Framework's
+# digest engine through a borrowed-stream adapter; the original eight complete
+# introductory source comparisons remain unchanged below.
+list(APPEND _identities
+    22-open-read-and-close-a-file
+    23-chunks-eof-and-read-errors
+    24-status-values-and-complete-results
+    25-check-file-digests-independently)
+list(APPEND _sources
+    labs/native/framework-checksum/main.c
+    labs/native/framework-checksum/checksum.c
+    labs/native/framework-checksum/checksum.h
+    labs/native/framework-checksum/test_checksum.c)
 list(LENGTH _identities _expected_count)
 list(LENGTH _sources _expected_sources)
 if(NOT _count EQUAL _expected_count OR NOT _expected_sources EQUAL _expected_count)
@@ -264,6 +283,10 @@ foreach(_n RANGE 0 ${_last})
     elseif(_source MATCHES "^umicom-kernel/")
         string(REGEX REPLACE "^umicom-kernel/" "" _kernel_file "${_source}")
         require_text("${_html}" "href=\"https://github.com/umicom-foundation/umicom-kernel/blob/main/${_kernel_file}\"" "published Kernel reading: ${_id}")
+    elseif(_source MATCHES "^labs/native/framework-checksum/")
+        require_file("${REPOSITORY_ROOT}/${_source}")
+        require_text("${_html}" "${_source}" "checksum source reference")
+        require_text("${_md}" "${_source}" "checksum manuscript reference")
     else()
         require_file("${REPOSITORY_ROOT}/${_source}")
         require_text("${_html}" "${_source}" "boundary example source reference")

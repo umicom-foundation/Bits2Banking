@@ -1,0 +1,65 @@
+<!--
+Umicom Bits2Banking
+File: content/lessons/02-programming/introduction-to-programming/06-pass-an-array-with-its-length.md
+
+PURPOSE:
+Explain the lesson: Pass an array with its length.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+# Pass an array with its length
+
+A function can use values owned by its caller. It needs both an address telling it where the values start and a length telling it how many values it may visit.
+
+## Setup recap
+
+Use the first-c-programs lab guide for PowerShell or Bash setup. Open borrowed_counts.h, borrowed_counts.c and borrowing.c. A header declares an interface; the C source implements it; the caller uses it.
+
+These examples work with activity counts and need no account, server or special hardware.
+
+## 1. Separate ownership from access
+
+borrowing.c owns a local array. It passes that array and its count to BtbSumCounts. The function reads the values but does not keep the address, change the array or free it.
+
+This is borrowing: temporary access while the caller keeps responsibility for the storage.
+
+The const qualifier says this function must not modify elements through this parameter. It does not make every possible alias to the array immutable.
+
+## 2. Read the admission rules
+
+BtbSumCounts accepts at most sixteen elements. A nonempty span must have a non-null pointer. Every element must be between zero and 1000 inclusive.
+
+The empty case can use a null pointer because no element is read. Its total is zero.
+
+These checks cannot prove that an arbitrary address points to enough live storage. The caller must supply a valid array for its declared count.
+
+## 3. Prove the total fits
+
+Sixteen elements, each at most 1000, have a maximum sum of 16000. That bound fits even the minimum positive range required for C int.
+
+Checking each value before addition makes this reasoning useful. A bound written only in a comment would not enforce anything.
+
+## Exercise
+
+Trace {2, 1, 3}, then {2, -1, 3}. The first returns 6; the second returns -1 as a refusal indicator.
+
+Explain why -1 is unambiguous here: all successful totals are nonnegative. Another domain permitting negative totals would need a different result contract.
+
+## Build and troubleshoot
+
+Build the borrowing target and the borrowed-counts tests using the lab guide. A missing BtbSumCounts symbol at link time means the implementation was not linked; including its header alone is insufficient.
+
+Record compiler errors separately from failed assertions. Neither is a successful run.
+
+## Source for this lesson
+
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/first-c-programs/borrowed_counts.c). Keep the source revision with your exercise notes so later changes can be compared.
+
+[Course contents](index.md) · [Previous lesson](05-visit-values-in-an-array.md) · [Next lesson](07-connect-source-files-at-link-time.md)
+

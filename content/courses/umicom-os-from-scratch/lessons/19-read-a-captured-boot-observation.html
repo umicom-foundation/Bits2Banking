@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/19-read-a-captured-boot-observation.html
+
+PURPOSE:
+Read a captured boot observation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read a captured boot observation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read a captured boot observation</h1>
+<p>Follow captured startup observations from bytes to a checked comparison. Use the real Framework parser, then inspect the OS command that consumes it.</p>
+<p>You need a text editor, a terminal, CMake 3.24 or newer, Ninja and a C23-capable C compiler. A terminal accepts commands as text. CMake describes how a program is assembled; Ninja carries out the necessary compilation commands. A compiler translates C source into machine instructions. This lab runs on the current computer; it does not install or boot an operating system.</p>
+<p>On Windows, install MSYS2 from its official installer, open its UCRT64 terminal and install the toolchain with the following command. Accept the package manager's prompts. If it requests a restart during a system update, complete that update first.</p>
+<pre><code class="language-sh">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja</code></pre>
+<p>Obtain the Bits2Banking and Framework source checkouts. In these examples they are located at C:\umicom\Umicom-Bits2Banking and C:\umicom\Umicom-Applications\framework. Adjust the paths if you use another folder. Open PowerShell and enter each line separately, stopping if a command fails:</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+cmake -S labs/framework/boot-report-comparison -B build/boot-report-learning -G Ninja -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/boot-report-learning --parallel 2
+ctest --test-dir build/boot-report-learning --output-on-failure --no-tests=error
+&amp; .\build\boot-report-learning\bin\boot-report-learning.exe</code></pre>
+<p>On a Linux system with GCC, CMake and Ninja installed, place the checkouts beneath ~/umicom, open Bash, and use:</p>
+<pre><code class="language-sh">cd ~/umicom/Umicom-Bits2Banking
+cmake -S labs/framework/boot-report-comparison -B build/boot-report-learning -G Ninja -DUMICOM_FRAMEWORK_SOURCE=&quot;$HOME/umicom/Umicom-Applications/framework&quot;
+cmake --build build/boot-report-learning --parallel 2
+ctest --test-dir build/boot-report-learning --output-on-failure --no-tests=error
+./build/boot-report-learning/bin/boot-report-learning</code></pre>
+<p>The expected output includes state: starting -&gt; ready, completed: 1 -&gt; 2 and Malformed report refused; previous comparison preserved. If CMake cannot find boot_report.c, check the source path. If comparison symbols are missing, the header and source must both contain the comparison API. Do not combine files from unrelated revisions. The build folder stores generated files; the labs folder contains the source you edit.</p>
+<p>A boot is the sequence that starts a computer's operating system. Firmware begins that sequence, a loader prepares the kernel, and the kernel starts the first user-space process. A report is a small record of what one part of that sequence observed. It is useful because a computer can stop before a graphical desktop appears.</p>
+<p>The lab contains two text records named EARLIER and LATER. A C string is an array of characters ending with a zero byte. The report protocol itself ends with a newline. The call passes sizeof EARLIER - 1U so the C-only zero byte is excluded from the protocol.</p>
+<ol>
+<li>Open labs/framework/boot-report-comparison/main.c in your editor.</li>
+<li>Find the first record. Read its state, planned and completed lines.</li>
+<li>Find the second record and identify the two different values.</li>
+<li>Run the lab using the setup commands. Match each printed line to its source field.</li>
+</ol>
+<p>Here, planned=2 means the report expects two service starts. completed=1 records one completion. It does not tell us which service, whether it remains alive, or why another service did not complete. Those questions require the matching service configuration and serial log.</p>
+<p>The source line is a 64-character hexadecimal identity supplied by the producer. Keeping it lets us compare evidence with a particular build or plan. It is not a digital signature. Someone who can replace a report can also replace its source text.</p>
+<p><strong>Check your understanding.</strong> Explain why a saved ready report cannot prove the computer is healthy now. Write down the report capture time, build identity and source of the serial log as separate investigation notes. Do not add arbitrary fields to the protocol: its parser deliberately rejects unknown fields.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/platform/boot_report.c">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="20-follow-the-boot-report-parser.html">Next: Follow the boot-report parser</a></p>
+</nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/19-read-a-captured-boot-observation.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-c/terminal-lab.html
+
+PURPOSE:
+Present the paired lesson manuscript as a standalone learning page.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab: create, compile and run C in a terminal | Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../course-series.html"><img src="../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom" width="160" height="44"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article>
+<h1 id="lab-create-compile-and-run-c-in-a-terminal">Lab: create, compile and run C in a terminal</h1>
+<p>This lab begins with an empty practice folder. You will install tools, write a C file, ask a compiler to build it, and run the result. No IDE or earlier course is required. A terminal is a text window. A shell, such as PowerShell or bash, interprets commands entered there. A compiler translates source text into machine code.</p>
+<h2 id="setup-recap-install-the-development-tools">Setup recap: Install the development tools</h2>
+<h3 id="windows">Windows</h3>
+<ol>
+<li>Install MSYS2 from <a href="https://www.msys2.org/">its official installation guide</a>. The examples below assume its usual <code>C:\msys64</code> location; adapt it if you chose another.</li>
+<li>Open the <strong>MSYS2 UCRT64</strong> terminal from the Start menu. Follow the site's complete update procedure. If instructed to close the terminal and repeat an update, do so before installing tools.</li>
+<li>In that terminal, install GCC, CMake, Ninja and GDB:</li>
+</ol>
+<pre><code class="language-bash">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-gdb
+</code></pre>
+<p><code>pacman</code> is MSYS2's package manager. GCC compiles C, CMake describes a build, Ninja performs scheduled build work, and GDB helps inspect a running program. This command installs packages; it does not compile your application.</p>
+<ol start="4">
+<li>Open PowerShell and make those tools available for this terminal session:</li>
+</ol>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+gcc --version
+cmake --version
+ninja --version
+gdb --version
+</code></pre>
+<p>PATH is a list of folders searched for commands. This assignment changes the current process environment, not your saved source or permanent system settings.</p>
+<h3 id="linux-with-apt">Linux with apt</h3>
+<p>On a supported Debian/Ubuntu system, use its package manager:</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install build-essential cmake ninja-build gdb
+gcc --version
+cmake --version
+ninja --version
+gdb --version
+</code></pre>
+<p><code>sudo</code> requests administrative permission for installing system packages. Other Linux distributions use their own package managers. Use a compiler that supports the requested C23 mode and CMake 3.24 or newer for the later repository labs. If an older distribution supplies older tools, update through its supported toolchain procedure. The <a href="https://gcc.gnu.org/onlinedocs/gcc/Standards.html">GCC standards guide</a> documents <code>-std=c23</code>.</p>
+<h2 id="create-a-folder-and-a-c-file">2. Create a folder and a C file</h2>
+<p>Use a new folder. The writing commands below replace a file with the same name.</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Path 'C:\umicom-learning\first-c'
+Set-Location 'C:\umicom-learning\first-c'
+@'
+/*-----------------------------------------------------------------------------
+ * Umicom Bits2Banking
+ * File: hello.c
+ *
+ * PURPOSE:
+ *   Print a first message from a terminal-built C program.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    puts(&quot;Hello from Bits2Banking.&quot;);
+    return 0;
+}
+'@ | Set-Content -Encoding ascii hello.c
+Get-Content hello.c
+</code></pre>
+<p><code>New-Item</code> creates the directory. <code>Set-Location</code> changes the current directory. The here-string contains literal text, including quotes and line breaks. <code>Set-Content</code> saves it and <code>Get-Content</code> reads it back. ASCII is sufficient for this example's text and avoids a byte-order marker with older PowerShell versions.</p>
+<p>In bash, copy this complete block. The lines between the two <code>EOF</code> markers become the C file:</p>
+<pre><code class="language-bash">mkdir -p &quot;$HOME/umicom-learning/first-c&quot;
+cd &quot;$HOME/umicom-learning/first-c&quot;
+cat &gt; hello.c &lt;&lt;'EOF'
+/*-----------------------------------------------------------------------------
+ * Umicom Bits2Banking
+ * File: hello.c
+ *
+ * PURPOSE:
+ *   Print a first message from a terminal-built C program.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    puts(&quot;Hello from Bits2Banking.&quot;);
+    return 0;
+}
+EOF
+cat hello.c
+</code></pre>
+<p><code>mkdir -p</code> creates the practice directory and any missing parent directories. <code>cd</code> selects it. The quoted delimiter keeps the C text literal, and <code>cat hello.c</code> displays the saved file. The closing <code>EOF</code> must be on its own line without indentation. Both shells create the same source; their file-writing commands differ.</p>
+<h2 id="understand-the-source">3. Understand the source</h2>
+<p>The opening comment explains the file. <code>#include &lt;stdio.h&gt;</code> introduces declarations for standard input/output functions. <code>int main(void)</code> is the program entry function; <code>void</code> says it accepts no parameters here, and <code>int</code> describes its completion result. Braces enclose its statements. <code>puts</code> prints the string and a newline. <code>return 0</code> reports successful completion. A semicolon ends each statement.</p>
+<h2 id="compile-and-run-separately">4. Compile and run separately</h2>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Wpedantic -g hello.c -o hello.exe
+$LASTEXITCODE
+.\hello.exe
+$LASTEXITCODE
+</code></pre>
+<p>Bash:</p>
+<pre><code class="language-bash">gcc -std=c23 -Wall -Wextra -Wpedantic -g hello.c -o hello
+echo $?
+./hello
+echo $?
+</code></pre>
+<p><code>-std=c23</code> selects the language mode. The warning options ask for useful diagnostics. <code>-g</code> includes debug information and <code>-o</code> names the result. Run only after successful compilation. Expect <code>Hello from Bits2Banking.</code> and a completion code of zero. <code>./</code> or <code>.\</code> identifies a program in the current directory. Compilation does not launch it.</p>
+<h2 id="make-and-repair-a-small-mistake">5. Make and repair a small mistake</h2>
+<p>Open <code>hello.c</code> in an editor: <code>notepad hello.c</code> in PowerShell, or your chosen editor in Linux. Save a reference copy first. Remove the semicolon after <code>puts</code>, save and compile. Read the first error and its source line. Restore the semicolon, save and compile again before running. An old executable can survive a failed build; its presence is not evidence that the new source compiled.</p>
+<p>If <code>gcc</code> is unrecognised, check PATH. If it rejects <code>c23</code>, check the compiler version. If it cannot find <code>hello.c</code>, display your current folder and its files with <code>Get-Location</code> / <code>Get-ChildItem</code>, or <code>pwd</code> / <code>ls</code> in bash.</p>
+<h2 id="continue-from-the-same-example">Continue from the same example</h2>
+<p>Compare your file with <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/first-c-programs/hello.c">the repository's hello.c</a>. Continue with <a href="lessons/03-values-and-calculations.html">values</a>, <a href="lessons/06-functions-with-a-contract.html">functions</a>, then <a href="terminal-assembly-lab.html">the C and Assembly lab</a>. The <a href="terminal-to-visual-studio.html">Visual Studio transition lab</a> shows how to keep the same source and compiler while adding an IDE.</p>
+<p><a href="index.html">Course contents</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/08-system-administration/03-open-powershell-or-linux-terminal.md">Deeper terminal guide</a></p>
+
+<nav aria-label="Course navigation"><a href="index.html">Course contents</a> · <a href="../course-series.html">Subject guide</a></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT. Original learning material.</div></footer></body></html>

@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/63-read-permission-bits.html
+
+PURPOSE:
+Read the permission bits attached to a page
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read the permission bits attached to a page | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read the permission bits attached to a page</h1>
+<p>An operating system must decide which memory a program may use. This module explains that boundary from bytes and addresses through complete checked copies. Each exercise follows actual Umicom Kernel C source; no prior kernel programming is assumed.</p>
+<h2>Prepare for this laboratory</h2>
+<p>This is a source-reading and host-test module. A host test is an ordinary program running on your current operating system. It exercises Kernel C functions using an array as test memory; it does not boot a machine or change a disk. Install a 64-bit GCC or Clang compiler with C23 support, CMake 3.24 or later and Ninja. Keep a checkout of Umicom Kernel alongside Bits2Banking.</p>
+<p>On Windows open PowerShell, then run one command at a time and stop on an error:</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicom-kernel&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S tests/user_memory -B build/host-user-memory -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe
+cmake --build build/host-user-memory --parallel 2
+ctest --test-dir build/host-user-memory --output-on-failure --no-tests=error</code></pre>
+<p>On Linux or macOS open a terminal in the Kernel checkout:</p>
+<pre><code class="language-bash">cmake -S tests/user_memory -B build/host-user-memory -G Ninja -DCMAKE_C_COMPILER=clang
+cmake --build build/host-user-memory --parallel 2
+ctest --test-dir build/host-user-memory --output-on-failure --no-tests=error</code></pre>
+<p>CMake writes build instructions; the build compiles the selected host project; CTest runs its named cases. Expect each selected case to pass before extending it. A missing compiler needs a corrected tool path. An unknown C23 keyword needs a supported compiler. A failed assertion is evidence to investigate, not a reason to remove the check. Open kernel/user_memory.c and tests/user_memory/user_memory_tests.c together. The lesson's source link identifies the relevant repository file.</p>
+<h2>A mapping also carries permission</h2>
+<p>A page-table entry records where a page is backed and which access is allowed. The source names READ, WRITE, EXECUTE and USER flags. A flag is a selected bit in an integer; combining flags with bitwise OR creates a set. A required set must be present before access is accepted.</p>
+<ol>
+<li>Find the rw flags in UmicomTestPrepare.</li>
+<li>Identify the read-only fixture, which has USER and READ but lacks WRITE.</li>
+<li>Identify the supervisor fixture, which lacks USER.</li>
+<li>Follow required = access | USER in the shared locate function.</li>
+</ol>
+<h2>Read the expression</h2>
+<p>(observed &amp; required) != required means at least one required bit is missing. The bitwise AND keeps only bits present in both operands. This expression is a set comparison, not a comparison of numeric privilege levels.</p>
+<h2>Exercise</h2>
+<p>Write the expected result for reading the user read-only page, writing it, and reading the supervisor page through the user-copy API. Run the read-only-write and supervisor-read cases and explain their refusals. Machine-mode code might technically read those bytes; that does not grant the user program permission.</p>
+<h2>Read the source</h2>
+<p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/include/umicom/kernel/virtual_memory.h">Open the example source</a>.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="62-draw-virtual-and-physical-memory.html">Previous: Draw virtual addresses and physical storage</a> · <a href="64-check-the-backing-owner.html">Next: Check who owns the backing frame</a></p>
+</nav><p><a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/63-read-permission-bits.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

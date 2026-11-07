@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/53-retire-a-slot-before-generation-wrap.html
+
+PURPOSE:
+Explain the lesson: Retire a slot before generation wrap.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retire a slot before generation wrap | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="52-wait-for-reset-acknowledgement.html">Previous lesson</a></nav>
+<h1>Retire a slot before generation wrap</h1>
+<h2>Prepare</h2>
+<p>Read queue.h and queue.c in labs/native/virtqueue-lifetime. Follow its README to prepare a C23 compiler, CMake and Ninja. The lab simulates a device with ordinary function calls; it does not implement DMA or a hardware VirtIO transport.</p>
+<h2>Understand the idea</h2>
+<p>ClearSlot increments a generation to invalidate old tokens. At UINT32_MAX it retires the slot instead of wrapping to an earlier identity. Otherwise an ancient token could accidentally identify a new request.</p>
+<h2>Work through the example</h2>
+<p>Draw a token as generation plus slot index. Compare clearing generation one with clearing the maximum generation. Show the next stage in each case.</p>
+<h2>Check your reasoning</h2>
+<p>The ordinary slot becomes FREE with the next generation. The maximum-generation slot becomes RETIRED and cannot be prepared again during this queue lifetime.</p>
+<h2>If something differs</h2>
+<p>If capacity falls after retirement, that is intentional. Also remember that reinitializing the entire queue starts a new identity lifetime; old external tokens must not survive it.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/virtqueue-lifetime/queue.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="52-wait-for-reset-acknowledgement.html">Previous lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-kernel-from-scratch/53-retire-a-slot-before-generation-wrap.md">Markdown edition</a></p><nav aria-label="Next lesson"><a rel="next" href="54-describe-a-service-request.html">Next: Describe a service request</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

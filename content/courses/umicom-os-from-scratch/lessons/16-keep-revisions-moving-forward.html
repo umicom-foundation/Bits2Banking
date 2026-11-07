@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/16-keep-revisions-moving-forward.html
+
+PURPOSE:
+Explain the lesson: Keep revisions moving forward.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep revisions moving forward | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-recover-before-retrying-a-revision.html">Previous lesson</a> · <a rel="next" href="17-stop-after-active-work-is-resolved.html">Next lesson</a></nav>
+<h1>Keep revisions moving forward</h1>
+<h2>Prepare</h2>
+<p>Open <code>labs/native/service-recovery/recovery.c</code> and its README in the Bits2Banking checkout. This is an in-memory model: a small program that demonstrates decisions without changing the operating system. A revision is a positive number identifying a proposed change. Use a three-column paper table: operation, in-flight revision, committed revision.</p>
+<h2>Understand the idea</h2>
+<p>Revision order prevents an older request from replacing a newer accepted result. Zero is reserved for no in-flight operation, so it is not a valid requested revision.</p>
+<h2>Work through the example</h2>
+<ol>
+<li>Set the accepted revision to 9 in a paper example.</li>
+<li>Trace Begin requests 0, 8, 9 and 10 on an idle started service.</li>
+<li>Separate invalid-argument and wrong-stage results.</li>
+</ol>
+<h2>Check your reasoning</h2>
+<p>Zero is an invalid argument; 8 and 9 are not newer than the accepted result. Only 10 reaches the ownership-entry step, which still needs to succeed.</p>
+<h2>If something differs</h2>
+<p>Do not solve revision exhaustion by wrapping to zero. A production policy must explicitly define how a new revision identity is created without confusing earlier work.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/service-recovery/recovery.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-recover-before-retrying-a-revision.html">Previous lesson</a> · <a rel="next" href="17-stop-after-active-work-is-resolved.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/umicom-os-from-scratch/16-keep-revisions-moving-forward.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

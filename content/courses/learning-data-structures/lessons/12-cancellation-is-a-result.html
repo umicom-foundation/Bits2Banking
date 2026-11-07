@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-data-structures/lessons/12-cancellation-is-a-result.html
+
+PURPOSE:
+Explain the lesson: Treat cancellation as a terminal result.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Treat cancellation as a terminal result | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-completion-backpressure.html">Previous lesson</a> · <a rel="next" href="13-own-a-receipt-after-release.html">Next lesson</a></nav>
+<h1>Treat cancellation as a terminal result</h1>
+<h2>Prepare</h2>
+<p>Read BtbDispatchCancel and the cancel/capacity tests in the work-dispatch lab. Cancellation means a request will not perform its intended work. The caller still needs a clear result and resource release.</p>
+<h2>Follow the conditions</h2>
+<p>Cancel accepts a valid identity for QUEUED work. If the identity is stale, it refuses. If the item has already reached a terminal state, it returns FINAL. If the completion queue is full, it returns BACKPRESSURE before changing the item.</p>
+<p>A successful cancellation transitions the work item and enqueues a CANCELLED notice with zero bytes transferred. Receive later delivers the receipt and releases the slot.</p>
+<h2>Why a notice matters</h2>
+<p>Silently removing a queued item would leave its submitter waiting indefinitely unless another contract explained the disappearance. A terminal notice gives the caller an explicit outcome.</p>
+<p>Cancellation also consumes completion capacity. Treating it as “free” could overfill the same queue used for successful results.</p>
+<h2>Lab trace</h2>
+<ol>
+<li>Submit two requests and save both identities.</li>
+<li>Cancel the second while it is queued.</li>
+<li>Step the first.</li>
+<li>Receive both terminal results.</li>
+<li>Match each result to its saved identity.</li>
+</ol>
+<p>Expected: one cancellation and one success. Notice order follows when terminal results were queued; do not assume cancellation notices retain original submission order.</p>
+<h2>Review the limit</h2>
+<p>Step performs one operation synchronously. There is no active asynchronous phase that another thread can interrupt. Supporting cancellation of a running worker would require acknowledgement and lifetime rules beyond this example.</p>
+<p>If a cancellation refuses because of backpressure, drain a receipt and retry according to the caller's policy. Do not mark the UI request cancelled until the service actually accepts that transition.</p>
+<h2>Source for this lesson</h2>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/work-dispatch/dispatch.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-completion-backpressure.html">Previous lesson</a> · <a rel="next" href="13-own-a-receipt-after-release.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/02-programming/learning-data-structures/12-cancellation-is-a-result.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
+

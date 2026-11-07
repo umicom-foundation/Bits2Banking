@@ -53,3 +53,7 @@ Open `umicom-c/src/lexer.c` in your Umicom source collection. Read the named fun
 ---
 
 [Read this lesson in HTML](../../../courses/building-a-compiler-in-c/lessons/02-reading-tokens.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+[Previous: From source text to a result](01-source-and-execution.md)
+
+[Next: Give expressions an unambiguous meaning](03-expression-order.md)
