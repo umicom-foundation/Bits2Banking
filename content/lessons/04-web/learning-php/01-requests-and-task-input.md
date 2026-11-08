@@ -63,3 +63,6 @@ Predict what three spaces become after trimming. Answer: the empty string, which
 ---
 
 [Read this lesson in HTML](../../../courses/learning-php/lessons/01-requests-and-task-input.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](02-validation-and-html-output.md)

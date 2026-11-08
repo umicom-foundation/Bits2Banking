@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/restart-renew-project-authority.html
+
+PURPOSE:
+Recheck project authority after waiting
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recheck project authority after waiting | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Recheck project authority after waiting</h1><h2>Prepare the exercise</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Framework SDK containing the restart service. Open a terminal in the lab directory. A terminal runs commands; CMake prepares build instructions and Ninja compiles them. Stop on a configure or build error before using an existing executable. Substitute your own SDK location for the Windows example.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\run-restart&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\run-restart.exe &quot;$PWD\build\run-restart.exe&quot; handover
+ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>In handover mode, expect two controlled executor calls and zero child processes after the old result is retained. Run stop and revoke for one-call refusals. These are expected outcomes to verify, not results asserted for your machine.</p><h2>Treat permission as current state</h2><p>A user may revoke trust while a program is stopping. A pending request records intent, not permanent permission. Restart must re-read the current open project, its trust decision and the launch settings before another operation is submitted.</p>
+<h2>Understand the identity</h2><p>Framework retains digests of the admitted project and profile settings. It compares current settings with those digests and checks that the profile belongs to the supplied project root. This prevents a delayed request from silently launching a different profile. The digest does not identify executable bytes or all inherited environment values.</p>
+<h2>Exercise</h2><p>Run revoke and confirm one executor call. Compare that path with restart, which reaches two. In the source, locate the fresh trusted argument passed to Advance. Then review the changed-after and other-project-after regression cases and explain why an unchanged menu item cannot override either refusal.</p>
+<h2>Recover deliberately</h2><p>When authority no longer matches, the intent is cleared. Open the intended project, review settings and explicitly request a new run after resolving the cause. Do not automatically restore trust or replay old arguments. An unchanged digest provides settings context, while ordinary launch preparation must still recheck file and directory availability.</p><h2>Review and recover</h2><p>A missing header or linker symbol requires a matching Framework SDK. For a failed runtime assertion, preserve the command, output and source revision. The four lab cases do not verify native process termination or GUI lifetime; execute the Framework and Studio checks separately before making those claims.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/run-restart/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/build/run_restart.h">Read the shared service contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="restart-retain-the-old-result.html">Previous lesson</a> · <a href="restart-preserve-cross-thread-stop.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/restart-renew-project-authority.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -45,5 +45,5 @@ Record skipped device or accessibility checks explicitly. Do not label the appli
 
 [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/iphone-framework-activity/README.md). Keep the source revision with your exercise notes so later changes can be compared.
 
-[Course contents](index.md) · [Previous lesson](09-accessible-actions-and-messages.md)
+[Course contents](index.md) · [Previous lesson](09-accessible-actions-and-messages.md) · [Next lesson](11-share-the-profile-policy-with-swift.md)
 

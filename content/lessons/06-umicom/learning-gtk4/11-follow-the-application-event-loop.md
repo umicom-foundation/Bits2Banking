@@ -52,3 +52,6 @@ Keep reusable asynchronous jobs and workbench behaviour in Framework when moving
 
 [Course contents](index.md) · [Previous lesson](10-separate-logic-and-window-checks.md)
 
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](12-identify-a-control.md)

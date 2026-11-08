@@ -41,3 +41,6 @@ For unsigned 32-bit arithmetic, a low-word result can wrap at the maximum value.
 [Course contents](index.md) · [Previous: Registers and instructions](01-registers-and-instructions.md)
 
 Sammy Hegab · Umicom Foundation · Original learning material.
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](03-inspect-object-code.md)

@@ -145,7 +145,7 @@ foreach(_course IN ITEMS learning-hdl-vhdl learning-riscv umicom-development
         umicom-kernel-from-scratch umicom-os-from-scratch safer-c-programming
         learning-data-structures introduction-to-programming building-a-compiler-in-c
         building-a-web-server-in-c learning-sql learning-pascal learning-python
-        learning-kotlin learning-d)
+        learning-kotlin learning-d learning-qt learning-wt)
     ReadContent("content/courses/${_course}/course.json" _metadata)
     string(JSON _lesson_count LENGTH "${_metadata}" lessons)
     string(JSON _module_count LENGTH "${_metadata}" modules)
@@ -272,6 +272,45 @@ foreach(_course IN ITEMS learning-hdl-vhdl
             get_filename_component(_next "${_route}" NAME)
         endif()
         CheckReadingRelations("${_page}" "${_previous}" "${_next}")
+    endforeach()
+endforeach()
+
+# A chapter listed on the website must also be declared in the matching
+# offline pack. This closes the declared lesson sequence; byte verification
+# and installed-reader behaviour still require their own qualification.
+# Qt target chapters participate in the same declared offline-closure contract.
+# Wt server-operation lessons use that closure contract for both reading editions.
+foreach(_course IN ITEMS learning-hdl-vhdl learning-iphone-development
+        learning-android learning-kotlin learning-flutter learning-riscv learning-qt learning-wt
+        building-a-web-server-in-c)
+    ReadContent("content/courses/${_course}/course.json" _metadata)
+    file(READ "${REPOSITORY_ROOT}/learning-packs/${_course}.json" _pack)
+    string(JSON _resources LENGTH "${_pack}" resources)
+    if(_resources LESS 1)
+        message(FATAL_ERROR "Empty offline course: ${_course}")
+    endif()
+    math(EXPR _resource_last "${_resources} - 1")
+    set(_resource_paths)
+    foreach(_r RANGE 0 ${_resource_last})
+        string(JSON _resource_path GET "${_pack}" resources ${_r} path)
+        if(_resource_path IN_LIST _resource_paths)
+            message(FATAL_ERROR "Repeated offline resource: ${_resource_path}")
+        endif()
+        list(APPEND _resource_paths "${_resource_path}")
+    endforeach()
+    string(JSON _chapters LENGTH "${_metadata}" lessons)
+    math(EXPR _last "${_chapters} - 1")
+    foreach(_chapter RANGE 0 ${_last})
+        string(JSON _html GET "${_metadata}" lessons ${_chapter} path)
+        string(JSON _md GET "${_metadata}" lessons ${_chapter} manuscript)
+        set(_html "content/courses/${_course}/${_html}")
+        set(_md "content/courses/${_course}/${_md}")
+        cmake_path(NORMAL_PATH _md)
+        foreach(_edition IN ITEMS "${_html}" "${_md}")
+            if(NOT _edition IN_LIST _resource_paths)
+                message(FATAL_ERROR "Course chapter is absent from its offline pack: ${_edition}")
+            endif()
+        endforeach()
     endforeach()
 endforeach()
 message(STATUS "Connected platform course editions and navigation are consistent")

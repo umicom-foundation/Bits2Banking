@@ -66,8 +66,19 @@ Draw three boxes: executable, teaching runner and Umicom C compiler/runtime. Mar
 
 ## Read the source
 
-[Open the example source](../../../labs/native/c-build-stages/CMakeLists.txt).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/CMakeLists.txt)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/CMakeLists.txt).
 
 ## Continue learning
 
 [Course contents](../../courses/learning-c/index.html) · [Previous: Understand object files and unresolved symbols](29-object-files-and-symbols.md) · [Next: Read diagnostics at the stage that produced them](31-read-diagnostics-by-stage.md)
+
+<details><summary>The dependency graph</summary>
+
+The executable depends on btb-stage-runner, which depends on UmicomC::Compiler. The imported SDK target carries its own runtime dependency. The lab owns main.c, runner.c and its tests; the SDK owns language processing. Keeping that dependency in CMake avoids copying the compiler into the teaching application.
+
+</details>
+
+[Word explanations](../../courses/learning-c/glossary.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Learning routes](../../courses/learning-paths.html)

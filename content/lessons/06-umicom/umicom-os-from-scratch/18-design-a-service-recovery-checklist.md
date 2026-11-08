@@ -45,3 +45,6 @@ An in-memory demonstration is not proof that a bootable OS recovers from power l
 
 [Course contents](index.md) · [Previous lesson](17-stop-after-active-work-is-resolved.md)
 
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](19-read-a-captured-boot-observation.md)

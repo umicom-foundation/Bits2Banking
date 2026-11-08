@@ -72,8 +72,19 @@ Draw the call boundary between main and LessonEvaluate. Label input pointers, by
 
 ## Read the source
 
-[Open the example source](../../../labs/native/c-build-stages/main.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/main.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/main.c).
 
 ## Continue learning
 
 [Course contents](../../courses/learning-c/index.html) · [Previous: Inspect the source after preprocessing](27-inspect-preprocessed-source.md) · [Next: Understand object files and unresolved symbols](29-object-files-and-symbols.md)
+
+<details><summary>The call boundary</summary>
+
+LessonEvaluate borrows a source pointer and its byte length, plus a pointer to the caller’s int32_t result. The wrapper returns 1 after a successful compile and execution, or 0 on refusal. The result is written only on success. Processor registers and instruction spelling depend on the target calling convention; the C declaration describes the portable call contract.
+
+</details>
+
+[Word explanations](../../courses/learning-c/glossary.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Learning routes](../../courses/learning-paths.html)

@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/restart-own-the-right-operation.html
+
+PURPOSE:
+Choose the operation you actually own
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose the operation you actually own | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Choose the operation you actually own</h1><h2>Prepare the exercise</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Framework SDK containing the restart service. Open a terminal in the lab directory. A terminal runs commands; CMake prepares build instructions and Ninja compiles them. Stop on a configure or build error before using an existing executable. Substitute your own SDK location for the Windows example.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\run-restart&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\run-restart.exe &quot;$PWD\build\run-restart.exe&quot; handover
+ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>In handover mode, expect two controlled executor calls and zero child processes after the old result is retained. Run stop and revoke for one-call refusals. These are expected outcomes to verify, not results asserted for your machine.</p><h2>Identify the owner</h2><p>A project session owns one queued workflow. Its requested phase describes the original action, while current_phase describes the step executing now. Build and Run can currently be configuring, compiling or running. A restart command must inspect both fields before selecting the program it intends to stop.</p>
+<h2>Read the shared check</h2><p>Open Framework’s run_restart.inc and find UmiBuildRunRestartReview. It requires requested_phase and current_phase to equal RUN, an active session, no earlier cancellation and a matching admitted profile. A debugger or separate program console has a different owner; a familiar menu label does not grant this session control over either.</p>
+<h2>Exercise</h2><p>Run the lab with restart, then inspect the Framework configure, build, test, run-configure and run-build regression cases. Write a table of requested/current phase pairs and predict which rows should be admitted. The tests use a controlled executor that holds a selected phase, making the distinction observable.</p>
+<h2>Explain a refusal</h2><p>If Restart is disabled during compilation, wait for the Run phase or cancel the build explicitly. Do not change the command to kill an arbitrary process by name. The service boundary is a specific owned operation, and its copied settings protect the running worker from unrelated frontend edits.</p><h2>Review and recover</h2><p>A missing header or linker symbol requires a matching Framework SDK. For a failed runtime assertion, preserve the command, output and source revision. The four lab cases do not verify native process termination or GUI lifetime; execute the Framework and Studio checks separately before making those claims.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/run-restart/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/build/run_restart.h">Read the shared service contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="evidence-runtime-and-patch-identity.html">Previous lesson</a> · <a href="restart-request-is-not-completion.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/restart-own-the-right-operation.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

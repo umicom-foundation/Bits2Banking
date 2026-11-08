@@ -72,8 +72,11 @@ Write expected observations for five cases: valid work, invalid schema, duplicat
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/message-retry/CMakeLists.txt).
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/message-retry/CMakeLists.txt).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-rabbitmq/index.html) · [Previous: Handle temporary ownership and safe deadlines](07-leases-time-and-overflow.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](09-workers-restarts-and-acquisition-identity.md)

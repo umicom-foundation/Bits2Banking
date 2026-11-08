@@ -71,3 +71,6 @@ Add project-specific recipes through the shared contracts. A VHDL simulation, Um
 ## Continue learning
 
 [Course contents](../../../courses/learning-build-systems/index.html) · [Previous: Compare builds as controlled experiments](11-reproducible-experiments.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](13-programs-and-argument-boundaries.md)

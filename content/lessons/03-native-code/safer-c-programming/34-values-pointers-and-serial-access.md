@@ -58,3 +58,5 @@ Setting one local pointer to NULL after freeing storage does not clear other ali
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Verify that rejection leaves the collection unchanged](33-prove-failure-keeps-state.md) · [Next: Turn a boundary fix into a repeatable review](35-review-and-qualify-a-boundary-fix.md)
+
+[Written course contents](index.md)

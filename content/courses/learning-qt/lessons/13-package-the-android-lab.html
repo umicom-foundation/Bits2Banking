@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/13-package-the-android-lab.html
+
+PURPOSE:
+Package the same Qt lab for Android
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Package the same Qt lab for Android | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Package the same Qt lab for Android</h1>
+<h2>Before starting</h2>
+<p>Prepare a Qt Android kit, its supported Android SDK, NDK and Java toolchain, and the Framework source checkout. Use the kit documentation to select matching versions; do not reuse the desktop compiler. Start with one ABI, the binary calling convention and CPU target used by a device. Reading is possible without an Android device; installation and touch checks require an emulator or device you control.</p>
+<h2>Use the target wrapper</h2>
+<p>Run from the profile lab. Replace every example SDK, NDK and Qt path with an installed matching path. The Qt helper creates the Android application target; the view and C policy are built as relocatable static libraries for that target.</p>
+<pre><code class="language-powershell">&amp; &#39;C:/Qt/your-version/android_arm64_v8a/bin/qt-cmake.bat&#39; -S . -B build-android -G Ninja -DCMAKE_BUILD_TYPE=Debug &#39;-DANDROID_SDK_ROOT=C:/Android/Sdk&#39; &#39;-DANDROID_NDK_ROOT=C:/Android/Sdk/ndk/your-ndk-version&#39; &#39;-DBTB_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework&#39; -DBUILD_TESTING=OFF
+cmake --build build-android --parallel 2
+cmake --build build-android --target apk</code></pre>
+<h2>Inspect the package stage</h2>
+<p>Compilation produces native code; the apk target also packages the Android application. Keep the packaging output and locate the exact APK it reports. If Gradle or a Java tool fails, preserve that error separately from a successful C compilation. Do not claim that a produced APK has been installed or launched. Qt also provides an aab target for an Android App Bundle; distribution and signing need their own review.</p>
+<h2>Install and observe deliberately</h2>
+<p>Use Qt Creator with the configured Android kit and a selected test device, or your established Android deployment process. Confirm which device receives the package before installing. Launch the lab, enter Alice_7 with the on-screen keyboard, tap Check name and record the lowercase result. Repeat invalid input, rotation and returning from the background. No password or broker connection belongs in this exercise.</p>
+<h2>Exercise and worked answer</h2>
+<p>The APK was produced for arm64-v8a, but the chosen emulator expects a different ABI. Is renaming the APK a fix? No. Select a matching device or build with the appropriate Qt kit in a separate folder. The policy source stays the same; the compiled libraries and package are target-specific.</p>
+<h2>Recover from build failure</h2>
+<p>Check the selected Qt kit, SDK and NDK together before changing source. For a failure that names a missing Framework module, verify BTB_FRAMEWORK_SOURCE points to the same revision used by the desktop source lab. A desktop SDK path cannot replace that target compilation.</p>
+<h2>Reference</h2><p><a href="https://doc.qt.io/qt-6.8/android-building-projects-from-commandline.html">Qt Android command-line build and package targets</a>. Consult the documentation for the exact kit you install.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/CMakeLists.txt">labs/framework/qt-profile/CMakeLists.txt</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="12-browser-boundaries-and-trust.html">Previous: Separate browser validation from server authority</a> · <a href="14-build-and-observe-on-ios.html">Next: Build and observe the lab on iOS</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/13-package-the-android-lab.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

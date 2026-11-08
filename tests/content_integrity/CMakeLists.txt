@@ -122,3 +122,94 @@ if(BUILD_TESTING)
     add_subdirectory("${_btb_repo_root}/content/community/examples/notes-word-count"
         "community-notes")
 endif()
+
+# Exercise the setup contract independently of the current course content.
+# A future heading change must not admit empty or preserved-only guidance.
+if(BUILD_TESTING)
+    foreach(_case IN ITEMS
+        recap
+        recap-subtitle
+        prepare
+        prepare-detail
+        before
+        set-up
+        crlf
+        semicolon
+        comment-before
+        empty
+        next-section
+        comment-only
+        hidden-heading
+        unclosed-comment
+        fenced-heading
+        tilde-fence
+        short-close
+        fence-then-setup
+        code-only-setup
+        indented-heading
+        third-level
+        missing)
+        add_test(NAME btb.education.setup.${_case}
+            COMMAND "${CMAKE_COMMAND}" "-DCASE=${_case}"
+                -P "${CMAKE_CURRENT_LIST_DIR}/test_setup_section.cmake")
+        set_tests_properties(btb.education.setup.${_case} PROPERTIES
+            TIMEOUT 10 LABELS "education;setup;contract")
+    endforeach()
+endif()
+
+# Source prerequisites are separate from the Python hook and rendered-site checks.
+if(BUILD_TESTING)
+    foreach(_case IN ITEMS
+        markdown
+        fragment
+        query
+        single-quote
+        external
+        commented
+        missing-manuscript
+        outside-content
+        missing-adapter
+        unconfigured-adapter
+        lab-source
+        local-file
+        unclosed-comment)
+        add_test(NAME btb.education.course_links.${_case}
+            COMMAND "${CMAKE_COMMAND}" "-DCASE=${_case}"
+                "-DFIXTURE_ROOT=${CMAKE_CURRENT_BINARY_DIR}/course-link-fixtures"
+                -P "${CMAKE_CURRENT_LIST_DIR}/test_course_links.cmake")
+        set_tests_properties(btb.education.course_links.${_case} PROPERTIES
+            TIMEOUT 15 LABELS "education;publication;source-links")
+    endforeach()
+endif()
+
+# Course source maps may name external Umicom code without requiring its checkout.
+# Validate that distinction while retaining strict local laboratory existence.
+if(BUILD_TESTING)
+    foreach(_case IN ITEMS
+        local local-missing local-directory compiler-relative compiler-sibling kernel-sibling framework-sibling compiler-public framework-public kernel-public studio-public unapproved-repository branch-change query fragment empty-segment dot-segment parent-segment extra-parent absolute encoded trailing-slash local-traversal empty os-public)
+        add_test(NAME btb.education.source_reference.${_case}
+            COMMAND "${CMAKE_COMMAND}" "-DCASE=${_case}"
+                "-DFIXTURE_ROOT=${CMAKE_CURRENT_BINARY_DIR}/source-reference-fixtures/${_case}"
+                -P "${CMAKE_CURRENT_LIST_DIR}/test_source_reference.cmake")
+        set_tests_properties(btb.education.source_reference.${_case} PROPERTIES
+            TIMEOUT 15 LABELS "education;source;identity")
+    endforeach()
+endif()
+
+# OS runtime lessons extend existing boot evidence; check both publication routes
+# and declared source boundaries without mistaking these checks for guest runs.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.os_runtime_course
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_os_runtime_course.cmake")
+    set_tests_properties(btb.education.os_runtime_course PROPERTIES
+        TIMEOUT 30 LABELS "education;os;navigation")
+endif()
+
+if(BUILD_TESTING)
+    add_test(NAME btb.education.file_evidence_course
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_file_evidence_course.cmake")
+    set_tests_properties(btb.education.file_evidence_course PROPERTIES TIMEOUT 30
+        LABELS "education;content;framework;evidence")
+endif()

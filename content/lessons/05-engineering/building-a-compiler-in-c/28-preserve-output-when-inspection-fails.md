@@ -78,3 +78,5 @@ The library cannot prove that an arbitrary C pointer names a large enough readab
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Embed the inspector in a C application](27-embed-the-inspector-in-a-c-application.md) · [Next: Design boundary tests for a virtual machine](29-design-boundary-tests-for-a-virtual-machine.md)
+
+[Written course contents](index.md)

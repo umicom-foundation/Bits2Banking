@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-wt/lessons/11-separate-public-assets-from-source.html
+
+PURPOSE:
+Separate public assets from application source
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate public assets from application source | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate public assets from application source</h1>
+<h2>Before starting</h2>
+<p>Complete a successful lab build. Locate build-source/public and the actual Wt resources directory in your installation. This lesson uses a loopback-only server. Keep source files and qualification logs outside the directories selected for public resources.</p>
+<h2>Draw the file boundary</h2>
+<p>The document root is a directory offered to the web-serving layer. It is not the application source root. CMake creates an empty public directory so the launch command can name an intentional boundary. Wt resources are supplied separately from the installed package. Adding a file to a public directory is an exposure decision even when no navigation link points to it.</p>
+<h2>Select real paths</h2>
+<p>Replace the example resources path before running. Test-Path must report True for that directory. Run from the lab directory so build-source/public resolves as intended.</p>
+<pre><code class="language-powershell">Test-Path &#39;C:/libraries/wt/share/Wt/resources&#39;
+.\build-source\btb-wt-profile.exe --docroot &#39;build-source/public&#39; --resources-dir &#39;C:/libraries/wt/share/Wt/resources&#39; --http-address 127.0.0.1 --http-port 9090</code></pre>
+<h2>Observe resource requests</h2>
+<p>Open http://127.0.0.1:9090/ and inspect the browser Network panel during a reload. Compare failed resource paths with the configured Wt resources directory. A missing stylesheet or script concerns resource delivery; changing the accepted name alphabet cannot repair it. Stop the server with Ctrl+C after the exercise.</p>
+<h2>Investigate an unexpected file response</h2>
+<p>Request only harmless files you created for this local exercise. If a private source file can be fetched, preserve the launch arguments and inspect which directory was exposed before making another run. Remove the exposure by selecting the intended public directory, then repeat the observation. Do not publish logs or credential material to test this boundary.</p>
+<h2>Exercise and worked answer</h2>
+<p>A colleague proposes --docroot . from the repository root because resource errors disappear. Why is that an unsuitable fix? It broadens the files offered by the server and hides the incorrect resources selection. Keep the narrow document root and correct the Wt resources path. The lab configuration is still not a reviewed Internet deployment.</p>
+<h2>Reference</h2><p><a href="https://www.webtoolkit.eu/wt/doc/reference/html/overview.html">Wt application and connector overview</a>. Consult the version matching your installation.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/wt-profile/README.md">labs/framework/wt-profile/README.md</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="10-exercise-server-events-without-http.html">Previous: Exercise production widget events without HTTP</a> · <a href="12-observe-independent-browser-sessions.html">Next: Observe independent browser sessions</a></p></nav><p><a href="../../../lessons/04-web/learning-wt/11-separate-public-assets-from-source.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/workflow-plan-stages-and-real-actions.html
+
+PURPOSE:
+Map descriptive stages to real actions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Map descriptive stages to real actions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Map descriptive stages to real actions</h1><h2>Prepare the exercise</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Framework SDK with the developer lifecycle service. A terminal runs commands; CMake prepares build instructions and Ninja compiles the program. Use your actual SDK prefix and stop on a configure or build error before running an existing executable.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\lifecycle-execution&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\lifecycle-execution.exe fail-build
+ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>For fail-build, expect five attempted callbacks, four completed callbacks and zero external commands. The deliberate backend result is 23. This is an expected observation to verify, not a claimed pass on your machine.</p><h2>Separate explanation from invocation</h2><p>The lifecycle plan has fourteen stages for complete, but the controlled host receives eight callbacks. Environment and native dependencies share one check. Four source categories share one scan. Repository stage, commit and push share one publisher. A plan explains required work; it need not create a separate process for every sentence.</p>
+<h2>Follow canonical order</h2><p>Read lifecycle_plan.c before lifecycle_execution.c. The plan owns the order. The executor walks it and groups adjacent stages mapped to the same action. It does not maintain a second independent list of goals. Adding a new stage without a supported action mapping refuses execution before any callback instead of silently skipping the work.</p>
+<h2>Exercise</h2><p>Run complete and draw the fourteen-stage sequence with brackets around each shared action. Match each bracket to first_stage and stage_count in the report. Change the requested goal to update in a local exercise and predict the two actions before executing it. Compare the resulting plan with complete.</p>
+<h2>Avoid accidental duplication</h2><p>Calling the repository publisher three times would not give three independent measurements of stage, commit and push. It would repeat a mutating workflow. When integrating a service, identify its actual unit of execution and keep that boundary visible in both progress reporting and tests.</p><h2>Review and recover</h2><p>A missing header or symbol requires checking the installed SDK identity. Preserve the command and output for a failed lab expectation. Controlled callbacks do not qualify real compilers, repository publication or a native GUI.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/lifecycle-execution/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/developer/lifecycle_execution.h">Read the shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="workflow-admit-the-whole-request.html">Previous lesson</a> · <a href="workflow-check-every-host-capability.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/workflow-plan-stages-and-real-actions.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

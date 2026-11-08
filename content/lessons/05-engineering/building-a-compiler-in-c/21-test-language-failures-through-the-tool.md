@@ -60,3 +60,5 @@ Add a parenthesized expression with an independently calculated answer. Then add
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Check only affected preview inputs](20-check-only-affected-preview-inputs.md) · [Next: Separate editor support from language semantics](22-separate-editor-support-from-language-semantics.md)
+
+[Written course contents](index.md)

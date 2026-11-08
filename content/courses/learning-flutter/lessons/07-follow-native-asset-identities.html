@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-flutter/lessons/07-follow-native-asset-identities.html
+
+PURPOSE:
+Follow a native asset from build hook to symbol
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow a native asset from build hook to symbol | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Follow a native asset from build hook to symbol</h1><h2>Prepare the native exercise</h2><p>Use a compatible Dart SDK and native compiler, with Bits2Banking beside the primary Framework checkout. Keep the complete Framework source tree: the local package builds its canonical C implementation. Read the lab README before resolving packages, then run each command separately and stop on an unexpected error. These host commands do not run an Android or Apple device test.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\mobile\flutter-framework-profile&quot;
+dart --version
+dart pub get
+dart analyze
+dart run bin/profile.dart Course_User
+dart test test/profile_consumer_test.dart</code></pre><p>The valid example should print canonical: course_user. The four consumer cases should exercise real native calls. These are expected outcomes to verify; no executed result is implied. Follow the separate device steps in the README when the lesson asks for target qualification.</p><h2>Name two different identities</h2><p>The asset ID identifies the native library supplied by the package. A symbol identifies a function inside that library. This binding uses package:umicom_profile_name/src/native_bindings.dart as its asset ID and UmiInteropProfileNameNormalize as one symbol. A correct library with the wrong symbol name still cannot satisfy the declaration.</p>
+<h2>Read the hook and declaration together</h2><p>Open hook/build.dart beside lib/src/native_bindings.dart. The builder names src/native_bindings.dart as the asset and uses a stable library basename. The Native annotations explicitly select that asset and each exported C symbol. Windows exports are enabled by UMICOM_PROFILE_FFI_BUILD; the ordinary CMake static target needs no DLL-import declaration.</p>
+<h2>Exercise</h2><p>Write a small identity table containing the package name, asset name, complete asset ID, native library basename and three exported symbols. Trace how each value is produced. Predict the diagnostic category for a missing package, a missing code asset and a missing symbol. These failures occur at different boundaries.</p>
+<h2>Keep target names stable</h2><p>Architecture and Apple SDK selection belong to the build output configuration. Do not append arbitrary arm64 or simulator suffixes to this shared asset identity. The compiled bytes may differ per target while the consumer contract stays stable. Real packaging and loading still require target-specific qualification.</p><h2>Review and recover</h2><p>Record the exact failing boundary, source revision, SDK/compiler versions and output. Fix package resolution before diagnosing native execution. Host, emulator, physical-device and browser evidence remain distinct; this native package does not support browser FFI.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/flutter-framework-profile/README.md">Exercise setup and device commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/bindings/dart/umicom_profile_name/README.md">Framework binding contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="06-read-a-native-package-graph.html">Previous lesson</a> · <a href="08-match-c-and-dart-abi-types.html">Next lesson</a></p></nav><p><a href="../../../lessons/15-mobile-development/learning-flutter/07-follow-native-asset-identities.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

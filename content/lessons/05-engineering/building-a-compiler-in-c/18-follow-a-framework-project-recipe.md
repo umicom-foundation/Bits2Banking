@@ -55,3 +55,5 @@ Adding a catalogue entry makes a recipe selectable. It does not install a compil
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Open an arithmetic project in Studio](17-open-an-arithmetic-project-in-studio.md) · [Next: Select the preview build profile](19-select-the-preview-build-profile.md)
+
+[Written course contents](index.md)

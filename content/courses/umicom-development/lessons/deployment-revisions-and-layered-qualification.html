@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/deployment-revisions-and-layered-qualification.html
+
+PURPOSE:
+Qualify revision limits and deployment layers
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify revision limits and deployment layers | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Qualify revision limits and deployment layers</h1><h2>Prepare the exercise</h2><p>Use a matching installed Framework development SDK and the provider-free C23 consumer. Run commands separately and stop on unexpected errors.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-deployment -B .\build\framework-deployment -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-deployment --parallel 2
+ctest --test-dir .\build\framework-deployment --output-on-failure --no-tests=error
+&amp; .\build\framework-deployment\btb-framework-deployment.exe complete
+&amp; .\build\framework-deployment\btb-framework-deployment.exe fail
+&amp; .\build\framework-deployment\btb-framework-deployment.exe rollback
+&amp; .\build\framework-deployment\btb-framework-deployment.exe cancel
+&amp; .\build\framework-deployment\btb-framework-deployment.exe revise</code></pre><p>The five scenarios report modeled outcomes. None installs a package, launches an application or contacts a target.</p><h2>Treat revisions as identities</h2><p>A revision tells observers that a value changed. If UINT64_MAX wraps to zero, old observations can appear current again. The plan and controller now refuse mutations that cannot represent the next identity. Operations affecting several step counters reserve every required increment before changing the first step, so a late exhausted counter cannot cause partial cancellation.</p>
+<h2>Inspect the boundary tests</h2><p>The lifecycle test includes the actual controller implementation so it can place private counters at exhaustion. Normal behavior is still exercised through public calls. This is a focused test seam, not a public setter for production. The refusal checks compare the complete owner before and after; they are stronger than checking only the returned status.</p>
+<h2>Build an evidence ladder</h2><p>First execute the shared admission and lifecycle cases in Framework. Next build this consumer against the installed SDK and run its five scenarios. Then qualify a real provider in an isolated destination, capturing its source, tools and outputs. Finally exercise the native UI that invokes it. A pass at one layer cannot substitute for the next.</p>
+<h2>Record the unresolved work</h2><p>Keep authored coverage separate from executed results, and retain skips with their reasons. Record the installed library revision when a consumer result differs from source expectations. Remote deployment, signing, health verification and recovery require provider-specific implementations and evidence. End your exercise with a table of what was modeled, what was actually executed and what remains unverified.</p><h2>Review and recover</h2><p>Inspect the selected SDK, compiler identity and failing output before changing expectations. Keep actual provider qualification separate from this state-model exercise.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-deployment/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-deployment/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/build/deployment_controller.h">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="deployment-rollback-and-phase-progress.html">Previous lesson</a> · <a rel="next" href="task-descriptor-storage-before-meaning.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/deployment-revisions-and-layered-qualification.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

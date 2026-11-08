@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/09-share-c-policy-across-targets.html
+
+PURPOSE:
+Share one C policy across target toolchains
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Share one C policy across target toolchains | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Share one C policy across target toolchains</h1>
+<h2>Before starting</h2>
+<p>Complete the desktop event lab. Keep a development checkout of Framework beside Bits2Banking. Locate cmake/UmicomProfileName.cmake, src/security/profile_name.c and include/umicom/security/profile_name.h in that checkout. Reading this lesson requires no new tools; the optional build requires a C23 compiler and the matching Qt C++ kit.</p>
+<h2>Follow the dependency</h2>
+<p>The form still calls UmiLocalProfileNameBytes. Its implementation now belongs to Umicom::profile_name, a small static C library. The account service links that same library. The older local_profile.h includes the narrow header, so existing account callers keep their function names and constant. A header describes a function; the target supplies its compiled definition. Moving only a declaration would not remove a link dependency.</p>
+<pre><code class="language-text">Qt form -&gt; Umicom::profile_name -&gt; C library string operations
+Account service -&gt; Umicom::profile_name
+Account service -&gt; credential and platform adapters</code></pre>
+<h2>Select a source consumer</h2>
+<p>BTB_FRAMEWORK_SOURCE opts this lab into compiling the shared source with the selected kit. It does not copy the validator into the lab. Leave the option empty for the installed desktop SDK route. Use separate build folders when the compiler, CPU or runtime changes. Do not point a WebAssembly build at an installed Windows archive.</p>
+<pre><code class="language-powershell">cmake -S . -B build-native-source -G Ninja -DCMAKE_BUILD_TYPE=Debug &#39;-DCMAKE_PREFIX_PATH=C:/Qt/your-version/your-desktop-kit&#39; &#39;-DBTB_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework&#39; -DBUILD_TESTING=ON
+cmake --build build-native-source --parallel 2
+ctest --test-dir build-native-source --output-on-failure</code></pre>
+<h2>Check the boundary</h2>
+<p>Replace the example Qt prefix with your actual matching kit before running. Inspect the link inputs: this source route builds profile_name.c and the view, without account database or credential code. Run Alice_7, a 49-byte name and a non-ASCII name through the form. Expect lowercase acceptance, refusal and refusal. A successful name result proves no account exists.</p>
+<h2>Exercise and worked answer</h2>
+<p>Why is a Windows .a file unsuitable for the browser even when both use C? The archive contains target machine code and an ABI, the rules for calling functions and laying out data. C source can be portable while compiled objects are not. Rebuild the source with the target compiler. If CMake reports that the portable component is missing, use matching source or reinstall the matching SDK; do not duplicate the function in C++.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/CMakeLists.txt">labs/framework/qt-profile/CMakeLists.txt</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="08-extend-the-view-without-duplicating-policy.html">Previous: Extend the view while keeping Framework authoritative</a> · <a href="10-build-the-browser-application.html">Next: Build the Qt form for a browser</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/09-share-c-policy-across-targets.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

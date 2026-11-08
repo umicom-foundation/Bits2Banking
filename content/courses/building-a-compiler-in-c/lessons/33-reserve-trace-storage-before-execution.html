@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/33-reserve-trace-storage-before-execution.html
+
+PURPOSE:
+Reserve trace storage before execution
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reserve trace storage before execution | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Reserve trace storage before execution</h1>
+<h2>Setup recap</h2>
+<p>Read the caller-owned buffer examples in the preceding embedding lessons. Open include/umicom_c/trace.h and tests/test_trace.c in the Umicom C checkout. This lesson studies the API contract; the CLI already supplies the maximum storage capacity.</p>
+<h2>Separate count from capacity</h2>
+<p>Capacity is the number of trace entries the caller can store. The returned trace_count is the number currently valid. They are both measured in entries, not bytes. A four-instruction program requires capacity of at least four before execution starts, even when its fuel would allow only one instruction.</p>
+<p>The runtime first validates the whole program. For structurally valid input, insufficient trace storage returns UMC_BUFFER_TOO_SMALL, clears trace_count to zero, and leaves the trace array and result untouched. It does not execute a prefix and then discover that the report is incomplete.</p>
+<pre><code class="language-c">UmcTraceStep steps[UMC_PROGRAM_LIMIT];
+size_t used = 0U;
+UmcStatus status = umc_execute_trace(program, count, fuel, &amp;result,
+    steps, UMC_PROGRAM_LIMIT, &amp;used, &amp;diagnostic);</code></pre>
+<h2>Give each object an owner</h2>
+<p>The caller owns the immutable program, result, trace array, count and optional diagnostic. Keep the writable objects disjoint from each other and from the input. The runtime does not retain their addresses. Concurrent previews need independent writable storage; making two pointers to the same array does not create two owners.</p>
+<p>Only entries below used belong to this request. Bytes after used may contain an earlier trace. Resetting a count does not securely erase the entire array. A UI must use the count to decide which rows to show.</p>
+<h2>Exercise and check</h2>
+<p>In test_trace.c, compare short-capacity, zero-capacity and reuse. The first two require zero published entries and unchanged bytes. Reuse checks that a shorter failed run cannot inherit the previous count. Add a deliberate local capacity change only in an exercise copy, then predict the status before running your qualification.</p>
+<p>Answer: count is cleared on entry when its pointer is valid. A NULL count pointer cannot be written and is rejected. Invalid storage is not a runtime arithmetic fault, so it has no attempted-step row. The runtime uses bounded local stack storage and no heap allocation or callback.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-c/blob/main/include/umicom_c/trace.h">umicom-c/include/umicom_c/trace.h</a>. Read the matching checkout when qualifying your own build.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="32-read-success-and-failure-states.html">Previous: Read successful and failed stack states</a> · <a href="34-count-the-rejected-fuel-step.html">Next: Count the rejected fuel step</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/33-reserve-trace-storage-before-execution.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

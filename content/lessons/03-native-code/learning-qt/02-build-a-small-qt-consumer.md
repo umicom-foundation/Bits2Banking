@@ -18,9 +18,9 @@ Qt is a library for building applications. A widget is a visible control, such a
 
 ## Before starting
 
-Use a development copy of Umicom Bits2Banking and an installed Umicom Framework SDK containing the security component and UmiLocalProfileNameBytes. Install a matching Qt 6 development kit, C++ compiler, CMake and Ninja. A kit groups tools and libraries compiled to work together. Do not combine libraries from different compiler families. Open a terminal in labs/framework/qt-profile. The lab README contains complete PowerShell and Bash commands and explains how to choose installation prefixes. The exercises check names only; they do not create an account or contact a broker.
+Use a development copy of Umicom Bits2Banking and an installed Umicom Framework SDK containing the profile_name component and UmiLocalProfileNameBytes. Install a matching Qt 6 development kit, C++ compiler, CMake and Ninja. A kit groups tools and libraries compiled to work together. Do not combine libraries from different compiler families. Open a terminal in labs/framework/qt-profile. The lab README contains complete PowerShell and Bash commands and explains how to choose installation prefixes. The exercises check names only; they do not create an account or contact a broker.
 
-[Open the lab setup guide](../../../../labs/framework/qt-profile/README.md).
+[Open the lab setup guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/README.md).
 
 ## The three build stages
 
@@ -28,7 +28,7 @@ Configuration reads CMakeLists.txt and finds dependencies. Generation writes ins
 
 ~~~text
 profile_window.cpp -> compiler -> object code --+
-Framework security library --------------------+-> linker -> executable
+Framework profile_name library ----------------+-> linker -> executable
 Qt Widgets libraries --------------------------+
 ~~~
 
@@ -36,7 +36,7 @@ Qt Widgets libraries --------------------------+
 
 1. Find project(... LANGUAGES C CXX). CXX is CMake's name for C++.
 2. Find CMAKE_CXX_STANDARD 17. It requests the language level used by this adapter.
-3. Find find_package(UmicomFramework ... COMPONENTS security). The installed package must expose the security service.
+3. Find find_package(UmicomFramework ... COMPONENTS profile_name). The installed package must expose the portable name target; security still uses that same implementation.
 4. Find find_package(Qt6 ... COMPONENTS Widgets). Widgets is the Qt component that provides the visible controls.
 5. Find add_library(btb-qt-profile-view STATIC ...). This compiles the reusable view once for the application and its test.
 6. Find target_link_libraries. Imported targets such as Qt6::Widgets carry include directories and link dependencies. They are more reliable than guessing filenames for individual libraries.
@@ -59,8 +59,18 @@ If CMake cannot find Qt6Config.cmake, verify the selected kit and prefix. If it 
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/qt-profile/CMakeLists.txt).
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/CMakeLists.txt).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-qt/index.html) · [Previous: A window, a program and an event loop](01-window-program-and-event-loop.md) · [Next: Controls, layouts and ownership](03-controls-layouts-and-ownership.md)
+
+## Choose the dependency route
+
+An installed desktop SDK now exports Umicom::profile_name. The source route sets BTB_FRAMEWORK_SOURCE to an absolute Framework checkout and compiles that same C implementation with the active compiler. This keeps account storage out of the name-only form. A cross-target build requires the source route and its own build directory. Read [the portable target lesson](09-share-c-policy-across-targets.md) before selecting a browser or mobile kit.
+
+<!-- The earlier build description named find_package(UmicomFramework ... COMPONENTS security) and the Framework security library. The narrow profile_name target replaces that dependency while security continues to link the same policy. -->
+
+<!-- The original out-of-docs lab routes are retained for review: (../../../../labs/framework/qt-profile/README.md) (../../../../labs/framework/qt-profile/CMakeLists.txt). Published manuscripts use repository source links because the site does not copy the labs directory. -->
+
+<!-- The earlier setup required an installed Umicom Framework SDK containing the security component and UmiLocalProfileNameBytes. The profile_name component now supplies the same policy without account-storage dependencies; the previous requirement is retained here for review. -->

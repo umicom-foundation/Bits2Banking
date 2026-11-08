@@ -13,7 +13,12 @@
  * MIT
  *---------------------------------------------------------------------------*/
 #include "profile_application.h"
+/* The narrow header keeps this view independent of account persistence.
+ * The earlier account-wide include remains for interface review. */
+#if 0
 #include "umicom/security/local_profile.h"
+#endif
+#include "umicom/security/profile_name.h"
 #include <Wt/WContainerWidget.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WPushButton.h>

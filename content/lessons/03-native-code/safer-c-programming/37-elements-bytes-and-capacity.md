@@ -85,3 +85,5 @@ When converting a count to bytes, first check count <= SIZE_MAX / sizeof(*inputs
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Read a next-token pair from bytes](36-read-next-token-pairs.md) · [Next: Recognise overlap between distinct pointers](38-recognise-overlapping-output-ranges.md)
+
+[Written course contents](index.md)

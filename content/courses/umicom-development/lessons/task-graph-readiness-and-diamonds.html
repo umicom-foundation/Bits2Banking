@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/task-graph-readiness-and-diamonds.html
+
+PURPOSE:
+Compute readiness across chains and diamonds
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compute readiness across chains and diamonds | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Compute readiness across chains and diamonds</h1><h2>Prepare the exercise</h2><p>Install the matching Framework SDK, then run these commands separately. Select the scenario named by the lesson and stop on an unexpected error.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-task-graph -B .\build\framework-task-graph -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-task-graph --parallel 2
+ctest --test-dir .\build\framework-task-graph --output-on-failure --no-tests=error
+&amp; .\build\framework-task-graph\btb-framework-task-graph.exe complete</code></pre><p>Complete and retry model three successes; fail models one failure and two blocked tasks; cancel leaves two waiting tasks canceled; reject preserves the running graph. These are task-state observations, not actual build results.</p><h2>Follow prerequisite edges</h2><p>Configure must finish before build is ready, and build must finish before test. A dependency graph represents these relationships independently of how commands will later execute. Run complete and trace each ready task before recording its fictional success. The ordering is a property of dependencies and deterministic registry order, not the spelling of task IDs.</p>
+<h2>Add a second branch</h2><p>Extend the lab with compile-a and compile-b after configure, then make link depend on both. Complete the two compilations in opposite orders. Link must remain pending after only one succeeds. Record its satisfied dependency count and explain why that count changes before the scheduling state changes.</p>
+<h2>Observe changes without losing them</h2><p>A node revision identifies its observable runtime record. Updating a satisfied-dependency count while keeping the same revision can leave a UI showing stale detail. The shared graph advances that identity even when the node remains Pending. Consumers should compare revision identities rather than infer changes solely from the state label.</p><h2>Review and recover</h2><p>Confirm the installed archive and headers when behavior differs. Preserve the selected scenario and assertion output. Do not change scheduling policies or expected counts merely to obtain a passing result.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-graph/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-graph/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/task-graph-transactions.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="task-graph-rejected-replacement.html">Previous lesson</a> · <a rel="next" href="task-graph-failure-and-skip-policy.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/task-graph-readiness-and-diamonds.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

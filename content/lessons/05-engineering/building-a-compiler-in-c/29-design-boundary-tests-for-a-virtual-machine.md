@@ -78,3 +78,5 @@ When running tests, record the source revision, command and result. A test that 
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Preserve output when inspection fails](28-preserve-output-when-inspection-fails.md) · [Next: Present program facts in an IDE](30-present-program-facts-in-an-ide.md)
+
+[Written course contents](index.md)

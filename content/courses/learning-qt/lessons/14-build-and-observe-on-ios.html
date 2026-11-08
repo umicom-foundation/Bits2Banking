@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/14-build-and-observe-on-ios.html
+
+PURPOSE:
+Build and observe the lab on iOS
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build and observe the lab on iOS | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Build and observe the lab on iOS</h1>
+<h2>Before starting</h2>
+<p>This practical step requires a Mac with Xcode and a compatible Qt iOS kit. Windows can be used to study and edit the source, but it cannot perform this Xcode workflow. Copy or check out the same reviewed Bits2Banking and Framework revisions on the Mac. Simulator and physical-device qualification are separate records.</p>
+<h2>Generate the target project</h2>
+<p>Run these shell commands from the profile lab on the Mac. Replace the example directories with your actual checkout and kit. The C source is compiled for the selected iOS target; no Windows or Android archive is imported.</p>
+<pre><code class="language-bash">/path/to/Qt/your-version/ios/bin/qt-cmake -S . -B build-ios -G Xcode -DCMAKE_BUILD_TYPE=Debug -DBTB_FRAMEWORK_SOURCE=/path/to/umicom-framework -DBUILD_TESTING=OFF
+cmake --build build-ios --config Debug</code></pre>
+<h2>Understand the bundle</h2>
+<p>The lab marks the Apple application as a bundle with an educational identifier. A bundle groups the program and platform metadata. That identifier is not an entitlement, a signing identity or proof of store approval. Physical-device deployment needs the appropriate certificates and provisioning configured in the owner’s Xcode environment. Keep secrets and signing material out of lesson source.</p>
+<h2>Choose a destination</h2>
+<p>Open the generated Xcode project, select a destination supported by the installed Qt kit, and resolve its signing requirements for your own test account. Run the existing form. Enter an accepted name, then an invalid one. Check keyboard visibility and reachability of the button and result. Record simulator or device explicitly; do not combine those outcomes into one generic mobile pass.</p>
+<h2>Exercise and worked answer</h2>
+<p>A simulator run works, but the device build reports a provisioning error. Should the C validator change? No. The failed boundary is device deployment authorization. Correct the project’s signing setup through the established Xcode process and rerun that stage. Retain the simulator observation and the device failure as separate evidence.</p>
+<h2>Recovery and limits</h2>
+<p>When a library architecture is rejected, inspect the selected destination and the Qt kit’s supported architectures before rebuilding. Preserve the failed build directory and use a new one if changing the target setup. This laboratory does not establish background persistence, store distribution or production account security. Continue with the lifecycle lesson to examine what the simple form actually retains.</p>
+<h2>Reference</h2><p><a href="https://doc.qt.io/qt-6.8/ios.html">Qt iOS toolchain, build and deployment reference</a>. Consult the documentation for the exact kit you install.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/CMakeLists.txt">labs/framework/qt-profile/CMakeLists.txt</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="13-package-the-android-lab.html">Previous: Package the same Qt lab for Android</a> · <a href="15-observe-mobile-lifecycle-and-input.html">Next: Observe mobile input and application lifetime</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/14-build-and-observe-on-ios.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

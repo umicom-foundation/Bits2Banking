@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/21-reset-state-without-keeping-a-connection.html
+
+PURPOSE:
+Reset parser state without claiming keep-alive
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset parser state without claiming keep-alive | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Reset parser state without claiming keep-alive</h1>
+<h2>Prepare</h2>
+<p>Trace the extra-byte and reset section near the end of stream.c. The lab has no socket and no handler. Its explicit Reset demonstrates object reuse, not a persistent HTTP connection protocol.</p>
+<h2>Follow terminal completion</h2>
+<p>After a complete request, an empty feed reports OK. Supplying another byte changes the stream to PARSE_ERROR: the byte is not silently accepted as a second message. A parse attempted in that state refuses and leaves the previously owned UmiWebRequest unchanged.</p>
+<h2>Begin a separate request explicitly</h2>
+<p>Reset discards received bytes, scan position and known framing while retaining the allocated maximum. Inspect should then show zero received bytes, no expected message and BUSY. The caller can feed a new independent request. The previously parsed owned value remains separate.</p>
+<pre><code class="language-text">complete -&gt; extra input -&gt; framing error
+framing error -&gt; explicit reset -&gt; empty/incomplete
+owned parsed request -&gt; unchanged throughout</code></pre>
+<h2>Keep transport ownership visible</h2>
+<p>The native connection service handles one request and closes the accepted socket. Reset cannot extend that socket lifetime, reorder messages or create HTTP keep-alive support. A future persistent protocol would need explicit message consumption, connection state and error recovery rules. Those features are not supplied by this API.</p>
+<h2>Exercise and worked answer</h2>
+<p>A developer catches every parse error, resets and keeps reading the same socket. What is missing? A defined resynchronization and connection policy. With ambiguous framing, remaining bytes may not begin at a safe message boundary. The current one-exchange service closes the transport instead of guessing.</p>
+<h2>Recover from stale-state mistakes</h2>
+<p>If a new independent input starts with old counts, inspect whether Reset was called on the intended object and whether another owner is still using it. Keep one owner thread and do not feed, reset or destroy concurrently. A new allocation may help isolate a diagnosis, but it does not excuse an ownership defect.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/stream.c">labs/native/framework-http-contracts/stream.c</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="20-bound-input-and-terminal-errors.html">Previous: Bound input and keep terminal errors visible</a> · <a rel="next" href="22-test-every-fragment-boundary.html">Next: Test message decisions across fragment boundaries</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/21-reset-state-without-keeping-a-connection.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

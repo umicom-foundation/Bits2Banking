@@ -83,3 +83,5 @@ For a two-instruction program that pushes one value and returns it, calculate th
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Distinguish structure from arithmetic safety](25-distinguish-structure-from-arithmetic-safety.md) · [Next: Embed the inspector in a C application](27-embed-the-inspector-in-a-c-application.md)
+
+[Written course contents](index.md)

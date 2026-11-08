@@ -91,8 +91,13 @@ Write the smallest reproducible input and observed result. “Selecting cpu.vhd 
 
 ## Read the source
 
-[Open the example source](../../../labs/native/framework-language-inspection/main.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-language-inspection/main.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-language-inspection/main.c).
 
 ## Continue learning
 
 [Course contents](../../courses/umicom-development/index.html) · [Previous: Separate editing rules from compiler support](language-comments-syntax-and-build-tools.md)
+
+[Next: Distinguish file bytes from version responses](evidence-bytes-and-version-strings.md)

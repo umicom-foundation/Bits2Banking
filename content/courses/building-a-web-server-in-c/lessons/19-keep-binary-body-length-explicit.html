@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/19-keep-binary-body-length-explicit.html
+
+PURPOSE:
+Keep binary body length explicit
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep binary body length explicit | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep binary body length explicit</h1>
+<h2>Prepare</h2>
+<p>Build or read the incremental stream lab. Locate the body array containing A, zero and B. Review the difference between a byte span and a NUL-terminated C string before changing the example.</p>
+<h2>Count the actual bytes</h2>
+<p>The array has three elements. Its middle zero is data, not an instruction to stop receiving the body. The header declares Content-Length: 3, and the stream remains BUSY until all three bytes have arrived. The parsed request also carries body_length, which must be used when copying or comparing the body.</p>
+<pre><code class="language-c">unsigned char body[] = {&#39;A&#39;, 0U, &#39;B&#39;};
+/* sizeof(body) is 3; a string-length operation would not describe it. */</code></pre>
+<h2>Observe the expected result</h2>
+<p>Run btb-http-stream after a successful build. Its body line should report length 3 and hexadecimal bytes 41 00 42. This is an expected observation, not a recorded pass. The Framework many-fragments scenario also supplies arbitrary byte values in a larger body, including CR and LF.</p>
+<h2>Preserve the representation</h2>
+<p>Do not route binary data through a helper that assumes a text string. If the application later interprets a form or JSON body, that is another parsing step with its own input rules. Transport framing establishes how many bytes belong to the message; it does not establish their application meaning.</p>
+<h2>Exercise and worked answer</h2>
+<p>A learner copies request-&gt;body with a function that stops at the first zero and sees only A. Is the stream missing bytes? Inspect body_length and compare the three-byte span first. In this example the string operation discarded the rest. Use the explicit length and choose a representation appropriate for the intended content.</p>
+<h2>Recover from disagreement</h2>
+<p>Keep the exact wire bytes, declared length, fragment sizes and resulting body length. A hex dump is clearer than a text screenshot when zeros are involved. Sanitize real request contents before publishing evidence. Repeating the same command without recording its byte inputs makes boundary failures hard to reproduce.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/stream.c">labs/native/framework-http-contracts/stream.c</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="18-scan-only-new-header-bytes.html">Previous: Scan new header bytes and reuse strict rules</a> · <a rel="next" href="20-bound-input-and-terminal-errors.html">Next: Bound input and keep terminal errors visible</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/19-keep-binary-body-length-explicit.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

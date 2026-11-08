@@ -75,3 +75,6 @@ Use these source studies after the introductory practical labs. Each identifies 
 - [Follow a discount factor and its failure paths](../07-practical-domains/financial-instruments-pricing/04-follow-a-discount-factor-and-its-failures.md)
 - [Lab: trace a stable job queue](../12-distributed-learning/priority-queue-reading-lab.md)
 - [Lab: measure a model without changing its checkpoint](../10-native-ai/checkpoint-observation-lab.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](85-check-real-ai-client-boundaries.md) · [Next lesson](learning-module-files-and-identities.md)

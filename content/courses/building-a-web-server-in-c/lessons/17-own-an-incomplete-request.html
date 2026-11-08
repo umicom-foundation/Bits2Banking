@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/17-own-an-incomplete-request.html
+
+PURPOSE:
+Own an incomplete request across reads
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own an incomplete request across reads | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Own an incomplete request across reads</h1>
+<h2>Prepare</h2>
+<p>Complete the framing and exchange labs from lessons 9–16. Install a matching Framework SDK that includes umicom/web/request_stream.h. Open stream.c in labs/native/framework-http-contracts. Build with the README commands only when your toolchain and SDK are ready; reading the ownership diagram needs no running server.</p>
+<h2>Give partial input an owner</h2>
+<p>A transport buffer may be reused after each read. The new UmiWebRequestStream copies fed bytes into its own bounded allocation, so the caller can reuse that temporary input. The stream remains owned by one thread until destroyed. An incomplete request is ordinary state, represented by BUSY, rather than an empty successful request.</p>
+<pre><code class="language-c">UmiWebRequestStream *stream = NULL;
+UmiStatus status = UmiWebRequestStreamCreate(1024U, &amp;stream);
+/* Check status before feeding any bytes. */</code></pre>
+<h2>Follow the lab</h2>
+<p>The program first feeds a complete header declaring a three-byte body. Inspect reports the received header size and expected total, but the status remains BUSY. The program feeds A, changes its original buffer to X, then feeds NUL and B. Parsing must still produce A, NUL, B because the earlier byte was copied.</p>
+<h2>Keep two lifetimes separate</h2>
+<p>The stream owns wire bytes. UmiWebRequestStreamParse produces a separate caller-owned UmiWebRequest through the existing strict parser. Destroying the stream does not invalidate that parsed value. The lab allocates the large request structure on the heap so a small thread stack need not hold it.</p>
+<h2>Exercise and worked answer</h2>
+<p>After Feed returns BUSY, may the caller overwrite its input array? Yes, the bytes supplied by that successful bounded feed have been copied. May it destroy the stream and then continue feeding through the old pointer? No, the owner has released the object. Draw separate boxes for the temporary array, stream allocation and parsed request.</p>
+<h2>Recover with the right evidence</h2>
+<p>If the owned body unexpectedly changes, keep the exact feed sequence and inspect whether the application accidentally reused a borrowed pointer elsewhere. If the new API fails to link, check that the installed library matches the header. Do not implement a second accumulator in the lab to conceal an SDK mismatch.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/stream.c">labs/native/framework-http-contracts/stream.c</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="16-distinguish-dispatch-from-delivery.html">Previous: Distinguish dispatch from delivery</a> · <a rel="next" href="18-scan-only-new-header-bytes.html">Next: Scan new header bytes and reuse strict rules</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/17-own-an-incomplete-request.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

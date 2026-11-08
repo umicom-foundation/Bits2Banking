@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/orchestration-owned-plans-and-source-edits.html
+
+PURPOSE:
+Keep accepted plans separate from editable source tasks
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep accepted plans separate from editable source tasks | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep accepted plans separate from editable source tasks</h1><h2>Prepare the exercise</h2><p>Install the matching Framework SDK and run these PowerShell commands separately. Use the scenario named in the lesson and stop on unexpected errors.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-task-orchestration -B .\build\framework-task-orchestration -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-task-orchestration --parallel 2
+ctest --test-dir .\build\framework-task-orchestration --output-on-failure --no-tests=error
+&amp; .\build\framework-task-orchestration\btb-framework-task-orchestration.exe selected</code></pre><p>Selected plans two tasks; parallel, retry and reject complete four; stop leaves three waiting tasks canceled after the active task finishes. These are modeled outcomes, not actual process results.</p><h2>Borrow the registry and own the plan</h2><p>The source registry must outlive the orchestrator, but the accepted plan owns copied task definitions. Editing source tasks does not change the operation already under review. Run reject: the example replaces a source dependency with a missing ID, refuses a new plan and then completes the previous valid operation through its retained definitions.</p>
+<h2>Publish a candidate only when complete</h2><p>Planning creates a new candidate registry, resolves the dependency closure and validates the replacement graph. It destroys the previous planned registry only after the new graph has been accepted. Failed lookup, cycles, allocation refusal and identity limits therefore leave the previous operation usable. This ordering is the ownership counterpart of staging a command and directory together.</p>
+<h2>Retain observer identity deliberately</h2><p>The graph object address stays stable across replanning for compatible borrowed observers. Its contents and revisions can change on successful publication. Treat the exposed pointer as an observation surface while using orchestration; changing graph state directly bypasses the owner&#39;s active counts. Explain which object owns each pointer in the lab&#39;s cleanup sequence.</p><h2>Review and recover</h2><p>Verify installed headers, archive and compiler when a contract differs. Keep the selected scenario and failure line. Preserve real process evidence separately from any refused graph observation.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-orchestration/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-orchestration/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/task-orchestration.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="orchestration-explicit-depth-first-frames.html">Previous lesson</a> · <a rel="next" href="orchestration-parallel-slots-and-outcomes.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/orchestration-owned-plans-and-source-edits.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

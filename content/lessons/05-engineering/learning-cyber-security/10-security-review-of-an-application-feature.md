@@ -74,3 +74,6 @@ Security is a set of maintained contracts across a working feature. Implement sh
 ## Continue learning
 
 [Course contents](../../../courses/learning-cyber-security/index.html) · [Previous: Test rejection, failure and recovery](09-test-security-failure-paths.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](11-read-an-identity-lifecycle.md)

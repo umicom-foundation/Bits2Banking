@@ -49,8 +49,11 @@ Why is registering `learning.reader` insufficient to prove that a real person is
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/identity-lifecycle/main.c).
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/identity-lifecycle/main.c).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-cyber-security/index.html) · [Next: Keep credential references inside their buffers](12-reference-fields-and-string-bounds.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](10-security-review-of-an-application-feature.md)

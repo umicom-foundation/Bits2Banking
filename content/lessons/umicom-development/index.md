@@ -368,3 +368,82 @@ A button becomes useful when its event reaches a rule and the result reaches the
 - [Check real AI client boundaries](85-check-real-ai-client-boundaries.md)
 
 </details>
+
+## Observe files and qualify evidence
+
+- [Distinguish file bytes from version responses](evidence-bytes-and-version-strings.md)
+- [Validate a complete file selection before reading](evidence-selection-before-reading.md)
+- [Own an observation independently of its inputs](evidence-observation-ownership.md)
+- [Bound one file and the complete request](evidence-file-and-total-budgets.md)
+- [Write complete JSON values into bounded buffers](evidence-complete-json-values.md)
+- [Preserve earlier evidence when saving a report](evidence-exclusive-report-files.md)
+- [Compare selected bytes before and after a run](evidence-before-after-comparison.md)
+- [Separate selected libraries from loaded runtime identity](evidence-runtime-and-patch-identity.md)
+
+## Restart an owned program
+
+- [Choose the operation you actually own](restart-own-the-right-operation.md)
+- [Separate a stop request from completion](restart-request-is-not-completion.md)
+- [Retain the old result before a new run](restart-retain-the-old-result.md)
+- [Recheck project authority after waiting](restart-renew-project-authority.md)
+- [Keep Stop effective across thread boundaries](restart-preserve-cross-thread-stop.md)
+- [Preserve separate transcripts for each run](restart-retain-separate-transcripts.md)
+- [Connect a menu action to normal refresh](restart-connect-menu-and-refresh.md)
+- [Qualify restart at each ownership boundary](restart-qualify-each-layer.md)
+
+## Execute a reviewed development lifecycle
+
+- [Admit the whole request before work starts](workflow-admit-the-whole-request.md)
+- [Map descriptive stages to real actions](workflow-plan-stages-and-real-actions.md)
+- [Check every host capability before execution](workflow-check-every-host-capability.md)
+- [Keep borrowed request data alive](workflow-borrowed-inputs-and-lifetime.md)
+- [Report attempted and completed actions separately](workflow-attempted-and-completed-evidence.md)
+- [Separate previews from optional audit policy](workflow-preview-and-optional-audits.md)
+- [Forward only options with defined meaning](workflow-adapters-and-option-scope.md)
+- [Qualify a workflow through distinct layers](workflow-qualify-the-integration-layers.md)
+
+## Deployment state and evidence
+
+Rehearse the actual Framework plan and controller, including bounded admission, content-specific approval, cancellation, rollback and revision limits.
+
+- [Separate a deployment model from real operations](deployment-models-and-real-providers.md)
+- [Admit bounded deployment values before reading them](deployment-bounded-public-values.md)
+- [Publish a complete replacement plan](deployment-publish-a-complete-plan.md)
+- [Keep approval attached to the reviewed content](deployment-approval-follows-content.md)
+- [Give one deployment step the execution slot](deployment-one-running-step.md)
+- [Preserve cancellation when the running step returns](deployment-stop-and-completion-evidence.md)
+- [Report rollback progress without erasing failure](deployment-rollback-and-phase-progress.md)
+- [Qualify revision limits and deployment layers](deployment-revisions-and-layered-qualification.md)
+
+## Task admission and ownership
+
+Build safe task descriptors, publish owned values and distinguish local validation from graph and execution evidence.
+
+- [Validate task storage before task meaning](task-descriptor-storage-before-meaning.md)
+- [Change a command and directory together](task-command-and-directory-transaction.md)
+- [Publish task values into an owning registry](task-registry-owning-public-values.md)
+- [Treat revisions as identities that cannot wrap](task-revision-refusal-and-reset.md)
+- [Separate local task validity from dependency validity](task-descriptors-and-dependency-graphs.md)
+- [Qualify task behavior at source and SDK boundaries](task-source-sdk-and-runtime-evidence.md)
+
+## Dependency graph transactions
+
+Preserve running workflows during rejected replacements, model dependency policy and qualify graph observations independently of process execution.
+
+- [Keep a running graph when replacement is invalid](task-graph-rejected-replacement.md)
+- [Compute readiness across chains and diamonds](task-graph-readiness-and-diamonds.md)
+- [Distinguish blocked work from permitted continuation](task-graph-failure-and-skip-policy.md)
+- [Retry a failed task without erasing its attempt budget](task-graph-retry-and-attempts.md)
+- [Cancel waiting work while preserving running-process ownership](task-graph-cancellation-and-process-ownership.md)
+- [Verify graph transactions across public and private boundaries](task-graph-transactions-and-regression-evidence.md)
+
+## Task operation ownership
+
+Select dependency-closed plans, bound traversal memory and coordinate parallel lifecycle changes through one shared owner.
+
+- [Select a task and its complete dependency closure](orchestration-select-a-dependency-closure.md)
+- [Bound dependency traversal without recursive task copies](orchestration-explicit-depth-first-frames.md)
+- [Keep accepted plans separate from editable source tasks](orchestration-owned-plans-and-source-edits.md)
+- [Admit parallel work through one owning orchestrator](orchestration-parallel-slots-and-outcomes.md)
+- [Distinguish stopping, retrying and finishing an operation](orchestration-stop-retry-and-finish.md)
+- [Qualify orchestration across owner and child boundaries](orchestration-layered-regression-evidence.md)

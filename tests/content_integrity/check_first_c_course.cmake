@@ -211,6 +211,26 @@ list(APPEND _sources
     labs/native/framework-checksum/checksum.c
     labs/native/framework-checksum/checksum.h
     labs/native/framework-checksum/test_checksum.c)
+# Keep the new build-stage module tied to the real teaching files. The
+# original source examples and exact ordered syllabus remain checked above.
+list(APPEND _identities
+    26-read-the-build-map
+    27-inspect-preprocessed-source
+    28-inspect-generated-assembly
+    29-object-files-and-symbols
+    30-link-with-a-native-sdk
+    31-read-diagnostics-by-stage
+    32-observe-incremental-rebuilds
+    33-review-a-complete-native-consumer)
+list(APPEND _sources
+    labs/native/c-build-stages/README.md
+    labs/native/c-build-stages/main.c
+    labs/native/c-build-stages/main.c
+    labs/native/c-build-stages/runner.h
+    labs/native/c-build-stages/CMakeLists.txt
+    labs/native/c-build-stages/test_runner.c
+    labs/native/c-build-stages/CMakeLists.txt
+    labs/native/c-build-stages/runner.c)
 list(LENGTH _identities _expected_count)
 list(LENGTH _sources _expected_sources)
 if(NOT _count EQUAL _expected_count OR NOT _expected_sources EQUAL _expected_count)
@@ -283,6 +303,12 @@ foreach(_n RANGE 0 ${_last})
     elseif(_source MATCHES "^umicom-kernel/")
         string(REGEX REPLACE "^umicom-kernel/" "" _kernel_file "${_source}")
         require_text("${_html}" "href=\"https://github.com/umicom-foundation/umicom-kernel/blob/main/${_kernel_file}\"" "published Kernel reading: ${_id}")
+    # Build-stage chapters are guided source readings, not the separate
+    # activity boundary exercise. Require their own published lab references.
+    elseif(_source MATCHES "^labs/native/c-build-stages/")
+        require_file("${REPOSITORY_ROOT}/${_source}")
+        require_text("${_html}" "${_source}" "build-stage source reference")
+        require_text("${_md}" "${_source}" "build-stage manuscript reference")
     elseif(_source MATCHES "^labs/native/framework-checksum/")
         require_file("${REPOSITORY_ROOT}/${_source}")
         require_text("${_html}" "${_source}" "checksum source reference")

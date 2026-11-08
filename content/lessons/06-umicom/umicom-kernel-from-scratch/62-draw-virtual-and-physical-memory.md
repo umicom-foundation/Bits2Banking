@@ -71,3 +71,6 @@ The cross-page-read case expects the correct byte order even when physical frame
 ## Continue learning
 
 [Course contents](../../../courses/umicom-kernel-from-scratch/index.html) · [Next: Read the permission bits attached to a page](63-read-permission-bits.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](61-design-a-kernel-boundary-test-table.md)

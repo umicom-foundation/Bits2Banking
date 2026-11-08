@@ -33,6 +33,19 @@ Parse into owned storage, reject ambiguous framing and distinguish dispatch from
 1. [Handle short reads and writes](15-handle-short-transfers.md)
 1. [Distinguish dispatch from delivery](16-distinguish-dispatch-from-delivery.md)
 
+## Project: own and admit fragmented input
+
+Trace copied bytes, shared header policy, terminal refusals, explicit reset and transport ownership.
+
+1. [Own an incomplete request across reads](17-own-an-incomplete-request.md)
+1. [Scan new header bytes and reuse strict rules](18-scan-only-new-header-bytes.md)
+1. [Keep binary body length explicit](19-keep-binary-body-length-explicit.md)
+1. [Bound input and keep terminal errors visible](20-bound-input-and-terminal-errors.md)
+1. [Reset parser state without claiming keep-alive](21-reset-state-without-keeping-a-connection.md)
+1. [Test message decisions across fragment boundaries](22-test-every-fragment-boundary.md)
+1. [Connect parser state to the transport owner](23-connect-stream-state-to-transport-ownership.md)
+1. [Qualify the parser, exchange and local host separately](24-qualify-a-local-c-web-workflow.md)
+
 <!-- The module guide above owns the reading order. Earlier explanations and reference links remain available for readers following existing material. -->
 
 <details markdown="1">
@@ -65,7 +78,10 @@ Read one lesson, predict the example result, then attempt the exercise before op
 
 ## Planned continuation
 
+<!-- The new module replaces the earlier incremental-parser continuation plan. The previous wording is retained for engineering review.
 Next modules: a bounded incremental parser; partial writes; connection timeouts; routing and methods; static-file containment; concurrency; graceful shutdown; TLS through a reviewed library; authentication boundaries; request limits and fault-injection coverage.
+-->
+The incremental input module above is now available. Further work covers static-file delivery, application input policy, concurrency, host shutdown and reviewed deployment. Runtime outcomes still need target-environment execution.
 
 These opening lessons do not claim a complete pricing engine, Bitcoin node, blockchain network, Linux distribution or production web server. Each course develops the relevant part in order.
 
@@ -96,3 +112,16 @@ Before a server opens a socket, it needs a valid port number. The Framework exam
 - [Distinguish dispatch from delivery](16-distinguish-dispatch-from-delivery.md)
 
 </details>
+
+## Project: preview selected static files
+
+Own one root and routing context; distinguish path admission, HTTP responses, listening and browser observations.
+
+- [Select a root for static files](25-select-a-static-document-root.md)
+- [Decode a URL path once and retain containment](26-decode-url-paths-once.md)
+- [Own the preview session and its borrowed contexts](27-own-the-preview-session.md)
+- [Separate an HTTP refusal from an operation failure](28-separate-http-status-from-operation-status.md)
+- [Check complete file bytes and HEAD responses](29-check-complete-file-bytes-and-head.md)
+- [Review loopback binding and browser admission](30-review-loopback-and-browser-admission.md)
+- [Run and stop the native preview command](31-run-and-stop-the-native-preview.md)
+- [Qualify a static preview in separate layers](32-qualify-static-preview-in-layers.md)

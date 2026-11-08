@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/evidence-selection-before-reading.html
+
+PURPOSE:
+Validate a complete file selection before reading
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate a complete file selection before reading | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Validate a complete file selection before reading</h1><h2>Prepare your tools</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Umicom Framework SDK containing the toolchain file-observation service. A terminal runs written commands; CMake prepares build instructions and Ninja performs compilation. Stop on a configure or build error before launching any existing executable. These examples use Windows UCRT64 and an SDK at C:\umicom\installed\framework; substitute your own paths. The lab reads ordinary files and needs no GUI, server or credentials.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\file-observation&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+[IO.File]::WriteAllBytes(&quot;$PWD\build\abc.bin&quot;, [byte[]](97,98,99))
+.\build\file-observation.exe &quot;$PWD\build\abc.bin&quot;</code></pre><p>Expect a JSON record with three bytes and the SHA-256 digest of abc. This is file evidence, not a passing build or runtime result. If the SDK header or symbol is missing, rebuild and install a matching SDK before continuing.</p><h2>Separate syntax from storage</h2><p>A path can be syntactically valid while naming a missing file. The Framework service first validates every path and the selection limits. Only then does it open the first file. This lets a caller reject a relative path at the end of the list without first reading unrelated earlier inputs. All paths must be absolute, ordinary UTF-8 paths.</p>
+<h2>Trace the admission loop</h2><p>Open file_observation.c and locate the loop before allocation. UmiOutputFileValidatePath checks the shared path syntax without creating a file. UmiUtf8Validate checks encoding. Exact duplicate strings are refused. Different spellings that reach the same file are not merged; the service makes no filesystem-identity claim about aliases.</p>
+<h2>Exercise</h2><p>Pass the absolute abc fixture followed by a relative path. The request should fail without a partial JSON report. Then pass a valid absolute path to a missing file. That selection passes syntax admission but fails during reading. Compare these two failures and identify which phase produced each.</p>
+<h2>Explain the boundary</h2><p>The library returns an index when a particular selected path fails. General argument errors use SIZE_MAX, meaning no selected index applies. Do not add one to this sentinel and display it as a filename number. The CLI checks the sentinel before presenting a one-based number. GUI callers should preserve this distinction when highlighting an invalid selection.</p><h2>Verify and recover</h2><pre><code>ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>The lab registers five output contracts. Read actual results and keep failed or skipped coverage explicit. Preserve the exact command, selected inputs and diagnostic when a check fails. Do not run an old binary after a failed build.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/file-observation/main.c">Read the C lab source</a> and <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/toolchain/file_observation.h">Framework API contract</a>.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="evidence-bytes-and-version-strings.html">Previous lesson</a> · <a href="evidence-observation-ownership.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/evidence-selection-before-reading.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

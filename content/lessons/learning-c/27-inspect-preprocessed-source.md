@@ -70,8 +70,19 @@ Write down the default factor, the overridden factor and the expected runtime re
 
 ## Read the source
 
-[Open the example source](../../../labs/native/c-build-stages/main.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/main.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/main.c).
 
 ## Continue learning
 
 [Course contents](../../courses/learning-c/index.html) · [Previous: Read the map from source to executable](26-read-the-build-map.md) · [Next: Inspect generated assembly without guessing its meaning](28-inspect-generated-assembly.md)
+
+<details><summary>The two factors</summary>
+
+The default factor is 6, so the embedded program returns 42. With -DLESSON_FACTOR=5, it returns 35. Producing main-five.i only writes preprocessed source: it does not rebuild or run the executable. A later build must use the same definition to observe 35 at runtime.
+
+</details>
+
+[Word explanations](../../courses/learning-c/glossary.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Learning routes](../../courses/learning-paths.html)

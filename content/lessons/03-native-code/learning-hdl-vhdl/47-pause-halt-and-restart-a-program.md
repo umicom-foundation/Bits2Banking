@@ -59,7 +59,10 @@ Make a table with four rows: paused, running, halted and reset. For each row, pr
 
 ## Read the source
 
-[Open the example source](../../../../labs/hardware/vhdl-cpu/tests/tb_learning_system.vhd).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/tests/tb_learning_system.vhd)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/tests/tb_learning_system.vhd).
 
 ## Continue learning
 

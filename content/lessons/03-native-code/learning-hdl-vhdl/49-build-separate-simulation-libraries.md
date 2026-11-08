@@ -59,7 +59,10 @@ Find the four source paths and both work directories. Change one comment in the 
 
 ## Read the source
 
-[Open the example source](../../../../labs/hardware/vhdl-cpu/CMakeLists.txt).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/CMakeLists.txt)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/CMakeLists.txt).
 
 ## Continue learning
 

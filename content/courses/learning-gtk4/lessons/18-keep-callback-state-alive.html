@@ -34,7 +34,7 @@ cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;$HOME/umicom-sdk&quot;
 cmake --build build --parallel 2
 ./build/btb-control-inspection</code></pre>
 <p>CMake reads CMakeLists.txt and finds the installed libraries. Ninja compiles only what this lab needs. This recipe does not rebuild the Framework. If CMake cannot find UmicomFramework, correct the SDK path. If ui_gtk4 or the checked lookup symbol is missing, install an SDK containing that component and API before continuing. A GTK window needs an interactive desktop session. On Windows, the GTK DLLs must remain reachable through Path.</p>
-<p>For more detail after this lesson, see <a href="../../learning-c/index.html">Learning C</a>, <a href="../../learning-cmake/index.html">Learning CMake</a> and the <a href="../../../../labs/native/framework-control-inspection/README.md">lab guide</a>.</p>
+<p>For more detail after this lesson, see <a href="../../learning-c/index.html">Learning C</a>, <a href="../../learning-cmake/index.html">Learning CMake</a> and the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-control-inspection/README.md">lab guide</a>.</p>
 <h2>What a dangling pointer means</h2>
 <p>A dangling pointer still contains an address after the object at that address has ceased to be valid. Reading or writing through it can produce a crash or corrupt memory. Keeping the number in a C variable does not preserve the object.</p>
 <p>The lab creates LabWindow with g_new0. This allocates zero-initialised storage for the structure. It attaches the structure to the window using g_object_set_data_full and gives g_free as the cleanup function. The window is therefore responsible for releasing the state.</p>
@@ -75,6 +75,6 @@ Callbacks borrow state and control pointers during one call</code></pre>
 <h3>Retained windows and available windows</h3>
 <p>Keeping a strong reference to a GtkWindow does not mean it can still receive input. Window destruction can hide and unrealize the native window while a retained object and its children still exist. A focus traversal must check mapping after the callback and stop if the viewport was unmapped, even if another callback immediately presents it again. Test both acceptance and rejection after closure, then separately test a fresh command after the reopened view has been allocated.</p>
 <h2>Read the source</h2>
-<p><a href="../../../../labs/native/framework-control-inspection/main.c">Open the example source</a>.</p>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-control-inspection/main.c">Open the example source</a>.</p>
 <nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="17-distinguish-visible-enabled-and-found.html">Previous: Distinguish a found control from a usable control</a> · <a href="19-test-control-lookup-boundaries.html">Next: Test control discovery at its boundaries</a></p>
 </nav><p><a href="../../../lessons/06-umicom/learning-gtk4/18-keep-callback-state-alive.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

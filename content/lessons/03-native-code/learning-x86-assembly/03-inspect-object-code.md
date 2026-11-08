@@ -71,3 +71,6 @@ If the assembler rejects register names, confirm you are using an x86-64 compile
 Read the [GNU objdump manual](https://sourceware.org/binutils/docs/binutils/objdump.html) for inspection options and Microsoft's [x64 calling convention](https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170) for the Windows ABI. The real source is [`add_x86_64.S`](https://github.com/umicom-foundation/umicom-framework/blob/main/examples/learning/assembly/add_x86_64.S). Return to [Learning x86 Assembly](index.md).
 
 [Next: Follow arguments through an Assembly function](04-follow-arguments-through-a-function.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](02-a-function-called-from-c.md)

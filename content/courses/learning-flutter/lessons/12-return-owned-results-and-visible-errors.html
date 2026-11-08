@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-flutter/lessons/12-return-owned-results-and-visible-errors.html
+
+PURPOSE:
+Return owned results and visible errors
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Return owned results and visible errors | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Return owned results and visible errors</h1><h2>Prepare the native exercise</h2><p>Use a compatible Dart SDK and native compiler, with Bits2Banking beside the primary Framework checkout. Keep the complete Framework source tree: the local package builds its canonical C implementation. Read the lab README before resolving packages, then run each command separately and stop on an unexpected error. These host commands do not run an Android or Apple device test.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\mobile\flutter-framework-profile&quot;
+dart --version
+dart pub get
+dart analyze
+dart run bin/profile.dart Course_User
+dart test test/profile_consumer_test.dart</code></pre><p>The valid example should print canonical: course_user. The four consumer cases should exercise real native calls. These are expected outcomes to verify; no executed result is implied. Follow the separate device steps in the README when the lesson asks for target qualification.</p><h2>Separate refusal from infrastructure failure</h2><p>An invalid name is an ordinary policy result: status 1, accepted false and no canonical text. A missing native asset, incompatible ABI or allocation failure is an integration problem. The wrapper keeps those failures visible instead of converting every exception into an invalid-name message.</p>
+<h2>Inspect the result model</h2><p>ProfileNameResult is immutable. Its canonicalName is a Dart-owned string for success and null for refusal. The public accepted getter derives from status zero. No mutable output buffer or stale text from a previous request survives as a successful response after validation fails.</p>
+<h2>Exercise</h2><p>Run a valid input followed by no/slash. Retain the first result in a local variable and inspect it after the failed call. Then review the public consumer test that checks a refused result has no text. Explain why clearing a visible form field is a frontend choice while returning null is part of the service contract.</p>
+<h2>Present errors at the right layer</h2><p>A future approved Flutter screen should distinguish a user-correctable name from a native loading failure that needs environment repair. Do not catch all errors and display success or silently retry indefinitely. Keep source revision, target and diagnostics available when investigating an integration failure.</p><h2>Review and recover</h2><p>Record the exact failing boundary, source revision, SDK/compiler versions and output. Fix package resolution before diagnosing native execution. Host, emulator, physical-device and browser evidence remain distinct; this native package does not support browser FFI.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/flutter-framework-profile/README.md">Exercise setup and device commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/bindings/dart/umicom_profile_name/README.md">Framework binding contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="11-review-output-capacity-and-failure-atomicity.html">Previous lesson</a> · <a href="13-test-the-native-binding-on-the-host.html">Next lesson</a></p></nav><p><a href="../../../lessons/15-mobile-development/learning-flutter/12-return-owned-results-and-visible-errors.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

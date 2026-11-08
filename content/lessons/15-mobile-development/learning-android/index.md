@@ -42,3 +42,16 @@ Navigation, durable progress, accessibility, device testing and Framework servic
 - [Understand the Android native build target](09-understand-native-build-targets.md)
 
 - [Check a complete mobile activity workflow](10-check-a-mobile-workflow.md)
+
+## Share C text policy with Android
+
+Use a separate native-string lab to study Framework policy, JNI text conversion, Android builds and independent evidence. The existing activity lessons remain the starting point.
+
+1. [Share one C name policy with Android](11-share-profile-policy-with-android.md)
+2. [Read bounded Java strings without truncation](12-read-bounded-java-strings.md)
+3. [Compile shared C for the Android target](13-build-c-for-the-android-target.md)
+4. [Match Android package and native method identity](14-match-native-method-identity.md)
+5. [Distinguish invalid input from a VM failure](15-distinguish-refusal-and-vm-failure.md)
+6. [Run the Android native contract tests](16-run-android-native-contract-tests.md)
+7. [Inspect the native libraries packaged in an APK](17-inspect-apk-native-abis.md)
+8. [Record mobile evidence without overstating coverage](18-record-mobile-evidence-by-layer.md)

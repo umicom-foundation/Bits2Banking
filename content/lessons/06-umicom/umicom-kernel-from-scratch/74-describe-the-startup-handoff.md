@@ -74,3 +74,6 @@ Write down who creates the input, who validates it and who may later allocate me
 ## Continue learning
 
 [Course contents](../../../courses/umicom-kernel-from-scratch/index.html) · [Next: Read little-endian fields without alignment assumptions](75-read-little-endian-fields.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](73-design-a-safe-new-buffer-service.md)

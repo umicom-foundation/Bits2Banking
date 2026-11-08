@@ -1,0 +1,29 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/32-read-success-and-failure-states.html
+
+PURPOSE:
+Read successful and failed stack states
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read successful and failed stack states | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read successful and failed stack states</h1>
+<h2>Setup recap</h2>
+<p>Build the trace-enabled compiler using lesson 31. Keep a text editor open and create a new local example named division.uc containing the program below. Save it as UTF-8 without a byte-order mark; use a folder you own.</p>
+<pre><code class="language-c">int main(void) { return 7 / 0; }</code></pre>
+<h2>Define when a snapshot is taken</h2>
+<p>A successful trace row describes the stack after the instruction. A failed row describes the unchanged stack before the rejected instruction. This distinction lets the reader see the operands that caused the fault. The runtime performs arithmetic checks before changing either the stack depth or its value.</p>
+<p>For division.uc the two pushes should succeed. The divide row should report depth 2, top 0 and an arithmetic error. There should be no RETURN row and no Result line. The top field shows only the right operand; it does not show both inputs or the entire stack.</p>
+<h2>Follow the failed operation</h2>
+<p>In src/vm.c, execute_validated reads left and right without first reducing depth. It checks division by zero and the INT32_MIN divided by -1 overflow case. Only successful arithmetic publishes the new depth and value. Ordinary execution and traced execution use this same path.</p>
+<ol><li>Launch umicom-c trace with the full path to division.uc. Expect exit code 1.</li><li>Read the divide row before the human-readable diagnostic. Its source offset identifies the division operator in the original source.</li><li>Change the divisor to 2, save and launch again. Expect integer division to produce 3, followed by a successful RETURN.</li></ol>
+<h2>Exercise</h2>
+<p>Predict the trace for return -(2147483647 + 1);. The addition overflows before NEGATE runs. Expect the failing addition to keep its two-input stack, and expect neither a NEGATE nor a RETURN row. The compiler accepts the individual literals; runtime arithmetic still needs its own check.</p>
+<p>A failed API call leaves the result object unchanged. A caller must read the returned status before displaying an old result. The Framework adapter deliberately clears its presentation result at the beginning of a new request; the low-level runtime keeps its unchanged-output contract.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-c/blob/main/src/vm.c">umicom-c/src/vm.c</a>. Read the matching checkout when qualifying your own build.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="31-observe-an-execution-trace.html">Previous: Observe an execution trace</a> · <a href="33-reserve-trace-storage-before-execution.html">Next: Reserve trace storage before execution</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/32-read-success-and-failure-states.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

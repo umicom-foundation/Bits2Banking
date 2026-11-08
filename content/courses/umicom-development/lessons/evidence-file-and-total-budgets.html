@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/evidence-file-and-total-budgets.html
+
+PURPOSE:
+Bound one file and the complete request
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bound one file and the complete request | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Bound one file and the complete request</h1><h2>Prepare your tools</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Umicom Framework SDK containing the toolchain file-observation service. A terminal runs written commands; CMake prepares build instructions and Ninja performs compilation. Stop on a configure or build error before launching any existing executable. These examples use Windows UCRT64 and an SDK at C:\umicom\installed\framework; substitute your own paths. The lab reads ordinary files and needs no GUI, server or credentials.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\file-observation&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+[IO.File]::WriteAllBytes(&quot;$PWD\build\abc.bin&quot;, [byte[]](97,98,99))
+.\build\file-observation.exe &quot;$PWD\build\abc.bin&quot;</code></pre><p>Expect a JSON record with three bytes and the SHA-256 digest of abc. This is file evidence, not a passing build or runtime result. If the SDK header or symbol is missing, rebuild and install a matching SDK before continuing.</p><h2>Memory needs an explicit budget</h2><p>The native reader allocates space for one selected file, hashes it, then frees that buffer before reading the next file. This limits peak file-buffer memory. A per-file limit alone does not limit the total work of reading many files, so Framework also limits combined bytes and the number of selected paths.</p>
+<h2>Use subtraction to find remaining work</h2><p>The service starts with a 256-MiB combined budget. Before each read it subtracts bytes already observed and takes the smaller of that remainder and the caller-selected per-file limit. If the budget is exactly exhausted, the reader may still accept an empty file but must refuse a nonempty one. The example lab chooses one MiB per file; the CLI defaults to 64 MiB.</p>
+<h2>Exercise</h2><p>Use the native CLI with --max-bytes 2 on the three-byte abc fixture. It should refuse the request. Increase the limit to 3 and capture again. A decimal byte count such as 3 is accepted; negative values, fractional numbers and values above the service maximum are refused.</p>
+<h2>Test without enormous fixtures</h2><p>The admission regression replaces only the read and digest boundaries. It checks that a fifth 64-MiB read receives a zero-byte allowance after four successful reads. This tests the orchestration without allocating 256 MiB. The real-file suite separately checks actual small files and platform errors. Keep both forms of coverage; one cannot establish the other.</p><h2>Verify and recover</h2><pre><code>ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>The lab registers five output contracts. Read actual results and keep failed or skipped coverage explicit. Preserve the exact command, selected inputs and diagnostic when a check fails. Do not run an old binary after a failed build.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/file-observation/main.c">Read the C lab source</a> and <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/toolchain/file_observation.h">Framework API contract</a>.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="evidence-observation-ownership.html">Previous lesson</a> · <a href="evidence-complete-json-values.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/evidence-file-and-total-budgets.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

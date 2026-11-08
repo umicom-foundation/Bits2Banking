@@ -55,3 +55,8 @@ Predict `2 + 3 * 4` before running it, then compare `(2 + 3) * 4`. Expected valu
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Next: Follow a Framework project recipe](18-follow-a-framework-project-recipe.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](16-budget-execution-and-publish-results.md)
+
+[Written course contents](index.md)

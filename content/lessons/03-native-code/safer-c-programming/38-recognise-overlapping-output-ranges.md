@@ -85,3 +85,5 @@ The regression exercises these directions with real arrays. It does not invent a
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Distinguish elements, bytes and writable capacity](37-elements-bytes-and-capacity.md) · [Next: Keep caller output unchanged when a request fails](39-keep-failed-output-unchanged.md)
+
+[Written course contents](index.md)

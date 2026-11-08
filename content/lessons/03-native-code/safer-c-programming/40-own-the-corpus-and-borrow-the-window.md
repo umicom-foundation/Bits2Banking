@@ -85,3 +85,5 @@ Can source[] go out of scope after successful corpus creation? Yes, the corpus s
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Keep caller output unchanged when a request fails](39-keep-failed-output-unchanged.md) · [Next: Turn a range contract into focused regression checks](41-qualify-the-corpus-range-contract.md)
+
+[Written course contents](index.md)

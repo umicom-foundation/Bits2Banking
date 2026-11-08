@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/35-compare-source-and-bytecode-traces.html
+
+PURPOSE:
+Compare source and bytecode traces
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare source and bytecode traces | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Compare source and bytecode traces</h1>
+<h2>Setup recap</h2>
+<p>Build the compiler as in lesson 31. Choose a new output filename for the encoded program; compilation refuses existing outputs. The example below uses trace-study.umcb and does not replace it on a later run.</p>
+<pre><code class="language-powershell">&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; compile &quot;.\examples\inspection.uc&quot; &quot;trace-study.umcb&quot;
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; trace &quot;.\examples\inspection.uc&quot;
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; trace-bytecode &quot;trace-study.umcb&quot;</code></pre>
+<h2>Trace a format without changing it</h2>
+<p>Bytecode stores opcodes, operands and source offsets. The new trace is an observation produced while those instructions execute; it is not another field in the encoded file. Wire format 1 and its existing opcode values remain unchanged. A bytecode decoder validates the complete file before the executor can produce a row.</p>
+<p>When the source file is unchanged, its compiled instructions and the decoded artifact should produce identical trace rows. The CLI regression compares the complete source and bytecode output, not only the final value. It also hashes the inputs before and after tracing to check that this observation did not modify them.</p>
+<h2>Identify the source before reusing a report</h2>
+<p>If you insert a comment before an expression, its arithmetic can stay the same while its source offsets change. The operation-comparison API deliberately ignores offsets, but a displayed trace must still identify the source it describes. An old artifact may carry valid offsets for an older file.</p>
+<p>Record the source revision or a content digest alongside the artifact and trace. A matching arithmetic result does not identify a compiler version, build configuration or source file. None of these commands proves that a native guest image was rebuilt.</p>
+<h2>Exercise</h2>
+<p>Insert a blank line before the return statement, recompile to a different output name and compare the old and new traces. Predict unchanged operations and values, with shifted source offsets. Keep both files so the distinction remains visible.</p>
+<p>For recovery, inspect the command path and input path before changing runtime code. A malformed UMCB header should fail decoding with no step rows. An accepted artifact that later divides by zero should instead produce a runtime fault row.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-c/blob/main/tests/check_cli_trace.cmake">umicom-c/tests/check_cli_trace.cmake</a>. Read the matching checkout when qualifying your own build.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="34-count-the-rejected-fuel-step.html">Previous: Count the rejected fuel step</a> · <a href="36-present-a-fresh-framework-trace.html">Next: Present a fresh Framework trace</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/35-compare-source-and-bytecode-traces.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

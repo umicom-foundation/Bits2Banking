@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/27-separate-host-target-and-image.html
+
+PURPOSE:
+Separate the host, target and image
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate the host, target and image | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate the host, target and image</h1>
+<h2>Setup recap</h2>
+<p>Continue after the boot-evidence module. Keep the Umicom OS and Umicom C checkouts available for reading, and open boot/cvm-probe/CMakeLists.txt. A text editor is enough for this first study. Practical execution later requires a compiler that supports the selected target.</p>
+<h2>Name the three different things</h2>
+<p>The host is the machine running your build tools. The target is the machine and operating-system interface for which those tools produce code. An image is the packaged collection that a boot process consumes. A Windows host executable, a Linux-target executable and an OS boot image are not interchangeable artifacts.</p>
+<p>The small CVM probe is a useful example because it has the same arithmetic runtime source on each target. Shared source does not make the resulting machine code or system-library interface universal. A Windows .exe cannot be placed in a Linux guest and expected to run. The freestanding RISC-V Kernel envelope is different again.</p>
+<h2>Read the CMake boundary</h2>
+<p>The probe project uses UMICOM_C_SOURCE_DIR to select the runtime source. It creates the runtime library and a native executable, without adding the source compiler. Native host process checks are registered only when CMAKE_CROSSCOMPILING is false. A cross build can finish successfully while providing no local launch result.</p>
+<p>UMICOM_OS_CVM_STATIC requests a static link for a Linux target. It also requires the target static C library. The option does not turn a Windows compiler into a Linux compiler, change the root-filesystem inventory or register a startup service.</p>
+<h2>Exercise</h2>
+<p>Make a table with host, target, output file and intended execution environment for three cases: Windows native probe, Linux probe and Kernel CVM envelope. Add a separate row for the OS archive. For each, write which command creates it and which observation would show it actually ran.</p>
+<p>If your build succeeds but no native process tests appear, inspect the cross-compilation setting before assuming coverage vanished. Do not launch a foreign binary to obtain a misleading failure. Keep compilation evidence separate from process and boot evidence.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-os/blob/main/boot/cvm-probe/CMakeLists.txt">Open the OS source</a>. Use the matching checkout for qualification.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="26-design-repeatable-boot-evidence-checks.html">Previous: Design repeatable boot-evidence checks</a> · <a href="28-run-a-fixed-runtime-trace-probe.html">Next: Run a fixed runtime trace probe</a></p></nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/27-separate-host-target-and-image.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

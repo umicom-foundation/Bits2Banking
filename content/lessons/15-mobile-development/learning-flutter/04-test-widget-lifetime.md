@@ -62,5 +62,5 @@ The [official Flutter interaction-testing guide](https://docs.flutter.dev/cookbo
 
 [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/flutter-lesson-counter/lifetime_test.dart). Keep the source revision with your exercise notes so later changes can be compared.
 
-[Course contents](index.md) · [Previous lesson](03-state-rebuild-and-disposal.md)
+[Course contents](index.md) · [Previous lesson](03-state-rebuild-and-disposal.md) · [Next lesson](05-trace-dart-to-the-c-policy.md)
 

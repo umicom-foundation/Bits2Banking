@@ -82,3 +82,8 @@ Why does a four-pair window need five source bytes? Pair four uses the fifth byt
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Next: Distinguish elements, bytes and writable capacity](37-elements-bytes-and-capacity.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](35-review-and-qualify-a-boundary-fix.md)
+
+[Written course contents](index.md)

@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/lessons/06-umicom/umicom-os-from-scratch/35-own-recipes-and-projected-tasks-separately.md
+
+PURPOSE:
+Own recipes and projected tasks separately
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+# Own recipes and projected tasks separately
+
+## Prepare the exercise
+
+Install a matching native Framework SDK with the recipe API, then build this C23 consumer using the same compiler and architecture. Run each command separately and stop on unexpected errors. The recipe stages themselves are never executed by this exercise.
+
+```powershell
+Set-Location "C:\umicom\Umicom-Bits2Banking"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+cmake -S .\labs\native\framework-recipes -B .\build\framework-recipes -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-recipes --parallel 2
+ctest --test-dir .\build\framework-recipes --output-on-failure --no-tests=error
+& .\build\framework-recipes\btb-framework-recipes.exe inspect C:/umicom/Umicom-Bits2Banking/labs/native/framework-recipes/recipe.json
+```
+
+The inspect scenario should report recipe-lab with one input and one stage. CTest registers inspect, owned, identity and refuse. These are expected observations; the commands must be run to establish results in your environment.
+
+## Follow each lifetime
+
+UmiBuildRecipeOpen copies accepted metadata into a new immutable owner. The caller may release its source byte buffer after the call returns. InfoRead copies a summary, while InputAt and StageAt lend pointers whose lifetime ends with recipe destruction. Do not save one of those borrowed pointers and access it after Destroy. The lab uses copied summary data to keep reporting safe after the recipe is gone.
+
+## Observe independent task ownership
+
+Run owned mode. It creates a registry through UmiBuildRecipeCreateTasks, destroys the recipe, and then reads a task from the registry. The registry owns its own descriptors, so the read remains valid. The check also requires a semantic phase and empty command text. Destroy the registry separately. This is a practical example of moving reusable ownership into Framework while leaving the application responsible only for selecting and presenting data.
+
+## Preserve the last accepted owner
+
+A failed recipe parse leaves the caller's output pointer unchanged. A successful parse transfers a new owner; it does not automatically destroy a previous owner held in that variable. Use a temporary candidate when replacing an accepted recipe, publish it only on success, and release the former owner after borrowers have finished. Draw this sequence for an editor worker and identify where cancellation and UI lifetime checks would be needed. The parser itself does not implement that UI coordination.
+
+## Review and recover
+
+Keep the selected JSON, diagnostic and executable identity when a check fails. Reconcile SDK headers and libraries before changing source. Correct malformed metadata without weakening the validator, and preserve unexecuted build, target and provenance checks separately from inspection results.
+
+[Read the C exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-recipes/main.c) · [Full setup and native commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-recipes/README.md) · [Shared contract](https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/source-build-recipes.md)
+
+[Course contents](index.md) · [Previous lesson](34-resolve-stage-dependencies-through-framework.md) · [Next lesson](36-use-native-recipe-inspection-and-exit-status.md)

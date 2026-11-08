@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-flutter/lessons/05-trace-dart-to-the-c-policy.html
+
+PURPOSE:
+Trace a Dart call to the shared C policy
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trace a Dart call to the shared C policy | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Trace a Dart call to the shared C policy</h1><h2>Prepare the native exercise</h2><p>Use a compatible Dart SDK and native compiler, with Bits2Banking beside the primary Framework checkout. Keep the complete Framework source tree: the local package builds its canonical C implementation. Read the lab README before resolving packages, then run each command separately and stop on an unexpected error. These host commands do not run an Android or Apple device test.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\mobile\flutter-framework-profile&quot;
+dart --version
+dart pub get
+dart analyze
+dart run bin/profile.dart Course_User
+dart test test/profile_consumer_test.dart</code></pre><p>The valid example should print canonical: course_user. The four consumer cases should exercise real native calls. These are expected outcomes to verify; no executed result is implied. Follow the separate device steps in the README when the lesson asks for target qualification.</p><h2>Start with a concrete result</h2><p>The counter project taught widget state. The native profile exercise introduces a different boundary: a Dart caller asks Framework to normalize a local profile name. Run the host example with Course_User and expect course_user. This is name validation only. There is no account, password, database or sign-in session behind that output.</p>
+<h2>Follow the ownership chain</h2><p>Read bin/profile.dart, then normalizeProfileName in the Framework Dart package. The public function calls a native binding declaration, which resolves the exported UmiInteropProfileNameNormalize symbol. That C adapter checks capacity and delegates to UmiLocalProfileNameBytes. All letter, digit, separator and leading-letter rules remain in the existing policy.</p>
+<h2>Exercise</h2><p>Draw five boxes for the consumer, Dart wrapper, native declaration, C adapter and policy. Add one arrow per real function call. For each box, record whether it owns validation rules, temporary memory or presentation. Then run no/slash and explain why the consumer reports refusal instead of repairing the name silently.</p>
+<h2>Extend without duplicating rules</h2><p>A Flutter form can present the returned result, but it should not grow a second regular expression that can drift from C. Keep product text and interaction in the frontend, shared decisions in Framework, and platform transport in a narrow adapter. This exercise supplies no new screen or approved form layout.</p><h2>Review and recover</h2><p>Record the exact failing boundary, source revision, SDK/compiler versions and output. Fix package resolution before diagnosing native execution. Host, emulator, physical-device and browser evidence remain distinct; this native package does not support browser FFI.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/flutter-framework-profile/README.md">Exercise setup and device commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/bindings/dart/umicom_profile_name/README.md">Framework binding contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="04-test-widget-lifetime.html">Previous lesson</a> · <a href="06-read-a-native-package-graph.html">Next lesson</a></p></nav><p><a href="../../../lessons/15-mobile-development/learning-flutter/05-trace-dart-to-the-c-policy.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

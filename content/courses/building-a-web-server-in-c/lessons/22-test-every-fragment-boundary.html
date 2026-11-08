@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/22-test-every-fragment-boundary.html
+
+PURPOSE:
+Test message decisions across fragment boundaries
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test message decisions across fragment boundaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Test message decisions across fragment boundaries</h1>
+<h2>Prepare</h2>
+<p>Open Partitions and ManyFragments in test_request_stream.c. These are authored Framework regression scenarios. Owner qualification builds and executes them; merely reading their assertions is static review.</p>
+<h2>Separate the oracle from the transport</h2>
+<p>Each vector has a complete wire message and an expected final status. The test first checks that expectation with the existing stateless frame reader. It then feeds the same bytes as every possible two-part split. This checks that chunk placement does not change the complete framing decision.</p>
+<h2>Choose meaningful boundaries</h2>
+<p>The split can fall between CR and LF, inside a header name, inside decimal Content-Length, between header and body or at the very end. Empty first or second chunks also matter. Valid requests, duplicate lengths, unsupported features and extra pipelined bytes are included. A separate case feeds a larger request one byte at a time.</p>
+<h2>Run and retain actual results</h2>
+<p>After the owner builds the matching Framework test target, the focused filter below selects the stream cases. Replace the example build folder with the one you actually configured. Check that cases were discovered and keep failed output.</p>
+<pre><code class="language-powershell">ctest --test-dir C:/umicom/Umicom-Applications/framework/build/windows-ucrt64-debug --output-on-failure --no-tests=error -R &#39;^framework\.web\.request_stream\.&#39;</code></pre>
+<h2>Exercise and worked answer</h2>
+<p>A test feeds one whole request and passes. Why is that insufficient for an incremental reader? It never exercises saved scan state across calls. A CR at the end of one chunk must remain pending until the next byte arrives. Test the boundary where state must survive, not only a convenient input size.</p>
+<h2>Interpret coverage honestly</h2>
+<p>All split checks compare final semantic decisions, while delayed-semantic separately documents when an error becomes visible. These checks do not measure network throughput or verify socket deadlines. A failure should retain its vector and split position; a timing claim requires a separately designed measurement.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/web/test_request_stream.c">Umicom-Applications/framework/tests/web/test_request_stream.c</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="21-reset-state-without-keeping-a-connection.html">Previous: Reset parser state without claiming keep-alive</a> · <a rel="next" href="23-connect-stream-state-to-transport-ownership.html">Next: Connect parser state to the transport owner</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/22-test-every-fragment-boundary.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

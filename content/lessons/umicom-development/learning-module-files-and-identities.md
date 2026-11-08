@@ -57,3 +57,6 @@ Draw arrows from each manifest path to its file. Then explain why a lesson title
 ## Continue learning
 
 [Course contents](../../courses/umicom-development/index.html) · [Next: Load a pack and understand its lifetime](learning-module-load-and-ownership.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](functionality-lab-map.md)

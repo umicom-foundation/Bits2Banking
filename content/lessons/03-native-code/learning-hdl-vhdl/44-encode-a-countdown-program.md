@@ -59,7 +59,10 @@ Replace only LOAD 3 with LOAD 2 on a separate learning copy. Write the expected 
 
 ## Read the source
 
-[Open the example source](../../../../labs/hardware/vhdl-cpu/rtl/learning_program.vhd).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_program.vhd)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_program.vhd).
 
 ## Continue learning
 

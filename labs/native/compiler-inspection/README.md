@@ -1,6 +1,9 @@
 # Compiler inspection lab
 
+<!-- The explicit trace mode extends the existing execution choice. The previous wording is retained for engineering review.
 This hosted C23 program embeds Umicom C. It compiles a literal source expression, checks its structure, prints its resource requirements and executes only when `--run` is supplied. Compiler and runtime behavior remain in the shared Umicom C libraries.
+-->
+This hosted C23 program embeds Umicom C. It compiles a literal source expression, checks its structure and prints its resource requirements. Execution is explicit: `--run` prints the result, while `--trace` also describes each arithmetic step. Compiler and runtime behaviour remain in Umicom C.
 
 ## What embedding means
 
@@ -39,3 +42,34 @@ Change the source expression, rebuild and inspect it. Keep the error checks. Do 
 - `CMakeLists.txt`: shared compiler linkage and two workflow checks.
 
 See [the lesson](../../../content/courses/building-a-compiler-in-c/lessons/27-embed-the-inspector-in-a-c-application.html) for the full setup summary.
+
+
+## Observe the shared runtime trace
+
+After building the lab, run:
+
+```powershell
+& ".\build\compiler-inspection\compiler-inspection.exe" --trace
+```
+
+The seven rows should show top values 2, 3, 4, 12, 14, -14 and -14, with depths 1, 2, 3, 2, 1, 1 and 1. The final row is RETURN; the arithmetic answer is not a completed program before that instruction runs. The lab owns a trace array and reads only entries below the returned count. It neither copies the runtime evaluator nor adds callbacks to it.
+
+The exact-output CTest case checks all seven rows. Rebuild Umicom C from source containing trace.h before configuring this lab; an older SDK or checkout cannot provide the new API. Trace data contains integer intermediates, so treat saved observations with the same care as the input. This is an arithmetic execution trace, not a live debugger, breakpoint facility or native stack inspector.
+
+Continue with [observing the runtime trace](../../../content/courses/building-a-compiler-in-c/lessons/31-observe-an-execution-trace.html).
+
+## Inspect and trace integer comparisons
+
+Rebuild against Umicom C source containing the comparison extension, then select it explicitly:
+
+```powershell
+& ".\build\compiler-inspection\compiler-inspection.exe" --comparison
+& ".\build\compiler-inspection\compiler-inspection.exe" --comparison --run
+& ".\build\compiler-inspection\compiler-inspection.exe" --comparison --trace
+```
+
+The selected source is `int main(void) { return 2 + 3 < 2 * 3; }`. Inspection should report eight instructions, a peak of three temporary values and eighty encoded bytes. The run should return 1. Its trace should show top values 2, 3, 5, 2, 3, 6, 1 and 1. The LESS operation consumes the two completed arithmetic values; RETURN completes the program afterwards.
+
+Comparisons produce 0 or 1, both valid results. They do not introduce variables, branches or logical short-circuiting. The encoder selects format 2 when a comparison occurs and preserves format 1 for the original arithmetic example. A successful inspection does not execute either operand. Keep the existing arithmetic checks when extending the exercise: they protect the old interface and demonstrate compatibility.
+
+If the comparison source is rejected, check the configured `UMICOM_C_SOURCE` path and its revision. A matching header alone does not establish which library was linked. These expected observations require an actual build and run on your toolchain. Continue with [comparison tokens](../../../content/courses/building-a-compiler-in-c/lessons/39-recognise-comparison-tokens.html).

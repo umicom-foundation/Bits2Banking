@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/evidence-bytes-and-version-strings.html
+
+PURPOSE:
+Distinguish file bytes from version responses
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish file bytes from version responses | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish file bytes from version responses</h1><h2>Prepare your tools</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Umicom Framework SDK containing the toolchain file-observation service. A terminal runs written commands; CMake prepares build instructions and Ninja performs compilation. Stop on a configure or build error before launching any existing executable. These examples use Windows UCRT64 and an SDK at C:\umicom\installed\framework; substitute your own paths. The lab reads ordinary files and needs no GUI, server or credentials.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\file-observation&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+[IO.File]::WriteAllBytes(&quot;$PWD\build\abc.bin&quot;, [byte[]](97,98,99))
+.\build\file-observation.exe &quot;$PWD\build\abc.bin&quot;</code></pre><p>Expect a JSON record with three bytes and the SHA-256 digest of abc. This is file evidence, not a passing build or runtime result. If the SDK header or symbol is missing, rebuild and install a matching SDK before continuing.</p><h2>Start with a question</h2><p>Suppose a test fails on one computer and succeeds on another. Both compilers print the same version. That observation does not establish that the executable files, runtime libraries or source bytes are identical. Package maintainers can rebuild a release or apply a repair without changing the upstream version string. Decide which file you need to compare before collecting evidence.</p>
+<h2>Read the report</h2><p>The lab calls UmiFileObservationCapture and prints one record per selected path. bytes is the number of bytes read. sha256 is a 64-character hexadecimal digest of those bytes. The three-byte abc fixture has a known digest, so it checks the complete reader-to-report path without requiring a real compiler file. An empty file also has a digest; zero bytes is a valid observation.</p>
+<h2>Exercise</h2><p>Capture abc.bin, then create another file containing abc followed by a newline. Compare their byte counts and digests. Predict the counts before running either command. The second file has four bytes when the newline is one LF byte; a Windows CRLF adds two. Text tools may also add an encoding marker.</p>
+<h2>Review the result</h2><p>A changed digest proves that the observed byte sequences differ, subject to the properties of the digest algorithm. It does not explain which source change caused the difference. Keep the selected filename and the original report beside any diagnostic. Never relabel the digest as a test result or a digital signature.</p><h2>Verify and recover</h2><pre><code>ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>The lab registers five output contracts. Read actual results and keep failed or skipped coverage explicit. Preserve the exact command, selected inputs and diagnostic when a check fails. Do not run an old binary after a failed build.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/file-observation/main.c">Read the C lab source</a> and <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/toolchain/file_observation.h">Framework API contract</a>.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="language-support-regression-and-source-map.html">Previous lesson</a> · <a href="evidence-selection-before-reading.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/evidence-bytes-and-version-strings.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

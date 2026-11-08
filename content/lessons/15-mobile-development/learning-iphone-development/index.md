@@ -29,3 +29,16 @@ A Mac with Xcode and an iOS Simulator runtime is required for the practical exer
 - [Check accessible actions and feedback](09-accessible-actions-and-messages.md)
 
 - [Check the complete Swift-to-C workflow](10-check-the-whole-native-path.md)
+
+## Share C text policy with Swift
+
+Use a separate Xcode lab to examine exact byte spans, pointer borrowing, native linkage and independent target evidence.
+
+1. [Share the Framework name policy with Swift](11-share-the-profile-policy-with-swift.md)
+2. [Pass Swift text as an exact UTF-8 span](12-pass-utf8-as-an-exact-span.md)
+3. [Borrow Swift buffers only for one C call](13-borrow-pointers-within-one-call.md)
+4. [Connect declarations and implementations in Xcode](14-connect-xcode-target-membership.md)
+5. [Exercise the actual Swift-to-C test target](15-exercise-the-swift-c-test-target.md)
+6. [Diagnose the first failing Swift-to-C boundary](16-diagnose-swift-c-linkage.md)
+7. [Keep simulator and device evidence separate](17-keep-simulator-and-device-evidence-separate.md)
+8. [Compare one C policy across mobile and desktop clients](18-compare-one-policy-across-clients.md)

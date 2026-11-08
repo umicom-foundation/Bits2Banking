@@ -42,3 +42,6 @@ If expanding tests, compare defined fields rather than assuming structure paddin
 
 [Course contents](index.md) · [Previous lesson](28-refuse-aliasing-accounts-explicitly.md)
 
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](30-count-capacity-and-index.md)

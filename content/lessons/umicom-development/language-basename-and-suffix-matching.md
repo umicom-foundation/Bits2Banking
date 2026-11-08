@@ -75,7 +75,10 @@ If a known ID appears but colours do not, investigate installed syntax descripti
 
 ## Read the source
 
-[Open the example source](../../../labs/native/framework-language-inspection/main.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-language-inspection/main.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-language-inspection/main.c).
 
 ## Continue learning
 

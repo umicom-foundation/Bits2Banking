@@ -46,3 +46,6 @@ Keep arrays separate as the example does. These tests do not establish input/out
 
 [Course contents](index.md) · [Previous lesson](84-build-the-framework-ai-contract-lab.md)
 
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](functionality-lab-map.md)

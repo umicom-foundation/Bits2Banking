@@ -81,8 +81,13 @@ Change the source expression, rebuild and inspect it. Keep the error checks. Do 
 
 ## Read the source
 
-[Open the example source](../../../../labs/native/compiler-inspection/main.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/compiler-inspection/main.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/compiler-inspection/main.c).
 
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Count execution budgets and encoded bytes](26-count-execution-budgets-and-wire-bytes.md) · [Next: Preserve output when inspection fails](28-preserve-output-when-inspection-fails.md)
+
+[Written course contents](index.md)

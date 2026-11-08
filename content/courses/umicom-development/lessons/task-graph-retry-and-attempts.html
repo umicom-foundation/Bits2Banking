@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/task-graph-retry-and-attempts.html
+
+PURPOSE:
+Retry a failed task without erasing its attempt budget
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retry a failed task without erasing its attempt budget | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Retry a failed task without erasing its attempt budget</h1><h2>Prepare the exercise</h2><p>Install the matching Framework SDK, then run these commands separately. Select the scenario named by the lesson and stop on an unexpected error.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-task-graph -B .\build\framework-task-graph -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-task-graph --parallel 2
+ctest --test-dir .\build\framework-task-graph --output-on-failure --no-tests=error
+&amp; .\build\framework-task-graph\btb-framework-task-graph.exe complete</code></pre><p>Complete and retry model three successes; fail models one failure and two blocked tasks; cancel leaves two waiting tasks canceled; reject preserves the running graph. These are task-state observations, not actual build results.</p><h2>Separate retry from reset</h2><p>Run retry. The lab fails configure once, requests a retry and then records successful configure, build and test outcomes. Retry retains the attempt count so repeated failures cannot bypass the declared maximum. Reset has a different purpose: it clears runtime results and attempts while keeping task definitions for a new modeled run.</p>
+<h2>Recover downstream readiness</h2><p>After retry changes a failed task back to Pending and then Ready, its blocked consumers must be reconsidered. A consumer may become Pending until the retried prerequisite succeeds. Inspect the graph policy test and trace the three states. Keeping consumers permanently blocked would make recovery impossible even after a successful second attempt.</p>
+<h2>Preserve rejected retries</h2><p>At the attempt limit, retry must return a refusal without changing the graph. Revision exhaustion can also refuse a transition even when the attempt budget remains. These are separate limits with different explanations. Keep both the failure outcome and the attempted operation in diagnostic evidence instead of clearing them to make the screen appear idle.</p><h2>Review and recover</h2><p>Confirm the installed archive and headers when behavior differs. Preserve the selected scenario and assertion output. Do not change scheduling policies or expected counts merely to obtain a passing result.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-graph/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-graph/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/task-graph-transactions.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="task-graph-failure-and-skip-policy.html">Previous lesson</a> · <a rel="next" href="task-graph-cancellation-and-process-ownership.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/task-graph-retry-and-attempts.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

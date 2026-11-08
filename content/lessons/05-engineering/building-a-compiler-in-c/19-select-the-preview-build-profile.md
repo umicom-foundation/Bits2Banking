@@ -60,3 +60,5 @@ Which file establishes that a preset exists, and which function places its name 
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Follow a Framework project recipe](18-follow-a-framework-project-recipe.md) · [Next: Check only affected preview inputs](20-check-only-affected-preview-inputs.md)
+
+[Written course contents](index.md)

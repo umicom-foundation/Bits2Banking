@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/34-resolve-stage-dependencies-through-framework.html
+
+PURPOSE:
+Resolve stage dependencies through Framework
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resolve stage dependencies through Framework | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Resolve stage dependencies through Framework</h1><h2>Prepare the exercise</h2><p>Install a matching native Framework SDK with the recipe API, then build this C23 consumer using the same compiler and architecture. Run each command separately and stop on unexpected errors. The recipe stages themselves are never executed by this exercise.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-recipes -B .\build\framework-recipes -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-recipes --parallel 2
+ctest --test-dir .\build\framework-recipes --output-on-failure --no-tests=error
+&amp; .\build\framework-recipes\btb-framework-recipes.exe inspect C:/umicom/Umicom-Bits2Banking/labs/native/framework-recipes/recipe.json</code></pre><p>The inspect scenario should report recipe-lab with one input and one stage. CTest registers inspect, owned, identity and refuse. These are expected observations; the commands must be run to establish results in your environment.</p><h2>Build a dependency graph</h2><p>A directed edge means that one stage waits for another. A configure stage may precede compile, and compile may precede package. The recipe schema permits forward references, so declaration order is not execution order. The existing task graph resolves the names and rejects cycles; the recipe reader does not implement a second scheduling algorithm. Read the dependencies array in a stage and find where it becomes a task dependency.</p>
+<h2>Distinguish data claims from dependencies</h2><p>Stage inputs name root source IDs, not previous stage outputs. The format does not infer dataflow by matching output paths to input paths. Declare required ordering explicitly and keep output files distinct. A diamond graph can have two checks depend on one compilation and one package depend on both checks. Explain why that graph is valid, whereas compile waiting for package while package waits for compile is a cycle.</p>
+<h2>Extend the exercise deliberately</h2><p>Create an exercise copy with a second stage that depends on compile and writes a different output. Keep its input list empty if it has no root-source reference. Inspect it, then deliberately misspell the dependency ID and record the refusal. Restore the valid name and verify the stage count. These observations exercise metadata resolution only: no stage becomes complete, no output file is created, and no scheduler execution is implied.</p><h2>Review and recover</h2><p>Keep the selected JSON, diagnostic and executable identity when a check fails. Reconcile SDK headers and libraries before changing source. Correct malformed metadata without weakening the validator, and preserve unexecuted build, target and provenance checks separately from inspection results.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-recipes/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-recipes/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/source-build-recipes.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="33-admit-portable-source-and-output-paths.html">Previous lesson</a> · <a rel="next" href="35-own-recipes-and-projected-tasks-separately.html">Next lesson</a></p></nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/34-resolve-stage-dependencies-through-framework.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

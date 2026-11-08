@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/29-reuse-the-framework-preview-command.html
+
+PURPOSE:
+Reuse the Framework preview command
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reuse the Framework preview command | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Reuse the Framework preview command</h1>
+<h2>Setup recap</h2>
+<p>Read Framework docs/learning/cvm-preview.md and install its required current Umicom C SDK first. The OS tools/cvm-preview directory contains a CMake wrapper, not another copy of the compiler or command source. Select a Framework checkout containing cvm_trace.h through UMICOM_OS_FRAMEWORK_SOURCE if its default dependency location is not appropriate.</p>
+<h2>Follow composition instead of copying</h2>
+<p>The wrapper adds Framework examples/cvm_preview as a subdirectory. The Framework example calls the shared presentation service; that service invokes Umicom C. Each layer has one job: the wrapper selects dependencies, Framework owns request state, and Umicom C compiles and executes the small arithmetic language.</p>
+<p>The default command prints 42. With --trace it also prints four successful rows. A second quoted argument can supply a complete arithmetic program. The service clears stale presentation state before accepting new work and retains a rejected runtime row without claiming completion.</p>
+<pre><code class="language-powershell">cmake -S tools/cvm-preview -B build/cvm-preview-native -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_PREFIX_PATH=C:/umicom/_local/install/umicom-c -DBUILD_TESTING=ON
+cmake --build build/cvm-preview-native --parallel 2
+ctest --test-dir build/cvm-preview-native --output-on-failure --no-tests=error
+&amp; &quot;.\build\cvm-preview-native\framework-preview\umicom-cvm-preview.exe&quot; --trace &quot;int main(void) { return 7 / 0; }&quot;</code></pre>
+<h2>Keep a source string in one argument</h2>
+<p>The deliberate division-by-zero example should print two push rows and a failed divide row, then a diagnostic and exit 1. Its braces and semicolon are source text. Quoting keeps the complete program in one PowerShell argument.</p>
+<p>The CMake process fixture also passes source through one explicitly quoted argument. CMake lists use semicolons as separators, so putting an unescaped C program into a generic argument list can split it before the command sees it. The tests compare real command output to make that boundary observable.</p>
+<h2>Exercise</h2>
+<p>Find the source selection, adapter function and executor in their three repositories. Explain why changing only the OS wrapper cannot add a new language operator. Then compare a syntax failure with a runtime failure: syntax produces no rows, while runtime failure can retain completed and rejected rows.</p>
+<p>If the wrapper builds against an older Framework dependency, align the selected source and SDK before diagnosing the command. This optional tool is not automatically part of PID-1 startup, a desktop application or a Studio debugger.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-os/blob/main/tools/cvm-preview/CMakeLists.txt">Open the OS source</a>. Use the matching checkout for qualification.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="28-run-a-fixed-runtime-trace-probe.html">Previous: Run a fixed runtime trace probe</a> · <a href="30-distinguish-installation-from-boot-integration.html">Next: Distinguish installation from boot integration</a></p></nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/29-reuse-the-framework-preview-command.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

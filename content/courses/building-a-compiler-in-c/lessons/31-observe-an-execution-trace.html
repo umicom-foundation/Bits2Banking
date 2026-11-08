@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/31-observe-an-execution-trace.html
+
+PURPOSE:
+Observe an execution trace
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Observe an execution trace | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Observe an execution trace</h1>
+<h2>Setup recap</h2>
+<p>Complete the preceding compiler inspection module. You need the Umicom C checkout, a C23 compiler, CMake, Ninja and a terminal. The examples below use the existing Windows UCRT64 preset. Run each command separately and stop on errors; an unknown trace command usually means an older executable is being launched.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicom-c&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --preset windows-ucrt64-debug -DBUILD_TESTING=ON
+cmake --build --preset windows-ucrt64-debug --parallel 2
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; trace &quot;.\examples\inspection.uc&quot;</code></pre>
+<h2>Read the rows as observations</h2>
+<p>A trace is a record of attempted execution. Earlier lessons predicted the stack with a table; this command asks the shared runtime to report what it did. Each row identifies an instruction index, a source byte offset, an operation, a stack depth, the top value and a status. The instruction index starts at zero. It is a position in the compiled instruction array, not a source line number.</p>
+<p>The existing inspection example returns -(2 + 3 * 4). Expect seven rows: push 2, push 3, push 4, multiply, add, negate and return. Successful top values should be 2, 3, 4, 12, 14, -14 and -14. The depths should be 1, 2, 3, 2, 1, 1 and 1. The reported source offsets come from the actual file, including its comments.</p>
+<h2>Keep inspection and execution distinct</h2>
+<p>The inspect command describes validated structure without doing the arithmetic. The trace command executes the arithmetic and can fail, just as run can. It does not save a bytecode artifact or launch native code. A successful trace includes RETURN and is followed by the result. Seeing an intermediate value of -14 alone is insufficient to claim completion.</p>
+<p>The implementation lives in Umicom C. The CLI owns trace storage and formats the returned entries; it does not copy the evaluator. The same public API is available to Framework and freestanding consumers.</p>
+<h2>Try it and explain it</h2>
+<p>Question: why are there two final rows with top -14? Answer: NEGATE produces the value; RETURN completes the function while retaining that value. A trace is not a breakpoint controller or a full copy of the operand stack.</p>
+<ol><li>Before launching, write the seven predicted depths on paper.</li><li>Compare your table with the command output. If a row differs, identify the operation that changed the depth before changing code.</li><li>Run the existing compiler-inspection lab with --trace after rebuilding it. Its shorter display should show the same arithmetic states.</li></ol>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-c/blob/main/tools/main.c">umicom-c/tools/main.c</a>. Read the matching checkout when qualifying your own build.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="30-present-program-facts-in-an-ide.html">Previous: Present program facts in an IDE</a> · <a href="32-read-success-and-failure-states.html">Next: Read successful and failed stack states</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/31-observe-an-execution-trace.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

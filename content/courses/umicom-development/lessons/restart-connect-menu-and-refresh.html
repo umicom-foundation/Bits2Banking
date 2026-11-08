@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/restart-connect-menu-and-refresh.html
+
+PURPOSE:
+Connect a menu action to normal refresh
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect a menu action to normal refresh | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Connect a menu action to normal refresh</h1><h2>Prepare the exercise</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Framework SDK containing the restart service. Open a terminal in the lab directory. A terminal runs commands; CMake prepares build instructions and Ninja compiles them. Stop on a configure or build error before using an existing executable. Substitute your own SDK location for the Windows example.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\run-restart&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\run-restart.exe &quot;$PWD\build\run-restart.exe&quot; handover
+ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>In handover mode, expect two controlled executor calls and zero child processes after the old result is retained. Run stop and revoke for one-call refusals. These are expected outcomes to verify, not results asserted for your machine.</p><h2>Keep the application thin</h2><p>Studio already has a Run menu, command registry, result collector and notification centre. The restart integration connects those existing parts to Framework. It does not create a second worker or put process termination logic inside a GTK button callback.</p>
+<h2>Trace the route</h2><p>The run.restart menu identifier dispatches studio.build.run-restart. Its handler reads current workspace authority and requests the shared intent. Normal UI refresh collects completed results first and then calls Advance. A terminal refusal produces one notification rather than an error that repeats on every idle refresh.</p>
+<h2>Exercise</h2><p>Read first_use_run_restart.inc in Studio. The positive scenario invokes the actual menu and waits for a bounded child’s readiness marker to be recreated under a new operation identifier. The revocation case uses the canonical registry directly to create a deterministic gap before GUI refresh. Explain why that gap matters for a repeatable test.</p>
+<h2>Protect the document</h2><p>Restart launches the selected existing executable. It must leave an unsaved draft and the saved file unchanged. The native fixture checks both independently. If new source is required, choose Build and Run explicitly. A successful restart does not establish that the running executable corresponds to the current editor buffer.</p><h2>Review and recover</h2><p>A missing header or linker symbol requires a matching Framework SDK. For a failed runtime assertion, preserve the command, output and source revision. The four lab cases do not verify native process termination or GUI lifetime; execute the Framework and Studio checks separately before making those claims.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/run-restart/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/build/run_restart.h">Read the shared service contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="restart-retain-separate-transcripts.html">Previous lesson</a> · <a href="restart-qualify-each-layer.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/restart-connect-menu-and-refresh.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -76,3 +76,27 @@ Follow the reading order below. Each lesson gives its own setup recap and links 
 - [Budget execution and publish results](16-budget-execution-and-publish-results.md)
 
 </details>
+
+## Observe bounded execution across consumers
+
+31. [Observe an execution trace](31-observe-an-execution-trace.md)
+32. [Read successful and failed stack states](32-read-success-and-failure-states.md)
+33. [Reserve trace storage before execution](33-reserve-trace-storage-before-execution.md)
+34. [Count the rejected fuel step](34-count-the-rejected-fuel-step.md)
+35. [Compare source and bytecode traces](35-compare-source-and-bytecode-traces.md)
+36. [Present a fresh Framework trace](36-present-a-fresh-framework-trace.md)
+37. [Qualify a freestanding trace](37-qualify-a-freestanding-trace.md)
+38. [Record layered trace evidence](38-record-layered-trace-evidence.md)
+
+## Extend integer expressions with comparisons
+
+Follow a bounded language extension from token recognition and precedence to canonical wire profiles, Framework preview and Kernel consumer evidence.
+
+- [Recognise comparison tokens without reading past the source](39-recognise-comparison-tokens.md)
+- [Layer arithmetic, relational and equality precedence](40-layer-comparison-precedence.md)
+- [Compare signed values without subtracting them](41-compare-signed-values-safely.md)
+- [Observe operand failures before a comparison](42-evaluate-comparison-operands.md)
+- [Version comparison bytecode without changing old artifacts](43-version-comparison-bytecode.md)
+- [Qualify comparison commands through the real CLI](44-qualify-comparison-cli-workflows.md)
+- [Reuse comparisons through Framework preview state](45-reuse-comparisons-in-framework.md)
+- [Qualify comparison execution in a Kernel guest](46-qualify-comparisons-in-a-kernel-guest.md)

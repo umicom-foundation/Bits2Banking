@@ -55,5 +55,5 @@ For a real connection, the host must close the transport after either outcome. F
 
 [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/exchange.c). Keep the source revision with your exercise notes so later changes can be compared.
 
-[Course contents](index.md) · [Previous lesson](15-handle-short-transfers.md)
+[Course contents](index.md) · [Previous lesson](15-handle-short-transfers.md) · [Next: Own an incomplete request](17-own-an-incomplete-request.md)
 

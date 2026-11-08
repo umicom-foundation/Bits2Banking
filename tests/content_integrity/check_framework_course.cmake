@@ -40,6 +40,8 @@ endif()
 if(_count LESS 14)
     message(FATAL_ERROR "The Framework course is missing its practice-copy chapter")
 endif()
+include("${CMAKE_CURRENT_LIST_DIR}/course_links.cmake")
+
 function(RequireText text fragment context)
     string(FIND "${text}" "${fragment}" _found)
     if(_found EQUAL -1)
@@ -74,7 +76,15 @@ foreach(_i RANGE 0 ${_last})
         message(FATAL_ERROR "Invalid or duplicated Framework lesson route: ${_path}")
     endif()
     endif()
+    # Stable descriptive lesson names also identify complete source studies.
+    # Keep the numeric-only contract disabled for review; traversal, uppercase
+    # names, duplicates and non-HTML destinations remain rejected.
+    if(FALSE)
     if(NOT _path MATCHES "^lessons/[0-9]+-[a-z0-9-]+[.]html$" OR _path IN_LIST _seen)
+        message(FATAL_ERROR "Invalid or duplicated Framework lesson route: ${_path}")
+    endif()
+    endif()
+    if(NOT _path MATCHES "^lessons/[a-z0-9]+(-[a-z0-9]+)*[.]html$" OR _path IN_LIST _seen)
         message(FATAL_ERROR "Invalid or duplicated Framework lesson route: ${_path}")
     endif()
     list(APPEND _seen "${_path}")
@@ -84,12 +94,18 @@ foreach(_i RANGE 0 ${_last})
     endif()
     file(READ "${_course}/${_path}" _page)
     file(READ "${_manuscripts}/${_name}.md" _markdown)
+    # The configured MkDocs hook resolves manuscript links after rendering.
+    # Preserve the former blanket refusal for review and validate its real
+    # source and publication prerequisites below.
+    if(FALSE)
     # Standalone HTML is copied as a web asset; Markdown link rewriting does
     # not apply inside it. Source-code links must not escape docs_dir.
     if(_page MATCHES [=[href="[^":]+[.]md([#?][^"]*)?"]=] OR
        _page MATCHES [=[href="([.][.]/)+labs/]=])
         message(FATAL_ERROR "A standalone course page uses an unpublished source route: ${_path}")
     endif()
+    endif()
+    BtbCheckCourseLinks("${_page}" "${_course}/${_path}" "${REPOSITORY_ROOT}")
     RequireText("${_home}" "href=\"${_path}\"" "Course contents")
     RequireText("${_index}" "(${_name}.md)" "Manuscript contents")
     RequireText("${_site_navigation}" "lessons/umicom-development/${_name}.md" "Site navigation")

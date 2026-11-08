@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/37-qualify-a-freestanding-trace.html
+
+PURPOSE:
+Qualify a freestanding trace
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify a freestanding trace | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Qualify a freestanding trace</h1>
+<h2>Setup recap</h2>
+<p>This optional study follows the existing native Kernel program lesson. You need the Kernel RISC-V Clang toolchain and QEMU as well as the trace-enabled Umicom C source checkout. Follow Kernel docs/CVM_PROGRAM_GUIDE.md for the separate CVM build directory; a hosted Windows executable cannot run as the Kernel user program.</p>
+<h2>Keep the interpreter inside its native envelope</h2>
+<p>The Kernel loads a native ELF program into user memory. That small program owns the bytecode, decoded instructions, result and trace storage. It interprets the arithmetic as data, checks the expected outcome, then uses the existing native EXIT call. The runtime has no Kernel pointers, host callbacks, heap calls or syscall interface.</p>
+<p>Selectors 0 through 4 retain their earlier meanings. Selectors 5 through 8 add trace success, fuel exhaustion, arithmetic rejection and insufficient-storage checks. They report 0xc005 through 0xc008 when the expected condition is observed. The normal console prints these values in decimal: 49157 through 49160.</p>
+<h2>Observe isolation as well as arithmetic</h2>
+<p>The diagnostic guest repeats the cases with runtime objects compiled at O0 and O2. These are two compiler optimization settings. Both links intentionally expose accidental hosted-library dependencies instead of discarding unused functions to hide them.</p>
+<p>The existing monitor checks U-mode exit, refuses re-entry into an exited process and verifies that destroying the process restores its owned frames. A correct trace value does not replace these lifecycle checks. The source receipt now includes trace.h, so a changed or missing trace layout can invalidate earlier image evidence.</p>
+<h2>Exercise and recovery</h2>
+<p>The added checks remain unqualified until executed on the relevant source and toolchain. A QEMU pass does not establish physical hardware support, a full C compiler or an OS debugger.</p>
+<ol><li>Read the expected selector table before launching anything.</li><li>After the owner has built and qualified the optional image, run selector 5 through the console and compare the decimal outcome.</li><li>Run selector 6, then selector 0 again, preserving the serial transcript.</li><li>If an older image rejects selector 5 with 49156, check the exact image path and build receipt before diagnosing an arithmetic bug.</li></ol>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/programs/cvm/main.c">umicom-kernel/programs/cvm/main.c</a>. Read the matching checkout when qualifying your own build.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="36-present-a-fresh-framework-trace.html">Previous: Present a fresh Framework trace</a> · <a href="38-record-layered-trace-evidence.html">Next: Record layered trace evidence</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/37-qualify-a-freestanding-trace.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

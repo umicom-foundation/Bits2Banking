@@ -59,7 +59,10 @@ Explain the difference between an unknown address and an unused address. The fir
 
 ## Read the source
 
-[Open the example source](../../../../labs/hardware/vhdl-cpu/rtl/learning_program.vhd).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_program.vhd)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_program.vhd).
 
 ## Continue learning
 

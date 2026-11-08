@@ -45,5 +45,5 @@ Keep observed results beside expected results, including failures and skipped ch
 
 [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/android-framework-activity/README.md). Keep the source revision with your exercise notes so later changes can be compared.
 
-[Course contents](index.md) · [Previous lesson](09-understand-native-build-targets.md)
+[Course contents](index.md) · [Previous lesson](09-understand-native-build-targets.md) · [Next lesson](11-share-profile-policy-with-android.md)
 

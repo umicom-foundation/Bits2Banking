@@ -53,3 +53,8 @@ Draw boxes for document detection, project recipe, compiler and interpreter. Tra
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Test language failures through the tool](21-test-language-failures-through-the-tool.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](23-inspect-a-program-before-running-it.md)
+
+[Written course contents](index.md)

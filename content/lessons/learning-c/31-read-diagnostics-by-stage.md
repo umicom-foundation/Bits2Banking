@@ -64,8 +64,19 @@ Predict which stage rejects each of these changes: remove a semicolon in main.c;
 
 ## Read the source
 
-[Open the example source](../../../labs/native/c-build-stages/test_runner.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/test_runner.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/test_runner.c).
 
 ## Continue learning
 
 [Course contents](../../courses/learning-c/index.html) · [Previous: Link a program with an existing native SDK](30-link-with-a-native-sdk.md) · [Next: Observe which files an incremental build rebuilds](32-observe-incremental-rebuilds.md)
+
+<details><summary>Three different failures</summary>
+
+A missing C semicolon is a compile-stage failure. Omitting runner.o leaves LessonEvaluate unresolved at link time. Division by zero inside the embedded source reaches the built application and is rejected by the Umicom C execution step. The wrapper returns 0 and leaves the old caller value untouched.
+
+</details>
+
+[Word explanations](../../courses/learning-c/glossary.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Learning routes](../../courses/learning-paths.html)

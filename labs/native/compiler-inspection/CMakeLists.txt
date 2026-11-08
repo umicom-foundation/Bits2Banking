@@ -45,7 +45,11 @@ if(BUILD_TESTING)
 endif()
 endif()
 if(BUILD_TESTING)
-    foreach(case IN ITEMS review execute usage)
+    # Retain the earlier workflow list; trace now has its own exact transcript.
+    # foreach(case IN ITEMS review execute usage)
+    # Preserve the former list; the same executable now has a comparison profile.
+    # foreach(case IN ITEMS review execute trace usage)
+    foreach(case IN ITEMS review execute trace usage comparison-review comparison-execute comparison-trace)
         add_test(NAME bits.compiler-inspection.${case}
             COMMAND "${CMAKE_COMMAND}" "-DTOOL=$<TARGET_FILE:compiler-inspection>"
                 "-DCASE=${case}" -P "${CMAKE_CURRENT_SOURCE_DIR}/check_output.cmake")

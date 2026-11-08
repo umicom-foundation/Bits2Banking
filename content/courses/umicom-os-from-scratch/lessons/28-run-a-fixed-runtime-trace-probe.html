@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/28-run-a-fixed-runtime-trace-probe.html
+
+PURPOSE:
+Run a fixed runtime trace probe
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Run a fixed runtime trace probe | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Run a fixed runtime trace probe</h1>
+<h2>Setup recap</h2>
+<p>Use a trace-enabled Umicom C checkout, a C23 compiler, CMake and Ninja. The commands below build the independent probe on a Windows UCRT64 host. Run each line separately and stop on errors; they do not build or boot the whole OS.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicomOS&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S boot/cvm-probe -B build/cvm-probe-native -G Ninja -DCMAKE_C_COMPILER=gcc -DUMICOM_C_SOURCE_DIR=C:/umicom/umicom-c -DBUILD_TESTING=ON
+cmake --build build/cvm-probe-native --parallel 2
+ctest --test-dir build/cvm-probe-native --output-on-failure --no-tests=error
+&amp; &quot;.\build\cvm-probe-native\umicom-cvm-probe.exe&quot; --trace-check</code></pre>
+<h2>Understand the fixed inputs</h2>
+<p>The trace mode does not read a file or accept arbitrary source. It constructs four reviewed instruction sequences in caller-owned memory and invokes the shared runtime. The successful case produces 42. The other cases check fuel exhaustion before RETURN, division by zero and insufficient trace capacity.</p>
+<p>A failed arithmetic row must retain the attempted stack depth and top operand. Insufficient storage must publish zero rows and leave the result unchanged. The probe checks these contracts and prints UMICOM_CVM_TRACE_READY cases=4 only after all four agree. This is an expected marker to verify, not evidence supplied by the lesson.</p>
+<h2>Keep ordinary readiness meaningful</h2>
+<p>Launching without options retains UMICOM_CVM_PROBE_READY value=42. That original marker does not imply that the trace checks ran. Unknown or extra arguments return usage exit 2. The process fixtures check complete stdout, stderr and exit status, so an unrelated success-looking substring cannot hide a failure.</p>
+<p>On a Linux host, use the same project with a Linux compiler and launch the executable without .exe. Keep that observation labelled with its own target and toolchain. A host probe result does not establish startup inside a prepared guest image.</p>
+<h2>Exercise and recovery</h2>
+<p>Run the ordinary and trace modes separately after a successful build, then compare their markers. Predict what --trace-check unexpected should do: print usage to stderr, no readiness marker and exit 2.</p>
+<p>If trace.h is missing, inspect UMICOM_C_SOURCE_DIR rather than copying a header by itself. The header and library must come from a compatible source tree. If a fixed check fails, retain its case number and reported runtime status before editing the evaluator.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-os/blob/main/boot/cvm-probe/main.c">Open the OS source</a>. Use the matching checkout for qualification.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="27-separate-host-target-and-image.html">Previous: Separate the host, target and image</a> · <a href="29-reuse-the-framework-preview-command.html">Next: Reuse the Framework preview command</a></p></nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/28-run-a-fixed-runtime-trace-probe.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -56,3 +56,8 @@ An empty initialized list has count zero and still has full capacity. It does no
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Next: Check the count before searching the array](31-validate-before-search.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](29-test-refusal-with-preserved-state.md)
+
+[Written course contents](index.md)

@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/deployment-publish-a-complete-plan.html
+
+PURPOSE:
+Publish a complete replacement plan
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish a complete replacement plan | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Publish a complete replacement plan</h1><h2>Prepare the exercise</h2><p>Use a matching installed Framework development SDK and the provider-free C23 consumer. Run commands separately and stop on unexpected errors.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-deployment -B .\build\framework-deployment -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-deployment --parallel 2
+ctest --test-dir .\build\framework-deployment --output-on-failure --no-tests=error
+&amp; .\build\framework-deployment\btb-framework-deployment.exe complete
+&amp; .\build\framework-deployment\btb-framework-deployment.exe fail
+&amp; .\build\framework-deployment\btb-framework-deployment.exe rollback
+&amp; .\build\framework-deployment\btb-framework-deployment.exe cancel
+&amp; .\build\framework-deployment\btb-framework-deployment.exe revise</code></pre><p>The five scenarios report modeled outcomes. None installs a package, launches an application or contacts a target.</p><h2>Start with a useful previous plan</h2><p>Imagine a user has reviewed a local release and then selects a different target. If that target is disabled or malformed, the old plan should remain available for inspection. Overwriting the destination first and discovering the error later leaves a partially changed object. The replacement composition stages its work in separate allocated storage.</p>
+<h2>Follow the transaction</h2><p>Read umi_build_deployment_plan_compose_default. It first admits the existing plan, checks revision capacity and validates the new artifact and target. It then allocates a candidate, invokes the retained composition logic on that candidate and validates the completed result. Only the successful branch copies the candidate into the caller’s plan. Cleanup releases the temporary allocation on every path.</p>
+<h2>Distinguish memory publication from deployment</h2><p>This transaction concerns one in-memory C value. It provides no rollback for a file copy, installer or remote service. The generation and revision identify the new plan observation; they do not prove an artifact was rebuilt. A later provider must separately define what happens if its external operation fails halfway through.</p>
+<h2>Check the failure boundary</h2><p>Read invalid-compose-preserves and disabled-target-preserves. Each stores the previous complete plan, requests an invalid replacement and compares the full object afterward. Add a test idea for allocation failure, explaining how a controlled allocator would inject it without depending on the machine running out of memory. Do not label that proposed case executed or implemented until its injection path exists.</p><h2>Review and recover</h2><p>Inspect the selected SDK, compiler identity and failing output before changing expectations. Keep actual provider qualification separate from this state-model exercise.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-deployment/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-deployment/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/build/deployment_controller.h">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="deployment-bounded-public-values.html">Previous lesson</a> · <a rel="next" href="deployment-approval-follows-content.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/deployment-publish-a-complete-plan.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

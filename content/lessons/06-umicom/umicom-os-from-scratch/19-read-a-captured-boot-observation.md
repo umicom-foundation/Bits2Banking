@@ -69,3 +69,6 @@ The source line is a 64-character hexadecimal identity supplied by the producer.
 ## Continue learning
 
 [Course contents](../../../courses/umicom-os-from-scratch/index.html) · [Next: Follow the boot-report parser](20-follow-the-boot-report-parser.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](18-design-a-service-recovery-checklist.md)

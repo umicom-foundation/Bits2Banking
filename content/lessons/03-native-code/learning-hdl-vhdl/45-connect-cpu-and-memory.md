@@ -59,7 +59,10 @@ Draw three boxes: testbench, CPU and program memory. Label every arrow with its 
 
 ## Read the source
 
-[Open the example source](../../../../labs/hardware/vhdl-cpu/rtl/learning_system.vhd).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_system.vhd)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_system.vhd).
 
 ## Continue learning
 

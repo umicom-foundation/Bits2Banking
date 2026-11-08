@@ -82,3 +82,8 @@ If the parser rejects a change, read the reported line and column and check the 
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Next: Trace the evaluation stack with a table](24-trace-the-stack-with-a-table.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](22-separate-editor-support-from-language-semantics.md)
+
+[Written course contents](index.md)

@@ -89,3 +89,5 @@ A smaller peak does not by itself prove a program is faster. The inspector repor
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Inspect a program before running it](23-inspect-a-program-before-running-it.md) · [Next: Distinguish structure from arithmetic safety](25-distinguish-structure-from-arithmetic-safety.md)
+
+[Written course contents](index.md)

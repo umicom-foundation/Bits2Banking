@@ -77,7 +77,10 @@ A catalogue row makes a choice discoverable. It does not install a compiler, ena
 
 ## Read the source
 
-[Open the example source](../../../labs/native/framework-language-inspection/main.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-language-inspection/main.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-language-inspection/main.c).
 
 ## Continue learning
 

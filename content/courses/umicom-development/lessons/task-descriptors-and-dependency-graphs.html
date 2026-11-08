@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/task-descriptors-and-dependency-graphs.html
+
+PURPOSE:
+Separate local task validity from dependency validity
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate local task validity from dependency validity | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate local task validity from dependency validity</h1><h2>Prepare the exercise</h2><p>Install a matching Framework SDK, then run these PowerShell commands separately. Use the lab scenario named in each lesson and stop on an unexpected error.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-tasks -B .\build\framework-tasks -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-tasks --parallel 2
+ctest --test-dir .\build\framework-tasks --output-on-failure --no-tests=error
+&amp; .\build\framework-tasks\btb-framework-tasks.exe atomic</code></pre><p>The lab has five scenarios: atomic, shape, owned, reset and revision. A zero exit means the selected assertion matched its expected metadata behavior; no stored task command runs.</p><h2>Local validity has a boundary</h2><p>A descriptor can name configure as a dependency without proving a configure task exists. This is not a reason to duplicate dependency lookup in every UI. First publish individually valid descriptors into a registry, then use the shared task graph to inspect relationships. The lab extension asks you to add configure and explain which layer establishes its presence.</p>
+<h2>Detect the relationship you actually mean</h2><p>A task depending on itself is invalid locally. A cycle across configure, generate and build requires a graph view of several tasks. Missing IDs and cycles are different explanations and should be shown separately. Disabling a task is also policy, not evidence that its output exists. Inspect the graph API before choosing how a workflow should interpret disabled prerequisites.</p>
+<h2>Keep planning distinct from execution</h2><p>A successful graph review still does not locate a compiler, compare input digests or create output files. Those responsibilities belong to toolchain, file-observation and supervised-process services. Write down the evidence each stage adds. A CLI preview or Studio panel should report only the facts supplied by the stage it actually performed.</p><h2>Review and recover</h2><p>If configuration or linking fails, identify the installed SDK and compiler before changing the source. Keep an assertion failure with its selected case and source revision. Do not weaken expected outputs to hide a mismatch.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-tasks/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-tasks/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/task-admission.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="task-revision-refusal-and-reset.html">Previous lesson</a> · <a rel="next" href="task-source-sdk-and-runtime-evidence.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/task-descriptors-and-dependency-graphs.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

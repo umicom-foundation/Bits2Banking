@@ -65,8 +65,19 @@ Create a small table with change, expected compilation, expected link and observ
 
 ## Read the source
 
-[Open the example source](../../../labs/native/c-build-stages/CMakeLists.txt).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/CMakeLists.txt)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/CMakeLists.txt).
 
 ## Continue learning
 
 [Course contents](../../courses/learning-c/index.html) · [Previous: Read diagnostics at the stage that produced them](31-read-diagnostics-by-stage.md) · [Next: Review and extend a complete native consumer](33-review-a-complete-native-consumer.md)
+
+<details><summary>Expected rebuild scope</summary>
+
+With unchanged inputs, an up-to-date Ninja build should perform no compilation. Editing main.c recompiles that translation unit and relinks its executable. Editing runner.h can recompile main.c, runner.c and test_runner.c because each includes it; dependent executables then relink. Check the actual verbose commands because build configuration and generated dependencies can also affect the result.
+
+</details>
+
+[Word explanations](../../courses/learning-c/glossary.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Learning routes](../../courses/learning-paths.html)

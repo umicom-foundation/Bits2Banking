@@ -63,3 +63,6 @@ Keep a future extension's control-flow validation and runtime budget separate. R
 
 [Course contents](index.md) · [Previous lesson](15-validate-stack-shape-before-execution.md)
 
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](17-open-an-arithmetic-project-in-studio.md)

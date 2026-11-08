@@ -64,3 +64,6 @@ If two files have identical visible paragraphs but different digests, is the has
 
 [Course contents](index.md) · [Previous lesson](24-status-values-and-complete-results.md)
 
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](26-read-the-build-map.md)

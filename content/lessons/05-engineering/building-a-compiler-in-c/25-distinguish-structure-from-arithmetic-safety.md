@@ -78,3 +78,5 @@ Inspect and run return 2147483647 + 1;. Predict the two outcomes before issuing 
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Trace the evaluation stack with a table](24-trace-the-stack-with-a-table.md) · [Next: Count execution budgets and encoded bytes](26-count-execution-budgets-and-wire-bytes.md)
+
+[Written course contents](index.md)

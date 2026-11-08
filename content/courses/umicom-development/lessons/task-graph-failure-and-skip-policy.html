@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/task-graph-failure-and-skip-policy.html
+
+PURPOSE:
+Distinguish blocked work from permitted continuation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish blocked work from permitted continuation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish blocked work from permitted continuation</h1><h2>Prepare the exercise</h2><p>Install the matching Framework SDK, then run these commands separately. Select the scenario named by the lesson and stop on an unexpected error.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-task-graph -B .\build\framework-task-graph -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-task-graph --parallel 2
+ctest --test-dir .\build\framework-task-graph --output-on-failure --no-tests=error
+&amp; .\build\framework-task-graph\btb-framework-task-graph.exe complete</code></pre><p>Complete and retry model three successes; fail models one failure and two blocked tasks; cancel leaves two waiting tasks canceled; reject preserves the running graph. These are task-state observations, not actual build results.</p><h2>Propagate a real failure observation</h2><p>Run fail. The example records configure exit 7 and expects build and test to become Blocked. A blocked task has not failed its own compiler invocation; its prerequisite prevents admission. Present those outcomes separately in a report so users can find the first failed operation instead of treating every downstream task as an independent defect.</p>
+<h2>Review continuation deliberately</h2><p>A dependency marked continue-on-error lets consumers become ready after its failure. A skipped dependency also counts as satisfied, and disabled tasks begin skipped. These policies retain existing Framework behavior. They do not create missing object files or make a later linker succeed. Use continuation only when the workflow can tolerate the missing result.</p>
+<h2>Specify importer requirements</h2><p>The graph checks relationships among enabled tasks. Disabled-only cycles and missing references remain accepted for compatibility. A source-build recipe may need stronger rules for every declared stage, including disabled ones. Apply that policy at recipe admission and document it; do not silently reinterpret the general task graph for all existing callers.</p><h2>Review and recover</h2><p>Confirm the installed archive and headers when behavior differs. Preserve the selected scenario and assertion output. Do not change scheduling policies or expected counts merely to obtain a passing result.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-graph/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-graph/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/task-graph-transactions.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="task-graph-readiness-and-diamonds.html">Previous lesson</a> · <a rel="next" href="task-graph-retry-and-attempts.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/task-graph-failure-and-skip-policy.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

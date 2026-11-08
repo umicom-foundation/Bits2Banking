@@ -52,6 +52,22 @@ int main(int argc, char **argv)
     input->clear();
     check->click();
     if (!result->text().startsWith("Name rejected.")) return 7;
+    /* QString may contain NUL. QByteArray keeps its explicit byte count, so
+     * the shared C span API must reject the complete field rather than accept
+     * a valid prefix. A later valid click must replace the old refusal text. */
+    QString embedded("Alice");
+    embedded.append(QChar(0));
+    embedded.append("Admin");
+    input->setText(embedded);
+    check->click();
+    if (!result->text().startsWith("Name rejected.")) return 8;
+    input->setText("Bob-4");
+    QTest::keyClick(input, Qt::Key_Return);
+    if (result->text() != "Accepted name: bob-4") return 9;
+    // HTML-like input remains plain text and never becomes a rich-text result.
+    input->setText("<b>Alice</b>");
+    check->click();
+    if (!result->text().startsWith("Name rejected.") || result->textFormat() != Qt::PlainText) return 10;
     std::puts("Profile widget event checks passed");
     return 0;
 }

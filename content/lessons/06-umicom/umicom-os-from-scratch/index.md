@@ -76,3 +76,34 @@ Follow the reading order below. Each lesson gives its own setup recap and links 
 - [Design a service-recovery checklist](18-design-a-service-recovery-checklist.md)
 
 </details>
+
+## Read and compare boot evidence
+
+- [Read a captured boot observation](19-read-a-captured-boot-observation.md)
+- [Follow the boot-report parser](20-follow-the-boot-report-parser.md)
+- [Validate caller-owned report fields](21-validate-caller-owned-report-fields.md)
+- [Compare fields with a change mask](22-compare-fields-with-a-change-mask.md)
+- [Preserve the last accepted comparison](23-preserve-the-last-accepted-comparison.md)
+- [Run the OS report-comparison command](24-run-the-os-report-comparison-command.md)
+- [Interpret source and service-count changes](25-interpret-source-and-service-count-changes.md)
+- [Design repeatable boot-evidence checks](26-design-repeatable-boot-evidence-checks.md)
+
+## Native runtime tools and boot integration
+
+27. [Separate the host, target and image](27-separate-host-target-and-image.md)
+28. [Run a fixed runtime trace probe](28-run-a-fixed-runtime-trace-probe.md)
+29. [Reuse the Framework preview command](29-reuse-the-framework-preview-command.md)
+30. [Distinguish installation from boot integration](30-distinguish-installation-from-boot-integration.md)
+
+## Inspect source-build plans before execution
+
+Eight connected exercises cover cross-toolchain identities, portable file claims, dependency graphs, owner lifetime, native inspection and the evidence needed before reproducible execution.
+
+- [Describe a source build before running it](31-describe-a-source-build-before-running-it.md)
+- [Distinguish build, host and target identities](32-distinguish-build-host-and-target-identities.md)
+- [Admit portable source and output paths](33-admit-portable-source-and-output-paths.md)
+- [Resolve stage dependencies through Framework](34-resolve-stage-dependencies-through-framework.md)
+- [Own recipes and projected tasks separately](35-own-recipes-and-projected-tasks-separately.md)
+- [Use native recipe inspection and exit status](36-use-native-recipe-inspection-and-exit-status.md)
+- [Distinguish digest claims from provenance](37-distinguish-digest-claims-from-provenance.md)
+- [Plan reproducible build and resume evidence](38-plan-reproducible-build-and-resume-evidence.md)

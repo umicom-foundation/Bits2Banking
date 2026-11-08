@@ -46,3 +46,6 @@ If several fields are invalid, the first check determines the observed status. I
 
 [Course contents](index.md) · [Previous lesson](60-report-full-capacity-without-overwriting.md)
 
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](62-draw-virtual-and-physical-memory.md)

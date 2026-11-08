@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/10-build-the-browser-application.html
+
+PURPOSE:
+Build the Qt form for a browser
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build the Qt form for a browser | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Build the Qt form for a browser</h1>
+<h2>Before starting</h2>
+<p>Use the same profile lab and Framework source from lesson 9. Install a Qt WebAssembly kit and the Emscripten version required by that exact Qt kit. Activate that Emscripten environment and confirm em++ is the intended compiler. Choose a single-threaded kit for this first exercise. The example paths below are placeholders for installed tools, not download instructions.</p>
+<h2>Understand the target</h2>
+<p>WebAssembly is code for a browser execution environment. Qt provides a target-specific qt-cmake wrapper; the lab uses qt6_add_executable so Qt can finalize the application for that target. The visible form and the C validator remain the existing sources. There is no HTTP account service in this exercise.</p>
+<h2>Configure a new build folder</h2>
+<p>Run these from labs/framework/qt-profile in the activated toolchain environment. Replace your-version and the kit directory with the installed names. Stop if configuration or compilation fails.</p>
+<pre><code class="language-powershell">em++ --version
+&amp; &#39;C:/Qt/your-version/wasm_singlethread/bin/qt-cmake.bat&#39; -S . -B build-wasm -G Ninja -DCMAKE_BUILD_TYPE=Debug &#39;-DBTB_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework&#39; -DBUILD_TESTING=OFF
+cmake --build build-wasm --parallel 2</code></pre>
+<h2>Inspect what was produced</h2>
+<p>Find the generated application HTML and its JavaScript and Wasm companions in build-wasm. Keep them together. The precise companion set belongs to the chosen kit; do not make a package from a guessed filename list. Save the configure output and compiler version with your exercise notes. This build result is still separate from a browser run.</p>
+<h2>Recover from a mismatch</h2>
+<p>An incompatible archive or compiler option often means the build reused a desktop directory or mixed toolchain versions. Inspect CMakeCache.txt for the target compiler and Qt prefix. Create a fresh, differently named build directory with the correct wrapper; preserve the failed log. Do not resolve an ABI mismatch by copying arbitrary libraries into the target directory.</p>
+<h2>Exercise and worked answer</h2>
+<p>Can desktop ctest --output-on-failure establish that this browser build works? No. The lab deliberately leaves its desktop Qt Test executable out of cross-target registration. The next lesson runs the actual generated application. Record an unrun target as unverified, even when desktop checks pass.</p>
+<h2>Reference</h2><p><a href="https://doc.qt.io/qt-6/wasm.html">Qt WebAssembly build and toolchain reference</a>. Consult the documentation for the exact kit you install.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/CMakeLists.txt">labs/framework/qt-profile/CMakeLists.txt</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="09-share-c-policy-across-targets.html">Previous: Share one C policy across target toolchains</a> · <a href="11-serve-and-observe-the-web-build.html">Next: Serve and observe the generated web application</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/10-build-the-browser-application.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

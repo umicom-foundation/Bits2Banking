@@ -95,3 +95,6 @@ Does a simulation pass mean this CPU can boot Umicom OS on an FPGA? No. That req
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](41-understand-the-vhdl-build-graph.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](43-store-an-instruction-program.md)

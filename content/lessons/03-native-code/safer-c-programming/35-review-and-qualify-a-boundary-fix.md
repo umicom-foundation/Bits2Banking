@@ -61,3 +61,8 @@ Write a review note containing the original unsafe ordering, the new ordering, t
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Understand what a copied watchlist entry owns](34-values-pointers-and-serial-access.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](36-read-next-token-pairs.md)
+
+[Written course contents](index.md)

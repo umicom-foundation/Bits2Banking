@@ -70,8 +70,11 @@ Does an array grow when its count grows? No. Storage capacity and the count fiel
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/governed-identities/main.c).
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/governed-identities/main.c).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-cyber-security/index.html) · [Next: Compare a borrowed profile with a saved observation](20-borrowed-profiles-and-observation-copies.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](18-review-security-evidence.md)

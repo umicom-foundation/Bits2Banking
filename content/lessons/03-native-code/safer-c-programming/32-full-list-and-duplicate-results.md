@@ -55,3 +55,5 @@ Write a short UI message for each status in the table. Avoid reporting a duplica
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Check the count before searching the array](31-validate-before-search.md) · [Next: Verify that rejection leaves the collection unchanged](33-prove-failure-keeps-state.md)
+
+[Written course contents](index.md)

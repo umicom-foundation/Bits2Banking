@@ -60,3 +60,5 @@ Add a test for a null instrument pointer in your learning copy. Assert INVALID_A
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Keep duplicate and full-list results meaningful](32-full-list-and-duplicate-results.md) · [Next: Understand what a copied watchlist entry owns](34-values-pointers-and-serial-access.md)
+
+[Written course contents](index.md)

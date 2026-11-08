@@ -65,8 +65,19 @@ The Building a Compiler in C course follows tokens, grammar, bytecode and execut
 
 ## Read the source
 
-[Open the example source](../../../labs/native/c-build-stages/runner.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/runner.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/runner.c).
 
 ## Continue learning
 
 [Course contents](../../courses/learning-c/index.html) · [Previous: Observe which files an incremental build rebuilds](32-observe-incremental-rebuilds.md)
+
+<details><summary>Publication after success</summary>
+
+The wrapper returns before executing when compilation fails. It passes only the successful instruction count to execution and copies result.value only after execution succeeds. For 4 - 9 the expected value is -5. For malformed source, initialize the caller value to a distinctive value and check both a 0 return and preservation of that value. These are wrapper-contract checks, not proof of a complete C language implementation.
+
+</details>
+
+[Word explanations](../../courses/learning-c/glossary.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Learning routes](../../courses/learning-paths.html)

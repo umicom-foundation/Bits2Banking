@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/36-present-a-fresh-framework-trace.html
+
+PURPOSE:
+Present a fresh Framework trace
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Present a fresh Framework trace | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Present a fresh Framework trace</h1>
+<h2>Setup recap</h2>
+<p>Read Framework docs/learning/cvm-preview.md and the new cvm_trace.h header. This is an optional source-composed adapter using an installed Umicom C SDK. Build and install the updated SDK before configuring the separate Framework example; the main Framework SDK does not automatically enable this service.</p>
+<h2>Translate ownership into presentation state</h2>
+<p>The runtime leaves an output result unchanged when execution fails. That is useful for a low-level contract, but a screen must not display an old success as the new answer. Framework owns this presentation decision: after validating storage sizes, it clears the previous success and numeric result, sets the phase to compiling, and resets the trace count.</p>
+<p>umi_cvm_preview_traced accepts the existing workspace and result plus a sized UmiCvmPreviewTrace. It compiles through Umicom C, changes the phase to executing, and delegates to umc_execute_trace. It sets complete only after the runtime succeeds. No parser or evaluator is copied into the adapter.</p>
+<h2>Read a failed request correctly</h2>
+<p>A syntax failure leaves phase compiling and trace count zero. An arithmetic or fuel failure leaves phase executing and retains the completed and rejected rows. A valid storage-size mismatch leaves every supplied object unchanged because the adapter has not accepted a new request. These cases need different presentation messages.</p>
+<p>The old umi_cvm_preview API still works without trace storage. Both APIs use the same request lifecycle and status translation. Consumers must use status and completed together, and must not read trace entries at or beyond count.</p>
+<h2>Exercise</h2>
+<p>These cases are represented in test_cvm_trace.c. They are adapter checks, not evidence of a Studio debugger panel. A future UI still needs document-revision handling, approved layout integration and its own interaction qualification.</p>
+<ol><li>Start with a successful four-instruction preview and note result 42.</li><li>Submit malformed source into the same objects. Predict count zero and completed false.</li><li>Submit valid source with fuel zero. Predict one attempted step and no completed result.</li><li>Repeat using a separate workspace, result and trace to check that the first set is unaffected.</li></ol>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/toolchain/cvm_preview.c">Umicom-Applications/framework/src/toolchain/cvm_preview.c</a>. Read the matching checkout when qualifying your own build.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="35-compare-source-and-bytecode-traces.html">Previous: Compare source and bytecode traces</a> · <a href="37-qualify-a-freestanding-trace.html">Next: Qualify a freestanding trace</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/36-present-a-fresh-framework-trace.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

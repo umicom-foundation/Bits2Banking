@@ -72,8 +72,19 @@ Explain why copying a header into a project cannot solve every unresolved-symbol
 
 ## Read the source
 
-[Open the example source](../../../labs/native/c-build-stages/runner.h).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/runner.h)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/runner.h).
 
 ## Continue learning
 
 [Course contents](../../courses/learning-c/index.html) · [Previous: Inspect generated assembly without guessing its meaning](28-inspect-generated-assembly.md) · [Next: Link a program with an existing native SDK](30-link-with-a-native-sdk.md)
+
+<details><summary>Declarations and definitions</summary>
+
+runner.h provides a declaration so main.c can be compiled with the correct argument and return types. runner.o provides the function definition needed at link time. The Umicom C archives then supply the symbols called by runner.o. Adding another include path cannot supply a missing definition to the linker.
+
+</details>
+
+[Word explanations](../../courses/learning-c/glossary.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Learning routes](../../courses/learning-paths.html)

@@ -17,6 +17,9 @@ cmake_minimum_required(VERSION 3.24)
 if(NOT DEFINED REPOSITORY_ROOT OR NOT IS_DIRECTORY "${REPOSITORY_ROOT}/content")
     message(FATAL_ERROR "REPOSITORY_ROOT must identify the Bits2Banking checkout")
 endif()
+include("${CMAKE_CURRENT_LIST_DIR}/course_links.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/source_reference.cmake")
+
 function(RequireText text fragment context)
     string(FIND "${text}" "${fragment}" _at)
     if(_at EQUAL -1)
@@ -98,12 +101,18 @@ foreach(_course IN LISTS _courses)
         if(_html MATCHES "\\[\\[course:" OR _markdown MATCHES "\\[\\[course:")
             message(FATAL_ERROR "Unresolved authoring link in ${_course}/${_path}")
         endif()
+        # The configured MkDocs hook resolves manuscript links after rendering.
+        # Preserve the former blanket refusal for review and validate its real
+        # source and publication prerequisites below.
+        if(FALSE)
         # Standalone HTML is copied intact by the site builder. A Markdown
         # source link in it would not be rewritten into a published page.
         if(_html MATCHES [=[href="[^":]+[.]md([#?][^"]*)?"]=] OR
            _html MATCHES [=[href="([.][.]/)+labs/]=])
             message(FATAL_ERROR "Unpublished HTML route in ${_course}/${_path}")
         endif()
+        endif()
+        BtbCheckCourseLinks("${_html}" "${_base}/${_path}" "${REPOSITORY_ROOT}")
         if(_chapter GREATER 0)
             math(EXPR _previous "${_chapter} - 1")
             string(JSON _route GET "${_metadata}" lessons ${_previous} path)
@@ -125,12 +134,21 @@ foreach(_course IN LISTS _courses)
             RequireText("${_markdown}" "(${_next_name}.md)" "Next manuscript")
         endif()
         string(JSON _source GET "${_metadata}" lessons ${_chapter} source)
+        # Preserve the earlier narrow grammar for review. Later course modules
+        # cite public Framework/Kernel headers and tests as well as local labs;
+        # the shared validator checks their declared boundaries without fetching.
+        if(FALSE)
         if(_source MATCHES "^labs/[a-zA-Z0-9_./-]+$" AND NOT _source MATCHES "[.][.]")
             if(NOT EXISTS "${REPOSITORY_ROOT}/${_source}")
                 message(FATAL_ERROR "Missing companion source: ${_source}")
             endif()
         elseif(NOT _source MATCHES "^umicom-c/src/[a-z_]+[.]c$")
             message(FATAL_ERROR "Unrecognised source map: ${_source}")
+        endif()
+        endif()
+        BtbValidateSourceReference("${_source}" "${REPOSITORY_ROOT}" _source_valid _source_reason)
+        if(NOT _source_valid)
+            message(FATAL_ERROR "Invalid source map: ${_source}: ${_source_reason}")
         endif()
     endforeach()
 endforeach()

@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/12-browser-boundaries-and-trust.html
+
+PURPOSE:
+Separate browser validation from server authority
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate browser validation from server authority | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate browser validation from server authority</h1>
+<h2>Before starting</h2>
+<p>Run or read the browser exercise. Open profile_window.cpp and identify the single shared C call. Compare it with the Wt course, where a server-side application receives events. Both examples check the same naming rule, but the location of execution changes what the result can authorize.</p>
+<h2>Trace the result</h2>
+<p>The Qt Wasm name check runs in the browser. The form turns a QString into UTF-8 bytes, passes the exact byte count and displays the returned status. The user controls this client environment. An Accepted name label is a local explanation, not a server-issued identity or permission. The lab intentionally contains no registration request.</p>
+<pre><code class="language-text">Text field -&gt; UTF-8 byte span -&gt; local C policy -&gt; result label
+Future request -&gt; server admission -&gt; shared policy -&gt; authorized storage</code></pre>
+<h2>Design a future request honestly</h2>
+<p>If a later product adds registration, the receiving service must validate its own request and enforce authentication and authorization for protected actions. Do not send an accepted=true flag and assume it is trustworthy. Send the necessary input under an explicit protocol and let the receiving service apply its own policy. A rejected client field should still be helpful to the user, but server refusal remains possible.</p>
+<h2>Keep capabilities explicit</h2>
+<p>This lab needs neither credentials nor local files. Do not add account storage to the portable target merely because the desktop account library exposes it. Browser file and network capabilities have their own permissions and protocols. Keep a future adapter outside the pure naming library and describe its supported environment before using it.</p>
+<h2>Exercise and worked answer</h2>
+<p>Imagine a request body containing name=../../other and accepted=true. Should a receiving service skip validation? No. The flag is client input. The service must independently reject the invalid name. In this lab, test the equivalent text locally and confirm the result changes to refusal; that experiment checks presentation, while the hypothetical server rule still needs its own implementation and tests.</p>
+<h2>Review your evidence</h2>
+<p>Write three statements: the compiled target you built, the browser action you observed, and the authority you did not implement. A useful final statement is: the browser form called the shared name policy; no account creation or sign-in was exercised. Continue with the C web and Wt courses to study request boundaries in a server process.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/profile_window.cpp">labs/framework/qt-profile/profile_window.cpp</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="11-serve-and-observe-the-web-build.html">Previous: Serve and observe the generated web application</a> · <a href="13-package-the-android-lab.html">Next: Package the same Qt lab for Android</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/12-browser-boundaries-and-trust.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

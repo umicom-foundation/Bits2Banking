@@ -60,7 +60,10 @@ Create a separate project copy, alter the branch destination from 4 to 3, and pr
 
 ## Read the source
 
-[Open the example source](../../../../labs/hardware/vhdl-cpu/tests/tb_learning_system.vhd).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/tests/tb_learning_system.vhd)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/tests/tb_learning_system.vhd).
 
 ## Continue learning
 

@@ -66,3 +66,6 @@ Write a design note for an eight-byte counter response. Draw the call sequence a
 ## Continue learning
 
 [Course contents](../../../courses/umicom-kernel-from-scratch/index.html) · [Previous: Distinguish host checks from guest execution](72-distinguish-host-and-guest-evidence.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](74-describe-the-startup-handoff.md)

@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/workflow-admit-the-whole-request.html
+
+PURPOSE:
+Admit the whole request before work starts
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit the whole request before work starts | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Admit the whole request before work starts</h1><h2>Prepare the exercise</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Framework SDK with the developer lifecycle service. A terminal runs commands; CMake prepares build instructions and Ninja compiles the program. Use your actual SDK prefix and stop on a configure or build error before running an existing executable.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\lifecycle-execution&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\lifecycle-execution.exe fail-build
+ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>For fail-build, expect five attempted callbacks, four completed callbacks and zero external commands. The deliberate backend result is 23. This is an expected observation to verify, not a claimed pass on your machine.</p><h2>Find the late failure</h2><p>A command can fail correctly and still fail too late. If complete first configures and builds a project, then discovers that its publication message is missing, the terminal reports an argument problem after real work has already changed the build directory. Admission means checking what the operation needs before it starts. It is a separate step from running each backend.</p>
+<h2>Read the shared boundary</h2><p>Open lifecycle_execution.c and follow lifecycle_admit. It checks the goal, option scope, positive job count, flags and required message. The executor does not inspect a CMake preset file or prove that the compiler exists. Those remain backend checks. Distinguish a complete syntactic request from a qualified environment.</p>
+<h2>Exercise</h2><p>Run missing-message in the lab. Predict zero callbacks before observing the output. Then run complete and compare the eight callback names. Add a whitespace-only message locally and explain why merely checking the pointer for NULL would not reject it. Retain both expected and observed results.</p>
+<h2>Recover deliberately</h2><p>When admission refuses an input, correct that input before retrying. When a backend fails later, retain earlier results because they may describe changes already made. Do not present these two failure classes as equivalent: their progress reports contain different evidence.</p><h2>Review and recover</h2><p>A missing header or symbol requires checking the installed SDK identity. Preserve the command and output for a failed lab expectation. Controlled callbacks do not qualify real compilers, repository publication or a native GUI.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/lifecycle-execution/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/developer/lifecycle_execution.h">Read the shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="restart-qualify-each-layer.html">Previous lesson</a> · <a href="workflow-plan-stages-and-real-actions.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/workflow-admit-the-whole-request.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

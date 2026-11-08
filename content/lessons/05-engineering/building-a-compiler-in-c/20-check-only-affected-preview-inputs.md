@@ -59,3 +59,5 @@ Make a table for unchanged source, changed expression and invalid expression. Re
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Select the preview build profile](19-select-the-preview-build-profile.md) · [Next: Test language failures through the tool](21-test-language-failures-through-the-tool.md)
+
+[Written course contents](index.md)

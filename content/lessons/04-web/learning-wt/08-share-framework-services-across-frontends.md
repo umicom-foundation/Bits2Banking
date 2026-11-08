@@ -18,13 +18,20 @@ Wt is a C++ library for building web applications with server-side widgets. A br
 
 ## Before starting
 
+<!-- The shared policy target and explicit event-test dependency replace the broader setup. The previous wording is retained for engineering review.
 Install a C++ compiler, CMake, Ninja, Wt 4 with its HTTP connector, and a matching Umicom Framework SDK containing UmiLocalProfileNameBytes. Open a terminal in the Bits2Banking labs/framework/wt-profile directory. Follow its README for PowerShell or Bash configuration, build and launch commands. The server binds to 127.0.0.1 on port 9090 for this exercise; open http://127.0.0.1:9090/ in a browser on the same computer. Stop the server with Ctrl+C. Reading requires no account. Running requires these development tools.
+-->
+Prepare compatible C23 and C++17 compilers, CMake 3.26 or later, Ninja and Wt 4 with its HTTP connector and test library. Choose either a matching Framework SDK containing the profile_name component or the explicit Framework source route in the lab README. Open labs/framework/wt-profile and follow that guide for configuration, event tests and loopback launch. Use the dedicated build/public directory and the real installed Wt resources path. Open http://127.0.0.1:9090/ on the same computer and stop the server with Ctrl+C. Reading requires no account; executing the lab requires the selected development tools.
 
-[Open the complete lab guide](../../../../labs/framework/wt-profile/README.md).
+<!-- Published documentation resolves source links through the repository browser. Retained route: [Open the complete lab guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/wt-profile/README.md) -->
+[Open the complete lab guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/wt-profile/README.md).
 
 ## One contract, different interfaces
 
+<!-- The portable policy target supports the expanded frontend courses without moving authority into a view. The previous wording is retained for engineering review.
 The Qt and Wt labs collect the same name and call UmiLocalProfileNameBytes. Qt displays a desktop window. Wt serves a browser interface. Neither adapter owns the validation rule. This is a small example of a thin client: presentation code delegates reusable behaviour to a shared engine.
+-->
+The Qt and Wt labs collect the same name and call UmiLocalProfileNameBytes from Umicom::profile_name. Qt can compile the form for desktop, browser or mobile targets; this Wt lab runs its policy in a server application. Neither adapter owns the naming rule. Shared source still needs separate builds and observations for each target, and the location of execution changes what a result can authorize.
 
 ## Compare the implementations
 
@@ -57,10 +64,15 @@ Which code changes if the permitted name length changes? The authoritative Frame
 
 Use [Learning Qt](../../../courses/learning-qt/index.html) for the desktop event lab, [Learning CMake](../../../courses/learning-cmake/index.html) for package and target concepts, and the Umicom development course for offline learning-module integration. Keep the implementations small enough that you can trace a user action from input to service to visible outcome.
 
+## Continue the server workflow
+
+The next eight lessons follow the shared target into automated events, public resources, independent browser contexts, failure diagnosis, bounded work and deployment evidence. Start with [Build one shared C policy](09-build-a-shared-c-policy-target.md).
+
 ## Read the source
 
-[Open the example source](../../../../labs/framework/wt-profile/profile_application.cpp).
+<!-- Published documentation resolves source links through the repository browser. Retained route: [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/wt-profile/profile_application.cpp) -->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/wt-profile/profile_application.cpp).
 
 ## Continue learning
 
-[Course contents](../../../courses/learning-wt/index.html) · [Previous: Plan registration and login beyond a name checker](07-from-name-check-to-registration.md)
+[Course contents](../../../courses/learning-wt/index.html) · [Previous: Plan registration and login beyond a name checker](07-from-name-check-to-registration.md) · [Next: Build one shared C policy for the web adapter](09-build-a-shared-c-policy-target.md)

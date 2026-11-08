@@ -17,6 +17,10 @@ if(NOT DEFINED REPOSITORY_ROOT OR NOT IS_DIRECTORY "${REPOSITORY_ROOT}/content")
     message(FATAL_ERROR "REPOSITORY_ROOT must identify the Bits2Banking checkout")
 endif()
 
+include("${CMAKE_CURRENT_LIST_DIR}/setup_section.cmake")
+
+include("${CMAKE_CURRENT_LIST_DIR}/course_links.cmake")
+
 function(RequireText text fragment context)
     string(FIND "${text}" "${fragment}" _found)
     if(_found EQUAL -1)
@@ -121,12 +125,27 @@ foreach(_id IN ITEMS learning-android learning-kotlin learning-flutter learning-
         RequireText("${_index}" "href=\"${_path}\"" "${_id} contents")
         RequireText("${_written}" "# ${_title}" "${_id} manuscript title")
         RequireText("${_page}" ">${_title}</h1>" "${_id} HTML title")
+        # Preserve the earlier literal-heading rule for review. The shared
+        # source check also accepts the existing Prepare/Before you begin
+        # sections and requires actual visible guidance.
+        if(FALSE)
         RequireText("${_written}" "## Setup recap" "${_id} independent setup")
+        endif()
+        BtbHasSetupSection("${_written}" _has_setup)
+        if(NOT _has_setup)
+            message(FATAL_ERROR "${_id} independent setup: missing visible preparation guidance")
+        endif()
         RequireText("${_page}" "href=\"../index.html\"" "${_id} return route")
+        # The configured MkDocs hook resolves manuscript links after rendering.
+        # Preserve the former blanket refusal for review and validate its real
+        # source and publication prerequisites below.
+        if(FALSE)
         if(_page MATCHES [=[href="[^":]+[.]md([#?][^"]*)?"]=] OR
            _page MATCHES [=[href="file:]=])
             message(FATAL_ERROR "${_id}: standalone HTML must use publishable links")
         endif()
+        endif()
+        BtbCheckCourseLinks("${_page}" "${_directory}/${_path}" "${REPOSITORY_ROOT}")
         get_filename_component(_absolute "${_directory}/${_manuscript}" ABSOLUTE)
         file(RELATIVE_PATH _relative "${REPOSITORY_ROOT}" "${_absolute}")
         string(REGEX REPLACE "^content/" "" _site_path "${_relative}")
@@ -166,7 +185,16 @@ foreach(_item IN ITEMS learning-c/terminal-lab learning-c/terminal-assembly-lab
     file(READ "${REPOSITORY_ROOT}/content/courses/${_item}.html" _page)
     RequireText("${_index}" "${_name}.html" "Lab HTML entry")
     RequireText("${_written_index}" "${_name}.md" "Lab manuscript entry")
+    # Preserve the earlier literal-heading rule for review. The shared
+    # source check also accepts the existing Prepare/Before you begin
+    # sections and requires actual visible guidance.
+    if(FALSE)
     RequireText("${_written}" "## Setup recap" "Lab setup")
+    endif()
+    BtbHasSetupSection("${_written}" _has_setup)
+    if(NOT _has_setup)
+        message(FATAL_ERROR "Lab setup: missing visible preparation guidance")
+    endif()
     RequireText("${_navigation}" "lessons/${_item}.md" "Lab navigation")
     RequireEdition("content/courses/${_item}.html" "content/lessons/${_item}.md")
 endforeach()

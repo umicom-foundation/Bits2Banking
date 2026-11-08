@@ -82,3 +82,7 @@ Then read the Framework recipe source linked below. Locate where source checks, 
 ## Continue learning
 
 [Course contents](../../../courses/building-a-compiler-in-c/index.html) · [Previous: Design boundary tests for a virtual machine](29-design-boundary-tests-for-a-virtual-machine.md)
+
+[Next: Observe an execution trace](31-observe-an-execution-trace.md)
+
+[Written course contents](index.md)

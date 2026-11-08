@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/task-registry-owning-public-values.html
+
+PURPOSE:
+Publish task values into an owning registry
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish task values into an owning registry | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Publish task values into an owning registry</h1><h2>Prepare the exercise</h2><p>Install a matching Framework SDK, then run these PowerShell commands separately. Use the lab scenario named in each lesson and stop on an unexpected error.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-tasks -B .\build\framework-tasks -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-tasks --parallel 2
+ctest --test-dir .\build\framework-tasks --output-on-failure --no-tests=error
+&amp; .\build\framework-tasks\btb-framework-tasks.exe atomic</code></pre><p>The lab has five scenarios: atomic, shape, owned, reset and revision. A zero exit means the selected assertion matched its expected metadata behavior; no stored task command runs.</p><h2>Borrow briefly and copy deliberately</h2><p>The caller owns its editable snapshot. Upsert borrows that object during the call, validates it and copies the accepted value into registry storage. Run owned: the example clears its caller snapshot after publication, then reads the task back by ID. The unchanged stored command demonstrates the intended lifetime boundary.</p>
+<h2>Separate identity from position</h2><p>A task ID selects an existing entry. Replacing that ID keeps its position but advances the stored task revision. Removing an entry shifts later entries, so array indices are not durable identities. When a Studio list stores a selection across refreshes, retain the task ID and resolve it again rather than assuming the old row number still names the same task.</p>
+<h2>Plan cleanup at the owner</h2><p>Registry creation allocates bounded owned storage and destruction releases it. Use one owning workspace service and serialize its mutations. This does not make the registry thread-safe by itself. Follow every error path in main.c and identify where the registry is destroyed before returning; distinguish a temporary descriptor from the larger long-lived registry.</p><h2>Review and recover</h2><p>If configuration or linking fails, identify the installed SDK and compiler before changing the source. Keep an assertion failure with its selected case and source revision. Do not weaken expected outputs to hide a mismatch.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-tasks/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-tasks/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/task-admission.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="task-command-and-directory-transaction.html">Previous lesson</a> · <a rel="next" href="task-revision-refusal-and-reset.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/task-registry-owning-public-values.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

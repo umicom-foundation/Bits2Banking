@@ -55,6 +55,26 @@ The unstaged diff shows the third sentence relative to the staged text. The cach
 
 A `.gitignore` rule can keep ordinary untracked build output out of future staging. It does not untrack an already recorded file and does not remove earlier history. Keep passwords, personal notes and raw private logs outside public repositories, and inspect staged text before publishing.
 
+## Connect manual review to a native workflow
+
+The native Umicom publication service can keep the review step visible while it coordinates related repositories. This is an advanced source study after the manual exercise; the practice repository above has no remote and is not ready for workspace publication.
+
+Read [the staged-review contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/repository/publication.h) and [its implementation](https://github.com/umicom-foundation/umicom-framework/blob/main/src/repository/operations/publication_review.c). A host supplies a callback: a function called synchronously when a new staged snapshot is ready to inspect. The callback receives the repository path, old HEAD, proposed tree identity, summary and patch. These are borrowed values, so a host must copy anything it needs after the callback returns.
+
+The service compares two captured Git objects, rather than asking a later screen refresh to describe a possibly changed index. An approval returns `UMI_STATUS_OK`. A refusal stops the remaining workflow and leaves the staged files available for investigation. After approval, the service checks the index tree and HEAD again. It still requires other editors to remain idle; checks alone do not make separate Git commands a transaction.
+
+On a prepared, reviewed publication workspace, `--review-staged` adds this behavior to `umicom repo publish-all ... --apply`. The terminal requires the literal word `commit` before each new commit. It does not review commits that already existed before the invocation, and it cannot undo a child that was published earlier. Keep the manual commands above as a way to inspect retained state after a refusal.
+
+### Diagnose a stale review
+
+Imagine the displayed snapshot identifies tree A. Another process stages an extra file and produces tree B before the reviewer responds. Should the service commit B using the approval for A?
+
+<details><summary>Worked answer</summary>
+
+No. The approval described A. The service must stop when the current index identity differs, preserve B for inspection, and obtain a new review. Resetting the index would hide another writer's work. The regression case `framework.repository.publication.review.changed-index` exercises this refusal through a fake Git transport; an authored test still needs to be executed against the built service.
+
+</details>
+
 ---
 
 [Read this lesson in HTML](../../../courses/introduction-to-version-control/lessons/02-review-and-record-a-change.html) · [Learning sequence](../../../start/learning-sequence.md)

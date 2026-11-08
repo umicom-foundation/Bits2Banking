@@ -18,9 +18,9 @@ Qt is a library for building applications. A widget is a visible control, such a
 
 ## Before starting
 
-Use a development copy of Umicom Bits2Banking and an installed Umicom Framework SDK containing the security component and UmiLocalProfileNameBytes. Install a matching Qt 6 development kit, C++ compiler, CMake and Ninja. A kit groups tools and libraries compiled to work together. Do not combine libraries from different compiler families. Open a terminal in labs/framework/qt-profile. The lab README contains complete PowerShell and Bash commands and explains how to choose installation prefixes. The exercises check names only; they do not create an account or contact a broker.
+Use a development copy of Umicom Bits2Banking and an installed Umicom Framework SDK containing the profile_name component and UmiLocalProfileNameBytes. Install a matching Qt 6 development kit, C++ compiler, CMake and Ninja. A kit groups tools and libraries compiled to work together. Do not combine libraries from different compiler families. Open a terminal in labs/framework/qt-profile. The lab README contains complete PowerShell and Bash commands and explains how to choose installation prefixes. The exercises check names only; they do not create an account or contact a broker.
 
-[Open the lab setup guide](../../../../labs/framework/qt-profile/README.md).
+[Open the lab setup guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/README.md).
 
 ## Classify the failure first
 
@@ -64,8 +64,12 @@ Write a defect report for a deliberately removed click connection in a practice 
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/qt-profile/README.md).
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/README.md).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-qt/index.html) · [Previous: Test the real widget event path](06-widget-event-tests.md) · [Next: Extend the view while keeping Framework authoritative](08-extend-the-view-without-duplicating-policy.md)
+
+<!-- The original out-of-docs lab routes are retained for review: (../../../../labs/framework/qt-profile/README.md). Published manuscripts use repository source links because the site does not copy the labs directory. -->
+
+<!-- The earlier setup required an installed Umicom Framework SDK containing the security component and UmiLocalProfileNameBytes. The profile_name component now supplies the same policy without account-storage dependencies; the previous requirement is retained here for review. -->

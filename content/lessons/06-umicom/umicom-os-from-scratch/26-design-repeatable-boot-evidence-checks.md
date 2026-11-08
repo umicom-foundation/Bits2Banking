@@ -69,3 +69,5 @@ Run focused parser and command tests after changes to these components, then the
 ## Continue learning
 
 [Course contents](../../../courses/umicom-os-from-scratch/index.html) · [Previous: Interpret source and service-count changes](25-interpret-source-and-service-count-changes.md)
+
+[Written course contents](index.md) · [Next: Separate the host, target and image](27-separate-host-target-and-image.md)

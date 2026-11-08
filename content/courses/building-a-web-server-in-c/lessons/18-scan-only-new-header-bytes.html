@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/18-scan-only-new-header-bytes.html
+
+PURPOSE:
+Scan new header bytes and reuse strict rules
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Scan new header bytes and reuse strict rules | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Scan new header bytes and reuse strict rules</h1>
+<h2>Prepare</h2>
+<p>Open request_stream.c beside request_frame.c in the same Framework revision. Locate received, scanned and frame in the private stream structure. Read the strict framing lesson first: the supported subset still requires one Host header and rejects ambiguous length fields.</p>
+<h2>Understand repeated work</h2>
+<p>The former connection loop called the stateless frame reader on the entire accumulated prefix after each read. With one-byte reads, that revisits earlier request and header lines many times. The stream keeps a scan position, examines new header bytes and detects the header terminator. It then asks the existing Frame implementation to validate header semantics and report the expected message size.</p>
+<h2>Keep recognition and policy separate</h2>
+<p>Recognizing the four-byte header boundary is not enough to accept a request. Host, method, field syntax, Content-Length and supported-feature rules still belong to the strict parser. The incremental layer calls the shared private header-admission function instead of inventing a second interpretation.</p>
+<pre><code class="language-text">new bytes -&gt; CR/LF and header-boundary scan
+complete header -&gt; existing strict field rules
+known body length -&gt; bounded completion comparison
+complete message -&gt; existing owned strict parse</code></pre>
+<h2>Notice the timing contract</h2>
+<p>Stream semantic rejection waits for the complete header. The stateless reader may reject an unsupported request line sooner when explicitly called on that prefix. CR/LF errors can still fail during the incremental scan. The delayed-semantic regression documents this difference. The transport deadline and maximum size remain necessary even when parsing does less repeated work.</p>
+<h2>Exercise and worked answer</h2>
+<p>A body contains CR, LF, CR, LF. Should the stream treat it as another header terminator? No. Once the header is admitted, its declared body length controls completion. Scanning body bytes as header syntax would reject valid binary content or split the message incorrectly.</p>
+<h2>Recover without competing rules</h2>
+<p>If a fragmented request differs from the same complete input, compare the shared parser result and the stream state at each feed. Repair the boundary handling or shared rule once. Do not add a special exception in the transport adapter that silently accepts input rejected by strict parsing. No throughput measurement is implied by reading this algorithm.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/web/request_stream.c">Umicom-Applications/framework/src/web/request_stream.c</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="17-own-an-incomplete-request.html">Previous: Own an incomplete request across reads</a> · <a rel="next" href="19-keep-binary-body-length-explicit.html">Next: Keep binary body length explicit</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/18-scan-only-new-header-bytes.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -85,3 +85,5 @@ This contract does not make the operation atomic between threads. Another thread
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Recognise overlap between distinct pointers](38-recognise-overlapping-output-ranges.md) · [Next: Follow corpus and output lifetimes](40-own-the-corpus-and-borrow-the-window.md)
+
+[Written course contents](index.md)

@@ -99,8 +99,11 @@ Why is **source file.c** one argument? The quotation marks group the space with 
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/command-arguments/main.c).
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/command-arguments/main.c).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-build-systems/index.html) · [Next: Give a parser the exact bytes it may read](14-readable-spans-and-terminators.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](12-design-a-build-service.md)

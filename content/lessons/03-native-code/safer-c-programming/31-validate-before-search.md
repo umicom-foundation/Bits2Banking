@@ -66,3 +66,5 @@ You should be able to explain why the capacity check before insertion was insuff
 ## Continue learning
 
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Understand count, capacity and array indices](30-count-capacity-and-index.md) · [Next: Keep duplicate and full-list results meaningful](32-full-list-and-duplicate-results.md)
+
+[Written course contents](index.md)

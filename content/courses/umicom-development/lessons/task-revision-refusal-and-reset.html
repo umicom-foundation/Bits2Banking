@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/task-revision-refusal-and-reset.html
+
+PURPOSE:
+Treat revisions as identities that cannot wrap
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Treat revisions as identities that cannot wrap | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Treat revisions as identities that cannot wrap</h1><h2>Prepare the exercise</h2><p>Install a matching Framework SDK, then run these PowerShell commands separately. Use the lab scenario named in each lesson and stop on an unexpected error.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\framework-tasks -B .\build\framework-tasks -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_PREFIX_PATH=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\framework-tasks --parallel 2
+ctest --test-dir .\build\framework-tasks --output-on-failure --no-tests=error
+&amp; .\build\framework-tasks\btb-framework-tasks.exe atomic</code></pre><p>The lab has five scenarios: atomic, shape, owned, reset and revision. A zero exit means the selected assertion matched its expected metadata behavior; no stored task command runs.</p><h2>A revision is an observation token</h2><p>Consumers can compare revisions to decide whether an observed task changed. An unsigned counter wraps mathematically, but reusing an earlier token can make stale state appear current. Run revision to place the descriptor at its representable limit. A new command must be refused and the saved state must remain identical.</p>
+<h2>Choose a checked reset</h2><p>Run reset to clear an ordinary registry through the status-returning API. The registry becomes empty and its identity advances once. The compatibility void clear remains available, but cannot report exhaustion to its caller. New code that needs to explain a refusal should use checked reset and handle its status explicitly.</p>
+<h2>Reserve every affected identity</h2><p>Replacing a task changes both its stored task identity and the registry identity. Checking only one counter is insufficient. The private regression suite reaches each exhausted boundary without adding public counter setters. Explain why these tests inspect complete state after refusal rather than merely checking that an error code was returned.</p><h2>Review and recover</h2><p>If configuration or linking fails, identify the installed SDK and compiler before changing the source. Keep an assertion failure with its selected case and source revision. Do not weaken expected outputs to hide a mismatch.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-tasks/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-tasks/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/task-admission.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="task-registry-owning-public-values.html">Previous lesson</a> · <a rel="next" href="task-descriptors-and-dependency-graphs.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/task-revision-refusal-and-reset.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

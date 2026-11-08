@@ -87,3 +87,42 @@ Build, test and investigate a change · Lesson 2 of 5.
 Run `umicom doctor --versions-only` to collect discovered tool paths and version results. This invokes tool version and compiler-target commands but skips generated compile, link and run probes. Its report says `NOT RUN` for those probes. Save the inventory with the source revision and selected preset, then qualify the project separately.
 
 A successful inventory does not prove that the CMake cache uses that compiler, that GTK dependencies match it or that any source compiles. Compare the recorded paths with the configure log. If discovery reports a missing required tool, correct the environment before proceeding. Use the existing PowerShell transcript when you also need a record of the commands typed around the native CLI.
+
+## Save and interpret a machine-readable inventory
+
+JSON stores named values so a program can read the same evidence that a person reviews. The inventory schema identifies itself as `umicom.tool-version-inventory` with version `1`. This is a file-format version, not the installed compiler version.
+
+1. Create a private folder for one attempt, such as `C:\work\evidence\attempt-01`.
+2. Confirm `umicom doctor --help` lists `--report`.
+3. Run the command below. It invokes version/target commands, but does not compile a probe or qualify the project.
+4. Inspect both the exit status and file before requesting a build. If a required tool is missing, the command returns 1 and still saves its incomplete observations.
+
+~~~powershell
+umicom doctor --versions-only --report C:\work\evidence\attempt-01\tools.json
+~~~
+
+An existing destination is refused. A relative path or missing parent folder is also refused. Choose a fresh filename for each corrected attempt. A storage error can leave a partial file; retain it as failed evidence instead of reading a prefix as a complete inventory. The report contains local paths, so review its contents before sharing it.
+
+The following is a small illustrative excerpt, not output from an executed build:
+
+~~~json
+{"mode":"versions-only","qualificationPassed":false,"probes":{"compile":"not-run","link":"not-run","runtime":"not-run","c23":"not-run"}}
+~~~
+
+### Follow the real implementation
+
+Read [the shared inventory writer](https://github.com/umicom-foundation/umicom-framework/blob/main/src/toolchain/version_inventory.c), [its public contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/toolchain/version_inventory.h) and [the CLI adapter](https://github.com/umicom-foundation/umicom-framework/blob/main/tools/umicom/src/command_check.c). Use the same source revision for all three. If your checkout predates these interfaces, inspect the matching development files before trying the command.
+
+The CLI requests discovery with `skip_compile_probe = 1`. Framework validates the already captured report, serializes it, then opens the output file exclusively. Exclusive creation means an existing filename cannot silently become a second attempt's evidence. The save result describes persistence; the discovery result remains a separate value inside the file.
+
+The formatter checks that each fixed C character array contains a terminator within its capacity before treating it as a string. It then validates UTF-8 and reuses the protocol JSON escaper. For example, a version containing a quotation mark must become an escaped JSON string; otherwise data could break the surrounding syntax. [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259.html#section-7) describes JSON string escaping, and [its encoding section](https://www.rfc-editor.org/rfc/rfc8259.html#section-8.1) specifies UTF-8 for interoperable exchange.
+
+Framework's base `UmiUtf8Validate` service is also used by the existing document validator. That reuse matters: the inventory does not need to import a document window or duplicate a Unicode decoder. The existing document API remains available to its callers.
+
+<details><summary>Worked diagnosis: the file saved, but the command failed</summary><p>An inventory command returns 1. Its JSON says discovery was incomplete and lists a required tool as missing. Is the saved file corrupt, and may the build proceed as qualified?</p><p><strong>Answer:</strong> The file can be a valid record of incomplete discovery. Persistence and discovery have separate outcomes. Correct the missing-tool environment, capture another inventory, and then run the actual build/test qualification. A file existing and a version command succeeding do not qualify a project.</p></details>
+
+<details><summary>Worked diagnosis: zero probe flags</summary><p>A native caller passes a zero-initialized discovery report to the save service and calls it proof that no process ran. What is missing?</p><p><strong>Answer:</strong> Zero values alone do not establish execution history. The caller must use the documented version-only discovery request and retain its result. Input validation prevents some contradictory records, but it cannot authenticate a caller's claim or supply missing source and tool identities.</p></details>
+
+### Practice with distinct evidence
+
+After obtaining a configured example project, save a version inventory and a source observation using the existing release inventory. Keep the test report separately. Explain which record would change if you edited one listed C source file, installed a different compiler at the same path, or changed a CMake preset. State any unknowns: the version inventory does not hash compiler bytes, and a source observation only covers its declared files. Do not substitute one digest or one successful command for all three questions.

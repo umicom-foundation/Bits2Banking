@@ -53,3 +53,6 @@ Keep personal progress, private logs and credentials outside public content. Do 
 ## Continue learning
 
 [Course contents](../../courses/umicom-development/index.html) · [Previous: Test a learning module through observable outcomes](learning-module-regression-design.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](language-names-and-document-identity.md)

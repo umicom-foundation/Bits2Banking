@@ -58,8 +58,14 @@ Write the words for addresses 0, 3, 4 and 15 without running the program. They a
 
 ## Read the source
 
-[Open the example source](../../../../labs/hardware/vhdl-cpu/rtl/learning_program.vhd).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_program.vhd)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/hardware/vhdl-cpu/rtl/learning_program.vhd).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Next: Encode a countdown program](44-encode-a-countdown-program.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](42-review-cpu-evidence-and-next-steps.md)

@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/30-distinguish-installation-from-boot-integration.html
+
+PURPOSE:
+Distinguish installation from boot integration
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish installation from boot integration | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish installation from boot integration</h1>
+<h2>Setup recap</h2>
+<p>Keep the native probe build and observation from lesson 28. Read docs/foundation/cvm-preview.md and the OS image workflow before preparing a guest. This lesson explains the packaging boundary; it does not instruct you to replace an existing boot image or add an unreviewed startup service.</p>
+<h2>What installation actually changes</h2>
+<p>The probe install rule places its executable under usr/libexec relative to the chosen installation prefix. A staging directory is an ordinary folder that holds candidate installed files. Populating it does not update the restrictive root-filesystem inventory, rebuild the archive or make PID 1 launch anything.</p>
+<p>A Linux guest also needs a Linux-target executable with the appropriate runtime dependencies. A static link can reduce dynamic-library requirements, but does not prove architecture compatibility, boot readiness or correct service ordering. These remain separate questions.</p>
+<h2>Review the integration contract</h2>
+<p>The current CVM probe has deliberately not been added to the normal root-filesystem or PID-1 service inventory. Its successful native process check is useful evidence for that executable only. The Kernel CVM envelope uses a different native EXIT interface and cannot substitute for this Linux user-space program.</p>
+<ol><li>Identify the exact target architecture and operating-system interface of the candidate executable.</li><li>Review the image inventory and archive validation rules before proposing an installed path.</li><li>Decide whether the tool is manual-only or a startup service; review ordering and failure behaviour if it is a service.</li><li>Rebuild the relevant image and preserve its identity before guest execution.</li><li>Record normal startup, recovery and service-failure observations independently.</li></ol>
+<h2>Exercise</h2>
+<p>Write a proposed integration record with four columns: source identity, built artifact, staged file and boot-image entry. Leave the boot-image entry unverified when only native compilation and installation have occurred. Explain what new evidence would be needed to fill it.</p>
+<p>For troubleshooting, locate the first boundary where the expected artifact is missing. A correct probe transcript cannot repair a missing image manifest entry. A complete archive cannot prove that the process launched. Keep these claims distinct so a later failure can be diagnosed from the right layer.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-os/blob/main/docs/foundation/cvm-preview.md">Open the OS source</a>. Use the matching checkout for qualification.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="29-reuse-the-framework-preview-command.html">Previous: Reuse the Framework preview command</a> · <a rel="next" href="31-describe-a-source-build-before-running-it.html">Next lesson</a></p></nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/30-distinguish-installation-from-boot-integration.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

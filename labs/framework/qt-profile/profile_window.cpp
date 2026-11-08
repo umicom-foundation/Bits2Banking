@@ -13,7 +13,12 @@
  * MIT
  *---------------------------------------------------------------------------*/
 #include "profile_window.h"
+/* The narrow contract avoids importing native account storage into this view.
+ * Retain the former include for source comparison; the called API is unchanged. */
+#if 0
 #include "umicom/security/local_profile.h"
+#endif
+#include "umicom/security/profile_name.h"
 #include <QByteArray>
 #include <QLabel>
 #include <QLineEdit>

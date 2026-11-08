@@ -101,8 +101,11 @@ Message identity tells you which job. Owner identity tells you which worker name
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/delivery-tickets/main.c).
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/delivery-tickets/main.c).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-rabbitmq/index.html) · [Next: Trace a complete Framework delivery-ticket program](10-trace-the-delivery-ticket-program.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](08-recovery-backpressure-and-integration.md)

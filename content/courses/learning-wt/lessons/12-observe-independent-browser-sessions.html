@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-wt/lessons/12-observe-independent-browser-sessions.html
+
+PURPOSE:
+Observe independent browser sessions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Observe independent browser sessions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Observe independent browser sessions</h1>
+<h2>Before starting</h2>
+<p>Start the lab on loopback with the public-assets command. Open the source and identify the application-owned widget tree. Use two browser contexts with separate storage, such as a normal window and an isolated private context; describe the actual browser setup in your notes.</p>
+<h2>Write the expected state before acting</h2>
+<p>Context A starts with an empty input. Context B should also start empty. Enter Alice_7 in A and Bob in B. The expected results are alice_7 and bob respectively. Change A to invalid input and expect only A to show refusal. Keep the two pages visible while you perform each action.</p>
+<h2>Record the sequence</h2>
+<p>Use a small observation table rather than a single final screenshot. The order matters because a global result variable could appear correct after one submission but overwrite another session later.</p>
+<pre><code class="language-text">Step | Context A action/result | Context B action/result
+1    | open / initial          | not opened
+2    | unchanged               | open / initial
+3    | submit Alice_7          | unchanged
+4    | unchanged               | submit Bob
+5    | submit ../../other      | unchanged</code></pre>
+<h2>Trace an interference defect</h2>
+<p>If one context changes another, inspect shared static variables, reused widget pointers and any new service cache. The current factory captures pointers belonging to one application instance. A reusable C naming rule has no session-specific result store. Keep a failing sequence before changing ownership; an isolated successful retry does not explain the earlier interaction.</p>
+<h2>Understand the limit</h2>
+<p>This small experiment observes two contexts at a particular moment. It does not establish a maximum session count, resistance to resource exhaustion or safety of future asynchronous code. The sequential fresh-session CTest scenario is useful but observes a different lifetime boundary.</p>
+<h2>Exercise and worked answer</h2>
+<p>Two ordinary tabs show related state. Can you immediately conclude that Framework shares results globally? No. First establish whether the browser contexts and Wt sessions are actually independent, then trace ownership in the server. Record the setup and repeat with isolated storage before changing the pure C policy.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/wt-profile/profile_application.cpp">labs/framework/wt-profile/profile_application.cpp</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="11-separate-public-assets-from-source.html">Previous: Separate public assets from application source</a> · <a href="13-diagnose-http-and-event-failures.html">Next: Diagnose transport, resource and event failures</a></p></nav><p><a href="../../../lessons/04-web/learning-wt/12-observe-independent-browser-sessions.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

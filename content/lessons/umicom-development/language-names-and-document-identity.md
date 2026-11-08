@@ -69,8 +69,14 @@ If a build cannot find an SDK header, check the installed SDK path. Changing the
 
 ## Read the source
 
-[Open the example source](../../../labs/native/framework-language-inspection/main.c).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-language-inspection/main.c)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-language-inspection/main.c).
 
 ## Continue learning
 
 [Course contents](../../courses/umicom-development/index.html) · [Next: Read a shared language catalogue safely](language-catalogues-and-borrowed-data.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](learning-module-publication-and-limits.md)

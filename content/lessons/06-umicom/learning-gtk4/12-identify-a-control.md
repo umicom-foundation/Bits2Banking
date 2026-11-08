@@ -47,7 +47,7 @@ cmake --build build --parallel 2
 
 CMake reads CMakeLists.txt and finds the installed libraries. Ninja compiles only what this lab needs. This recipe does not rebuild the Framework. If CMake cannot find UmicomFramework, correct the SDK path. If ui_gtk4 or the checked lookup symbol is missing, install an SDK containing that component and API before continuing. A GTK window needs an interactive desktop session. On Windows, the GTK DLLs must remain reachable through Path.
 
-For more detail after this lesson, see [Learning C](../../../courses/learning-c/index.html), [Learning CMake](../../../courses/learning-cmake/index.html) and the [lab guide](../../../../labs/native/framework-control-inspection/README.md).
+For more detail after this lesson, see [Learning C](../../../courses/learning-c/index.html), [Learning CMake](../../../courses/learning-cmake/index.html) and the [lab guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-control-inspection/README.md).
 
 
 ## What you will learn
@@ -87,8 +87,11 @@ Framework's GTK automation service accepts stable IDs. Broker workspace tests al
 
 ## Read the source
 
-[Open the example source](../../../../labs/native/framework-control-inspection/main.c).
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-control-inspection/main.c).
 
 ## Continue learning
 
 [Course contents](../../../courses/learning-gtk4/index.html) · [Next: Understand the logical widget tree](13-understand-the-logical-widget-tree.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](11-follow-the-application-event-loop.md)

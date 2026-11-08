@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/11-serve-and-observe-the-web-build.html
+
+PURPOSE:
+Serve and observe the generated web application
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Serve and observe the generated web application | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Serve and observe the generated web application</h1>
+<h2>Before starting</h2>
+<p>Finish the Wasm build and locate its generated application HTML. This exercise uses the single-threaded kit from lesson 10, a browser and Python 3 for a temporary local development server. Use a new terminal for the server so its output stays visible. No public hosting or account is needed.</p>
+<h2>Serve the complete directory</h2>
+<p>A browser application must load its companion resources. Serve the generated directory over local HTTP rather than opening one file with a file URL. In the following command the relative build-wasm path is resolved from the lab directory.</p>
+<pre><code class="language-powershell">python -m http.server 8000 --bind 127.0.0.1 --directory build-wasm</code></pre>
+<h2>Follow the request</h2>
+<p>Open http://127.0.0.1:8000/ in the browser, then choose the generated application HTML. In developer tools, inspect Network before refreshing. The application page and its requested companions should load successfully. A missing Wasm response is a deployment-path problem; it is not evidence that UmiLocalProfileNameBytes rejected a name. Keep the browser console available for initialization errors.</p>
+<h2>Repeat the same workflow</h2>
+<p>Enter Alice_7 and activate Check name. Record whether the result is Accepted name: alice_7. Replace the field with ../../other, activate Check name again and confirm the old success is replaced by a refusal. Try keyboard Enter, paste, browser zoom and a narrow window. Record the actual browser, kit and source revision. A screenshot helps explain a layout problem but cannot establish which C library was linked.</p>
+<h2>Diagnose and recover</h2>
+<p>If the page loads but the application remains blank, inspect the first console error and failed request. If a resource is missing, compare the build directory with the served directory. If browser state appears stale, reload with cache disabled and compare resource names. Multithreaded kits need additional server headers; this simple server is not the threaded-kit setup. Stop the server with Ctrl+C when finished.</p>
+<h2>Exercise and worked answer</h2>
+<p>A learner copies only the HTML file to a new folder and receives 404 responses. What should be repaired first? Restore the complete generated resource set and serve the correct root. Rebuilding the name validator would not restore missing JavaScript or Wasm files. Once loading works, repeat the input workflow and retain the new observations separately.</p>
+<h2>Reference</h2><p><a href="https://doc.qt.io/qt-6/wasm.html">Qt WebAssembly running and deployment reference</a>. Consult the documentation for the exact kit you install.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-profile/README.md">labs/framework/qt-profile/README.md</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="10-build-the-browser-application.html">Previous: Build the Qt form for a browser</a> · <a href="12-browser-boundaries-and-trust.html">Next: Separate browser validation from server authority</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/11-serve-and-observe-the-web-build.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

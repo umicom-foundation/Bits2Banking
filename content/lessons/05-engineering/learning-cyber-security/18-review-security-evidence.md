@@ -60,3 +60,6 @@ Design one additional failure case for the lab without duplicating a scenario al
 ## Continue learning
 
 [Course contents](../../../courses/learning-cyber-security/index.html) · [Previous: Use the same security boundary from desktop and mobile](17-desktop-and-mobile-sign-in.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Next lesson](19-validate-a-public-identity-table.md)

@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/restart-preserve-cross-thread-stop.html
+
+PURPOSE:
+Keep Stop effective across thread boundaries
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep Stop effective across thread boundaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep Stop effective across thread boundaries</h1><h2>Prepare the exercise</h2><p>Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Framework SDK containing the restart service. Open a terminal in the lab directory. A terminal runs commands; CMake prepares build instructions and Ninja compiles them. Stop on a configure or build error before using an existing executable. Substitute your own SDK location for the Windows example.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\native\run-restart&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot;
+cmake --build build
+.\build\run-restart.exe &quot;$PWD\build\run-restart.exe&quot; handover
+ctest --test-dir build --output-on-failure --no-tests=error</code></pre><p>In handover mode, expect two controlled executor calls and zero child processes after the old result is retained. Run stop and revoke for one-call refusals. These are expected outcomes to verify, not results asserted for your machine.</p><h2>Give state one writer</h2><p>The frontend owns mutable restart intent. The worker owns execution. A cancellation request may come from another thread, so directly editing the frontend’s pending flag from Cancel would introduce a data race: unsynchronized threads could read and write the same storage.</p>
+<h2>Use a narrow atomic signal</h2><p>The session uses an atomic stop signal for cross-thread communication. Owner-thread calls consume that signal into the restart snapshot. During restart submission, the signal remains sticky across cancellation-token reset so a Stop arriving during admission cannot be silently discarded. Other session inputs remain owner-thread operations.</p>
+<h2>Exercise</h2><p>Read the thread-stop regression case. A Framework thread calls ordinary cancellation, joins, and the owning thread then advances the restart. Predict NOT_FOUND and no second executor call. Compare it with stop in the lab, where the same public cancellation is requested on the main thread.</p>
+<h2>State the remaining timing limit</h2><p>A Stop can arrive after a replacement task is queued. That task then reports cancellation through its terminal result; queue acceptance is not a promise of successful execution. Never use an atomic flag as permission to destroy a session while another caller still uses it. Object lifetime still requires coordination.</p><h2>Review and recover</h2><p>A missing header or linker symbol requires a matching Framework SDK. For a failed runtime assertion, preserve the command, output and source revision. The four lab cases do not verify native process termination or GUI lifetime; execute the Framework and Studio checks separately before making those claims.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/run-restart/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/build/run_restart.h">Read the shared service contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="restart-renew-project-authority.html">Previous lesson</a> · <a href="restart-retain-separate-transcripts.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/restart-preserve-cross-thread-stop.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

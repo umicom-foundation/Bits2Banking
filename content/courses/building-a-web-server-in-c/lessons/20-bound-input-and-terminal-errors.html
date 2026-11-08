@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/20-bound-input-and-terminal-errors.html
+
+PURPOSE:
+Bound input and keep terminal errors visible
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bound input and keep terminal errors visible | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Bound input and keep terminal errors visible</h1>
+<h2>Prepare</h2>
+<p>Read the stream header and the capacity, full-incomplete and declared-overlimit regression scenarios. Create uses a maximum of 1 through 65,536 bytes. The existing request body capacity remains smaller; increasing the stream maximum does not remove that separate limit.</p>
+<h2>Distinguish refusal states</h2>
+<p>A null nonempty input is an invalid call and preserves the stream. A chunk larger than the remaining capacity is refused without copying and puts the stream into a terminal capacity error. A full buffer without a complete header cannot keep waiting for more bytes. An admitted header whose declared total cannot fit is also refused.</p>
+<h2>Inspect without advancing</h2>
+<p>Inspect copies received bytes, maximum, known framing and current status. Its own OK result means the snapshot was copied successfully; snapshot.status may still be BUSY or an error. Treat those two statuses as answers to different questions.</p>
+<pre><code class="language-c">UmiWebRequestStreamSnapshot snapshot;
+UmiStatus copied = UmiWebRequestStreamInspect(stream, &amp;snapshot);
+/* Check copied first, then interpret snapshot.status. */</code></pre>
+<h2>Do not conceal the first error</h2>
+<p>After a framing or capacity error, later feeds report that error until Reset. The stream does not search ahead for a convenient next request or discard an arbitrary prefix. A caller handling a real connection must follow its close/error policy; reset alone does not make ambiguous input safe to continue.</p>
+<h2>Exercise and worked answer</h2>
+<p>A 1024-byte stream receives a header declaring a 1024-byte body. Why can it fail before the body arrives? The maximum covers the entire wire message, including the header, and the declared total already exceeds it. Raising the limit may be a policy decision, but it is not a correction to the length arithmetic.</p>
+<h2>Recover deliberately</h2>
+<p>Check whether the intended request fits the documented total and body bounds. Keep the failed snapshot and original configuration. If the application chooses a larger supported maximum, repeat boundary checks and retain the new environment identity. Do not turn capacity errors into empty successful requests.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/request_stream.h">Umicom-Applications/framework/include/umicom/web/request_stream.h</a>. Use the matching local revision when working offline.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="19-keep-binary-body-length-explicit.html">Previous: Keep binary body length explicit</a> · <a rel="next" href="21-reset-state-without-keeping-a-connection.html">Next: Reset parser state without claiming keep-alive</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/20-bound-input-and-terminal-errors.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

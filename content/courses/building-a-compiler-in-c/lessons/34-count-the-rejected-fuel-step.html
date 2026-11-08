@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/34-count-the-rejected-fuel-step.html
+
+PURPOSE:
+Count the rejected fuel step
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Count the rejected fuel step | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Count the rejected fuel step</h1>
+<h2>Setup recap</h2>
+<p>Use the compiler built in lesson 31 and the existing inspection.uc example. It contains seven instructions. Keep the same source for both launches so only the instruction budget changes.</p>
+<pre><code class="language-powershell">&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; trace &quot;.\examples\inspection.uc&quot; --max-steps 7
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; trace &quot;.\examples\inspection.uc&quot; --max-steps 6</code></pre>
+<h2>An attempted instruction is not an executed instruction</h2>
+<p>Fuel is an instruction allowance. Each successfully executed operation consumes one unit, including RETURN. With fuel 6, the six arithmetic operations finish, but RETURN is refused. The trace contains six successful rows and a seventh row whose status is instruction budget exhausted. The seventh row describes the next instruction; it does not mean that instruction executed.</p>
+<p>The failed row retains depth 1 and top -14 from the completed NEGATE. No Result line is published. This is why a trace entry count and an execution count are different quantities. On failure the low-level result object is unchanged rather than updated with a partial execution count.</p>
+<h2>Understand zero and the validation pass</h2>
+<p>The C API accepts fuel zero and records the first attempted instruction with an empty stack: depth zero and top zero. The CLI deliberately accepts decimal budgets from 1 to 256, so zero is an API regression case rather than a CLI option. Both contracts are explicit.</p>
+<p>Validation examines the entire bounded program before fuel is considered. A malformed suffix is rejected before any execution, even at zero fuel. An instruction allowance is not a wall-clock deadline, a network timeout or an operating-system sandbox.</p>
+<h2>Exercise</h2>
+<p>For the four-instruction program 7 * 6, predict the rows at fuel 0, 1, 2 and 3. Answers: the final attempted depths are 0, 1, 2 and 1, with top values 0, 7, 6 and 42. Each trace contains fuel + 1 rows. At fuel 4 it completes with exactly four successful rows.</p>
+<p>The fuel-boundaries regression checks these independent expectations and compares traced status with ordinary execution. Preserve the original source and actual test output when diagnosing a mismatch.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/umicom-c/blob/main/tests/test_trace.c">umicom-c/tests/test_trace.c</a>. Read the matching checkout when qualifying your own build.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="33-reserve-trace-storage-before-execution.html">Previous: Reserve trace storage before execution</a> · <a href="35-compare-source-and-bytecode-traces.html">Next: Compare source and bytecode traces</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/34-count-the-rejected-fuel-step.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

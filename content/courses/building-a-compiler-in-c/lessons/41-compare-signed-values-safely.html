@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/41-compare-signed-values-safely.html
+
+PURPOSE:
+Compare signed values without subtracting them
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare signed values without subtracting them | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Compare signed values without subtracting them</h1><h2>Prepare the exercise</h2><p>Complete the earlier compiler inspection and trace exercises. Keep the Umicom C and Bits2Banking checkouts beside each other, and use comparison-capable Umicom C source. This exercise reuses the existing C23 compiler lab; it adds no second parser or interpreter.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/native/compiler-inspection -B build/compiler-inspection -G Ninja -DBUILD_TESTING=ON
+cmake --build build/compiler-inspection --parallel 2
+ctest --test-dir build/compiler-inspection --output-on-failure --no-tests=error
+&amp; &quot;.\build\compiler-inspection\compiler-inspection.exe&quot; --comparison --trace</code></pre><p>Run each command separately and stop on errors. The comparison trace should contain eight rows and finish with Result: 1; inspection should report a peak of three values and eighty encoded bytes. These are expected observations to verify, not recorded passes.</p><h2>Use the defined comparison operation</h2><p>A tempting implementation compares left and right by subtracting them and checking the sign. That subtraction can overflow when one operand is the minimum signed value and the other is the maximum. The runtime instead uses the native signed comparison directly and stores 1 or 0. The widened arithmetic path remains for addition and multiplication, but comparison does not need an arithmetic difference.</p>
+<h2>Trace the stack contract</h2><p>Every binary comparison requires two values. The right operand is the last stack entry and the left operand is immediately below it. After comparing, the engine reduces the depth by one and writes the result into the surviving entry. Validation checks this shape before execution begins. Reserved instruction operands must still be zero; a comparison cannot use that field as a hidden literal.</p>
+<h2>Use independent expected values</h2><p>Read test_comparison_runtime.c. Its truth table includes negative values, equality and both orders of the signed extremes. Expected results are literal zeros and ones, not calls to a second copy of the runtime evaluator. Change the lesson expression to (-2147483647 - 1) &lt; 2147483647. Expect 1. Reverse the values and expect 0; both executions should complete successfully.</p>
+<h2>Keep result value and status separate</h2><p>Zero is a valid comparison result, not an error code. The runtime return status states whether execution completed, while UmcResult.value carries the program answer. Framework adds its completed flag and phase for presentation. A UI that treats a zero answer as failure would reject every false comparison. Test the status and the value independently, including a successful false expression followed by a malformed request.</p><h2>Review and recover</h2><p>If comparison syntax is rejected, inspect the selected Umicom C path and rebuild that dependency. Keep the full diagnostic and source identity. Preserve earlier artifacts and choose a new output name for compilation. Host, installed-SDK and guest checks are separate evidence layers.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/compiler-inspection/main.c">Read the C exercise</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/compiler-inspection/README.md">Full setup and native commands</a> · <a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/language.md">Shared contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="40-layer-comparison-precedence.html">Previous lesson</a> · <a rel="next" href="42-evaluate-comparison-operands.html">Next lesson</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/41-compare-signed-values-safely.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

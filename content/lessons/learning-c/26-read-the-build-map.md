@@ -68,8 +68,22 @@ Explain which program GCC compiles and which text Umicom C compiles. Then identi
 
 ## Read the source
 
-[Open the example source](../../../labs/native/c-build-stages/README.md).
+<!-- The lab remains repository source; this earlier checkout-only link is retained for review.
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/README.md)
+-->
+[Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/README.md).
 
 ## Continue learning
 
 [Course contents](../../courses/learning-c/index.html) · [Next: Inspect the source after preprocessing](27-inspect-preprocessed-source.md)
+
+<!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
+[Previous lesson](25-check-file-digests-independently.md)
+
+<details><summary>The two execution layers</summary>
+
+GCC compiles main.c and runner.c into the outer native application. At runtime, that application passes the arithmetic source string to Umicom C. main.c owns printing; runner.c owns the compile-and-execute calls. Changing LESSON_FACTOR requires rebuilding the outer application because that macro contributes bytes to its embedded string.
+
+</details>
+
+[Word explanations](../../courses/learning-c/glossary.html) · [Practical guide](../../courses/learning-c/practical-guide.html) · [Learning routes](../../courses/learning-paths.html)

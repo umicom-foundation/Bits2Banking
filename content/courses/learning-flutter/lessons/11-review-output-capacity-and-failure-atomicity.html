@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-flutter/lessons/11-review-output-capacity-and-failure-atomicity.html
+
+PURPOSE:
+Review output capacity and failure atomicity
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review output capacity and failure atomicity | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Review output capacity and failure atomicity</h1><h2>Prepare the native exercise</h2><p>Use a compatible Dart SDK and native compiler, with Bits2Banking beside the primary Framework checkout. Keep the complete Framework source tree: the local package builds its canonical C implementation. Read the lab README before resolving packages, then run each command separately and stop on an unexpected error. These host commands do not run an Android or Apple device test.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\mobile\flutter-framework-profile&quot;
+dart --version
+dart pub get
+dart analyze
+dart run bin/profile.dart Course_User
+dart test test/profile_consumer_test.dart</code></pre><p>The valid example should print canonical: course_user. The four consumer cases should exercise real native calls. These are expected outcomes to verify; no executed result is implied. Follow the separate device steps in the README when the lesson asks for target qualification.</p><h2>Read the C adapter first</h2><p>The underlying profile function expects a fixed-capacity output array. A foreign caller can supply any pointer, so the adapter adds an explicit capacity parameter. It rejects null pointers and insufficient capacity before calling the policy. The policy validates the entire name before copying any successful result.</p>
+<h2>Understand unchanged output</h2><p>On refusal, every output byte stays unchanged. On success, exactly the required capacity is written, including the terminator and zero padding. Extra caller capacity is not filled. This lets a client preserve earlier state until validation succeeds and makes buffer boundaries observable in a regression test.</p>
+<h2>Exercise</h2><p>Read the small-capacity, excess-capacity, partial-overlap and failure-unchanged C cases. Each starts with recognizable surrounding bytes. Predict which bytes may change and which must remain identical. Compare this with a Dart-level result test: the latter proves presentation behavior but cannot replace the lower-level guard-byte check.</p>
+<h2>Do not infer pointer safety from a count</h2><p>A capacity value is a caller promise that the pointer designates that much writable storage. The adapter cannot discover the true size of an arbitrary foreign allocation. Correct type declarations and scoped allocation remain necessary even when the C interface validates its numeric bounds.</p><h2>Review and recover</h2><p>Record the exact failing boundary, source revision, SDK/compiler versions and output. Fix package resolution before diagnosing native execution. Host, emulator, physical-device and browser evidence remain distinct; this native package does not support browser FFI.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/flutter-framework-profile/README.md">Exercise setup and device commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/bindings/dart/umicom_profile_name/README.md">Framework binding contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="10-own-native-buffers-for-one-call.html">Previous lesson</a> · <a href="12-return-owned-results-and-visible-errors.html">Next lesson</a></p></nav><p><a href="../../../lessons/15-mobile-development/learning-flutter/11-review-output-capacity-and-failure-atomicity.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

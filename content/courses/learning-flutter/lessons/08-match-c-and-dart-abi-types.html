@@ -1,0 +1,24 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-flutter/lessons/08-match-c-and-dart-abi-types.html
+
+PURPOSE:
+Match C and Dart ABI types exactly
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Match C and Dart ABI types exactly | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Match C and Dart ABI types exactly</h1><h2>Prepare the native exercise</h2><p>Use a compatible Dart SDK and native compiler, with Bits2Banking beside the primary Framework checkout. Keep the complete Framework source tree: the local package builds its canonical C implementation. Read the lab README before resolving packages, then run each command separately and stop on an unexpected error. These host commands do not run an Android or Apple device test.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\mobile\flutter-framework-profile&quot;
+dart --version
+dart pub get
+dart analyze
+dart run bin/profile.dart Course_User
+dart test test/profile_consumer_test.dart</code></pre><p>The valid example should print canonical: course_user. The four consumer cases should exercise real native calls. These are expected outcomes to verify; no executed result is implied. Follow the separate device steps in the README when the lesson asks for target qualification.</p><h2>Understand the binary contract</h2><p>An application binary interface describes how values cross a native call boundary. Source-language types that sound similar are not automatically interchangeable. The C adapter returns int32_t status, exposes uint32_t metadata, and accepts size_t byte counts. Dart declares Int32, Uint32 and Size in the corresponding native signatures.</p>
+<h2>Avoid enum assumptions</h2><p>The underlying Framework service returns UmiStatus, a C enum. The FFI adapter converts that result to a fixed-width integer so Dart does not guess the compiler’s enum representation. The adapter also exposes an ABI version and required output capacity. The Dart wrapper checks both before allocating buffers or invoking normalization.</p>
+<h2>Exercise</h2><p>Annotate every parameter in UmiInteropProfileNameNormalize with direction, byte width rule and owner. Explain why Size follows the target ABI while Int32 remains fixed width. Compare an Android 32-bit target with a 64-bit desktop without assuming that a desktop test covers both calling conventions.</p>
+<h2>Diagnose a mismatch</h2><p>An ABI version refusal is a source/package consistency problem, not an invalid user name. Use matching C and Dart revisions. Never work around a missing symbol by changing the declared return type until a call stops crashing; that can conceal a binary mismatch while corrupting later values.</p><h2>Review and recover</h2><p>Record the exact failing boundary, source revision, SDK/compiler versions and output. Fix package resolution before diagnosing native execution. Host, emulator, physical-device and browser evidence remain distinct; this native package does not support browser FFI.</p><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/mobile/flutter-framework-profile/README.md">Exercise setup and device commands</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/bindings/dart/umicom_profile_name/README.md">Framework binding contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="07-follow-native-asset-identities.html">Previous lesson</a> · <a href="09-count-encoded-bytes-explicitly.html">Next lesson</a></p></nav><p><a href="../../../lessons/15-mobile-development/learning-flutter/08-match-c-and-dart-abi-types.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>
