@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/19-turn-a-cash-forecast-into-a-contract.html
+
+PURPOSE:
+Teach Turn a cash forecast into a data contract through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Turn a cash forecast into a data contract | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="03-follow-evidence-through-a-payment.html">Previous lesson</a> · <a href="20-reconcile-counts-gross-totals-and-status.html">Next lesson</a></p><h1>Turn a cash forecast into a data contract</h1>
+<h2>From a business question to a program</h2>
+<p>Treasury asks whether cash will be available when obligations fall due. A program needs a more precise question: which account or scope, currency, date horizon, statuses and data cutoff? Without those fields, a number may be arithmetically correct but operationally misleading.</p>
+<p>The supplied Treasury guide teaches the connection between front-office trades and downstream processing. Here we narrow that idea to one classroom forecast. We do not infer settlement or available funds from a trade's existence.</p>
+<h2>Worked contract</h2>
+<p>Use one agreed GBP horizon with expected receipts of 125000 and payments of 140000 minor units. The net movement is -15000. If the opening available balance is 50000 and no other movements exist, the projected closing balance is 35000. The native lab computes only net movement; opening balance and availability policy are separate.</p>
+<p>Umicom Framework's UmiTreasuryCashForecast stores an identifier, horizon and nonnegative inflow/outflow totals. It does not store currency. The caller must partition by currency before constructing it. The classroom executable uses a fixed identifier and zero horizon sentinel; do not mistake those values for a complete production forecast record.</p>
+<h2>Follow the reusable service</h2>
+<pre><code>UmiTreasuryCashForecast forecast;
+if (umi_treasury_cash_forecast_init(
+        &amp;forecast, &quot;classroom&quot;, 0, 125000, 140000) != UMI_STATUS_OK)
+    return 3;</code></pre>
+<p>The <a href="https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/treasury-framework-bridge">native lab</a> then calls the existing net-minor operation. Neither the C++ nor JVM examples introduce a second finance engine.</p>
+<h2>Exercise and answer</h2>
+<p>A second receipt of 10000 USD arrives. Can you add it to GBP inflow? Answer: no. First separate currencies. Conversion requires an explicit rate, timestamp and rounding policy; the simple forecast contract does not perform it.</p>
+<h2>Check before proceeding</h2>
+<p>Write down units, cutoff, horizon and included statuses beside every fixture. Preserve rejected records and missing-data indicators. The expected result -15000 validates a narrow arithmetic case, not a bank balance, funding recommendation or payment authorization.</p><p><a href="../index.html">Course contents</a> · <a href="03-follow-evidence-through-a-payment.html">Previous lesson</a> · <a href="20-reconcile-counts-gross-totals-and-status.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

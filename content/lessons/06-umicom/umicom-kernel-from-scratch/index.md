@@ -255,3 +255,10 @@ A native program asks a kernel what services and data sizes it supports. Several
 - [Design a kernel-boundary test table](61-design-a-kernel-boundary-test-table.md)
 
 </details>
+
+## From a booted kernel to observable services
+
+- [Boot is the start of a service lifetime](82-boot-is-the-start-of-service-lifetime.md)
+- [Treat readiness and heartbeats as expiring evidence](83-readiness-heartbeats-and-expiring-evidence.md)
+- [Restart a provider without stale consumers](84-restart-a-provider-without-stale-consumers.md)
+- [Copy one owned service observation](85-copy-one-owned-service-observation.md)

@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/05-keep-pm-vfs-and-vm-responsibilities-clear.html
+
+PURPOSE:
+Teach Keep process, filesystem and memory responsibilities clear through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep process, filesystem and memory responsibilities clear | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="04-understand-sef-startup-and-restart.html">Previous lesson</a> · <a href="06-use-grants-for-bounded-data-transfer.html">Next lesson</a></p><h1>Keep process, filesystem and memory responsibilities clear</h1>
+<h2>Separate the questions</h2>
+<p>A process needs an identity and lifecycle, access to named files, and memory mappings. These concerns interact, but they are not the same owner. The MINIX architecture uses distinct services to coordinate them.</p>
+<p>The <a href="https://wiki.minix3.org/doku.php?id=developersguide:vminternals">VM internals guide</a> explains the separation of process management and memory management. VM maintains memory-region information and page-table state; operations can involve PM, VFS and the kernel. Read the release source before assuming the current wiki's implementation details match 3.3.0 exactly.</p>
+<h2>Draw two address spaces</h2>
+<p>Draw virtual addresses 0x1000–0x1fff for process A and the same numeric range for process B. The numbers can map to different physical frames. This is why equality of pointer values across processes does not imply shared storage.</p>
+<p>Now draw two adjacent virtual pages in A backed by nonadjacent physical frames. A contiguous virtual range is not necessarily a contiguous physical range. Device DMA may impose additional constraints that ordinary CPU copying does not.</p>
+<h2>Worked source-reading task</h2>
+<ol>
+<li>Locate the receive loop in the VM server.</li>
+<li>Select one memory operation.</li>
+<li>Trace its call-specific handling into region or page-table management.</li>
+<li>Identify where another service supplies information.</li>
+<li>Mark which errors leave ownership unchanged and which require cleanup.</li>
+</ol>
+<p>Record file names and your release identity. Do not treat a conceptual diagram as proof that you have traced every asynchronous path.</p>
+<h2>Exercise and answer</h2>
+<p>A driver asks for a buffer suitable for hardware DMA by calling an ordinary allocation function. Is that enough? Answer: not without the device's addressing, contiguity and lifetime requirements being satisfied. An available virtual pointer alone does not establish those properties.</p>
+<h2>Connection to Umicom</h2>
+<p>Return to Umicom Kernel's earlier lessons on user-memory spans and backing owners. Compare the invariant—every accessed byte belongs to valid storage—while keeping the two systems' implementation and public APIs separate. Neither system is qualified by the other's tests.</p><p><a href="../index.html">Course contents</a> · <a href="04-understand-sef-startup-and-restart.html">Previous lesson</a> · <a href="06-use-grants-for-bounded-data-transfer.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

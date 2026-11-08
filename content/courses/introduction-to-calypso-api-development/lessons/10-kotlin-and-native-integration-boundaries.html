@@ -1,0 +1,28 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-calypso-api-development/lessons/10-kotlin-and-native-integration-boundaries.html
+
+PURPOSE:
+Teach Connect Kotlin and native code through explicit boundaries through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect Kotlin and native code through explicit boundaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="09-scheduled-tasks-reports-and-control-totals.html">Previous lesson</a> · <a href="11-review-and-qualify-a-custom-extension.html">Next lesson</a></p><h1>Connect Kotlin and native code through explicit boundaries</h1>
+<h2>Choose a language for a reason</h2>
+<p>Calypso's documented classic application API is Java. Kotlin can call JVM classes, so it can reuse the same Java adapter. C and C++ serve a different purpose: they consume Umicom Framework's native C treasury contracts. There is no invented Calypso C API in this course.</p>
+<p>The <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/java/calypso-classic-readonly/ClassicTradeExample.kt">Kotlin example</a> receives the host's DSConnection and delegates to ClassicTradeReader. It explicitly handles a nullable returned identity. It does not create another session or disconnect the host's session.</p>
+<h2>Keep financial data explicit</h2>
+<p>Before passing a value to a native calculator, define currency, minor-unit scale, sign, horizon and provenance. A Java double is not an appropriate default carrier for an exact cash amount. Convert a documented decimal amount using a reviewed rounding rule, rejecting values that cannot be represented.</p>
+<p>The separate <a href="https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/native/treasury-framework-bridge">Framework bridge lab</a> already expects whole minor units. Its JVM adapter launches a trusted native executable using separate arguments and bounded output. It does not extract Calypso product amounts automatically.</p>
+<h2>Worked mapping</h2>
+<p>An approved business mapping produces GBP receipt 1250.00 and payment 1400.00 for the same horizon. At scale two, send 125000 and 140000. Expected result is -15000. If one source amount is USD, stop: choosing the same number of decimal places does not make currencies compatible.</p>
+<h2>Exercise and answer</h2>
+<p>Why not pass a serialized vendor Trade object into C? Answer: its Java representation, lifecycle and versioning are not a stable native wire contract. Extract only approved scalar fields into an explicit schema.</p>
+<h2>Qualification</h2>
+<p>Compile Kotlin with the certified JVM and matching JAR classpath. Qualify the vendor read, field mapping and native calculation independently before connecting them. A correct -15000 result proves arithmetic for that fixture; it does not prove Calypso permissions, valuation, settlement or server compatibility.</p><p><a href="../index.html">Course contents</a> · <a href="09-scheduled-tasks-reports-and-control-totals.html">Previous lesson</a> · <a href="11-review-and-qualify-a-custom-extension.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

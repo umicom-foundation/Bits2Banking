@@ -44,3 +44,10 @@ After the financial sequence, continue to [Financial Instruments Pricing Using C
 A payment instruction, an approval and a completed transfer describe different events. This lab continues the existing treasury introduction using its equipment-payment example. You will build a small evidence table before considering a software implementation.
 
 - [Follow evidence through a payment](03-follow-evidence-through-a-payment.md)
+
+## Treasury operations and four-language laboratory
+
+- [Turn a cash forecast into a data contract](19-turn-a-cash-forecast-into-a-contract.md)
+- [Reconcile counts, gross totals and status](20-reconcile-counts-gross-totals-and-status.md)
+- [Call the Framework treasury contract from C and C++](21-call-framework-from-c-and-cpp.md)
+- [Use one native treasury service from Java and Kotlin](22-use-one-native-service-from-java-and-kotlin.md)

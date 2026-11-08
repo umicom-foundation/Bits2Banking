@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/07-build-and-review-the-read-only-driver.html
+
+PURPOSE:
+Teach Build and review the read-only driver through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build and review the read-only driver | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="06-use-grants-for-bounded-data-transfer.html">Previous lesson</a> · <a href="08-compare-recovery-with-umicom-kernel.html">Next lesson</a></p><h1>Build and review the read-only driver</h1>
+<h2>Two builds answer different questions</h2>
+<p>The lab contains a portable range helper and a MINIX-specific driver adapter. A host CMake build checks the helper only. A guest Makefile uses MINIX service rules and links the system's character-driver and system libraries.</p>
+<p>The <a href="https://github.com/Stichting-MINIX-Research-Foundation/minix/blob/v3.3.0/minix/drivers/examples/hello/Makefile">official 3.3.0 hello Makefile</a> establishes the release's service build convention. The Umicom lab is original code, with a distinct program name and a bounded fixed response.</p>
+<h2>Start with the host boundary</h2>
+<p>From the Bits2Banking repository:</p>
+<pre><code>cmake -S labs/minix/status-driver -B build/minix-read-window -G Ninja
+cmake --build build/minix-read-window
+ctest --test-dir build/minix-read-window --output-on-failure</code></pre>
+<p>Expected coverage includes a normal read window, huge request, EOF, zero length and invalid output arguments. No results are claimed until the owner executes these commands.</p>
+<h2>Continue in the guest</h2>
+<p>Copy the lab into a separate working directory in your release-matched guest, then run make there. Expected product: umi_status. Keep the original MINIX tree and licence notices intact.</p>
+<p>Before installation, review the guest's service configuration, an available device major and its device node. The lab does not guess a universal major number or provide a broad privilege policy. Follow the matching service manual; command names can differ between older release images and newer documentation.</p>
+<h2>Exercise and answer</h2>
+<p>The host test passes but the guest link fails to find libchardriver. Should you change read_window.c? Answer: no. Investigate the guest's development libraries and build context. The two builds exercise different boundaries.</p>
+<h2>Acceptance record</h2>
+<p>Record source and binary identities, guest compiler, configuration, observed read text, offset behaviour, grant refusal and restart behaviour. A loaded driver is not yet a qualified driver. A successful restart is not live update, and no live-update implementation is included in this lab.</p><p><a href="../index.html">Course contents</a> · <a href="06-use-grants-for-bounded-data-transfer.html">Previous lesson</a> · <a href="08-compare-recovery-with-umicom-kernel.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

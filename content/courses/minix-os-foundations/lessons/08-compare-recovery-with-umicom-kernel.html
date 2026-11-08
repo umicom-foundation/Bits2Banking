@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/08-compare-recovery-with-umicom-kernel.html
+
+PURPOSE:
+Teach Compare MINIX recovery with Umicom Kernel through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare MINIX recovery with Umicom Kernel | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="07-build-and-review-the-read-only-driver.html">Previous lesson</a></p><h1>Compare MINIX recovery with Umicom Kernel</h1>
+<h2>Compare invariants, not names</h2>
+<p>Both systems invite questions about service lifetime: who owns resources, when may a replacement run, and what happens to in-flight work? Their implementations and ABIs remain independent.</p>
+<p>MINIX's <a href="https://wiki.minix3.org/doku.php?id=developersguide:liveupdate">live-update guide</a> describes RS-coordinated quiescence, state transfer and rollback. Its details and limitations require a matching system version. Umicom's managed-service controller currently provides its own readiness, health and replacement policy; a restart path is not evidence of MINIX-style live update.</p>
+<h2>Build a comparison worksheet</h2>
+<p>For each system, answer these questions from identified source:</p>
+<ol>
+<li>How is a live instance identified?</li>
+<li>What makes it ready for dependents?</li>
+<li>Who revokes access after failure?</li>
+<li>Which resources remain owned during cleanup?</li>
+<li>What state must be transferred or reconstructed?</li>
+<li>What evidence distinguishes recovery success from a retry still in progress?</li>
+</ol>
+<p>Do not fill unknown answers with a familiar API from the other system.</p>
+<h2>Worked scenario</h2>
+<p>A service is replaced while another component still refers to a buffer it owned. Copying the visible service name does not repair the stale memory relationship. The recovery design must account for outstanding references, grants or handles before declaring the replacement usable.</p>
+<p>In Umicom, study dependency revocation and collection before readmission. In MINIX, study the selected service's quiescence and grant behaviour. The similar problem does not imply identical solutions.</p>
+<h2>Exercise and answer</h2>
+<p>A demonstration prints “restarted” after a new process begins. What remains unproven? Answer: readiness, resource cleanup, outstanding request outcomes, restored state and the client's ability to use the new instance.</p>
+<h2>Capstone</h2>
+<p>Produce a source map, a read-window boundary test report, a guest build record and an explicit list of unexecuted checks. If you only performed source reading, label the work accordingly. Keep MINIX source attribution and licences; the original Umicom teaching driver does not relicense the operating system.</p>
+<p>The next course stage can add a stateful service after the read-only boundary is qualified. This introductory module does not claim a complete MINIX course, a new operating system or hardware validation.</p><p><a href="../index.html">Course contents</a> · <a href="07-build-and-review-the-read-only-driver.html">Previous lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

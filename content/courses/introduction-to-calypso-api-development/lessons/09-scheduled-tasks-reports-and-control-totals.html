@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-calypso-api-development/lessons/09-scheduled-tasks-reports-and-control-totals.html
+
+PURPOSE:
+Teach Design scheduled tasks and reports with control totals through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Design scheduled tasks and reports with control totals | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="08-events-acknowledgements-and-replay.html">Previous lesson</a> · <a href="10-kotlin-and-native-integration-boundaries.html">Next lesson</a></p><h1>Design scheduled tasks and reports with control totals</h1>
+<h2>Start with a report contract</h2>
+<p>A scheduled task automates an operation at a configured time. A report turns selected data into an interpretable result. Neither should hide the selection criteria, time basis or rejected records. The later Calypso refresher discusses these extension families; its examples are starting points, not a replacement for your release's SDK.</p>
+<p>Suppose the task exports next-day cash movements. Define business date, timezone, books, legal entities, currencies and included statuses. A trade date is not necessarily a value date, and an unapproved movement is not an available balance.</p>
+<h2>Worked control totals</h2>
+<p>Your approved fixture contains three GBP movements: receipts 10000 and 5000, payment 12000, all in minor units. The expected receipt total is 15000, payment total 12000 and net 3000. Record the row count as three as well as the totals. Equal net values alone can conceal a missing receipt and missing payment.</p>
+<p>Keep each currency separate. Do not net 3000 GBP with 3000 USD unless an explicitly defined conversion and rate timestamp are part of the report.</p>
+<h2>A controlled task lifecycle</h2>
+<ol>
+<li>Validate configuration before querying.</li>
+<li>Resolve the supported selection API and authorization scope.</li>
+<li>Accumulate accepted and rejected records separately.</li>
+<li>Write output through a reviewed publication boundary.</li>
+<li>Record counts, currency totals and output identity.</li>
+<li>Report failure when required rows or publication steps fail.</li>
+</ol>
+<p>Do not guess the ScheduledTask process override or Report load signature from an internet snippet. Inspect the licensed abstract class and interface, then document the implementation's transaction and connection ownership.</p>
+<h2>Exercise and answer</h2>
+<p>The output has two rows and net 3000, matching the expected net. Is it complete? Answer: no. Expected count was three. Investigate omitted rows and both gross totals before accepting the output.</p>
+<h2>Extension exercise</h2>
+<p>Prepare a release-specific signature inventory and a fixture with one malformed currency. Decide whether the whole report is refused or the row is explicitly quarantined. Explain that policy in the report itself. Runtime qualification remains pending.</p><p><a href="../index.html">Course contents</a> · <a href="08-events-acknowledgements-and-replay.html">Previous lesson</a> · <a href="10-kotlin-and-native-integration-boundaries.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

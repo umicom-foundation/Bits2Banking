@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-calypso-api-development/lessons/08-events-acknowledgements-and-replay.html
+
+PURPOSE:
+Teach Process events without losing work through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Process events without losing work | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="07-workflow-checks-and-transactions.html">Previous lesson</a> · <a href="09-scheduled-tasks-reports-and-control-totals.html">Next lesson</a></p><h1>Process events without losing work</h1>
+<h2>Delivery and completion are different</h2>
+<p>An event tells an engine that something occurred. Receiving it does not mean your custom work has completed. The supplied classic guide describes custom engines derived from com.calypso.engine.Engine, an EngineContext initialization hook, processing of PSEvent and the RemoteTrade eventProcessed acknowledgement boundary.</p>
+<p>Those names are useful evidence, but constructors, registration and deployment remain release-specific. Persistent and non-persistent subscriptions must not be confused.</p>
+<h2>Design the state machine first</h2>
+<p>Consider an original outbound-report engine. It records a stable event key, creates an export and only then acknowledges the source event. Its durable states might be received, export-recorded and acknowledged. These are your integration states, not invented Calypso status values.</p>
+<p>A crash after the export but before acknowledgement can cause replay. The destination must recognize the same stable event key and return the original outcome, rather than creating a duplicate report. Acknowledging before durable work instead risks permanent loss.</p>
+<h2>Worked failure table</h2>
+<ul>
+<li>Crash before export: replay must attempt the work.</li>
+<li>Crash after export, before acknowledgement: replay must find the prior export.</li>
+<li>Acknowledgement exception: retain the completed export and retry acknowledgement under a controlled policy.</li>
+<li>Export rejection: record refusal and follow the agreed operational policy; do not silently acknowledge success.</li>
+</ul>
+<p>A single database transaction cannot automatically cover an external file server or remote API. Use a durable outbox or another explicitly reviewed coordination design where appropriate.</p>
+<h2>Exercise and answer</h2>
+<p>The process method returns true after placing work in an in-memory queue. Power fails before the worker runs. What was lost? Answer: the source may regard processing as complete while the queued work never became durable. Successful queue insertion is not the same as completed business processing.</p>
+<h2>Before writing the engine</h2>
+<p>Inspect the matching Engine and PSEvent declarations, persistent subscription configuration and eventProcessed signature. Use the guide to explain the lifecycle, then compile a release-specific implementation. No persistent-engine deployment or replay test has been run for this course.</p><p><a href="../index.html">Course contents</a> · <a href="07-workflow-checks-and-transactions.html">Previous lesson</a> · <a href="09-scheduled-tasks-reports-and-control-totals.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

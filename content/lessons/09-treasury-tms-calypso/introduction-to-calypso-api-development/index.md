@@ -28,3 +28,14 @@ These opening lessons do not claim a complete pricing engine, Bitcoin node, bloc
 [Finance and systems learning routes](../../../courses/finance-and-systems.html)
 
 [Browser contents](../../../courses/introduction-to-calypso-api-development/index.html)
+
+## Practice with the classic Calypso SDK
+
+- [Match the guide to your licensed SDK](04-match-the-guide-to-your-sdk.md)
+- [Borrow a connection and read one trade](05-borrow-a-connection-and-read-a-trade.md)
+- [Bound a query and preserve its failure](06-bound-a-query-and-preserve-failure.md)
+- [Separate workflow checks from updates](07-workflow-checks-and-transactions.md)
+- [Process events without losing work](08-events-acknowledgements-and-replay.md)
+- [Design scheduled tasks and reports with control totals](09-scheduled-tasks-reports-and-control-totals.md)
+- [Connect Kotlin and native code through explicit boundaries](10-kotlin-and-native-integration-boundaries.md)
+- [Review and qualify a custom extension](11-review-and-qualify-a-custom-extension.md)

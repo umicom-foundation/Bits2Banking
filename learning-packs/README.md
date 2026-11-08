@@ -80,10 +80,10 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Introduction to Bitcoin | `learning-packs/introduction-to-bitcoin.json` | 3 |
 | Introduction to Bitcoin Source Code | `learning-packs/introduction-to-bitcoin-source-code.json` | 3 |
 | Introduction to Blockchain | `learning-packs/introduction-to-blockchain.json` | 3 |
-| Introduction to Calypso API Development | `learning-packs/introduction-to-calypso-api-development.json` | 3 |
+| Introduction to Calypso API Development | `learning-packs/introduction-to-calypso-api-development.json` | 11 |
 | Introduction to Operating Systems | `learning-packs/introduction-to-operating-systems.json` | 12 |
 | Introduction to Programming | `learning-packs/introduction-to-programming.json` | 16 |
-| Introduction to Treasury Management Systems | `learning-packs/introduction-to-treasury-management-systems.json` | 21 |
+| Introduction to Treasury Management Systems | `learning-packs/introduction-to-treasury-management-systems.json` | 25 |
 | Introduction to Version Control | `learning-packs/introduction-to-version-control.json` | 5 |
 | Learning Motorola 6800 Assembly | `learning-packs/learning-6800-assembly.json` | 2 |
 | Learning Motorola 68000 Assembly | `learning-packs/learning-68000-assembly.json` | 4 |
@@ -129,6 +129,8 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | LLM from Scratch | `learning-packs/llm-from-scratch.json` | 125 |
 | Safer C Programming | `learning-packs/safer-c-programming.json` | 35 |
 | Learning Umicom Framework | `learning-packs/umicom-development.json` | 94 |
-| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 74 |
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 86 |
 | Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 18 |
 | Learning Build Systems | `learning-packs/learning-build-systems.json` | 12 |
+
+| MINIX OS Foundations | `learning-packs/minix-os-foundations.json` | 8 |

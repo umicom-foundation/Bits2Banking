@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/03-follow-a-message-and-a-reply.html
+
+PURPOSE:
+Teach Follow a message and its reply through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow a message and its reply | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="02-draw-the-kernel-and-server-boundaries.html">Previous lesson</a> · <a href="04-understand-sef-startup-and-restart.html">Next lesson</a></p><h1>Follow a message and its reply</h1>
+<h2>Sending is not completing</h2>
+<p>IPC means inter-process communication. In a request/reply protocol, delivery of a request and completion of the requested operation are separate events. A caller waiting for a reply must distinguish a valid result from failure or a service that never responds.</p>
+<p>MINIX exposes several message operations. The <a href="https://wiki.minix3.org/doku.php?id=developersguide:messagepassing">message-passing guide</a> describes blocking send, receive, combined send/receive and notifications. Check the <a href="https://github.com/Stichting-MINIX-Research-Foundation/minix/blob/v3.3.0/minix/include/minix/ipc.h">v3.3.0 IPC declarations</a> for the actual message layout and names used by that release.</p>
+<h2>Trace a small protocol on paper</h2>
+<p>Design an original status request with an operation, sequence and reply status. This is a classroom schema, not a reserved MINIX message number. The server validates the operation before reading operation-specific fields. It then produces either a defined result or a defined refusal.</p>
+<p>Draw what happens if the caller exits before the reply. Next draw two services that synchronously call one another while both wait. The second drawing reveals why ordering and deadlock rules matter.</p>
+<h2>Worked example</h2>
+<p>Client A sends request 12 and later sees a response tagged 11. A result with plausible bytes is still the wrong response. Reject the mismatch rather than treating data shape as identity.</p>
+<h2>Exercise and answer</h2>
+<p>Can a server read a sender's raw pointer from a message and dereference it? Answer: not as a general cross-process operation. The address belongs to another virtual address space and requires a supported transfer boundary.</p>
+<h2>Source exercise</h2>
+<p>Locate the send/receive declarations, message source field and notification test in your release. Record their types. Do not memorize a payload size from a tutorial and apply it to another architecture or version.</p>
+<p>A source trace demonstrates understanding. A host simulation can test your schema logic. Only a guest exercise with the real IPC mechanisms can qualify the operating-system interaction, and no such execution is claimed here.</p><p><a href="../index.html">Course contents</a> · <a href="02-draw-the-kernel-and-server-boundaries.html">Previous lesson</a> · <a href="04-understand-sef-startup-and-restart.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

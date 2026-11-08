@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-calypso-api-development/lessons/05-borrow-a-connection-and-read-a-trade.html
+
+PURPOSE:
+Teach Borrow a connection and read one trade through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Borrow a connection and read one trade | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="04-match-the-guide-to-your-sdk.html">Previous lesson</a> · <a href="06-bound-a-query-and-preserve-failure.html">Next lesson</a></p><h1>Borrow a connection and read one trade</h1>
+<h2>Connection ownership</h2>
+<p>DSConnection gives a client access to remote services. The supplied guide demonstrates ConnectionUtil for applications that establish their own session. An extension inside an existing application often receives a session instead. That difference determines who may disconnect it.</p>
+<p>ClassicTradeReader borrows a non-null DSConnection. It neither connects nor disconnects. Authentication, authorization and timeout configuration belong to the host. This avoids terminating a shared session when one lesson operation ends.</p>
+<h2>Follow the real boundary</h2>
+<pre><code>Trade trade = connection.getRemoteTrade().getTrade(id);
+result.add(new Identity(id,
+    trade == null ? null : Long.valueOf(trade.getId())));</code></pre>
+<p>These calls are based on the guide's remote-client examples. The complete <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/java/calypso-classic-readonly/ClassicTradeReader.java">Java source</a> compiles only when the licensed SDK supplies the matching contract.</p>
+<p>The adapter copies identity into an owned result. It does not return a mutable vendor Trade for unrelated code to modify. It deliberately omits product-specific fields: a trade's amount, settlement currency and pricing currency are not interchangeable concepts.</p>
+<h2>Walk through the outcomes</h2>
+<p>For an approved ID, compare the returned identity with the authorized application view. If no object is returned, preserve that absence. Do not label it unauthorized or nonexistent without documented server behaviour. If the service throws, let the operation fail; an empty successful list would hide a connectivity or permission problem.</p>
+<p>No save, action or event acknowledgement occurs. Reading a trade still requires an approved account and data scope.</p>
+<h2>Exercise and answer</h2>
+<p>Two panels share the host's DSConnection. Panel A finishes its query and disconnects. Panel B then fails. Where is the ownership error? Answer: A treated a borrowed connection as an owned connection. The host should manage the shared lifetime; A should release only its own local results.</p>
+<h2>Verification</h2>
+<p>Compile first, then have the owner run one approved read in a non-production environment. Capture release, patch, JAR identities and the observed outcome. This lesson supplies source, not evidence of a completed remote call.</p><p><a href="../index.html">Course contents</a> · <a href="04-match-the-guide-to-your-sdk.html">Previous lesson</a> · <a href="06-bound-a-query-and-preserve-failure.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

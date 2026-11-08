@@ -1,0 +1,28 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/06-use-grants-for-bounded-data-transfer.html
+
+PURPOSE:
+Teach Use grants for bounded data transfer through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use grants for bounded data transfer | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="05-keep-pm-vfs-and-vm-responsibilities-clear.html">Previous lesson</a> · <a href="07-build-and-review-the-read-only-driver.html">Next lesson</a></p><h1>Use grants for bounded data transfer</h1>
+<h2>Authority to copy bytes</h2>
+<p>Large data should not be moved by pretending a small IPC message is an arbitrary shared-memory buffer. MINIX memory grants describe controlled access to another process's data. The <a href="https://wiki.minix3.org/doku.php?id=developersguide:memorygrants">official grants guide</a> explains the model and its service privilege requirements.</p>
+<p>In the status-driver read callback, the request carries an endpoint and grant. The driver computes an allowed portion of its fixed response, then calls sys_safecopyto. A successful copy returns the byte count; a failed copy returns the error. This does not grant the driver arbitrary access to the requester's memory.</p>
+<h2>Bound the source before copying</h2>
+<p>The original helper first checks whether position is at or past the response length. Only then does it subtract position from length. It limits requested bytes to that remainder. This avoids an overflowing position + requested expression.</p>
+<p>For a ten-byte response, position nine and an enormous request produce exactly one byte. Position ten produces EOF. A zero request produces zero bytes without inventing a read.</p>
+<h2>Exercise and answer</h2>
+<p>A safecopy call fails but the driver returns the requested count. What will the caller believe? Answer: that bytes were transferred when they were not. Return the actual error; do not convert transport failure into successful progress.</p>
+<h2>Practical checks</h2>
+<p>Study the source bounds in read_window.c and the transfer boundary in status_driver.c separately. The authored host test covers the former. It cannot construct a valid privileged MINIX grant or prove the latter works.</p>
+<p>In an approved guest harness, test short reads, offsets, EOF and an invalid grant. Retain the exact error and environment. Do not expose broad device I/O rights to this read-only status service.</p>
+<p>A grant's lifetime and permission are part of its contract. Restart or update can affect that contract, so a future stateful driver needs additional recovery design rather than assuming copied data and process replacement are independent.</p><p><a href="../index.html">Course contents</a> · <a href="05-keep-pm-vfs-and-vm-responsibilities-clear.html">Previous lesson</a> · <a href="07-build-and-review-the-read-only-driver.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

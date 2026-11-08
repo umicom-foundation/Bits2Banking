@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/introduction-to-treasury-management-systems/lessons/22-use-one-native-service-from-java-and-kotlin.html
+
+PURPOSE:
+Teach Use one native treasury service from Java and Kotlin through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use one native treasury service from Java and Kotlin | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="21-call-framework-from-c-and-cpp.html">Previous lesson</a></p><h1>Use one native treasury service from Java and Kotlin</h1>
+<h2>Reuse through a process</h2>
+<p>Java and Kotlin run on the JVM in this lab. Both call NativeForecast.net, which launches the same trusted C executable. The native service owns the financial calculation. The JVM adapter owns argument conversion, waiting and response validation.</p>
+<p>Using ProcessBuilder with separate arguments avoids shell interpretation. An absolute executable path makes the chosen program explicit. This does not make arbitrary executables safe: use the built calculator, which launches no child processes.</p>
+<h2>Follow the response</h2>
+<p>The adapter closes stdin because no input stream is expected. A separate reader drains stdout into at most 128 bytes. The caller waits ten seconds for process completion, checks exit status, then waits up to two seconds for the reader. The response must be one signed decimal line and fit Java long.</p>
+<p>The small program returns -15000 for the fixture. Kotlin delegates to the Java adapter and checks the same expected result. There is no Java or Kotlin subtraction formula to drift away from Framework.</p>
+<h2>Try the boundaries</h2>
+<ol>
+<li>Run the C demonstration first using the lab README.</li>
+<li>Compile NativeForecast.java and ForecastDemo.java.</li>
+<li>Run the Java program with the absolute native executable path.</li>
+<li>Compile ForecastDemo.kt against the Java output.</li>
+<li>Run it with the same executable.</li>
+<li>Record compiler identities, command results and the Framework SDK used.</li>
+</ol>
+<p>Expected outputs are specified in the lab; they have not been observed here.</p>
+<h2>Exercise and answer</h2>
+<p>The process writes a correct number and then an extra debug line to stdout. Should the adapter accept the first line? Answer: no. That would conceal a protocol change. Keep diagnostics on stderr and reject the malformed response.</p>
+<h2>Understand the limits</h2>
+<p>This boundary does not provide a payment protocol, credentials, persistent audit, process-tree containment or a high-throughput server. It teaches ownership and reuse. Calypso integration is a separate step: use the documented Java SDK to obtain approved fields, validate their currency and units, then connect the mapped values to this service. A successful offline calculation does not qualify the vendor read or business mapping.</p><p><a href="../index.html">Course contents</a> · <a href="21-call-framework-from-c-and-cpp.html">Previous lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

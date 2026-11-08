@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/82-boot-is-the-start-of-service-lifetime.html
+
+PURPOSE:
+Teach Boot is the start of a service lifetime through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Boot is the start of a service lifetime | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="81-qualify-host-and-freestanding-boundaries.html">Previous lesson</a> · <a href="83-readiness-heartbeats-and-expiring-evidence.html">Next lesson</a></p><h1>Boot is the start of a service lifetime</h1>
+<h2>Connect the earlier lessons</h2>
+<p>The earlier course traces native startup, physical memory, user address spaces and bounded IPC. A boot message proves that execution reached a point. It does not prove that a service remains alive, answers requests or can be replaced safely.</p>
+<p>Umicom Kernel's managed-service controller builds on its existing loader, supervisor, scheduler and stream owner. It supplies lifecycle policy. It does not replace the architecture adapter or turn stdout into a readiness signal.</p>
+<h2>Read the plan</h2>
+<p>Open include/umicom/kernel/service_manager.h and docs/MANAGED_SERVICES.md in <a href="https://github.com/umicom-foundation/umicom-kernel">Umicom Kernel</a>. A plan supplies a name, immutable ELF bytes, launch arguments, dependencies and bounded timing/attempt budgets.</p>
+<p>Names and launch strings are copied into owned storage. The ELF bytes are borrowed and must remain immutable and alive until the manager closes. Keep the manager at one stable zero-filled address; copying it would break its self-identity and embedded ownership.</p>
+<h2>Worked lifecycle</h2>
+<p>A provider starts before a consumer that depends on it. Loading the provider changes it to STARTING. Only its accepted READY report, committed after the execution adapter checks restoration, makes it HEALTHY. The consumer is then eligible for admission. An exit value of zero is terminal completion, not evidence of a live service.</p>
+<h2>Exercise and answer</h2>
+<p>The provider prints “ready” and exits. Should the consumer start? Answer: not on that evidence. A log string is not the managed report contract, and the process no longer provides a live dependency.</p>
+<h2>Practical source trace</h2>
+<ol>
+<li>Find Initialize and its preflight of the plan.</li>
+<li>Find Step and its one-admission/one-quantum structure.</li>
+<li>Locate ServiceReportDispatch.</li>
+<li>Locate ServiceCheckpointCommit and identify the post-return checks.</li>
+<li>Explain which owner keeps each buffer alive.</li>
+</ol>
+<p>Do this source exercise before changing the boot image. Host model tests exercise policy with simulated machine entry; guest execution must separately demonstrate actual RISC-V instructions and trap restoration. This lesson makes no new boot-success claim.</p><p><a href="../index.html">Course contents</a> · <a href="81-qualify-host-and-freestanding-boundaries.html">Previous lesson</a> · <a href="83-readiness-heartbeats-and-expiring-evidence.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

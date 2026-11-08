@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/04-understand-sef-startup-and-restart.html
+
+PURPOSE:
+Teach Understand SEF startup and restart through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand SEF startup and restart | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="03-follow-a-message-and-a-reply.html">Previous lesson</a> · <a href="05-keep-pm-vfs-and-vm-responsibilities-clear.html">Next lesson</a></p><h1>Understand SEF startup and restart</h1>
+<h2>A service has a managed lifecycle</h2>
+<p>A normal command-line program starts at main and may immediately perform work. A managed operating-system service must coordinate its initialization with the system that starts or replaces it.</p>
+<p>MINIX's System Event Framework, SEF, supplies lifecycle handling. Use the <a href="https://github.com/Stichting-MINIX-Research-Foundation/minix/blob/v3.3.0/minix/include/minix/sef.h">v3.3.0 sef.h declarations</a> as the version-specific reference. Some wiki descriptions are older than the interface they discuss.</p>
+<h2>Follow the original lab</h2>
+<p>The <a href="https://github.com/umicom-foundation/Bits2Banking/tree/main/labs/minix/status-driver">Umicom status-driver lab</a> registers fresh-start and restart initialization callbacks, calls sef_startup, then enters the character-driver task loop. The initialization announces the driver.</p>
+<p>The example owns only a fixed response string. Restart therefore does not need to reconstruct a persistent counter. No live-update callback is registered, and no live-update support is claimed.</p>
+<h2>Worked lifecycle distinction</h2>
+<p>A fresh start establishes an initial state. A restart after failure may reconstruct that state from a durable source or begin an explicitly stateless service again. A live update must transfer a compatible state while preserving the relevant protocol obligations. Those are different operations.</p>
+<p>Calling a function “restart” does not prove outstanding client requests or grants survive. Define what clients should observe when the service disappears and returns.</p>
+<h2>Exercise and answer</h2>
+<p>A driver increments an in-memory counter on every request. After restart, the counter returns to zero. Is that necessarily a bug? Answer: it depends on the documented contract. If the counter is diagnostic per-instance data, reset may be correct. If it controls durable business or filesystem identity, losing it is unacceptable.</p>
+<h2>Review task</h2>
+<p>Identify every piece of state in status_driver.c. Explain why the fixed text needs no migration and why adding mutable state would require a new lifecycle design. Compile with release-matched headers before trying a guest launch. The lab has been authored and compared with official declarations, but its guest lifecycle remains unexecuted.</p><p><a href="../index.html">Course contents</a> · <a href="03-follow-a-message-and-a-reply.html">Previous lesson</a> · <a href="05-keep-pm-vfs-and-vm-responsibilities-clear.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

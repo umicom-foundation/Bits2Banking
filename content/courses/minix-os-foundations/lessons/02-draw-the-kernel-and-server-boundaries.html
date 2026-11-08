@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/02-draw-the-kernel-and-server-boundaries.html
+
+PURPOSE:
+Teach Draw the kernel and server boundaries through original worked examples and source study.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited works retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Draw the kernel and server boundaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="01-choose-a-release-and-isolated-guest.html">Previous lesson</a> · <a href="03-follow-a-message-and-a-reply.html">Next lesson</a></p><h1>Draw the kernel and server boundaries</h1>
+<h2>A small kernel still needs a system</h2>
+<p>An operating system includes more than its kernel. MINIX separates mechanisms and services across protection boundaries. The kernel provides low-level facilities including IPC, while user-space servers perform major operating-system roles.</p>
+<p>The <a href="https://wiki.minix3.org/doku.php?id=developersguide:overviewofminixservers">official server overview</a> identifies PM for process management, VFS for the virtual filesystem, VM for virtual memory and RS for service restart. DS provides a data-store service. Verify the components actually present in your selected release rather than assuming every item in a current wiki list is installed.</p>
+<h2>Build a source map</h2>
+<p>In the release-matched source tree, locate minix/kernel, minix/servers and minix/drivers. Draw a box for each owner. For a file read, distinguish the requesting application, VFS, a filesystem server and the device driver. Draw messages between boxes instead of drawing every function inside a single kernel.</p>
+<p>This drawing is a reasoning aid, not an exact call trace. Read the selected operation's source before assigning a particular message number or callback.</p>
+<h2>Worked ownership question</h2>
+<p>A driver needs to return bytes to a requester. The requester's pointer is not automatically meaningful in the driver's address space. A controlled transfer mechanism is required. That need follows from isolation and motivates the later grants lesson.</p>
+<h2>Exercise and answer</h2>
+<p>If a user-space driver fails, must the kernel itself have crashed? Answer: no. The separation permits different failure domains. Whether recovery succeeds depends on the service, manager policy and resource state; isolation alone is not a recovery proof.</p>
+<h2>Compare with Umicom</h2>
+<p>Umicom Kernel's own supervisor and managed-service controller also distinguish owners and lifetimes. Their functions, structures and ABI are independent. Do not rename a MINIX call to an Umicom-looking name and assume compatibility.</p>
+<p>Before continuing, explain one benefit and one cost of a message boundary. A benefit is explicit ownership; a cost can be additional scheduling and protocol complexity. Measure those costs in a real system rather than assuming an architectural label determines performance.</p><p><a href="../index.html">Course contents</a> · <a href="01-choose-a-release-and-isolated-guest.html">Previous lesson</a> · <a href="03-follow-a-message-and-a-reply.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>
