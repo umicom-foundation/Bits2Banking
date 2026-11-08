@@ -39,6 +39,29 @@ MIT
 <p>Resize the window and increase text size. Verify that the full button label and result can be reached. An attractive screenshot at one width is insufficient evidence for a resizable workflow.</p>
 <h2>Diagnose</h2>
 <p>A missing widget can result from failing to add it to the hierarchy, putting it in the wrong parent or replacing the window child. Trace ownership and placement before adding more fixed sizes. Shared Framework workbench components should be reused for product work; this small GTK lab explains the underlying container concept.</p>
+<h2>Respect the minimum size of split panes</h2>
+<p>A <strong>split pane</strong> contains two regions and a draggable separator. Its minimum size is a promise: enough space for the controls that must remain usable. The natural size is the preferred size when more room is available. Neither number is the current allocation, which GTK supplies when laying out the window.</p>
+<p>In a separate exercise copy of the activation callback, replace the box composition with the code below. Here <code>window</code> is the GTK window you already created; call this after GTK starts and before presenting the window. These labels stand in for two editing regions, so this exercise does not need a media player or a video file.</p>
+<pre><code class="language-c">GtkWidget *pane = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
+GtkWidget *preview = gtk_label_new("Preview area");
+GtkWidget *timeline = gtk_label_new("Timeline controls");
+gtk_paned_set_start_child(GTK_PANED(pane), preview);
+gtk_paned_set_end_child(GTK_PANED(pane), timeline);
+gtk_paned_set_shrink_start_child(GTK_PANED(pane), FALSE);
+gtk_paned_set_shrink_end_child(GTK_PANED(pane), FALSE);
+gtk_window_set_child(GTK_WINDOW(window), pane);
+
+int minimum = 0;
+gtk_widget_measure(pane, GTK_ORIENTATION_VERTICAL, -1,
+                   &amp;minimum, NULL, NULL, NULL);
+int width = 0;
+gtk_widget_measure(pane, GTK_ORIENTATION_HORIZONTAL, minimum,
+                   &amp;width, NULL, NULL, NULL);</code></pre>
+<p><code>FALSE</code> for both shrink properties asks GTK to preserve each visible child's minimum. It still permits the divider to move within the available space. The <code>-1</code> measurement constraint means no fixed size is supplied for the other axis. The second call asks for the width when the pane has exactly its minimum height.</p>
+<ol><li>Build and open the exercise using the existing lab instructions. Resize toward the smallest allowed window and check both labels remain reachable.</li><li>Replace the timeline label with a box containing a button, a wrapped label and an expander. Repeat measurement with the expander closed and open.</li><li>Hide one region explicitly, measure again, then show it. Hidden regions and regions permitted to shrink are different layout choices.</li><li>Repeat with larger text and several widths. Record the actual GTK version and whether any warning occurred; do not infer success from a compile alone.</li></ol>
+<p>A warning about measuring a child one pixel below its minimum points to the size contract, not necessarily to a missing font or an incorrect screenshot. Follow the parent containers and separator requirements before adding an arbitrary fixed height. Increasing the default window size may conceal the boundary without correcting it. Keep warnings visible, preserve model state across layout changes, and test the boundary as well as a comfortable full-size window.</p>
+<p>The shared video workspace has native <code>minimum-empty</code>, <code>minimum-populated</code>, <code>minimum-expanded</code> and <code>minimum-visibility</code> checks for these transitions. Their presence in source is not evidence that they passed on your desktop.</p>
+<p><a href="https://docs.gtk.org/gtk4/class.Paned.html">GTK split-pane reference</a> explains the independent resize and shrink choices.</p>
 <h2>Source for this lesson</h2>
 <p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-activity/window.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
 <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-wire-a-signal-to-a-callback.html">Previous lesson</a> · <a rel="next" href="09-present-status-without-changing-the-model.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/06-umicom/learning-gtk4/08-compose-widgets-in-a-container.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

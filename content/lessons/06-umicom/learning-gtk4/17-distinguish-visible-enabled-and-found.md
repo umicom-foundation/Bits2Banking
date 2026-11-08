@@ -82,6 +82,29 @@ Record what was actually executed. A skipped GUI test means the scenario was not
 
 Add a disabled Confirm variation in a private copy of the lab. Predict whether lookup, reveal and user interaction should succeed. Keep the underlying lookup service unchanged; disabled presentation must not erase the control's identity.
 
+
+## Exercise: export through a collapsed section
+
+A file-export panel often keeps its path field and Save button inside an expander. Framework lookup can discover those controls while the expander is closed. That is useful for navigation, but it does not mean a person can press the button. A test that finds the button and emits its signal has tested a different interaction from a native click.
+
+Use a temporary destination that does not already exist. Keep the expected document text before opening the export section so that you can compare the resulting file with the intended content, rather than accepting the mere existence of a file.
+
+1. Find the export expander and check that its type is GtkExpander before using the expander API.
+2. Call gtk_expander_set_expanded(expander, TRUE), then allow the owning GTK event loop to process layout. A bounded wait should observe the button becoming mapped; do not assume a fixed sleep proves readiness.
+3. Find the path field again from the live panel. Check GTK_IS_EDITABLE before setting its text. Find the Save button and check that it is visible, mapped and effectively sensitive.
+4. Activate the button through the same native activation path used by the application. Wait for the export job to finish, with a deadline and an explicit failure when it does not finish.
+5. Read the destination and compare its bytes with the expected document. Close the panel, reopen it and confirm that stale operation state has not made the next export appear complete.
+
+For a negative test, keep the section collapsed and verify that native activation is unavailable. Test a rejected destination separately and confirm that the existing file is unchanged. These cases establish different guarantees: usable control, completed operation and correct saved content.
+
+If lookup succeeds but activation fails, inspect visibility, mapping and effective sensitivity before changing the lookup algorithm. If activation succeeds but no file appears, inspect the job result and destination permissions. Do not remove the output comparison to make the test pass.
+
+### Check your understanding
+
+Why should the test wait for both mapping and export completion?
+
+**Answer:** Mapping means the control participates in the displayed interface. Export completion means the asynchronous operation has finished. Neither state implies the other, and neither by itself proves the saved bytes are correct.
+
 ## Read the source
 
 [Open the example source](../../../../labs/native/framework-control-inspection/main.c).

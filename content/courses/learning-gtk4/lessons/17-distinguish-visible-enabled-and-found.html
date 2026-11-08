@@ -58,6 +58,22 @@ cmake --build build --parallel 2
 <p>Record what was actually executed. A skipped GUI test means the scenario was not observed, not that it passed.</p>
 <h2>Extension exercise</h2>
 <p>Add a disabled Confirm variation in a private copy of the lab. Predict whether lookup, reveal and user interaction should succeed. Keep the underlying lookup service unchanged; disabled presentation must not erase the control's identity.</p>
+
+<h2>Exercise: export through a collapsed section</h2>
+<p>A file-export panel often keeps its path field and Save button inside an expander. Framework lookup can discover those controls while the expander is closed. That is useful for navigation, but it does not mean a person can press the button. A test that finds the button and emits its signal has tested a different interaction from a native click.</p>
+<p>Use a temporary destination that does not already exist. Keep the expected document text before opening the export section so that you can compare the resulting file with the intended content, rather than accepting the mere existence of a file.</p>
+<ol>
+<li>Find the export expander and check that its type is GtkExpander before using the expander API.</li>
+<li>Call gtk_expander_set_expanded(expander, TRUE), then allow the owning GTK event loop to process layout. A bounded wait should observe the button becoming mapped; do not assume a fixed sleep proves readiness.</li>
+<li>Find the path field again from the live panel. Check GTK_IS_EDITABLE before setting its text. Find the Save button and check that it is visible, mapped and effectively sensitive.</li>
+<li>Activate the button through the same native activation path used by the application. Wait for the export job to finish, with a deadline and an explicit failure when it does not finish.</li>
+<li>Read the destination and compare its bytes with the expected document. Close the panel, reopen it and confirm that stale operation state has not made the next export appear complete.</li>
+</ol>
+<p>For a negative test, keep the section collapsed and verify that native activation is unavailable. Test a rejected destination separately and confirm that the existing file is unchanged. These cases establish different guarantees: usable control, completed operation and correct saved content.</p>
+<p>If lookup succeeds but activation fails, inspect visibility, mapping and effective sensitivity before changing the lookup algorithm. If activation succeeds but no file appears, inspect the job result and destination permissions. Do not remove the output comparison to make the test pass.</p>
+<h3>Check your understanding</h3>
+<p>Why should the test wait for both mapping and export completion?</p>
+<details><summary>Compare your answer</summary><p>Mapping means the control participates in the displayed interface. Export completion means the asynchronous operation has finished. Neither state implies the other, and neither by itself proves the saved bytes are correct.</p></details>
 <h2>Read the source</h2>
 <p><a href="../../../../labs/native/framework-control-inspection/main.c">Open the example source</a>.</p>
 <nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="16-reveal-without-running-an-action.html">Previous: Reveal a panel without running its action</a> · <a href="18-keep-callback-state-alive.html">Next: Keep callback state alive for the right lifetime</a></p>

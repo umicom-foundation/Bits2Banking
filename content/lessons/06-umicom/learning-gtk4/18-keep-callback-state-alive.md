@@ -84,6 +84,33 @@ Explain the difference between these claims: the object still exists; it is stil
 
 When diagnosing a lifetime crash, record who owns the object, which callback releases or replaces it and which later operation uses it. Avoid hiding the fault with an arbitrary delay.
 
+
+## Focus changes can call back into your code
+
+Disabling a panel while an entry inside it owns keyboard focus can leave the focus transition happening during another state change. Releasing focus first makes the transition explicit, but changing focus can itself emit notifications. A notification callback may request another load or close the panel before your original function resumes. This is called reentrancy: one operation is entered again before its earlier call has returned.
+
+Treat focus release as a callback boundary. Framework adapters should use the existing shared focus-handoff helper rather than each application implementing another traversal of GTK internals. The low-level GTK operation is gtk_root_set_focus(root, NULL), which unsets focus; it must only be used after establishing that the focused widget belongs to the panel being retired or disabled.
+
+1. Keep the root object alive for the duration of the operation, using the ownership contract already established by the component.
+2. Publish the busy or retired flag before changing focus. A nested callback must see the new state and reject an incompatible second operation.
+3. Check whether the focused widget is the panel itself or one of its descendants. Preserve focus in unrelated controls, such as another editor.
+4. Release the owned focus through the shared helper. Then recheck whether a callback retired, replaced or detached the panel.
+5. Disable controls or queue work only if the panel is still valid for that action. On cancellation, return resources to their owner and release temporary references.
+
+An object reference prevents finalisation while held. It does not prove that the widget still belongs to the same window or that the user still wants the pending operation. Check lifetime and current state separately.
+
+A useful regression fixture connects to the window focus notification and attempts to reload or retire the panel when focus is cleared. Check that the nested load is rejected, that no abandoned job is queued and that retiring twice is safe. Also test an unrooted panel and a window whose focus is outside the retiring subtree.
+
+### Check your understanding
+
+Why is setting busy after releasing focus too late?
+
+**Answer:** The focus notification runs before the original call resumes. Its callback can observe the old idle state and start a second operation. Set the guard first, then recheck state after the notification.
+
+### Retained windows and available windows
+
+Keeping a strong reference to a GtkWindow does not mean it can still receive input. Window destruction can hide and unrealize the native window while a retained object and its children still exist. A focus traversal must check mapping after the callback and stop if the viewport was unmapped, even if another callback immediately presents it again. Test both acceptance and rejection after closure, then separately test a fresh command after the reopened view has been allocated.
+
 ## Read the source
 
 [Open the example source](../../../../labs/native/framework-control-inspection/main.c).

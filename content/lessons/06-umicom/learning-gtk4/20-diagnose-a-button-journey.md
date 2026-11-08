@@ -87,6 +87,29 @@ For Studio Open File, list the checkpoints: menu activation, file chooser displa
 
 Use the same method for Trader account refresh or Media import. Retain the application-specific operation while sharing Framework discovery, lifecycle and diagnostic services.
 
+
+## Separate an accepted request from a completed result
+
+A catalogue load may return success because it has accepted a job. At that moment the worker may not have inspected any files. Checking for an empty catalogue immediately after that return can confuse “not loaded yet” with “loaded and empty”. The same distinction applies to exports, search and project discovery.
+
+Observe the component state and result through its supported API. A bounded test pumps the owning event loop until the pending count reaches zero or a deadline expires. Only then should it inspect the final status, record count and visible notice. Keep missing-folder, existing-empty-folder and valid-content cases separate.
+
+1. Prepare one fixture for each outcome and record the expected final status before starting the operation.
+2. Check the immediate return value. If the request was rejected, verify that no job was queued and that the previous view remains intact.
+3. For an accepted request, observe busy state and wait for completion with a deadline. Report a timeout as a failure; do not convert it into an empty result.
+4. Check the final status and visible notice. An unavailable lesson should identify the missing local content and a recovery action, while preserving the previously selected reading material.
+5. Repeat after closing or replacing the panel to verify that stale completion callbacks cannot update the new view.
+
+A persistent project button needs a second kind of transition test. Create the Explorer while no project is open and confirm that Project board is disabled. Open a project and confirm that the same button becomes enabled. Close the project, then open a different one and verify that the button follows the new project. Recreating the entire Explorer for each case would miss a stale sensitivity state.
+
+When the button is disabled, a forced signal is a useful service-boundary test: the handler must still reject the unavailable operation. Keep that check separate from the native input test. Correct appearance and correct command policy are both required.
+
+### Check your understanding
+
+What does a successful “start load” return prove?
+
+**Answer:** It proves only the documented acceptance contract. Completion, valid content, a refreshed view and preservation of the previous selection require their own observations.
+
 ## Read the source
 
 [Open the example source](../../../../labs/native/framework-control-inspection/main.c).
