@@ -71,6 +71,24 @@ The extra words should appear at the end. Type `poweroff` when finished. This
 RAM file will not survive the guest shutdown. The Windows source file and
 your host logs are separate and remain where you saved them.
 
+## Keep a boot observation that you can inspect later
+
+The guest console and the host's log are different objects. The console can show a short recent history; a saved log lets you compare what a particular guest build actually printed. The Framework CLI offers a reviewed serial-recording workflow in addition to a direct QEMU terminal.
+
+1. Prepare the native Umicom CLI, the already-built Kernel ELF and QEMU. Create an ordinary parent folder for recordings, such as `C:\VMsecordings`.
+2. Run `umicom qemu review` with the target `umicom-kernel`, absolute `--qemu`, `--directory` and `--firmware` paths, and `--record "C:\VMsecordingsirst-boot"`. The selected child directory must not exist.
+3. Inspect the argument list and fingerprint. Repeat the same options with `run` and `--expect` followed by that fingerprint. The guest starts paused; review alone does not create the output directory.
+4. At the VM prompt enter `resume`, `send help files` and `console`. Use `send poweroff` when finished. This prompt is the Framework control console, so guest input is supplied through `send`.
+5. Inspect `serial.log` in the selected host directory. Compare a specific expected line from the guest with the actual bytes. Keep the source revision, build result and emulator version with your observations.
+
+A new `recording.umi` file records the reviewed identity, not a passed boot test. If startup failed, the directory can remain without a serial log; preserve it to diagnose the failure and select another new directory for the next run. The serial log records guest output. A separate `qemu-errors.log` records the emulator's standard error output, including startup failures. Neither file is a full host transcript. It can contain terminal control bytes, so use a viewer rather than treating the file as a script.
+
+**Compare two streams:** after an emulator fails to load a required asset, inspect `qemu-errors.log` for the host diagnostic and `serial.log` for guest bytes. A missing serial file can mean that the emulator stopped before creating its character device. An empty error file can mean that no diagnostic was written; it does not prove a boot succeeded. The files have no automatic size limit, so keep the destination under your control and check available space.
+
+**Exercise:** predict whether the log exists after only `review`, after a rejected fingerprint, and after an emulator startup failure. Check each outcome separately. The expected results are no new directory for the first two, and possibly retained partial evidence for the last. Do not label the run successful until you have observed the guest behavior you intended to check.
+
+The [Framework boot guide](https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/boot-kernels-and-linux-with-qemu.html) gives complete PowerShell examples. Recording is implemented by shared Framework services; the Kernel itself still produces its ordinary serial bytes.
+
 ## 4. Read the real implementation in order
 
 Open these files in your editor. Locate the named symbol with text search:
