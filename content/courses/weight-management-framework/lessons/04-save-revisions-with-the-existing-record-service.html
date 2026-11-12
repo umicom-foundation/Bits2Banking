@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/weight-management-framework/lessons/04-save-revisions-with-the-existing-record-service.html
+
+PURPOSE:
+Save a reviewed revision without losing a newer draft
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Save a reviewed revision without losing a newer draft | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Save a reviewed revision without losing a newer draft</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-edit-and-read-a-native-form.html">Previous lesson</a> · <a rel="next" href="05-compose-the-existing-desktop-editor.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the native client lesson and the existing Framework record-service guide. This chapter is a persistence integration exercise. The console example does not open a Data Server, authenticate a user or save records.</p>
+<h2>Keep two revisions distinct</h2>
+<p>A form revision tracks editing. A record revision tracks storage history. An observation can have several draft edits before its first database revision exists.</p>
+<pre><code class="language-c">status = umi_structured_form_record_save(
+    server, &amp;metadata, umi_weight_log_schema(), form,
+    expected_record_revision, &amp;saved_record);</code></pre>
+<p>This integration fragment assumes a live authorized Data Server, reviewed metadata, a stable form and declared output. The existing service saves form content with its record metadata; do not create a parallel private file format inside each frontend.</p>
+<p>1. Load or create the host's authorized record identity. 2. Capture the form revision being saved. 3. Use zero as the expected record revision only for a genuinely new entity. 4. After storage succeeds, acknowledge that captured form revision only if it still matches the current form.</p>
+<h2>Worked race</h2>
+<p>Suppose the form is at edit revision 8 and storage head is 3. The host saves edit 8 with expected record revision 3. While it waits, the user creates edit 9. Storage may now return record revision 4. That does not make edit 9 saved.</p>
+<p>umi_structured_form_mark_saved protects the current form against a mismatched acknowledgement. The host must keep edit 9 dirty and present the successful earlier save accurately.</p>
+<h2>Exercise and expected result</h2>
+<p>Draw two columns for the sequence above. The storage column ends at 4; the current edit column ends at 9. State which values can be safely shown as saved. Then repeat with a competing writer who changes storage revision 3 before this request. The stale expected revision must be refused.</p>
+<h2>Recovery</h2>
+<p>A lost response does not prove that a transaction failed. Reconcile the authorized record state before retrying a create. Retain the user's draft, the captured revision and the operation outcome separately. Do not log request bodies or notes to make recovery easier.</p>
+<p>The existing record primitive does not encrypt data or authenticate an actor label. Those are real host requirements, not properties established by successful serialization. Personal-data deployment and cross-device synchronization remain separate work.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-edit-and-read-a-native-form.html">Previous lesson</a> · <a rel="next" href="05-compose-the-existing-desktop-editor.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

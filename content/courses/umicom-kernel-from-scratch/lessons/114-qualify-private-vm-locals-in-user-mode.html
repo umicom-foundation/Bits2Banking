@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/114-qualify-private-vm-locals-in-user-mode.html
+
+PURPOSE:
+Qualify private VM locals in user mode
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify private VM locals in user mode | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Qualify private VM locals in user mode</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="113-prove-refusal-with-models-and-a-real-guest.html">Previous lesson</a> · <a rel="next" href="115-execute-forward-vm-paths-in-user-mode.html">Next lesson</a></nav>
+<h2>Goal and boundary</h2>
+<p>Qualify a reusable integer VM inside a real RISC-V user process. Hosted tests cover language and runtime contracts. The Kernel test adds the native envelope, process boundary, optimization settings, trap result and frame lifetime. It does not compile source inside the guest or provide a full C operating-system application ABI.</p>
+<h2>Read the two layers</h2>
+<p>In programs/cvm/main.c, CheckLocals supplies immutable instruction fixtures to the canonical Umicom C runtime. Its automatic bytecode, decoded instruction, trace and result buffers belong to the user program. The interpreted instructions have no syscall or pointer operations. The native envelope issues its exit syscall only after checking the VM result.</p>
+<p>In kernel/cvm_validation.c, CheckImage loads the envelope and runs each selector in user mode. It checks the expected exit value, the user-mode environment-call trap, one accepted exit call, refusal to reenter an exited process, and physical frame counts before and after destruction.</p>
+<h2>Follow the local selectors</h2>
+<table><thead><tr><th scope="col">Selector</th><th scope="col">Contract</th></tr></thead><tbody><tr><td>14</td><td>Store, read and overwrite slot 31; return 42 with eight trace entries</td></tr><tr><td>15</td><td>A later uninitialized read fails despite an earlier successful execution</td></tr><tr><td>16</td><td>Fuel ends before the second store; no result is published</td></tr><tr><td>17</td><td>Format-3 records mislabeled as format 2 are rejected</td></tr><tr><td>18</td><td>Slot index 32 is refused before execution</td></tr></tbody></table>
+<p>Both O0 and O2 images run the same cases. O0 matters because aggregate copies can reveal unexpected hosted helper dependencies in a freestanding link. Immutable fixtures avoid introducing such copies simply to prepare a test.</p>
+<h2>Build before measuring the guest</h2>
+<p>Follow the Kernel repository's toolchain guide to configure a mirror or disposable build with UMICOM_KERNEL_CVM=ON and UMICOM_C_SOURCE_DIR pointing to the intended Umicom C checkout. Use the real configured path for build below.</p>
+<pre><code class="language-powershell">cmake --build build --target umicom-kernel-evidence --parallel 2
+ctest --test-dir build -R &quot;^kernel.riscv64.cvm$&quot; --verbose --output-on-failure --no-tests=error</code></pre>
+<p>Run commands separately and stop on an error. The explicit build completes changed dependent images before the bounded CTest build fixture runs. If that fixture times out, the dependent guest may be Not Run. Record those outcomes separately; neither is a VM assertion result. Finish the build, investigate any compiler or linker error, then rerun the fixture and guest without suppressing either.</p>
+<h2>Read evidence rather than one green line</h2>
+<p>Expect cvm.optimization=O0 and O2, each followed by completed selectors 0 through 18, then UMICOM_KERNEL_CVM_READY. The earlier selectors still exercise arithmetic, trace failures, comparisons and linked capability queries. The source receipt binds the canonical runtime files, envelope, recipe and linked images used by this check.</p>
+<p>Check the complete CTest result and the receipt verification before claiming target qualification. A source hash does not by itself prove execution. A generic ready marker without the expected cases can come from an older workload. This test uses the QEMU virt configuration; it establishes neither physical hardware boot support nor a desktop GUI workflow.</p>
+<h2>Exercise and recovery</h2>
+<p>Compare the VM's instruction fuel with the Kernel process budget. The first bounds interpreted operations; the second bounds the native process run. Explain why one cannot replace the other. Then identify every condition checked after process destruction. A correct value of 42 is insufficient if the process leaves frames allocated.</p>
+<p>Do not edit a captured runtime source and reuse its old receipt. Rebuild the affected images and capture current identity. Keep failures, skipped checks and successful retries as separate observations so the next developer can reconstruct what actually ran.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="113-prove-refusal-with-models-and-a-real-guest.html">Previous lesson</a> · <a rel="next" href="115-execute-forward-vm-paths-in-user-mode.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

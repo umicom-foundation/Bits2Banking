@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/71-select-values-with-conditional-expressions.html
+
+PURPOSE:
+Select values with conditional expressions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Select values with conditional expressions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Select values with conditional expressions</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="70-compare-logical-programs-with-native-c.html">Previous lesson</a> · <a rel="next" href="72-bound-recursive-expression-parsing.html">Next lesson</a></nav>
+<h2>Goal</h2>
+<p>Add value selection to the expression language using the already qualified forward-branch runtime. You should understand the logical operators and join checks from the preceding lessons. No new VM operation is needed for this feature.</p>
+<h2>Choose a fallback value</h2>
+<pre><code class="language-c">int main(void) {
+    int divisor = 0;
+    return divisor != 0 ? 42 / divisor : 7;
+}</code></pre>
+<p>The condition is zero, so the fallback seven is selected. Division is not attempted. Change divisor to six: the result is still seven, but this time division executes. Equal results do not prove that two programs have identical traces, source positions or instruction costs.</p>
+<p>Unlike &amp;&amp; and ||, the conditional operator preserves the selected integer. The expression 1 ? -9 : 42 returns minus nine. It does not convert the selected value into true or false.</p>
+<h2>Parse the lowest expression level</h2>
+<p>The conditional level sits below logical OR. Read logical_or and expression in src/compiler.c. The parser first consumes a complete logical-OR expression as the condition. If the next token is ?, it parses the middle expression, requires :, and parses the final expression.</p>
+<p>The final arm recursively parses another conditional. This gives right associativity: a ? b : c ? d : e means a ? b : (c ? d : e). The middle arm may also contain a nested conditional. For example, 1 ? 0 ? 7 : 8 : 9 returns eight. Parentheses are useful even when grouping is already defined.</p>
+<h2>Lower values into compatible paths</h2>
+<p>After the condition, emit JUMP_IF_ZERO. The true arm leaves its integer on the stack and JUMP skips the false arm. The false arm also leaves one integer. The existing graph validator checks equal stack depth at their join. The compiler does not insert the zero-comparison normalization used by logical AND and OR.</p>
+<p>Both arms must parse, so an undeclared name in an unselected arm is still an error. Both arms must be structurally valid bytecode. Only arithmetic on the chosen arm executes. Format 4, runtime feature mask 411 and wire mask 30 are unchanged; the compiler adds conditional feature bit 1024.</p>
+<h2>Inspect and qualify</h2>
+<p>After building the intended Umicom C checkout, run these commands separately:</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe check .\examples\conditional_value.uc
+.\build\windows-ucrt64-debug\bin\umicom-c.exe trace .\examples\conditional_value.uc --max-steps 8
+ctest --test-dir .\build\windows-ucrt64-debug -R &quot;umicom[.]c[.](conditional[.]|cli-conditional)&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Expect 12 compiled records, eight executed instructions and value seven for the supplied example. A seven-instruction budget exhausts at RETURN. The source tests cover selected faults, skipped faults, integer extremes, grouping, locals and incomplete punctuation. The CLI test separately checks source/wire agreement and existing-output preservation.</p>
+<h2>Exercise and recovery</h2>
+<p>Compare 1 ? 0 : 1 ? 7 : 8 with (1 ? 0 : 1) ? 7 : 8. Predict both results before executing them: the first returns zero, the second eight. Explain which condition is used in each case.</p>
+<p>If ? is rejected, inspect the linked compiler's conditional feature bit and select a current build. If a selected division fails, change the program's guard rather than suppressing the error. This profile does not add conditional statements, comma expressions, assignments inside expressions, omitted middle arms or pointer conversions.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="70-compare-logical-programs-with-native-c.html">Previous lesson</a> · <a rel="next" href="72-bound-recursive-expression-parsing.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

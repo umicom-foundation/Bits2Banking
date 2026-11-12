@@ -17,6 +17,10 @@ MIT
 
 # Check native release without retrying handles
 
+## Before you begin
+
+Read the Framework release adapter and the lab qualification guide with the same source revision beside them. Locate the handle owner and the code that clears it after release. Study injected release failures through the regression harness; do not deliberately close a live operating-system handle twice.
+
 ## Finish the ownership protocol
 
 Closing a native handle is an operation with a result. Ignoring that result can turn an incomplete operation into a misleading success report. Framework now uses the private BmCloseResult boundary when completing inspection, transfer and comparison. Application code still calls the public media service; it must not adopt this private transport helper as an installed API.

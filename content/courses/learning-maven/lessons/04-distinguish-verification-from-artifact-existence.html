@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-maven/lessons/04-distinguish-verification-from-artifact-existence.html
+
+PURPOSE:
+Distinguish verification from artifact existence
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish verification from artifact existence | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Distinguish verification from artifact existence</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-dependencies-and-reproducible-evidence.html">Previous lesson</a></nav>
+<p>A JAR file left in a directory tells you that some operation created those bytes. It does not tell you whether the current sources passed their tests. This lesson uses the existing JVM identity fixture to keep lifecycle progress and evidence separate.</p>
+<h2>Read the project first</h2>
+<p>Open labs/build-tools/jvm-identity/pom.xml. The project declares Java release 17 and explicit compiler, test and JAR plugin versions. Its JUnit dependency belongs to test scope. These are the versions declared by this lab, not a claim that every machine has them cached or that they are the newest releases.</p>
+<p>Open BuildIdentityTest.java. It contains three tests: one checks component/version display, one rejects a missing component and one rejects a blank version. The expected exceptions are successful test outcomes when the required exception occurs.</p>
+<h2>Run a verification workflow</h2>
+<p>From the lab directory, with the documented JDK and Maven available:</p>
+<pre><code class="language-powershell">mvn --version
+mvn -B verify</code></pre>
+<p>Run the commands separately and stop if either fails. The first establishes which Maven and Java runtime you selected. The second requests the lifecycle through verify. Maven executes the earlier phases required to reach it; packaging and tests are distinct parts of that sequence. See the official <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html">lifecycle introduction</a>.</p>
+<h2>Inspect evidence rather than the final line alone</h2>
+<p>1. Check the native process exit status immediately after Maven returns.</p>
+<p>2. Open target/surefire-reports/TEST-org.umicom.learning.BuildIdentityTest.xml. Confirm the named tests and their outcomes rather than trusting an old filename.</p>
+<p>3. Confirm that the report belongs to this invocation and selected checkout. Preserve earlier reports outside target before running experiments.</p>
+<p>4. Inspect the packaged artifact only after interpreting the test result. An existing JAR does not override a failed verification command.</p>
+<h2>Controlled failure exercise</h2>
+<p>In an experimental copy, change the expected display text in preservesIdentity to a deliberately wrong value. Run mvn -B verify again. Expect the test phase to fail and a nonzero Maven result. Retain the failure report. Restore the intended expectation, review the change and run verification again.</p>
+<p>Do not add skipTests to make the exercise green. Skipping the test changes the question being answered. The lab configures failIfNoTests so missing test discovery cannot quietly look like complete test evidence.</p>
+<h2>Recovery and boundary</h2>
+<p>If dependencies are unavailable, preserve the resolver diagnostic and identify the unavailable coordinate. A network or cache failure is not a Java assertion failure. This course does not execute dependency downloads for you, publish artifacts, or replace Umicom's native C implementation. The JVM fixture exists to teach a requested build tool; Framework remains the reusable product boundary.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-dependencies-and-reproducible-evidence.html">Previous lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -53,3 +53,5 @@ If comparison syntax is rejected, inspect the selected Umicom C path and rebuild
 [Read the C exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/compiler-inspection/main.c) · [Full setup and native commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/compiler-inspection/README.md) · [Shared contract](https://github.com/umicom-foundation/umicom-c/blob/main/docs/language.md)
 
 [Course contents](index.md) · [Previous lesson](45-reuse-comparisons-in-framework.md)
+
+[Next lesson](47-recognise-prefix-negation.md)

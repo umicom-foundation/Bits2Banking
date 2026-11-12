@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/72-bound-recursive-expression-parsing.html
+
+PURPOSE:
+Bound recursive expression parsing
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bound recursive expression parsing | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Bound recursive expression parsing</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="71-select-values-with-conditional-expressions.html">Previous lesson</a></nav>
+<h2>Goal</h2>
+<p>Keep parser recursion bounded when a new operator recursively invokes the expression parser. A finite source buffer alone does not guarantee acceptable call-stack use. The depth bound, instruction bound and runtime execution budget protect different resources.</p>
+<h2>Find the recursive edges</h2>
+<p>The unary parser already increases depth for another unary operator or a parenthesized expression. Conditional parsing adds two more recursive edges: the true arm and the false arm. Both call expression with depth + 1. The next unary entry rejects depth at or beyond UMC_PARSE_DEPTH_LIMIT before consuming another operand.</p>
+<p>Passing the old depth to either arm would let nested conditionals bypass the established bound. Applying a separate unrelated counter could also let mixed parentheses, unary operators and conditionals exceed the intended shared allowance. Follow one depth parameter through the complete parser call chain.</p>
+<h2>Distinguish resource limits</h2>
+<!-- The earlier conversion flattened a Markdown table into prose. The semantic
+     table below preserves its cells and column relationships; the old output
+     remains here for source review.
+<p>| Bound | Resource protected | Observable refusal | | --- | --- | --- | | Source bytes | Borrowed input span | Source-too-large status | | Parse depth | Recursive parser calls | Depth-limit status | | Program capacity | Emitted instruction slots | Program-too-large status | | Execution fuel | Instructions on the selected path | Fuel-exhausted status |</p>
+-->
+<table><thead><tr><th scope="col">Bound</th><th scope="col">Resource protected</th><th scope="col">Observable refusal</th></tr></thead><tbody><tr><td>Source bytes</td><td>Borrowed input span</td><td>Source-too-large status</td></tr><tr><td>Parse depth</td><td>Recursive parser calls</td><td>Depth-limit status</td></tr><tr><td>Program capacity</td><td>Emitted instruction slots</td><td>Program-too-large status</td></tr><tr><td>Execution fuel</td><td>Instructions on the selected path</td><td>Fuel-exhausted status</td></tr></tbody></table>
+<p>A valid source program can reach one limit before another. Do not assume a test exercises recursion merely because its source looks deeply nested. Count the instructions emitted before the deepest operand is reached.</p>
+<h2>Construct both nesting directions</h2>
+<p>Read bounds in tests/test_conditional.c. One generated source repeatedly prefixes 1? and appends :0 arms after the final seven. The other repeatedly prefixes 0?0: before the final seven. These exercise recursive middle and final arms separately.</p>
+<p>With 63 conditional levels, the full program contains 254 records and remains within the 256-record capacity. Both forms return seven. With a 64th level, the parser must report the depth limit and publish count zero. The test uses an explicit byte length; a trailing zero is not part of the input contract.</p>
+<h2>Preserve publication rules</h2>
+<p>The output buffer may contain partial instructions after a failed compile, but count must remain zero. A caller must never execute that partial buffer. A later successful compile can reuse storage only after checking the new status and count. This is different from claiming that a failed compile leaves every output byte untouched.</p>
+<p>The same source test group also checks a capacity one record below the required count and a borrowed span ending after :. Those failures should not be misreported as a successful empty program.</p>
+<h2>Qualify the exact boundary</h2>
+<pre><code class="language-powershell">ctest --test-dir .\build\windows-ucrt64-debug -R &quot;^umicom[.]c[.]conditional[.]bounds$&quot; --output-on-failure --no-tests=error</code></pre>
+<p>A pass covers the selected host compiler and the concrete generated forms. It does not measure every possible native call-stack frame or prove unlimited nesting is safe. Keep the production depth limit in place even on a machine with more memory.</p>
+<h2>Read exact wire fixtures carefully</h2>
+<p>The neighboring wire-trace case uses the exact text int main(void){return 0?7:42;}. Its condition begins at byte 22, ? at 23, true value at 24 and false value at 26. The space after return occupies byte 21. Enumerate the literal independently before freezing golden bytes; changing a compiler to satisfy an incorrectly counted fixture would create a product defect.</p>
+<h2>Exercise and recovery</h2>
+<p>Wrap a conditional in several pairs of parentheses and add unary negation inside one arm. Trace how the shared depth changes and predict which operand reaches the limit first. Keep a separate instruction count. If a test reports program capacity before depth, redesign the fixture to reach its intended boundary; do not weaken either guard.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="71-select-values-with-conditional-expressions.html">Previous lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-xml/lessons/02-understand-namespace-identity.html
+
+PURPOSE:
+Understand XML namespace identity
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand XML namespace identity | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Understand XML namespace identity</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-read-and-repair-a-document.html">Previous lesson</a> · <a rel="next" href="03-separate-parsing-from-application-validation.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Keep the Maven POM and the synthetic measurement example open. Locate xmlns on the project element before reading any namespace-aware lookup code. The namespace URI identifies a vocabulary; it is not an instruction to download or execute content from that address.</p>
+<h2>Compare names precisely</h2>
+<p>A namespace-aware element name combines a namespace name and a local name. Two different prefixes can refer to the same namespace, while the same prefix can mean different things in different scopes.</p>
+<pre><code class="language-xml">&lt;a:measurement xmlns:a=&quot;urn:umicom:learning:measurement&quot; unit=&quot;g&quot;&gt;
+  &lt;a:value&gt;80000&lt;/a:value&gt;
+&lt;/a:measurement&gt;</code></pre>
+<p>Renaming a to m everywhere in this example preserves the expanded element names when the binding stays the same. Changing the namespace URI changes their identity. The unprefixed unit attribute has no namespace merely because its owning element has one.</p>
+<h2>Follow the Maven default</h2>
+<p>The POM uses a default namespace, so its unprefixed elements belong to the Maven vocabulary. The xsi prefix identifies schema-instance attributes. Do not remove namespace declarations just to make a naive local-name-only query find an element.</p>
+<h2>Exercise</h2>
+<p>Write the namespace URI and local name for project, modelVersion and the schemaLocation attribute in the lab POM. Then create a second synthetic element named value in another namespace and explain why a parser must not confuse it with the measurement value.</p>
+<p>Expected conclusion: prefixes are convenient spellings, whereas the resolved namespace and local name determine element identity. An import service should admit the expected vocabulary explicitly before interpreting fields.</p>
+<h2>Diagnose a missing lookup</h2>
+<p>If a query finds no nodes, compare the query's namespace binding with the document's actual binding. A visible tag spelling by itself does not prove that a namespace-aware query names the same element.</p>
+<p><a href="https://www.w3.org/TR/xml-names/">W3C Namespaces in XML</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-read-and-repair-a-document.html">Previous lesson</a> · <a rel="next" href="03-separate-parsing-from-application-validation.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

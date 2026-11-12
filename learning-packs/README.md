@@ -73,7 +73,8 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 
 | Course | Manifest path | Lessons |
 | --- | --- | --- |
-| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 46 |
+<!-- Previous catalogue row retained after course continuation: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 46 | -->
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 64 |
 | Building a Text Editor in C | `learning-packs/building-a-text-editor.json` | 8 |
 | Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 36 |
 | Building Bitcoin from Scratch Using Assembly and C | `learning-packs/building-bitcoin-in-c.json` | 3 |
@@ -120,7 +121,8 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning Flutter | `learning-packs/learning-flutter.json` | 20 |
 | Learning GTK4 | `learning-packs/learning-gtk4.json` | 20 |
 | Learning HDL and VHDL | `learning-packs/learning-hdl-vhdl.json` | 50 |
-| Learning HTML | `learning-packs/learning-html.json` | 10 |
+<!-- Previous catalogue row retained after course continuation: | Learning HTML | `learning-packs/learning-html.json` | 10 | -->
+| Learning HTML | `learning-packs/learning-html.json` | 15 |
 | Learning iPhone Development | `learning-packs/learning-iphone-development.json` | 18 |
 | Learning Java | `learning-packs/learning-java.json` | 8 |
 | Learning JavaScript | `learning-packs/learning-javascript.json` | 10 |
@@ -152,10 +154,20 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Safer C Programming | `learning-packs/safer-c-programming.json` | 41 |
 | Learning Umicom Framework | `learning-packs/umicom-development.json` | 160 |
 | Learning Umicom Framework — Markdown manuscripts | `learning-packs/umicom-development-manuscripts.json` | 160 |
-| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 94 |
+<!-- Previous catalogue row retained after course continuation: | Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 94 | -->
+<!-- Previous catalogue row retained: 109 lessons before UDP admission. -->
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 112 |
 | Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 50 |
 | Learning Build Systems | `learning-packs/learning-build-systems.json` | 24 |
 | MINIX OS Foundations | `learning-packs/minix-os-foundations.json` | 12 |
+| Learning Maven | `learning-packs/learning-maven.json` | 4 |
+
+| Learning Gradle | `learning-packs/learning-gradle.json` | 4 |
+
+| Learning XML | `learning-packs/learning-xml.json` | 4 |
+
+| Build a weight-management companion with Umicom Framework | `learning-packs/weight-management-framework.json` | 9 |
+
 ## Keep native packs stable during website publication
 
 A native pack names exact file bytes. Website tools must not insert a logo or rewrite a link in those files after their checksums have been reviewed. The source-link and branding hooks share `hooks/publication_artifacts.py` to identify native payloads before either hook changes generated pages. Invalid, missing or linked payload paths stop publication before page rewriting begins. This is publication admission, not a replacement for Framework pack verification.

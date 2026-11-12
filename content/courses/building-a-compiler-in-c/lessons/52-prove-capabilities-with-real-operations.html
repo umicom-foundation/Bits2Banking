@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/52-prove-capabilities-with-real-operations.html
+
+PURPOSE:
+Prove capability declarations with real operations
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prove capability declarations with real operations | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Prove capability declarations with real operations</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="51-query-the-linked-compiler-and-runtime.html">Previous lesson</a> · <a rel="next" href="53-give-private-helpers-a-linker-namespace.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Complete the profile-query lesson. Build the Umicom C tests and read tests/test_compiler_profile.c and tests/test_runtime_profile.c. The runtime test links only UmicomC::Runtime.</p>
+<h2>Avoid a circular feature test</h2>
+<p>A test that merely compares a feature constant with itself says little about behavior. These tests compile real expressions for each advertised source feature. The runtime test starts with fixed instruction arrays so it does not need the compiler to manufacture its expectations.</p>
+<p>1. Follow the arithmetic fixture: 7 multiplied by 6 returns 42. 2. Follow the comparison fixture: 7 greater than 6 returns 1. 3. Observe that encoding selects format 1 or 2 respectively. 4. Verify the encoded version's bit is advertised by the runtime. 5. Decode, inspect and trace each program. 6. Change the fixture's wire version to 3 and expect refusal.</p>
+<pre><code class="language-powershell">ctest --test-dir build -R &quot;umicom.c.(profile|cli-profile)&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Expect three tests. A zero-test run is an error because the command includes --no-tests=error. The separate CLI case also rejects an extra filename before attempting file access.</p>
+<h2>Bound reports are not allocations</h2>
+<p>The source limit is a ceiling, not permission to read beyond your buffer. The compiler test submits an oversized declared length with a short literal only because the contract rejects that length before scanning. Ordinary accepted spans must still point to valid storage.</p>
+<p>The runtime's instruction and stack limits describe this implementation. A caller with a smaller array must use its actual capacity. Never allocate an unbounded amount merely because an untrusted remote report contains a large number.</p>
+<h2>Extend carefully</h2>
+<p>When adding a real operation, append stable query IDs or feature bits rather than renumbering them. Add a behavioral example and an explicit unsupported case. Keep old wire identities intact.</p>
+<p>If a declaration passes but the operation fails, preserve both observations and investigate. Do not redefine the feature as available merely because a menu item or header constant exists.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="51-query-the-linked-compiler-and-runtime.html">Previous lesson</a> · <a rel="next" href="53-give-private-helpers-a-linker-namespace.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

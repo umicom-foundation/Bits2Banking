@@ -22,7 +22,8 @@ MIT
 <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md">Lab setup and recovery</a> · <!-- Retained source-tree route for review. Public repository links keep
      laboratory sources reachable from both the published site and local lessons.
 <a href="../../../../labs/native/framework-boot-media/check.cmake">Qualification cases</a> -->
-<a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/check.cmake">Qualification cases</a></p><h2>Identify who calls the callback</h2>
+<a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/check.cmake">Qualification cases</a></p><h2>Before you begin</h2><p>Read the progress callback in the existing framework-boot-media client before running a cancellation scenario. Locate the context allocation, the synchronous apply call and the point where that context goes out of scope. Use a fresh regular-file destination for each run so an earlier refusal does not mask callback behaviour.</p>
+<h2>Identify who calls the callback</h2>
 <p>UmiBootMediaApply calls its progress function synchronously on the invoking thread. The callback receives a borrowed report and a caller-supplied context pointer. It may request cancellation by returning nonzero. It must not destroy the plan, free transfer inputs or close transport handles. The service remains responsible for unwinding the operation and publishing its final report.</p>
 
 <pre><code class="language-c">typedef struct MediaLessonStop {

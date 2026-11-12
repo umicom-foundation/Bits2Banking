@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/60-record-configuration-inputs-with-honest-limits.html
+
+PURPOSE:
+Record configuration inputs with honest limits
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Record configuration inputs with honest limits | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Record configuration inputs with honest limits</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="59-separate-instruction-fuel-from-wall-clock-time.html">Previous lesson</a> · <a rel="next" href="61-refuse-stale-input-records-without-repairing-them.html">Next lesson</a></nav>
+<p>A file name identifies a location. A checksum identifies the bytes observed there. Neither tells you whether a compiler actually used those bytes. This lesson builds a small evidence vocabulary before collecting a record.</p>
+<h2>Make three separate statements</h2>
+<p>“The source tree was observed” describes an inventory. “The executable was compiled” describes an executed build. “The tests passed” describes specific test outcomes. One statement cannot stand in for the other two. Umicom C now writes a configuration-input observation and deliberately leaves compilationVerified false.</p>
+<p>Open cmake/UmicomCInputIdentity.cmake. Its function returns immediately when the project is embedded rather than top-level. The Kernel's runtime-only integration still uses UmicomCRuntime.cmake and does not acquire hosted file inspection or a Framework dependency.</p>
+<h2>Collect and inspect</h2>
+<p>1. In your Umicom C checkout, configure with the existing preset.</p>
+<pre><code class="language-powershell">cmake --preset windows-ucrt64-debug</code></pre>
+<p>2. Open build/windows-ucrt64-debug/qualification/configuration-inputs.json in a text editor. Find sourceFiles, generatedFiles, toolFiles and unknownInputs. Each answers a different question.</p>
+<p>3. Find src/lexer.c in sourceFiles. Its checksum covers comments as well as executable statements. The check is about source bytes; it does not attempt semantic equivalence.</p>
+<p>4. Find CMAKE_C_COMPILER in the recipe and toolFiles. The path and the driver checksum belong together. A driver can load other libraries, so this pair does not close the whole toolchain dependency graph.</p>
+<p>5. Build and run the normal tests. Keep their results separately from the configuration record. Use native-debug instead on the supported Linux host workflow.</p>
+<h2>Explain the generated files</h2>
+<p>The package configuration and Windows resource script are generated inputs with their own checksums. Copying an old resource script into a new build directory can change which icon is compiled even when the main C source is unchanged. The record compares these selected files; it does not claim to inventory every generated build rule or object.</p>
+<h2>Exercise</h2>
+<p>Write down the evidence needed for “this executable used this source.” Compare it with the record you just inspected. You still need an observed build, artifact identity, controlled input continuity and dependency context. The current record explicitly does not supply those facts.</p>
+<p>Expected answer: configuration evidence is a useful prerequisite, not a signed provenance statement. A null optional tool entry means no path was observed for that tool; it does not prove the tool is irrelevant in every possible build.</p>
+<h2>Recovery and extension</h2>
+<p>If configuration refuses a linked input or a missing compiler path, inspect the selected workspace and toolchain. Do not remove inventory checks to manufacture a record. Extending the toolchain requires adding declared inputs and tests while retaining an explicit unknown set. No test-result reuse is enabled by this lesson.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="59-separate-instruction-fuel-from-wall-clock-time.html">Previous lesson</a> · <a rel="next" href="61-refuse-stale-input-records-without-repairing-them.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

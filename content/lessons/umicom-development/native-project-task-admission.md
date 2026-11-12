@@ -62,6 +62,7 @@ The test dispatcher holds a task, then releases it to a real GTask thread. Compl
 
 ## Source and next steps
 
-[Native project source and qualification guide](../../../docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-task-admission.html)
+<!-- The checkout-only guide route is retained for review: [Native project source and qualification guide](../../../docs/guides/native-project-forms.md) -->
+[Native project source and qualification guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-task-admission.html)
 
 [Previous lesson](native-project-captured-inputs.md) · [Next lesson](native-project-result-publication.md) · [Course index](index.md)

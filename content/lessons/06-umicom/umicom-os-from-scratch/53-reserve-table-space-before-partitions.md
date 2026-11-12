@@ -23,6 +23,10 @@ MIT
 
 A small data structure can still require a larger reserved region around it. The synthetic image in this lab declares four partition slots. At 128 bytes per slot, their encoded contents occupy only 512 bytes. The layout deliberately reserves more room, so later partitions do not begin inside space assigned to table metadata.
 
+## Before you begin
+
+Use a scratch copy of the synthetic GPT lab and retain its original valid fixture. Locate the table extent, usable interval and CRC fields before modifying a partition boundary. The negative case must update the affected checksums, otherwise it tests a checksum failure instead of overlap admission.
+
 ## Distinguish occupied bytes from reserved space
 
 Seal calculates a CRC over the declared array contents and copies those bytes into the backup array. LabImageCreate separately calculates the reservation used to choose usable addresses. These calculations answer different questions: which bytes participate in this checksum, and where may partition data begin?

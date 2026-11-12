@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gradle/lessons/02-run-and-inspect-tests.html
+
+PURPOSE:
+Run and inspect Gradle tests
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Run and inspect Gradle tests | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Run and inspect Gradle tests</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-projects-plugins-and-tasks.html">Previous lesson</a> · <a rel="next" href="03-wrapper-and-native-boundaries.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Check that the lab can find an installed Java 17 toolchain. gradle.properties disables automatic toolchain download so a missing JDK produces a setup problem rather than silently provisioning a compiler. Read the selected Java installation in Gradle's diagnostics before changing the requested language version.</p>
+<h2>Build the shared fixture</h2>
+<pre><code class="language-powershell">gradle test
+gradle build</code></pre>
+<p>The source and the three JUnit test methods are the same ones used by Maven. Inspect build/reports/tests/test/index.html and the XML under build/test-results/test. Confirm the number of tests and inspect any failure. The archive belongs under build/libs, while compiled classes and test output use other build subdirectories.</p>
+<h2>Read incremental outcomes accurately</h2>
+<p>UP-TO-DATE means Gradle decided that an earlier output still satisfied its input tracking for that task. It does not mean the task executed again during this invocation. A run with all tasks skipped or up to date can be useful evidence, but it answers a different question from a fresh compiler execution.</p>
+<pre><code class="language-powershell">gradle test --rerun-tasks</code></pre>
+<p>Use a forced rerun when the exercise specifically requires new execution evidence. Do not make repeated forced rebuilds the default response to every unexplained problem; inspect inputs, reports and the source revision first.</p>
+<h2>Exercise and recovery</h2>
+<p>Break the expected display string in BuildIdentityTest, run test and locate the failed assertion in the report. Restore it, rerun, and record both outcomes. Compare the method names with Maven's Surefire report. If no tests appear, verify the test filename, package, JUnit dependency and useJUnit configuration before claiming success.</p>
+<p><a href="https://docs.gradle.org/current/userguide/java_plugin.html">Gradle Java plugin test tasks</a> · <a href="https://docs.gradle.org/current/userguide/toolchains.html">Gradle JVM toolchains</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-projects-plugins-and-tasks.html">Previous lesson</a> · <a rel="next" href="03-wrapper-and-native-boundaries.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

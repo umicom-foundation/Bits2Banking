@@ -33,3 +33,18 @@ An HTML form gathers named values and sends a request. The local web-service exa
 - [Explain loading and failure in the page](09-status-messages-and-page-language.md)
 
 - [Resolve relative resources over HTTP](10-relative-resources-and-http.md)
+
+## Forms and reliable records
+
+- [Follow named controls into a form request](11-names-controls-and-submitted-values.md)
+- [Present records with a useful table](12-read-an-observation-table.md)
+- [Keep record text out of executable markup](13-display-untrusted-text-as-text.md)
+- [Explain draft, review and saved states](14-distinguish-a-draft-from-a-saved-record.md)
+
+## Shared validation errors
+
+- [Connect field errors to the shared contract](15-connect-field-errors-to-the-shared-contract.md)
+
+## Qualify published page structure
+
+- [Test published table structure with native C](16-test-published-table-structure.md)

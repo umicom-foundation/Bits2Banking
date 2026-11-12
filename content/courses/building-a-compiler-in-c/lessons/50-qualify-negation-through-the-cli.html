@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/50-qualify-negation-through-the-cli.html
+
+PURPOSE:
+Qualify negation through source and bytecode commands
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify negation through source and bytecode commands | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Qualify negation through source and bytecode commands</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="49-observe-negation-failures-and-budgets.html">Previous lesson</a> · <a rel="next" href="51-query-the-linked-compiler-and-runtime.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Build the current Umicom C checkout using its documented native preset. Open examples/logical_not.uc. Keep the binary and source from the same build, and choose a new artifact name when compiling bytecode.</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe check examples/logical_not.uc
+.\build\windows-ucrt64-debug\bin\umicom-c.exe run examples/logical_not.uc --max-steps 4
+.\build\windows-ucrt64-debug\bin\umicom-c.exe trace examples/logical_not.uc</code></pre>
+<p>Run each command separately. The example's intended result is 1 with four executed instructions. Its leading comment is source metadata; it is not executable code.</p>
+<h2>Compare two execution paths</h2>
+<p>Compile to a new file, then run that artifact:</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe compile examples/logical_not.uc build/negation-practice.umcb
+.\build\windows-ucrt64-debug\bin\umicom-c.exe exec build/negation-practice.umcb --max-steps 4
+.\build\windows-ucrt64-debug\bin\umicom-c.exe trace-bytecode build/negation-practice.umcb</code></pre>
+<p>1. Compare the source and bytecode result. 2. Compare the trace operations and source offsets. 3. Repeat execution with a budget of three and expect a nonzero failure status. 4. Attempt compilation to the same existing artifact and verify that its bytes remain unchanged.</p>
+<h2>Automated regression</h2>
+<p>The umicom.c.cli-logical-not CTest performs these checks through the real command, including the existing comparison-format header. The library tests exercise lower-level boundaries independently.</p>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-debug --output-on-failure -R &quot;umicom[.]c[.](logical-not|cli-logical-not)&quot;</code></pre>
+<h2>Recovery and interpretation</h2>
+<p>If compile refuses an existing destination, use another filename; do not delete the source to clear the error. If execution reports an unsupported bytecode profile, inspect the runtime version rather than rewriting the format marker.</p>
+<p>A guest running the canonical runtime can consume supported operations, but this CLI test does not prove that a complete compiler or editor runs inside the Kernel. Keep hosted compiler evidence, freestanding linking and guest execution separate.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="49-observe-negation-failures-and-budgets.html">Previous lesson</a> · <a rel="next" href="51-query-the-linked-compiler-and-runtime.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

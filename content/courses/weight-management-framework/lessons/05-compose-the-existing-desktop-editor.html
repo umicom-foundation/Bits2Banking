@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/weight-management-framework/lessons/05-compose-the-existing-desktop-editor.html
+
+PURPOSE:
+Reuse the native desktop form editor
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reuse the native desktop form editor | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Reuse the native desktop form editor</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-save-revisions-with-the-existing-record-service.html">Previous lesson</a> · <a rel="next" href="06-connect-an-authorized-web-host.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the form and persistence lessons. Use an existing qualified GTK4 application host and a Framework SDK with Umicom::structured_form_gtk4. This chapter studies the established editor; it does not introduce a new product layout.</p>
+<h2>Keep the screen thin</h2>
+<p>The existing GTK4 editor consumes the same immutable schema as the C client. It owns its widget state, while the host decides where the editor appears and how a save operation is authorized.</p>
+<pre><code class="language-c">GtkWidget *editor = UmiStructuredFormGtk4New(umi_weight_log_schema(), initial);
+if (editor == NULL) {
+    /* Report creation refusal; do not attach an invalid widget. */
+}</code></pre>
+<p>The returned widget follows the documented floating-reference contract. A real host must arrange its parent/reference ownership and keep the schema valid. The schema returned by the weight module is process-lifetime data.</p>
+<p>1. Read include/umicom/ui/gtk4/structured_form.h. 2. Find the operations that apply the entire draft, copy a snapshot and acknowledge a saved revision. 3. Separate those operations from database persistence. 4. Keep the product's approved existing branding and form layout.</p>
+<h2>Submit and close</h2>
+<p>UmiStructuredFormGtk4Apply(editor, 1) checks required fields before accepting a complete draft. UmiStructuredFormGtk4Snapshot then copies accepted state into caller-owned storage. The initial generated field uses canonical grams; it does not automatically become a kilogram control merely because the domain parser exists.</p>
+<p>UmiStructuredFormGtk4CanClose also considers visible unapplied text. Destroying a widget is not a save operation. The host must obtain an explicit discard decision or finish an appropriate save workflow.</p>
+<h2>Exercise and expected result</h2>
+<p>Trace a user typing an invalid date, pressing Save, then closing the window. The accepted model should stay intact after refusal, and the unsaved visible text should still affect close handling. Write down which call observes each state.</p>
+<h2>Recovery</h2>
+<p>Retired or detached editors cannot be revived by calling Apply again. Stop pending callbacks before releasing host data, recreate a new editor from an explicitly selected snapshot, and never silently substitute a newer record.</p>
+<p>A desktop qualification should check focus, keyboard access, visible errors, logo/icon resources and actual font fallback. Passing the headless C example establishes none of those UI properties.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-save-revisions-with-the-existing-record-service.html">Previous lesson</a> · <a rel="next" href="06-connect-an-authorized-web-host.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

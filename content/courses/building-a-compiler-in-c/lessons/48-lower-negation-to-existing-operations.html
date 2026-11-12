@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/48-lower-negation-to-existing-operations.html
+
+PURPOSE:
+Lower logical negation without a new opcode
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lower logical negation without a new opcode | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Lower logical negation without a new opcode</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="47-recognise-prefix-negation.html">Previous lesson</a> · <a rel="next" href="49-observe-negation-failures-and-budgets.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Understand stack instructions and the comparison equality operation. Read the new unary parser beside its retained predecessor in src/compiler.c.</p>
+<h2>Express the result with existing semantics</h2>
+<p>Logical negation returns one when its operand is zero and zero otherwise. The runtime already compares two signed integers for equality, so the compiler can express this result without changing the public opcode enumeration.</p>
+<pre><code class="language-text">Source: !0
+PUSH 0       operand
+PUSH 0       comparison constant
+EQUAL        operand == 0
+RETURN</code></pre>
+<p>1. Compile the operand recursively. 2. Emit the additional zero. 3. Emit equality. 4. Keep both inserted operations tied to the source byte offset of !.</p>
+<p>The lowering adds two instructions beyond its operand. It also needs one extra temporary stack value during equality. Those costs matter to a bounded interpreter.</p>
+<h2>Work through precedence</h2>
+<p>!0 + 4 becomes 1 + 4 and returns 5. !(0 + 4) negates the parenthesized sum and returns 0. The unary parser's position in the existing expression hierarchy gives those forms different meaning.</p>
+<h2>Exercise and expected result</h2>
+<p>Draw stack states for !!-9. Start with the arithmetic unary-minus lowering already supported by the compiler, then apply each logical negation from the inside out. The final value is 1. Compare your prediction with the library regression rather than guessing from the spelling.</p>
+<h2>Recovery</h2>
+<p>Do not add a special VM instruction only to make the source look more direct. A new opcode would affect encoding, decoding, inspection and every consumer. If existing semantics express the exact required behavior, reuse them and qualify their resource costs.</p>
+<p>The emitted equality selects the existing comparison wire profile. An older arithmetic-only decoder still cannot accept that profile. No format-number change is needed, but consumer compatibility must still be checked.</p>
+<p>See tests/test_logical_not.c for the four-instruction !0 case, source-offset assertions and wire round trip. Those checks establish the tested library behavior, not a full C compiler.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="47-recognise-prefix-negation.html">Previous lesson</a> · <a rel="next" href="49-observe-negation-failures-and-budgets.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

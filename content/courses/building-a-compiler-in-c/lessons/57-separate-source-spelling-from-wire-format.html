@@ -1,0 +1,46 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/57-separate-source-spelling-from-wire-format.html
+
+PURPOSE:
+Separate source spelling from wire format
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate source spelling from wire format | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate source spelling from wire format</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="56-read-hexadecimal-and-binary-source.html">Previous lesson</a> · <a rel="next" href="58-test-source-spans-without-a-terminator.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the bytecode lesson and the preceding numeric-token walkthrough. Open tests/test_integer_literals.c, src/bytecode.c and include/umicom_c/profile.h. The useful distinction is between what source accepts and what the runtime executes.</p>
+<h2>One value, one existing operation</h2>
+<p>A constant emits UMC_PUSH with an int32 operand. Hexadecimal and binary do not need their own opcodes. The runtime does not need to know the original radix to execute addition, comparison or return.</p>
+<p>The numeric wire test compiles three complete programs returning 42. They spell it as decimal, hexadecimal and binary. The literal starts at byte offset 22 in each program, and return starts at offset 15. That makes their entire serialized output identical, including source locations.</p>
+<pre><code class="language-text">Header: U M C B, version 1, reserved 0, count 2
+Record 1: PUSH, value 42, source offset 22
+Record 2: RETURN, reserved operand 0, source offset 15</code></pre>
+<p>Read the literal expected byte array. The operand and offsets are little-endian: their lowest byte appears first. This expected array is written independently of the encoder. A test that only encodes then decodes with the same implementation could miss a shared mistake in both directions.</p>
+<h2>Source locations are still observable</h2>
+<p>Different spellings do not always produce identical artifact bytes. If a longer literal moves a later operator, that operator's source offset changes. The test deliberately uses a single constant so no later emitted operation moves. Do not remove location checks to force unrelated programs to have the same digest.</p>
+<p>Run the focused wire check from your configured source directory:</p>
+<pre><code class="language-powershell">ctest --test-dir build -R &quot;umicom.c.integer-literals.wire&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Then run the CLI comparison example. Equality still selects existing format 2 because it uses a comparison operation, not because the constants have prefixes.</p>
+<pre><code class="language-powershell">.\build\bin\umicom-c.exe compile examples\integer_literals.uc build\numeric-comparison.umcb
+.\build\bin\umicom-c.exe exec build\numeric-comparison.umcb --max-steps 4
+.\build\bin\umicom-c.exe trace-bytecode build\numeric-comparison.umcb</code></pre>
+<p>Choose an unused output path. Expect two pushes of 42, an equality result of 1, and return. A three-step budget must fail before publishing a completed result. The CLI regression checks that source and bytecode traces agree and that failed compilation does not leave an output artifact.</p>
+<h2>Advertise the correct component</h2>
+<p>The compiler mask now includes hexadecimal and binary source bits, 32 and 64. Added to its earlier mask of 7, that is 103. The runtime still reports 27. An editor can query the compiler before offering a source form. A runtime-only consumer should query execution and wire capabilities instead.</p>
+<pre><code class="language-c">uint32_t grammar = umc_compiler_profile(UMC_PROFILE_FEATURES);
+if ((grammar &amp; UMC_FEATURE_HEXADECIMAL_LITERALS) != 0U) {
+    /* Offer the documented bounded hexadecimal spelling. */
+}</code></pre>
+<p>This declaration is not a signature or build receipt. Keep header, library, source and toolchain identity separately when qualifying a deployment.</p>
+<h2>Recovery exercise</h2>
+<p>Imagine that source compilation succeeds but an older runtime rejects the artifact. Inspect the emitted operations and format version before assuming the radix is at fault. A comparison program needs comparison support; a single constant uses the earlier arithmetic format. Select a qualified matching runtime. Never relabel a format-2 artifact as format 1 to bypass admission checks.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="56-read-hexadecimal-and-binary-source.html">Previous lesson</a> · <a rel="next" href="58-test-source-spans-without-a-terminator.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

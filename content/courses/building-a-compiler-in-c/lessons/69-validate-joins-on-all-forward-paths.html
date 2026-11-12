@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/69-validate-joins-on-all-forward-paths.html
+
+PURPOSE:
+Validate joins on all forward paths
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate joins on all forward paths | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Validate joins on all forward paths</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="68-lower-short-circuit-logical-expressions.html">Previous lesson</a> · <a rel="next" href="70-compare-logical-programs-with-native-c.html">Next lesson</a></nav>
+<h2>Goal</h2>
+<p>Explain why validating each instruction alone is insufficient after introducing branches. A join is an instruction reached by more than one incoming edge. The runtime must prove that either path leaves a compatible state there.</p>
+<h2>Read a diamond</h2>
+<p>Consider these records from the independent runtime fixture:</p>
+<!-- The earlier conversion flattened a Markdown table into prose. The semantic
+     table below preserves its cells and column relationships; the old output
+     remains here for source review.
+<p>| Index | Operation | Operand | | --- | --- | --- | | 0 | PUSH | condition | | 1 | JUMP_IF_ZERO | 5 | | 2 | PUSH | 41 | | 3 | STORE_LOCAL | 31 | | 4 | JUMP | 7 | | 5 | PUSH | 42 | | 6 | STORE_LOCAL | 31 | | 7 | LOAD_LOCAL | 31 | | 8 | RETURN | 0 |</p>
+-->
+<table><thead><tr><th scope="col">Index</th><th scope="col">Operation</th><th scope="col">Operand</th></tr></thead><tbody><tr><td>0</td><td>PUSH</td><td>condition</td></tr><tr><td>1</td><td>JUMP_IF_ZERO</td><td>5</td></tr><tr><td>2</td><td>PUSH</td><td>41</td></tr><tr><td>3</td><td>STORE_LOCAL</td><td>31</td></tr><tr><td>4</td><td>JUMP</td><td>7</td></tr><tr><td>5</td><td>PUSH</td><td>42</td></tr><tr><td>6</td><td>STORE_LOCAL</td><td>31</td></tr><tr><td>7</td><td>LOAD_LOCAL</td><td>31</td></tr><tr><td>8</td><td>RETURN</td><td>0</td></tr></tbody></table>
+<p>Both arms arrive at record 7 with an empty operand stack and initialized slot 31. The load is safe regardless of the condition. Change the store at record 3 to slot 30: one arm no longer initializes slot 31, so the whole program must be refused before execution, even when the condition selects the other arm.</p>
+<h2>Merge facts conservatively</h2>
+<p>The first incoming edge establishes the target's stack depth and initialized-local bits. Every later edge must have the same depth. Intersect its initialization set with the recorded set. Intersection means a bit survives only if every incoming edge carries it; union would incorrectly accept a local initialized on just one arm.</p>
+<p>Read merge_state and inspect_program in src/vm.c. Targets must be greater than the source index and smaller than count. Consequently, processing records in index order visits every predecessor before its target. No work queue, heap allocation or fixed-point iteration is needed for this forward-only graph. Backward edges are rejected rather than treated as a supported loop.</p>
+<h2>Check the complete graph</h2>
+<p>Both edges of a conditional branch are structurally reachable even for a constant condition. The validator does not execute arithmetic or perform constant propagation. An unconditional jump that leaves hidden, unreachable records is refused. RETURN must remain the final record with exactly one stack value.</p>
+<p>Inspection counts every admitted record, including alternative arms. Its instruction count is a sufficient fuel upper bound. A chosen path can need less. The maximum stack is calculated over all admitted paths, so callers can reason about storage without guessing the runtime condition.</p>
+<h2>Run independent tests</h2>
+<pre><code class="language-powershell">ctest --test-dir .\build\windows-ucrt64-debug -R &quot;umicom[.]c[.]logical[.]forward_branches&quot; --output-on-failure --no-tests=error</code></pre>
+<p>The target links UmicomC::Runtime without the compiler. It checks both arms, inconsistent stack depths, one-arm initialization, backward and out-of-range targets, hidden records, trace gaps and literal format-4 bytes. This separation catches cases that a well-behaved compiler would never generate.</p>
+<h2>Exercise and recovery</h2>
+<p>Draw the two incoming states at record 7 after replacing STORE_LOCAL at record 3 with NEGATE. Explain the stack-depth mismatch. Then restore the store and replace its slot index with 32. The latter must fail before shifting a bit or indexing local storage. Keep result objects and trace bytes unchanged after admission failure; zero written rows is the observable contract.</p>
+<p>A valid graph can still divide by zero on its selected path. Admission proves structure and bounded access, not the usefulness of a program or authorization to run it.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="68-lower-short-circuit-logical-expressions.html">Previous lesson</a> · <a rel="next" href="70-compare-logical-programs-with-native-c.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

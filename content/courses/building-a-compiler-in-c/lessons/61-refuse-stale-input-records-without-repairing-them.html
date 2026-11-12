@@ -1,0 +1,39 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/61-refuse-stale-input-records-without-repairing-them.html
+
+PURPOSE:
+Refuse stale input records without repairing them
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Refuse stale input records without repairing them | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Refuse stale input records without repairing them</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="60-record-configuration-inputs-with-honest-limits.html">Previous lesson</a> · <a rel="next" href="62-keep-template-looking-text-as-data.html">Next lesson</a></nav>
+<p>A checker should report a mismatch without overwriting the evidence that made the mismatch visible. Otherwise “verify” can quietly become “accept whatever is present.” The Umicom C input checker keeps those operations separate.</p>
+<h2>Trace the two paths</h2>
+<p>Capture runs during standalone configuration. Verification reads the stored object, takes a current observation, and compares canonical bytes. It has no file-writing branch. Missing, malformed or changed evidence is a failure, not permission to capture a replacement.</p>
+<p>Read tests/check_input_identity.cmake. Each case creates a new synthetic directory beneath the test build directory. A fake compiler file supplies bytes to hash; the test never executes it. This lets the suite exercise tool changes without damaging the installed compiler.</p>
+<h2>Run the mutation cases</h2>
+<p>After configuring your Umicom C checkout:</p>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-debug -R '^umicom.c.input-identity.' --output-on-failure --no-tests=error</code></pre>
+<p>The source case changes 1 to 2 without changing the source file length. The renamed-source case retains the contents but changes the path. Both must fail the nested verifier. The outer regression passes only when that refusal is observed and the receipt remains byte-for-byte unchanged.</p>
+<h2>Predict the boundary</h2>
+<p>The prose-outside-scope case writes ordinary documentation. The binary-outside-scope case creates an executable-shaped file in the output directory. Both are expected to leave this configuration-input check successful. Those results demonstrate its declared limits. In particular, a successful input check does not authorize running an unverified executable.</p>
+<h2>Perform a controlled stale check</h2>
+<p>1. Work in an experimental checkout with your changes already preserved.</p>
+<p>2. Configure once and keep a copy of the generated record.</p>
+<p>3. Add a comment to an example under examples.</p>
+<p>4. Run only the existing-record check:</p>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-debug -R '^umicom.c.inputs-current$' --output-on-failure --no-tests=error</code></pre>
+<p>5. Expect a mismatch. Review the edit, then explicitly reconfigure, rebuild and rerun tests. Do not modify a stored checksum by hand.</p>
+<p>The build convenience target can trigger CMake regeneration before it calls the verifier. Use the CTest command for a stale-record investigation because it does not request a build or configure step.</p>
+<h2>Explain the result</h2>
+<p>A passing regression can contain an intentionally failing child command. Read which layer reported success. If the nested checker crashes or times out instead of issuing a diagnostic refusal, the regression must fail. Keep both the result code and diagnostic output; an arbitrary nonzero status alone is weak evidence.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="60-record-configuration-inputs-with-honest-limits.html">Previous lesson</a> · <a rel="next" href="62-keep-template-looking-text-as-data.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

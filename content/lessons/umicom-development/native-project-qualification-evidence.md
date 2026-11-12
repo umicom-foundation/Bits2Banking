@@ -62,7 +62,8 @@ Lessons reference approved Umicom SVG and ICO assets and the established learnin
 
 ## Source and next steps
 
-[Native project source and qualification guide](../../../docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-qualification-evidence.html)
+<!-- The checkout-only guide route is retained for review: [Native project source and qualification guide](../../../docs/guides/native-project-forms.md) -->
+[Native project source and qualification guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-qualification-evidence.html)
 
 <!-- Retain the former course endpoint for review.
 [Previous lesson](native-project-host-shutdown.md) · [Course index](index.md)

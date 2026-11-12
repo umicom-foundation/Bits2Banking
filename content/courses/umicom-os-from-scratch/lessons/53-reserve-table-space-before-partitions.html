@@ -23,6 +23,7 @@ MIT
      laboratory sources reachable from both the published site and local lessons.
 <a href="../../../../labs/native/framework-gpt-inspection/QUALIFICATION.md">Qualification guide</a> -->
 <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-gpt-inspection/QUALIFICATION.md">Qualification guide</a></p><p>A small data structure can still require a larger reserved region around it. The synthetic image in this lab declares four partition slots. At 128 bytes per slot, their encoded contents occupy only 512 bytes. The layout deliberately reserves more room, so later partitions do not begin inside space assigned to table metadata.</p>
+<h2>Before you begin</h2><p>Use a scratch copy of the synthetic GPT lab and retain its original valid fixture. Locate the table extent, usable interval and CRC fields before modifying a partition boundary. The negative case must update the affected checksums, otherwise it tests a checksum failure instead of overlap admission.</p>
 <h2>Distinguish occupied bytes from reserved space</h2>
 <p>Seal calculates a CRC over the declared array contents and copies those bytes into the backup array. LabImageCreate separately calculates the reservation used to choose usable addresses. These calculations answer different questions: which bytes participate in this checksum, and where may partition data begin?</p>
 <pre><code class="language-c">size_t length = (size_t)4U * width;

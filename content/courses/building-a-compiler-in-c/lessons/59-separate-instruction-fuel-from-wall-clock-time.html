@@ -1,0 +1,41 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/59-separate-instruction-fuel-from-wall-clock-time.html
+
+PURPOSE:
+Separate instruction fuel from wall-clock time
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate instruction fuel from wall-clock time | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate instruction fuel from wall-clock time</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="58-test-source-spans-without-a-terminator.html">Previous lesson</a> · <a rel="next" href="60-record-configuration-inputs-with-honest-limits.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Complete the execution-budget and source-span lessons. Open tests/check_cli_budget.cmake and tests/CMakeLists.txt. This lesson concerns test supervision as well as the interpreter's contract.</p>
+<h2>Two budgets answer different questions</h2>
+<p>Instruction fuel counts VM operations. Wall-clock time measures elapsed time on the host. A process may spend time starting, waiting for a CPU, loading libraries or writing output before it executes the first VM operation.</p>
+<p>The expression 6 * 7 uses four instructions in this profile: two pushes, multiply and return. A budget of four succeeds; a budget of three cannot publish a completed result. Those assertions must remain exact even on a slow machine.</p>
+<pre><code class="language-powershell">.\build\bin\umicom-c.exe run build\practice.uc --max-steps 4
+.\build\bin\umicom-c.exe run build\practice.uc --max-steps 3</code></pre>
+<p>Create practice.uc first with int main(void) { return 6 * 7; }. The first command should report 42 and four instructions. The second must fail with instruction-budget exhaustion and no Result line. Do not confuse that expected refusal with a test harness killing a process for taking too long.</p>
+<h2>Count the child processes</h2>
+<p>The CLI budget regression compiles its fixture once. For each of source run and bytecode exec it checks three accepted budgets, one exhausted budget, eight malformed budgets and one duplicate option. Finally it checks that a non-execution command refuses the execution-only option.</p>
+<p>That is 1 + 2 * (3 + 1 + 8 + 1) + 1, or 28 processes. An aggregate thirty-second limit can expire during repeated process startup on a loaded host, even if individual commands eventually behave correctly. A timeout alone does not identify the slow invocation or prove the exact scheduling cause.</p>
+<h2>Bound each layer</h2>
+<p>The current fixture gives each execute_process call a ten-second timeout. A timed-out child returns a non-success result to its surrounding assertion, which identifies the command and case. The enclosing CTest case allows ninety seconds for the complete sequence and its scheduling overhead.</p>
+<p>These limits do not increase --max-steps or accept a result after exhaustion. They supervise host processes. The former aggregate limit remains in an explicit inactive CMake block for review.</p>
+<p>1. Locate all six execute_process call sites. 2. Count how the loops expand them into 28 invocations. 3. Check that each result is examined before continuing. 4. Check that failure cases still reject any published result. 5. Find the final hashes proving that execution did not change input artifacts.</p>
+<h2>Reproduce and diagnose carefully</h2>
+<p>After configuration and building, run:</p>
+<pre><code class="language-powershell">ctest --test-dir build -R &quot;^umicom.c.cli-budget$&quot; --output-on-failure --no-tests=error</code></pre>
+<p>If it times out, preserve the output and source/toolchain identity. Determine whether a child deadline or the aggregate deadline expired. Review the last reported case, host load and the selected executable. An isolated rerun can provide additional evidence, but does not erase the earlier failure.</p>
+<p>Do not remove assertions, skip slow cases or increase VM fuel to make a wall-clock failure disappear. If a command genuinely hangs, investigate its process behavior. If many bounded successful starts consume the aggregate allowance, account for that workload explicitly and retain a finite overall deadline.</p>
+<h2>Report what ran</h2>
+<p>A test definition is authored coverage. A successful configure means CTest can register it. An executed passing result qualifies the tested source and environment. Keep failures and reruns as separate observations so a reviewer can tell whether a repair addressed the symptom or merely changed the measurement.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="58-test-source-spans-without-a-terminator.html">Previous lesson</a> · <a rel="next" href="60-record-configuration-inputs-with-honest-limits.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

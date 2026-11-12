@@ -64,6 +64,7 @@ Disabling a widget helps the user follow the workflow but does not prevent progr
 
 ## Source and next steps
 
-[Native project source and qualification guide](../../../docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-captured-inputs.html)
+<!-- The checkout-only guide route is retained for review: [Native project source and qualification guide](../../../docs/guides/native-project-forms.md) -->
+[Native project source and qualification guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-captured-inputs.html)
 
 [Previous lesson](storage-qualifying-filesystem-clients.md) · [Next lesson](native-project-task-admission.md) · [Course index](index.md)

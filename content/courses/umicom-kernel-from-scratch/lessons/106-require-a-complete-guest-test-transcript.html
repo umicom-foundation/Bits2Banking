@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/106-require-a-complete-guest-test-transcript.html
+
+PURPOSE:
+Require a complete guest test transcript
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Require a complete guest test transcript | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Require a complete guest test transcript</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="105-move-a-packet-check-from-host-to-guest.html">Previous lesson</a> · <a rel="next" href="107-separate-a-guest-runtime-from-source-grammar.html">Next lesson</a></nav>
+<h2>Preparation and outcome</h2>
+<p>Run the packet guest test from the previous lesson, then open packet-admission-guest.log in its build directory. Read the corresponding check_guest.cmake wrapper. You will distinguish an early success marker from complete, current execution evidence.</p>
+<h2>Why one marker is insufficient</h2>
+<p>A guest can print a readiness line and fail later. A previous executable can also print a familiar marker even when the edited source has never been compiled. The packet wrapper therefore combines several observations: a current-image build fixture, source/image identity checking, a successful QEMU exit, absence of failure markers and ordered completion records.</p>
+<p>The required records begin with Kernel boot readiness. The wrapper then expects packet admission to begin, each of the seven named groups, the group count, packet readiness and the final Kernel end marker. A missing or out-of-order record causes failure. This is stronger than searching for one word such as ready anywhere in the output.</p>
+<h2>Inspect the host-side contract</h2>
+<p>The wrapper launches the known QEMU executable with the established RISC-V machine arguments and an explicit -nic none option. It captures standard output and standard error, writes them to the configured transcript and waits at most 30 seconds. CTest supplies a larger outer timeout. A timeout is a failure, not a successful partial run.</p>
+<p>The wrapper checks the child exit result before reading acceptance markers. Output text alone cannot prove normal completion. Conversely, exit zero does not prove that every intended case ran, which is why the ordered records are also required.</p>
+<h2>Test definitions are inputs too</h2>
+<p>CMake generates CTest's test definitions during configuration. CTest reads those definitions when a run starts. If a fixture rebuild regenerates the files, an already running CTest process can still hold its earlier command in memory. Build or reconfigure first when changing a test command, then start a fresh CTest run.</p>
+<p>A literal placeholder such as an unexpanded architecture-specific variable can configure successfully but still point to no executable. Inspect the generated command and verify that it contains the actual QEMU path and image path. Configuration success does not validate every later command-line argument.</p>
+<h2>Worked review</h2>
+<p>1. Find the earliest boot marker and the later packet begin marker. 2. List the seven case names in order and explain what each proves. 3. Confirm that packet readiness appears before the final Kernel end marker. 4. Read the captured exit status in the CTest result and check for skipped or failed entries. 5. Keep the source/image identity record with this transcript, including the toolchain and virtual machine profile.</p>
+<p>If only a prefix exists, investigate the last completed group rather than calling the whole reader verified. If the source identity is stale, rebuild before rerunning. If QEMU is missing, fix tool discovery; a host-only test is useful but cannot substitute for the missing guest observation.</p>
+<h2>Exercise</h2>
+<p>On a copy of the transcript, remove the final marker and show why a single-marker search would still be misleading. Then reorder two case records and compare that with the wrapper's increasing-position requirement. Do not alter the original execution log. Explain why these synthetic packet records still make no claim about a live network, a hardware NIC or a complete transport protocol.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="105-move-a-packet-check-from-host-to-guest.html">Previous lesson</a> · <a rel="next" href="107-separate-a-guest-runtime-from-source-grammar.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

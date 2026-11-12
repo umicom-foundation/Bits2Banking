@@ -126,3 +126,62 @@ Inspect resource requirements without executing a program, trace stack behavior,
 1. [Preserve output when inspection fails](28-preserve-output-when-inspection-fails.md)
 1. [Design boundary tests for a virtual machine](29-design-boundary-tests-for-a-virtual-machine.md)
 1. [Present program facts in an IDE](30-present-program-facts-in-an-ide.md)
+
+## Compile and qualify logical negation
+
+- [Recognise prefix negation without changing not-equal](47-recognise-prefix-negation.md)
+- [Lower logical negation without a new opcode](48-lower-negation-to-existing-operations.md)
+- [Observe operand failure before negation](49-observe-negation-failures-and-budgets.md)
+- [Qualify negation through source and bytecode commands](50-qualify-negation-through-the-cli.md)
+
+## Linked compiler and runtime profiles
+
+- [Query the linked compiler and runtime](51-query-the-linked-compiler-and-runtime.md)
+- [Prove capability declarations with real operations](52-prove-capabilities-with-real-operations.md)
+
+## Native linkage and trustworthy test fixtures
+
+- [Give private C helpers a linker namespace](53-give-private-helpers-a-linker-namespace.md)
+- [Check the bytes of a C test fixture](54-check-the-bytes-of-a-c-test-fixture.md)
+- [Keep regression observations type correct](55-keep-regression-observations-type-correct.md)
+
+## Bounded integer spellings and evidence
+
+- [Read hexadecimal and binary source without overflowing](56-read-hexadecimal-and-binary-source.md)
+- [Separate source spelling from wire format](57-separate-source-spelling-from-wire-format.md)
+- [Test source spans without a terminator](58-test-source-spans-without-a-terminator.md)
+
+## Execution and supervision budgets
+
+- [Separate instruction fuel from wall-clock time](59-separate-instruction-fuel-from-wall-clock-time.md)
+
+## Configuration input observation
+
+- [Record configuration inputs with honest limits](60-record-configuration-inputs-with-honest-limits.md)
+- [Refuse stale input records without repairing them](61-refuse-stale-input-records-without-repairing-them.md)
+- [Keep template-looking text as data](62-keep-template-looking-text-as-data.md)
+
+## Native operation comparison and exit contracts
+
+- [Compare operations without running programs](63-compare-operations-without-running-programs.md)
+- [Handle comparison exits without hiding errors](64-handle-comparison-exits-without-hiding-errors.md)
+
+## Buffered report failures
+
+- [Test buffered report failures](65-test-buffered-report-failures.md)
+
+## Bounded local integers
+
+- [Bind local names to integer slots](66-bind-local-names-to-slots.md)
+- [Prove local initialization before execution](67-prove-local-initialization-before-execution.md)
+
+## Short-circuit control flow
+
+- [Lower short-circuit logical expressions](68-lower-short-circuit-logical-expressions.md)
+- [Validate joins on all forward paths](69-validate-joins-on-all-forward-paths.md)
+- [Compare logical programs with native C](70-compare-logical-programs-with-native-c.md)
+
+## Conditional values and parser recursion
+
+- [Select values with conditional expressions](71-select-values-with-conditional-expressions.md)
+- [Bound recursive expression parsing](72-bound-recursive-expression-parsing.md)

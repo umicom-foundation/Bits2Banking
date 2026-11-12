@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/weight-management-framework/lessons/08-qualify-the-whole-observation-workflow.html
+
+PURPOSE:
+Collect evidence for each application boundary
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Collect evidence for each application boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Collect evidence for each application boundary</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-plan-a-mobile-native-boundary.html">Previous lesson</a> · <a rel="next" href="09-test-the-kilogram-boundary-with-synthetic-inputs.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the preceding lessons and keep the exact source and SDK identities for your practice build. Use only synthetic observations during early qualification.</p>
+<h2>Start with the native contract</h2>
+<p>The new Framework regression groups cover decimal values, refused syntax, numeric capacity, complete entries, invalid dates/units and note length. Their registration is visible in cmake/UmicomWeightLog.cmake.</p>
+<pre><code class="language-powershell">ctest --test-dir build/your-framework-build --output-on-failure -R &quot;^framework[.]weight_log[.]&quot;</code></pre>
+<p>Replace the build path with a configured and built Framework tree. Listing tests is not executing them. Capture the final command status and failed/skipped cases, not just a line containing the word pass.</p>
+<h2>Follow one fixture through each boundary</h2>
+<p>1. Use the same date and integer grams in the C client, desktop form and browser request. 2. Compare the accepted model before examining presentation. 3. Save an authorized reviewed revision, reopen it and compare exact content. 4. Introduce an invalid date, wrong unit and stale revision, then verify that each refusal preserves the accepted model. 5. On mobile, repeat the workflow after backgrounding and process recreation.</p>
+<h2>Expected evidence</h2>
+<p>A parser pass demonstrates input admission for the tested build. A database readback adds persistence evidence. A screenshot demonstrates one visible state. None alone proves the complete product, every platform or safe deployment.</p>
+<p>Keep build identity, test command and result together. Record missing tools and skipped tests separately. Do not turn a known missing mobile dependency into an unconditional passing test.</p>
+<h2>Exercise</h2>
+<p>Create a release checklist with a row for each boundary: parser, shared form, storage, desktop editor, web host, mobile lifecycle and distribution. Mark a row verified only when you have executed evidence for its actual source and environment. Mark the rest unexecuted or blocked with a concrete reason.</p>
+<h2>Recovery</h2>
+<p>When two clients disagree, first compare schema and SDK versions, then the submitted bytes and revision expectations using synthetic reproductions. Keep private personal data out of bug reports. Add a narrow regression for the discovered contract failure before broadening the feature.</p>
+<p>This first course sequence provides a native example and real integration contracts. The finished multi-platform application, its approved layouts, authentication and deployment are further work. That distinction makes the next implementation step reviewable.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-plan-a-mobile-native-boundary.html">Previous lesson</a> · <a rel="next" href="09-test-the-kilogram-boundary-with-synthetic-inputs.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

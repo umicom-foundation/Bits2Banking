@@ -248,3 +248,38 @@ if(BUILD_TESTING)
     set_tests_properties(btb.education.studio_learning_collection PROPERTIES
         TIMEOUT 30 LABELS "education;studio;content;identity")
 endif()
+
+# Both build-tool courses share one real Java fixture and distinct published routes.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.jvm_build_courses
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_jvm_build_courses.cmake")
+    set_tests_properties(btb.education.jvm_build_courses PROPERTIES TIMEOUT 30 LABELS "education;navigation;jvm")
+endif()
+
+# Practical observation teaching must preserve both published editions.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.observation_course
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_observation_course.cmake")
+    set_tests_properties(btb.education.observation_course PROPERTIES TIMEOUT 30 LABELS "education;navigation;forms")
+endif()
+
+# Presentation contracts complement route checks: paired lessons must retain
+# actual scoped table cells, not Markdown flattened into an HTML paragraph.
+add_executable(btb-lesson-tables-test test_lesson_tables.c)
+target_compile_features(btb-lesson-tables-test PRIVATE c_std_23)
+if(MSVC)
+    target_compile_options(btb-lesson-tables-test PRIVATE /W4)
+else()
+    target_compile_options(btb-lesson-tables-test PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror)
+endif()
+if(BUILD_TESTING)
+    add_test(NAME btb.education.lesson_tables.selftest COMMAND btb-lesson-tables-test --self-test)
+    add_test(NAME btb.education.lesson_tables.joins
+        COMMAND btb-lesson-tables-test "${_btb_repo_root}/content/courses/building-a-compiler-in-c/lessons/69-validate-joins-on-all-forward-paths.html" 3 9)
+    add_test(NAME btb.education.lesson_tables.guest-selectors
+        COMMAND btb-lesson-tables-test "${_btb_repo_root}/content/courses/umicom-kernel-from-scratch/lessons/115-execute-forward-vm-paths-in-user-mode.html" 2 7)
+    add_test(NAME btb.education.lesson_tables.parse-bounds
+        COMMAND btb-lesson-tables-test "${_btb_repo_root}/content/courses/building-a-compiler-in-c/lessons/72-bound-recursive-expression-parsing.html" 3 4)
+endif()

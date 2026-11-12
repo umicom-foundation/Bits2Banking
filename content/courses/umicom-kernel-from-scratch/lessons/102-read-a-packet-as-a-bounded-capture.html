@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/102-read-a-packet-as-a-bounded-capture.html
+
+PURPOSE:
+Read a packet as a bounded capture
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read a packet as a bounded capture | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read a packet as a bounded capture</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="101-qualify-kernel-storage-on-disposable-media.html">Previous lesson</a> · <a rel="next" href="103-check-headers-without-trusting-payloads.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the byte-span and checked-address lessons. Open include/umicom/kernel/network_packet.h and kernel/network_packet.c in the Kernel repository. You need no network adapter for this exercise.</p>
+<h2>Begin with ownership</h2>
+<p>A driver may eventually receive bytes into a buffer shared with a device. A pointer alone does not say whether the device has finished writing, whether another thread may recycle the buffer, or how many bytes are readable. The current reader deliberately starts after those ownership questions have been answered by its caller.</p>
+<pre><code class="language-c">UmicomKernelEthernetIpv4Read(capture, accessible_bytes, &amp;view);</code></pre>
+<p>The caller supplies stable RAM. The reader neither takes ownership nor returns a pointer into the capture. It copies metadata into view and reports the offset and length of the remaining payload. Keep the original capture alive before using that offset.</p>
+<h2>Trace the first checks</h2>
+<p>1. Find the null argument guards. 2. Locate the minimum and maximum capture lengths: 34 and 1514. 3. Follow checked address addition and the overlap refusal. 4. Find ReadNetwork16 and explain why it reads two bytes instead of dereferencing a cast structure. 5. Follow the IP total-length check before any payload observation is published.</p>
+<p>The input may be unaligned. The typed output requires its normal C alignment. These are different contracts because wire bytes are decoded individually, while callers use fields of the result structure.</p>
+<h2>Padding exercise</h2>
+<p>The golden fixture holds a 32-byte IP datagram after a 14-byte Ethernet header. Its 12-byte payload starts at offset 34. The padding test extends the capture to 60 bytes. Predict the output before running it: payloadBytes stays 12.</p>
+<p>Ethernet padding does not contribute to the IP total-length field; see <a href="https://www.rfc-editor.org/rfc/rfc894.html">RFC 894</a>. This reader also accepts unpadded captures, so it must not be used as proof that a transmitted frame obeys all Ethernet requirements.</p>
+<h2>Verify</h2>
+<p>From the Kernel repository, configure and build tests/network_packet using the commands in docs/NETWORK_PACKET_ADMISSION.md. Then run:</p>
+<pre><code class="language-powershell">ctest --test-dir build/host-network-packet -R &quot;kernel.network_packet.(golden|padding|unaligned)$&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Expect three selected groups. If none are selected, check the configured directory and test names rather than counting an empty run as success. If a result differs, inspect the fixed fixture before changing the parser's limits.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="101-qualify-kernel-storage-on-disposable-media.html">Previous lesson</a> · <a rel="next" href="103-check-headers-without-trusting-payloads.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

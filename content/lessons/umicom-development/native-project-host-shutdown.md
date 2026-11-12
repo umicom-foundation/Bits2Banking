@@ -61,6 +61,7 @@ The three Studio wizard-during-write cases act immediately after the click retur
 
 ## Source and next steps
 
-[Native project source and qualification guide](../../../docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-host-shutdown.html)
+<!-- The checkout-only guide route is retained for review: [Native project source and qualification guide](../../../docs/guides/native-project-forms.md) -->
+[Native project source and qualification guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-host-shutdown.html)
 
 [Previous lesson](native-project-hidden-retired.md) · [Next lesson](native-project-qualification-evidence.md) · [Course index](index.md)

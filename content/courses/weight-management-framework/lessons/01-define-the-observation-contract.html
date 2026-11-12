@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/weight-management-framework/lessons/01-define-the-observation-contract.html
+
+PURPOSE:
+Define the observation before the screen
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Define the observation before the screen | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Define the observation before the screen</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-convert-kilograms-without-rounding.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Know basic C structures, functions and return values. Keep a current Framework source checkout available for reading. This course starts with a small observation log that can support a weight-management application. It does not calculate an ideal weight or give medical advice.</p>
+<h2>Follow one piece of data</h2>
+<p>A complete observation contains a chosen calendar date, a mass in integer grams and an optional note. The first version deliberately excludes an account system, cloud synchronization, medical classification and automatic target setting.</p>
+<pre><code class="language-c">typedef struct UmiWeightLogEntry {
+    char observed_on[11];
+    uint32_t mass_grams;
+    char note[256];
+} UmiWeightLogEntry;</code></pre>
+<p>Read the real declaration in include/umicom/healthcare/weight_log.h. The date occupies ten characters plus a terminator. The mass unit is part of the contract. A value of 80250 means 80.250 kg, not 80250 kg.</p>
+<p>1. List which values a user supplies. 2. Identify the values the host supplies: record identity, access authority and the acknowledged storage revision. 3. Draw the boundary between a mutable draft and a copied validated observation. 4. Write down which parts remain outside this first client.</p>
+<h2>Reuse the shared engine</h2>
+<p>umi_weight_log_schema returns a borrowed immutable schema. Existing structured-form services own date admission, typed answers, editing revisions and snapshots. The weight module adds a domain schema and an exact input conversion; desktop and browser code must not maintain independent validation rules.</p>
+<p>The broad numeric capacity is an encoding bound. It is intentionally not a claim about a healthy human range. A future clinical feature would need separate requirements and qualified expertise.</p>
+<h2>Exercise and expected result</h2>
+<p>Create three fictional examples on paper: a complete record, a missing mass, and an impossible date. Classify each as a complete observation or a refused/incomplete draft. The missing mass must not silently become zero. The impossible date must not be repaired by changing the user's meaning.</p>
+<h2>Recovery</h2>
+<p>If two clients disagree about units or required fields, inspect the schema version and SDK identity before patching either screen. Keep older saved schema versions readable through an explicit migration plan. Changing a unit label without converting and versioning stored values corrupts meaning.</p>
+<p>The course proceeds from this contract to an executable C example, then to existing desktop/web service boundaries and a mobile port plan. It does not present those later platform clients as already shipped.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-convert-kilograms-without-rounding.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

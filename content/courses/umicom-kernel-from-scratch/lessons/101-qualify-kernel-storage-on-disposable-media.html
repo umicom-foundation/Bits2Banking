@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/101-qualify-kernel-storage-on-disposable-media.html
+
+PURPOSE:
+Qualify storage with disposable images and fresh readback
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify storage with disposable images and fresh readback | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Qualify storage with disposable images and fresh readback</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="100-bind-a-guest-run-to-current-source.html">Previous lesson</a> · <a rel="next" href="102-read-a-packet-as-a-bounded-capture.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the FAT16 and block-device chapters. Use the repository's synthetic fixtures and an isolated build directory. This lesson does not ask you to write a physical USB drive or a production filesystem.</p>
+<h2>Separate the writer from the evidence reader</h2>
+<p>A writer can keep successful-looking values in memory. To demonstrate persistence, the suite starts a fresh reader against the disposable image after the writer exits. The reader does not share the writer's cached state.</p>
+<pre><code class="language-text">Known synthetic fixture
+    -&gt; checked disposable copy
+    -&gt; read-only admission check
+    -&gt; explicit writer guest
+    -&gt; fresh readback guest
+    -&gt; compare expected bytes and metadata
+    -&gt; remove the disposable test copy</code></pre>
+<p>1. Read the prepare and cleanup branches in cmake/DiskWritableFilesystem.cmake. 2. Identify the checked original fixture and the test-owned destination. 3. Follow the fixture dependencies that order read-only, writer and readback checks. 4. Keep interrupted-write cases distinct from clean committed cases.</p>
+<h2>Expected result</h2>
+<p>A clean write is followed by a readback of the intended data. An intentionally interrupted sequence should trigger its documented recovery/refusal behavior. A nonzero process exit alone does not identify the expected recovery cause.</p>
+<h2>Exercise</h2>
+<p>Draw a dependency graph for the writable-filesystem test group. Explain why starting the reader before the writer finishes would create misleading results. Then identify which cleanup operation may run after a failed dependent test and which source fixture must remain intact.</p>
+<h2>Recovery</h2>
+<p>If a test fails, keep its logs and the failed disposable artifact when the diagnostic workflow supports retention. Compare the exact source and expected fixture hashes before interpreting the on-disk structure. Never replace the test destination with a real device path just because QEMU accepts a different argument.</p>
+<p>Run the documented Kernel build before the tests. CTest fixture relationships protect ordering, but the complete build and source receipt remain part of the evidence. A successful synthetic emulator suite is not qualification of a firmware bootloader, a USB installer or physical hardware power-loss behavior.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="100-bind-a-guest-run-to-current-source.html">Previous lesson</a> · <a rel="next" href="102-read-a-packet-as-a-bounded-capture.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

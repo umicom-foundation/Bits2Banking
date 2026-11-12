@@ -23,6 +23,10 @@ MIT
 
 The lab can produce a malformed table and then compute perfectly matching checksums for it. That is intentional. A checksum answers a narrow consistency question; it does not decide whether the bytes describe a useful operating system or came from a trusted publisher.
 
+## Before you begin
+
+Read the GPT lab checksum helper and keep a known-valid synthetic image for comparison. Identify which bytes belong to the header checksum and which belong to the table checksum. No signing key or trusted distribution channel is part of this exercise; prepare a table separating corruption detection from provenance.
+
 ## Follow the encoder
 
 Crc processes each byte of a synthetic record and returns a 32-bit result. Seal stores that value for the declared array, copies the array to its backup position, and recomputes each header’s CRC. These are producer operations. Framework independently interprets the resulting bytes and decides whether they fit its structural profile.

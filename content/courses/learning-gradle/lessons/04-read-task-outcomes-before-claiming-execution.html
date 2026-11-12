@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gradle/lessons/04-read-task-outcomes-before-claiming-execution.html
+
+PURPOSE:
+Read task outcomes before claiming execution
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read task outcomes before claiming execution | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read task outcomes before claiming execution</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-wrapper-and-native-boundaries.html">Previous lesson</a></nav>
+<p>Gradle can avoid work when declared inputs and outputs make reuse appropriate. Your report should distinguish a task that executed from one that was already up to date or restored cached outputs. A successful command does not always mean the tests executed again.</p>
+<h2>Inspect the fixture</h2>
+<p>The JVM identity lab applies the Java plugin, requests a Java 17 toolchain and configures JUnit tests. Maven and Gradle share the Java sources but maintain separate output directories and build metadata. A Maven report cannot prove that Gradle discovered the tests.</p>
+<p>The lab does not silently provide a downloaded wrapper. Use the reviewed Gradle version described in the lab README. If you add a wrapper later, review its files and origin as another source change. Automatic Java toolchain downloading is disabled in this fixture.</p>
+<h2>Compare two runs</h2>
+<p>From labs/build-tools/jvm-identity:</p>
+<pre><code class="language-powershell">gradle --version
+gradle test --info
+gradle test --info</code></pre>
+<p>Run each command separately and inspect its exit status. Compare the test task outcome across the two runs. The second may be up to date. The official <a href="https://docs.gradle.org/current/userguide/build_cache.html">build-cache guide</a> explains how task outputs can also be restored from a cache when enabled. Observe your actual result rather than predicting a cache hit.</p>
+<h2>Request fresh execution for diagnosis</h2>
+<pre><code class="language-powershell">gradle --no-build-cache --rerun-tasks test</code></pre>
+<p>This is a small diagnostic exercise, not an everyday instruction to rebuild everything. Inspect build/test-results/test/TEST-org.umicom.learning.BuildIdentityTest.xml and the HTML report under build/reports/tests/test. Expect the three declared JUnit tests when discovery and execution succeed.</p>
+<p>In an experimental copy, change the expected component string in BuildIdentityTest.java. Repeat the diagnostic command. Expect a failing task and nonzero result. Preserve the report, restore the intended expectation and repeat. If a report is missing, investigate admission and discovery before reporting any passing count.</p>
+<h2>Connect the evidence to native builds</h2>
+<p>Ninja's no-work result, Gradle's task outcomes and a matching Umicom C configuration record describe different mechanisms. None alone proves a fresh test execution or authenticates a binary. Keep the command, tool identities, source context, task outcome and current report together.</p>
+<p>If reused output seems wrong, inspect whether the changed input was declared. Forcing every task to run can expose a symptom without repairing the missing dependency. A permanent rerun workaround is not a substitute for that diagnosis.</p>
+<p>The Java fixture is a course-specific example. Maven and Gradle execution remains unqualified until those commands run in the selected environment; source review and native C tests do not supply JVM execution evidence.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-wrapper-and-native-boundaries.html">Previous lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

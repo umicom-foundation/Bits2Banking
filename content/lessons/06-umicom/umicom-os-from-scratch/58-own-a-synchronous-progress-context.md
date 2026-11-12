@@ -17,6 +17,10 @@ MIT
 
 # Own a synchronous progress context
 
+## Before you begin
+
+Read the progress callback in the existing framework-boot-media client before running a cancellation scenario. Locate the context allocation, the synchronous apply call and the point where that context goes out of scope. Use a fresh regular-file destination for each run so an earlier refusal does not mask callback behaviour.
+
 ## Identify who calls the callback
 
 UmiBootMediaApply calls its progress function synchronously on the invoking thread. The callback receives a borrowed report and a caller-supplied context pointer. It may request cancellation by returning nonzero. It must not destroy the plan, free transfer inputs or close transport handles. The service remains responsible for unwinding the operation and publishing its final report.

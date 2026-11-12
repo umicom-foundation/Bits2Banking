@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/63-compare-operations-without-running-programs.html
+
+PURPOSE:
+Compare operations without running programs
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare operations without running programs | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Compare operations without running programs</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="62-keep-template-looking-text-as-data.html">Previous lesson</a> · <a rel="next" href="64-handle-comparison-exits-without-hiding-errors.html">Next lesson</a></nav>
+<p>Two source files can look different yet compile into the same instruction sequence. Umicom C already has a library operation for that question. The compare-operations command exposes it without adding a second comparison engine or executing the programs.</p>
+<h2>Before you begin</h2>
+<p>Follow the Umicom C execution guide to build the native command with the Windows UCRT64 preset, or select the corresponding native preset on another host. Know the actual executable path. This lesson uses two small source files and does not modify installed applications or publish a repository.</p>
+<h2>Create a spelling experiment</h2>
+<p>Save these programs in two files:</p>
+<pre><code class="language-c">/* left.uc */
+int main(void) { return 0x2a; }</code></pre>
+<pre><code class="language-c">/* right.uc: different comments and source positions */
+int main(void) { return 0b101010; }</code></pre>
+<p>From the Umicom C checkout, using its documented Windows preset:</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe compare-operations .\left.uc .\right.uc
+$LASTEXITCODE</code></pre>
+<p>Expected result: operations=same, two instructions on each side, source-locations=not-compared, execution=not-performed and exit zero. Both literals become the same signed PUSH operand followed by RETURN. The command creates no output file.</p>
+<h2>Follow ownership through the implementation</h2>
+<p>Open tools/main.c and locate compare_operations. It reads each source into one bounded scratch buffer and compiles into a separate caller-owned instruction array. The scratch buffer may be reused after compilation because instructions retain values and source offsets, not pointers into the text.</p>
+<p>The command then calls umc_program_same_operations. Open src/comparison.c: that service validates both complete programs before comparing opcode and operand fields. Source offsets are excluded intentionally. The hosted command owns file I/O; the core service owns instruction identity.</p>
+<h2>Separate instructions from results</h2>
+<p>Change left.uc to return 2 + 3 and right.uc to return 5, preserving each function body. The expected comparison is different, exit one, although both programs would return five when executed. One contains an addition and extra constant; the other does not.</p>
+<p>Now set both bodies to return 1 / 0. The expected comparison is same, exit zero. Execution would fail, but this command does not execute. This is a useful counterexample to the claim that equal operations establish a successful runtime result.</p>
+<h2>Exercise and recovery</h2>
+<p>Explain three different comparisons: source bytes, instruction identity and execution results. For each, name a pair of programs where it differs from another comparison. Comments can change bytes and diagnostic offsets; a simplified expression can change operations; a failing expression can have identical operations in two files without producing a result.</p>
+<p>If a comparison is surprising, inspect each program and disassemble newly compiled copies in separate output files. Preserve the inputs. Do not modify the comparison service to ignore an opcode merely because two sample results happen to match.</p>
+<p>Instruction identity alone cannot approve a cache hit, skip a regression, certify a binary or preserve diagnostic locations. Keep the preceding configuration-input lesson's source, tool and artifact questions separate.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="62-keep-template-looking-text-as-data.html">Previous lesson</a> · <a rel="next" href="64-handle-comparison-exits-without-hiding-errors.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

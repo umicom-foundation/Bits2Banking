@@ -51,3 +51,5 @@ The hosted cases pass while the guest prints nothing. Start before the C coordin
 Companion source: umicom-kernel/kernel/normal_boot.c and tests/boot_services/normal_boot_tests.c. Read docs/NORMAL_BOOT_COORDINATOR.md in the same Kernel checkout. Match source revisions before running the exercises.
 
 [Course contents](index.md) · [Previous lesson](98-require-the-intended-recovery-cause.md)
+
+[Next lesson](100-bind-a-guest-run-to-current-source.md)

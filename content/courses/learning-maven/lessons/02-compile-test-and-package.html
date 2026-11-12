@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-maven/lessons/02-compile-test-and-package.html
+
+PURPOSE:
+Compile test and package a Java library
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compile test and package a Java library | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Compile test and package a Java library</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-read-a-project-model.html">Previous lesson</a> · <a rel="next" href="03-dependencies-and-reproducible-evidence.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Use the jvm-identity lab from the preceding lesson. Confirm that Maven reports a JDK capable of compiling Java 17 source. The first build may retrieve the pinned plugins and test dependencies from Maven Central; retain any resolution failure separately from a Java compiler error.</p>
+<h2>Execute a lifecycle phase</h2>
+<pre><code class="language-powershell">mvn test
+mvn package</code></pre>
+<p>The test phase follows earlier required phases in Maven's default lifecycle. The package phase continues far enough to produce the library artifact. Read target/surefire-reports and confirm that BuildIdentityTest actually ran all three methods without failures, errors or skips. A successful build message with zero tests is not the expected result. This POM sets failIfNoTests to catch a completely missing test suite.</p>
+<p>BuildIdentity preserves a component and version. One test checks the resulting string and both accessors. Two refusal tests require IllegalArgumentException for a missing component or blank version. Those cases test behaviour, rather than merely calling the constructor.</p>
+<h2>Distinguish artifacts from source</h2>
+<p>The expected archive is target/jvm-identity-1.0.0.jar. It is a library, not an executable application with a Main-Class entry. Inspect it with the JDK jar tool:</p>
+<pre><code class="language-powershell">jar tf target/jvm-identity-1.0.0.jar</code></pre>
+<p>Expect the compiled BuildIdentity class and package directories. Test classes belong to test output; the normal library JAR should not contain BuildIdentityTest. Keep generated target files out of source commits.</p>
+<h2>Exercise and recovery</h2>
+<p>Change the expected display string in one test, rerun test, and inspect the failing method in the report. Restore the expectation only after explaining the actual contract. Do not use a skip-tests flag to turn this exercise green. If compilation fails first, there is no new test result yet; old XML reports may remain from a previous successful run.</p>
+<p><a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html">Apache Maven lifecycle guide</a> · <a href="https://maven.apache.org/surefire/maven-surefire-plugin/examples/junit.html">Surefire JUnit support</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-read-a-project-model.html">Previous lesson</a> · <a rel="next" href="03-dependencies-and-reproducible-evidence.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

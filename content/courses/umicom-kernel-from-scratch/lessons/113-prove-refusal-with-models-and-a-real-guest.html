@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/113-prove-refusal-with-models-and-a-real-guest.html
+
+PURPOSE:
+Prove refusal with models and a real guest
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prove refusal with models and a real guest | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Prove refusal with models and a real guest</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="112-protect-diagnostic-and-handle-outputs.html">Previous lesson</a> · <a rel="next" href="114-qualify-private-vm-locals-in-user-mode.html">Next lesson</a></nav>
+<p>A successful error return is only part of a driver regression. This lesson combines controlled host faults with a named virtual device, using the caller-output checks introduced in the previous lesson. The objective is to distinguish what each environment actually proves.</p>
+<h2>Establish the observation before the call</h2>
+<p>Read OutputOwnership in tests/virtio_block/virtio_block_tests.c. The fixture saves every byte of the domain, the model RAM and independent caller storage. It also saves MMIO read/write counters and physical allocation/release counters. Only then does it make the deliberately invalid call.</p>
+<p>The owner snapshot includes the serial busy flag. The guard may change that flag during a call, but it must restore it before returning. The RAM comparison catches accidental writes even when the API eventually reports an error. Counter comparisons catch premature register access that a byte snapshot cannot detect.</p>
+<h2>Separate active and retained DMA</h2>
+<p>Run the active and retained-page cases:</p>
+<pre><code class="language-powershell">ctest --test-dir build/host-block -R '^block[.](probe|open)_(queue|data|retained_queue|retained_data)$' --output-on-failure --no-tests=error</code></pre>
+<p>The retained cases first open the real driver against the register model, then make reset acknowledgement stop arriving. Close must report RESET_PENDING and retain both pages. Probe and Open must refuse outputs in those pages too. Finally, the fixture allows reset to complete and verifies that a later Close releases the memory.</p>
+<p>This model can inject a nonresponsive reset deterministically. It does not execute RISC-V fences, emulate a bus or demonstrate real hardware timing. There is no asynchronous cancellation API in this driver; the tested lifecycle is synchronous timeout followed by explicit reset/retry.</p>
+<h2>Check a named virtual device</h2>
+<p>The root Kernel CMake project registers kernel.riscv64.read_only_block when QEMU is available. It uses virtio-blk-device, modern MMIO and the repository's synthetic raw fixture with readonly=on. Run it from an already configured Kernel checkout:</p>
+<pre><code class="language-powershell">cmake --preset riscv64-clang-debug
+cmake --build --preset riscv64-clang-debug
+ctest --preset riscv64-clang-debug -R '^kernel[.]riscv64[.](block_without_device|read_only_block)$' --output-on-failure --no-tests=error</code></pre>
+<p>The CTest build fixture checks the current image before execution. Do not substitute a physical disk or remove readonly=on. The existing fixture is deterministic test input, not a filesystem image.</p>
+<p>In kernel/virtio_block_validation.c, the guest refuses an occupied handle and a diagnostic destination inside the owner. After admission it refuses destinations in the actual queue and bounce pages. Successful normal reads then demonstrate that the queue still works after those refusals. Look for the following marker followed by successful sector checks and the final acceptance marker:</p>
+<pre><code class="language-text">block.output-ownership=refused-before-io
+block.first-sector=verified
+block.multi-sector-and-ring-reuse=verified
+UMICOM_KERNEL_READ_ONLY_BLOCK_READY</code></pre>
+<p>The marker identifies the checked code path. Host MMIO counters provide the direct no-I/O observation; the guest checks refusal and continued operation. A marker copied from an older transcript does not identify the current source, and a no-device acceptance marker does not prove any sector read.</p>
+<h2>Build a defensible evidence record</h2>
+<p>Record the toolchain, source content identity, exact configure/build/test commands, exit codes and test transcript. Keep the pre-repair failing cases as well as the repaired results. Re-run the writable suite because both admission paths share the changed guard:</p>
+<pre><code class="language-powershell">cmake -S tests/virtio_block_write -B build/host-block-write -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_BLOCK_WRITE_SANITIZERS=OFF
+cmake --build build/host-block-write
+ctest --test-dir build/host-block-write --output-on-failure --no-tests=error</code></pre>
+<p>If a build fails, resolve that failure before interpreting test output. If no tests are found, check the configured source directory and QEMU discovery; do not remove --no-tests=error to obtain a green command.</p>
+<h2>Extend the experiment</h2>
+<p>Explain why a passing QEMU read cannot prove that every physical device stops DMA correctly, and why a host snapshot cannot prove I/O fence ordering. Then add a new meaningful fault to the existing model, with an unchanged-output assertion and successful cleanup. Do not replace the real driver with a second implementation inside the test. A network driver, noncoherent cache management and multi-hart synchronization require their own contracts and evidence.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="112-protect-diagnostic-and-handle-outputs.html">Previous lesson</a> · <a rel="next" href="114-qualify-private-vm-locals-in-user-mode.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

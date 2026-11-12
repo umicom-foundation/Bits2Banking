@@ -23,6 +23,10 @@ MIT
 
 A partition record contains addresses, while a read callback consumes byte offsets. Confusing those units can point a correct-looking reader at the wrong part of an image. This lesson keeps logical blocks, entry widths and byte lengths visible in names and calculations.
 
+## Before you begin
+
+Keep the GPT inspection lab from the preceding chapter. Read the valid-512 and valid-4096 scenarios and write down the logical-block size used by each before calculating byte offsets. Use the same installed SDK for both runs so the unit comparison is meaningful.
+
 ## Identify each quantity
 
 | Quantity | Meaning in this lab |

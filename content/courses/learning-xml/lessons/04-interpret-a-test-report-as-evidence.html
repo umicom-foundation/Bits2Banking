@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-xml/lessons/04-interpret-a-test-report-as-evidence.html
+
+PURPOSE:
+Interpret an XML test report as evidence
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Interpret an XML test report as evidence | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Interpret an XML test report as evidence</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-separate-parsing-from-application-validation.html">Previous lesson</a></nav>
+<p>XML describes structured text. A document can be well formed while its contents are incomplete, stale or inconsistent. Test reports make that distinction concrete: parsing a report is the beginning of interpretation, not proof that a test run passed.</p>
+<h2>Read a small report</h2>
+<p>This illustrative fragment is teaching data, not an executed result:</p>
+<pre><code class="language-xml">&lt;testsuite name=&quot;identity&quot; tests=&quot;3&quot; failures=&quot;1&quot; errors=&quot;0&quot; skipped=&quot;1&quot;&gt;
+  &lt;testcase name=&quot;preservesIdentity&quot;/&gt;
+  &lt;testcase name=&quot;rejectsMissingComponent&quot;&gt;
+    &lt;failure message=&quot;Expected an exception&quot;/&gt;
+  &lt;/testcase&gt;
+  &lt;testcase name=&quot;rejectsBlankVersion&quot;&gt;&lt;skipped/&gt;&lt;/testcase&gt;
+&lt;/testsuite&gt;</code></pre>
+<p>The suite has one passing case, one failing case and one skipped case under this example's convention. A skipped case is not a pass. The XML language specifies element and attribute structure, but it does not define a universal JUnit report schema. Use the report producer's contract when interpreting fields. See the <a href="https://www.w3.org/TR/xml/">XML specification</a> for the syntax rules.</p>
+<h2>Connect it to real source</h2>
+<p>The JVM lab's BuildIdentityTest.java declares three tests. After a successful Maven test run, inspect target/surefire-reports/TEST-org.umicom.learning.BuildIdentityTest.xml. The Gradle route writes its report under build/test-results/test. These paths identify expected outputs, not proof that the files belong to the latest invocation.</p>
+<p>1. Check the runner's exit result.</p>
+<p>2. Confirm that the file was produced by the current run and intended project.</p>
+<p>3. Inspect individual testcase outcomes and compare them with the suite totals.</p>
+<p>4. Keep failures, errors and skips separate. Preserve the report when diagnosis continues.</p>
+<h2>Exercise conflicting evidence</h2>
+<p>Change tests=&quot;3&quot; to tests=&quot;30&quot; in a disposable copy of the fragment. It remains well-formed XML, but the number no longer agrees with the three visible cases. A consumer must define how it handles such inconsistency; it should not manufacture twenty-seven successes.</p>
+<p>Now imagine that the report says all cases passed but the runner exits unsuccessfully. Preserve both facts. The failure might occur after test execution, or the report might be stale. Do not discard the process failure merely because the document contains a convenient total.</p>
+<h2>Keep data boundaries explicit</h2>
+<p>Diagnostic text can contain less-than signs, ampersands and quotes. XML escaping represents those characters without turning them into elements or attributes. Use a maintained serializer and a bounded parser contract instead of concatenating untrusted text into markup.</p>
+<p>For an importer that only needs local reports, define limits for document size, cases and diagnostic text, and avoid resolving external resources. This lesson does not implement a new XML parser or assert that every producer uses the same conventions. The next useful step is a regression fixture for each report dialect your application actually accepts.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-separate-parsing-from-application-validation.html">Previous lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

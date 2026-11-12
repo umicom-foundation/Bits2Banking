@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/100-bind-a-guest-run-to-current-source.html
+
+PURPOSE:
+Bind a guest run to current source and images
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bind a guest run to current source and images | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Bind a guest run to current source and images</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="99-qualify-normal-boot-at-separate-boundaries.html">Previous lesson</a> · <a rel="next" href="101-qualify-kernel-storage-on-disposable-media.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the course's separate host, cross-build and guest boundaries. Use a disposable practice build directory, the documented RISC-V Clang toolchain and QEMU. Keep the Kernel checkout and optional canonical Umicom C runtime identity together.</p>
+<h2>A successful boot can still be stale</h2>
+<p>An old ELF file can remain after a failed compilation. Launching it may produce a familiar ready marker even though the new source never linked. The Kernel qualification fixture rebuilds current targets and records source/image identities before dependent guest tests.</p>
+<pre><code class="language-text">Source tree + toolchain
+    -&gt; current build
+    -&gt; source and ELF receipt
+    -&gt; receipt verification
+    -&gt; guest observation</code></pre>
+<p>1. Inspect cmake/Qualification.cmake. 2. Follow the current-image fixture relationship in the root CMake file. 3. Open the receipt in your build directory. 4. Distinguish source identity from the runtime marker printed by a guest.</p>
+<h2>Optional external runtime</h2>
+<p>The CVM user program links the canonical Umicom C runtime. Its additional receipt includes selected runtime sources, public headers, build recipe and both O0/O2 images. A Kernel-only revision cannot identify that external code by itself.</p>
+<h2>Exercise and expected result</h2>
+<p>After a successful practice build, change a copied source input and run the identity verification against the old receipt. Expect refusal, not an automatic claim that the old image represents the edit. Restore through your normal reviewed source workflow and rebuild before rerunning the guest.</p>
+<p>The regression fixtures perform controlled source, image and receipt mutations in test-owned storage. Do not perform this exercise on your only working tree or an important disk image.</p>
+<h2>Recovery</h2>
+<p>If identity verification fails, preserve the receipt and compare its listed inputs with current files. A missing header, edited source and corrupted receipt are different causes. Rebuild only after resolving the mismatch; do not hand-edit hashes to make verification succeed.</p>
+<p>A receipt documents what was observed. It is not a code signature, a proof of authenticity or a replacement for reproducible toolchain qualification.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="99-qualify-normal-boot-at-separate-boundaries.html">Previous lesson</a> · <a rel="next" href="101-qualify-kernel-storage-on-disposable-media.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

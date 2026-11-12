@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gradle/lessons/01-projects-plugins-and-tasks.html
+
+PURPOSE:
+Read projects plugins and tasks
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read projects plugins and tasks | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read projects plugins and tasks</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-run-and-inspect-tests.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Use labs/build-tools/jvm-identity in Bits2Banking with an installed JDK 17 and a supported Gradle distribution. The course was authored against the Gradle 9.9.1 manual. Record your actual version; a newer manual is not evidence that an older local distribution supports every setting.</p>
+<pre><code class="language-powershell">Set-Location labs/build-tools/jvm-identity
+gradle --version
+gradle tasks --all</code></pre>
+<p>settings.gradle.kts names the project. build.gradle.kts applies the Java plugin, identifies the artifact and selects the installed Java toolchain. Kotlin is the configuration language here; the application fixture is Java. This explicit JVM teaching example does not replace native Framework services.</p>
+<h2>Follow the graph</h2>
+<p>A task is a unit of build work. Dependencies between tasks express which work must happen first. The Java plugin contributes compilation, test and archive tasks; the project does not need to create equivalent tasks by hand.</p>
+<pre><code class="language-powershell">gradle build --dry-run</code></pre>
+<p>Read the scheduled task names. A dry run explains task selection without executing those tasks. It is not a compilation or test pass. Compare the graph with Maven's lifecycle phases from the companion course: both express build order, but a Gradle task name is not a Maven phase.</p>
+<h2>Exercise</h2>
+<p>Locate the source and test directories used by both tools. Predict whether changing settings.gradle.kts changes the Java package declaration. Check the resulting archive basename after a real build in the next lesson.</p>
+<p>Expected conclusion: project naming and Java package naming remain distinct. Keep the common source files intact so differences in observed outcomes can be investigated in build configuration, test execution or toolchain selection.</p>
+<p><a href="https://docs.gradle.org/current/userguide/java_plugin.html">Gradle Java plugin</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-run-and-inspect-tests.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

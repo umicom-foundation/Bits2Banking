@@ -17,6 +17,10 @@ MIT
 
 # Interpret cancellation after payload writing
 
+## Before you begin
+
+Prepare the framework-boot-media regular-file lab with a fresh destination and the documented cancellation phase. Keep the input image immutable, and record whether a previous attempt created an output. Retain late-cancellation artifacts for inspection instead of overwriting them on a retry.
+
 ## A late stop has different evidence
 
 The flush, verify and finished phases occur after the lab has attempted the complete payload. A cancellation request there cannot undo accepted writes. Framework retains the regular-file output, reports cancellation and leaves verified false. An output that happens to contain all expected bytes does not change the meaning of that transfer result.

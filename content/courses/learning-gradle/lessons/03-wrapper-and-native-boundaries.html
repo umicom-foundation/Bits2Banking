@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gradle/lessons/03-wrapper-and-native-boundaries.html
+
+PURPOSE:
+Pin the build tool and preserve native boundaries
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pin the build tool and preserve native boundaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Pin the build tool and preserve native boundaries</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-run-and-inspect-tests.html">Previous lesson</a> · <a rel="next" href="04-read-task-outcomes-before-claiming-execution.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Finish the two preceding lessons and record the installed Gradle version. This lab does not ship an unreviewed wrapper JAR. Generate a wrapper only from a trusted installed distribution, inspect the generated files and verify the distribution checksum against Gradle's official published value before sharing them.</p>
+<h2>Understand the wrapper</h2>
+<p>The wrapper scripts select a configured Gradle distribution. They do not pin every dependency, the selected JDK, a native compiler or an installed Umicom SDK. A reproducible record therefore needs more than the wrapper version.</p>
+<pre><code class="language-powershell">gradle wrapper --gradle-version 9.9.1 --distribution-type bin</code></pre>
+<p>Review gradlew, gradlew.bat, gradle/wrapper/gradle-wrapper.jar and gradle-wrapper.properties together. The first wrapper invocation can download the selected distribution. Keep credentials out of distribution URLs. Consult the official wrapper guide for distributionSha256Sum and wrapper-JAR verification rather than inventing a checksum.</p>
+<h2>Plan a native client</h2>
+<p>An Android or desktop Java client may eventually load a native C library. Keep the C service, Java native declarations, native-library packaging and target ABI as separate contracts. The same Java source compiling on a workstation does not establish that an Android device can load the corresponding library.</p>
+<h2>Exercise</h2>
+<p>Create a table with four identities: Gradle distribution, JDK, Umicom Framework SDK and target architecture. For each, name the file or command that would supply evidence. Mark the Framework SDK and device cells not applicable for this pure-Java fixture, rather than inventing a successful native integration.</p>
+<p>Expected conclusion: the wrapper answers which build tool starts; toolchain selection answers which compiler builds classes; the SDK and architecture describe a separate native boundary. Use this distinction in the later mobile and desktop application courses.</p>
+<p><a href="https://docs.gradle.org/current/userguide/gradle_wrapper.html">Gradle wrapper guide</a> · <a href="https://docs.gradle.org/current/userguide/toolchains.html">JVM toolchain guide</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-run-and-inspect-tests.html">Previous lesson</a> · <a rel="next" href="04-read-task-outcomes-before-claiming-execution.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

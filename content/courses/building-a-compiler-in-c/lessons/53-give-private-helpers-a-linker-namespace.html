@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/53-give-private-helpers-a-linker-namespace.html
+
+PURPOSE:
+Give private C helpers a linker namespace
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Give private C helpers a linker namespace | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Give private C helpers a linker namespace</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="52-prove-capabilities-with-real-operations.html">Previous lesson</a> · <a rel="next" href="54-check-the-bytes-of-a-c-test-fixture.html">Next lesson</a></nav>
+<h2>Preparation and outcome</h2>
+<p>Read the earlier build-stage lessons and open the native c-library-composition lab in the Bits2Banking repository. You need an installed C23 compiler, CMake and Ninja. This lesson follows a failure that appears only when two otherwise useful libraries enter one executable. You will distinguish file organization, header visibility and external linkage.</p>
+<h2>Why a private header is not a linker boundary</h2>
+<p>A translation unit is the source text after preprocessing, including the headers it incorporates. An ordinary function definition has external linkage unless its declaration gives it internal linkage, commonly with static. Placing its declaration in a file named internal.h does not change that rule. The linker still sees the function's symbol.</p>
+<p>In the lab, scanner.c defines Count(bytes) to count 256-byte pages. Catalogue code defines Count(entries, width) to count bytes. These are different operations. The public entry points have distinct names, but both archive members contain Count. Linking both together without private prefixes produces duplicate definitions. Reordering libraries cannot establish the intended ownership.</p>
+<h2>Follow the correction</h2>
+<p>The source component retains its local spelling through a private alias:</p>
+<pre><code class="language-c">#define Count BtbSourceInternalCount
+size_t Count(size_t bytes);</code></pre>
+<p>The catalogue uses BtbCatalogueInternalCount. Preprocessing changes declarations, definitions and calls consistently. Public API names remain stable. A component that spreads helpers across several source files can place these aliases in its private header. Every participating translation unit must include that header before declaring or defining the helpers.</p>
+<p>A function used only within one translation unit can simply be static. Do not use static when other translation units genuinely need the same implementation, and do not copy the function into each file to avoid a link error. Choose visibility based on ownership.</p>
+<h2>Build and prove composition</h2>
+<p>From the Bits2Banking repository root, run these commands separately:</p>
+<pre><code class="language-powershell">cmake -S labs/native/c-library-composition -B build/c-library-composition -G Ninja
+cmake --build build/c-library-composition --parallel 2
+ctest --test-dir build/c-library-composition -R composition --output-on-failure --no-tests=error</code></pre>
+<p>Expect two passing tests. Both executable variants call both services, including size boundaries. An archive is a collection of object files; a linker commonly extracts members needed to resolve references. A test that calls only one service can therefore miss a collision hidden in the other archive. This explains why isolated tests are necessary but insufficient.</p>
+<h2>Apply the reasoning to Framework</h2>
+<p>Framework's Source Contracts and Setup Centre both historically used names including ScRead and ScCopy. Their signatures and meanings differ. Source Contracts now maps its private helpers to UmiSourceContractInternal names through its own internal header. The source implementations stay in place. The public UmiSourceContract API and Setup Centre API remain separate.</p>
+<p>The authored Framework composition regression calls both public services from one executable and registers both archive orders. A successful configuration only creates its build rules. It does not prove the executable linked or its assertions passed; capture those results separately when running the Framework qualification suite.</p>
+<h2>Exercise and recovery</h2>
+<p>Use the separate collision build documented in the lab README. Enable BTB_TEACH_UNQUALIFIED_HELPERS and expect the build to fail during linking. Save the exact command and first duplicate-symbol diagnostic. Return to the valid build directory afterward. Never conceal this failure with an allow-multiple-definitions option: the two helper contracts are incompatible.</p>
+<p>Explain in your notes why an include guard prevents repeated declarations within one translation unit but does not rename symbols across libraries. Your explanation should identify the public APIs, private implementations and evidence that both libraries actually participated.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="52-prove-capabilities-with-real-operations.html">Previous lesson</a> · <a rel="next" href="54-check-the-bytes-of-a-c-test-fixture.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

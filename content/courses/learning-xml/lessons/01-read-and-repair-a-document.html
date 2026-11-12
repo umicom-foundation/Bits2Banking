@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-xml/lessons/01-read-and-repair-a-document.html
+
+PURPOSE:
+Read and repair an XML document
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read and repair an XML document | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read and repair an XML document</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-understand-namespace-identity.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Open the supplied labs/build-tools/jvm-identity/pom.xml as text. Keep an unchanged copy for comparison. Use a plain text editor that preserves UTF-8 and shows line numbers. You can complete the first reading exercise without installing Maven or executing a build.</p>
+<h2>Follow the tree</h2>
+<p>An XML document has one document element. Start and end tags nest in order, and attribute values use quotes. The following small teaching record is well formed:</p>
+<pre><code class="language-xml">&lt;measurement unit=&quot;g&quot;&gt;
+  &lt;value&gt;80000&lt;/value&gt;
+  &lt;note&gt;Morning &amp;amp; evening example&lt;/note&gt;
+&lt;/measurement&gt;</code></pre>
+<p>The element names carry application-defined meaning. XML syntax alone does not know that g means grams or that value is supposed to contain an integer. The entity reference amp represents an ampersand in text; a literal ampersand needs appropriate escaping.</p>
+<h2>Read a real project</h2>
+<p>Find project in the POM, then locate properties, dependencies and build beneath it. Match every closing tag to its opening tag. Notice that comments are separate from element content and that whitespace between structural elements makes the file readable.</p>
+<h2>Exercise</h2>
+<p>In a scratch copy, close measurement before closing value. Explain the crossed nesting and repair it. Next remove the quotes from unit and repair that error. Finally replace 80000 with unknown. Explain why the last document can remain well formed even though the application cannot interpret its value as an integer.</p>
+<p>Expected conclusion: syntax checks answer whether a document follows XML rules. An application's validation contract answers whether the data makes sense for that application. A file extension does not establish either result.</p>
+<h2>Recover from an error</h2>
+<p>Use the first parser line and column as a starting point, then examine preceding tags and quotes. Later diagnostics can be consequences of the first malformed construct. Keep the original document when practising repairs, and never treat changing an expected result as a syntax fix.</p>
+<p><a href="https://www.w3.org/TR/xml/">W3C XML specification</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-understand-namespace-identity.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

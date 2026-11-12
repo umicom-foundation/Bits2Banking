@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/weight-management-framework/lessons/06-connect-an-authorized-web-host.html
+
+PURPOSE:
+Connect the shared form to a web host
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect the shared form to a web host | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Connect the shared form to a web host</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-compose-the-existing-desktop-editor.html">Previous lesson</a> · <a rel="next" href="07-plan-a-mobile-native-boundary.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Complete the HTML forms and request lessons. Read include/umicom/web/structured_form.h and structured_form_edit.h. This chapter describes a host integration; the native console example is not an HTTP server.</p>
+<h2>Render the current revision</h2>
+<p>The Framework renderer produces controls from the schema and current form. It escapes data for the page and requires the host to supply a local action and a session-bound CSRF token.</p>
+<pre><code class="language-c">status = umi_web_structured_form_render(
+    umi_weight_log_schema(), form, &quot;/observations/review&quot;,
+    csrf_token, html, html_capacity, &amp;html_length);</code></pre>
+<p>1. Authenticate the request and authorize access to this record before rendering. 2. Generate and bind the CSRF token through the host's session service. 3. Emit the complete page only after rendering succeeds. 4. Keep personal observations and tokens out of ordinary access diagnostics.</p>
+<h2>Review a submission</h2>
+<p>umi_web_structured_form_prepare checks the complete submitted control contract against the current form and prepares an edit. Applying that edit remains a separate shared operation. Serialize prepare and apply with competing writes; an HTML hidden revision is not a lock.</p>
+<p>Do not replace the generated field names with a hand-written three-field exercise and assume the adapter will accept it. The adapter also binds form identity, schema version, revision and intent.</p>
+<h2>Exercise and expected result</h2>
+<p>Draw two browser tabs showing the same initial revision. Submit a change from the first tab. Then submit the older second tab. The old submission must be reviewed against the actual current form and refused when its revision no longer matches. The older screen must not overwrite the accepted change.</p>
+<h2>Recovery</h2>
+<p>On refusal, preserve the submitted draft separately from accepted storage. A refreshed page should explain the conflict and offer an explicit review path. Do not echo unescaped request bytes into an error page or mark a form saved because HTML rendering succeeded.</p>
+<p>This renderer does not supply authentication, network transport, TLS, hosting or a deployment policy. Use the existing Framework web services and separately qualify the actual host. Read the <a href="https://html.spec.whatwg.org/multipage/forms.html">HTML forms specification</a> for the browser side of this boundary.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-compose-the-existing-desktop-editor.html">Previous lesson</a> · <a rel="next" href="07-plan-a-mobile-native-boundary.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

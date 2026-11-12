@@ -324,3 +324,46 @@ Follow the real Kernel coordinator, distinguish image purposes, preserve output 
 1. [Preserve startup stream identity](97-preserve-startup-stream-identity.md)
 1. [Require the intended recovery cause](98-require-the-intended-recovery-cause.md)
 1. [Qualify normal boot at separate boundaries](99-qualify-normal-boot-at-separate-boundaries.md)
+
+## Bind native guest and storage evidence
+
+- [Bind a guest run to current source and images](100-bind-a-guest-run-to-current-source.md)
+- [Qualify storage with disposable images and fresh readback](101-qualify-kernel-storage-on-disposable-media.md)
+
+## Bounded packet admission
+
+- [Read a packet as a bounded capture](102-read-a-packet-as-a-bounded-capture.md)
+- [Check headers without trusting payloads](103-check-headers-without-trusting-payloads.md)
+- [Separate parser evidence from network readiness](104-separate-parser-evidence-from-network-readiness.md)
+
+## Execute packet admission in the diagnostic guest
+
+- [Move a packet check from host to guest](105-move-a-packet-check-from-host-to-guest.md)
+- [Require a complete guest test transcript](106-require-a-complete-guest-test-transcript.md)
+
+## Guest runtime and source grammar boundary
+
+- [Separate a guest runtime from source grammar](107-separate-a-guest-runtime-from-source-grammar.md)
+
+## Configuration and guest identity
+
+- [Distinguish input identity from guest evidence](108-distinguish-input-identity-from-guest-evidence.md)
+
+## UDP capture admission and guest evidence
+
+- [Admit UDP with an explicit checksum policy](109-admit-udp-with-an-explicit-checksum-policy.md)
+- [Separate capture, IP and UDP lengths](110-separate-capture-ip-and-udp-lengths.md)
+- [Check UDP in the real diagnostic guest](111-check-udp-in-the-real-diagnostic-guest.md)
+
+## Caller output ownership and device lifetime
+
+- [Protect diagnostic and handle outputs](112-protect-diagnostic-and-handle-outputs.md)
+- [Prove refusal with models and a real guest](113-prove-refusal-with-models-and-a-real-guest.md)
+
+## Private VM locals in user mode
+
+- [Qualify private VM locals in user mode](114-qualify-private-vm-locals-in-user-mode.md)
+
+## Forward VM paths in user mode
+
+- [Execute forward VM paths in user mode](115-execute-forward-vm-paths-in-user-mode.md)

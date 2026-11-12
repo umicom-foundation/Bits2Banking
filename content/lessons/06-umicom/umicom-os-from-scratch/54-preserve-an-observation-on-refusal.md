@@ -23,6 +23,10 @@ MIT
 
 An application often has a useful result before its next operation fails. Replacing that result with partially validated data makes recovery difficult and can mislead the user. This lesson follows the lab’s successful observation, controlled refusal and fresh retry through the same public API.
 
+## Before you begin
+
+Prepare the valid GPT memory fixture and a separate output structure for the last accepted observation. Review the lab refusal scenarios before injecting a read failure. Keep the original successful observation available for a field-by-field comparison after the refused call.
+
 ## Capture the successful state
 
 ~~~c

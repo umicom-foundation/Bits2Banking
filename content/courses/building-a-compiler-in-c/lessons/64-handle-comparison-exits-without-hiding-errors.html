@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/64-handle-comparison-exits-without-hiding-errors.html
+
+PURPOSE:
+Handle comparison exits without hiding errors
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Handle comparison exits without hiding errors | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Handle comparison exits without hiding errors</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="63-compare-operations-without-running-programs.html">Previous lesson</a> · <a rel="next" href="65-test-buffered-report-failures.html">Next lesson</a></nav>
+<p>A read-only comparison has three useful outcomes: same, different, and unable to compare. Treating the last two as one state can hide malformed source behind an ordinary difference. This lesson follows the native command's explicit exit contract and the tests that protect it.</p>
+<h2>Before you begin</h2>
+<p>Complete the operation-comparison lesson and keep left.uc and right.uc in a disposable exercise directory. Use the actual built command from your configured Umicom C preset. You should know how to inspect PowerShell's LASTEXITCODE immediately after a native command.</p>
+<h2>Read the command-specific contract</h2>
+<p>Exit zero means both inputs compiled and their validated opcodes and operands matched. Exit one means both compiled but the operations differed. Exit two means usage, reading, compilation, validation or reporting failed. These meanings belong to compare-operations; existing run and check commands retain their own error behavior.</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe compare-operations .\left.uc .\right.uc
+$comparisonExit = $LASTEXITCODE
+switch ($comparisonExit) {
+    0 { 'The validated operations match.' }
+    1 { 'The validated operations differ.' }
+    2 { 'Comparison failed; inspect the diagnostic.' }
+    default { 'Unexpected process result; investigate before continuing.' }
+}</code></pre>
+<p>This optional shell example interprets the native result. It does not implement comparison or authorize any follow-up build, copy or publication operation.</p>
+<h2>Make a failure visible</h2>
+<p>1. Leave left.uc valid and remove the expression after return in right.uc. 2. Run the command and expect exit two. 3. Check that the diagnostic names right.uc with a line and byte-column location. 4. Confirm that no operations=same or operations=different report appeared. 5. Restore the right file, then repeat with malformed left source.</p>
+<p>Missing paths and a source larger than the supported limit also fail with exit two. A path containing spaces is still one argument when quoted. An execution-budget option is invalid because this command does not execute programs.</p>
+<h2>Inspect independent regression evidence</h2>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-debug -R '^umicom[.]c[.]cli-operation-identity[.]' --output-on-failure --no-tests=error</code></pre>
+<p>Expected result: twelve groups pass. The test file supplies independent source pairs and expected process exits. It also hashes both existing input files before and after invocation and compares the directory inventory. These checks would catch an accidental rewrite or newly created output.</p>
+<p>Each invocation has its own timeout. An exit caused by timeout is not the same as an expected semantic difference; the test compares the exact process result. Keeping separate CTest groups also identifies which input category failed instead of hiding all cases behind one aggregate result.</p>
+<h2>Exercise and recovery</h2>
+<p>A workflow uses if comparisonExit is nonzero to rebuild, then discards every diagnostic. Explain how that can conceal a missing source file or compiler rejection. Change the workflow design so errors stop for investigation, while an ordinary difference is reported distinctly. Do not add automatic repository publication to the exercise.</p>
+<p>If a test fails, retain stdout, stderr, the case name and the exact executable identity. Review the source pair and expected contract before changing assertions. A passed comparison remains evidence only about the two admitted operation sequences; it is not evidence that a program ran or that an older artifact can safely be reused.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="63-compare-operations-without-running-programs.html">Previous lesson</a> · <a rel="next" href="65-test-buffered-report-failures.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

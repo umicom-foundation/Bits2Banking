@@ -1,0 +1,41 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/67-prove-local-initialization-before-execution.html
+
+PURPOSE:
+Prove local initialization before execution
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prove local initialization before execution | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Prove local initialization before execution</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="66-bind-local-names-to-slots.html">Previous lesson</a> · <a rel="next" href="68-lower-short-circuit-logical-expressions.html">Next lesson</a></nav>
+<h2>Goal</h2>
+<p>Understand why the runtime must validate local operations even when the compiler already checks names. A bytecode consumer can receive data from another producer. It must enforce its own storage contract.</p>
+<h2>Separate two kinds of memory</h2>
+<p>The operand stack holds temporary expression values. A local slot holds an integer that can be read repeatedly during one invocation. Neither is a native address exposed to the program. The runtime has 32 slots and a 64-value operand stack.</p>
+<pre><code class="language-text">PUSH 42
+STORE_LOCAL 31
+LOAD_LOCAL 31
+RETURN</code></pre>
+<p>STORE pops one stack value into the highest valid slot. LOAD pushes a copy. RETURN still needs exactly one value and must be last. A local store consumes one instruction of fuel just like addition.</p>
+<h2>Construct the proof</h2>
+<ol><li>Start an unsigned 32-bit initialization map at zero.</li><li>For a slot operation, reject negative operands and operands at least 32 before shifting or indexing.</li><li>For STORE, require one stack value, reduce depth and set the slot's bit.</li><li>For LOAD, require that bit and space on the stack, then increase depth.</li><li>Check every instruction and the final return before executing any instruction.</li></ol>
+<p>This proof works because the supported program is straight-line. A future branch would require reasoning about every path reaching a load. Reusing this single linear map unchanged for branching code would be incorrect.</p>
+<p>The executor can use an automatic local array without reading an uninitialized element because admission proves every read has a preceding write. The array belongs to one call. Executing a valid program first must never initialize a slot for a later invalid program.</p>
+<h2>Inspect independent tests</h2>
+<p>Read tests/test_local_runtime.c. The runtime-only target deliberately does not link the compiler. It supplies its own instruction arrays and literal format-3 bytes, checks slot 31, rejects -1 and 32, and attempts to read a different slot from the one stored. Sentinel results and trace entries prove that refusal does not publish partial success.</p>
+<pre><code class="language-powershell">ctest --test-dir build -R &quot;umicom.c.locals.runtime&quot; --output-on-failure --no-tests=error</code></pre>
+<p>The fuel test tries every budget below the eight-instruction workload. A failed trace includes the attempted instruction. Exhaustion before STORE leaves the stack value visible in that failed row, while the public result remains unchanged. Trace capacity failure and malformed bytecode happen before execution and publish zero trace entries.</p>
+<h2>Preserve the wire contract</h2>
+<p>Local operations append opcode identities 14 and 15. They require format 3 while retaining the eight-byte header and nine-byte records. Arithmetic-only programs keep format 1; comparisons without locals keep format 2. The decoder requires the minimum profile, so changing a header byte cannot downgrade local operations or relabel arithmetic as format 3.</p>
+<p>The encoder must inspect beyond an early comparison. Otherwise it could return format 2 before noticing a later STORE. The mixed-operation fixture checks this ordering directly.</p>
+<h2>Exercise</h2>
+<p>Draw stack depth and initialized bits after each operation in the four-record example. Then replace its load operand with 30. Predict the rejection point and which output sentinels must remain intact. Explain why a successful previous execution, spare fuel or a large output buffer cannot make that read valid. Finally compare header capability macros with linked profile queries: a new header alone does not update an installed runtime.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="66-bind-local-names-to-slots.html">Previous lesson</a> · <a rel="next" href="68-lower-short-circuit-logical-expressions.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

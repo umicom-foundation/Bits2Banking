@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-html/lessons/15-connect-field-errors-to-the-shared-contract.html
+
+PURPOSE:
+Connect field errors to the shared contract
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect field errors to the shared contract | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Connect field errors to the shared contract</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-distinguish-a-draft-from-a-saved-record.html">Previous lesson</a> · <a rel="next" href="16-test-published-table-structure.html">Next lesson</a></nav>
+<p>A form error should explain which input needs attention while preserving the person's draft. Color alone is insufficient. This lesson connects a small HTML teaching fragment to the existing Framework kilogram parser; it does not introduce a new application layout.</p>
+<h2>Before you begin</h2>
+<p>Complete the earlier lessons on named controls and saved-state messages. Keep a disposable HTML exercise separate from a production endpoint, and read the kilogram parser contract in the Framework header. Use synthetic values only. A browser and keyboard are needed for the later presentation checks; source inspection alone cannot verify announcements or focus.</p>
+<h2>Use one validation contract</h2>
+<p>The shared C function umi_weight_log_parse_kilograms accepts a bounded ASCII span. For this contract, 80.250 means 80250 grams. A comma decimal separator, exponent, sign, spaces or a kg suffix is refused. The web client must communicate that input format and still submit through the shared validation boundary.</p>
+<p>Client hints can make entry easier. They cannot replace server-side or host-side validation. A request can arrive without using your form at all.</p>
+<h2>Associate text with its control</h2>
+<pre><code class="language-html">&lt;label for=&quot;mass&quot;&gt;Observation in kilograms&lt;/label&gt;
+&lt;p id=&quot;mass-help&quot;&gt;Use a dot and up to three fractional digits, for example 80.250.&lt;/p&gt;
+&lt;input id=&quot;mass&quot; name=&quot;mass_kg&quot; type=&quot;text&quot; inputmode=&quot;decimal&quot;
+       value=&quot;80,250&quot; aria-invalid=&quot;true&quot;
+       aria-describedby=&quot;mass-help mass-error&quot;&gt;
+&lt;p id=&quot;mass-error&quot;&gt;Use a dot instead of a comma. Your entry has not been saved.&lt;/p&gt;</code></pre>
+<p>This is an error-state example. In a real response, escape the preserved value as an HTML attribute through the shared output adapter. Never insert an untrusted value directly into this string. inputmode is an input hint; it does not enforce the C grammar.</p>
+<h2>Plan the response sequence</h2>
+<p>1. Keep the entered value in the draft.</p>
+<p>2. Validate it through the shared native contract.</p>
+<p>3. On refusal, return a stable field identifier and useful text, without claiming a save.</p>
+<p>4. Associate the error text with the control and provide an error summary for a multi-field form.</p>
+<p>5. Let the person correct the entry and submit again. Only an acknowledged persistence result can support “saved.”</p>
+<p>The W3C <a href="https://www.w3.org/WAI/tutorials/forms/notifications/">form-notification guidance</a> describes identifying errors and associating messages with controls. Browser, keyboard and assistive-technology behavior still needs actual qualification.</p>
+<h2>Exercise and expected observations</h2>
+<p>Try 80.250, 80,250, an empty value and 80.250kg in a synthetic test plan. Only the first matches the parser's valid nonzero kilogram grammar. Date, authorization and persistence remain separate checks even for that accepted mass.</p>
+<p>Explain what happens if the request times out after submission. “No response received” is accurate; “not saved” may be wrong if the server completed the write. Recovery must inspect the authorized record state before retrying a create operation.</p>
+<h2>Keep branding and scope intact</h2>
+<p>Use the approved Umicom SVG wordmark, ICO and shared typography when the fragment is integrated into the approved page design. This lesson's source editions already use those course assets. It does not prove a browser rendered them, supply a production endpoint, or provide a completed mobile or desktop application.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="14-distinguish-a-draft-from-a-saved-record.html">Previous lesson</a> · <a rel="next" href="16-test-published-table-structure.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

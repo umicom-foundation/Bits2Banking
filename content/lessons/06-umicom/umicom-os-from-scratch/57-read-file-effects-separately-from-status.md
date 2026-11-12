@@ -17,6 +17,10 @@ MIT
 
 # Read file effects separately from status
 
+## Before you begin
+
+Open the framework-boot-media lab README and use its regular-file practice fixture in a dedicated scratch directory. Identify the installed Framework SDK and the client executable before interpreting report fields. Do not select a physical disk; the exercises in this module rely on disposable regular files.
+
 ## Begin with an incomplete operation
 
 A file-copy function returning an error does not necessarily leave the filesystem unchanged. Opening a new output may create an empty file before allocation or metadata checks fail. Writing can fail after accepting some bytes. The media report therefore carries observations separately from its final status. Open the installed-client main.c and find Result, which prints the same fields for success and failure.

@@ -23,6 +23,10 @@ MIT
 
 A media application has two separate responsibilities: obtaining bytes it is allowed to read, and interpreting those bytes. This lesson connects an owned memory allocation to the installed Framework parser. The small program never opens a path or a device, so its behavior can be studied without selecting a real disk.
 
+## Before you begin
+
+Open the installed GPT inspection lab README and confirm that its C23 compiler and Framework SDK prefix are available. Start with the valid-512 synthetic memory fixture; this chapter needs no device path. Read port.c and identify the LabImage allocation before following the borrowed callback.
+
 ## The result you will build
 
 The lab creates a synthetic image, gives Framework an exact-read callback, and prints a structural observation. main.c chooses a scenario; image.c constructs teaching data; port.c supplies bytes. Framework remains the only partition parser. These divisions let you change the source adapter later without copying validation logic into each application.

@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/weight-management-framework/lessons/02-convert-kilograms-without-rounding.html
+
+PURPOSE:
+Convert kilogram text into exact grams
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Convert kilogram text into exact grams | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Convert kilogram text into exact grams</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-define-the-observation-contract.html">Previous lesson</a> · <a rel="next" href="03-edit-and-read-a-native-form.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the observation contract and understand a byte span: a pointer plus an explicit length. Use synthetic values such as 80.250. No personal measurements are required.</p>
+<h2>Trace the actual parser</h2>
+<p>The shared parser accepts ASCII digits, an optional dot and up to three fractional digits. It rejects a comma, exponent, sign, suffix, spaces and embedded NUL bytes. That narrow contract is deliberate: a localized interface must explicitly translate its own input rules before calling the canonical service.</p>
+<pre><code class="language-c">uint32_t grams = 19U;
+UmiStatus status = umi_weight_log_parse_kilograms(&quot;80.250&quot;, 6U, &amp;grams);
+if (status == UMI_STATUS_OK) {
+    /* grams is 80250U. */
+}</code></pre>
+<p>1. Accumulate the whole part, 80. 2. Accumulate the fraction, 250. 3. Compute 80 * 1000 + 250 using bounded unsigned integer arithmetic. 4. Publish the result only after syntax and capacity admission succeed.</p>
+<p>For 80.2, the parser scales the fraction to 200 grams. It does not approximate a binary floating-point value. For 80.2501, it refuses the extra precision rather than rounding without consent.</p>
+<h2>Expected result</h2>
+<p>The example returns OK and replaces 19 with 80250. A refused parse leaves 19 intact. The input length excludes any terminator; a buffer can contain additional bytes after the admitted span without making them part of the input.</p>
+<h2>Exercise</h2>
+<p>Trace 0.001, 80, 80.25, 80,25 and 8e1. Predict each status and output. Then read the decimal, syntax and range groups in tests/healthcare/test_weight_log.c. These tests include a non-terminated span and embedded NUL, so they check more than ordinary string input.</p>
+<h2>Recovery</h2>
+<p>A PARSE_ERROR means the text did not match this grammar. INVALID_ARGUMENT covers required null pointers or a numeric value outside the positive encoding range. Do not show a previously valid number as if the latest invalid entry was accepted. Keep the visible draft and ask the user to correct it.</p>
+<p>The service's maximum is 1,000,000,000 grams. That value prevents a storage overflow; it is not a suggested weight or a health judgement. Display units explicitly whenever a client converts the canonical integer for presentation.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-define-the-observation-contract.html">Previous lesson</a> · <a rel="next" href="03-edit-and-read-a-native-form.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

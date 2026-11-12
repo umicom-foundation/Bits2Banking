@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/56-read-hexadecimal-and-binary-source.html
+
+PURPOSE:
+Read hexadecimal and binary source without overflowing
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read hexadecimal and binary source without overflowing | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read hexadecimal and binary source without overflowing</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="55-keep-regression-observations-type-correct.html">Previous lesson</a> · <a rel="next" href="57-separate-source-spelling-from-wire-format.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Complete the expression and capability lessons. Build Umicom C from the same checkout you are reading. Open src/lexer.c and docs/integer-literals.md. This lesson extends a small integer language; it does not teach a complete C23 lexer.</p>
+<h2>A spelling becomes a value</h2>
+<p>Decimal 42, hexadecimal 0x2A and binary 0b101010 describe the same integer. A radix is the number of different digits used by a spelling. Decimal has ten, binary two, hexadecimal sixteen. Hexadecimal uses A through F for digit values ten through fifteen.</p>
+<p>Decode 0x2A by hand: start at zero, multiply by sixteen and add two, then multiply by sixteen and add ten. The result is 42. The parser should receive that value without caring which spelling produced it.</p>
+<pre><code class="language-c">value = value * base + part;</code></pre>
+<p>That line is safe only after the next value has been admitted. The implementation checks first:</p>
+<pre><code class="language-c">if (value &gt; (INT32_MAX - part) / base)
+    return umc_fail(diagnostic, UMC_LITERAL_RANGE, start);</code></pre>
+<p>Every admitted part is nonnegative and smaller than base. Subtracting it from INT32_MAX is therefore safe. Integer division gives the greatest previous value that can be extended. Try value 134217727, base 16 and part 15: the result is exactly INT32_MAX. Increasing value by one must fail before multiplication.</p>
+<h2>Follow the boundary in source</h2>
+<p>1. Find the byte consumed at the start of umc_lex_next. 2. Find the length check before looking for x, X, b or B after zero. 3. Find the helper that consumes the prefix byte. 4. Track digits_start and explain why a bare 0x fails. 5. Find the check that rejects a digit outside the selected base. 6. Find the unchanged decimal branch below the new prefix admission.</p>
+<p>The existing decimal branch matters. In this language 010 continues to mean ten. Silently changing it to octal would change the meaning of previously accepted programs. Explicit prefixes add new spellings without reinterpreting that older input.</p>
+<h2>Use the actual command</h2>
+<p>From the Umicom C source directory, after building:</p>
+<pre><code class="language-powershell">.\build\bin\umicom-c.exe run examples\integer_literals.uc --max-steps 4
+ctest --test-dir build -R &quot;umicom.c.integer-literals.(values|refusals|decimal)&quot; --output-on-failure --no-tests=error</code></pre>
+<p>The example compares two spellings of forty-two. Expect Result: 1 and Instructions: 4. The tests include mixed-case hex digits, long leading-zero sequences, signed limits, invalid binary digits and unsupported suffixes.</p>
+<h2>Make a prediction, then check it</h2>
+<p>Create a separate practice source with return -0x80000000;. Predict a literal range error. The minus sign is a later unary operation; it cannot make the positive token fit. Rewrite it as -0x7fffffff - 1 and expect the minimum signed result.</p>
+<p>Now try 0x1e+2. The e is a hexadecimal digit, so this is thirty plus two, not floating-point exponent notation. Try 0x1p0 and expect a syntax error because floating-point literals are outside the profile. Keep the original example unchanged.</p>
+<h2>Recovery and limits</h2>
+<p>If an old compiler rejects the new prefix, inspect its profile output and the selected executable path. Rebuild the matching source rather than adding a silent decimal fallback. If a large constant is refused, check the signed literal range before changing arithmetic. This implementation does not provide unsigned integers, octal, suffixes or digit separators. Missing features should stay explicit.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="55-keep-regression-observations-type-correct.html">Previous lesson</a> · <a rel="next" href="57-separate-source-spelling-from-wire-format.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

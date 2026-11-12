@@ -1,0 +1,40 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-html/lessons/11-names-controls-and-submitted-values.html
+
+PURPOSE:
+Follow named controls into a form request
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow named controls into a form request | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Follow named controls into a form request</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-relative-resources-and-http.html">Previous lesson</a> · <a rel="next" href="12-read-an-observation-table.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the earlier HTML form lesson. Use a scratch file and synthetic values. No server is provided by this exercise; pressing Submit against a missing route does not save anything. Start by tracing the document on paper.</p>
+<h2>Build a request vocabulary</h2>
+<p>An id joins a visible label to its control. A name identifies the value in the submitted request. Keeping those jobs distinct makes a form understandable to both its reader and its receiving C service.</p>
+<pre><code class="language-html">&lt;form method=&quot;post&quot; action=&quot;/practice/observations&quot;&gt;
+  &lt;label for=&quot;practice-date&quot;&gt;Observation date&lt;/label&gt;
+  &lt;input id=&quot;practice-date&quot; name=&quot;observed_on&quot;
+         type=&quot;date&quot; required value=&quot;2024-02-29&quot;&gt;
+  &lt;label for=&quot;practice-mass&quot;&gt;Mass in grams&lt;/label&gt;
+  &lt;input id=&quot;practice-mass&quot; name=&quot;mass_grams&quot;
+         type=&quot;number&quot; min=&quot;1&quot; step=&quot;1&quot; required value=&quot;80250&quot;&gt;
+  &lt;button type=&quot;submit&quot; name=&quot;intent&quot; value=&quot;review&quot;&gt;Review&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+<p>1. Write down the three names the receiving route needs: observed_on, mass_grams and intent. 2. Change only practice-mass to practice-weight in both id and label for. The request's mass_grams name remains unchanged. 3. Remove the name from the mass control in your practice copy. The visible number still exists, but it no longer contributes that named entry. 4. Restore the name before continuing. The server must reject a missing required entry; it must not substitute a previous person's value.</p>
+<h2>Expected result</h2>
+<p>For this filled form and activated Review button, the logical entries are observed_on=2024-02-29, mass_grams=80250 and intent=review. Actual encoding and transport are separate concerns. A browser can prevent an ordinary invalid submission, but a caller can construct its own request.</p>
+<h2>Exercise and recovery</h2>
+<p>Disable the date control, then compare its submission with a read-only text field in a separate scratch form. Record what is omitted and what remains editable. A missing date must remain a refused request. Restore the original controls when finished; do not repair a server error by weakening required fields.</p>
+<h2>Connect to Framework</h2>
+<p>The Framework structured-form adapter has its own complete field, revision and intent contract. This three-name teaching fragment is not a drop-in replacement for the generated controls. Inspect include/umicom/web/structured_form.h before wiring a real route.</p>
+<p>The <a href="https://html.spec.whatwg.org/multipage/forms.html">HTML forms specification</a> explains the browser contract. A network request trace, server validation and an acknowledged save are different pieces of evidence.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-relative-resources-and-http.html">Previous lesson</a> · <a rel="next" href="12-read-an-observation-table.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,39 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-html/lessons/13-display-untrusted-text-as-text.html
+
+PURPOSE:
+Keep record text out of executable markup
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep record text out of executable markup | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Keep record text out of executable markup</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-read-an-observation-table.html">Previous lesson</a> · <a rel="next" href="14-distinguish-a-draft-from-a-saved-record.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Read the table lesson. Work only with a scratch document containing synthetic notes. You will inspect bytes and escaped examples, not run an injected script.</p>
+<h2>Separate data from the document</h2>
+<p>A note can contain characters that have meaning in HTML. If a server concatenates the note directly into its response, the browser may interpret it as markup. The display adapter must encode text for the destination context.</p>
+<pre><code class="language-text">Stored note:       Walk &lt;outside&gt; &amp; rest
+Text-node markup:  Walk &amp;lt;outside&amp;gt; &amp;amp; rest
+Visible text:      Walk &lt;outside&gt; &amp; rest</code></pre>
+<p>1. Keep the original note in the model. Do not mutate stored text merely because one view uses HTML. 2. When producing an HTML text node, use the shared rendering service's escaping. 3. Avoid placing arbitrary notes in a URL, style or script. Those contexts need different admission rules. 4. Review the emitted page source and the resulting visible text separately.</p>
+<h2>Follow the native adapter</h2>
+<p>Framework's umi_web_structured_form_render escapes its form data and does not emit a script. It requires a rooted local action path and a nonempty session-bound CSRF token supplied by the host. That renderer does not authenticate the visitor or grant record access.</p>
+<pre><code class="language-c">/* After the host establishes a session and authorizes the record: */
+status = umi_web_structured_form_render(
+    schema, form, &quot;/observations/review&quot;, csrf_token,
+    html_buffer, html_capacity, &amp;html_length);</code></pre>
+<p>This fragment assumes declared buffers and an initialized form. Read the real header for limits and refused field types before adding it to a route. Do not copy a fixed demonstration token into a deployed service.</p>
+<h2>Expected result</h2>
+<p>The synthetic note remains text when displayed. The caller can distinguish rendering refusal from a completed response. A correctly escaped page is not evidence of authentication, transport encryption or safe deployment.</p>
+<h2>Exercise and recovery</h2>
+<p>Try the synthetic note A &quot;quoted&quot; label &amp; &lt;sample&gt; with the existing Framework renderer in an owner-qualified test harness. Inspect both text and attribute contexts. If the output is truncated or the renderer refuses the buffer, allocate a permitted larger output buffer and repeat rendering from the original model; never publish a partial page as success.</p>
+<p>For the exact native contract, read include/umicom/web/structured_form.h and the associated Framework tests. The <a href="https://html.spec.whatwg.org/multipage/forms.html">HTML forms specification</a> provides browser background.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-read-an-observation-table.html">Previous lesson</a> · <a rel="next" href="14-distinguish-a-draft-from-a-saved-record.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

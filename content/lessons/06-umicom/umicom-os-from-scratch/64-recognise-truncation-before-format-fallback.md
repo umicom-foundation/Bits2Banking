@@ -24,6 +24,10 @@ MIT
 -->
 [Course contents](../../../courses/umicom-os-from-scratch/index.html) · [HTML edition](../../../courses/umicom-os-from-scratch/lessons/64-recognise-truncation-before-format-fallback.html) · [Complete lab](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-iso-inspection/README.md)
 
+## Before you begin
+
+Open the framework-iso-inspection lab README and build its memory-only client against the intended installed Framework SDK. Locate the fixture allocation and its separately supplied visible length. Record the original length before shortening only the view; no optical drive or physical image write is needed.
+
 ## Start with three different questions
 
 A format detector asks whether bytes identify a known format. A parser asks whether a recognised structure satisfies that format’s supported rules. A boot qualification asks whether a particular machine actually starts from the produced image. These questions have different evidence. In this lesson you extend the existing memory-only ISO client to distinguish an absent identifier, a recognised truncation and a completed structural observation. No file is created and no device is opened.
@@ -97,3 +101,5 @@ Before executing a change, predict the result at one byte below, exactly at and 
 - Identify which result owns the flags after a failed second inspection.
 - Record compiler, architecture, SDK revision and the exact scenario with any observed failure.
 
+
+[Course contents](index.md) · [Previous lesson](63-qualify-installed-media-recovery-behaviour.md)

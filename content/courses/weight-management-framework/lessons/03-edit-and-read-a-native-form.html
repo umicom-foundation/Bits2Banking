@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/weight-management-framework/lessons/03-edit-and-read-a-native-form.html
+
+PURPOSE:
+Build and inspect the C client
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build and inspect the C client | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Build and inspect the C client</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-convert-kilograms-without-rounding.html">Previous lesson</a> · <a rel="next" href="04-save-revisions-with-the-existing-record-service.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Use a Framework SDK containing the new weight-log header and matching application library. Read examples/weight_log/README.md. The following commands assume you are in the Framework source root; replace the SDK prefix with your installed qualified SDK.</p>
+<pre><code class="language-powershell">cmake -S examples/weight_log -B build/weight-log-consumer -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=C:/sdk/umicom
+cmake --build build/weight-log-consumer
+ctest --test-dir build/weight-log-consumer --output-on-failure</code></pre>
+<p>Run each command separately and stop on an error. This course gives the procedure; a source example is not an executed result on your machine.</p>
+<h2>Read the ownership in main.c</h2>
+<p>The example allocates a UmiStructuredForm, obtains the immutable schema, parses kilograms and creates typed answers. The date has text type. Mass has integer type and the exact unit token mass.g.</p>
+<pre><code class="language-c">status = umi_structured_form_set(schema, form, form-&gt;revision,
+                                &quot;weight.mass_grams&quot;, &amp;mass);
+if (status == UMI_STATUS_OK)
+    status = umi_weight_log_read(form, &amp;entry);</code></pre>
+<p>The complete program handles earlier failures before reaching these calls. Copying this fragment alone does not initialize a form or authorize storage.</p>
+<p>1. Find the allocation and its matching free. 2. Find where the current edit revision is supplied. 3. Find the unit assignment and distinguish it from the user-facing label. 4. Follow each failure to the final return code.</p>
+<h2>Expected result</h2>
+<p>A qualified successful run prints Synthetic observation: 2024-02-29, 80250 g and returns zero. It has not saved a database record. Only this known fixture is printed; real notes and measurements should not enter ordinary diagnostic logs.</p>
+<h2>Exercise and recovery</h2>
+<p>Change the fixture date to 2023-02-29 in a practice copy. Predict which shared call rejects it and why no final entry should be printed. Restore the valid fixture before comparing with the published example.</p>
+<p>If the header is found but a symbol fails to link, inspect the SDK prefix and library identity. A mixed old library/new header is different from a C syntax error. If configuration cannot find Umicom::application, qualify the installed component rather than adding source files directly to the consumer.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-convert-kilograms-without-rounding.html">Previous lesson</a> · <a rel="next" href="04-save-revisions-with-the-existing-record-service.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

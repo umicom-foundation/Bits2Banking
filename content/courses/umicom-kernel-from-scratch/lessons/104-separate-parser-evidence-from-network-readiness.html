@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/104-separate-parser-evidence-from-network-readiness.html
+
+PURPOSE:
+Separate parser evidence from network readiness
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate parser evidence from network readiness | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate parser evidence from network readiness</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="103-check-headers-without-trusting-payloads.html">Previous lesson</a> · <a rel="next" href="105-move-a-packet-check-from-host-to-guest.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Complete the capture and checksum lessons. Review the distinction between host tests and guest tests in the earlier qualification chapters. Use the documented cross-toolchain only for the link-contract step.</p>
+<h2>Three separate claims</h2>
+<p>A host test proves behavior for its supplied bytes on the host compiler/runtime. A freestanding link check proves that compiled code can link without a hosted C library. A network guest test would exercise a driver and actual queue ownership. The current packet foundation provides the first two contracts; it does not implement the third.</p>
+<h2>Why a successful ordinary link can be misleading</h2>
+<p>Linkers can discard unused functions. If the parser is not called by a guest, discarding it could also hide an unresolved runtime-library reference. The existing boot-memory contracts keep all sections and link the actual parser at O0 and O2 without libc.</p>
+<p>1. Open cmake/BootMemoryContracts.cmake. 2. Find kernel/network_packet.c in its source list. 3. Locate the two optimization settings. 4. Find the no-undefined and nostdlib options. 5. Explain why these contract images are not offered as bootable kernels.</p>
+<pre><code class="language-powershell">cmake --build build/riscv64-clang-debug --target umicom-boot-memory-contracts</code></pre>
+<p>Use the cross-build directory you actually configured. Expect both link images to complete. An undefined memcpy or memset is a real freestanding dependency problem; do not fix it by adding a host operating-system library.</p>
+<h2>Plan the next device boundary</h2>
+<p>Write a small ownership table with the states device-owned, completed, admitted and released. For each transition, name who may read or write the buffer. Add one bounded queue-full outcome and one shutdown case where completion arrives late. This is a design exercise, not an implemented driver state machine.</p>
+<p>The parser refuses options, fragments and unsupported frame types. Reassembly would need storage limits, expiry and collision handling. A receive queue needs resource accounting before exposing a packet to a service. Each new capability must preserve the existing refusal behavior until its replacement contract is explicit.</p>
+<h2>Verification and recovery</h2>
+<p>Run all 19 host groups after changing the reader. Run the O0/O2 link targets after changing byte-copy or result-publication logic. Keep these results separate from QEMU boot evidence and physical hardware evidence.</p>
+<p>If a test fails only after optimization, compare generated dependencies and object symbols, then reduce the failing case. Do not label a host-only pass as a working network stack. No socket, live NIC, ARP exchange or packet transmission is implemented by these lessons.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="103-check-headers-without-trusting-payloads.html">Previous lesson</a> · <a rel="next" href="105-move-a-packet-check-from-host-to-guest.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

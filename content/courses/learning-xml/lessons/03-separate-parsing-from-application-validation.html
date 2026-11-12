@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-xml/lessons/03-separate-parsing-from-application-validation.html
+
+PURPOSE:
+Separate parsing from application validation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate parsing from application validation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate parsing from application validation</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-understand-namespace-identity.html">Previous lesson</a> · <a rel="next" href="04-interpret-a-test-report-as-evidence.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Use only the small synthetic documents from this course. Keep a list of the fields your reader would accept: one measurement value, an explicit unit and an optional note. Define byte and item limits before planning a native import service.</p>
+<h2>Design an admission sequence</h2>
+<p>First limit the input size and parse under an explicit policy. Then check the expected root and namespace. Next reject unknown or repeated required fields, parse integer text with overflow checks and admit the unit. Only after the complete record is accepted should a service publish a new value to its caller.</p>
+<pre><code class="language-xml">&lt;measurement unit=&quot;g&quot;&gt;
+  &lt;value&gt;80000&lt;/value&gt;
+  &lt;value&gt;81000&lt;/value&gt;
+&lt;/measurement&gt;</code></pre>
+<p>This tree is structurally ordinary XML. An application expecting exactly one value must decide how to reject the duplicate instead of silently using whichever value a helper returns first. A document that parses is not automatically a valid measurement.</p>
+<h2>Keep external access explicit</h2>
+<p>A general XML parser may support document types and external entities. An untrusted import should not gain network or filesystem authority merely from text inside the document. The future native Framework adapter needs a reviewed parser policy, bounded memory and regression fixtures before it can be used for user records. This introductory course does not supply that adapter.</p>
+<h2>Exercise</h2>
+<p>Write an expected-result table for missing value, duplicate value, unsupported unit, integer overflow, unexpected namespace and oversized input. For every refusal, require the prior accepted record to remain unchanged. Add a successful synthetic case to show that the refusal policy still allows the intended document.</p>
+<h2>Connect to the build-tool courses</h2>
+<p>Maven validate checks a Maven project model and can involve build configuration. Do not execute an unknown downloaded POM merely to ask whether arbitrary XML is well formed. Use a parser designed for the input's trust boundary. For the supplied trusted lab, compare a POM syntax error with a later Java test failure and explain why they occur at different stages.</p>
+<p><a href="https://www.w3.org/TR/xml/">W3C XML specification</a> · <a href="https://maven.apache.org/guides/introduction/introduction-to-the-pom.html">Maven POM model</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-understand-namespace-identity.html">Previous lesson</a> · <a rel="next" href="04-interpret-a-test-report-as-evidence.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

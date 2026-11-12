@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-maven/lessons/03-dependencies-and-reproducible-evidence.html
+
+PURPOSE:
+Track dependencies and build evidence
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track dependencies and build evidence | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Track dependencies and build evidence</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-compile-test-and-package.html">Previous lesson</a> · <a rel="next" href="04-distinguish-verification-from-artifact-existence.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Keep one successful lab build and its console output. Open pom.xml and locate the junit dependency and the three build plugins. The test library is versioned separately from the compiler, test runner and archive plugins.</p>
+<h2>Understand test scope</h2>
+<p>The junit dependency has test scope. It is available to compile and run tests, while the public BuildIdentity class needs only the Java platform. Keeping the test dependency out of the production API prevents callers from needing JUnit simply to use the library.</p>
+<pre><code class="language-powershell">mvn dependency:tree
+mvn help:effective-pom</code></pre>
+<p>These diagnostic goals can themselves require plugin downloads. Compare the effective model with your authored POM: inherited defaults explain values that do not appear explicitly in the file. Do not copy the entire generated model back into the source POM as a repair.</p>
+<h2>Separate package install and deploy</h2>
+<p>Package creates the local build artifact. Maven install adds an artifact to the local Maven repository; deploy publishes to a configured remote artifact repository. Neither is equivalent to installing a desktop application or deploying the Umicom OS. This lab needs package, not a remote publication step.</p>
+<h2>Exercise</h2>
+<p>Record the Maven version, JDK home, source revision, plugin versions, dependency tree and three-test report. Copy the project to another scratch folder while keeping generated outputs out of the copy. Predict which downloads can be reused through the local Maven cache and which files must be rebuilt.</p>
+<p>Expected conclusion: a cache can supply dependencies but does not establish that the second source tree passed its tests. An offline build succeeds only when every required dependency and plugin is already available. Keep network errors, missing artifacts and test failures as different observations.</p>
+<h2>Connect a native client later</h2>
+<p>A future Java client of Umicom Framework should call a deliberately designed native boundary. A Maven JAR alone cannot prove C ABI compatibility, native-library discovery or correct ownership. Record the native SDK identity separately when adding that integration.</p>
+<p><a href="https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html">Apache dependency guide</a> · <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html">Maven lifecycle reference</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-compile-test-and-package.html">Previous lesson</a> · <a rel="next" href="04-distinguish-verification-from-artifact-existence.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

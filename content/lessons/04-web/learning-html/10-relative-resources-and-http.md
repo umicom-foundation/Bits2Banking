@@ -47,3 +47,5 @@ Opening a file directly with a `file:` URL may encounter module-loading restrict
 
 [Course contents](index.md) · [Previous lesson](09-status-messages-and-page-language.md)
 
+
+[Next lesson](11-names-controls-and-submitted-values.md)

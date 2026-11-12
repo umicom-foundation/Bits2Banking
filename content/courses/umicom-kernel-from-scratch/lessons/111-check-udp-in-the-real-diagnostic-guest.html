@@ -1,0 +1,40 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/111-check-udp-in-the-real-diagnostic-guest.html
+
+PURPOSE:
+Check UDP in the real diagnostic guest
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check UDP in the real diagnostic guest | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Check UDP in the real diagnostic guest</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="110-separate-capture-ip-and-udp-lengths.html">Previous lesson</a> · <a rel="next" href="112-protect-diagnostic-and-handle-outputs.html">Next lesson</a></nav>
+<p>A hosted unit test and a freestanding guest answer different questions. The host suite explores many malformed inputs. The diagnostic guest demonstrates that the actual Kernel image can execute the production UDP reader without relying on a host C runtime.</p>
+<h2>Before you begin</h2>
+<p>Complete the packet and UDP host lessons. Follow the Kernel build guide to configure its RISC-V Clang toolchain and QEMU. Use the configured build directory from that guide. The commands below use build/riscv64-clang-debug as an example; do not invent a second unrelated cache if yours has another path.</p>
+<h2>Locate production and fixture code</h2>
+<p>kernel/network_packet.c owns both IPv4 and UDP admission. kernel/network_packet_validation.c supplies synthetic byte arrays and assertions. Read udpCapture: it is separate from the earlier IPv4-only capture, whose arbitrary payload deliberately does not represent a valid UDP datagram.</p>
+<p>UdpValidateExecution adds four groups. udp-golden checks the copied fields and five-byte application payload. udp-refusals changes the odd final payload byte, declares a mismatched length and supplies a truncated capture. udp-padding extends accessible storage while retaining the same admitted payload. udp-checksum-policy checks both required and explicitly absent checksum cases.</p>
+<p>These are tests of RAM parsing. No virtual NIC, DMA completion, network interrupt or packet transmission is involved.</p>
+<h2>Build the current image and collect the transcript</h2>
+<pre><code class="language-powershell">cmake --build build/riscv64-clang-debug --target umicom-kernel-evidence --parallel 2
+ctest --test-dir build/riscv64-clang-debug -R '^kernel[.](qualification[.]identity|riscv64[.]packet_admission)$' --output-on-failure --no-tests=error</code></pre>
+<p>Stop after a failed command. CTest may add the required current-image setup fixture. Keep its result separate from the single guest test and from the groups printed inside that guest.</p>
+<p>Expected transcript: the seven original IPv4 groups, the four UDP groups in order, packet-admission.cases=11, the packet ready marker and the final Kernel end marker. The wrapper also requires successful emulator exit and rejects explicit failure text. A log containing only a ready marker cannot qualify the run.</p>
+<h2>Check the linkage boundary separately</h2>
+<pre><code class="language-powershell">cmake --build build/riscv64-clang-debug --target umicom-boot-memory-contracts</code></pre>
+<p>This target links admission code at O0 and O2 without libc and without discarding unused sections. It can reveal a compiler-inserted memory helper that a hosted build would quietly supply. The resulting contract images check linkage; they are not substitutes for the guest execution above.</p>
+<h2>Explain an odd-byte checksum failure</h2>
+<p>The golden payload has an odd number of bytes. The checksum reader includes its final byte without reading a nonexistent partner byte. The guest changes that final byte and requires checksum refusal with unchanged output. This catches an implementation that accidentally ignores the last payload byte while still accepting even-length examples.</p>
+<p>The host suite remains broader: it also checks independent pseudo-header changes, absent-checksum policy, the all-ones checksum encoding, maximum extent, overlap, unaligned input and every truncated prefix. Do not describe four guest groups as covering every hosted boundary.</p>
+<h2>Exercise and recovery</h2>
+<p>Suppose an older transcript contains packet-admission.cases=7 and an end marker. Explain why it is insufficient for the extended reader. Preserve it as historical evidence, regenerate the build after changing test definitions, build the current image and collect a new transcript.</p>
+<p>If a guest fails, preserve its serial output and source/image identities before retrying. A passing host suite does not authorize ignoring a guest failure. Passing both still leaves physical hardware, device queues, DMA ownership, socket policy and live networking unqualified.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="110-separate-capture-ip-and-udp-lengths.html">Previous lesson</a> · <a rel="next" href="112-protect-diagnostic-and-handle-outputs.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/66-bind-local-names-to-slots.html
+
+PURPOSE:
+Bind local names to integer slots
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bind local names to integer slots | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Bind local names to integer slots</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="65-test-buffered-report-failures.html">Previous lesson</a> · <a rel="next" href="67-prove-local-initialization-before-execution.html">Next lesson</a></nav>
+<h2>Goal and prerequisites</h2>
+<p>Extend the expression compiler into a small statement language. You should already understand token offsets, expression precedence and the difference between compilation and execution. Use the implemented local profile in the Umicom C source tree; this lesson does not claim full C23 support.</p>
+<h2>Follow a declaration</h2>
+<pre><code class="language-c">int main(void) {
+    int base = 6;
+    int result = base * 7;
+    base = 9;
+    return result;
+}</code></pre>
+<p>Predict the answer before running it. result stores 42 when its initializer executes; assigning 9 to base does not recompute result. These are integer values, not spreadsheet formulas.</p>
+<ol><li>Open src/lexer.c. A name begins with an ASCII letter or underscore. Later characters may also be digits. The token carries an offset and length, allowing comparison without allocating a copied string.</li><li>Open src/compiler.c and find the active find_local function. It compares both length and bytes against earlier declarations. base and baseline must remain different names; Base differs from base.</li><li>Follow local_statement. It checks whether the name already exists before compiling an initializer. A new declaration is entered only after its expression and semicolon are accepted.</li><li>Follow the identifier arm in unary. It resolves a name and emits LOAD_LOCAL with the numeric slot. Source locations remain diagnostic offsets; no source pointer enters bytecode.</li><li>Follow assignment. It resolves an existing slot, compiles the right side, then emits STORE_LOCAL. It does not add a symbol or yield an expression value.</li></ol>
+<p>This ordering explains why int value=value; is rejected. The new variable cannot read itself before initialization. An earlier variable remains visible in a later initializer. The single function body has one flat scope; there is no shadowing block.</p>
+<h2>Run and inspect</h2>
+<p>Save the example as slots.uc in your Umicom C checkout after following its build guide.</p>
+<pre><code class="language-powershell">.\build\bin\umicom-c.exe check .\slots.uc
+.\build\bin\umicom-c.exe run .\slots.uc
+.\build\bin\umicom-c.exe trace .\slots.uc</code></pre>
+<p>Expect result 42. Trace the store into result and the later store into base. Explain why the returned copy still holds 42. The trace exposes the operand stack, not a complete variable inspector.</p>
+<h2>Make the boundaries fail</h2>
+<p>Change return result to return missing. Expect a syntax error at the undeclared name and no executable instruction count. Try declaring base twice, omit an initializer, or use return base=9. Each violates a different part of the statement contract. Restore valid source after each experiment; do not execute partially emitted instructions.</p>
+<p>The limits are independent: 63 bytes per identifier, 32 declared locals, 256 instructions and 64 stack values. Reassigning one variable consumes instructions without consuming another local slot. The tests generate 32 distinct declarations and a rejected 33rd; they also exhaust instruction storage with assignments to one name.</p>
+<h2>Exercise and review</h2>
+<p>Add two similarly named variables and verify that changing one does not change the other. Write down the expected declaration-order slots before reading disassembly. Then run:</p>
+<pre><code class="language-powershell">ctest --test-dir build -R &quot;umicom.c.locals.source&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Read tests/test_local_source.c. Its expected values, rejected forms and boundary cases are the specification checks. Passing compilation alone does not establish arithmetic success, portable wire compatibility or the Kernel consumer's execution.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="65-test-buffered-report-failures.html">Previous lesson</a> · <a rel="next" href="67-prove-local-initialization-before-execution.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

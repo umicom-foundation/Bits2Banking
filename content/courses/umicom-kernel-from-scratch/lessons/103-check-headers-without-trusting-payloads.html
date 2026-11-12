@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/103-check-headers-without-trusting-payloads.html
+
+PURPOSE:
+Check headers without trusting payloads
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check headers without trusting payloads | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Check headers without trusting payloads</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="102-read-a-packet-as-a-bounded-capture.html">Previous lesson</a> · <a rel="next" href="104-separate-parser-evidence-from-network-readiness.html">Next lesson</a></nav>
+<h2>Before you begin</h2>
+<p>Complete the bounded-capture lesson and build its host checks. Keep the fixed golden bytes visible beside the parser. The fixture is synthetic; its protocol field does not make its payload a complete UDP message.</p>
+<h2>What a checksum proves</h2>
+<p>The fixed IPv4 header checksum uses 16-bit words in network byte order. Carries are folded back into the low 16 bits. The reader includes the checksum field and expects the folded sum 0xffff. The format is described in <a href="https://www.rfc-editor.org/rfc/rfc791.html">RFC 791</a>.</p>
+<pre><code class="language-c">UmicomU32 sum = 0U;
+for (UmicomSize i = 0U; i &lt; 20U; i += 2U)
+    sum += ReadNetwork16(ip + i);
+while (sum &gt;&gt; 16U)
+    sum = (sum &amp; 0xffffU) + (sum &gt;&gt; 16U);</code></pre>
+<p>This is the real bounded loop from the implementation. There are only ten words; the intermediate sum fits UmicomU32. A future variable-length header profile would need its own bounds review.</p>
+<h2>Use independent expectations</h2>
+<p>1. Read golden's fixed checksum bytes 0x3c, 0x62. 2. Notice that the test helper Checksum is used only after a header mutation. 3. Compare the helper's fold-after-each-add strategy with the reader's final fold. 4. Read the header-corruption test and predict CHECKSUM. 5. Read payload_policy and explain why changing payload bytes still passes header admission.</p>
+<p>The reader does not verify UDP, TCP, sender identity or application content. A matching checksum is not authentication.</p>
+<h2>Preserve the old observation on refusal</h2>
+<p>Refused fills the result with a sentinel, saves its full byte representation, calls the parser and compares the result afterward. A parser that wrote a source address before discovering a bad checksum would fail this contract.</p>
+<p>Staging has a cost: a temporary result occupies stack space. Here the result has a fixed small size and no allocation. The benefit is a clear publication point after every required check.</p>
+<h2>Verify and recover</h2>
+<pre><code class="language-powershell">ctest --test-dir build/host-network-packet -R &quot;kernel.network_packet.(checksum|payload_policy|truncation)$&quot; --output-on-failure --no-tests=error</code></pre>
+<p>Expect three groups. In a scratch fixture, flip one header bit and keep the original checksum. Expect refusal with unchanged output. Restore the fixture before rerunning the canonical suite. Do not recalculate a broken test's checksum unless the case is intentionally about a different, valid header.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="102-read-a-packet-as-a-bounded-capture.html">Previous lesson</a> · <a rel="next" href="104-separate-parser-evidence-from-network-readiness.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

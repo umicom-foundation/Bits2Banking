@@ -158,3 +158,5 @@ Use the existing installed C23 media client to distinguish creation, payload wri
 - [Check native release without retrying handles](61-check-native-release-without-retrying-handles.md)
 - [Retain failed media artifacts for recovery](62-retain-failed-media-artifacts-for-recovery.md)
 - [Qualify installed media recovery behaviour](63-qualify-installed-media-recovery-behaviour.md)
+
+- [Recognise truncation before format fallback](64-recognise-truncation-before-format-fallback.md)

@@ -17,6 +17,10 @@ MIT
 
 # Retain failed media artifacts for recovery
 
+## Before you begin
+
+Create a dedicated scratch directory for the regular-file media exercises and keep a copy of the original input identity. Prepare separate destination names for the first attempt and any later retry. Decide where status, phase, size and digest observations will be recorded before invoking the client.
+
 ## Choose preservation before retry
 
 After a failed transfer, the most useful evidence is often the source identity, requested destination, report and retained output. Automatic deletion would hide whether creation or writing happened. The existing lab deliberately creates a unique scratch directory for each test and never removes its artifacts. Treat a partial image as diagnostic material, not as a ready distribution.

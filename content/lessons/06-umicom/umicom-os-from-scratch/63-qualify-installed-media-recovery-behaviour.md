@@ -17,6 +17,10 @@ MIT
 
 # Qualify installed media recovery behaviour
 
+## Before you begin
+
+Select one installed Framework SDK and read the framework-boot-media lab README and QUALIFICATION.md. Confirm that the practice-image tool and client use the intended architecture and configuration. Start with a fresh consumer build directory when an existing cache names a different SDK, preserving the old evidence.
+
 ## Identify the code that is actually running
 
 The lab links an installed Framework package. Editing Framework source or packaging a new complete file does not update that installation. Before interpreting test results, record the producer revision, compiler, architecture, build configuration, SDK prefix and consumer executable. A matching header with an older library can expose declarations while retaining older runtime behaviour.

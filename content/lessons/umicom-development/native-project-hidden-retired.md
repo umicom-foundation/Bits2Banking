@@ -62,6 +62,7 @@ Destroy is not rollback. It cannot erase effects already performed, and forced p
 
 ## Source and next steps
 
-[Native project source and qualification guide](../../../docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-hidden-retired.html)
+<!-- The checkout-only guide route is retained for review: [Native project source and qualification guide](../../../docs/guides/native-project-forms.md) -->
+[Native project source and qualification guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/docs/guides/native-project-forms.md) · [HTML edition](../../courses/umicom-development/lessons/native-project-hidden-retired.html)
 
 [Previous lesson](native-project-result-publication.md) · [Next lesson](native-project-host-shutdown.md) · [Course index](index.md)

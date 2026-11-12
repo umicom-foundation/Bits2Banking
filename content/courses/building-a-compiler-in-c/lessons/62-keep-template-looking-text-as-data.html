@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/62-keep-template-looking-text-as-data.html
+
+PURPOSE:
+Keep template-looking text as data
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep template-looking text as data | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Keep template-looking text as data</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="61-refuse-stale-input-records-without-repairing-them.html">Previous lesson</a> · <a rel="next" href="63-compare-operations-without-running-programs.html">Next lesson</a></nav>
+<p>Build configuration contains text that can resemble another language's instructions. A path or flag might include an at-sign token. Serializing that value must not reinterpret it as a template.</p>
+<h2>Reproduce the reasoning error</h2>
+<p>CMake file(CONFIGURE) is designed to substitute variables. That is useful when generating a deliberate template. It is unsuitable for a JSON record whose values have already been resolved and must remain literal. A value such as @UNDECLARED_VARIABLE@ can disappear during a second substitution pass.</p>
+<p>Read the preserved disabled writer in cmake/InputIdentity.cmake, then the active umc_input_write_data helper. The replacement compares existing bytes and writes the content directly when needed. It does not run another template expansion over the record.</p>
+<h2>Inspect the regression</h2>
+<p>The literal-configuration-token fixture uses string(ASCII 64) to construct an at sign, places a token and a semicolon in a recipe value, captures the record, and verifies it unchanged. Constructing the character deliberately also keeps the test authoring step from accidentally expanding the very token under test.</p>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-debug -R '^umicom.c.input-identity.literal-configuration-token$' --output-on-failure --no-tests=error</code></pre>
+<p>Expected result: one passing regression. The recorded value keeps its token, spaces and semicolon. The record remains data even when it resembles CMake source.</p>
+<h2>Distinguish escaping from substitution</h2>
+<p>JSON escaping makes quotes and backslashes representable inside a string. Template substitution replaces recognized tokens with values. These are different operations. Escaping JSON correctly does not make a later template-expansion pass safe for literal data.</p>
+<p>The checker also refuses appended content and altered claims. It compares the canonical representation produced by capture rather than accepting arbitrary reformatted JSON. This narrow contract is appropriate for a generated local record and should be explained to users.</p>
+<h2>Exercise and answer</h2>
+<p>Suppose a recipe has a path called build/@PROFILE@/compiler. Should the recorder replace PROFILE with the current build type? No. Resolve deliberate build variables before constructing the recipe; once the path is a data value, preserve it. If you intended an unresolved template, it belongs in a separate template field and workflow.</p>
+<p>A related failure occurs when a program evaluates a receipt as configuration code. The receipt-as-code regression confirms that the verifier does not create a marker requested by injected CMake text. Reviewers should look for forbidden include or execute operations on untrusted receipt contents, not merely for correct checksums.</p>
+<p>CMake documents substitution and direct writing separately in its <a href="https://cmake.org/cmake/help/v3.24/command/file.html">file command reference</a>. The lesson's repair uses those existing build-system facilities; it does not add another product runtime.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="61-refuse-stale-input-records-without-repairing-them.html">Previous lesson</a> · <a rel="next" href="63-compare-operations-without-running-programs.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
