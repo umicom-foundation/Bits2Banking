@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/project-select-a-catalogue-recipe.html
+
+PURPOSE:
+Select a project recipe by its stable identity
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Select a project recipe by its stable identity | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Select a project recipe by its stable identity</h1><p>After preparing the installed-SDK lab in its README, run this scenario. Commands below are qualification instructions, not recorded results.</p><pre><code class="language-powershell">&amp; .\build\framework-project-recipes\project-recipes.exe catalogue</code></pre><h2>Start with the installed catalogue</h2>
+<p>A project recipe describes files that a generator can prepare. Its title is for people; its identifier is for stored settings, commands and comparisons. Build a small client that enumerates the installed Framework catalogue before writing a project picker. The available recipes depend on the Framework revision selected by the application. A course screenshot cannot establish which recipes your binary contains.</p>
+<pre><code class="language-c">size_t count = umi_developer_project_builtin_template_count();
+for (size_t i = 0; i &lt; count; ++i) {
+    const UmiDeveloperProjectTemplate *recipe =
+        umi_developer_project_builtin_template_at(i);
+    /* Check the pointer and validator before presenting its fields. */
+}</code></pre>
+<h2>Follow the real client</h2>
+<p>Open inputs.c in the linked lab. The catalogue scenario checks each returned pointer, validates its structure and prints its stable identity and file count. It also requires the C23 console recipe and checks that the index immediately after the catalogue returns no entry. This is a public API exercise: the lab does not include Framework implementation files or maintain a second list of recipe definitions.</p>
+<h2>Keep descriptions and capability evidence separate</h2>
+<p>A recipe can declare that it supports tests or installation because it emits the corresponding build instructions. Those declarations do not show that a compiler, GTK development package or signing tool is available on this computer. Present the declaration as a recipe property, then use the appropriate build and environment services to collect actual evidence. Do not label a project Ready merely because its catalogue entry exists.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Value</th><th scope="col">Use</th><th scope="col">Do not infer</th></tr></thead><tbody><tr><td>template_id</td><td>Persist the selected recipe identity</td><td>An immutable version of its content</td></tr><tr><td>title</td><td>Display readable choices</td><td>A stable lookup key</td></tr><tr><td>file_count</td><td>Explain the expected recipe size</td><td>The number successfully written</td></tr><tr><td>supports_tests</td><td>Describe generated build support</td><td>That tests have executed</td></tr></tbody></table></div>
+<h2>Try a controlled change</h2>
+<p>Run the catalogue scenario after building the lab. Copy two identifiers from the output into your notes. Compare the console and GTK recipes by reading their current generated build text in the preview workflow. Keep the selected identifier as data; do not turn the displayed title into a shell command. If a saved identifier disappears after an SDK change, report an unavailable choice and ask the application user to select a replacement rather than silently choosing the first item.</p>
+<h2>Expected observation and diagnosis</h2>
+<p>The scenario should print the available identifiers and exit zero after its checks. A missing console entry or invalid record is a failed expectation, not permission to weaken the test. Record the selected SDK prefix, its producer revision and the diagnostic. A missing symbol at link time usually directs investigation toward an older or mismatched installed library; changing the course source cannot update that installation.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-project-recipes/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-project-recipes/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/project-select-a-catalogue-recipe.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="recovery-layered-qualification.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="project-borrowed-recipes-owned-variables.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/52-keep-partition-address-units-explicit.html
+
+PURPOSE:
+Teach keep partition address units explicit through the installed Framework GPT service.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep partition address units explicit | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="51-connect-an-owned-image-read-port.html">Previous lesson</a> · <a rel="next" href="53-reserve-table-space-before-partitions.html">Next lesson</a></nav><h1>Keep partition address units explicit</h1><p>Complete source: <a href="../../../../labs/native/framework-gpt-inspection/image.c">image.c</a> · <a href="../../../../labs/native/framework-gpt-inspection/README.md">Build and run the lab</a> · <a href="../../../../labs/native/framework-gpt-inspection/QUALIFICATION.md">Qualification guide</a></p><p>A partition record contains addresses, while a read callback consumes byte offsets. Confusing those units can point a correct-looking reader at the wrong part of an image. This lesson keeps logical blocks, entry widths and byte lengths visible in names and calculations.</p>
+<h2>Identify each quantity</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Quantity</th><th scope="col">Meaning in this lab</th></tr></thead><tbody><tr><td>image.length</td><td>Number of allocated source bytes.</td></tr><tr><td>image.block</td><td>Bytes per logical block: 512 or 4096.</td></tr><tr><td>sectors</td><td>image.length divided by image.block.</td></tr><tr><td>first</td><td>First usable logical block address.</td></tr><tr><td>width</td><td>Byte width of one partition entry.</td></tr></tbody></table></div>
+<p>The synthetic allocation has 524,288 bytes. At 512 bytes per block it contains 1,024 blocks; at 4096 it contains 128 blocks. Neither representation changes the allocation size. The header locations and usable addresses do change because they describe positions in the chosen logical-block coordinate system.</p>
+<h2>Follow construction</h2>
+<pre><code class="language-c">uint64_t sectors = candidate.length / block;
+uint64_t reserve = 16384U / block;
+uint64_t first = 2U + reserve;
+uint64_t last = sectors - 2U - reserve;</code></pre>
+<p>The lab accepts only two block sizes, each of which divides the reservation exactly. Its first usable address is 34 for the 512-byte fixture and 6 for the 4096-byte fixture. Those become byte offsets 17,408 and 24,576 respectively. The larger logical-block fixture needs fewer address units but not fewer allocated source bytes.</p>
+<h2>Keep encoding separate from host layout</h2>
+<p>Put32 and Put64 write individual little-endian bytes. They do not cast the image buffer to a C structure. A structure cast would depend on alignment, padding and the host representation. Explicit encoding also makes it possible to alter one field in a teaching fixture without accidentally modifying a neighboring field.</p>
+<pre><code class="language-c">static void Put64(unsigned char *p, uint64_t value)
+{
+    for (unsigned i = 0U; i &lt; 8U; ++i)
+        p[i] = (unsigned char)(value &gt;&gt; (8U * i));
+}</code></pre>
+<h2>Run two coordinate systems</h2>
+<p>Run valid-512 and valid-4096 separately. Each should report one partition. The expected usable intervals are 34..990 and 6..122. The program compares the first usable address with the fixture calculation and checks the reported logical-block size. Keep both command results; passing one case does not qualify the other geometry.</p>
+<h2>Exercise</h2>
+<p>Calculate the byte address of the backup header for each fixture before running it. Then explain why multiplying a partition count by the block size would not locate that header.</p>
+<h2>Worked explanation</h2>
+<p>The backup header occupies the final logical block. Its byte address is source length minus one logical block: 523,776 for 512-byte blocks and 520,192 for 4096-byte blocks. A partition count describes how many regions are active, not where the final block begins. Using it as an address confuses a count with a coordinate.</p>
+<h2>Transfer the lesson to an application</h2>
+<p>Carry observed logical-block geometry alongside the source identity. Do not substitute a filesystem cluster size, a physical-sector size or an assumed universal value. The read-only Framework service supports both teaching geometries, while the existing Boot Media transfer workflow retains its separate 512-byte image policy. Inspection support alone does not authorize or qualify a new device-writing format.</p>
+<p><a href="https://uefi.org/specs/UEFI/2.11/05_GUID_Partition_Table_Format.html">Primary GPT format reference</a> · <a href="../index.html">Course contents</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT for these original lessons and examples. Referenced specifications retain their own rights.</p></footer></body></html>

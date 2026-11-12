@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/project-refused-preview-preserves-state.html
+
+PURPOSE:
+Preserve a reviewed preview when the next recipe fails
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve a reviewed preview when the next recipe fails | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Preserve a reviewed preview when the next recipe fails</h1><p>After preparing the installed-SDK lab in its README, run this scenario. Commands below are qualification instructions, not recorded results.</p><pre><code class="language-powershell">&amp; .\build\framework-project-recipes\project-recipes.exe late-failure</code></pre><h2>Begin with useful state</h2>
+<p>An application often already displays a valid preview when the user changes a field or recipe. If a new render fails halfway through, clearing the displayed plan would discard useful information and may make the interface appear to accept an incomplete project. The generation-plan builder prepares a private candidate and publishes it only after all files and final path checks succeed.</p>
+<h2>Follow a late failure</h2>
+<p>The lab first renders a valid two-file plan and copies every byte into a comparison snapshot. It then changes only the second file to reference UNSET_VARIABLE. The first file can render successfully, but the second cannot. The expected status is NOT_FOUND and the old plan must remain byte-for-byte unchanged. Checking only file_count would miss accidental edits to paths, content, root metadata or revision.</p>
+<pre><code class="language-c">memcpy(before, plan, sizeof *before);
+files[1].content_template = &quot;{{UNSET_VARIABLE}}&quot;;
+UmiStatus status = umi_developer_project_generation_plan_build(
+    &amp;recipe, &amp;variables, &quot;C:/learning/replacement&quot;, plan);
+/* Require NOT_FOUND and memcmp(plan, before, sizeof *plan) == 0. */</code></pre>
+<h2>Check the final validation boundary too</h2>
+<p>The duplicate scenario uses different recipe path text that renders to the same destination. Its expected ALREADY_EXISTS result must also preserve the earlier plan. This tests the final validation stage rather than a missing variable. In a learner copy, replace the second path with a traversal attempt and predict the refusal before running it. Keep the original accepted plan as the observation baseline.</p>
+<h2>Understand aliasing</h2>
+<p>The aliased-root scenario passes plan-&gt;project_root as an input while plan is also the output. A builder that clears output before reading this input would erase its own source string. Candidate preparation avoids that failure: all input reads finish before publication. This guarantee is about readable in-process input storage during the call; it does not permit an unrelated thread to mutate those bytes concurrently.</p>
+<h2>Keep transaction claims narrow</h2>
+<p>Atomic publication here means one complete memory value replaces another on success. It does not mean filesystem creation is transactional. The separate writer can leave newly created partial files after an I/O failure. It also does not make raw render_text transactional for every syntax or capacity error; callers that need an intact previous view should use the plan boundary or their own candidate around the lower-level renderer.</p>
+<h2>Diagnose without erasing evidence</h2>
+<p>If the scenario returns one, retain its exact assertion, scenario name and SDK identity. Compare the current public contract and installed library before modifying expected statuses. A regression may come from selecting an older archive even when your source headers are new. Run the success, late-failure, duplicate and aliased-root cases together after correcting the environment so that a refusal fix does not hide a broken happy path.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-project-recipes/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-project-recipes/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/project-refused-preview-preserves-state.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="project-preview-owned-plan.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="project-select-a-new-destination.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/46-decode-optical-records-and-byte-order.html
+
+PURPOSE:
+Decode optical records and byte order
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+
+
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Decode optical records and byte order | Umicom Bits2Banking</title><!-- Earlier favicon route retained for review; canonical SVG and ICO links follow. <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"> --><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><!-- Canonical Framework wordmark replaces this earlier course identity; retained for review. <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"> -->
+<img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Decode optical records and byte order</h1>
+<section><h2>Prepare the byte-layout exercise</h2><p>Use the bios scenario from the installed ISO lab. The memory allocation contains 24 optical blocks, each 2048 bytes long. The primary volume descriptor begins at block 16, so its byte offset is 16 multiplied by 2048. That arithmetic locates a record; it does not create a filesystem.</p><p>An LBA is a logical block address. Its byte meaning depends on the structure that contains it. This ISO profile uses 2048-byte blocks for descriptor and catalogue locations, while the El Torito load count uses 512-byte units. Name units in comments and variables so a plausible integer does not conceal a fourfold error.</p></section>
+<section><h2>Read integers without casting byte buffers</h2><p>Do not cast a pointer into an input buffer to uint32_t and dereference it. The address may be unaligned, the host may use another byte order, and a typed access may violate the object rules. Combine unsigned bytes with shifts instead. The Framework reader uses explicit little-endian and big-endian helpers.</p><pre><code class="language-c">uint32_t little = (uint32_t)p[0] | ((uint32_t)p[1] &lt;&lt; 8U) |
+                  ((uint32_t)p[2] &lt;&lt; 16U) | ((uint32_t)p[3] &lt;&lt; 24U);
+uint32_t big = (uint32_t)p[3] | ((uint32_t)p[2] &lt;&lt; 8U) |
+               ((uint32_t)p[1] &lt;&lt; 16U) | ((uint32_t)p[0] &lt;&lt; 24U);</code></pre></section>
+<section><h2>Two encodings must describe the same value</h2><p>ISO9660 represents selected numeric fields in both byte orders. The primary descriptor stores the volume-space size at offsets 80 and 84. For 24 blocks, the little-endian bytes are 18 00 00 00 in hexadecimal; the big-endian bytes are 00 00 00 18. These are two representations of one value, not two independent size claims.</p><p>The endian scenario changes the second representation to 23 while leaving the first at 24. The expected outcome is a parse error and no published flags. Keeping only the value that happens to match your host would accept contradictory input.</p><pre><code class="language-text">volume blocks: 24
+volume bytes: 24 * 2048 = 49152
+boot start:   20 * 2048 = 40960
+BIOS load:     4 * 512  = 2048
+end of load:  40960 + 2048 = 43008</code></pre></section>
+<section><h2>Bound the work as well as each read</h2><p>A parser can stay inside the file and still spend excessive time scanning it. This service reads at most 64 volume descriptors and one 2048-byte catalogue. A terminator beyond the accepted descriptor window is not silently treated as valid. The profile also rejects duplicate primary descriptors and duplicate El Torito boot records.</p><p>One catalogue block is a deliberate support limit. An unsupported extension can return unavailable even when another ISO tool understands it. That status should lead to a profile review, not an automatic instruction to delete records or relax every bound.</p></section>
+<section><h2>Exercise and reference</h2><p>Write the hexadecimal bytes for a 32-block volume in both orders. Next, move the synthetic boot start to block 24 without enlarging the 24-block source. Predict why the range check fails before any load can be accepted. Keep the positive BIOS fixture and add a separate negative case.</p><p>Read the numeric-field and volume-descriptor definitions in ECMA-119. The service checks a bounded structural subset; it does not validate every directory record, path table or file extent. If a test fails, compare the expected unit, field offset and complete encoded bytes before changing an acceptance rule.</p><ul><li><a href="https://ecma-international.org/publications-and-standards/standards/ecma-119/">ECMA-119 standard and editions</a></li></ul></section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-iso-inspection/README.md">Lab setup and commands</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-iso-inspection/main.c">Read the C23 client</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/image_inspection/iso.h">Framework ISO contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="45-share-a-read-only-image-inspector.html">Previous lesson</a> · <a rel="next" href="47-interpret-uefi-boot-catalogue-counts.html">Next lesson</a></p></nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/46-decode-optical-records-and-byte-order.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

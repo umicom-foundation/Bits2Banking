@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/storage-existing-parent-ownership.html
+
+PURPOSE:
+Prepare directories below an explicit existing parent
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prepare directories below an explicit existing parent | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Prepare directories below an explicit existing parent</h1><p>Prepare the installed-SDK lab using its README. The following command is a qualification step, not a recorded execution result.</p><pre><code class="language-powershell">&amp; .\build\framework-filesystem-clients\filesystem-clients.exe directory-chain C:/umicom/Umicom-Bits2Banking/build/framework-filesystem-clients/qualification/directory-chain</code></pre><h2>Choose the root deliberately</h2>
+<p>An application should know which directory owns its output. Passing a relative path and relying on the process working directory makes that identity depend on how the program was launched. The lab receives an absolute parent as its second argument. Native exercises ask the shared service to create a fresh run folder below that parent; they never change the process directory or search for a convenient fallback location.</p>
+<pre><code class="language-c">UmiRootedDirectoryCreation progress;
+UmiStatus status = UmiRootedDirectoryEnsure(
+    fixture_root, &quot;notes/source&quot;, &amp;progress);
+/* Inspect status, complete and directories_created together. */</code></pre>
+<h2>Read the fixture owner</h2>
+<p>Open fixture.c. LabFixture tries a bounded sequence of run names using exclusive native directory creation. It advances to another name only when the result is ALREADY_EXISTS and reports no creation. Any other failure stops immediately, including failure after a directory was created. The printed fixture path identifies retained evidence. This is deliberately different from deleting an earlier test folder to obtain a convenient empty destination.</p>
+<h2>Observe ensure semantics</h2>
+<p>The directory-chain scenario prepares notes/source and expects two newly created directories. Calling Ensure again should succeed with a creation count of zero. Both results can be complete: the count describes work performed by this call, not the total number of components that exist. The shared service validates the complete relative path before opening or creating an earlier component.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Boundary</th><th scope="col">Owner</th></tr></thead><tbody><tr><td>Existing absolute parent</td><td>The caller selects and controls it</td></tr><tr><td>Checked descendants during a call</td><td>Framework native directory service</td></tr><tr><td>Serialized application edits</td><td>The calling application</td></tr><tr><td>Retained fixture after completion</td><td>The person qualifying the lab</td></tr></tbody></table></div>
+<h2>Know the limit of a held directory</h2>
+<p>Framework uses its native checked-parent traversal while performing each rooted operation. That reduces reliance on unchecked descendant path strings, but it does not hold the entire project open across later calls. Ancestors above the selected root remain trusted. Do not describe successful directory preparation as permission to execute a project, or as a lock against every external process. A workflow must still serialize its own edits and record native failures.</p>
+<h2>Diagnose the correct layer</h2>
+<p>A missing selected parent should be reported as missing; the lab does not create it recursively. Prepare the parent explicitly, confirm its identity, and rerun in another retained fixture. A name-policy refusal calls for reviewing the request. A native access or link refusal calls for inspecting that specific environment. Neither is repaired by substituting the current directory.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-filesystem-clients/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-filesystem-clients/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/storage-existing-parent-ownership.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="storage-portable-path-admission.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="storage-exclusive-directory-reservation.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

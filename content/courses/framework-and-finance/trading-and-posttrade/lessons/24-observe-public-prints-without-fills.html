@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/24-observe-public-prints-without-fills.html
+
+PURPOSE:
+Pause public prints without inventing account fills
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pause public prints without inventing account fills | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Pause public prints without inventing account fills</h1>
+<h2>Give each sequence a clear meaning</h2>
+<p>The public trade tape orders records by a provider-supplied sequence. This sequence is different from an execution identifier and from the workspace revision. A sequence gap records missing provider evidence; it does not create a synthetic account fill to compensate. The tape scenario publishes sequence 1 followed by sequence 3 so the distinction is visible.</p>
+
+<h2>Retain while the view is paused</h2>
+<pre><code class="language-c">umi_trading_workspace_set_trade_tape_paused(workspace, 1);
+/* Check the result, then publish the next validated public print. */
+umi_trading_workspace_snapshot(workspace, &amp;snapshot);</code></pre>
+
+<p>The complete client checks both calls. Pausing freezes the visible sequence boundary, while ingestion may continue. After the second print, the expected retained count is two and the missing-sequence count is one. The paused selection still exposes sequence 1. Resuming makes sequence 3 the newest visible print without requesting a resend.</p>
+
+<h2>Read the observations separately</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Observation</th><th scope="col">What it establishes</th></tr></thead><tbody><tr><td>retained_count</td><td>Rows still stored in the bounded tape</td></tr><tr><td>selected_trade_count</td><td>Rows visible for the selected instrument</td></tr><tr><td>missing_sequence_count</td><td>Observed gaps in accepted provider sequence</td></tr><tr><td>execution_count</td><td>Account execution records, separate from public prints</td></tr></tbody></table></div>
+
+<p>A full retained window and a full revision counter are different conditions. Normal row capacity discards the oldest row under the tape contract. Revision exhaustion refuses a new data edit before changing rows or diagnostic counters. Provider availability can still be observed while its revision saturates; a maximum revision is therefore unsuitable as the sole readiness cache key.</p>
+
+<h2>Exercise and answer</h2>
+<p>Should resuming a paused view replay prints through the account execution API? No. It changes presentation of already retained public data. The expected execution and position counts remain zero throughout this scenario.</p>
+
+<h2>Run the scenario</h2>
+<p>After an owner build, run btb-market-observation tape. The program checks retained and visible counts as well as account isolation. These are expected outcomes, not captured runtime evidence.</p>
+
+<h2>Complete source and owner commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md. Installed-SDK builds, scenario checks and native presentation require owner execution.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="23-validate-depth-before-lookup.html">Previous: Validate depth before looking up its instrument</a> · <a href="25-publish-alert-changes-together.html">Next: Observe crossings and remove dependent alerts together</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/24-observe-public-prints-without-fills.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

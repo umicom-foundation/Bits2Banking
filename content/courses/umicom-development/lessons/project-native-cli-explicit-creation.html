@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/project-native-cli-explicit-creation.html
+
+PURPOSE:
+Move from a native CLI preview to explicit project creation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Move from a native CLI preview to explicit project creation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Move from a native CLI preview to explicit project creation</h1><p>After preparing the installed-SDK lab in its README, run this scenario. Commands below are qualification instructions, not recorded results.</p><pre><code class="language-powershell">&amp; .\build\framework-project-recipes\project-recipes.exe preview</code></pre><h2>Use the same service through a terminal client</h2>
+<p>The native umicom project commands are a presentation layer over the shared project catalogue, variable preparation and generation services. Begin by listing templates. Then supply the recipe, display name, application identity, target, parent and folder explicitly. This makes the intended project reviewable and avoids relying on whichever working directory happened to launch the terminal.</p>
+<pre><code class="language-powershell">umicom project templates
+umicom project plan --template developer.template.c23-gtk4 --name &quot;Umicom Recipe Study&quot; --id org.umicom.recipe.study --target recipe_study --parent C:/umicom/projects --folder recipe-study --show-files</code></pre>
+<h2>Read before authorizing creation</h2>
+<p>The plan command renders text and reports the proposed destination without writing project files. Review both paths and contents. It does not check destination existence or save an immutable plan token. A later create command renders the selected recipe again using its current implementation. If the CLI binary or recipe source changes between commands, repeat the preview and compare it before creation.</p>
+<pre><code class="language-powershell">umicom project create --template developer.template.c23-gtk4 --name &quot;Umicom Recipe Study&quot; --id org.umicom.recipe.study --target recipe_study --parent C:/umicom/projects --folder recipe-study --apply</code></pre>
+<h2>Interpret completion precisely</h2>
+<p>The explicit --apply option authorizes the CLI to attempt project creation. It is not used on plan. Existing destinations are refused, and the command does not run Git, CMake, a package manager or the generated application. Exit zero reports completion of this scoped operation. Exit two indicates command admission or option misuse; exit one indicates service, I/O or output failure. Inspect the printed diagnostic as well as the exit code.</p>
+<h2>Handle partial effects</h2>
+<p>Creation is not rollback-based. A filesystem error or a later model-registration failure can leave new partial files. Keep the report and inspect the destination before deciding how to recover. Do not rerun the command repeatedly or delete the folder automatically. A concurrent writer is outside the supported creation contract. The preview does not reserve the destination against another process.</p>
+<h2>Exercise the interface deliberately</h2>
+<p>In a separate disposable parent chosen by you, first omit --apply and verify refusal without a project directory. Then preview and create once with valid options. Finally try creation at the same destination and verify that it is refused without changing existing content. These are owner-run filesystem exercises; the memory-only course lab does not execute them. Record commands, exit codes and destination content identities if you use them as qualification evidence.</p>
+<h2>Continue through the generated guide</h2>
+<p>Read the generated README before configuring. The GTK recipe requires a compatible Framework SDK with its GTK component and branding helper, alongside the native toolkit toolchain. Successful file creation cannot establish that those dependencies are present. Keep build, test, install and launch observations as separate stages, preserving the first failure instead of continuing through errors.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-project-recipes/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-project-recipes/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/project-native-cli-explicit-creation.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="project-select-a-new-destination.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="project-branding-and-sdk-qualification.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

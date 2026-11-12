@@ -1,0 +1,39 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-catalogue-admission.html
+
+PURPOSE:
+Check catalogue storage before selecting a compiler
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check catalogue storage before selecting a compiler | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Check catalogue storage before selecting a compiler</h1><h2>Treat the count as a claim</h2>
+<p>A fixed-capacity catalogue contains an array and a count. The array has storage determined by its C type; the count is a value a producer can change. A safe consumer compares those facts before indexing. The Framework provider registry, sysroot catalogue and runtime catalogue now perform that admission before lookup or insertion.</p>
+
+<p>Read the catalogue scenario. It initializes a real provider registry, registers a provider, then deliberately writes an oversized count as an isolated malformed fixture. The client expects validation to fail, lookup to return no record and registration to return INVALID_STATE without changing owner bytes. Production clients should correct the producer rather than clamp a damaged count and continue.</p>
+
+<pre><code class="language-c">umi_compiler_registry_init(&amp;registry);
+UmiStatus status = umi_compiler_registry_register(
+    &amp;registry, &amp;provider);
+if (status != UMI_STATUS_OK) return status;
+if (!umi_compiler_registry_valid(&amp;registry))
+    return UMI_STATUS_INVALID_STATE;</code></pre>
+
+<h2>Inspect the complete active set</h2>
+<p>A matching first row is not enough when a later active row is malformed. The shared validator checks every active record before returning a borrowed result. Each fixed text field must terminate inside its array. Unused slots are ignored because they are outside the declared active set. The same policy applies to the runtime and sysroot owners.</p>
+
+<div class="table-scroll"><table><thead><tr><th scope="col">Observation</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>INVALID_ARGUMENT</td><td>The incoming record or required argument is malformed</td></tr><tr><td>INVALID_STATE</td><td>The existing owner is malformed</td></tr><tr><td>ALREADY_EXISTS</td><td>The admitted owner already holds the identifier</td></tr><tr><td>CAPACITY_EXCEEDED</td><td>A new insertion lacks a slot or revision capacity</td></tr></tbody></table></div>
+
+<h2>Preserve useful observations at a boundary</h2>
+<p>A duplicate identifier remains ALREADY_EXISTS even when the array is full or its revision is exhausted. Duplicate registration does not replace the stored record. Read operations also remain available at the maximum revision when storage is valid. This preserves observation without silently recycling an identity.</p>
+
+<p>A selected record is borrowed from the catalogue. Keep that owner alive and serialize access through the complete lookup-and-use interval. A validator cannot prevent another thread from changing a public record immediately afterward. Adding a local mutex to only the caller would be insufficient unless every participant follows the same ownership rule.</p>
+
+<h2>Practice with two different claims</h2>
+<p>Write down why a provider marked available is not necessarily available now. Registration copies that flag; it does not launch the command or inspect a filesystem. For the exercise, describe one test for storage admission and one separate check for a genuinely usable compiler. Keep their results distinct in a project report.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-ownership/README.md">Compiler ownership laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-catalogue-admission.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="compiler-record-ownership.html">Previous lesson</a> · <a href="compiler-request-composition.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

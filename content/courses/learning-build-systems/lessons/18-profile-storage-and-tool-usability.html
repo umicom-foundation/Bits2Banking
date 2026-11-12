@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/18-profile-storage-and-tool-usability.html
+
+PURPOSE:
+Distinguish a stored profile from a usable compiler
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish a stored profile from a usable compiler | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip-link" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish a stored profile from a usable compiler</h1>
+<p>A toolchain profile records what an application knows about compilers and related tools. The record can describe a successful discovery, a missing executable or a failed probe. Saving that information is useful even when the tool cannot build anything. This lesson separates a well-formed record from evidence that a selected compiler is usable.</p>
+<h2>Read the named state</h2>
+<p>An enumeration gives names to a finite set of states. Its numeric order is not a quality ranking. A condition such as state greater than or equal to FOUND can accidentally admit FAILED if FAILED has a larger numeric value. Read the contract and match the named states that the operation actually supports.</p>
+<pre><code class="language-c">if (tool-&gt;state != UMI_TOOL_FOUND &amp;&amp; tool-&gt;state != UMI_TOOL_VALIDATED)
+    return UMI_STATUS_UNAVAILABLE;</code></pre>
+<p>This fragment illustrates admission at a compiler bridge; it is not a standalone discovery function. The bridge also checks the selected kind and bounded text. FOUND and VALIDATED are admitted metadata, not fresh proof that a driver still exists. Another program could replace an executable after discovery.</p>
+<h2>Check storage before interpreting it</h2>
+<p>umi_toolchain_profile_storage_valid checks record compatibility, fixed-string termination and declared known tool slots. A fixed string needs a terminating zero inside its array. Without that bound, ordinary string functions can read beyond the object. The validator accepts empty draft fields and explicit FAILED states. Catalogue insertion additionally requires a nonempty identifier.</p>
+<h2>Work through the lab</h2>
+<ul><li>Open the Storage function in the shared lab source. MakeProfile creates synthetic metadata; it does not run a compiler.</li><li>Observe that FAILED remains valid storage. Conversion to a compiler profile returns UNAVAILABLE and leaves the receiving bytes unchanged.</li><li>Inspect the final case, which fills display_name with nonzero bytes. Explain why this is malformed storage even though the tool state has a recognized name.</li></ul>
+<h2>Exercise and review</h2>
+<p>Write a two-column decision table: can this record be stored, and can this selected tool be converted? Include an empty draft, a failed selected compiler, a terminated path and an unterminated display name. A useful answer gives different decisions for the failed tool: its history is representable, but it cannot supply a usable compiler selection. Keep that distinction in status messages and regression checks.</p>
+<h2>Source and practice</h2><p>Use the <a href="../../../../labs/native/framework-toolchain-selection/README.md">installed C23 lab guide</a> and its <a href="../../../../labs/native/framework-toolchain-selection/main.c">complete source</a>. The examples are authored; no build or execution result is implied.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="17-command-planning-regression-lab.html">Previous: Investigate command failures through focused regression checks</a> · <a href="19-child-environments-and-path.html">Next: Prepare a child environment without changing the parent shell</a></p></nav><p><a href="../../../lessons/05-engineering/learning-build-systems/18-profile-storage-and-tool-usability.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

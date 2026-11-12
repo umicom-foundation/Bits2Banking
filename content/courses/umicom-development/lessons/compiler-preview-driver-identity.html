@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-preview-driver-identity.html
+
+PURPOSE:
+Keep the complete compiler driver identity
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep the complete compiler driver identity | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep the complete compiler driver identity</h1><h2>A path is part of the requested operation</h2>
+<p>Suppose a caller supplies a long executable path and a convenience constructor copies only its beginning. The resulting string may still look like a valid path, yet it no longer identifies what the caller chose. A later process service cannot reconstruct the missing characters. This is why a compiler preview must refuse over-capacity identities instead of silently shortening them.</p>
+
+<p>The shared provider factory validates its strings before construction. All eight convenience providers use that boundary. The native CLI currently exposes GCC, Clang and MSVC; the broader factory set does not imply that every language or action is exposed in the command. Keep those two surfaces distinct when documenting support.</p>
+
+<h2>Recognize the refusal value</h2>
+<pre><code class="language-c">UmiCompilerProvider provider = umi_compiler_gcc_provider(
+    requested_driver, NULL);
+if (provider.revision == 0U) {
+    /* Correct the complete input; do not trim it to make it fit. */
+    return UMI_STATUS_INVALID_ARGUMENT;
+}</code></pre>
+
+<p>The factory returns a value rather than a separate status. Invalid text produces an invalid zero-initialized provider, whose revision is zero. A valid constructed provider starts at revision one. Null or empty executable text remains a supported way to describe an unavailable provider. A nonempty executable sets the availability field without probing the filesystem.</p>
+
+<h2>Distinguish storage from reality</h2>
+<p>The executable array accepts at most 2,047 bytes followed by its terminating zero. A target accepts at most 191 bytes followed by its terminator. These are byte capacities; they do not promise that every operating system accepts such a path or that the driver understands the target. UTF-8 characters can occupy more than one byte.</p>
+
+<p>Run the identity scenario. It first supplies an overlong driver and checks the invalid result. It then uses a short name that is deliberately not installed and observes a declared provider. Neither step starts a process. That second observation teaches why the word available in a metadata record must not be presented as verified toolchain health.</p>
+
+<h2>Practice</h2>
+<p>Design three separate interface messages: input exceeds storage, driver identity accepted, and driver successfully qualified. List the evidence needed for each. Then explain how truncation could make a later log misleading even if no process ran during planning. Preserve the original requested value in the caller so the user can correct it.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-preview/README.md">Compiler preview laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-preview-driver-identity.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="compiler-preview-actions.html">Previous lesson</a> · <a href="compiler-preview-json-arguments.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

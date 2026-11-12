@@ -1,0 +1,40 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-borrowed-arguments.html
+
+PURPOSE:
+Rebase borrowed argument views after copying a plan
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rebase borrowed argument views after copying a plan | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Rebase borrowed argument views after copying a plan</h1><h2>See the two kinds of fields</h2>
+<p>A compiler plan owns its inline argument bytes. Its argument_view entries are pointers to those bytes. Copying the struct copies both the bytes and the pointer values, but the copied pointers still refer to the original plan until they are rebuilt. This is a general C ownership issue, not a compiler-specific language feature.</p>
+
+<pre><code class="language-c">UmiCompilerPlan copied = plan;
+const char *const *view =
+    umi_compiler_plan_arguments(&amp;copied);
+if (view == NULL) return UMI_STATUS_INVALID_STATE;
+for (size_t index = 0; index &lt; copied.argument_count; ++index) {
+    /* view[index] points into copied.arguments[index]. */
+}</code></pre>
+
+<h2>Validate owned storage without trusting cached pointers</h2>
+<p>Storage validation checks the inline strings and count. It deliberately does not dereference argument_view, because those cached pointers may still belong to another object after a value copy. The view accessor first admits the owned storage and then rebuilds each active pointer into the receiving plan.</p>
+
+<p>Consume exactly argument_count entries. The pointer array has the same capacity as the argument array and does not promise an additional NULL sentinel. A process-launch API that requires a sentinel needs an explicitly sized adapter. Reading until NULL could continue beyond a full view even though every stored argument is valid.</p>
+
+<h2>Keep publication and lifetime connected</h2>
+<p>Successful provider publication performs this rebasing before freeing its temporary plan. A successful incremental append also rebuilds active views. The views scenario checks that the published plan points into itself and that a later copy points into the copy after the accessor runs. Those are address-ownership checks, not comparisons of pointer numbers for display.</p>
+
+<p>A borrowed view does not extend the plan lifetime. Do not keep it after destroying, replacing or concurrently mutating the owner. If an asynchronous process service needs longer ownership, use its established argument-copying contract rather than storing this pointer array indefinitely.</p>
+
+<h2>Practice revision and lifetime reasoning</h2>
+<p>Run views, then revision. At UINT64_MAX a new argument is refused without modifying owner bytes, but the stored argument remains readable. Rebuilding a derived pointer cache does not create a new semantic argument revision. Explain why that distinction allows observation without authorizing another append.</p>
+
+<p>For the exercise, sketch two plan objects and draw where each pointer goes before and after rebasing. Then describe a failure that equal argument text would not reveal: a view can print the expected text today while still borrowing storage that will be freed tomorrow. Address ownership and cleanup order are essential parts of the evidence.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-ownership/README.md">Compiler ownership laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-borrowed-arguments.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="compiler-plan-publication.html">Previous lesson</a> · <a href="compiler-installed-qualification.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

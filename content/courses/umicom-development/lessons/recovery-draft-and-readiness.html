@@ -1,0 +1,39 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/recovery-draft-and-readiness.html
+
+PURPOSE:
+Separate recoverable text from a prepared request
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate recoverable text from a prepared request | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate recoverable text from a prepared request</h1><h2>Prepare the exercise</h2><p>Use the installed-SDK lab linked below after the earlier Framework ownership lessons. Configure and build once, then run this lesson’s scenario. Commands and expected results are instructions for qualification, not a claim that this revision has been executed.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\creative-draft-recovery -B .\build\creative-draft-recovery -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_EXPECTED_SDK_PREFIX=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\creative-draft-recovery --parallel 2
+ctest --test-dir .\build\creative-draft-recovery --output-on-failure --no-tests=error
+&amp; .\build\creative-draft-recovery\creative-draft-recovery.exe unfinished</code></pre>
+<h2>Begin with the work a person can lose</h2>
+<p>A creative editor has useful work long before it has a complete request. Someone may have written an opening sentence, selected a media type and left the title empty. If saving calls the same validator as generation preparation, that unfinished work can be refused exactly when it most needs protection. Start by writing down the two decisions: can these values be represented safely, and is there enough information to prepare the next operation?</p>
+<p>Umicom Framework makes those decisions through separate public contracts. UmiMediaBriefDocument contains the editable draft and a prompt buffer. UmiMediaBriefDocumentValidate admits bounded, terminated UTF-8 text even when title or source is empty. UmiMediaBriefCreate requires visible title and source text before it prepares a deterministic prompt. Neither operation contacts a model. A document that can be stored is therefore not automatically ready for generation.</p>
+<h2>Make the distinction visible in C</h2>
+<pre><code class="language-c">UmiMediaBriefDocument document = {0};
+strcpy(document.prompt, &quot;Keep this opening idea while I choose a source.&quot;);
+UmiStatus storage = UmiMediaBriefDocumentValidate(&amp;document);
+UmiMediaBrief *prepared = NULL;
+UmiStatus preparation = UmiMediaBriefCreate(&amp;document.draft, &amp;prepared);
+UmiMediaBriefDestroy(prepared);</code></pre>
+<p>The zero initializer terminates every array and selects the first valid creation kind. The literal copied here is smaller than the destination; user input would need a checked copy. Expect storage to be UMI_STATUS_OK and preparation to be UMI_STATUS_INVALID_ARGUMENT. Read both results. Replacing them with a single Boolean would hide which boundary refused the operation.</p>
+<p>Run the unfinished scenario in the accompanying lab. It exports the value, imports it into a fresh destination and checks that the opening idea survives. It then attempts preparation. The scenario succeeds only if recovery succeeds and preparation still refuses the empty inputs. This is a useful example of a test whose expected behavior includes a refusal.</p>
+<h2>Store values without inventing authority</h2>
+<p>The serialized creation document contains a format marker, a version, the four draft fields and the independently editable prompt. It does not contain a selected model, credentials, a send approval or a generation receipt. Those facts belong to an execution workflow with its own lifetime. Restoring a file should recover the words the person wrote, then invite a fresh review.</p>
+<p>Keep the same distinction in product language. Save creation text describes a storage action. Prepare text describes a local transformation. Send to a provider would be another action with another result. Showing a recovered prompt in an editor is not evidence that the source is complete, that the prompt matches it or that a service accepted anything.</p>
+<h2>Exercise and explain the result</h2>
+<ol><li>Build the installed-SDK lab using its README and run the unfinished scenario. Record the program exit status separately from the explanatory line.</li><li>Change the prompt literal, keep the title empty and repeat the scenario. Predict which value changes after import.</li><li>Add a visible title and source in a copy of the exercise. Adjust the expected preparation result only after explaining why it changes.</li></ol>
+<p>Answer: the edited prompt must survive in both cases. Preparation changes from refusal to success only when its own input contract is met. The imported document still grants no provider permission. If the unfinished case fails at export, check the actual status and the installed header/archive identity before weakening validation. A missing terminator or malformed UTF-8 is a storage defect, not an incomplete creative idea.</p><h2>Source and qualification</h2><p><a href="../../../../labs/native/creative-draft-recovery/main.c">Complete C exercise</a> · <a href="../../../../labs/native/creative-draft-recovery/README.md">Lab setup and recovery</a> · <a href="../../../../labs/native/creative-draft-recovery/QUALIFICATION.md">Layered qualification guide</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="next" href="recovery-scene-to-creation.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/recovery-draft-and-readiness.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

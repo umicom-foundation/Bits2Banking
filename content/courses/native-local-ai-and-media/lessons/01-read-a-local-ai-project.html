@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/01-read-a-local-ai-project.html
+
+PURPOSE:
+Teach read a local ai project before designing your own.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read a local AI project before designing your own | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/01-read-a-local-ai-project.md">Written lesson</a></p><h1>Read a local AI project before designing your own</h1>
+<h2>What you will learn</h2>
+<p>Separate a user interface, an inference engine and a complete product. You will turn a small reference application into a set of requirements without copying its code or artwork.</p>
+<h2>Trace one request</h2>
+<p>In the reviewed <a href="https://github.com/MaokunZhang/local-nsfw-model-router/blob/76c0420ed60e8a83c00cbbfc26b1d7c38a742dbe/app.py">reference application</a>, a user selects a model, enters a message and sees incremental text. Its <a href="https://github.com/MaokunZhang/local-nsfw-model-router/blob/76c0420ed60e8a83c00cbbfc26b1d7c38a742dbe/utils/gen_response.py">generation function</a> passes messages and sampling controls to NexaTextInference. That is a text-chat integration, not an image or video generator. Uploading an avatar changes presentation; it does not synthesize an image.</p>
+<p>A model is the learned numerical state used to produce predictions. An engine loads that state and performs computation. A router selects a suitable engine/model combination. A chat interface manages the interaction. Those responsibilities can be implemented and qualified separately.</p>
+<h2>Turn observations into requirements</h2>
+<ol>
+<li>Draw the path: message → request → policy → provider → engine → response → display.</li>
+<li>Mark which component owns each allocation and which component can perform I/O.</li>
+<li>Describe model selection as “choose a compatible available runtime,” without importing the reference project&#39;s hard-coded model list.</li>
+<li>Describe persona editing as an explicit configuration transaction, not a hidden change to conversation history.</li>
+<li>List absent capabilities separately: retrieval, durable conversations, media generation and application integration need their own evidence.</li>
+</ol>
+<p>The reference <a href="https://github.com/MaokunZhang/local-nsfw-model-router/blob/76c0420ed60e8a83c00cbbfc26b1d7c38a742dbe/utils/initialize.py">loaders</a> and UI use different context-setting keys. This is a source-level reason to trace every control to the actual call, rather than assume that a slider changes inference. It is not a reproduced SDK failure.</p>
+<h2>Exercise</h2>
+<p>Write three acceptance conditions for a model switch. Include loading failure, an active reply and a change in context capacity. Keep the old conversation available until a new runtime is ready; define whether the new conversation starts empty or includes an explicitly reviewed history.</p>
+<p><strong>Expected result:</strong> each condition names an observable outcome. “Model works” is too broad.</p>
+<p><strong>Knowledge check:</strong> does a C interface prove that an engine is implemented in C? No. An ABI describes how callers cross a boundary; the implementation behind it may use other languages.</p>
+<h2>Recovery</h2>
+<p>When a claimed feature is visible only in a README or screenshot, inspect its call path and dependency. Label it a claim or design until you find implementation and execution evidence. A successful import of an SDK does not establish usable weights, compatible hardware or correct output.</p>
+<nav aria-label="Lesson sequence"><p><a href="../index.html">Course contents</a> · <a href="02-map-framework-and-applications.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/39-inspect-an-image-without-booting-it.html
+
+PURPOSE:
+Inspect an image without booting it
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect an image without booting it | Umicom Bits2Banking</title><!-- Earlier favicon route retained for review; canonical SVG and ICO links follow. <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"> --><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><!-- Canonical Framework wordmark replaces this earlier course identity; retained for review. <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"> -->
+<img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Inspect an image without booting it</h1>
+<section><h2>Prepare the exercise</h2><p>Complete the source-build planning lessons first. You should be able to distinguish a byte buffer, a file path and a return status. Install the matching Framework SDK and follow the framework-boot-media lab README to build the C23 client and the existing practice-image tool. Keep the new practice directory, $Lab and $Image variables from that guide. No administrator account or physical drive is needed.</p></section>
+<section><h2>Distinguish the objects you are inspecting</h2><p>A kernel executable contains instructions for one target architecture and a particular startup contract. A disk image represents sectors and may contain partition tables, filesystems and loaders. An ISO image uses an optical-media filesystem layout and may carry boot catalogues. Giving a kernel file an .iso extension does not create those structures. Framework inspection reads the selected image as data; it does not execute the instructions it finds.</p><p>The supplied two-mebibyte practice image deliberately contains a synthetic MBR partition entry and no filesystem or operating system. MBR stands for master boot record. The structural flag tells you the parser accepted its supported layout and ranges. It cannot tell you whether a guest will start.</p></section>
+<section><h2>Call the existing parser</h2><p>Read the inspect branch in main.c. It uses Framework rather than duplicating the MBR, GPT or ISO parser. PRIu64 comes from inttypes.h and formats a uint64_t portably. The two NULL callback arguments request synchronous inspection without progress notifications. The report is caller-owned and remains available after the function returns.</p><pre><code class="language-c">UmiBootMediaImage image = {0};
+UmiBootMediaReport report = {0};
+UmiStatus status = UmiBootMediaInspect(path, &amp;image, NULL, NULL, &amp;report);
+if (status != UMI_STATUS_OK) {
+    /* Present the failure; do not interpret image as accepted evidence. */
+    return 1;
+}
+printf(&quot;Bytes: %&quot; PRIu64 &quot;\n&quot;, image.bytes);</code></pre></section>
+<section><h2>Make and interpret an observation</h2><p>Expect Bytes: 2097152 and MBR: 1 for this particular practice file. Record the complete SHA-256 value; do not copy a sample digest from a lesson. The other structural flags should be zero. Then select a short text file in the same practice folder: inspection should refuse it rather than pretending that any readable file is a disk image.</p><p>Write two statements in your notes: what the inspector observed, and what you have not checked. A useful first statement names the absolute path, length and digest. The second should include provenance and boot behavior. A zero exit status is an observation about this parser invocation, not a release certificate.</p><pre><code class="language-powershell">&amp; $Lab inspect $Image</code></pre></section>
+<section><h2>Review and recover</h2><p>If the client cannot load, compare the installed SDK and executable architecture before changing parser rules. If inspection rejects the practice image, keep the file and complete diagnostic; verify you used the named generator and did not pass its executable as the image. Do not relax sector or range checks to make an unrelated file pass. In the next lesson, use the accepted image to create a review without writing a destination.</p></section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md">Lab setup and complete commands</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/main.c">Read the C23 application</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/boot_media/media.h">Framework media contract</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="38-plan-reproducible-build-and-resume-evidence.html">Previous lesson</a> · <a rel="next" href="40-own-a-reviewed-media-plan.html">Next lesson</a></p></nav><p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/39-inspect-an-image-without-booting-it.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

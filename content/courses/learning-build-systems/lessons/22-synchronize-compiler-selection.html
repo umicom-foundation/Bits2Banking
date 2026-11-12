@@ -1,0 +1,29 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/22-synchronize-compiler-selection.html
+
+PURPOSE:
+Replace a compiler provider and profile together
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Replace a compiler provider and profile together | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip-link" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Replace a compiler provider and profile together</h1>
+<p>Toolchain discovery and compiler planning serve different purposes. A toolchain profile describes selected tools. A compiler provider maps requests into arguments for a driver family. A compiler profile supplies a named target and policy. Keeping these records synchronized prevents a preview from using yesterday’s driver path.</p>
+<h2>Follow the explicit bridge</h2>
+<pre><code class="language-c">UmiStatus status = umi_compiler_centre_sync_toolchain(
+    centre, toolchain, &quot;selected&quot;);
+if (status != UMI_STATUS_OK) return status;</code></pre>
+<p>The initialized centre remains caller-owned. The bridge admits an explicitly selected GCC, Clang or MSVC C compiler, converts its metadata and publishes the provider and named compiler profile together. The operation activates that profile. Missing or failed selections are unavailable; unrelated tool kinds are not silently interpreted as GCC.</p>
+<h2>Repeat a selection</h2>
+<p>In the Compiler lab, both synthetic profiles use the selected identifier and GCC family. The second operation changes the executable path. The checks require one provider and one profile, then inspect both the provider executable and profile linker driver. A test that only counts profiles would miss a stale provider; a test that only reads the active identifier would miss both stale paths.</p>
+<h2>Understand replacement limits</h2>
+<p>Synchronization uses Framework debug defaults. A product that needs a custom policy should construct it deliberately and call umi_compiler_centre_configure_profile. That operation stages provider replacements and validates the candidate profile before publication. Readers and writers remain caller-serialized. It preserves the centre on refusal, but does not make borrowed pointers safe across later mutation.</p>
+<p>Other providers and profiles remain in the centre. Changing from GCC to Clang does not delete GCC if another profile still needs it. Previously planned commands also remain historical records until explicitly replanned. Configuration publication does not silently rewrite the compilation database or execute a compiler.</p>
+<h2>Exercise and recovery</h2>
+<p>Extend your decision table with repeated same-family selection and a family change. Predict provider count, active profile provider and the status of old commands. For an unsupported selection, record the refusal and keep the previous centre. Do not substitute a different compiler merely because it is available; that would change the user’s requested toolchain. Review the existing compiler-publication lessons for command refresh and custom policy planning.</p>
+<h2>Source and practice</h2><p>Use the <a href="../../../../labs/native/framework-toolchain-selection/README.md">installed C23 lab guide</a> and its <a href="../../../../labs/native/framework-toolchain-selection/main.c">complete source</a>. The examples are authored; no build or execution result is implied.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="21-environment-pointer-ownership.html">Previous: Keep borrowed process pointers inside their receiving owner</a> · <a href="23-position-independent-compile-intent.html">Next: Express position-independent compilation as an explicit request</a></p></nav><p><a href="../../../lessons/05-engineering/learning-build-systems/22-synchronize-compiler-selection.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

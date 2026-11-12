@@ -25,10 +25,21 @@ target_link_libraries(btb-static-preview PRIVATE Umicom::web)
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(btb-static-preview PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
 endif()
+if(WIN32)
+    enable_language(RC)
+endif()
+# Installed Framework owns the artwork and Windows shell identity.
+umicom_apply_application_branding(TARGET btb-static-preview
+    PRODUCT_NAME "Umicom Static Preview Learning Lab" INTERNAL_NAME btb-static-preview
+    NO_RUNTIME_DEPLOYMENT)
 if(BUILD_TESTING)
-    foreach(case get head nested missing traversal post)
+    foreach(case get head nested missing traversal post owned-get owned-head owned-svg owned-ico legacy-svg)
+        set(_fixture_root "${CMAKE_CURRENT_SOURCE_DIR}/site")
+        if(case MATCHES "(svg|ico)$")
+            get_filename_component(_fixture_root "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand" ABSOLUTE)
+        endif()
         add_test(NAME bits2banking.static_preview.${case} COMMAND "${CMAKE_COMMAND}"
-            "-DTOOL=$<TARGET_FILE:btb-static-preview>" "-DROOT=${CMAKE_CURRENT_SOURCE_DIR}/site"
+            "-DTOOL=$<TARGET_FILE:btb-static-preview>" "-DROOT=${_fixture_root}"
             "-DCASE=${case}" -P "${CMAKE_CURRENT_SOURCE_DIR}/check.cmake")
         set_tests_properties(bits2banking.static_preview.${case} PROPERTIES TIMEOUT 20)
     endforeach()

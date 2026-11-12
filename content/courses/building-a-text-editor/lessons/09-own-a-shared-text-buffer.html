@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/09-own-a-shared-text-buffer.html
+
+PURPOSE:
+Teach own a shared text buffer and respect borrowed views.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own a shared text buffer and respect borrowed views | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-check-failure-state-and-command-results.html">Previous lesson</a> · <a rel="next" href="10-resolve-unicode-positions.html">Next lesson</a></nav><h1>Own a shared text buffer and respect borrowed views</h1><p>Complete source: <a href="../../../../labs/native/shared-editor/buffer.c">buffer.c</a> · <a href="../../../../labs/native/shared-editor/README.md">Build and run the lab</a> · <a href="../../../../labs/native/shared-editor/QUALIFICATION.md">Qualification guide</a></p><p>The first eight lessons built a deliberately small ASCII editor. Its fixed array made insertion and file loading visible. An application that grows beyond that exercise should use the existing Framework text services. This chapter changes the ownership model, while keeping the introductory implementation available for study.</p>
+<h2>What you will build</h2>
+<p>The shared-editor lab is a C23 console program. It has no window and opens no document file. In this scenario it copies caller-owned bytes into a Framework buffer, marks the current revision as saved, inserts one byte and checks an independent copy. Complete code is in buffer.c, with its command dispatcher in main.c.</p>
+<h2>1. Prepare the installed SDK</h2>
+<p>Follow the lab README to configure a separate build directory against an identified installed Framework SDK. Both editor and document targets must be exported by that installation. The source checkout, installed headers, libraries and runtime dependencies must describe the same build. Do not fix a missing installed header by silently adding another checkout to the include search path.</p>
+<h2>2. Give each allocation one owner</h2>
+<p>A successful umi_editor_text_buffer_create call returns an opaque pointer. Opaque means the client knows the type name but cannot depend on its private members. The client must eventually call umi_editor_text_buffer_destroy. Initialising the pointer to NULL allows every failure path to share the cleanup label.</p>
+<pre><code class="language-c">UmiEditorTextBuffer *buffer = NULL;
+UmiStatus status = umi_editor_text_buffer_create(32U, &amp;buffer);
+if (status == UMI_STATUS_OK)
+    status = umi_editor_text_buffer_set(buffer, &quot;draft&quot;, 5U);
+umi_editor_text_buffer_destroy(buffer);</code></pre>
+<p>The value 32 is initial storage capacity, not a promise that this is the largest permitted document. A byte count excludes the C string terminator. The setter copies the supplied bytes. Changing the original array afterwards must not change the buffer. The ownership scenario deliberately changes caller[0] to X after the call and still expects draft from the buffer.</p>
+<h2>3. Distinguish a view from a copy</h2>
+<p>umi_editor_text_buffer_view returns a borrowed pointer and metadata. The pointer belongs to the buffer and must not be freed. A successful mutation can relocate or replace its storage, so obtain a fresh view before reading again. The copy operation writes into storage supplied by the caller. A five-byte word needs six bytes of destination capacity because this copy API also writes a terminator.</p>
+<p>The lab keeps a copy containing draft, inserts an exclamation mark into the buffer and checks that the copy still contains draft. This is a lifetime test, not just a string comparison. A stale view might appear to work when no allocation moves; that apparent success does not extend its documented lifetime.</p>
+<h2>4. Interpret the saved mark</h2>
+<p>mark_saved records the current revision as the save point. It performs no filesystem write. After insertion, is_dirty becomes true because the model differs from that recorded point. A real editor must mark its content saved only after its own saving workflow succeeds. Do not use a model flag as evidence that a file exists on disk.</p>
+<h2>Run and inspect</h2>
+<p>After building the lab, run the ownership scenario. Success requires all comparisons to complete and a zero exit code; the printed message alone is insufficient if the process later fails.</p>
+<pre><code class="language-powershell">&amp; .\build\shared-editor\shared-editor.exe ownership</code></pre>
+<h2>Exercise and worked explanation</h2>
+<p>Change the input word to a different five-byte ASCII word in a practice copy. Update the expected contents and run again. Then explain why keeping a pointer to view.bytes across insert is unsafe even if it still prints the right text. The buffer owns that allocation, and a successful mutation ends the previous view contract. A copied array has a separate lifetime.</p>
+<h2>Limits</h2>
+<p>This buffer stores bytes. The next chapter uses a separate service to interpret Unicode positions. Neither this scenario nor a successful installed-SDK build qualifies GTK drawing, clipboard handling, disk saving or Studio keyboard input.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-check-failure-state-and-command-results.html">Previous lesson</a> · <a rel="next" href="10-resolve-unicode-positions.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></footer></body></html>

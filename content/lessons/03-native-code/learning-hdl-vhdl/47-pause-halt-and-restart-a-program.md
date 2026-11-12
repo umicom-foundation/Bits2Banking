@@ -67,3 +67,6 @@ Make a table with four rows: paused, running, halted and reset. For each row, pr
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous: Check a program trace](46-check-a-program-trace.md) · [Next: Handle unresolved addresses](48-handle-unresolved-addresses.md)
+
+
+[Manuscript course contents](index.md)

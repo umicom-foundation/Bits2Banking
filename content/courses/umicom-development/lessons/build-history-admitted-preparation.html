@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/build-history-admitted-preparation.html
+
+PURPOSE:
+Record an admitted failure before a child starts
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Record an admitted failure before a child starts | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Record an admitted failure before a child starts</h1><h2>Start with a failed attempt</h2>
+<p>A build command does more than start a compiler. It first resolves the project root, prepares the tool arguments, selects a working directory and owns the environment and diagnostic parser. Any of those steps can fail. A useful development tool must show that refusal as the latest attempt, even when the previous attempt succeeded. Otherwise the interface can present a reassuring result that belongs to older work.</p>
+
+<p>The shared runner distinguishes admission from execution. Admission reserves an operation identity and creates the caller result. Execution begins only after preparation succeeds. A null runner is not admitted. A valid runner whose Run program is missing is admitted, then refused during preparation. Those cases both return an error, but they have different history consequences.</p>
+
+<div class="table-scroll"><table><thead><tr><th scope="col">Boundary</th><th scope="col">Identity</th><th scope="col">History</th></tr></thead><tbody><tr><td>Invalid caller argument</td><td>None</td><td>Unchanged</td></tr><tr><td>Admitted preparation refusal</td><td>Reserved ID</td><td>Completed failure offered to history</td></tr><tr><td>Child completion</td><td>Same reserved ID</td><td>Completed observation offered once</td></tr><tr><td>Exhausted identity space</td><td>No new ID</td><td>Unchanged</td></tr></tbody></table></div>
+
+<h2>Use the actual Framework boundary</h2>
+<pre><code class="language-c">UmiStatus status = umi_build_runner_run(runner, UMI_BUILD_PHASE_RUN, result);
+if (status == UMI_STATUS_INVALID_STATE) {
+    /* Inspect result-&gt;operation_id and state before updating presentation. */
+}</code></pre>
+
+<p>The laboratory creates a valid profile with an absolute illustrative root and leaves its Run program empty. The launch-plan contract rejects the missing program before a child can start. The client checks INVALID_STATE, failed state, exit code -1, zero duration and empty child output. It then reads the configured history and compares the retained value with the returned result. This is a real API observation, not a manually invented history entry.</p>
+
+<h2>Exercise: trace single</h2>
+<ul><li>Read main.c and locate profile initialisation, runner creation and ObserveRefusal.</li><li>Build the client against an installed SDK using its README. Run the single scenario only after that build succeeds.</li><li>Explain why operation 1 can be retained even though no program ran.</li><li>Identify which checks would fail with an older SDK that omitted preparation failures from history.</li></ul>
+
+<h2>Interpret the laboratory result</h2>
+<p>The client exits zero when the expected refusal and history are observed. That exit code belongs to the laboratory, while INVALID_STATE belongs to its attempted Run operation. Keep those two layers separate in reports. A successful laboratory result would not establish that a compiler, CTest, an application or Studio launched. Current source and checker expectations are authored; execution still needs owner evidence.</p>
+
+<h2>Recovery and next step</h2>
+<p>If history is empty, first compare the installed SDK identity with the source containing the shared completion change. Do not change the expected history count to hide an older implementation. Preserve the failed observation and rebuild the correct producer through its normal workflow. Next, examine how history can retain a value after the caller reuses its own buffer.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-build-history/README.md">Build-history laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/build-history-admitted-preparation.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="native-project-qualification-evidence.html">Previous lesson</a> · <a href="build-history-copy-and-lifetime.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

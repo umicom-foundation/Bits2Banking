@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/10-resolve-unicode-positions.html
+
+PURPOSE:
+Teach resolve exact utf-8 offsets and utf-16 positions.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resolve exact UTF-8 offsets and UTF-16 positions | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-own-a-shared-text-buffer.html">Previous lesson</a> · <a rel="next" href="11-select-source-words-and-lines.html">Next lesson</a></nav><h1>Resolve exact UTF-8 offsets and UTF-16 positions</h1><p>Complete source: <a href="../../../../labs/native/shared-editor/buffer.c">buffer.c</a> · <a href="../../../../labs/native/shared-editor/README.md">Build and run the lab</a> · <a href="../../../../labs/native/shared-editor/QUALIFICATION.md">Qualification guide</a></p><p>A position can mean a byte offset, a Unicode scalar position, a UTF-16 code-unit count or a screen column. These numbers agree for simple ASCII and diverge for other text. Treating them as interchangeable can select half of a character or apply a diagnostic to the wrong location.</p>
+<h2>The fixture</h2>
+<p>buffer.c contains A, an e-acute character, a grinning face, CRLF, the word note and a final LF. Its C literal uses hexadecimal UTF-8 bytes so that the example does not depend on the compiler guessing the source-file encoding. The document contains 14 bytes before its terminating zero.</p>
+<pre><code class="language-c">static const char sample[] = &quot;A\xc3\xa9\xf0\x9f\x98\x80\r\nnote\n&quot;;</code></pre>
+<h2>1. Count each representation</h2>
+<p>A occupies one UTF-8 byte and one UTF-16 code unit. The e-acute character occupies two UTF-8 bytes and one UTF-16 code unit. The supplementary grinning-face character occupies four UTF-8 bytes and two UTF-16 code units. Thus byte offset 7, immediately before CRLF, corresponds to UTF-16 column 4 on line zero. These are encoding positions, not measurements of how wide a font draws the characters.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">UTF-8 offset</th><th scope="col">Zero-based line</th><th scope="col">UTF-16 column</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td></tr><tr><td>3</td><td>0</td><td>2</td></tr><tr><td>7</td><td>0</td><td>4</td></tr><tr><td>9</td><td>1</td><td>0</td></tr><tr><td>13</td><td>1</td><td>4</td></tr><tr><td>14</td><td>2</td><td>0</td></tr></tbody></table></div>
+<h2>2. Resolve through Framework</h2>
+<p>UmiEditorTextViewPositionAt converts a byte offset to a protocol position. UmiEditorTextViewResolvePosition performs the reverse operation. They borrow a stable buffer view and allocate nothing. Keep all calls on the owning thread or otherwise prevent concurrent mutation. The scenario checks both directions for every row instead of checking only one convenient ASCII position.</p>
+<pre><code class="language-c">UmiEditorTextPosition position = {99U, 99U};
+size_t offset = SIZE_MAX;
+UmiStatus status = UmiEditorTextViewPositionAt(&amp;view, 7U, &amp;position);
+if (status == UMI_STATUS_OK)
+    status = UmiEditorTextViewResolvePosition(&amp;view, position, &amp;offset);</code></pre>
+<p>This excerpt assumes the valid view established earlier in buffer.c. On success the expected values are line zero, column four and offset seven. Always check status before using outputs. The sentinel values make an accidental use of an unchanged output easier to notice during a failure investigation.</p>
+<h2>3. Refuse positions that split an encoding</h2>
+<p>Offsets 2, 4, 5 and 6 fall inside multibyte UTF-8 sequences. Offset 8 lies between CR and LF. UTF-16 column 3 lies between the two units representing the supplementary character. Exact conversion refuses these positions; it does not round them to a nearby character. The position-refusals scenario also checks an offset beyond the buffer and confirms that output sentinels remain unchanged.</p>
+<p>The service recognises LF, CRLF and standalone CR line endings. End of buffer is a valid position. A final newline creates a valid empty final line. The conversion validates the scanned prefix, so successfully resolving the beginning of a file does not certify an unvisited malformed suffix.</p>
+<h2>Run the two observations</h2>
+<pre><code class="language-powershell">&amp; .\build\shared-editor\shared-editor.exe positions
+&amp; .\build\shared-editor\shared-editor.exe position-refusals</code></pre>
+<h2>Exercise and worked explanation</h2>
+<p>Predict the result at byte offset 9 before running the scenario: it is the start of line one, column zero. Now explain why the editor Go To command can have a different policy. The coordinator navigation contract uses one-based byte columns and permits clamping, while these protocol conversion functions require exact zero-based UTF-16 positions. A client must choose the contract required by its input rather than hide the difference in a generic column variable.</p>
+<h2>Troubleshooting</h2>
+<p>If the expected rows fail, preserve the exact fixture bytes, compiler identity and selected SDK prefix. Check whether an editor converted the CRLF escape into unrelated source text or a different binary was launched. Font appearance cannot repair an encoding-offset error.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-own-a-shared-text-buffer.html">Previous lesson</a> · <a rel="next" href="11-select-source-words-and-lines.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></footer></body></html>

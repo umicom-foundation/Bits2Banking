@@ -101,3 +101,6 @@ Why test both taken and untaken branches? A decoder that always jumps could pass
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](34-check-fixed-width-arithmetic.md) · [Next lesson](36-control-pause-halt-reset.md)
+
+
+[Manuscript course contents](index.md)

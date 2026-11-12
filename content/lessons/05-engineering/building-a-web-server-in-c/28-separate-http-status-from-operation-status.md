@@ -27,7 +27,10 @@ ctest --test-dir build/static-preview --output-on-failure --no-tests=error
 & ".\build\static-preview\btb-static-preview.exe" "C:\umicom\Umicom-Bits2Banking\labs\native\framework-static-preview\site" GET /message.txt
 ```
 
+<!-- Earlier inline-only lab guidance is retained for review; the active explanation includes owned assets and explicit evidence boundaries.
 Six lab cases are expected. GET /message.txt should report HTTP 200 and fourteen representation bytes. Authored checks are not executed results. Use the laboratory README for the separate CLI and browser steps.
+-->
+Eleven lab cases are authored. GET /message.txt should describe HTTP 200 and fourteen representation bytes. The optional --owned mode also checks approved SVG and ICO assets from the installed SDK; the original inline command remains available. Reported wire sizes are inspection results, not bytes delivered to a peer. Use the laboratory README for qualification and the separate CLI and browser steps.
 
 ## Two results answer different questions
 
@@ -39,7 +42,10 @@ Follow missing file, traversal and POST requests. Static-file handling produces 
 
 ## Exercise
 
+<!-- Earlier inline-only lab guidance is retained for review; the active explanation includes owned assets and explicit evidence boundaries.
 Run all six lab cases and build a table with C process exit, printed HTTP status and body-sent field. Add a malformed request method in a practice invocation and compare its operational failure. Explain why changing the program to return failure for every 4xx response would change the meaning of the existing refusal tests.
+-->
+Run the eleven authored lab cases and build a table with C process exit, printed HTTP status, selected inline or owned mode and planned body output. The historical body-sent label describes serialization; the added transport line confirms that this inspection client sends nothing to a peer. Add a malformed request method in a practice invocation and compare its operational failure. Explain why returning failure for every 4xx response would change the meaning of the refusal tests.
 
 ## Write a precise report
 

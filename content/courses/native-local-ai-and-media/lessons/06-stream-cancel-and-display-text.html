@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/06-stream-cancel-and-display-text.html
+
+PURPOSE:
+Teach stream cancel and display model text.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stream cancel and display model text | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/06-stream-cancel-and-display-text.md">Written lesson</a></p><h1>Stream cancel and display model text</h1>
+<h2>What you will learn</h2>
+<p>Design incremental output without confusing a collector, a transport and a native model generator.</p>
+<h2>Three different contracts</h2>
+<p>Framework&#39;s ai/stream.h accumulates text chunks into a bounded collector and invokes a sink. It does not itself open a connection, decode an HTTP event stream or enforce a request lifecycle. The loopback provider used by this course is nonstreaming. The educational native generation sessions under ai/training can pull tokens from their model contracts; this is another path again.</p>
+<p>A UI should expose streaming only when the selected route supports it. Adding a STREAMING bit to a catalogue entry cannot implement the missing behavior.</p>
+<h2>Design an event boundary</h2>
+<p>For a future shared streaming adapter, specify request identity, sequence number, payload length and terminal state. Then write acceptance cases before connecting it to a pane:</p>
+<ol>
+<li>Start request A and accept its first chunk.</li>
+<li>Cancel A and start B.</li>
+<li>Deliver a late A chunk. It must not enter B&#39;s transcript.</li>
+<li>Deliver B&#39;s terminal event twice. Only one terminal transition is allowed.</li>
+<li>Close the pane during work. Release it only when callbacks cannot target freed state.</li>
+</ol>
+<p>Cancellation is a request to stop. It does not erase already-generated text or guarantee that a remote job stopped computing. Serialize mutable state and join workers before destroying borrowed objects.</p>
+<h2>Decode bytes carefully</h2>
+<p>UTF-8 represents some characters with several bytes. A transport chunk may end halfway through a character. Keep incomplete bytes until a later chunk completes the character; distinguish invalid input from an incomplete final sequence. Native byte-token generation can also produce invalid UTF-8. Never assume one token equals one printable character.</p>
+<p>For web or markup-backed views, render generated text as text or through an explicitly constrained renderer. Model output must not create executable HTML merely because it resembles a tag. For terminals, escape control sequences.</p>
+<h2>Exercise</h2>
+<p>Use the bytes E2 82 AC, the UTF-8 encoding of the euro sign, as a three-chunk input. Predict the visible output after each byte: nothing complete, nothing complete, then one euro sign. On cancellation after E2, do not display a fabricated valid character or attach the byte to a later request.</p>
+<h2>Continue existing lessons</h2>
+<p>Study the <a href="../../llm-from-scratch/index.html">native generation and UTF-8 sequence</a> for the actual decoder and text-admission implementations. Reuse those boundaries where applicable rather than adding another decoder in an application.</p>
+<p><strong>Recovery:</strong> when text appears in the wrong chat, capture request and operation identity first. A faster refresh timer cannot correct ownership of late events.</p>
+<nav aria-label="Lesson sequence"><p><a href="05-call-an-existing-local-model.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="07-ground-answers-with-reviewed-sources.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

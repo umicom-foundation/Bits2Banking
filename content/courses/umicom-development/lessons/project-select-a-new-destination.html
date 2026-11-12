@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/project-select-a-new-destination.html
+
+PURPOSE:
+Choose a destination without confusing it with write authority
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose a destination without confusing it with write authority | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Choose a destination without confusing it with write authority</h1><p>After preparing the installed-SDK lab in its README, run this scenario. Commands below are qualification instructions, not recorded results.</p><pre><code class="language-powershell">&amp; .\build\framework-project-recipes\project-recipes.exe destination</code></pre><h2>Separate selection from effects</h2>
+<p>A file chooser can select an existing parent directory and ask for one new folder name. UmiDeveloperProjectChooseDestination combines those values under shared path rules. It is useful in Studio, a terminal command or another application because all clients can apply the same naming boundary. The function prepares a string; it neither creates the folder nor confirms that the eventual destination is unused.</p>
+<pre><code class="language-c">char destination[UMI_DEVELOPER_PROJECT_PATH_CAPACITY];
+UmiStatus status = UmiDeveloperProjectChooseDestination(
+    &quot;C:/learning&quot;, &quot;recipe-study&quot;, destination, sizeof destination);</code></pre>
+<h2>Observe two different outcomes</h2>
+<p>The destination scenario expects C:/learning/recipe-study. The reserved-folder scenario supplies CON and requires refusal with the previous output unchanged. The shared rooted-file profile rejects portable-device-name hazards on every host, so a project recipe does not become acceptable merely because it was prepared on a host with different filename rules. The lab does not need the selected parent to exist because this operation performs lexical validation only.</p>
+<h2>Explain lexical validation</h2>
+<p>Lexical means examining the spelling of a path without asking the filesystem which object it identifies. Rejecting a parent traversal or an absolute child path is valuable, but it does not resolve symbolic links, junctions, case-insensitive aliases or changes made by another process. <!-- Earlier exact-spelling explanation retained for review: Current project plan duplicate detection compares path text. Do not claim that two different accepted strings necessarily identify different filesystem objects. -->Current project plans also reject ASCII case/separator aliases and file/parent conflicts through shared portable name admission. Unicode folding, links and actual filesystem object identity remain separate. A disjoint lexical result does not prove that two paths identify different filesystem objects.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Stage</th><th scope="col">What it establishes</th><th scope="col">What remains</th></tr></thead><tbody><tr><td>Choose destination</td><td>An admitted parent/folder path string</td><td>Existence and object identity</td></tr><tr><td>Build plan</td><td>Rendered relative paths and content</td><td>Filesystem effects</td></tr><tr><td>Create new</td><td>An attempt to create at a new destination</td><td>Partial-write recovery and later build</td></tr><tr><td>Compile and test</td><td>Evidence for selected generated source</td><td>Installation and runtime behavior</td></tr></tbody></table></div>
+<h2>Design the application response</h2>
+<p>When selection is refused, keep the user’s entered folder visible and show the reason. Do not silently strip punctuation or choose another folder. Before explicit creation, present the complete destination and current recipe identity. Avoid concurrent edits to the destination during creation; the existing service does not provide a filesystem-wide transaction or a race-proof reservation contract.</p>
+<h2>Extend and recover</h2>
+<p>Try one nested folder string and a parent-traversal string in a learner copy. Both should be refused by the one-component destination interface. Then choose a different ordinary single-component name. For a later real creation failure, preserve partial new files for inspection and review the report rather than deleting the destination automatically. Path-selection success alone cannot tell you whether a retry is safe or whether a different process has created files there.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-project-recipes/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-project-recipes/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/project-select-a-new-destination.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="project-refused-preview-preserves-state.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="project-native-cli-explicit-creation.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

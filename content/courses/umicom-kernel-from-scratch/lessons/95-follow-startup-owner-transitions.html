@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/95-follow-startup-owner-transitions.html
+
+PURPOSE:
+Teach follow startup owner transitions through the native Kernel coordinator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow startup owner transitions | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="94-choose-a-kernel-startup-purpose.html">Previous lesson</a> · <a href="96-read-linker-boundaries-as-addresses.html">Next lesson</a></p><h1>Follow startup owner transitions</h1>
+<section><h2>Draw owners before drawing services</h2>
+<p>Startup is a sequence of ownership decisions. The Kernel first reserves its memory, then admits a complete job plan, executes bounded work, closes the job owners and checks that temporary frames returned. The console becomes useful only after those obligations succeed. A line saying that a job finished does not prove its resources were collected.</p>
+</section>
+<section><h2>Follow the coordinator in order</h2>
+<p>The session-environment job depends on runtime-contract. The first job may use two attempts; the second allows one. An attempt limit is a total count, not a count of extra retries. The existing controller remains responsible for fresh process identities and collection.</p>
+<ul><li>Find UmicomKernelBootMemoryInitialize and the first physical-memory snapshot.</li><li>Read the two job definitions and their dependency bits.</li><li>Follow Initialize, repeated Step calls and Close on the same stable controller.</li><li>Compare the later frame counters with the saved counters.</li><li>Locate the readiness marker and the subsequent shell call.</li></ul>
+</section>
+<section><h2>Keep the cleanup check separate</h2>
+<p>This is the important relationship in the real source. The coordinator checks several counters and validates the allocator after closing the jobs. A mismatch selects recovery even if the jobs appeared to complete.</p>
+<pre><code class="language-c">if (UmicomKernelBootServicesClose(&amp;umicomSystemServices)
+        != UMICOM_BOOT_SERVICE_OK)
+    UmicomStartupRecovery(&quot;startup-cleanup&quot;, UMICOM_FALSE);
+/* The following snapshot must match the saved allocation baseline. */</code></pre>
+</section>
+<section><h2>Understand what a host observation substitutes</h2>
+<p>The coordinator fixture supplies controller outcomes and physical-memory snapshots deliberately. That lets a test force a cleanup error or change one counter while holding other inputs constant. Separate controller and allocator suites exercise their real implementations. Combining these evidence types is useful; calling the synthetic snapshot a physical-memory test would hide the boundary.</p>
+</section>
+<section><h2>Exercise and troubleshooting</h2>
+<p>A job reports success, Close refuses cleanup, and the old frame counts happen to match. Should the shell start? No. Cleanup refusal is its own failed obligation; matching counters do not erase it. Preserve the cleanup status, the job identity and the source revision. Do not reset the owner simply to obtain an empty-looking state.</p>
+</section>
+<p>Companion source: umicom-kernel/kernel/normal_boot.c and tests/boot_services/normal_boot_tests.c. Read docs/NORMAL_BOOT_COORDINATOR.md in the same Kernel checkout. Match source revisions before running the exercises.</p><p><a href="../index.html">Course contents</a> · <a href="94-choose-a-kernel-startup-purpose.html">Previous lesson</a> · <a href="96-read-linker-boundaries-as-addresses.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

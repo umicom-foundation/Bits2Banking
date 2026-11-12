@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/54-preserve-an-observation-on-refusal.html
+
+PURPOSE:
+Teach preserve an observation on refusal through the installed Framework GPT service.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve an observation on refusal | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="53-reserve-table-space-before-partitions.html">Previous lesson</a> · <a rel="next" href="55-distinguish-checksums-from-trust.html">Next lesson</a></nav><h1>Preserve an observation on refusal</h1><p>Complete source: <a href="../../../../labs/native/framework-gpt-inspection/main.c">main.c</a> · <a href="../../../../labs/native/framework-gpt-inspection/README.md">Build and run the lab</a> · <a href="../../../../labs/native/framework-gpt-inspection/QUALIFICATION.md">Qualification guide</a></p><p>An application often has a useful result before its next operation fails. Replacing that result with partially validated data makes recovery difficult and can mislead the user. This lesson follows the lab’s successful observation, controlled refusal and fresh retry through the same public API.</p>
+<h2>Capture the successful state</h2>
+<pre><code class="language-c">UmiGptImageInfo observation = {0}, previous;
+UmiStatus status = UmiGptImageInspect(LabReadAt, &amp;image,
+    image.length, image.block, &amp;observation);
+/* Check status before accepting observation. */
+memcpy(&amp;previous, &amp;observation, sizeof(previous));</code></pre>
+<p>The complete program checks status before the copy. memcpy captures the entire stored representation, including any padding bytes, so the later comparison can detect a write to output even when the visible field values happen to match. It is not a serialization format, and it should not be used to compare structures received from unrelated processes.</p>
+<h2>Refuse a partial observation</h2>
+<p>Each malformed scenario changes the source and calls the parser again with the same output object. The parser builds a private candidate and publishes it only after all checks succeed. Failure therefore leaves the previous object unchanged. The application must still label that object as the previous observation, rather than implying it describes the newly rejected source.</p>
+<pre><code class="language-c">status = UmiGptImageInspect(LabReadAt, &amp;image,
+    image.length, image.block, &amp;observation);
+if (status != UMI_STATUS_OK &amp;&amp;
+    memcmp(&amp;previous, &amp;observation, sizeof(observation)) == 0) {
+    /* Report the current refusal and retain the earlier observation. */
+}</code></pre>
+<h2>Inject an exact-read error</h2>
+<p>The read-failure scenario sets failRead to 3 after resetting the read counter. The next call reads two headers and then receives IO_ERROR from the primary-array read. The service must propagate that status, release temporary ownership and leave output unchanged. The callback does not supply guessed or zero-filled bytes to turn an incomplete read into success.</p>
+<h2>Retry from a fresh source</h2>
+<p>The retry scenario first creates a malformed reservation and observes refusal. It then destroys the synthetic source and constructs a new valid one. A later call must succeed with four reads and one active partition. Reusing the output object is allowed; reusing freed source pointers is not.</p>
+<pre><code class="language-c">LabImageDestroy(&amp;image);
+if (!LabImageCreate(&amp;image, block)) return 1;
+status = UmiGptImageInspect(LabReadAt, &amp;image,
+    image.length, block, &amp;observation);</code></pre>
+<p>The full program keeps cleanup in one exit path, including failed assertions. The new source does not inherit the old read-failure counter. This is a simple example of reconstructing a valid input before retrying instead of weakening the parser’s refusal.</p>
+<h2>Exercise and worked explanation</h2>
+<p>Imagine a GUI with a green “one partition” label left over from the first call. The second call fails. Should the label remain green without explanation? No. Data preservation is an internal ownership guarantee, not permission to display stale success as current success. Show the latest error and clearly identify any retained observation as belonging to the earlier source.</p>
+<h2>Qualification boundary</h2>
+<p>Run read-failure and retry separately and retain their exit codes. They exercise callback error propagation and replacement of a synthetic source. They do not test concurrent mutation, native worker scheduling or a GUI’s presentation state. Those behaviors belong to separate application tests with their own source and environment identities.</p>
+<p><a href="https://uefi.org/specs/UEFI/2.11/05_GUID_Partition_Table_Format.html">Primary GPT format reference</a> · <a href="../index.html">Course contents</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT for these original lessons and examples. Referenced specifications retain their own rights.</p></footer></body></html>

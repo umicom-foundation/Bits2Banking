@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-publication-metadata-keys.html
+
+PURPOSE:
+Distinguish request identity from artifact freshness
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish request identity from artifact freshness | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish request identity from artifact freshness</h1><h2>Start with the question a key can answer</h2>
+<p>A build cache associates a key with an artifact, such as an object file. The key should change when relevant input changes. However, a key is only as complete as the data supplied to its construction. Framework’s compiler request key describes request metadata. It does not read a source file, inspect an included header or identify the installed compiler binary. Understanding this boundary prevents a quick metadata lookup from becoming an unsupported claim that an old executable is safe to reuse.</p>
+
+<p>Read Keys in the companion C laboratory. It constructs a request through the installed Framework service, changes one field at a time and compares the resulting identities. No driver is launched. Begin with the same request values in both owners so each observation isolates the field under discussion.</p>
+
+<h2>Keep collection roles in the identity</h2>
+<pre><code class="language-c">changed = request;
+umi_compiler_request_add_include(&amp;changed, &quot;shared&quot;);
+uint64_t include_key = umi_compiler_request_hash(&amp;changed);
+changed = request;
+umi_compiler_request_add_definition(&amp;changed, &quot;shared&quot;);
+uint64_t definition_key = umi_compiler_request_hash(&amp;changed);</code></pre>
+
+<p>The complete laboratory checks each returned status before using the value. The string shared has different meaning as an include directory and as a definition. A serialization that merely concatenates all option strings can lose that distinction. Framework includes collection names and counts, preserves their order and encodes scalar values explicitly. Working directory, debug information and other request flags also contribute.</p>
+
+<p>Unused array slots and bytes after a string terminator are not active metadata. Hashing structure padding would introduce unrelated object representation into identity. Conversely, an excessive public count or an unterminated active field is refused before traversal. The zero result identifies malformed storage; it is not a valid cache key.</p>
+
+<h2>Choose additional evidence for reuse</h2>
+<p>A nonzero key remains non-cryptographic and can collide. A source file can change while its path and command stay identical. A compiler upgrade can also change output without changing this request. A production reuse decision therefore needs content and dependency identities, the selected toolchain and environment, and an artifact verification policy. A valid flag supplied by a caller is not a filesystem observation.</p>
+
+<h2>Practice</h2>
+<p>Draw two columns headed metadata identity and reuse evidence. Place working directory, source digest, driver version, include-directory order and object-file existence in the appropriate column. Then explain what happens when a header changes without a command-line change. Run the keys scenario only after SDK qualification and report the limited observations it prints; do not label the artifact current from that result.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-publication/README.md">Compiler publication laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-publication-metadata-keys.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="compiler-preview-qualification.html">Previous lesson</a> · <a href="compiler-publication-centre.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

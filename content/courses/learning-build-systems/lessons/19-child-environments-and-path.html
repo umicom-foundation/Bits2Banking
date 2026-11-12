@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/19-child-environments-and-path.html
+
+PURPOSE:
+Prepare a child environment without changing the parent shell
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prepare a child environment without changing the parent shell | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip-link" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Prepare a child environment without changing the parent shell</h1>
+<p>A build process needs more than an executable name. Environment variables can choose a compiler, describe SDK locations or affect dependency lookup. Changing the parent shell globally makes later tasks depend on earlier tasks. An owned child-environment plan keeps each intended launch explicit and reviewable.</p>
+<h2>Understand the two owners</h2>
+<p>UmiToolchainProfile owns discovery metadata. UmiEnvironmentPlan owns a bounded set of variable names and values, together with a process-facing pointer view. Preparing this plan does not launch a process or change the parent environment. A later launch operation must receive it and keep its storage alive for the required lifetime.</p>
+<pre><code class="language-c">UmiStatus status = umi_environment_plan_from_toolchain(profile, environment);
+if (status != UMI_STATUS_OK) return status;
+const char *compiler = umi_environment_plan_find(environment, &quot;CC&quot;);
+if (compiler == NULL) return UMI_STATUS_UNAVAILABLE;</code></pre>
+<p>The fragment belongs inside a status-returning function with valid caller-owned profile and environment pointers. CC is borrowed from the plan. Do not free it, and do not retain it across an operation that can replace or destroy that plan.</p>
+<h2>Account for inherited PATH</h2>
+<p>When a profile supplies a bin directory, environment preparation can combine it with inherited PATH. The result must fit the declared capacity. An oversized inherited value can therefore prevent preparation even when the compiler path itself is short. An absent inherited PATH contributes no empty segment. A successful plan remains metadata; it does not prove the directory exists or the selected driver can execute.</p>
+<h2>Make a repeatable experiment</h2>
+<p>The installed lab leaves bin_directory empty so its ownership checks do not depend on the host PATH length. It checks an explicit CC value instead. This is deliberate fixture design, not advice to omit search paths from a real project. A separate owner-run integration exercise should use the intended SDK directory and record the inherited environment assumptions.</p>
+<h2>Exercise and recovery</h2>
+<ul><li>Explain why a newline-bearing compiler path can be stored as text yet refused as an environment value.</li><li>Identify which operation prepares values and which future operation would execute a child.</li><li>If preparation refuses a value, retain the prior plan, report the status and correct the input. Do not truncate PATH or overwrite the parent environment merely to obtain success.</li></ul>
+<h2>Source and practice</h2><p>Use the <a href="../../../../labs/native/framework-toolchain-selection/README.md">installed C23 lab guide</a> and its <a href="../../../../labs/native/framework-toolchain-selection/main.c">complete source</a>. The examples are authored; no build or execution result is implied.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="18-profile-storage-and-tool-usability.html">Previous: Distinguish a stored profile from a usable compiler</a> · <a href="20-publish-toolchain-selection.html">Next: Publish the selected profile only after its environment is ready</a></p></nav><p><a href="../../../lessons/05-engineering/learning-build-systems/19-child-environments-and-path.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

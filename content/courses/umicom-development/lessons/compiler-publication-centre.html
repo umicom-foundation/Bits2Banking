@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-publication-centre.html
+
+PURPOSE:
+Preserve both owners when compiler planning is refused
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve both owners when compiler planning is refused | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Preserve both owners when compiler planning is refused</h1><h2>Find the publication boundary</h2>
+<p>A compiler centre combines a provider, profile, manifest and compilation database. Planning a unit appears to be one action in an application, but internally it has several possible failure points. A provider can refuse the request, policy arguments can exceed capacity, or the database can be unable to record the command. Publishing the output plan too early makes a failed operation look partly successful to the caller.</p>
+
+<p>The transaction scenario first obtains an accepted plan, then exhausts the database revision and requests another directory. The request reaches a later publication boundary, where it must be refused. The lab compares all bytes of the centre and output with their previous snapshots. This is stronger than checking a count alone: unused storage and borrowed-pointer values must also survive a refused operation.</p>
+
+<h2>Pass the project directory explicitly</h2>
+<pre><code class="language-c">UmiStatus status = umi_compiler_centre_plan_unit_in_directory(
+    centre, &quot;project&quot;, &quot;main&quot;, &quot;C:/projects/example&quot;, &amp;plan);
+if (status != UMI_STATUS_OK) {
+    /* Keep the previous plan and display the refusal. */
+}</code></pre>
+
+<p>The directory is recorded in the returned plan and command entry. The service does not change the process directory or resolve filesystem paths. The older entry point remains available with a relative dot directory. That compatibility convention depends on the eventual executor’s location; an application should prefer explicit project ownership when it has that information.</p>
+
+<h2>Stage before changing live state</h2>
+<p>Framework prepares a request and command entry in temporary heap storage. Provider and policy operations work on this candidate. The database service then admits and inserts or replaces the complete entry. Only after success does the centre publish the output plan and increment its revision. Argument views are rebuilt in each receiving owner, so they do not point into freed temporary storage.</p>
+
+<p>This guarantee assumes serialized access. It is not a lock-free transaction, a disk journal or protection against process termination during a memory copy. The application must exclude concurrent readers and writers for the full call. Output storage also cannot be embedded inside the centre; that overlap is refused because it could corrupt the owner being updated.</p>
+
+<h2>Practice</h2>
+<p>List every point at which the operation can still return failure. Mark the last fallible step and the copies that follow it. Explain why moving output publication before that step breaks the contract. Run the transaction case after installing the matching SDK, retain its diagnostic if it fails, and report memory-state preservation separately from compiler execution or crash recovery.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-publication/README.md">Compiler publication laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-publication-centre.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="compiler-publication-metadata-keys.html">Previous lesson</a> · <a href="compiler-publication-command-refresh.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

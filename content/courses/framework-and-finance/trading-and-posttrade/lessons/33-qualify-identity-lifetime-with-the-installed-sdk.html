@@ -1,0 +1,40 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/33-qualify-identity-lifetime-with-the-installed-sdk.html
+
+PURPOSE:
+Qualify the identity and lifetime client against one SDK
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify the identity and lifetime client against one SDK | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><template data-preserved="offline-logo-alias"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"></template><img src="../../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Qualify the identity and lifetime client against one SDK</h1>
+<h2>Source, installation and execution are different evidence</h2>
+<p>The complete identity_lifetime.c client calls exported Framework services. Reading its source can establish which API it intends to use. Compilation checks declarations and types; linking checks that libraries provide the referenced symbols; execution checks the selected behavior in that environment. None substitutes for the others.</p>
+
+<h2>Prepare the existing laboratory</h2>
+<ul><li>Install a matching native Framework SDK with trading, ui and trading_ui components required by the existing lab.</li><li>Use the compiler, architecture and runtime compatible with that SDK.</li><li>Open labs/framework/order-lifecycle and configure against its installation prefix.</li><li>Build btb-identity-lifetime, then run its four named CTest cases.</li><li>Keep the commands, output and source/SDK identity together. Stop and diagnose any failure.</li></ul>
+
+<h2>Build and select the new cases</h2>
+<pre><code class="language-powershell">cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=&quot;C:/umicom/installed/framework&quot; -DBUILD_TESTING=ON
+cmake --build build --target btb-identity-lifetime
+ctest --test-dir build -R &quot;^learning[.]trading[.]identity-lifetime[.]&quot; --output-on-failure
+&amp; &quot;.\build\btb-identity-lifetime.exe&quot; navigation</code></pre>
+
+<p>Run these PowerShell commands separately from the laboratory directory. On Linux or macOS use the appropriate SDK prefix and ./build/btb-identity-lifetime navigation. The selector covers only the four cases whose executable was built; broader suites require their other targets too.</p>
+
+<h2>Interpret a failure at its boundary</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Observation</th><th scope="col">First investigation</th></tr></thead><tbody><tr><td>Package or component missing</td><td>SDK prefix and installed component set</td></tr><tr><td>Undefined watchlist symbol</td><td>Header/library revision and architecture agreement</td></tr><tr><td>Scenario reports a failed requirement</td><td>Exact inputs, status and matching Framework implementation</td></tr><tr><td>ICO resource missing</td><td>Installed canonical branding resources</td></tr><tr><td>Native chart looks wrong</td><td>Separate application presentation and lifecycle evidence</td></tr></tbody></table></div>
+
+<p>All five lab executables use the exported Umicom branding helper. Windows resources include the approved ICO and SVG assets are staged from the SDK. Terminal programs use the terminal font; these lesson pages use the shared Umicom stylesheet. No native window is launched by this client.</p>
+
+<h2>Finish with an honest report</h2>
+<p>Record each scenario as passed, failed or unexecuted based on actual output. The authored examples here are not captured test results. A successful memory-only client proves neither broker connectivity nor native chart appearance. Do not repair an SDK mismatch by copying one header over an unrelated installation.</p>
+
+<h2>Capstone question</h2>
+<p>A build succeeded but CTest could not find an executable. Is that a passing behavior check? No. Confirm that the selected target was built in the same build directory and configuration, retain the missing-executable evidence, then repeat the intended command. Skipped or not-run coverage must remain separate from passes.</p>
+<h2>Complete source and qualification commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the existing laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md and identity_lifetime.c. Compilation, installed SDK linking and execution remain separate qualification steps.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="32-move-chart-state-with-instrument-identity.html">Previous lesson</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/33-qualify-identity-lifetime-with-the-installed-sdk.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

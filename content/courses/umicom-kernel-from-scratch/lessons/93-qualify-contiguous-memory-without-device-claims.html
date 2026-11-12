@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/93-qualify-contiguous-memory-without-device-claims.html
+
+PURPOSE:
+Teach qualify contiguous memory without device claims through the real Kernel allocator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify contiguous memory without device claims | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><!-- Previous endpoint navigation is retained; the course now continues into normal startup. <p><a href="../index.html">Course contents</a> · <a href="92-release-owned-pages-as-one-operation.html">Previous lesson</a></p> --><p><a href="../index.html">Course contents</a> · <a href="92-release-owned-pages-as-one-operation.html">Previous lesson</a> · <a href="94-choose-a-kernel-startup-purpose.html">Next lesson</a></p><h1>Qualify contiguous memory without device claims</h1>
+<section><h2>Test the production implementation</h2><p>The lesson executable links the actual Kernel physical allocator and checked-address helpers. It has no second allocation algorithm that might drift away from the product. The four scenarios teach alignment, fragmentation, complete release and coexistence with the single-page API.</p>
+<p>Use the README to configure a new host build directory with explicit Kernel and Framework source paths. Framework supplies canonical SVG and Windows ICO resources to the hosted teaching executable. It is not linked into the freestanding allocator, and the lab does not introduce GTK into the Kernel.</p>
+</section>
+<section><h2>Layer the evidence</h2><p>The 40 authored allocator cases cover argument refusal, absolute alignment, barriers, fragmentation, complete release, subranges, compatibility, top-of-address-space geometry, maximum capacity and reinitialization. Counts describe coverage that exists in source, not passing execution evidence.</p>
+<p>The link-only contract targets include the actual allocator without discarding unused sections. This matters because hosted tests can hide compiler-generated runtime dependencies. The resulting ELF files are linkage artifacts, not new boot images.</p>
+<ol><li>Build and run the four teaching scenarios, keeping their source revision and output.</li><li>Build the isolated tests/physical_memory project in the Kernel checkout and execute its registered tests.</li><li>Build the Kernel umicom-boot-memory-contracts target using the prepared RISC-V toolchain to check freestanding linkage at debug and optimized settings.</li><li>Only after those checks pass, design and qualify a real consumer and its target-platform lifetime.</li></ol>
+</section>
+<section><h2>Keep expected outcomes explicit</h2><p>If the build fails, stop before attributing later test output to the new source. Old executables can remain in a build directory. Record command, compiler, source revisions, exit status and logs; keep skipped tests distinct from passes.</p>
+<pre><code class="language-text">alignment     first=0x4000, then allocated=0 after release
+fragmentation two-page request refused with eight isolated free pages
+release       refused whole release retains three live allocations
+coexist       single-page and run ownership return to the same baseline</code></pre>
+</section>
+<section><h2>Understand what the host did not prove</h2><p>The host examples never access physical RAM. They prove properties of bookkeeping only when actually executed successfully. A physical device consumer still needs accessible mappings, DMA address constraints, cache management, completion ownership and a release point after the device has stopped using the buffer.</p>
+<p>An aligned physical run also does not create an ISO, install a loader, choose a USB device or prove that firmware can boot it. Umicom OS image preparation and the Framework boot-media service handle those separate workflows. Keep their qualification records separate from this allocator contract.</p>
+</section>
+<section><h2>Troubleshoot the boundary</h2><p>If the compiler cannot find AllocateFrames, verify that UMICOM_KERNEL_SOURCE selects the checkout containing the new declarations and implementation. If the branding helper is missing, correct UMICOM_FRAMEWORK_SOURCE rather than removing its resource checks. If a refused allocation changes a sentinel or a refusal changes ownership, retain the exact fixture and source identity before proposing a fix.</p>
+<p>Exercise: all four hosted examples pass, but a target driver still corrupts a buffer after release. Does that prove the run allocator failed? Answer: no. Inspect whether the driver released ownership before DMA completion, whether addresses were correctly mapped and whether the platform cache rules were followed. The allocator cannot infer that a device still holds an address.</p>
+</section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-runs/README.md">Prepare the hosted laboratory</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-runs/main.c">Read the complete C example</a></p><!-- Previous endpoint navigation is retained; the course now continues into normal startup. <p><a href="../index.html">Course contents</a> · <a href="92-release-owned-pages-as-one-operation.html">Previous lesson</a></p> --><p><a href="../index.html">Course contents</a> · <a href="92-release-owned-pages-as-one-operation.html">Previous lesson</a> · <a href="94-choose-a-kernel-startup-purpose.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

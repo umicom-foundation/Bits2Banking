@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/ui-values-active-payload.html
+
+PURPOSE:
+Read a UI value as a kind and an owned payload
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read a UI value as a kind and an owned payload | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read a UI value as a kind and an owned payload</h1><h2>Begin with the existing owner</h2>
+<p>A toolkit-neutral UI value is a record an application can copy without depending on GTK widgets. Its kind tells the reader which payload has meaning. This is useful when the same model feeds a console example, a property inspector and a native window. Framework owns the representation and copying rules; the application decides what a title or quantity means in its domain.</p>
+
+<p>Before starting, be comfortable with C structs, enums, pointers and the terminating zero byte in a string. Open the laboratory main.c and the installed umicom/ui/value.h header. Find UmiUiValue, its five declared kinds and the fixed string field. The record has several fields, but only the one selected by kind is active. Avoid reading every scalar as though all fields describe the same value.</p>
+
+<div class="table-scroll"><table><thead><tr><th scope="col">Kind</th><th scope="col">Active meaning</th><th scope="col">Additional policy</th></tr></thead><tbody><tr><td>NONE</td><td>No active payload</td><td>Decide how absence appears</td></tr><tr><td>BOOLEAN</td><td>Stored boolean integer</td><td>Use the setter for normalized 0 or 1</td></tr><tr><td>INTEGER</td><td>Signed 64-bit integer</td><td>Check business bounds separately</td></tr><tr><td>REAL</td><td>Floating-point observation</td><td>Decide whether NaN or infinity is permitted</td></tr><tr><td>STRING</td><td>Bounded copied bytes</td><td>Apply text encoding rules separately</td></tr></tbody></table></div>
+
+<h2>Construct rather than guess</h2>
+<pre><code class="language-c">UmiUiValue quantity;
+UmiStatus status = umi_ui_value_set_integer(&amp;quantity, 42);
+if (status != UMI_STATUS_OK) return status;
+if (!umi_ui_value_valid(&amp;quantity)) return UMI_STATUS_INVALID_STATE;</code></pre>
+
+<p>The setter establishes deterministic inactive fields as well as the active payload. Validation recognizes the declared kind and checks a bounded terminator when STRING is active. It does not validate a trade, decode UTF-8 or grant a command permission. Keeping those responsibilities separate allows the same Framework value service to serve different products without absorbing their business rules.</p>
+
+<h2>Distinguish kind validity from value validity</h2>
+<p>A converter descriptor names a source and target kind without storing either payload. It can use umi_ui_value_kind_valid. A complete value instead needs umi_ui_value_valid because a recognized STRING kind can still contain unterminated bytes. Constructing an empty dummy string merely to check a kind obscures that distinction.</p>
+
+<h2>Practice and explain the result</h2>
+<p>Run the publish scenario only after building the installed client through the laboratory instructions. Identify the source record, the stored copy and the later observation. Then write a short explanation of why changing source.kind directly to 99 is a malformed fixture rather than a new application type. Do not extend the enum locally in a client header; that would invent a contract the shared library and other applications do not recognize.</p>
+
+<p>For a second exercise, decide whether an unavailable temperature should be NONE or a REAL NaN in a proposed application. State the display and validation rules you would need. There is no universal choice supplied by this generic container. The important requirement is that the producer and consumer agree, and that your evidence distinguishes a valid payload from a valid domain observation.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-ui-values/README.md">UI value laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/ui-values-active-payload.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="build-history-layered-qualification.html">Previous lesson</a> · <a href="ui-values-aliased-text.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

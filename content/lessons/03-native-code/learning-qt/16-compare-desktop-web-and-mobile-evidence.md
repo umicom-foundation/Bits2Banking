@@ -50,4 +50,7 @@ Compare this Qt client with the C web and Wt courses. Wt moves its application l
 
 ## Continue learning
 
+<!-- The former end-of-course navigation is retained for review; the active path now continues into the component model module.
 [Course contents](../../../courses/learning-qt/index.html) · [Previous: Observe mobile input and application lifetime](15-observe-mobile-lifecycle-and-input.md)
+-->
+[Course contents](../../../courses/learning-qt/index.html) · [Previous: Observe mobile input and application lifetime](15-observe-mobile-lifecycle-and-input.md) · [Next: Use the C registry directly from a Qt adapter](17-c-linkage-and-the-installed-sdk.md)

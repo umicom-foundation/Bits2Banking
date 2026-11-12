@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/30-admit-every-active-record.html
+
+PURPOSE:
+Admit every active record before returning a match
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit every active record before returning a match | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><template data-preserved="offline-logo-alias"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"></template><img src="../../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Admit every active record before returning a match</h1>
+<h2>A successful comparison is not complete admission</h2>
+<p>Suppose the first row is LAB.A and the second row has a symbol with no terminating zero. An early-return search can find LAB.A and report success while the retained catalogue is malformed. A later consumer may inspect the damaged row and encounter a different result. Shared admission checks the complete active catalogue first.</p>
+
+<h2>Read the validation sequence</h2>
+<ul><li>Check that the count fits the fixed array before it controls a read.</li><li>Validate each active instrument using the existing canonical instrument validator.</li><li>Reject repeated active identifiers.</li><li>Only then search for the requested identity or decide whether an insertion is a duplicate.</li><li>Publish an output or append a staged record only after admission succeeds.</li></ul>
+
+<p>The validator checks the stored instrument contract, including terminated identifier, symbol and venue fields, a valid currency and a finite positive multiplier. This establishes a structurally usable catalogue. It does not establish that a venue recognizes the instrument, that prices are current or that trading is permitted.</p>
+
+<h2>Keep inactive storage separate</h2>
+<p>Initialization resets the active count. It need not erase every unused record. Only the active prefix participates in admission, so old bytes beyond the count do not reject an otherwise valid empty list. Appending overwrites the destination with an admitted value.</p>
+
+<h2>Preserve observable result precedence</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Condition</th><th scope="col">Result</th></tr></thead><tbody><tr><td>Count above array capacity</td><td>INVALID_ARGUMENT</td></tr><tr><td>Malformed active record or repeated retained identity</td><td>INVALID_STATE</td></tr><tr><td>Valid full list, existing identity</td><td>ALREADY_EXISTS</td></tr><tr><td>Valid full list, new identity</td><td>CAPACITY_EXCEEDED</td></tr></tbody></table></div>
+
+<h2>Study the watchlist scenario</h2>
+<p>The installed lab first inserts two valid synthetic instruments, then deliberately damages the later record. Lookup of the first identity and duplicate insertion must both refuse. A complete byte copy checks that refusal changed no storage. This controlled fixture uses a public caller-owned structure; it is not a pattern for editing an opaque application owner.</p>
+
+<h2>Exercise and answer</h2>
+<p>Does checking only the requested row catch duplicate retained identities elsewhere? No. Complete admission must inspect the entire active set. With a fixed small capacity, the current implementation uses a bounded pairwise identity comparison. Any future indexing optimization must preserve the same admission and result contracts.</p>
+<h2>Complete source and qualification commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the existing laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md and identity_lifetime.c. Compilation, installed SDK linking and execution remain separate qualification steps.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="29-bound-queries-and-protect-output.html">Previous lesson</a> · <a href="31-treat-zero-as-a-real-timestamp.html">Next lesson</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/30-admit-every-active-record.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/project-application-identities.html
+
+PURPOSE:
+Keep display names, targets and application identities distinct
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep display names, targets and application identities distinct | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep display names, targets and application identities distinct</h1><p>After preparing the installed-SDK lab in its README, run this scenario. Commands below are qualification instructions, not recorded results.</p><pre><code class="language-powershell">&amp; .\build\framework-project-recipes\project-recipes.exe request</code></pre><h2>Prepare one explicit request</h2>
+<p>A project wizard asks for several names because they serve different consumers. The display name is human-facing. The build target becomes a CMake target and executable name. The application identifier identifies the application to native facilities. The repository name describes the project folder or repository. Giving all of them the same unrestricted text can produce invalid source or build files.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Field</th><th scope="col">Lab value</th><th scope="col">Role</th></tr></thead><tbody><tr><td>application_name</td><td>Umicom Recipe Study</td><td>Human-facing title</td></tr><tr><td>application_id</td><td>org.umicom.recipe.study</td><td>Application identity</td></tr><tr><td>repository_name</td><td>recipe-study</td><td>Repository/folder identity</td></tr><tr><td>target_name</td><td>recipe_study</td><td>Build target</td></tr><tr><td>template_id</td><td>learning.recipe.console</td><td>Recipe selection</td></tr></tbody></table></div>
+<h2>Use the shared admission rule</h2>
+<p>LabRequest initializes the public request and copies fixed, bounded literals into its owned fields. For user-entered text, use checked copies and preserve the original text when reporting refusal. The current request validator accepts a restricted ASCII naming profile. Spaces are allowed in the display name; the target must begin with a letter or underscore and continue with letters, digits or underscores. This is a source-generation contract, not a complete validator for every downstream toolkit or packaging system.</p>
+<pre><code class="language-c">char message[256];
+UmiStatus status = umi_developer_project_generation_request_validate(
+    &amp;request, message, sizeof message);
+if (status == UMI_STATUS_OK)
+    status = umi_developer_project_generation_request_variables(
+        &amp;request, &amp;variables);</code></pre>
+<h2>Derive common values once</h2>
+<p>The standard-variable service prepares values such as APPLICATION_NAME, TARGET_NAME, TARGET_UPPER and HEADER_GUARD. The request scenario expects RECIPE_STUDY_GENERATED_H. A thin application client should call this service rather than copy its uppercase and separator rules. That keeps the CLI, Studio and a teaching client aligned when the reusable contract changes.</p>
+<h2>Observe a refusal</h2>
+<p>Run invalid-request after request. It replaces the target with 9bad-target and requires INVALID_ARGUMENT. Read the returned explanation before editing the input. The bad target combines two problems: its initial digit and its hyphen. In a learner copy, test those independently so you understand which rule each example exercises. Keep a valid display name with spaces to show that target restrictions must not accidentally be applied to every field.</p>
+<h2>Carry the limits forward</h2>
+<p>Validation does not check whether the destination exists, reserve a folder, invoke CMake or register an application with the operating system. The dry_run field belongs to generation execution; pure plan rendering already has no filesystem writes. When you later create a GTK application, still qualify its application identifier and deployment assets against the actual GTK and operating-system environment. A valid request is one prerequisite in a longer workflow.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-project-recipes/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-project-recipes/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/project-application-identities.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="project-borrowed-recipes-owned-variables.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="project-preview-owned-plan.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

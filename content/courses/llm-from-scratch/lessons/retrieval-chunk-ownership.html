@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/retrieval-chunk-ownership.html
+
+PURPOSE:
+Keep chunk identity and source ownership intact
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep chunk identity and source ownership intact | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" style="object-fit:contain" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep chunk identity and source ownership intact</h1><h2>A chunk is more than a string</h2>
+<p>A retrievable chunk contains its text, a document identifier, a chunk identifier and source offsets. The constructor generates an identifier by joining the document ID, a colon and the chunk index. Offsets count bytes, so do not interpret them as screen columns or Unicode character positions. An editor needs a separate mapping from source bytes to its visible coordinates.</p>
+
+<p>Open ChunkOwnership in the laboratory. It starts with the word sample, then passes the destination document ID and a pointer to the second text byte back into the constructor. Those pointers borrow storage from the very record being replaced. Clearing the record first would erase the input before it could be read.</p>
+
+<h2>Capture before publishing</h2>
+<pre><code class="language-c">UmiStatus status = umi_ai_chunk_set(
+    &amp;chunk, chunk.document_id, 7U, 10U, chunk.text + 1U);
+if (status != UMI_STATUS_OK)
+    return status;</code></pre>
+
+<p>Framework prepares a separate candidate, reads both borrowed strings and formats the generated ID before publishing. The example becomes guide:7, with text ample and offsets 10 through 15. A failed replacement preserves the previous complete record. This is useful when a document browser is editing metadata that the user has already accepted.</p>
+
+<h2>Distinguish the two length limits</h2>
+<p>A document ID may fit its own array while the generated chunk ID does not fit after the colon and index are appended. Both capacities must be checked. The text must terminate inside its own capacity, and adding its byte length to the start offset must not overflow size_t. Refusing that addition is preferable to producing a wrapped end position that points somewhere unrelated.</p>
+
+<p>The storage validator intentionally checks string termination without inventing provenance rules. Existing callers may construct a chunk with an ID and text but leave document metadata and offsets empty. Such a record can be safe to consume while still lacking enough information for a source citation. Your application should state that distinction.</p>
+
+<h2>Practice</h2>
+<p>Run chunk and inspect the overflow refusal. Compare the complete record before and after it; checking only the return status would miss accidental partial edits. As a written exercise, calculate the generated ID length for a long document name and a multi-digit index. Then identify what additional evidence a source-navigation feature would need before highlighting the referenced bytes.</p>
+<h2>Read and run the client</h2><p><a href="../../../../labs/native/framework-retrieval-ownership/README.md">Setup, expected output and troubleshooting</a> · <a href="../../../../labs/native/framework-retrieval-ownership/main.c">C23 example source</a>.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="retrieval-and-model-training.html">Previous: Separate retrieval from model training</a> · <a href="retrieval-embedding-geometry.html">Next: Read embedding geometry and finite numeric limits</a></p></nav><p><a href="../../../lessons/10-native-ai/llm-from-scratch/retrieval-chunk-ownership.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

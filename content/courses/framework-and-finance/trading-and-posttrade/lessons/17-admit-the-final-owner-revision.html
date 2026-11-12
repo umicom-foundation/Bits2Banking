@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/17-admit-the-final-owner-revision.html
+
+PURPOSE:
+Admit a revision before publishing a new event
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit a revision before publishing a new event | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Admit a revision before publishing a new event</h1>
+<h2>A revision is an observation identity</h2>
+<p>Readers use a revision to distinguish earlier and later owner state. Wrapping the counter from its maximum back to zero can make a changed session resemble an old observation. The workspace must therefore reserve publication capacity before changing orders, positions or evidence.</p>
+<p>The execution path checks exact replay first because it publishes nothing. It then requires an available workspace revision for a new event. Cancellation follows the same distinction: acknowledging an already-cancelled order does not consume a revision, while a new cancellation needs capacity in both the order and workspace.</p>
+<h2>Read the decision boundary</h2>
+<pre><code class="language-c">/* Inside the Framework owner, after exact-replay handling: */
+if (workspace-&gt;revision == UINT64_MAX)
+    return UMI_STATUS_CAPACITY_EXCEEDED;</code></pre>
+<p>This is a source-reading fragment from the private owner implementation. The installed-SDK laboratory cannot and should not write workspace-&gt;revision because its workspace type is opaque. Product clients handle the returned status and retain evidence. Regression tests include the real implementation to inject this otherwise impractical boundary.</p>
+<h2>Design the important cases</h2>
+<ul><li>The last available revision accepts one complete new change.</li><li>A later unseen event refuses publication and preserves the owner.</li><li>An exact retained replay still succeeds at the maximum revision.</li><li>Conflicting reuse of an identity still reports a conflict.</li><li>Repeated cancellation does not consume another revision.</li></ul>
+<h2>Exercise and answer</h2>
+<p>Why not reset the counter when capacity is exhausted? Resetting inside the same session breaks the relationship between identity and state. A new session needs an explicit lifecycle and evidence boundary. Silently rewriting the counter is not recovery.</p>
+<h2>Keep the scope honest</h2>
+<p>These changes guard execution publication and cancellation. They do not prove that every other workspace command has identical revision admission. Review each mutation path and its return contract before extending the rule; a source change in one function is not qualification of the entire trading product.</p>
+<h2>Use the complete laboratory</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Read the source, owner commands and expected results</a>. In an offline checkout, open labs/framework/order-lifecycle/README.md. Build and runtime qualification remains unexecuted for this authored continuation.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="16-respect-represented-fill-quantities.html">Previous: Respect small quantities and represented arithmetic</a> · <a href="18-qualify-the-client-and-product-separately.html">Next: Qualify the example, SDK and product at separate boundaries</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/17-admit-the-final-owner-revision.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

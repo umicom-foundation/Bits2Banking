@@ -1,0 +1,41 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-record-ownership.html
+
+PURPOSE:
+Construct compiler metadata without losing the previous value
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Construct compiler metadata without losing the previous value | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Construct compiler metadata without losing the previous value</h1><h2>Start with values rather than processes</h2>
+<p>A compiler target is a description, not a running compiler. Its fields identify an architecture, an operating system and an object format. An ABI profile adds metadata about calling and representation conventions. These descriptions are useful to a project editor before any external tool is started. Framework owns their construction and compatibility policy so the CLI and native application do not invent different rules.</p>
+
+<p>Before this lesson, review C structures, pointers, array bounds and terminating zero bytes. Read TargetAlias and AbiAlias in the laboratory. The client supplies a real target string and checks every status. It does not assume that a successful metadata operation proves that an SDK is installed or a binary can be linked.</p>
+
+<h2>Keep the accepted value until replacement succeeds</h2>
+<pre><code class="language-c">UmiCompilerTarget target;
+UmiStatus status = umi_compiler_target_parse(
+    &quot;x86_64-unknown-linux-gnu&quot;, &amp;target);
+if (status != UMI_STATUS_OK) return status;
+status = umi_compiler_target_parse(&quot;unfinished&quot;, &amp;target);
+/* The previous accepted target remains after PARSE_ERROR. */</code></pre>
+
+<p>The initializer prepares a temporary record and publishes it only after parsing succeeds. This gives an editor a useful failure contract: an incomplete replacement cannot destroy the last accepted configuration. The temporary record is small enough for local storage; larger Framework constructors use temporary heap storage for the same publication principle.</p>
+
+<h2>Recognize when an input belongs to the output</h2>
+<p>Calling the parser with target.triple as its input creates an alias. If the initializer clears target before reading that string, it also destroys its own input. Staging consumes the input first. The ABI example exercises two aliases at once: profile.abi_id and profile.target both belong to the destination profile. Both must survive until the replacement is ready.</p>
+
+<pre><code class="language-c">status = umi_compiler_abi_init(
+    &amp;profile, profile.abi_id, UMI_COMPILER_ABI_CPP,
+    &amp;profile.target);</code></pre>
+
+<h2>Practice and state the limit</h2>
+<p>Run the target and abi scenarios after building the matching installed client. Explain why a failed replacement can be a successful laboratory observation. Then identify which bytes must remain unchanged when the target is incomplete. Compare that requirement with merely checking that the function returned an error.</p>
+
+<p>For a written exercise, distinguish metadata compatibility from demonstrated interoperability. The current target comparison checks its established architecture, operating-system, format and pointer-width fields. It does not newly qualify every environment or vendor distinction. A real cross-toolchain project needs compiler, linker and runtime evidence in addition to this bounded description.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-ownership/README.md">Compiler ownership laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-record-ownership.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="ui-values-installed-qualification.html">Previous lesson</a> · <a href="compiler-catalogue-admission.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

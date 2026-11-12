@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/58-own-a-synchronous-progress-context.html
+
+PURPOSE:
+Teach own a synchronous progress context through the installed Framework media client.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own a synchronous progress context | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="57-read-file-effects-separately-from-status.html">Previous lesson</a> · <a rel="next" href="59-cancel-before-the-first-payload-write.html">Next lesson</a></nav><h1>Own a synchronous progress context</h1><p>Complete application: <a href="../../../../labs/native/framework-boot-media/main.c">main.c</a> · <a href="../../../../labs/native/framework-boot-media/README.md">Lab setup and recovery</a> · <a href="../../../../labs/native/framework-boot-media/check.cmake">Qualification cases</a></p><h2>Identify who calls the callback</h2>
+<p>UmiBootMediaApply calls its progress function synchronously on the invoking thread. The callback receives a borrowed report and a caller-supplied context pointer. It may request cancellation by returning nonzero. It must not destroy the plan, free transfer inputs or close transport handles. The service remains responsible for unwinding the operation and publishing its final report.</p>
+
+<pre><code class="language-c">typedef struct MediaLessonStop {
+    UmiBootMediaPhase phase;
+    int observed;
+} MediaLessonStop;
+
+static int StopAtPhase(const UmiBootMediaReport *report, void *context)
+{
+    MediaLessonStop *stop = context;
+    if (report-&gt;phase != stop-&gt;phase) return 0;
+    stop-&gt;observed = 1;
+    return 1;
+}</code></pre>
+
+<h2>Explain why this context remains alive</h2>
+<p>The lab declares MediaLessonStop in MediaLessonMain and calls Apply before that function returns. Its stack storage therefore outlives every callback in this synchronous invocation. A GUI worker would need a different ownership arrangement: its context must survive until the worker has finished, and GTK widgets must remain on their owning thread. This console example does not implement that GUI lifecycle.</p>
+
+<h2>Keep cancellation small</h2>
+<ul><li>Read ReadStopPhase and list the accepted phase names. Invalid names return usage status before review.</li><li>Find the conditional callback and context arguments passed to Apply. Ordinary copy passes neither.</li><li>Add a proposed callback that saves the borrowed report pointer, then explain why copying needed values is safer than retaining that pointer. Do not add it to the working client.</li></ul>
+
+<h2>Expected observation and recovery</h2>
+<p>The copy-until command prints whether its requested phase was actually observed. A transfer can fail before reaching that phase, so a requested stop is not proof that cancellation caused the final result. Read both the callback observation and returned status. Keep callbacks bounded; a slow callback delays the caller and is not an asynchronous notification queue.</p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT for these original lessons and examples. Referenced specifications retain their own rights.</p></footer></body></html>

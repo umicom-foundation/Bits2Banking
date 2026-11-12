@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/50-format-device-labels-without-splitting-utf8.html
+
+PURPOSE:
+Teach format device labels without splitting utf-8 through the shared native media adapter.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Format device labels without splitting UTF-8 | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><!-- Earlier favicon route retained for review; canonical SVG and ICO links follow. <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"> --><!-- Earlier favicon route retained for review; canonical SVG and ICO links follow. <link rel="alternate icon" href="../../../assets/branding/umicom.ico"> --><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><!-- Canonical Framework wordmark replaces this earlier course identity; retained for review. <img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"> -->
+<img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="49-bind-device-rows-to-inventory-identity.html">Previous lesson</a></p><h1>Format device labels without splitting UTF-8</h1>
+<section><h2>Prepare the label boundary exercise</h2><p>A device path is text encoded as bytes. UTF-8 uses one to four bytes for a Unicode character. A byte count that happens to fall inside a character cannot safely be used as a display truncation boundary. Open MediaDeviceLabel in the Framework Windows boot-media adapter and compare its preserved predecessor in Finish.</p>
+<p>The --check-labels mode supplies synthetic strings to the real native conversion path. It does not open those paths. The check is authored and requires owner execution before any runtime result can be claimed.</p>
+
+</section>
+<section><h2>Why a bounded printf can still lose a row</h2><p>The former label used %.127s for the path. That prevents reading an unlimited string into the formatted label, but precision counts bytes, not Unicode characters. If a three-byte euro sign begins at byte 126, the projection includes only its first byte. Strict UTF-8 conversion then rejects the whole label.</p>
+<p>Relaxing Unicode validation would hide the damaged data instead of fixing its cause. The replacement first proves that each fixed array contains a terminator, formats every complete field into a sufficiently large temporary buffer and converts the complete result with MB_ERR_INVALID_CHARS.</p>
+
+</section>
+<section><h2>Separate the two capacity contracts</h2><p>The temporary label capacity covers the full path, model, serial and reason plus separators and the largest displayed decimal byte count. snprintf reports whether the byte buffer was sufficient. MultiByteToWideChar separately receives the destination's capacity in wchar_t elements.</p>
+<pre><code>int length = snprintf(label, sizeof label,
+    &quot;%s | %s | %s | %llu bytes | %s&quot;,
+    device-&gt;path, device-&gt;model, device-&gt;serial,
+    (unsigned long long)device-&gt;bytes, device-&gt;reason);
+if (length &lt; 0 || (size_t)length &gt;= sizeof label) return 0;
+return MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+    label, -1, wide, capacity) &gt; 0;</code></pre>
+<p>This excerpt follows bounded terminator checks for all four source arrays. The negative return check occurs before converting length to size_t. The explicit unsigned long long cast matches %llu. A nonzero result means conversion succeeded; it does not establish that the path names a device.</p>
+</section>
+<section><h2>Exercise boundary cases, not only ordinary names</h2>
+<ol><li>Place a three-byte euro sign across the old 127-byte precision boundary and require the complete character and .img suffix to survive.</li><li>Offer one UTF-16 element for a longer label and require refusal.</li><li>Supply invalid UTF-8 and require refusal rather than substitution.</li><li>Fill each source array without a zero terminator in turn and require refusal before formatting.</li><li>Fill every field to its documented maximum and use UINT64_MAX for the byte count; the complete label should still fit its designed buffer.</li></ol></section>
+<section><h2>Exercise and answer</h2><p>Would replacing %.127s with %s alone solve the problem? Answer: only if the input arrays are known to terminate and the destination is large enough with checked formatting. Without those prerequisites, the new code could read outside an array or silently truncate a different part of the label.</p>
+<p>If a product later needs visual shortening, perform it at a character boundary and retain an accessible complete value for review. The current adapter chooses complete bounded fields. Selection identity remains separately bound to inventory item data, so a conversion refusal cannot shift a later row onto the wrong device.</p>
+
+</section>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/adapters/win32/boot_media.c">Read the complete native adapter</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/development/boot-media.md">Follow the media guide</a></p><p><a href="https://learn.microsoft.com/en-us/windows/win32/controls/cb-addstring">Microsoft: CB_ADDSTRING</a> · <a href="https://learn.microsoft.com/en-us/windows/win32/controls/cb-setitemdata">Microsoft: CB_SETITEMDATA</a> · <a href="https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar">Microsoft: MultiByteToWideChar</a></p><p><a href="../index.html">Course contents</a> · <a href="49-bind-device-rows-to-inventory-identity.html">Previous lesson</a></p><p><a rel="next" href="51-connect-an-owned-image-read-port.html">Continue: Connect an owned image read port</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

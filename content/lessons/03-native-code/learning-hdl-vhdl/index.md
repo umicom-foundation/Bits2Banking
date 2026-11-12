@@ -125,3 +125,35 @@ Reading and paper exercises need no installation. Simulation labs use GHDL with 
 - [Review a circuit before moving to a device](30-review-a-hardware-boundary.md)
 
 </details>
+
+
+## Project: an instruction-driven CPU
+
+Create the Framework VHDL project, trace its instruction set and qualify its simulation.
+
+1. [Create a CPU simulation project in Studio](31-create-a-cpu-project.md)
+1. [Read the inputs, outputs and stored state](32-read-ports-and-state.md)
+1. [Decode operation codes and operands](33-decode-an-instruction.md)
+1. [Explain wraparound in fixed-width arithmetic](34-check-fixed-width-arithmetic.md)
+1. [Follow jumps and conditional branches](35-follow-branches.md)
+1. [Control pause, halt and reset](36-control-pause-halt-reset.md)
+1. [Make invalid instructions visible](37-stop-on-invalid-operations.md)
+1. [Drive a clocked circuit from a testbench](38-write-a-clocked-testbench.md)
+1. [Choose expected results independently](39-build-an-independent-cpu-oracle.md)
+1. [Distinguish successful completion from a timeout](40-bound-a-cpu-simulation.md)
+1. [Understand the analysis and simulation build graph](41-understand-the-vhdl-build-graph.md)
+1. [Review CPU evidence and plan the next extension](42-review-cpu-evidence-and-next-steps.md)
+
+
+## Project: a CPU with program memory
+
+Connect read-only instruction memory, follow a countdown program and inspect bounded simulation evidence without changing the CPU instruction engine.
+
+1. [Store an instruction program](43-store-an-instruction-program.md)
+1. [Encode a countdown program](44-encode-a-countdown-program.md)
+1. [Connect CPU and memory](45-connect-cpu-and-memory.md)
+1. [Check a program trace](46-check-a-program-trace.md)
+1. [Pause, halt and restart a program](47-pause-halt-and-restart-a-program.md)
+1. [Handle unresolved addresses](48-handle-unresolved-addresses.md)
+1. [Build separate simulation libraries](49-build-separate-simulation-libraries.md)
+1. [Investigate a program failure](50-investigate-a-program-failure.md)

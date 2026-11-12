@@ -1,0 +1,40 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/28-distinguish-identity-from-array-position.html
+
+PURPOSE:
+Distinguish an instrument identity from its array position
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish an instrument identity from its array position | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><template data-preserved="offline-logo-alias"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"></template><img src="../../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish an instrument identity from its array position</h1>
+<h2>Begin with two different questions</h2>
+<p>Which instrument is this? asks for identity. Where is its record stored right now? asks for position. A watchlist index answers the second question. Removing an earlier row can change that position without changing the instrument. A pointer into the array has the same lifetime problem.</p>
+
+<h2>Trace a small owner</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Before removal</th><th scope="col">After removing LAB.A</th></tr></thead><tbody><tr><td>Slot 0: LAB.A</td><td>Slot 0: LAB.B</td></tr><tr><td>Slot 1: LAB.B</td><td>Slot 1: LAB.C</td></tr><tr><td>Slot 2: LAB.C</td><td>Slot 2: inactive</td></tr></tbody></table></div>
+
+<p>A retained index of 1 originally identified LAB.B. After removal it identifies LAB.C. The number is still inside the array, so a simple bounds check cannot detect this semantic error. Keep the stable identifier when a selection must survive edits, then resolve it against the current owner.</p>
+
+<h2>Use a result within its lifetime</h2>
+<pre><code class="language-c">size_t index = SIZE_MAX;
+UmiStatus status = umi_watchlist_find(watchlist, &quot;LAB.B&quot;, &amp;index);
+if (status == UMI_STATUS_OK) {
+    UmiInstrument copy = watchlist-&gt;instruments[index];
+    /* Use this copied value; do not retain index across list edits. */
+    (void)copy;
+}</code></pre>
+
+<p>The caller serializes access from lookup through the copy. Copying after a concurrent writer changes the array would still be unsafe. Framework does not turn a plain index into a lock or a durable database key.</p>
+
+<h2>Read the installed example</h2>
+<p>Open identity_lifetime.c in the existing order-lifecycle laboratory. The query scenario copies a selected instrument immediately after successful lookup. The navigation scenario keeps identifiers across edits and asks the workspace to resolve them again. Neither client owns private workspace arrays.</p>
+
+<h2>Exercise and answer</h2>
+<p>An interface caches slot 2 and then removes slot 0. Can it safely use slot 2 because the allocation still exists? No. The logical record moved, and the old tail is inactive. Preserve the identifier and obtain a fresh result, or keep a value snapshot with a clearly limited meaning.</p>
+<h2>Complete source and qualification commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the existing laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md and identity_lifetime.c. Compilation, installed SDK linking and execution remain separate qualification steps.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="27-handle-refusal-without-resetting-owners.html">Previous lesson</a> · <a href="29-bound-queries-and-protect-output.html">Next lesson</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/28-distinguish-identity-from-array-position.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/18-map-registry-records-to-qt-roles.html
+
+PURPOSE:
+Map registry records to rows and roles
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Map registry records to rows and roles | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Map registry records to rows and roles</h1>
+<h2>Describe one row</h2>
+<p>The laboratory exposes one row per admitted component. Its row order follows insertion order. Each row has three custom roles: componentId, componentText and componentKind. A role is a named question about a row. Qt::DisplayRole returns the same label as componentText, allowing a conventional view to display useful text without knowing the custom roles.</p>
+<h2>Read through the adapter</h2>
+<pre><code class="language-cpp">ComponentModel model;
+const UmiStatus status = model.appendButton(&quot;save&quot;, &quot;Save&quot;);
+if (status == UMI_STATUS_OK) {
+    const QModelIndex row = model.index(0, 0);
+    const QString id = model.data(row, ComponentModel::IdRole).toString();
+    const QString label = model.data(row).toString();
+}</code></pre>
+<p>The returned QString owns its value independently of the registry. The adapter never returns a writable pointer to a component. This is why future model edits cannot turn a previously returned label into a dangling pointer. The registry stays private and its accepted count is bounded by Framework capacity.</p>
+<h2>Refuse meaningless indexes</h2>
+<p>Read the first branch in data. An invalid index, an index from another model, a nonzero column or a row outside the current count returns an empty QVariant. A valid parent has no children in this flat model, so rowCount(parent) returns zero. These checks prevent an interface mistake from becoming an out-of-range C array access.</p>
+<h2>Exercise and worked answer</h2>
+<p>After adding save and cancel, request componentId at row one, then request an unsupported role. Expect cancel for the first query and an invalid QVariant for the second. An unsupported role is not an empty string: the absence of a value is distinguishable. Add a read-only tooltip role as an exercise using the existing component field, while keeping the storage and validity rules in Framework.</p>
+<h2>Reference</h2><ul><li><a href="https://doc.qt.io/qt-6/qabstractlistmodel.html">QAbstractListModel contract</a></li></ul><h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-component-model/component_model.cpp">labs/framework/qt-component-model/component_model.cpp</a>. Use the matching local revision when offline.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="17-c-linkage-and-the-installed-sdk.html">Previous: Use the C registry directly from a Qt adapter</a> · <a href="19-utf8-ownership-and-zero-characters.html">Next: Keep text ownership and byte boundaries explicit</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/18-map-registry-records-to-qt-roles.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

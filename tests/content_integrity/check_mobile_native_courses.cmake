@@ -18,6 +18,7 @@ if(NOT DEFINED REPOSITORY_ROOT OR NOT IS_DIRECTORY "${REPOSITORY_ROOT}/content")
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/setup_section.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/source_reference.cmake")
 
 include("${CMAKE_CURRENT_LIST_DIR}/course_links.cmake")
 
@@ -116,9 +117,18 @@ foreach(_id IN ITEMS learning-android learning-kotlin learning-flutter learning-
         if(NOT _manuscript MATCHES "^[.][.]/[.][.]/lessons/[a-z0-9-]+/${_id}/[0-9]+-[a-z0-9-]+[.]md$")
             message(FATAL_ERROR "${_id}: unexpected manuscript ${_manuscript}")
         endif()
+        # Nested package files are valid teaching sources. Keep the original
+        # flat-file rule for review; the shared validator checks real files,
+        # rejects traversal and verifies that resolved paths stay in the checkout.
+        if(FALSE)
         if(NOT _source MATCHES "^labs/(mobile|languages)/[a-z0-9-]+/[A-Za-z0-9_.]+$"
                 OR NOT EXISTS "${REPOSITORY_ROOT}/${_source}")
             message(FATAL_ERROR "${_id}: missing or unexpected teaching source ${_source}")
+        endif()
+        endif()
+        BtbValidateSourceReference("${_source}" "${REPOSITORY_ROOT}" _source_valid _source_reason)
+        if(NOT _source MATCHES "^labs/(mobile|languages)/[a-z0-9-]+/" OR NOT _source_valid)
+            message(FATAL_ERROR "${_id}: invalid teaching source ${_source}: ${_source_reason}")
         endif()
         file(READ "${_directory}/${_path}" _page)
         file(READ "${_directory}/${_manuscript}" _written)

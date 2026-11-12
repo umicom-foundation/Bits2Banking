@@ -1,3 +1,5 @@
+![Umicom](../../assets/branding/umicom-logo.svg)
+
 # Umicom Framework Development
 
 Start with the first module and follow its lessons in order. Later project modules build on the earlier ideas. Each exercise identifies the source files, setup, expected result and recovery steps; keep your practice work in a separate folder.
@@ -447,3 +449,131 @@ Select dependency-closed plans, bound traversal memory and coordinate parallel l
 - [Admit parallel work through one owning orchestrator](orchestration-parallel-slots-and-outcomes.md)
 - [Distinguish stopping, retrying and finishing an operation](orchestration-stop-retry-and-finish.md)
 - [Qualify orchestration across owner and child boundaries](orchestration-layered-regression-evidence.md)
+
+
+## Author offline learning modules
+
+Continue with the linked source studies in this order.
+
+1. [Separate a course, a manifest and a reader](learning-module-files-and-identities.md)
+1. [Load a pack and understand its lifetime](learning-module-load-and-ownership.md)
+1. [Verify the current bytes before reading or distribution](learning-module-verify-current-files.md)
+1. [Prepare a new revision without replacing the previous manifest](learning-module-prepare-reviewed-revision.md)
+1. [Understand how Studio opens a bundled learning module](learning-module-studio-installation-boundary.md)
+1. [Copy an example into a learner-chosen file](learning-module-copy-example-safely.md)
+1. [Test a learning module through observable outcomes](learning-module-regression-design.md)
+1. [Review content, accessibility and publication separately](learning-module-publication-and-limits.md)
+
+
+## Build language-aware document tools
+
+Use the shared document catalogue, inspect language identities, handle borrowed data, validate bounded patterns and trace file-opening behaviour through an application.
+
+1. [Identify a document from its filename](language-names-and-document-identity.md)
+1. [Read a shared language catalogue safely](language-catalogues-and-borrowed-data.md)
+1. [Separate a filename from its directories](language-basename-and-suffix-matching.md)
+1. [Bound a character buffer before reading it](language-filters-and-bounded-c-strings.md)
+1. [Keep an object unchanged when an operation fails](language-filter-results-and-failure-atomicity.md)
+1. [Share file-opening categories between applications](language-filter-categories-and-open-dialogs.md)
+1. [Separate editing rules from compiler support](language-comments-syntax-and-build-tools.md)
+1. [Trace language support from a command to an outcome](language-support-regression-and-source-map.md)
+
+
+## Build an editable creative application
+
+Compose storyboard and creation services, preserve unfinished work, manage owned captures and qualify native recovery without restoring execution permission.
+
+- [Separate recoverable text from a prepared request](recovery-draft-and-readiness.md)
+- [Compose scene instructions into a creation document](recovery-scene-to-creation.md)
+- [Keep serialized bytes alive for every reader](recovery-owned-serialized-bytes.md)
+- [Refuse a damaged document without losing current work](recovery-transactional-import.md)
+- [Choose a recovery path and interpret cancellation](recovery-explicit-file-operations.md)
+- [Keep native file workers independent of widgets](recovery-native-worker-lifetimes.md)
+- [Review restored references and edited prompts](recovery-reference-and-prompt-review.md)
+- [Qualify storage, SDK clients and native workflows separately](recovery-layered-qualification.md)
+
+## Prepare and create a Framework application
+
+Select shared recipes, own preview state, preserve useful output on refusal and distinguish explicit creation from SDK, branding and runtime qualification.
+
+- [Select a project recipe by its stable identity](project-select-a-catalogue-recipe.md)
+- [Separate borrowed recipes from owned variable values](project-borrowed-recipes-owned-variables.md)
+- [Keep display names, targets and application identities distinct](project-application-identities.md)
+- [Preview generated files in an owned plan](project-preview-owned-plan.md)
+- [Preserve a reviewed preview when the next recipe fails](project-refused-preview-preserves-state.md)
+- [Choose a destination without confusing it with write authority](project-select-a-new-destination.md)
+- [Move from a native CLI preview to explicit project creation](project-native-cli-explicit-creation.md)
+- [Qualify generated application branding and the installed SDK boundary](project-branding-and-sdk-qualification.md)
+
+## Build checked filesystem and project clients
+
+Use shared portable paths, native directory/file ownership, explicit progress and success-only model publication through an installed SDK.
+
+- [Admit portable paths before touching the filesystem](storage-portable-path-admission.md)
+- [Prepare directories below an explicit existing parent](storage-existing-parent-ownership.md)
+- [Distinguish ensuring a directory from creating a new name](storage-exclusive-directory-reservation.md)
+- [Create a file without replacing an existing leaf](storage-exclusive-file-publication.md)
+- [Read empty and binary files with explicit ownership](storage-empty-files-owned-reads.md)
+- [Report refusal and partial progress without inventing rollback](storage-progress-and-partial-results.md)
+- [Publish project state only after successful file creation](storage-project-state-publication.md)
+- [Qualify storage clients across source, SDK and native boundaries](storage-qualifying-filesystem-clients.md)
+
+## Own native project creation and host lifetime
+
+Trace copied worker requests, GTK task admission, success-only publication, hidden results and safe normal shutdown through shared Framework forms.
+
+- [Copy a project request before starting background work](native-project-captured-inputs.md)
+- [Admit a GTK task before transferring lifetime ownership](native-project-task-admission.md)
+- [Publish created source and adoption state in separate steps](native-project-result-publication.md)
+- [Distinguish a hidden form from a retired host](native-project-hidden-retired.md)
+- [Keep a host alive until its shared source writer completes](native-project-host-shutdown.md)
+- [Qualify a native workflow without confusing authored tests with results](native-project-qualification-evidence.md)
+
+## Observe build failures and own operation history
+
+Use a real installed Framework client to distinguish admission, preparation, copied results, bounded retention and qualification layers.
+
+- [Record an admitted failure before a child starts](build-history-admitted-preparation.md)
+- [Keep retained build evidence independent of caller storage](build-history-copy-and-lifetime.md)
+- [Retry with new identities and bounded retained history](build-history-bounded-identities.md)
+- [Qualify the runner, installed client and native presentation separately](build-history-layered-qualification.md)
+
+## Publish owned UI values and reactive observations
+
+Use the installed Framework SDK to handle aliased strings, refused edits, copied properties, revision boundaries and archive admission.
+
+- [Read a UI value as a kind and an owned payload](ui-values-active-payload.md)
+- [Stage aliased text before replacing a display value](ui-values-aliased-text.md)
+- [Publish a copied property without sharing caller storage](ui-values-property-publication.md)
+- [Keep reactive observations readable when revisions are exhausted](ui-values-reactive-revisions.md)
+- [Validate every encoded field without confusing data with authority](ui-values-archive-admission.md)
+- [Qualify a branded installed client and report its limits](ui-values-installed-qualification.md)
+
+## Own compiler records, catalogues and argument plans
+
+Build an installed Framework metadata client with bounded records, refused edits, complete plan publication and borrowed-pointer lifetimes.
+
+- [Construct compiler metadata without losing the previous value](compiler-record-ownership.md)
+- [Check catalogue storage before selecting a compiler](compiler-catalogue-admission.md)
+- [Compose a bounded compiler request and preserve refused edits](compiler-request-composition.md)
+- [Publish a compiler plan only after every argument is accepted](compiler-plan-publication.md)
+- [Rebase borrowed argument views after copying a plan](compiler-borrowed-arguments.md)
+- [Qualify the installed compiler client and report what it proves](compiler-installed-qualification.md)
+
+## Inspect native compiler plans as structured evidence
+
+Use an installed C client and native CLI metadata to distinguish action mappings, complete driver identities, JSON argument boundaries and qualification layers.
+
+- [Choose a compiler action before planning its arguments](compiler-preview-actions.md)
+- [Keep the complete compiler driver identity](compiler-preview-driver-identity.md)
+- [Present compiler arguments as structured JSON](compiler-preview-json-arguments.md)
+- [Qualify preview behavior without claiming a build](compiler-preview-qualification.md)
+
+## Keep compiler metadata and published commands coherent
+
+Explore request identity, staged centre publication, explicit command replacement and unsupported policy intent with an installed C23 client.
+
+- [Distinguish request identity from artifact freshness](compiler-publication-metadata-keys.md)
+- [Preserve both owners when compiler planning is refused](compiler-publication-centre.md)
+- [Refresh a stored command without losing its ownership](compiler-publication-command-refresh.md)
+- [Report unsupported compiler policy without weakening it](compiler-publication-policy.md)

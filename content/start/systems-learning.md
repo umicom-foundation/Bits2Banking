@@ -60,6 +60,17 @@ The native Kernel is a separate project. Follow the first four sections of the f
 13. [Device discovery](../lessons/06-umicom/131-read-umicom-kernel-device-discovery.md) — Compare firmware information with supported device bindings.
 14. [Filesystems and storage](../lessons/06-umicom/136-follow-kernel-filesystems-and-storage.md) — Connect named files to storage and ownership.
 
+
+## I want to connect C to screens and understand circuits
+
+Read the shared model first, then choose desktop, browser or mobile. Begin the independent HDL route with signals before clocked circuits.
+
+1. [Learning HDL and VHDL](../courses/learning-hdl-vhdl/index.html) — Describe small digital circuits, simulate their behaviour, and check the results before considering a physical board.
+1. [Learning iPhone Development](../courses/learning-iphone-development/index.html) — Create a small iPhone screen and connect it to an existing C application model. Learn each boundary before adding storage or networking.
+1. [Introduction to RISC-V](../courses/learning-riscv/index.html) — Continue the ordered course and its linked practical labs.
+1. [Learning Umicom Framework](../courses/umicom-development/index.html) — Continue the ordered course and its linked practical labs.
+1. [Android Development](../courses/learning-android/index.html) — Continue the ordered course and its linked practical labs.
+
 ## Ready for a practical lab?
 
 Before building, explain a file path, a C function, an array, a return value and the difference between a compiler and a test. The Kernel labs also need bounds and pointer-lifetime concepts. If any are unfamiliar, return to the first-programming route.

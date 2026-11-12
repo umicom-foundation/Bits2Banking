@@ -1,0 +1,29 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/23-position-independent-compile-intent.html
+
+PURPOSE:
+Express position-independent compilation as an explicit request
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Express position-independent compilation as an explicit request | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip-link" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Express position-independent compilation as an explicit request</h1>
+<p>Some object files need code that can support loading at different addresses. A compiler flag is only one part of that workflow: the target architecture, compiler, linker and final artifact each matter. This lesson uses a narrow request to show how an API can represent intent without claiming a complete shared-library build.</p>
+<h2>Inspect the supported mapping</h2>
+<p>For a C or C++ COMPILE action, the current GCC and Clang providers map position_independent set to true into -fPIC. The PIC lab creates a synthetic GCC provider and checks that the plan contains exactly one such argument. Planning does not inspect an executable or confirm target support.</p>
+<pre><code class="language-c">request.position_independent = true;
+UmiStatus status = umi_compiler_provider_plan(&amp;provider, &amp;request, &amp;plan);
+if (status != UMI_STATUS_OK) return status;</code></pre>
+<p>This fragment requires initialized request, provider and plan storage. The complete lab supplies them. Setting the field to false leaves the driver’s defaults; it does not emit -fno-PIC. Position-independent executables and shared libraries can require additional choices. Do not equate an object-compilation switch with a finished deployment artifact.</p>
+<h2>Refuse an unmapped combination</h2>
+<p>The lab changes the action to CHECK while retaining explicit PIC intent. This combination is not mapped and returns NOT_IMPLEMENTED. The previously valid plan remains byte-for-byte unchanged. Current MSVC and other unsupported mappings likewise must not silently discard the request. A clear refusal allows the caller to present the actual limitation.</p>
+<h2>Review raw arguments too</h2>
+<p>A structured field expresses intent, but the low-level C request can also carry raw arguments. Contradictory raw options may alter a driver’s effective behavior. A product should review the complete plan and decide how it handles conflicting user-supplied options. The presence of one expected argument alone is insufficient evidence that a real compile used the intended policy.</p>
+<h2>Exercise and verification</h2>
+<p>Write separate acceptance statements for plan mapping, actual object compilation and final linking. The supplied scenario checks the first. A platform exercise must choose a real compiler/target, preserve its diagnostics and inspect the resulting artifact using appropriate tools. Consult the compiler’s own documentation for target restrictions; record unsupported targets as limits rather than changing the request until a command happens to succeed.</p>
+<h2>Source and practice</h2><p>Use the <a href="../../../../labs/native/framework-toolchain-selection/README.md">installed C23 lab guide</a> and its <a href="../../../../labs/native/framework-toolchain-selection/main.c">complete source</a>. The examples are authored; no build or execution result is implied.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="22-synchronize-compiler-selection.html">Previous: Replace a compiler provider and profile together</a> · <a href="24-installed-toolchain-lab-qualification.html">Next: Qualify the installed client without confusing plans with execution</a></p></nav><p><a href="../../../lessons/05-engineering/learning-build-systems/23-position-independent-compile-intent.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

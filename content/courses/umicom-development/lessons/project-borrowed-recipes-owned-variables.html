@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/project-borrowed-recipes-owned-variables.html
+
+PURPOSE:
+Separate borrowed recipes from owned variable values
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate borrowed recipes from owned variable values | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate borrowed recipes from owned variable values</h1><p>After preparing the installed-SDK lab in its README, run this scenario. Commands below are qualification instructions, not recorded results.</p><pre><code class="language-powershell">&amp; .\build\framework-project-recipes\project-recipes.exe variables</code></pre><h2>Identify the memory owner</h2>
+<p>The recipe fixture in recipe.c contains pointers to static strings. Framework borrows those strings while it validates and renders the recipe. The variable set instead stores names and values inside bounded arrays. This distinction lets the caller change an input buffer after setting a variable without changing the stored value. It also explains why a pointer returned by the getter should be treated as a temporary view, not independent storage.</p>
+<pre><code class="language-c">char value[] = &quot;First name&quot;;
+umi_developer_project_variable_set(&amp;variables, &quot;NAME&quot;, value);
+value[0] = 'X';
+const char *view = umi_developer_project_variable_get(&amp;variables, &quot;NAME&quot;);
+/* The stored value remains &quot;First name&quot;. Check every returned status. */</code></pre>
+<h2>Read the two scenarios together</h2>
+<p>The variables scenario copies a caller buffer, changes that buffer and verifies the owned value. It then passes a borrowed stored value into another setter call. The implementation prepares a candidate before mutating the owner, so overlapping input remains readable during preparation. Reacquire getter results after a mutation; this keeps client code correct if the internal representation changes later.</p>
+<h2>A fixed array still needs admission</h2>
+<p>A public C structure can be malformed even when its storage is allocated. A count may exceed capacity, or an occupied character array may have no terminating zero. The invalid-variable scenario deliberately fills a value array without a terminator. The shared validator refuses it, lookup returns no value and rendering refuses before changing the supplied output. This is different from an unknown variable name in otherwise valid storage.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Storage condition</th><th scope="col">Expected boundary</th></tr></thead><tbody><tr><td>Valid name with empty value</td><td>An empty value is allowed</td></tr><tr><td>Unknown name in a valid set</td><td>Lookup returns no value</td></tr><tr><td>Unterminated occupied value</td><td>Validation refuses the owner</td></tr><tr><td>Full set replacing an existing name</td><td>Capacity alone need not forbid replacement</td></tr><tr><td>Full set adding another name</td><td>Append is refused</td></tr></tbody></table></div>
+<h2>Extend the exercise</h2>
+<p>Add a local experiment that uses a value exactly one byte shorter than the public value capacity, leaving room for its terminator. Then try a value that needs one extra byte. Compare the complete variable set before and after the refused call. Do not truncate the value to hide the error: a truncated application identity can refer to a different application. Keep these experiments in a separate learner copy until their expected outcomes have been reviewed.</p>
+<h2>Ownership is not concurrency control</h2>
+<p>Copying strings does not make simultaneous mutations safe. Route edits through the owning service or another explicitly serialized context. The revision is a bounded state indicator; it is not a lock or a timestamp. Record executed observations separately from your reasoning about the implementation. This lab supplies scenarios to run, not evidence that a particular SDK has passed them.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-project-recipes/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-project-recipes/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/project-borrowed-recipes-owned-variables.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="project-select-a-catalogue-recipe.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="project-application-identities.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

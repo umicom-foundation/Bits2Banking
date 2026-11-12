@@ -94,3 +94,6 @@ Why do we need a testbench as well as a CPU file? The CPU file describes a circu
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](30-review-a-hardware-boundary.md) · [Next lesson](32-read-ports-and-state.md)
+
+
+[Manuscript course contents](index.md)

@@ -107,3 +107,54 @@ Eight connected exercises cover cross-toolchain identities, portable file claims
 - [Use native recipe inspection and exit status](36-use-native-recipe-inspection-and-exit-status.md)
 - [Distinguish digest claims from provenance](37-distinguish-digest-claims-from-provenance.md)
 - [Plan reproducible build and resume evidence](38-plan-reproducible-build-and-resume-evidence.md)
+
+## Build a reviewed media-copy application
+
+Use real Framework APIs for file-only inspection, review, transfer and verification, then plan the remaining distribution evidence.
+
+- [Inspect an image without booting it](39-inspect-an-image-without-booting-it.md)
+- [Own a reviewed media plan](40-own-a-reviewed-media-plan.md)
+- [Refuse a changed media review](41-refuse-a-changed-media-review.md)
+- [Copy and verify regular-file media](42-copy-and-verify-regular-file-media.md)
+- [Prepare an ISO through native services](43-prepare-an-iso-through-native-services.md)
+- [Plan boot and distribution evidence](44-plan-boot-and-distribution-evidence.md)
+
+## Inspect optical records through Framework
+
+- [Share a read-only image inspector](45-share-a-read-only-image-inspector.md)
+- [Decode optical records and byte order](46-decode-optical-records-and-byte-order.md)
+- [Interpret UEFI boot catalogue counts](47-interpret-uefi-boot-catalogue-counts.md)
+- [Qualify produced images in stages](48-qualify-produced-images-in-stages.md)
+
+
+## Laboratory: preserve device selection and Unicode labels
+
+Follow explicit inventory bindings in the existing Windows interface and qualify presentation without opening devices.
+
+1. [Bind device rows to inventory identity](49-bind-device-rows-to-inventory-identity.md)
+1. [Format device labels without splitting UTF-8](50-format-device-labels-without-splitting-utf8.md)
+
+## Inspect partition tables through an installed Framework client
+
+Own a byte source, understand geometry and preserve observations through a failed inspection. The lab uses actual installed Framework APIs and no devices.
+
+- [Connect an owned image read port](51-connect-an-owned-image-read-port.md)
+- [Keep partition address units explicit](52-keep-partition-address-units-explicit.md)
+- [Reserve table space before partitions](53-reserve-table-space-before-partitions.md)
+- [Preserve an observation on refusal](54-preserve-an-observation-on-refusal.md)
+- [Distinguish checksums from trust](55-distinguish-checksums-from-trust.md)
+- [Qualify an installed image client](56-qualify-an-installed-image-client.md)
+
+[Build the lab](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-gpt-inspection/README.md) · [Record qualification](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-gpt-inspection/QUALIFICATION.md)
+
+## Own media effects, cancellation and recovery
+
+Use the existing installed C23 media client to distinguish creation, payload writes, checked release and later verification.
+
+- [Read file effects separately from status](57-read-file-effects-separately-from-status.md)
+- [Own a synchronous progress context](58-own-a-synchronous-progress-context.md)
+- [Cancel before the first payload write](59-cancel-before-the-first-payload-write.md)
+- [Interpret cancellation after payload writing](60-interpret-cancellation-after-payload-writing.md)
+- [Check native release without retrying handles](61-check-native-release-without-retrying-handles.md)
+- [Retain failed media artifacts for recovery](62-retain-failed-media-artifacts-for-recovery.md)
+- [Qualify installed media recovery behaviour](63-qualify-installed-media-recovery-behaviour.md)

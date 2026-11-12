@@ -103,3 +103,6 @@ Why keep the original instruction table when reviewing a test? It is the contrac
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](38-write-a-clocked-testbench.md) · [Next lesson](40-bound-a-cpu-simulation.md)
+
+
+[Manuscript course contents](index.md)

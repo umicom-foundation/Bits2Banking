@@ -76,3 +76,17 @@ A function can refuse a request. The caller must know whether a result was produ
 - [Read a file in bounded chunks](23-chunks-eof-and-read-errors.md)
 - [Return a status and publish one complete result](24-status-values-and-complete-results.md)
 - [Check a result using known answers and another tool](25-check-file-digests-independently.md)
+
+
+## Follow C from source to executable
+
+Continue with preprocessing, assembly, object files, linking and incremental builds using a small consumer of Umicom C.
+
+1. [Read the map from source to executable](26-read-the-build-map.md)
+1. [Inspect the source after preprocessing](27-inspect-preprocessed-source.md)
+1. [Inspect generated assembly without guessing its meaning](28-inspect-generated-assembly.md)
+1. [Understand object files and unresolved symbols](29-object-files-and-symbols.md)
+1. [Link a program with an existing native SDK](30-link-with-a-native-sdk.md)
+1. [Read diagnostics at the stage that produced them](31-read-diagnostics-by-stage.md)
+1. [Observe which files an incremental build rebuilds](32-observe-incremental-rebuilds.md)
+1. [Review and extend a complete native consumer](33-review-a-complete-native-consumer.md)

@@ -36,3 +36,18 @@ A window can outlive the function that created it. Its callbacks therefore need 
 - [Separate model checks from window checks](10-separate-logic-and-window-checks.md)
 
 - [Follow the application event loop](11-follow-the-application-event-loop.md)
+
+
+## Inspect and operate GTK controls safely
+
+Follow a small window from control identity to logical discovery, explicit navigation, safe callback lifetime and reproducible user-interface checks. The example uses the shared Framework GTK service.
+
+1. [Identify a control independently of its caption](12-identify-a-control.md)
+1. [Understand the logical widget tree](13-understand-the-logical-widget-tree.md)
+1. [Read checked lookup results before using a pointer](14-read-checked-lookup-results.md)
+1. [Detect duplicate names and keep searches scoped](15-find-ambiguous-controls.md)
+1. [Reveal a panel without running its action](16-reveal-without-running-an-action.md)
+1. [Distinguish a found control from a usable control](17-distinguish-visible-enabled-and-found.md)
+1. [Keep callback state alive for the right lifetime](18-keep-callback-state-alive.md)
+1. [Test control discovery at its boundaries](19-test-control-lookup-boundaries.md)
+1. [Diagnose a button journey from click to result](20-diagnose-a-button-journey.md)

@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-preview-actions.html
+
+PURPOSE:
+Choose a compiler action before planning its arguments
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose a compiler action before planning its arguments | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Choose a compiler action before planning its arguments</h1><h2>Describe the stage you intend</h2>
+<p>A source file can take part in several stages. A syntax check asks a driver to inspect a translation unit without producing its usual object output. Compilation produces an object for later linking. Archiving groups objects into a library. These intentions need different argument mappings. Changing an action label in an editor is not enough if the generated arguments still request the old stage.</p>
+
+<p>Begin with the preceding compiler ownership module, then read Actions and Prepare in the installed laboratory. The example uses original metadata and a deliberately nonexistent driver name. Its purpose is to make the mapping visible without hiding a compiler launch behind a preview button. Framework owns the mapping; a thin command-line client chooses fields and presents the result.</p>
+
+<h2>Ask about a mapping separately from availability</h2>
+<pre><code class="language-c">request.action = UMI_COMPILER_ACTION_CHECK;
+bool mapped = umi_compiler_provider_can_plan_action(
+    &amp;provider, request.language, request.action);
+/* mapped describes this planner, not an installed compiler. */</code></pre>
+
+<p>The query is independent of the availability field. A provider can describe a supported mapping while its executable is unavailable. Conversely, a nonempty executable does not make every action supported. The current C and C++ check mappings cover GCC, Clang and MSVC. Link and archive requests are refused by this provider planner rather than being reported as successful compile plans.</p>
+
+<h2>Read the actual arguments</h2>
+<p>Run the actions scenario after qualifying the installed SDK. It checks for the GCC syntax-only switch and the absence of object-output switches. It then changes the action to compile and checks the object arguments. Finally it requests archive, expects an unsupported result, and compares the previous plan bytes. The observed refusal is intentional, not a successful archive operation.</p>
+
+<p>The native CLI exposes compile and check with an explicit language standard and working directory. Check refuses output and debug options because it does not use them. A selected standard still needs a compatible installed driver; metadata alone cannot establish that compatibility.</p>
+
+<h2>Practice</h2>
+<p>Write a three-row table for check, compile and archive. In each row record the requested stage, the planner status and the evidence still missing. Explain why a successful plan should not enable a green build-completed indicator. A later process runner needs its own authorization, environment, output collection and exit-status handling.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-preview/README.md">Compiler preview laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-preview-actions.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="compiler-installed-qualification.html">Previous lesson</a> · <a href="compiler-preview-driver-identity.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

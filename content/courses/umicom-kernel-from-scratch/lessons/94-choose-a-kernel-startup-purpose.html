@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/94-choose-a-kernel-startup-purpose.html
+
+PURPOSE:
+Teach choose a kernel startup purpose through the native Kernel coordinator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose a Kernel startup purpose | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="93-qualify-contiguous-memory-without-device-claims.html">Previous lesson</a> · <a href="95-follow-startup-owner-transitions.html">Next lesson</a></p><h1>Choose a Kernel startup purpose</h1>
+<section><h2>Start with the question you want to answer</h2>
+<p>A successful boot is not one universal result. A diagnostic Kernel deliberately runs checks before reaching its final marker. A normal system image prepares a session without executing that cumulative sequence first. Recovery supplies a smaller inspection path when ordinary startup cannot proceed. Before choosing an executable, write down which behaviour you intend to observe.</p>
+</section>
+<section><h2>Read the existing image profiles</h2>
+<p>The Kernel build defines these profiles in cmake/NormalBoot.cmake. They inherit the established source graph but select different compile definitions and output locations. A shared source file does not make their execution paths identical. Keep the complete build result with the exact image you launched.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Profile</th><th scope="col">Purpose</th><th scope="col">Important boundary</th></tr></thead><tbody><tr><td>system</td><td>Enter the normal shell after startup</td><td>Human input still needs a real session</td></tr><tr><td>recovery</td><td>Enter independent recovery directly</td><td>No allocator or job admission</td></tr><tr><td>startup-check</td><td>Complete normal startup and stop</td><td>Does not open the shell</td></tr><tr><td>recovery-check</td><td>Exercise a malformed required job</td><td>Accept only the intended failure</td></tr><tr><td>forced-recovery-check</td><td>Exercise the direct recovery selection</td><td>Physical owner must remain uninitialised</td></tr></tbody></table></div>
+</section>
+<section><h2>Find the decision in C</h2>
+<p>The normal coordinator publishes its ready marker after job cleanup and frame-accounting checks. The automatic build stops at that point. This excerpt shows the distinction; it is part of the Kernel, not a standalone hosted program.</p>
+<pre><code class="language-c">UmicomKernelConsoleWriteLine(&quot;UMICOM_KERNEL_NORMAL_STARTUP_READY&quot;);
+#ifdef UMICOM_KERNEL_STARTUP_AUTOMATED
+    UmicomStartupPoweroff();
+#endif
+UmicomKernelConsoleShellRun();</code></pre>
+</section>
+<section><h2>Work through a misleading result</h2>
+<p>Suppose startup-check prints readiness and exits, but you have never entered a shell command. You may report the automatic startup result with its source and environment identity. You cannot report that interactive editing, file commands or keyboard recovery worked. Those actions were deliberately excluded from this image.</p>
+</section>
+<section><h2>Exercise and recovery</h2>
+<p>Choose a profile for each question: can the two startup jobs complete, can a user type help, and can recovery start without physical allocation? Answer: startup-check, system, and forced-recovery-check respectively. If the wrong profile was launched, retain its output but repeat the intended exercise with the correct image; do not relabel an old log.</p>
+</section>
+<p>Companion source: umicom-kernel/kernel/normal_boot.c and tests/boot_services/normal_boot_tests.c. Read docs/NORMAL_BOOT_COORDINATOR.md in the same Kernel checkout. Match source revisions before running the exercises.</p><p><a href="../index.html">Course contents</a> · <a href="93-qualify-contiguous-memory-without-device-claims.html">Previous lesson</a> · <a href="95-follow-startup-owner-transitions.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

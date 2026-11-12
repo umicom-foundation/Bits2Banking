@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-publication-command-refresh.html
+
+PURPOSE:
+Refresh a stored command without losing its ownership
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Refresh a stored command without losing its ownership | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Refresh a stored command without losing its ownership</h1><h2>A repeated source can have a new command</h2>
+<p>A compilation database gives tools a description of how a source is compiled. Editing a profile may change warnings, optimisation or the working directory while the source path stays the same. If a planner treats the existing database row as a harmless duplicate and ignores it, the returned plan can disagree with the record that other tools read. Both values may be individually well-formed while the combined workflow is wrong.</p>
+
+<p>Read Refresh in the installed laboratory. It plans one source, changes the profile’s warnings-as-errors intent and plans the same source again. The observation checks that there is still one row, that both command owners contain the new option and that the stored directory is refreshed. It also verifies that the add-only API still reports a duplicate when called explicitly.</p>
+
+<h2>Choose insertion or replacement deliberately</h2>
+<pre><code class="language-c">/* Add-only clients retain duplicate refusal. */
+UmiStatus added = umi_polyglot_compilation_database_add(database, &amp;entry);
+/* A client that intends replacement selects the separate operation. */
+UmiStatus updated = umi_polyglot_compilation_database_upsert(database, &amp;entry);</code></pre>
+
+<p>Upsert means insert when the key is absent and update when it is present. Here the key is the literal source string. It is not canonical filesystem identity, and this API does not merge several build configurations for one source. Keep separate databases when separate configurations must coexist. Check each status; the snippet illustrates the two contracts rather than a recommended sequence of unconditional calls.</p>
+
+<h2>Copy strings and rebuild views</h2>
+<p>A plan owns inline argument strings and caches pointers into them. Copying the structure copies those pointers too, which can leave the receiving record referring to the caller’s array. Successful database publication rebases its views into the stored plan. The returned plan has its own rebased views. Mutating one owner’s strings must not change the other owner’s values.</p>
+
+<p>Replacing a known source does not need a free slot, so it can succeed in a full database. It still consumes revision and is refused when that counter is exhausted. A new source at capacity is also refused. Every failure preserves the complete database; reading a stale row after a failed update must not be described as a successful refresh.</p>
+
+<h2>Practice</h2>
+<p>Write a small state table with an absent source, an existing source, a full database and an exhausted revision. Predict add-only and upsert results for each combination. Then explain why a borrowed lookup pointer becomes unsafe after owner destruction or concurrent mutation even when its source key has not changed. Use the refresh scenario as evidence of ownership behavior, not as proof that an external language server accepted the database.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-publication/README.md">Compiler publication laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-publication-command-refresh.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="compiler-publication-centre.html">Previous lesson</a> · <a href="compiler-publication-policy.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

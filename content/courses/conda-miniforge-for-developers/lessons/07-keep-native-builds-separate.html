@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/lessons/07-keep-native-builds-separate.html
+
+PURPOSE:
+Teach keep native c and assembly builds separate.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep native C and Assembly builds separate | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/07-keep-native-builds-separate.md">Markdown manuscript</a> · <a href="06-plan-a-python-ai-project.html" rel="prev">Previous lesson</a> · <a href="08-describe-and-recreate-environments.html" rel="next">Next lesson</a></p></nav><h1>Keep native C and Assembly builds separate</h1>
+<p>Lesson 7 of 10 · Suggested study time: 30 minutes. Command exercises are unexecuted teaching examples.</p><h2>What you will learn</h2>
+<p>Recognise when environment activation changes the tools selected by a native build. Read lesson 4 first. This lesson inspects tools; it does not ask you to configure, compile or launch a product.</p>
+<h2>The same command name can select another file</h2>
+<p>A terminal process carries environment variables, including PATH. Programs started from it inherit that environment. An activated Python environment can change executable search order and available libraries. A command named cmake may therefore resolve differently in two terminals.</p>
+<p>Umicom&#39;s Windows native workflow uses the repository&#39;s documented MSYS2 UCRT64 toolchain. Keep that compiler, its headers and its runtime libraries together. Conda is optional supporting infrastructure for Python experiments, not a required dependency of native Framework, Studio, OS or kernel builds.</p>
+<h2>Make a read-only tool inventory</h2>
+<p>Open a fresh ordinary PowerShell window without an activated Conda environment. Inspect:</p>
+<pre><code class="language-powershell">$env:CONDA_PREFIX
+Get-Command cmake,ninja,gcc,python -All -ErrorAction SilentlyContinue
+where.exe cmake
+where.exe gcc
+</code></pre>
+<p>A missing command is an observation, not a reason to install the first available similarly named package. Compare the returned paths with your repository&#39;s setup guide. Get-Command can reveal aliases or functions as well as executable files; where.exe focuses on executable search. <a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/get-command">PowerShell command discovery</a>.</p>
+<p>If the documented tools are installed at the following locations, explicit paths avoid ambiguity for these version checks:</p>
+<pre><code class="language-powershell">&amp; &#39;C:\msys64\ucrt64\bin\cmake.exe&#39; --version
+&amp; &#39;C:\msys64\ucrt64\bin\gcc.exe&#39; --version
+&amp; &#39;C:\msys64\ucrt64\bin\ninja.exe&#39; --version
+</code></pre>
+<p>These are examples of the usual installation location, not a claim that those files exist on every machine. A version check does not establish that all DLL dependencies or build settings are correct.</p>
+<h2>Worked diagnosis</h2>
+<p>A project configured yesterday with UCRT64 is opened today from an AI terminal. The shell finds another CMake and Python. The existing CMake cache still records yesterday&#39;s compiler. Activating or deactivating an environment does not rewrite that cache. Inspect both the shell selection and the recorded build configuration before deciding whether a separate build directory is needed. Do not copy a cache between checkouts or delete the old directory as a first diagnostic step.</p>
+<p>After your environment experiment, use conda deactivate and inspect CONDA_PREFIX again. If environments were stacked, one deactivation may reveal another active environment. A terminal inherited from an already activated parent can retain that environment; verify the values instead of trusting the word “new.”</p>
+<h2>Exercise and answer</h2>
+<p>CMake&#39;s version is identical in two terminals, but its full executable path differs. Is that enough evidence to treat their results as interchangeable?</p>
+<p><strong>Answer:</strong> no. Record the actual binary, compiler, library paths and build configuration. Equal version strings do not prove equal dependencies or environment state. Preserve evidence before changing toolchain selection.</p>
+<p>Continue with <a href="../../learning-build-systems/index.html">Learning Build Systems</a> and <a href="../../learning-cmake/index.html">Learning CMake</a> for compilation exercises. Keep those qualification steps separate from the environment checks in this course.</p>
+
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/07-keep-native-builds-separate.md">Markdown manuscript</a> · <a href="06-plan-a-python-ai-project.html" rel="prev">Previous lesson</a> · <a href="08-describe-and-recreate-environments.html" rel="next">Next lesson</a></p></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

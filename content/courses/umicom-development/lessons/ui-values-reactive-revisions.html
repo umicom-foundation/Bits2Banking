@@ -1,0 +1,41 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/ui-values-reactive-revisions.html
+
+PURPOSE:
+Keep reactive observations readable when revisions are exhausted
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep reactive observations readable when revisions are exhausted | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep reactive observations readable when revisions are exhausted</h1><h2>Use revisions as accepted-change identities</h2>
+<p>The reactive store maps paths to values and records a revision for the owner and each changed row. An accepted put advances the owner and changed row once. A failed put must not create an apparent new observation. This is why counters used as identities need a defined policy at their maximum value instead of ordinary unsigned wraparound.</p>
+
+<p>Open ShowRevision in the lab. It creates and initializes a heap-allocated store, publishes ready under status, then injects UINT64_MAX into the public record for an isolated boundary exercise. That direct assignment is a fixture technique. Production clients must not edit a live revision to bypass admission or to make a failed update look new.</p>
+
+<pre><code class="language-c">UmiUiValue observed;
+UmiStatus status = umi_ui_reactive_observable_store_get(
+    store, &quot;status&quot;, &amp;observed);
+if (status != UMI_STATUS_OK) {
+    /* Preserve the current presentation and report the refused lookup. */
+}</code></pre>
+
+<h2>Separate reading from changing state</h2>
+<p>At the revision limit, another put returns CAPACITY_EXCEEDED, while get remains available. The lab must still observe ready. The value and owner revision are preserved. Preventing another write does not require destroying the last accepted evidence or making the application blank.</p>
+
+<div class="table-scroll"><table><thead><tr><th scope="col">Boundary</th><th scope="col">Expected behavior</th><th scope="col">Reason</th></tr></thead><tbody><tr><td>Last available revision</td><td>One accepted put reaches UINT64_MAX</td><td>Use the remaining identity exactly once</td></tr><tr><td>Revision exhausted</td><td>Refuse further puts</td><td>Do not recycle an observation identity</td></tr><tr><td>Rows full</td><td>Existing row can be replaced</td><td>Replacement does not need another slot</td></tr><tr><td>Malformed active row</td><td>Refuse access with INVALID_STATE</td><td>Do not index or compare damaged owner data</td></tr></tbody></table></div>
+
+<p>The store has 256 bounded rows and no internal mutex. Allocate large records deliberately and serialize the complete operation in the application model. Validating a count before lookup is necessary for memory safety, but it is not a lock against another thread changing the count immediately afterward.</p>
+
+<h2>Make a recovery decision without hiding history</h2>
+<p>If a live owner exhausts its revision space, define how the application retires that owner and creates a new observation context. Shut down borrowers and preserve any required accepted state. Silently resetting the revision inside the same live instance can make cached observations appear current when they belong to an earlier sequence.</p>
+
+<h2>Practice with the expected output</h2>
+<p>Run revision through the owner commands and compare all three observations: CAPACITY_EXCEEDED, readable value ready and the exact decimal maximum. A successful laboratory exit means these checks agreed. It does not qualify concurrent UI callbacks, persistence or a product restart. Write down which additional evidence a real application would need for those workflows.</p>
+
+<p>For a design exercise, describe how a status panel could remain useful after writes are refused. Keep its accepted snapshot visible, separate the rejected draft from stored state and show a specific recovery action. Use the existing approved layout when wiring the model into a product; this console lesson defines state behavior rather than a new visual design.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-ui-values/README.md">UI value laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/ui-values-reactive-revisions.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="ui-values-property-publication.html">Previous lesson</a> · <a href="ui-values-archive-admission.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

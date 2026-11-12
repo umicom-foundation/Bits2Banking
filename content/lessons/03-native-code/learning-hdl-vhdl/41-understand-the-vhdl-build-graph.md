@@ -106,3 +106,6 @@ Why must the stamp be written last? If analysis fails but a fresh stamp is left 
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](40-bound-a-cpu-simulation.md) · [Next lesson](42-review-cpu-evidence-and-next-steps.md)
+
+
+[Manuscript course contents](index.md)

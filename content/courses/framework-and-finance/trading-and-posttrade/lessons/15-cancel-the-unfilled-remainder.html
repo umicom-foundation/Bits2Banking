@@ -1,0 +1,29 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/15-cancel-the-unfilled-remainder.html
+
+PURPOSE:
+Cancel the remainder while preserving completed fills
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cancel the remainder while preserving completed fills | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Cancel the remainder while preserving completed fills</h1>
+<h2>Cancellation does not reverse a fill</h2>
+<p>A two-unit request with one unit already filled still has a one-unit position after cancellation. Cancellation ends the remaining local order lifecycle. Erasing the fill quantity or position would rewrite history and hide exposure. The shared UmiOrderCancel operation changes only order status and revision.</p>
+<h2>Follow the cancel scenario</h2>
+<ul><li>Accept a synthetic two-unit limit order.</li><li>Retain one one-unit execution and observe the position.</li><li>Cancel the selected order through the workspace.</li><li>Repeat cancellation and replay the original fill; neither publishes another change.</li><li>Submit a new fill identity and observe refusal for the cancelled order.</li></ul>
+<p>The workspace and local broker both delegate the transition to the canonical order-state service. The workspace additionally owns its own revision and selection. A partial position remains visible because cancellation does not remove prior execution evidence or recalculate that position to zero.</p>
+<h2>Use the owner command</h2>
+<pre><code class="language-c">UmiStatus status = umi_trading_workspace_cancel_selected_order(workspace);
+/* Keep prior fills and positions. Read the resulting owner state. */</code></pre>
+<p>The default laboratory view retains the selected cancelled order, so repeating the command succeeds without a new revision. An open-orders filter may remove the order from that view and clear its selection. A later selected-order command can then return NOT_FOUND. That result describes the current selection; it does not undo or invalidate the earlier cancellation.</p>
+<h2>Exercise and answer</h2>
+<p>Should a live broker client mark an order cancelled immediately after sending a network request? This local value helper does not establish that acknowledgement. A live adapter needs its own command and provider-response lifecycle. The lesson makes no claim that local cancellation confirms exchange cancellation.</p>
+<h2>Read the evidence</h2>
+<p>Inspect order_state.c and the workspace command, then compare the cancel regression fixture. It checks partial fills, repeated calls, invalid states and revision limits. The test source is authored coverage; only an owner run against identified binaries supplies a result.</p>
+<h2>Use the complete laboratory</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Read the source, owner commands and expected results</a>. In an offline checkout, open labs/framework/order-lifecycle/README.md. Build and runtime qualification remains unexecuted for this authored continuation.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="14-replay-without-new-economics.html">Previous: Replay an execution without adding its economics twice</a> · <a href="16-respect-represented-fill-quantities.html">Next: Respect small quantities and represented arithmetic</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/15-cancel-the-unfilled-remainder.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

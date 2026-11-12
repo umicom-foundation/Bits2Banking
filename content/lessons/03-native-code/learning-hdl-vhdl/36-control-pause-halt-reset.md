@@ -94,3 +94,6 @@ What distinguishes pause from halt? Pause is controlled externally by enable. Ha
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](35-follow-branches.md) · [Next lesson](37-stop-on-invalid-operations.md)
+
+
+[Manuscript course contents](index.md)

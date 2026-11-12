@@ -1,3 +1,5 @@
+![Umicom](../../../../assets/branding/umicom-logo.svg)
+
 # Understand exposure and collateral
 
 Distinguish market data, orders, executions, positions and collateral.

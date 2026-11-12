@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/10-preserve-failed-copy-outcomes.html
+
+PURPOSE:
+Teach preserve failed copy outcomes through the original bounded read-only C lab.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve failed copy outcomes | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="09-separate-read-planning-from-copying.html">Previous lesson</a> · <a href="11-read-in-chunks-and-retry-explicitly.html">Next lesson</a></p><h1>Preserve failed copy outcomes</h1>
+<h2>An error is an outcome to preserve</h2>
+<p>Continue with the same read-only driver. The range may be valid while the copy callback fails. The portable helper must preserve that distinction. It returns UMI_LEARNING_READ_COPY_FAILED and records the exact nonzero callback status. It acknowledges zero bytes because the callback did not report complete success.</p>
+<p>Zero acknowledged bytes does not mean that the destination stayed unchanged. A general callback can copy some bytes and then fail. The helper cannot roll back an external operation or infer a trustworthy partial count from an integer error. This distinction matters in file I/O, device drivers and network adapters as well as this small example.</p>
+<h2>Compare the three results</h2>
+<p>Read the header before adding another result category. The callback contract currently reports complete success with zero and failure with any other integer. It has no partial-success protocol. Supporting partial success would require an explicit new contract and corresponding caller changes, not an invented interpretation of a positive status.</p>
+<p>The guest adapter maps invalid arguments to EINVAL and returns a failed copy’s actual status. A completed reply becomes the read byte count. Its response is a small fixed string, so that count fits in ssize_t. A later variable-sized service must prove its own conversion bound rather than copying this cast without review.</p>
+<table><thead><tr><th scope="col">Result</th><th scope="col">Reply storage</th><th scope="col">Copy callback</th></tr></thead><tbody><tr><td>INVALID</td><td>Unchanged; do not interpret as a new observation</td><td>Never called</td></tr><tr><td>COMPLETE</td><td>New offset and acknowledged byte count; zero copy status</td><td>Zero or one call</td></tr><tr><td>COPY_FAILED</td><td>New offset; zero acknowledged bytes; exact error</td><td>One call</td></tr></tbody></table>
+<h2>Study an intentionally imperfect copy</h2>
+<p>In read_reply_tests.c, capture_copy copies the bounded slice into its small probe buffer and then returns the chosen status. This design makes a useful failure visible: destination bytes can differ even though the helper reports failure. The positive-failure and negative-failure cases both require the original status, one callback attempt and zero acknowledged bytes.</p>
+<p>Those two artificial signs test preservation in the portable helper. They do not claim that a particular MINIX release uses both error conventions. The driver uses the status supplied by its real grant-copy function. Keep that source identity in the guest record.</p>
+<pre><code class="language-c">if (result == UMI_LEARNING_READ_COPY_FAILED) {
+    /* Record reply.copy_status; do not advance by the requested count. */
+    return reply.copy_status;
+}</code></pre>
+<h2>Prevent stale reports from looking successful</h2>
+<p>The reuse-eof case first creates a failed reply, then requests the end of the source using the same reply object. The second valid operation must clear the earlier error and copy-attempt flag. It must not call the callback again. This checks that reporting is per request rather than accumulated accidental state.</p>
+<p>Invalid arguments have a different contract: they leave the caller’s storage alone. A caller that ignores INVALID may display an old success or an old failure. Branching on the function result is therefore part of correctness, even if your UI or log already has a report object ready to reuse.</p>
+<h2>Exercise and recovery</h2>
+<p>The expected answer is a failed result, the admitted source offset, zero acknowledged bytes, the exact callback error and copy_attempted equal to one. Permissions require review in the selected guest. Do not add unrelated hardware access to resolve a memory-transfer problem. Host fault injection demonstrates report semantics; it does not demonstrate that the kernel rejected a real grant.</p>
+<ol><li>Trace positive-failure and identify the copied bytes that remain in the probe.</li><li>Explain why returning the requested count after that error would mislead the reader.</li><li>Change only your worksheet’s requested size and predict the failure reply fields; do not change error signs to make a test pass.</li><li>When qualifying the guest, record the actual error and service configuration before investigating a grant failure.</li></ol>
+<h2>Source and further reading</h2><ul><li><a href="../../../../labs/minix/status-driver/README.md">Original Umicom read-only driver and host commands</a></li><li><a href="../../../../labs/minix/status-driver/QUALIFICATION.md">Qualification worksheet</a></li><li><a href="https://github.com/Stichting-MINIX-Research-Foundation/minix/blob/v3.3.0/minix/drivers/examples/hello/hello.c">MINIX 3.3.0 character-driver example</a></li><li><a href="https://wiki.minix3.org/doku.php?id=developersguide:memorygrants">MINIX memory grants guide</a></li></ul><p><a href="../index.html">Course contents</a> · <a href="09-separate-read-planning-from-copying.html">Previous lesson</a> · <a href="11-read-in-chunks-and-retry-explicitly.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

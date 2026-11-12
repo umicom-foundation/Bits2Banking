@@ -1,0 +1,41 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/build-history-bounded-identities.html
+
+PURPOSE:
+Retry with new identities and bounded retained history
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retry with new identities and bounded retained history | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Retry with new identities and bounded retained history</h1><h2>Separate identity from position</h2>
+<p>An operation ID identifies an admitted attempt. A history index identifies a position in the currently retained ring. Those values are not interchangeable. With capacity two, three attempts produce IDs 1, 2 and 3, but only IDs 2 and 3 remain. Index zero now refers to ID 2. An interface that stores a ring index as permanent identity could later open the wrong attempt after another completion.</p>
+
+<h2>Observe the rolling scenario</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">After attempt</th><th scope="col">Retained IDs</th><th scope="col">Oldest index</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>0 points to ID 1</td></tr><tr><td>2</td><td>1, 2</td><td>0 points to ID 1</td></tr><tr><td>3</td><td>2, 3</td><td>0 points to ID 2</td></tr></tbody></table></div>
+
+<p>All three attempts in this laboratory fail for the same missing Run program. Retrying does not overwrite the earlier failure or reuse its ID. The ring removes only the oldest retained record when capacity is full. This makes the capacity policy visible without claiming that omitted records succeeded, disappeared from a durable log or were never attempted.</p>
+
+<h2>Share the identity allocator</h2>
+<pre><code class="language-c">config.history = history;
+umi_build_runner_create(&amp;config, &amp;first);
+umi_build_runner_create(&amp;config, &amp;second);
+/* Check both creation statuses before using either runner. */</code></pre>
+
+<p>The shared scenario creates both runners before either performs work. Each runner initially has a local next-ID field, but a configured history is the authoritative allocator. The first call reserves ID 1 and the second runner reserves ID 2. This is why assigning IDs independently inside each client would be wrong. The laboratory performs these calls sequentially; it does not claim to qualify simultaneous access from multiple threads.</p>
+
+<h2>Respect exhaustion and clearing</h2>
+<p>The identity API uses zero as an exhaustion signal rather than wrapping a 64-bit ID back to one. A refused reservation cannot be appended as an invented operation. Clearing retained records also does not authorise reusing old IDs. The Framework regression fixture exercises exhaustion; this small public client keeps to ordinary IDs and does not modify private allocator state.</p>
+
+<h2>Exercise: model a history viewer</h2>
+<ul><li>Run rolling and shared through the owner procedure and compare retained IDs.</li><li>Sketch a viewer that copies records before presenting them instead of holding mutable ring indices.</li><li>Explain how a completed result can be evicted while its operation identity remains meaningful in an external log.</li><li>Describe what the viewer should display when a retained record cannot be read.</li></ul>
+
+<p>For a coherent multi-record review while producers are active, inspect UmiBuildHistoryCopyRecent. It copies the newest retained records under one history lock and reports omitted retained records. Repeated count and at calls are sufficient for this single-threaded laboratory, but may observe different ring generations in a concurrent viewer. The method selected for observation must match the producer lifetime.</p>
+
+<h2>Recover without erasing evidence</h2>
+<p>Investigate the failing profile and submit a new attempt after correcting it. Do not clear history as a way to make the latest error disappear. For exhausted identities, use a reviewed new owner lifecycle and preserve the previous evidence. Native presentation, concurrent producers and persistent logging each need their own qualification; a sequential ring exercise proves none of those automatically.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-build-history/README.md">Build-history laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/build-history-bounded-identities.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="build-history-copy-and-lifetime.html">Previous lesson</a> · <a href="build-history-layered-qualification.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

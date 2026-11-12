@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/retrieval-store-admission.html
+
+PURPOSE:
+Admit the complete vector store before searching
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit the complete vector store before searching | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" style="object-fit:contain" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Admit the complete vector store before searching</h1><h2>A count is a claim about storage</h2>
+<p>The reference vector store owns a fixed array of entries and an active count. Each entry combines a chunk and an embedding. A public structure can be filled without calling its initializer, so the count must be checked before it drives indexing. A value larger than the array capacity is malformed state, not a request to grow the array.</p>
+
+<p>Read StoreAdmission in the laboratory. It inserts one real entry, then deliberately corrupts only the count in its isolated fixture. Both search and addition must refuse that owner. The example compares the complete store and output values after refusal, proving more than an error status by itself could demonstrate.</p>
+
+<h2>Use shared admission</h2>
+<pre><code class="language-c">if (!umi_ai_vector_store_valid(&amp;store))
+    return UMI_STATUS_INVALID_STATE;
+UmiStatus status = umi_ai_vector_store_add(
+    &amp;store, &amp;chunk, &amp;embedding);
+if (status != UMI_STATUS_OK)
+    return status;</code></pre>
+
+<p>The validator checks every active chunk and embedding, not just the first row or the row likely to score highest. This prevents a malformed later entry from being hidden behind an early result. Inactive slots are ignored. An initialized empty store is valid, and the current service permits duplicate chunk identities and mixed embedding dimensions.</p>
+
+<h2>Separate capacity from corruption</h2>
+<p>A valid full store returns CAPACITY_EXCEEDED when another entry is added. A malformed existing store returns INVALID_STATE. Invalid incoming records return INVALID_ARGUMENT. These distinctions help an application explain whether it needs more room, a corrected producer or different input. Silently clamping a corrupted count would hide the source of the problem and could expose unrelated entries.</p>
+
+<p>Insertion stages both incoming records before publishing the next slot and count. Callers can borrow from an existing or unused entry without losing the source during the write. That local alias support does not make the store thread-safe. A product must still define who owns it and synchronize concurrent reads and mutations.</p>
+
+<h2>Practice</h2>
+<p>Run store and explain why an expected refusal produces a successful laboratory exit. Then trace the full-capacity path in Framework without changing the fixture count to bypass it. Draw the distinction between active entries, allocated slots and requested output capacity. Each is a different boundary, and confusing them can cause either unsafe access or unnecessary rejection of valid data.</p>
+<h2>Read and run the client</h2><p><a href="../../../../labs/native/framework-retrieval-ownership/README.md">Setup, expected output and troubleshooting</a> · <a href="../../../../labs/native/framework-retrieval-ownership/main.c">C23 example source</a>.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="retrieval-embedding-geometry.html">Previous: Read embedding geometry and finite numeric limits</a> · <a href="retrieval-stable-top-matches.html">Next: Select top matches without losing stable order</a></p></nav><p><a href="../../../lessons/10-native-ai/llm-from-scratch/retrieval-store-admission.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

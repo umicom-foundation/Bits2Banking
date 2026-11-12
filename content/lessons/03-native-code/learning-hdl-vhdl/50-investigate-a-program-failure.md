@@ -68,3 +68,6 @@ Create a separate project copy, alter the branch destination from 4 to 3, and pr
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous: Build separate simulation libraries](49-build-separate-simulation-libraries.md)
+
+
+[Manuscript course contents](index.md)

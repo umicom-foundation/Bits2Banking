@@ -1,0 +1,39 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/build-history-copy-and-lifetime.html
+
+PURPOSE:
+Keep retained build evidence independent of caller storage
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep retained build evidence independent of caller storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep retained build evidence independent of caller storage</h1><h2>Draw the ownership relationships</h2>
+<p>The laboratory has one history, one or two runners, and three caller-owned result records. A runner borrows the history pointer. The history owns copies of completed results. The caller owns the result buffer passed to the synchronous run function and the buffers used to read retained records. These roles explain both the destruction order and why an application may reuse a completed output buffer.</p>
+
+<p>A build result contains bounded output text and diagnostic arrays. Allocating those records through umi_build_result_create avoids placing several large values on a small worker stack. Allocation is not execution: if any allocation fails, the client releases everything it already owns and exits with a laboratory failure. It never reports a synthetic successful operation to compensate for missing storage.</p>
+
+<h2>Follow the copy scenario</h2>
+<pre><code class="language-c">if (umi_build_history_latest(history, retained) == UMI_STATUS_OK) {
+    *saved = *retained;
+    umi_build_result_init(result, 99U, UMI_BUILD_PHASE_BUILD, &quot;local-reuse&quot;);
+    /* Reading history again must still return the completed Run observation. */
+}</code></pre>
+
+<p>Here, reinitialising result changes only caller storage. The code does not submit operation 99, append it to history or change the history allocator. The saved record provides an independent comparison value. The laboratory reads the latest record again and checks that it is byte-for-byte unchanged. The comparison is appropriate because these records are initialised and copied by the same API; arbitrary uninitialised C structures would require more careful treatment of padding.</p>
+
+<h2>Release borrowers before owners</h2>
+<ul><li>Wait until the synchronous operation and its callbacks have returned.</li><li>Destroy the second runner, if created, then the first runner.</li><li>Destroy their shared history.</li><li>Destroy the independent caller-owned result records.</li></ul>
+
+<p>Destroying history while a runner can still append would leave a borrowed pointer to dead storage. Likewise, a UI should not free its result buffer while a worker is using it. A synchronous API provides a clear return boundary, but calling it on a worker does not automatically solve host shutdown. The earlier native-project lifetime module explains captured requests and host authority in that wider setting.</p>
+
+<h2>Exercise: separate mutation from observation</h2>
+<p>Run copy through the owner procedure and locate the retained ID in its output. Explain why the locally assigned ID 99 is absent. Then review the no-history scenario: its standalone history stays empty because the runner was configured with a null history pointer. The completed result still belongs to the caller. The runner does not create an implicit global history or borrow the unrelated laboratory history.</p>
+
+<h2>Limits and recovery</h2>
+<p>A copied result remains an observation of one attempt. It is not durable storage, proof of current source identity or a guarantee that the diagnostic text is complete. If a consumer needs persistent evidence, it must own and check that separate sink. Preserve allocation or read errors rather than replacing missing evidence with empty success. The next lesson adds bounded retention and multiple identity producers.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-build-history/README.md">Build-history laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/build-history-copy-and-lifetime.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="build-history-admitted-preparation.html">Previous lesson</a> · <a href="build-history-bounded-identities.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

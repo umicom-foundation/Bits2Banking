@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/lessons/03-connect-conda-to-powershell.html
+
+PURPOSE:
+Teach connect conda to powershell.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect Conda to PowerShell | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/03-connect-conda-to-powershell.md">Markdown manuscript</a> · <a href="02-install-miniforge-and-verify.html" rel="prev">Previous lesson</a> · <a href="04-create-and-inspect-an-environment.html" rel="next">Next lesson</a></p></nav><h1>Connect Conda to PowerShell</h1>
+<p>Lesson 3 of 10 · Suggested study time: 35 minutes. Command exercises are unexecuted teaching examples.</p><h2>What you will learn</h2>
+<p>Explain command discovery and initialize the shell that you actually use. Complete the installation checks first: Conda must already run in Miniforge Prompt.</p>
+<h2>Why an executable is not the whole story</h2>
+<p>PowerShell resolves a command name against commands it knows and executable search locations. Get-Command can show whether the name is a function, script or application. Activation must change the current shell&#39;s environment, so finding an executable alone is not equivalent to installing Conda&#39;s shell integration. <a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/get-command">Get-Command reference</a>, <a href="https://docs.conda.io/projects/conda/en/stable/commands/init.html">Conda init reference</a>.</p>
+<h2>Preview, initialize and reopen</h2>
+<p>Run these commands in <strong>Miniforge Prompt</strong>, where Conda already works:</p>
+<pre><code class="language-text">conda init --dry-run powershell
+conda init powershell
+conda config --set auto_activate false
+</code></pre>
+<p>Review the preview before the real initialization. The configuration command keeps base from automatically becoming your active working environment. It does not uninstall Conda. Current Miniforge guidance uses the auto_activate setting; if an older release rejects it, consult that installed release&#39;s help rather than repeatedly editing PATH. <a href="https://github.com/conda-forge/miniforge#automatic-activation-of-environments">Miniforge activation guidance</a>.</p>
+<p>Close the existing PowerShell terminal and open a fresh one. Then inspect:</p>
+<pre><code class="language-powershell">$PSVersionTable.PSVersion
+$PROFILE
+Get-Command conda -All
+conda --version
+</code></pre>
+<p>Initialization changes startup integration. An already-running shell may not have read that integration. A version result in the new shell is the first checkpoint; successful activation in lesson 4 is the next.</p>
+<h2>If the prompt still cannot find Conda</h2>
+<p>Windows PowerShell, PowerShell 7 and an editor&#39;s integrated terminal can use different profile locations or startup options. A profile is a script loaded when a shell starts. Inspect the exact profile path and any startup error in the failing host. A terminal launched with NoProfile deliberately skips profile initialization. <a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles">PowerShell profiles</a>.</p>
+<p>If script policy blocks the profile, inspect the policy before changing anything:</p>
+<pre><code class="language-powershell">Get-ExecutionPolicy -List
+</code></pre>
+<p>Follow your organisation&#39;s approved policy. Do not set a machine-wide unrestricted policy as a generic Conda repair. The working Miniforge Prompt remains an alternative while the profile problem is resolved. A permission failure is a different problem from an absent executable.</p>
+<h2>Exercise and explained answer</h2>
+<p>Conda works in Miniforge Prompt but fails in a PowerShell window started with NoProfile. Is the installation necessarily broken?</p>
+<p><strong>Answer:</strong> no. That startup deliberately bypasses the initialization profile. Test a normal newly opened PowerShell window, then compare host, profile path and startup diagnostics. A visible environment name is helpful, but later checks should inspect the interpreter path too.</p>
+<h2>Completion check</h2>
+<p>You can explain which shell was initialized, find its profile, and run Conda from a fresh terminal. Preserve custom profile contents; do not replace an entire profile with a copied initialization block from another computer.</p>
+
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/03-connect-conda-to-powershell.md">Markdown manuscript</a> · <a href="02-install-miniforge-and-verify.html" rel="prev">Previous lesson</a> · <a href="04-create-and-inspect-an-environment.html" rel="next">Next lesson</a></p></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

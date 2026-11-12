@@ -609,3 +609,53 @@ A measurement should help us understand a model, not silently change it. In this
 ## Build a small client of the real AI services
 
 The [Framework AI contract lab](../umicom-development/84-build-the-framework-ai-contract-lab.md) compiles the original tokenizer and gradient-measurement source into a small client. Continue with [boundary cases](../umicom-development/85-check-real-ai-client-boundaries.md) to check insufficient buffers, reserved tokens and non-finite gradients. Follow the setup recap in the first lab before running any command.
+
+
+## Further source studies
+
+These chapters extend the preceding course. Read their setup and prerequisites before starting the exercises.
+
+1. [Supplement 19B — Profile Whole-Model Inference and Memory in C23](19b-profile-whole-model-inference-and-memory.md)
+1. [Supplement 19C — Compact Inference Memory and Ownership in C23](19c-compact-inference-memory-and-ownership.md)
+1. [Supplement 19D — How Much Memory Does Training Our Language Model Need?](19d-training-memory-capacity-and-budgets.md)
+1. [Supplement 19E — Train Multiple Source-Code Sequences with Wider Native Tensors](19e-expand-tensors-and-train-multiple-sequences.md)
+1. [Accumulate Gradients Across Smaller Native Training Batches](19f-accumulate-gradients-across-microbatches.md)
+1. [Supplement 19G — Reproducible Effective-Batch Training Experiments](19g-reproducible-effective-batch-experiments.md)
+1. [Lesson 20 — From a Banking Source File to Training Data](20-from-banking-source-to-training-data.md)
+1. [Lesson 21 — Construct and Check Next-Token Windows](21-build-next-token-windows.md)
+1. [Lesson 22 — Separate Training Evidence from Evaluation Evidence](22-prevent-training-data-leakage.md)
+1. [Lesson 23 — Plan a Reproducible Native Training Experiment](23-plan-a-reproducible-training-run.md)
+1. [Lesson 24 — Understand Checkpoints, Recovery and Evidence](24-checkpoint-recovery-and-evidence.md)
+1. [Lesson 25 — Design a Trustworthy C23 Expert Benchmark](25-design-a-trustworthy-c23-expert-benchmark.md)
+1. [Lesson 63 — Qualify KV-Cached Nucleus Generation in Native C23](63-qualify-kv-cached-nucleus-generation.md)
+1. [Lesson 64 — Test Cached Generation Parity and Bounded Memory](64-test-cached-generation-parity-and-memory.md)
+1. [Lesson 65 — Pull Native LLM Tokens One at a Time with a C23 Session](65-stream-native-llm-tokens-one-at-a-time.md)
+1. [Lesson 66 — Verify Chunked Generation, Cancellation and Decoder Invalidation](66-test-streamed-generation-parity-and-cancellation.md)
+1. [Lesson 67 — Measure Native C23 Decoder and KV-Cache Work Honestly](67-measure-decoder-and-kv-cache-work.md)
+1. [Lesson 68 — Benchmark Full-Context and Streaming Generation with Real Evidence](68-qualify-native-generation-performance.md)
+1. [Reuse KV Cache Within a Growing Prefix](69-reuse-kv-cache-within-a-growing-prefix.md)
+1. [Test Prefix Reuse Against Real Decoder Logits](70-test-prefix-reuse-with-real-decoder.md)
+1. [Qualify KV Reuse Against the Canonical Decoder](71-qualify-canonical-decoder-kv-parity.md)
+1. [Bound Learned-Position Rollover and Checkpoint Compatibility](72-test-learned-position-rollover.md)
+1. [Stream an Unpadded Growing Prefix with Native C23](73-stream-growing-prefix-generation-in-c23.md)
+1. [Test Prefix-Generation Parity and Observed Workload](74-test-streaming-prefix-generation-parity.md)
+1. [Benchmark Native Prefix Inference with Real Decoder Evidence](75-benchmark-native-prefix-inference.md)
+1. [Qualify Timing Evidence and Protect Native Checkpoints](76-qualify-benchmark-evidence.md)
+1. [Bind Position Policies to Native Checkpoint Identity](77-bind-positions-to-checkpoint-identity.md)
+1. [Encode and Verify Portable Position Sidecars](78-write-and-verify-position-sidecars.md)
+1. [Admit Approved Native Model Checkpoints Before Inference](79-admit-model-checkpoints-before-inference.md)
+1. [Qualify Policy-Bound Generation and Benchmarks](80-qualify-policy-bound-generation-and-benchmarks.md)
+1. [Introduce Rotary Position Mathematics in Native C23](81-introduce-rotary-position-mathematics.md)
+1. [Prove Single-Block Rotary KV Reuse Through Rollover](82-prove-single-block-rotary-kv-reuse.md)
+1. [Differentiate Rotary Position Mathematics in Native C23](83-differentiate-rotary-position-in-c23.md)
+1. [Qualify Batched Rotary Forward and Backward Operations](84-qualify-batched-rotary-gradients.md)
+1. [Build Rotary Attention on the Existing Training Tape](85-build-rotary-attention-on-the-training-tape.md)
+1. [Learn the Mathematics Behind Rotary Training Tests](86-learn-maths-alongside-rope-training.md)
+1. [Train Query and Key Projections in a Native RoPE Attention Exercise](87-train-rotary-attention-projections.md)
+1. [Verify Rotary Training Results Without Overstating Them](88-verify-rope-optimisation-and-results.md)
+1. [Audit Rotary Gradients with an Independent Numerical Oracle](89-audit-rotary-gradients-against-an-oracle.md)
+1. [Test Rotary Positions, Tape Lifetimes and Reproducible Training](90-test-real-tape-positions-and-lifetimes.md)
+1. [Qualify the Real Rotary Training Tape](91-qualify-the-production-rotary-training-tape.md)
+1. [Measure Tape Memory and Verify Safe Rewind](92-measure-tape-memory-and-rewind.md)
+1. [Lesson 93 — Prove Real-Tape Results Before Optimisation](93-check-real-tape-evidence.md)
+1. [Lesson 94 — Plan a Correct Fused Rotary Operator](94-plan-a-fused-rotary-tape-operator.md)

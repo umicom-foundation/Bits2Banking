@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/ui-values-archive-admission.html
+
+PURPOSE:
+Validate every encoded field without confusing data with authority
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate every encoded field without confusing data with authority | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Validate every encoded field without confusing data with authority</h1><h2>Follow the same contract into a record envelope</h2>
+<p>A reactive command parameter contains a UI value plus metadata. Change events contain both a before and an after value. Expression results also carry values. These envelopes should not maintain separate lists of recognized kinds. They reuse Framework's shared value admission before accepting or encoding an embedded payload.</p>
+
+<p>The archive scenario initializes a command parameter, supplies a deliberately unsupported kind and tries to encode it. The expected result is INVALID_ARGUMENT before either the output bytes or reported size changes. The lab then replaces the malformed payload with integer 7 and asks the encoder to measure the required size.</p>
+
+<pre><code class="language-c">UmiUiReactiveCommandParameter parameter;
+umi_ui_reactive_command_parameter_init(&amp;parameter);
+UmiStatus status = umi_ui_value_set_integer(&amp;parameter.value, 7);
+if (status != UMI_STATUS_OK) return status;
+size_t required = 0U;
+status = umi_ui_reactive_command_parameter_archive_encode(
+    &amp;parameter, NULL, 0U, &amp;required);</code></pre>
+
+<h2>Distinguish measurement from publication</h2>
+<p>Passing a null byte buffer and zero capacity asks for the required encoded size. It does not save a file or execute the command represented by the data. A caller can allocate storage after measuring, then encode through the same public API. Check each status and keep output ownership explicit.</p>
+
+<p>Generic value validation examines only the active payload. Archive validation can be stricter because the format may serialize inactive fields too. A scalar value with unterminated unused text may be acceptable as a current UI value but unacceptable as an archived envelope. Retaining the archive's terminator checks prevents a serializer from reading beyond that fixed field.</p>
+
+<h2>Keep admission separate from domain execution</h2>
+<p>A recognized converter source kind does not prove a converter implementation is installed. A valid command parameter does not grant permission to execute a command. A saved expression result does not prove the expression ran against current dependencies. The archive transfers data; the responsible live service decides whether and how to adopt it.</p>
+
+<div class="table-scroll"><table><thead><tr><th scope="col">Check</th><th scope="col">Establishes</th><th scope="col">Does not establish</th></tr></thead><tbody><tr><td>Kind admission</td><td>Declared representation</td><td>Business meaning</td></tr><tr><td>Payload admission</td><td>Readable active data</td><td>Command permission</td></tr><tr><td>Archive validation</td><td>All encoded fields satisfy the format</td><td>Current live-service authority</td></tr><tr><td>Owner adoption</td><td>Service accepts a reviewed state change</td><td>Every later workflow succeeds</td></tr></tbody></table></div>
+
+<h2>Practice a preservation assertion</h2>
+<p>Read the two sentinel arrays and size variable in ShowArchive. Explain why the lab compares all output bytes after refusal instead of checking only the error status. Then propose a malformed after-value for a change event. State which owner API should refuse it and which output must remain unchanged; do not write a replacement serializer in the application.</p>
+
+<p>If an older installed SDK accepts the malformed record, preserve that observation with its source and installation identity. Update the matching Framework package through the owner workflow. Do not weaken the checker or label a later successful size measurement as proof that the earlier malformed input was correctly refused.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-ui-values/README.md">UI value laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/ui-values-archive-admission.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="ui-values-reactive-revisions.html">Previous lesson</a> · <a href="ui-values-installed-qualification.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

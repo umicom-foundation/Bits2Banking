@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/99-qualify-normal-boot-at-separate-boundaries.html
+
+PURPOSE:
+Teach qualify normal boot at separate boundaries through the native Kernel coordinator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify normal boot at separate boundaries | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="98-require-the-intended-recovery-cause.html">Previous lesson</a></p><h1>Qualify normal boot at separate boundaries</h1>
+<section><h2>Build an evidence chain</h2>
+<p>The coordinator tests answer whether given boundary outcomes lead to the intended next action. The controller tests answer how real jobs are admitted, retried and collected under their host model. Native image tests answer whether the configured guest can execute the corresponding machine path. A manual session answers whether actual input and shell operations work. Each result has a different scope.</p>
+</section>
+<section><h2>Run the hosted project deliberately</h2>
+<p>Use a native host C23 compiler. The coordinator targets compile the real normal_boot.c with explicit test observations and the existing recovery parser. Stop after a failed configure or build; a later test run may otherwise execute an older binary. These commands are an exercise for the reader, not a recorded passing result.</p>
+<pre><code class="language-powershell">Set-Location C:\umicom\umicom-kernel
+cmake -S tests/boot_services -B build/host-boot-services -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build/host-boot-services
+ctest --test-dir build/host-boot-services -R &quot;^kernel\.normal_boot\.&quot; --output-on-failure</code></pre>
+</section>
+<section><h2>Record what the fixture does not execute</h2>
+<p>The 32 coordinator cases use four compiled profiles. They observe machine finish operations through a hosted jump, supply synthetic memory counters, and replace the shell call with a counter. No privileged instructions, real UART, hardware clock or user ELF execution occurs. A passing interactive-profile case means the coordinator reached its shell call; it does not mean a person successfully typed a command.</p>
+</section>
+<section><h2>Continue into native qualification</h2>
+<p>Keep skipped or unexecuted checks explicit. A host-only result cannot establish a physical USB boot, an optical ISO, a new CPU architecture or Secure Boot compatibility.</p>
+<ul><li>Follow the Kernel normal-startup guide for the configured RISC-V machine.</li><li>Retain separate outputs for automatic startup, required-job recovery and forced recovery.</li><li>Launch the interactive system image and perform the documented input, file and shutdown exercises.</li><li>Record source and local changes, image digest, toolchain, emulator version, machine arguments and actual results.</li></ul>
+</section>
+<section><h2>Exercise and troubleshooting</h2>
+<p>The hosted cases pass while the guest prints nothing. Start before the C coordinator: inspect firmware entry, the linker map, loaded image and serial configuration. If the guest prints a recovery reason, follow that named boundary instead. Preserve the complete output and exact image before rebuilding; otherwise the next observation may no longer describe the same artifact.</p>
+</section>
+<p>Companion source: umicom-kernel/kernel/normal_boot.c and tests/boot_services/normal_boot_tests.c. Read docs/NORMAL_BOOT_COORDINATOR.md in the same Kernel checkout. Match source revisions before running the exercises.</p><p><a href="../index.html">Course contents</a> · <a href="98-require-the-intended-recovery-cause.html">Previous lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/storage-progress-and-partial-results.html
+
+PURPOSE:
+Report refusal and partial progress without inventing rollback
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Report refusal and partial progress without inventing rollback | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Report refusal and partial progress without inventing rollback</h1><p>Prepare the installed-SDK lab using its README. The following command is a qualification step, not a recorded execution result.</p><pre><code class="language-powershell">&amp; .\build\framework-filesystem-clients\filesystem-clients.exe invalid-directory C:/umicom/Umicom-Bits2Banking/build/framework-filesystem-clients/qualification/invalid-directory</code></pre><h2>Describe what happened in this attempt</h2>
+<p>A progress report answers a different question from a final status. The status says whether the requested operation completed; counts say which effects occurred before it stopped. Initialize or reset reports for each attempt so a rejected request cannot accidentally display counts from a previous success. Framework performs that reset at the shared boundary, which keeps CLI and graphical clients consistent.</p>
+<pre><code class="language-c">if (status != UMI_STATUS_OK) {
+    printf(&quot;Directories created before refusal: %zu\n&quot;, progress.directories_created);
+    /* Retain partial work. A failed status does not imply zero effects. */
+}</code></pre>
+<h2>Start with an admission refusal</h2>
+<p>The invalid-directory scenario supplies new/../outside. Complete lexical admission should reject the traversal before creating new. The lab checks a zero directory count and then confirms that a child beneath new is absent. This case proves a specific zero-effect admission boundary when executed. It does not prove that every later native I/O failure is also free of effects.</p>
+<h2>Reason through a later failure</h2>
+<p>Suppose creation of the first directory succeeds and the second component cannot be created. The report should retain the first creation count while complete remains false. A file can similarly be created before its write fails. Treat those outputs as observations to preserve, not as an instruction to delete a tree. Recursive cleanup could remove files written by another actor or destroy useful diagnostic evidence.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Failure layer</th><th scope="col">Possible effects</th><th scope="col">Recovery direction</th></tr></thead><tbody><tr><td>Request admission</td><td>None under the admitted contract</td><td>Correct the request</td></tr><tr><td>Native directory traversal</td><td>Some directories may exist</td><td>Inspect status and retained paths</td></tr><tr><td>File write, flush or close</td><td>A partial new file may exist</td><td>Inspect accepted-byte count and file</td></tr><tr><td>Later project publication</td><td>Created source may remain</td><td>Preserve source and project-state evidence</td></tr></tbody></table></div>
+<h2>Use controlled failure coverage</h2>
+<p>The installed lab demonstrates real admission and collision behavior. Framework qualification also includes injected native-boundary outcomes for partial roots, parents and files, plus native platform cases. An injected failure is useful for checking report arithmetic and stop order because it is reproducible. It cannot establish how a particular filesystem behaves under a real access or concurrency failure. Keep both kinds of evidence and their scope.</p>
+<h2>Write a useful failure message</h2>
+<p>Include the operation, destination, returned status, created-object counts and accepted-byte count where relevant. State that partial work was retained. Avoid saying rolled back unless a separately implemented and verified rollback actually occurred. After correcting the cause, choose a new destination for a fresh creation attempt instead of weakening the exclusive policy to make a retry appear successful.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-filesystem-clients/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-filesystem-clients/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/storage-progress-and-partial-results.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="storage-empty-files-owned-reads.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="storage-project-state-publication.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/storage-empty-files-owned-reads.html
+
+PURPOSE:
+Read empty and binary files with explicit ownership
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read empty and binary files with explicit ownership | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Read empty and binary files with explicit ownership</h1><p>Prepare the installed-SDK lab using its README. The following command is a qualification step, not a recorded execution result.</p><pre><code class="language-powershell">&amp; .\build\framework-filesystem-clients\filesystem-clients.exe empty-file C:/umicom/Umicom-Bits2Banking/build/framework-filesystem-clients/qualification/empty-file</code></pre><h2>A byte count is the content boundary</h2>
+<p>An empty file is a valid file with zero content bytes. A binary file may contain zero-valued bytes in the middle of its content. Neither case can be handled reliably by treating strlen as the authoritative length. Framework returns a byte count with an owned buffer and also appends a trailing NUL for convenience. The count, not that terminator, determines which bytes belong to the file.</p>
+<pre><code class="language-c">unsigned char *bytes = NULL;
+size_t count = 0U;
+UmiStatus status = UmiRootedFileRead(root, relative, 64U, &amp;bytes, &amp;count);
+if (status == UMI_STATUS_OK) {
+    /* Consume exactly count bytes, then release the owned buffer. */
+    UmiRootedFileFree(bytes);
+}</code></pre>
+<h2>Follow the shared lab helper</h2>
+<p>LabReadEquals in fixture.c compares count to the expected length, compares exactly that many bytes, checks the convenience terminator, then frees the buffer through UmiRootedFileFree. Its success condition does not require count to be nonzero. The empty-file scenario creates a zero-length record and uses that helper. The new-file scenario includes both an embedded zero byte and a byte outside ASCII to expose accidental text assumptions.</p>
+<h2>Bound reads before allocating content</h2>
+<p>The maximumBytes argument limits what the operation will read. A limit refusal is different from an empty successful read. Keep output initialization and status handling visible: a failed read must not lead a caller to reuse a previous buffer as if it were new content. The lab uses a small bound because its fixture is intentionally small. A product should select a bound from its document contract and explain the refusal to its user.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Observation</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>OK, count zero</td><td>A successfully read empty file</td></tr><tr><td>OK, embedded NUL</td><td>Binary content; count still owns the boundary</td></tr><tr><td>Limit refusal</td><td>The selected input exceeds the allowed read size</td></tr><tr><td>Owned buffer released</td><td>The caller no longer retains that allocation</td></tr></tbody></table></div>
+<h2>Do not overextend the result</h2>
+<p>A successful read gives a snapshot of accepted bytes. It is not a lock against later content changes, and it does not establish the file format or trustworthiness of those bytes. A parser must still validate its own structure. Keep filesystem ownership, byte-buffer ownership and application-format validation as separate steps with separately reported failures.</p>
+<h2>Practice and diagnosis</h2>
+<p>Change the fixture bytes while keeping the expected count explicit, then qualify the corresponding scenario again. If a binary record appears truncated, inspect the client for text-length operations before changing the storage API. If an empty file fails the comparison, check whether the caller incorrectly requires a positive count or forgets that zero-length content remains valid.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-filesystem-clients/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-filesystem-clients/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/storage-empty-files-owned-reads.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="storage-exclusive-file-publication.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="storage-progress-and-partial-results.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

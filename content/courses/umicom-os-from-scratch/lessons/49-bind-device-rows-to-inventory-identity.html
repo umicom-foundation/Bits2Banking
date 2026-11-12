@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/49-bind-device-rows-to-inventory-identity.html
+
+PURPOSE:
+Teach bind device rows to inventory identity through the shared native media adapter.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bind device rows to inventory identity | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><!-- Earlier favicon route retained for review; canonical SVG and ICO links follow. <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"> --><!-- Earlier favicon route retained for review; canonical SVG and ICO links follow. <link rel="alternate icon" href="../../../assets/branding/umicom.ico"> --><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><!-- Canonical Framework wordmark replaces this earlier course identity; retained for review. <img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"> -->
+<img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="48-qualify-produced-images-in-stages.html">Previous lesson</a> · <a href="50-format-device-labels-without-splitting-utf8.html">Next lesson</a></p><h1>Bind device rows to inventory identity</h1>
+<section><h2>Prepare a source review</h2><p>A media-writing interface must identify the device the user actually selected. Open adapters/win32/boot_media.c in Umicom Framework and locate PopulateDevices, SelectedDevice and Start. This is the existing Windows Boot Media Centre; the exercise does not create a new screen layout or grant permission to write a disk.</p>
+<p>Read the shared boot-media guide first. The native --check-selection mode constructs hidden controls and synthetic observations. It is an owner-run acceptance check, not an executed result in this lesson. Keep physical-device writing disabled while studying presentation behavior.</p>
+
+</section>
+<section><h2>Watch an index become misleading</h2><p>Imagine an inventory containing devices A, B and C. A has a label that cannot be converted to Unicode, so the dropdown shows B and C as rows zero and one. Using selected row zero directly as the inventory index would retrieve A, even though the user selected B.</p>
+<p>The old code made exactly that assumption. It remains in an explained disabled block. The replacement attaches an explicit key to each successfully added row. A row can move or an earlier row can disappear without changing that association.</p>
+
+</section>
+<section><h2>Attach a key only after insertion succeeds</h2><p>CB_ADDSTRING returns the row that was added, or an error. Bind data to that returned row rather than assuming insertion succeeded. The adapter stores index plus one, keeping zero available to mean unbound.</p>
+<pre><code>LRESULT row = SendMessageW(list, CB_ADDSTRING, 0, (LPARAM)wide);
+if (row &lt; 0) continue;
+if (SendMessageW(list, CB_SETITEMDATA, (WPARAM)row,
+        (LPARAM)(i + 1U)) == CB_ERR) {
+    SendMessageW(list, CB_DELETESTRING, (WPARAM)row, 0);
+    continue;
+}</code></pre>
+<p>This excerpt belongs inside PopulateDevices, where the inventory is bounded and the complete label has already been converted. The row is removed if the binding cannot be established. A displayed but unbound row must not become a usable review target.</p>
+</section>
+<section><h2>Resolve the selection through its owner</h2>
+<ol><li>Retrieve the selected row and refuse no-selection or control errors.</li><li>Read its item data and require a key from one through the current inventory count.</li><li>Convert the admitted key back to an inventory index and copy that observation into the owned worker job.</li><li>Enable Review only when a bound selection exists. A refreshed inventory clears the selection and requires a new review.</li></ol></section>
+<section><h2>Keep presentation and device authority separate</h2><p>Correct row binding fixes which observation is reviewed. It does not prove that the observation is still true. The shared service re-observes identity and geometry, binds the image and destination into a plan, and checks the required confirmation before an enabled transfer.</p>
+<p>The synthetic regression removes the first visible row, selects the remaining row and checks that its original inventory identity survives. It also rejects zero, negative and out-of-range keys and an excessive inventory count. No device discovery or transfer is called.</p>
+
+</section>
+<section><h2>Exercise and answer</h2><p>A list is sorted alphabetically after insertion. Is the visible row number now a safe inventory key? Answer: no. Sorting is another reason visual order and source identity can differ. Item data travels with the row; use the bound identity and still validate it against the current owner.</p>
+<p>Read Microsoft's CB_ADDSTRING and CB_SETITEMDATA documentation alongside the source. Passing these synthetic checks would verify control behavior on the tested Windows environment; it would not qualify USB discovery, unplug/replug handling or a destructive write.</p>
+
+</section>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/adapters/win32/boot_media.c">Read the complete native adapter</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/development/boot-media.md">Follow the media guide</a></p><p><a href="https://learn.microsoft.com/en-us/windows/win32/controls/cb-addstring">Microsoft: CB_ADDSTRING</a> · <a href="https://learn.microsoft.com/en-us/windows/win32/controls/cb-setitemdata">Microsoft: CB_SETITEMDATA</a> · <a href="https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar">Microsoft: MultiByteToWideChar</a></p><p><a href="../index.html">Course contents</a> · <a href="48-qualify-produced-images-in-stages.html">Previous lesson</a> · <a href="50-format-device-labels-without-splitting-utf8.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

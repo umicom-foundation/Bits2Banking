@@ -49,3 +49,5 @@ Keep the selected JSON, diagnostic and executable identity when a check fails. R
 [Read the C exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-recipes/main.c) · [Full setup and native commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-recipes/README.md) · [Shared contract](https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/source-build-recipes.md)
 
 [Course contents](index.md) · [Previous lesson](37-distinguish-digest-claims-from-provenance.md)
+
+[Next lesson: Inspect an image without booting it](39-inspect-an-image-without-booting-it.md)

@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/08-design-local-image-generation.html
+
+PURPOSE:
+Teach design a local image generation adapter.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Design a local image generation adapter | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/08-design-local-image-generation.md">Written lesson</a></p><h1>Design a local image generation adapter</h1>
+<h2>What you will learn</h2>
+<p>Define a real image-generation boundary and distinguish it from a chat request or image upload.</p>
+<h2>A separate inference pipeline</h2>
+<p>Text-to-image generation typically includes text conditioning, repeated numerical denoising steps and a decoder that produces pixels. A text model&#39;s chat endpoint does not implement those stages. The model family, weight files, tokenizer/encoder, dimensions and backend must be compatible.</p>
+<p>The upstream <a href="https://github.com/leejet/stable-diffusion.cpp">stable-diffusion.cpp project</a> is a C/C++ diffusion engine worth examining as an optional interoperability reference. Calling such an engine through C would still use an external implementation. It would not become an original all-C Umicom inference engine. No dependency or model is installed by this course.</p>
+<h2>Reuse the existing media boundary</h2>
+<p>Umicom&#39;s Seedream adapter already separates a draft, immutable review plan, execution and owned validated image result. It calls a remote service. A local implementation should reuse common image surfaces, jobs, provenance and export services while defining its own backend contract; changing the remote adapter&#39;s URL is not enough.</p>
+<p>A proposed local image draft should describe model identity, positive/optional negative conditioning, seed, dimensions, sampler, steps and output policy. Reject unsupported combinations explicitly. A seed helps repeat an experiment; it does not promise identical pixels across hardware, kernels or backend revisions.</p>
+<h2>Build a staged design</h2>
+<ol>
+<li>Review the draft without starting inference.</li>
+<li>Resolve approved model files and verify their identities.</li>
+<li>Estimate memory with visible assumptions and reserve bounded resources.</li>
+<li>Run on a worker that supports progress and cancellation.</li>
+<li>Validate dimensions, channel format and decoded pixel extent.</li>
+<li>Transfer the image into an existing UmiMediaImageSurface owner.</li>
+<li>Apply the approved Umicom identity through the shared export workflow and inspect the saved output.</li>
+</ol>
+<p>A byte buffer is not automatically a valid image. Check multiplication when calculating row size and total bytes; reject dimensions whose allocation would overflow.</p>
+<h2>Exercise</h2>
+<p>Write a contract table for “512×512 RGB, fixed seed, 20 steps.” Mark every value as a teaching assumption until a selected backend admits it. Add failures for missing weights, unsupported dimensions, cancellation after a step and invalid output.</p>
+<p><strong>Expected result:</strong> no output asset is marked complete merely because a progress value reaches 100 percent.</p>
+<h2>Recovery</h2>
+<p>Keep partial output separate from accepted assets. Never retry an unknown remote operation automatically. Local cancellation also needs cleanup: release buffers and report whether any newly created partial file remains. Actual quality, GPU compatibility and watermark appearance require separate executed checks.</p>
+<nav aria-label="Lesson sequence"><p><a href="07-ground-answers-with-reviewed-sources.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="09-plan-video-jobs-and-exports.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

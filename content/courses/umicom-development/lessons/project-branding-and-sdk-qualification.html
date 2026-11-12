@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/project-branding-and-sdk-qualification.html
+
+PURPOSE:
+Qualify generated application branding and the installed SDK boundary
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify generated application branding and the installed SDK boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Qualify generated application branding and the installed SDK boundary</h1><p>After preparing the installed-SDK lab in its README, run this scenario. Commands below are qualification instructions, not recorded results.</p><pre><code class="language-powershell">&amp; .\build\framework-project-recipes\project-recipes.exe gtk-branding</code></pre><h2>Reuse the shared identity</h2>
+<p>The GTK starter recipes connect their build target to umicom_apply_application_branding and their window to umi_gtk4_ws_apply_window_identity. These services stage the supplied SVG artwork and integrate the Windows ICO where applicable. A client should not redraw the Umicom symbol, embed a replacement emoji or copy identity logic into each generated application. The installed SDK and its resource catalogue provide the reusable boundary.</p>
+<h2>Understand what this lab checks</h2>
+<p>The gtk-branding scenario renders the C23 GTK recipe in memory and looks for the shared build and window identity calls. This is useful evidence that the recipe connects those APIs. It does not execute CMake, inspect an executable resource or display a window. A string-presence check cannot show that a shell, taskbar or window manager actually presents the intended icon.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Qualification layer</th><th scope="col">Observation to collect</th></tr></thead><tbody><tr><td>Recipe rendering</td><td>Expected shared calls and generated identities</td></tr><tr><td>SDK consumer build</td><td>Matching headers, archives and package origin</td></tr><tr><td>Executable packaging</td><td>Canonical ICO and staged SVG resources</td></tr><tr><td>Native launch</td><td>Window identity and resource lookup on the target host</td></tr><tr><td>Visual review</td><td>Logo proportions, readable fonts, contrast and DPI behavior</td></tr></tbody></table></div>
+<h2>Keep typography honest</h2>
+<p>The course pages use the shared approved font stack: Segoe UI Variable Text or Segoe UI for prose and Cascadia Code or Consolas for code, with local fallbacks. The small generated GTK window still inherits the toolkit’s font settings; the recipe has not implemented a complete managed appearance panel or branded content header. Report those limits instead of claiming visual parity with a full Studio mockup.</p>
+<h2>Build against one installed SDK</h2>
+<p>The lab CMake file requires an absolute installed prefix, checks that the chosen package configuration belongs to it, verifies the exported SDK environment metadata and links Umicom::developer. It does not add a source checkout as a fallback. This is intentional: a consumer build should reveal an incomplete installation rather than silently finding missing files in the producer tree. Use a compiler and runtime compatible with that SDK.</p>
+<h2>Run the qualification sequence</h2>
+<p>Follow the lab README to configure a fresh build directory, build once and run all twelve registered scenarios. Record the SDK producer revision, consumer revision, compiler and test output. Then separately create and build a GTK application through the native CLI. Inspect its installed resources and launch it on the intended desktop. None of those actions is implied by reading this lesson or by a successful static source review.</p>
+<h2>Recover from mismatched evidence</h2>
+<p>An undefined reference to the new variable validator can mean the headers and installed archive come from different revisions. A missing resource helper can mean the installation is incomplete. Keep the original diagnostic, select a coherent SDK and configure a new consumer directory before changing application code. A clean-machine launch is valuable because resources accidentally found in a development checkout can otherwise hide deployment errors.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-project-recipes/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-project-recipes/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/project-branding-and-sdk-qualification.md">Markdown edition</a></p><!-- Earlier end-of-module navigation retained for review: <nav aria-label="Lesson navigation"><a href="project-native-cli-explicit-creation.html">Previous lesson</a> · <a href="../index.html">Course index</a></nav> -->
+<nav aria-label="Lesson navigation"><a href="project-native-cli-explicit-creation.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="storage-portable-path-admission.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

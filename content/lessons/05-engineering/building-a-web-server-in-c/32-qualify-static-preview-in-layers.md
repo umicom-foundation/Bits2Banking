@@ -27,11 +27,17 @@ ctest --test-dir build/static-preview --output-on-failure --no-tests=error
 & ".\build\static-preview\btb-static-preview.exe" "C:\umicom\Umicom-Bits2Banking\labs\native\framework-static-preview\site" GET /message.txt
 ```
 
+<!-- Earlier inline-only lab guidance is retained for review; the active explanation includes owned assets and explicit evidence boundaries.
 Six lab cases are expected. GET /message.txt should report HTTP 200 and fourteen representation bytes. Authored checks are not executed results. Use the laboratory README for the separate CLI and browser steps.
+-->
+Eleven lab cases are authored. GET /message.txt should describe HTTP 200 and fourteen representation bytes. The optional --owned mode also checks approved SVG and ICO assets from the installed SDK; the original inline command remains available. Reported wire sizes are inspection results, not bytes delivered to a peer. Use the laboratory README for qualification and the separate CLI and browser steps.
 
 ## Start with the smallest observation
 
+<!-- Earlier inline-only lab guidance is retained for review; the active explanation includes owned assets and explicit evidence boundaries.
 The six installed-SDK lab cases check parsed requests, rooted file responses and serialization. Framework service tests add copied roots, browser admission and invalid arguments. Controlled CLI tests replace only session and signal boundaries, making option admission and cleanup observable without opening a port. Each layer answers a different question.
+-->
+The eleven installed-SDK lab cases check parsed requests, rooted responses, inline compatibility and owned SVG/ICO inspection. Framework connection scenarios additionally exercise complete asset bytes, short writes, cancellation and cleanup. Controlled CLI tests replace session and signal boundaries to observe option admission without opening a port. Each layer answers a different question; none of those headless checks establishes browser rendering.
 
 ## Then use the actual executable
 
@@ -52,3 +58,5 @@ Preserve the exact source, SDK and output. Check package origin for compile/link
 [Read the C exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-static-preview/main.c) · [Full setup and native commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-static-preview/README.md) · [Shared contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/preview.h)
 
 [Course contents](index.md) · [Previous lesson](31-run-and-stop-the-native-preview.md)
+
+[Next: separate body capacity from public C layout](33-separate-body-capacity-from-public-layout.md)

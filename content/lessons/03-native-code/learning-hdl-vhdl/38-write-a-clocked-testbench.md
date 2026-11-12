@@ -106,3 +106,6 @@ Why does the testbench use a procedure instead of copying the same wait sequence
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](37-stop-on-invalid-operations.md) · [Next lesson](39-build-an-independent-cpu-oracle.md)
+
+
+[Manuscript course contents](index.md)

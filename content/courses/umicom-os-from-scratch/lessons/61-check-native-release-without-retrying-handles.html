@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/61-check-native-release-without-retrying-handles.html
+
+PURPOSE:
+Teach check native release without retrying handles through the installed Framework media client.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check native release without retrying handles | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="60-interpret-cancellation-after-payload-writing.html">Previous lesson</a> · <a rel="next" href="62-retain-failed-media-artifacts-for-recovery.html">Next lesson</a></nav><h1>Check native release without retrying handles</h1><p>Complete application: <a href="../../../../labs/native/framework-boot-media/main.c">main.c</a> · <a href="../../../../labs/native/framework-boot-media/README.md">Lab setup and recovery</a> · <a href="../../../../labs/native/framework-boot-media/check.cmake">Qualification cases</a></p><h2>Finish the ownership protocol</h2>
+<p>Closing a native handle is an operation with a result. Ignoring that result can turn an incomplete operation into a misleading success report. Framework now uses the private BmCloseResult boundary when completing inspection, transfer and comparison. Application code still calls the public media service; it must not adopt this private transport helper as an installed API.</p>
+
+<pre><code class="language-c">UmiStatus targetClose = BmCloseResult(target);
+UmiStatus sourceClose = BmCloseResult(source);
+if (s == UMI_STATUS_OK) s = targetClose;
+if (s == UMI_STATUS_OK) s = sourceClose;</code></pre>
+
+<h2>Preserve the first failure</h2>
+<p>Both owned wrappers receive a close attempt even if the first attempt fails. An earlier write or read error remains the primary result. If all earlier work succeeded, destination close failure takes precedence over source close failure. The report cannot mark verified when one of these required release operations fails. This preserves useful diagnosis without pretending cleanup can undo previous writes.</p>
+
+<h2>Do not reuse consumed ownership</h2>
+<p>The helper consumes its wrapper on every result. On Linux it attempts close once because a descriptor may already have been released and reused when an error is reported. Retrying the numeric descriptor could affect another file. Windows held-volume handles are each attempted even after an earlier failure. A failed attempt does not prove the native resource was released; the consumed wrapper must nevertheless never be dereferenced again.</p>
+
+<h2>Trace the regression boundary</h2>
+<ul><li>Read test_close_observation.c: synthetic handles never reach an operating-system close.</li><li>Read test_read_close.c and find the case where source release failure prevents comparison-target acquisition.</li><li>Explain why an injected error test is useful but does not prove behaviour of your real filesystem or removable device.</li></ul>
+
+<h2>References and limits</h2>
+<p>Consult the Linux close manual and Microsoft CloseHandle documentation linked from the Framework boot-media guide. Successful close is not a substitute for flush, readback or a boot test. The lab consumes the resulting public status; native-platform qualification remains a separate owner-run exercise.</p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT for these original lessons and examples. Referenced specifications retain their own rights.</p></footer></body></html>

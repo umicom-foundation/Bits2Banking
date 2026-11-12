@@ -4,7 +4,7 @@
   "title": "Building a Text Editor in C",
   "status": "introductory-lessons-available",
   "requiresAccount": false,
-  "practicalRequirements": "C23 toolchain, CMake 3.24 or newer and Ninja",
+  "practicalRequirements": "C23 toolchain, CMake 3.24 or newer and Ninja; lessons 9–14 also require an installed Umicom Framework SDK exporting editor and document services",
   "seriesPrerequisites": "You should recognise C variables and functions. The project introduces arrays, byte positions and file operations as they are needed.",
   "lessons": [
     {
@@ -30,6 +30,76 @@
       "title": "Test the model and the whole editing session",
       "manuscript": "../../lessons/05-engineering/building-a-text-editor/04-test-the-whole-editing-session.md",
       "source": "labs/native/text-editor/check_session.cmake"
+    },
+    {
+      "path": "lessons/05-open-an-existing-document.html",
+      "title": "Open an existing document without losing work",
+      "source": "labs/native/text-editor/editor.c",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/05-open-an-existing-document.md",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/06-load-into-a-private-candidate.html",
+      "title": "Load into a private candidate before replacing state",
+      "source": "labs/native/text-editor/editor.c",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/06-load-into-a-private-candidate.md",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/07-recognise-line-endings-and-eof.html",
+      "title": "Recognise line endings and end of file",
+      "source": "labs/native/text-editor/test_load.c",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/07-recognise-line-endings-and-eof.md",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/08-check-failure-state-and-command-results.html",
+      "title": "Check failure state and command results",
+      "source": "labs/native/text-editor/test_load.c",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/08-check-failure-state-and-command-results.md",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/09-own-a-shared-text-buffer.html",
+      "title": "Own a shared text buffer and respect borrowed views",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/09-own-a-shared-text-buffer.md",
+      "source": "labs/native/shared-editor/buffer.c",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/10-resolve-unicode-positions.html",
+      "title": "Resolve exact UTF-8 offsets and UTF-16 positions",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/10-resolve-unicode-positions.md",
+      "source": "labs/native/shared-editor/buffer.c",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/11-select-source-words-and-lines.html",
+      "title": "Select source words and physical lines without changing text",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/11-select-source-words-and-lines.md",
+      "source": "labs/native/shared-editor/buffer.c",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/12-capture-and-apply-document-edits.html",
+      "title": "Capture an edit for the intended document",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/12-capture-and-apply-document-edits.md",
+      "source": "labs/native/shared-editor/document.c",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/13-traverse-one-shared-document-history.html",
+      "title": "Traverse shared undo history and create a new edit branch",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/13-traverse-one-shared-document-history.md",
+      "source": "labs/native/shared-editor/document.c",
+      "kind": "practical-lab"
+    },
+    {
+      "path": "lessons/14-test-refused-edits-and-sdk-identity.html",
+      "title": "Check refused edits, preserved state and SDK identity",
+      "manuscript": "../../lessons/05-engineering/building-a-text-editor/14-test-refused-edits-and-sdk-identity.md",
+      "source": "labs/native/shared-editor/document.c",
+      "kind": "practical-lab"
     }
   ],
   "claims": {
@@ -37,8 +107,43 @@
     "hardwareQualified": false
   },
   "nextTopics": [
+    "Native editor integration and grouped typing",
+    "Grapheme-aware movement and IME composition",
+    "File saving, conflicts and crash recovery"
+  ],
+  "availableTopics": [
     "Open existing documents",
     "Unicode and selection",
     "Multiple undo steps"
+  ],
+  "modules": [
+    {
+      "id": "bounded-ascii-editor",
+      "title": "Build and inspect a bounded ASCII editor",
+      "description": "Understand array editing, one-level undo and deliberate file loading through the original standalone lab.",
+      "lessons": [
+        "lessons/01-plan-a-small-editor.html",
+        "lessons/02-insert-and-erase-text.html",
+        "lessons/03-undo-and-save-to-a-chosen-path.html",
+        "lessons/04-test-the-whole-editing-session.html",
+        "lessons/05-open-an-existing-document.html",
+        "lessons/06-load-into-a-private-candidate.html",
+        "lessons/07-recognise-line-endings-and-eof.html",
+        "lessons/08-check-failure-state-and-command-results.html"
+      ]
+    },
+    {
+      "id": "shared-editor-services",
+      "title": "Use Framework text and document services",
+      "description": "Compose owned text, exact Unicode positions, source selections and named-document history through an installed SDK.",
+      "lessons": [
+        "lessons/09-own-a-shared-text-buffer.html",
+        "lessons/10-resolve-unicode-positions.html",
+        "lessons/11-select-source-words-and-lines.html",
+        "lessons/12-capture-and-apply-document-edits.html",
+        "lessons/13-traverse-one-shared-document-history.html",
+        "lessons/14-test-refused-edits-and-sdk-identity.html"
+      ]
+    }
   ]
 }

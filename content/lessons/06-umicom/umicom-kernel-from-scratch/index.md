@@ -262,3 +262,65 @@ A native program asks a kernel what services and data sizes it supports. Several
 - [Treat readiness and heartbeats as expiring evidence](83-readiness-heartbeats-and-expiring-evidence.md)
 - [Restart a provider without stale consumers](84-restart-a-provider-without-stale-consumers.md)
 - [Copy one owned service observation](85-copy-one-owned-service-observation.md)
+
+
+## Laboratory: protect the user-memory boundary
+
+Begin with virtual addresses and page ownership. Follow preflight and copying, then study refusal tests, cleanup and the difference between a host model and a booted guest.
+
+1. [Draw virtual addresses and physical storage](62-draw-virtual-and-physical-memory.md)
+1. [Read the permission bits attached to a page](63-read-permission-bits.md)
+1. [Check who owns the backing frame](64-check-the-backing-owner.md)
+1. [Check the last requested byte without wrapping](65-check-the-last-requested-byte.md)
+1. [Inspect every page in the requested span](66-inspect-every-page-in-a-span.md)
+1. [Preflight the whole copy before changing output](67-preflight-before-copying.md)
+1. [Copy bytes across nonadjacent physical frames](68-copy-across-nonadjacent-frames.md)
+1. [Explain empty copies and work limits](69-explain-zero-and-oversized-copies.md)
+1. [Keep writable executable pages outside the user policy](70-keep-writable-code-out-of-the-model.md)
+1. [Release test memory in ownership order](71-release-test-memory-in-owner-order.md)
+1. [Distinguish host checks from guest execution](72-distinguish-host-and-guest-evidence.md)
+1. [Design a new buffer service from its contract](73-design-a-safe-new-buffer-service.md)
+
+
+## Laboratory: validate a boot handoff
+
+Read bytes, bound counts, validate memory ownership and publish a complete observation. Continue into firmware descriptors and freestanding qualification without changing the existing boot path.
+
+1. [Describe the startup handoff](74-describe-the-startup-handoff.md)
+1. [Read little-endian fields without alignment assumptions](75-read-little-endian-fields.md)
+1. [Bound counts before reading sections](76-bound-counts-before-reading-sections.md)
+1. [Check physical-memory spans without integer wrap](77-check-physical-memory-spans.md)
+1. [Reserve what startup already owns](78-reserve-what-startup-already-owns.md)
+1. [Admit firmware and framebuffer descriptions](79-admit-optional-boot-descriptors.md)
+1. [Publish one owned boot observation](80-publish-one-owned-boot-observation.md)
+1. [Qualify host and freestanding boot boundaries](81-qualify-host-and-freestanding-boundaries.md)
+
+
+## Laboratory: produce a validated boot handoff
+
+Encode through the production Kernel writer, inspect narrowing and ownership, and qualify bytes independently of the reader.
+
+1. [Encode a boot handoff through the Kernel](86-encode-a-boot-handoff-through-the-kernel.md)
+1. [Admit fields before narrowing](87-admit-fields-before-narrowing.md)
+1. [Publish encoded bytes only after admission](88-publish-encoded-bytes-only-after-admission.md)
+1. [Qualify a boot producer independently](89-qualify-a-boot-producer-independently.md)
+
+## Laboratory: own aligned contiguous physical pages
+
+Use the production Kernel allocator to understand absolute alignment, fragmented capacity and complete release, then separate host bookkeeping from platform evidence.
+
+1. [Align a physical frame run](90-align-a-physical-frame-run.md)
+1. [Explain fragmentation before retrying](91-explain-fragmentation-before-retrying.md)
+1. [Release owned pages as one operation](92-release-owned-pages-as-one-operation.md)
+1. [Qualify contiguous memory without device claims](93-qualify-contiguous-memory-without-device-claims.md)
+
+## Trace normal startup, output and recovery
+
+Follow the real Kernel coordinator, distinguish image purposes, preserve output ownership and qualify exact recovery decisions.
+
+1. [Choose a Kernel startup purpose](94-choose-a-kernel-startup-purpose.md)
+1. [Follow startup owner transitions](95-follow-startup-owner-transitions.md)
+1. [Read linker boundaries as addresses](96-read-linker-boundaries-as-addresses.md)
+1. [Preserve startup stream identity](97-preserve-startup-stream-identity.md)
+1. [Require the intended recovery cause](98-require-the-intended-recovery-cause.md)
+1. [Qualify normal boot at separate boundaries](99-qualify-normal-boot-at-separate-boundaries.md)

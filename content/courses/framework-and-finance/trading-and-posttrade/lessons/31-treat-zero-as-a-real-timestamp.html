@@ -1,0 +1,39 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/31-treat-zero-as-a-real-timestamp.html
+
+PURPOSE:
+Treat zero as a real timestamp in an attempt quota
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Treat zero as a real timestamp in an attempt quota | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><template data-preserved="offline-logo-alias"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"></template><img src="../../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Treat zero as a real timestamp in an attempt quota</h1>
+<h2>An unused state needs its own meaning</h2>
+<p>Timestamp zero is a valid point in a local monotonic clock domain. If a throttle interprets window_start_ms equal to zero as unused on every call, repeated calls at zero keep restarting the window. The counter can fail to enforce its intended limit.</p>
+
+<h2>Follow the fixed-window example</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Time in milliseconds</th><th scope="col">Expected result</th><th scope="col">Count after the call</th></tr></thead><tbody><tr><td>0</td><td>Admit</td><td>1</td></tr><tr><td>0</td><td>Admit</td><td>2</td></tr><tr><td>0</td><td>Refuse</td><td>2</td></tr><tr><td>999</td><td>Refuse</td><td>2</td></tr><tr><td>1000</td><td>Admit in a new window</td><td>1</td></tr></tbody></table></div>
+
+<pre><code class="language-c">UmiOrderThrottle throttle;
+umi_order_throttle_init(&amp;throttle, 2U, 1000);
+int first = umi_order_throttle_accept(&amp;throttle, 0);
+int second = umi_order_throttle_accept(&amp;throttle, 0);
+int third = umi_order_throttle_accept(&amp;throttle, 0);
+/* Expected: first and second are nonzero; third is zero. */</code></pre>
+
+<p>The accepted count now identifies an unused window. A zero count starts the next accepted window at the supplied time. Negative time, a timestamp before the active window start, invalid configuration, damaged count or exhausted quota refuses without mutation. The implementation orders admitted nonnegative timestamps before subtracting them.</p>
+
+<h2>State what this clock check cannot prove</h2>
+<p>The record remembers the window start rather than every call time. It therefore cannot detect every backwards movement within a window. Use one monotonic clock domain and enforce stronger sequencing in the clock owner when required. This local service is not a distributed quota shared across processes.</p>
+
+<h2>An attempt is not an accepted order</h2>
+<p>The reference OMS checks its kill switch before consuming an attempt. After the throttle admits, a later request-validation, risk or storage refusal still consumes that attempt. That existing policy limits attempted submissions. Moving the quota after validation would change the policy rather than merely repair arithmetic.</p>
+
+<h2>Exercise and answer</h2>
+<p>A request consumes the last attempt and is then rejected for invalid quantity. Should the client subtract one from the throttle count? No. The OMS policy already chose attempt accounting. Correct the input and follow the configured retry timing; do not mutate the service record to disguise the refusal. The quota scenario uses no real order or broker.</p>
+<h2>Complete source and qualification commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the existing laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md and identity_lifetime.c. Compilation, installed SDK linking and execution remain separate qualification steps.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="30-admit-every-active-record.html">Previous lesson</a> · <a href="32-move-chart-state-with-instrument-identity.html">Next lesson</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/31-treat-zero-as-a-real-timestamp.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

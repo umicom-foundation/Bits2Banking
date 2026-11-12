@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/64-recognise-truncation-before-format-fallback.html
+
+PURPOSE:
+Teach optical format recognition and retained observations through the installed Framework ISO client.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recognise truncation before format fallback | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="63-qualify-installed-media-recovery-behaviour.html">Previous lesson</a></nav><h1>Recognise truncation before format fallback</h1><p>Complete application: <a href="../../../../labs/native/framework-iso-inspection/main.c">main.c</a> · <a href="../../../../labs/native/framework-iso-inspection/README.md">Lab setup and observations</a> · <a href="../../../../labs/native/framework-iso-inspection/check.cmake">Qualification checks</a></p><h2>Start with three different questions</h2>
+<p>A format detector asks whether bytes identify a known format. A parser asks whether a recognised structure satisfies that format’s supported rules. A boot qualification asks whether a particular machine actually starts from the produced image. These questions have different evidence. In this lesson you extend the existing memory-only ISO client to distinguish an absent identifier, a recognised truncation and a completed structural observation. No file is created and no device is opened.</p>
+
+<h2>Draw the first descriptor on paper</h2>
+<p>The supported optical profile places its first descriptor at byte 16 × 2048. Its first byte identifies a descriptor type; the next five bytes spell CD001. A source ending five bytes after the descriptor offset cannot supply the complete identifier. A source ending six bytes after that offset can identify the format but cannot contain the full descriptor. The second source is malformed recognised input, even though both are far shorter than a usable image.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Scenario</th><th scope="col">Advertised extent</th><th scope="col">Expected result</th><th scope="col">Reads</th></tr></thead><tbody><tr><td>prefix-short</td><td>16 × 2048 + 5</td><td>OK; zero flags</td><td>0</td></tr><tr><td>prefix-unknown</td><td>16 × 2048 + 6; different identifier</td><td>OK; zero flags</td><td>1</td></tr><tr><td>prefix-truncated</td><td>16 × 2048 + 6; CD001 present</td><td>PARSE_ERROR; output unchanged</td><td>1</td></tr><tr><td>prefix-sector</td><td>17 × 2048; no following descriptor</td><td>PARSE_ERROR; output unchanged</td><td>1</td></tr></tbody></table></div>
+
+<h2>Change the view, not the allocation</h2>
+<p>The laboratory allocates its usual synthetic buffer and changes Source.size to advertise a shorter extent. Bytes may still exist in the allocation after that boundary, but the callback must not expose them. This models a bounded input view. Allocated capacity and admitted source length are separate quantities. A parser that reads past the admitted view is incorrect even when the underlying allocation happens to be larger.</p>
+<pre><code class="language-c">Source source = {image, IMAGE_BYTES, 0, 0, 0};
+source.size = 16U * BLOCK + 6U;
+UmiIsoImageInfo info = {0};
+UmiStatus status = UmiIsoImageInspect(Read, &amp;source, source.size, &amp;info);</code></pre>
+
+<h2>Keep parsing in Framework</h2>
+<p>The client sets up scenarios and owns the read callback. It never copies the ISO parser into its repository. The shared service probes only the available identifying bytes for an incomplete first sector. Once a complete sector is available, its existing parser checks descriptors, byte-order fields and the supported catalogue profile. Reusing that boundary ensures the Setup and Boot Media clients can receive the same classification from a matching Framework revision.</p>
+
+<h2>Preserve the difference between an error and absence</h2>
+<p>The prefix-read-failure scenario makes the callback fail its first requested read. The inspector must return that I/O error and leave the destination unchanged. It must not convert the inability to read into “not ISO.” An actual storage failure, cancellation or permission refusal belongs to the reader’s own contract. This laboratory injects an error in memory; its output says nothing about the health of a disk.</p>
+<pre><code class="language-c">if ((source-&gt;fail &amp;&amp; source-&gt;calls == 2U) ||
+    (source-&gt;failAt != 0U &amp;&amp; source-&gt;calls == source-&gt;failAt)) {
+    return UMI_STATUS_IO_ERROR;
+}</code></pre>
+
+<h2>Read retained flags in their original context</h2>
+<p>The retained-error scenario first inspects the complete synthetic BIOS fixture successfully. It then advertises a truncated descriptor and inspects again into the same output. The second call returns PARSE_ERROR while the earlier BIOS flags remain intact. That is the promised output-preservation behavior, not acceptance of the second source. The program prints a separate explanation so the historical flags cannot be mistaken for a current success. In retained-noniso, the second inspection succeeds with a different prefix and replaces the earlier flags with zeros.</p>
+
+<h2>Run the installed client deliberately</h2>
+<p>Use the existing lab README to configure and build against one matching Framework SDK. Then run each command below separately. The two refusal demonstrations intentionally exit with code 1; CTest checks that exact result as well as the status, flags, read count and explanation. A crash or different error does not count as an expected refusal.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+.\build\framework-iso-inspection\btb-framework-iso-inspection.exe prefix-short
+.\build\framework-iso-inspection\btb-framework-iso-inspection.exe prefix-truncated
+.\build\framework-iso-inspection\btb-framework-iso-inspection.exe retained-error
+ctest --test-dir .\build\framework-iso-inspection --output-on-failure --no-tests=error</code></pre>
+
+<h2>Complete a boundary experiment</h2>
+<p>Before executing a change, predict the result at one byte below, exactly at and one byte above the six-byte identifier boundary. Write down both the expected status and callback count. Keep the original cases. If an expectation fails, compare the advertised extent, callback bounds and installed SDK identity before changing the assertion. The source, lesson and thirteen installed-client checks are authored; their build and execution remain owner qualification. A passing memory fixture would still not establish CD burning, USB boot, firmware compatibility or publisher trust.</p>
+<ul><li>Explain why unreadable is not the same as absent.</li><li>Explain why a valid allocation can still contain bytes outside the admitted input.</li><li>Identify which result owns the flags after a failed second inspection.</li><li>Record compiler, architecture, SDK revision and the exact scenario with any observed failure.</li></ul>
+<p><a href="../../../lessons/06-umicom/umicom-os-from-scratch/64-recognise-truncation-before-format-fallback.md">Read the Markdown edition</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="63-qualify-installed-media-recovery-behaviour.html">Previous lesson</a></nav></article></main><footer><div class="container"><p>Sammy Hegab · Umicom Foundation · MIT for this original lesson and lab code.</p></div></footer></body></html>

@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/17-c-linkage-and-the-installed-sdk.html
+
+PURPOSE:
+Use the C registry directly from a Qt adapter
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use the C registry directly from a Qt adapter | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Use the C registry directly from a Qt adapter</h1>
+<h2>Start from the shared contract</h2>
+<p>The first sixteen lessons built a profile form across target environments. This module adds a native, memory-only model exercise. A model supplies values to an interface; it does not have to draw a window. Open component_model.h and then the installed Framework header umicom/ui/components/registry.h. The registry owns component specifications as C records. Qt supplies the C++ model interface.</p>
+<h2>Include the real SDK header</h2>
+<pre><code class="language-cpp">#include &quot;umicom/ui/components/registry.h&quot;
+#include &lt;QAbstractListModel&gt;
+
+class ComponentModel final : public QAbstractListModel {
+    // See the complete laboratory header for roles, signals and ownership.
+};</code></pre>
+<p>Framework public headers declare their external functions with C linkage when included by C++. This keeps the language boundary explicit. Do not copy declarations into the lab or include Framework .c implementation files. The library and header must come from the same SDK installation. Linkage spelling alone does not reconcile different processors, compiler runtimes or structure layouts.</p>
+<h2>Trace the dependency</h2>
+<p>CMake links the adapter against Umicom::ui_components and Qt6::Core. The imported Framework target carries the library dependencies. The adapter calls umi_ui_component_spec_default, the text setters and umi_ui_component_registry_add. C++ is required to implement the Qt class; admission policy stays in the shared C functions.</p>
+<h2>Exercise and recovery</h2>
+<p>Before building, locate the selected SDK header and its matching library. Record their installation prefix and source identity. If the linker cannot resolve a component function, first determine whether the requested symbol has C or C++ linkage, then inspect the selected header and imported target. Do not paste an extern declaration into the application to hide a mismatched SDK. Reinstall a coherent SDK and qualify the consumer again.</p>
+<h2>Reference</h2><ul><li><a href="https://doc.qt.io/qt-6/qabstractlistmodel.html">Qt list models</a></li></ul><h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-component-model/component_model.h">labs/framework/qt-component-model/component_model.h</a>. Use the matching local revision when offline.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="16-compare-desktop-web-and-mobile-evidence.html">Previous: Compare desktop, web and mobile release evidence</a> · <a href="18-map-registry-records-to-qt-roles.html">Next: Map registry records to rows and roles</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/17-c-linkage-and-the-installed-sdk.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

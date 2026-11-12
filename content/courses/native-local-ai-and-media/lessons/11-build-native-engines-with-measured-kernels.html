@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/11-build-native-engines-with-measured-kernels.html
+
+PURPOSE:
+Teach build native engines with measured kernels.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build native engines with measured kernels | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/11-build-native-engines-with-measured-kernels.md">Written lesson</a></p><h1>Build native engines with measured kernels</h1>
+<h2>What you will learn</h2>
+<p>Plan an original C implementation without confusing orchestration work with model computation. Use Assembly only where a measured low-level contract needs it.</p>
+<h2>Two distinct paths</h2>
+<p>The first path is interoperability: a C adapter connects an existing engine to Umicom&#39;s shared services. The <a href="https://github.com/ggml-org/llama.cpp">llama.cpp project</a> is an example of a C/C++ inference engine. Using it requires an explicit external dependency boundary; this course does not upgrade Umicom&#39;s approved vendor pins.</p>
+<p>The second path is Umicom&#39;s own model implementation. Existing ai/training code already covers numerical and generation responsibilities. Extend it through measured, compatible steps instead of starting another model engine in each application.</p>
+<h2>Grow one supported contract</h2>
+<ol>
+<li>Define the tokenizer, model architecture and supported tensor shapes.</li>
+<li>Specify weight format, integrity checks, numeric types and ownership.</li>
+<li>Establish a portable C reference for each operation.</li>
+<li>Check output against independently calculated small fixtures.</li>
+<li>Profile complete inference to locate costly work.</li>
+<li>Introduce an optimized kernel only after its semantics are fixed.</li>
+<li>Keep the portable path for unsupported CPUs and parity checks.</li>
+</ol>
+<p>A GGUF filename does not establish that an engine supports the file&#39;s architecture, quantization or tokenizer. Likewise, a C ABI around a GPU library does not prove the whole implementation is C. Document exactly what runs inside and outside the native engine.</p>
+<h2>Where Assembly can help</h2>
+<p>Vectorized matrix multiplication or quantized dot products may benefit from architecture-specific instructions. Dispatch must check CPU capabilities before entering a kernel. Alignment, tail elements, calling conventions and floating-point tolerances belong in the contract.</p>
+<p>Do not write Assembly for model dropdowns, HTTP request policy or course navigation. Portable C expresses those responsibilities clearly. A fast kernel cannot repair an incorrect cache position or tokenizer.</p>
+<h2>Exercise</h2>
+<p>For a dot product, use vectors [1, 2, 3] and [4, 5, 6]. The reference result is 32. Add a length that is not a multiple of the vector width and compare the complete result with the portable implementation.</p>
+<p><strong>Expected result:</strong> correctness is established before speed is reported. Record hardware, compiler flags, input dimensions and numerical tolerance with any timing.</p>
+<h2>Continue and recover</h2>
+<p>The <a href="../../llm-from-scratch/index.html">LLM from scratch course</a> covers decoder training, cache semantics and generation evidence. This application course builds on that material.</p>
+<p>When optimized and reference outputs disagree, isolate the smallest failing shape. Keep the original reference implementation. Do not widen tolerances until a test passes without understanding the numerical difference.</p>
+<nav aria-label="Lesson sequence"><p><a href="10-manage-personas-and-conversations.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="12-qualify-a-complete-ai-workflow.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

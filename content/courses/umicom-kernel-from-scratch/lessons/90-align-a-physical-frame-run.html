@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/90-align-a-physical-frame-run.html
+
+PURPOSE:
+Teach align a physical frame run through the real Kernel allocator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Align a physical frame run | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="89-qualify-a-boot-producer-independently.html">Previous lesson</a> · <a href="91-explain-fragmentation-before-retrying.html">Next lesson</a></p><h1>Align a physical frame run</h1>
+<section><h2>Start with pages, not pointers</h2><p>A physical frame is one fixed-size part of RAM. Umicom Kernel uses 4096-byte frames. Earlier lessons allocated one frame at a time; some future consumers need several adjacent frames whose first address also obeys a larger alignment. A contiguous run is such a consecutive group. It is an ownership allocation, not a virtual mapping or a device operation.</p>
+<p>Prepare labs/native/physical-frame-runs using its README. It compiles the real kernel/physical_memory.c and kernel/address.c files. The addresses in this host exercise are invented numbers; the program never dereferences them. Read lessons 22–29 first if the difference between reserved, allocated and free frames is unfamiliar.</p>
+</section>
+<section><h2>Express the request in frames</h2><p>The following call requests three consecutive pages with a four-page alignment. The count and alignment have different meanings: the run contains 12288 bytes, but its first address must be divisible by 16384. Count need not be a power of two. Alignment must be a nonzero power of two.</p>
+<pre><code class="language-c">UmicomAddress first = 0;
+UmicomKernelMemoryStatus status =
+    UmicomKernelPhysicalMemoryAllocateFrames(3U, 4U, &amp;first);
+if (status == UMICOM_KERNEL_MEMORY_OK) {
+    /* Own three frames beginning at first. Do not dereference it here. */
+}</code></pre>
+<p>Check the result before using first. A failed call preserves the previous output value. A physical address of zero can be a valid successful result when the managed RAM range includes it; testing first != 0 is not a replacement for checking status.</p>
+</section>
+<section><h2>Align absolute addresses</h2><p>Our example initializes sixteen pages beginning at 0x1000. Their physical page numbers are 1 through 16. Four-page alignment admits page numbers 4, 8, 12 and 16. The lowest three-page run therefore starts at 0x4000, not at the beginning of RAM.</p>
+<p>An implementation that aligns an array index relative to ramBase would call index zero aligned and return 0x1000. That is a different contract. The production implementation divides the physical address by the page size, then checks the low bits of that absolute page number. It avoids multiplying a possibly enormous alignment by 4096.</p>
+</section>
+<section><h2>Follow the ownership transition</h2><p>The allocator scans for the lowest eligible complete run. It changes no bits during that search. Only after finding every required free page does it mark ownership and publish the first address. Single-page calls delegate to this same service with count and alignment equal to one.</p>
+<ol><li>Initialize the isolated lab inventory and confirm that it contains sixteen free pages.</li><li>Run the alignment scenario. Expect first=0x4000, three allocated frames and thirteen free frames.</li><li>Release exactly those three owned frames. Expect allocated=0 and free=16.</li><li>Change the requested count to five while keeping alignment four. Predict the same first address and eleven free frames before running your changed example.</li></ol>
+</section>
+<section><h2>Exercise and answer</h2><p>RAM begins at 0x3000 and has eight pages. What is the first two-page run aligned to four pages? Answer: 0x4000 followed by 0x5000. The initial RAM page is skipped because its absolute page number is three. If 0x5000 is reserved, the next eligible start is 0x8000, provided both it and 0x9000 are managed and free.</p>
+<p>The source and examples are authored. Obtain compiler and execution results before claiming the expected observations occurred. This exercise does not qualify DMA, cache behaviour, an IOMMU, page-table mappings or a bootable image.</p>
+</section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-runs/README.md">Prepare the hosted laboratory</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-runs/main.c">Read the complete C example</a></p><p><a href="../index.html">Course contents</a> · <a href="89-qualify-a-boot-producer-independently.html">Previous lesson</a> · <a href="91-explain-fragmentation-before-retrying.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

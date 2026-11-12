@@ -82,4 +82,7 @@ Write two sentences: one that accurately describes this lab and one that oversta
 
 ## Continue learning
 
+<!-- Earlier end-of-module navigation retained for review:
 [Course contents](../../../courses/llm-from-scratch/index.html) · [Previous: Build a checkpoint rejection checklist](test-checkpoint-rejections-systematically.md)
+-->
+[Course contents](../../../courses/llm-from-scratch/index.html) · [Previous: Build a checkpoint rejection checklist](test-checkpoint-rejections-systematically.md) · [Next: Separate retrieval from model training](retrieval-and-model-training.md)

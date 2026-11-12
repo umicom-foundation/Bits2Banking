@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/native-project-hidden-retired.html
+
+PURPOSE:
+Distinguish a hidden form from a retired host
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish a hidden form from a retired host | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish a hidden form from a retired host</h1><p>Read the focused native project guide first. Code fragments below explain the shared Framework implementation; they are not standalone applications or recorded execution results.</p><h2>Visibility is not lifetime</h2>
+<p>A hidden window can still belong to a live application. A destroyed native window can also remain as a GObject because another component retains a reference. A non-NULL pointer or retained widget therefore does not prove that its application context is available. Read DeveloperAlive and DeveloperVisible together: they answer different questions about the same controller.</p>
+
+<pre><code class="language-c">static int DeveloperVisible(const UmiGtk4DeveloperDialog *dialog)
+{
+    return DeveloperAlive(dialog) &amp;&amp;
+        gtk_widget_get_visible(GTK_WIDGET(dialog-&gt;window));
+}</code></pre>
+
+<h2>Keep a hidden result</h2>
+<p>When a write completes while its form is hidden, the owned result is still useful. The form retains the model/profile and offers Open Project when presented again. It does not invoke the host while hidden. When the form or parent has retired, completion only releases ownership; it must not update controls or use a borrowed application context.</p>
+
+<h2>Prepare before adopting the handle</h2>
+<p>Prepare constructs a hidden form. Keep its output in local storage across construction, reacquire the live host, adopt the returned handle and then call Present. Construction and presentation can notify observers. If the host disappears before adoption, destroy the unadopted handle. The public callback context remains borrowed, so the host must destroy its owned handle before releasing that context.</p>
+
+<h2>Compare native states</h2>
+<ul><li>hidden-completion retains a result, presents the form again and requires explicit adoption.</li><li>parent-retired destroys the parent while retaining its object; completion must not adopt.</li><li>form-retired destroys the native form while its controller remains owned; retained memory does not restore presentation authority.</li></ul>
+
+<h2>Keep recovery claims narrow</h2>
+<p>Destroy is not rollback. It cannot erase effects already performed, and forced process termination may prevent completion from draining. During normal shutdown, inspect pending activity while the handle is valid and keep the event loop alive. The expected tests separate memory lifetime from permission to act; neither source inspection nor an object reference proves runtime authority.</p>
+<h2>Source and next steps</h2><p><a href="../../../../docs/guides/native-project-forms.md">Native project source and qualification guide</a> · <a href="../../../lessons/umicom-development/native-project-hidden-retired.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="native-project-result-publication.html">Previous lesson</a> · <a href="native-project-host-shutdown.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

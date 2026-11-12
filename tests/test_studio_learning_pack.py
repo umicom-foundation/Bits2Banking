@@ -186,3 +186,136 @@ def test_course_links_resolve_to_declared_resources():
             assert target in pages, (current, href, target)
             if link.fragment:
                 assert link.fragment in pages[target].anchors, (current, href)
+
+
+# Checked-in catalogues bypass the collection publisher, so they need their
+# own native-capacity guard. Keep the reader's bounds instead of enlarging
+# them to admit an ever-growing combined HTML/Markdown curriculum.
+@pytest.mark.parametrize("manifest", sorted((ROOT / "learning-packs").glob("*.json")),
+                         ids=lambda path: path.stem)
+def test_checked_in_pack_obeys_native_capacity(manifest):
+    data = manifest.read_bytes()
+    value = json.loads(data.decode("utf-8"), object_pairs_hook=pack.unique_object)
+    assert value["schema"] == "umicom.learning.pack"
+    assert len(data) <= pack.MAX_MANIFEST_BYTES
+    assert 1 <= len(value["resources"]) <= 256
+    ids = [row["id"] for row in value["resources"]]
+    paths = [row["path"].casefold() for row in value["resources"]]
+    assert len(ids) == len(set(ids))
+    assert len(paths) == len(set(paths))
+
+
+@pytest.mark.parametrize("slug", ["umicom-development", "llm-from-scratch"])
+def test_split_course_preserves_html_and_manuscript_coverage(slug):
+    course_path = ROOT / "content" / "courses" / slug
+    course = json.loads((course_path / "course.json").read_text(encoding="utf-8"))
+    primary = json.loads((ROOT / "learning-packs" / (slug + ".json")).read_text(encoding="utf-8"))
+    companion = json.loads((ROOT / "learning-packs" / (slug + "-manuscripts.json")).read_text(encoding="utf-8"))
+    assert primary["id"] != companion["id"]
+    primary_paths = {row["path"] for row in primary["resources"]}
+    companion_paths = {row["path"] for row in companion["resources"]}
+    for lesson in course["lessons"]:
+        html = (course_path / lesson["path"]).resolve().relative_to(ROOT).as_posix()
+        manuscript = (course_path / lesson["manuscript"]).resolve().relative_to(ROOT).as_posix()
+        assert html in primary_paths, html
+        assert manuscript in companion_paths, manuscript
+    # Relocation between packs must never relax content identity checks.
+    for catalogue in (primary, companion):
+        for resource in catalogue["resources"]:
+            source = pack.plain_path(ROOT, resource["path"])
+            assert hashlib.sha256(source.read_bytes()).hexdigest() == resource["sha256"]
+
+
+def test_checked_in_pack_identities_are_unique():
+    manifests = sorted((ROOT / "learning-packs").glob("*.json"))
+    identities = [json.loads(path.read_text(encoding="utf-8"))["id"] for path in manifests]
+    assert len(identities) == len(set(identities))
+
+
+def _course_lesson_count(manifest_name):
+    slug = manifest_name.removesuffix(".json").removesuffix("-manuscripts")
+    course = ("framework-and-finance/" + slug.removeprefix("framework-and-finance-")
+              if slug.startswith("framework-and-finance-") else slug)
+    value = json.loads((ROOT / "content/courses" / course / "course.json").read_text(encoding="utf-8"))
+    return len(value["lessons"])
+
+
+def test_offline_html_catalogue_uses_current_lesson_counts():
+    from html.parser import HTMLParser
+
+    class Rows(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.rows, self.row, self.cell = [], None, None
+            self.inert = 0
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "template":
+                self.inert += 1
+            if self.inert:
+                return
+            if tag == "tr":
+                self.row = []
+            elif tag == "td" and self.row is not None:
+                self.cell = ""
+
+        def handle_data(self, data):
+            if not self.inert and self.cell is not None:
+                self.cell += data
+
+        def handle_endtag(self, tag):
+            if tag == "template" and self.inert:
+                self.inert -= 1
+                return
+            if self.inert:
+                return
+            if tag == "td" and self.row is not None and self.cell is not None:
+                self.row.append(self.cell.strip())
+                self.cell = None
+            elif tag == "tr" and self.row is not None:
+                self.rows.append(self.row)
+                self.row = None
+
+    parser = Rows()
+    parser.feed((ROOT / "learning-packs/index.html").read_text(encoding="utf-8"))
+    listed = set()
+    for row in parser.rows:
+        if len(row) == 3 and row[1].startswith("learning-packs/"):
+            name = row[1].removeprefix("learning-packs/")
+            assert int(row[2]) == _course_lesson_count(name), row
+            listed.add(name)
+    assert listed == {p.name for p in (ROOT / "learning-packs").glob("*.json")}
+
+
+def test_offline_markdown_catalogue_remains_one_current_table():
+    import re
+    text = (ROOT / "learning-packs/README.md").read_text(encoding="utf-8")
+    # Retained historical rows must stay outside the active Markdown table:
+    # a comment or blank line between rows terminates the table in Markdown.
+    active = re.sub(r"<!--[\s\S]*?-->", "", text)
+    start = active.index("| Course | Manifest path | Lessons |")
+    end = active.index("## Keep native packs stable", start)
+    lines = active[start:end].strip().splitlines()
+    assert all(line.startswith("|") for line in lines)
+    rows = re.findall(r"^\|[^\n]*?\x60learning-packs/([^\x60]+)\x60\s*\|\s*(\d+)\s*\|$", active, re.M)
+    assert {name for name, _ in rows} == {p.name for p in (ROOT / "learning-packs").glob("*.json")}
+    for name, count in rows:
+        assert int(count) == _course_lesson_count(name), name
+
+@pytest.mark.parametrize("manifest", sorted((ROOT / "learning-packs").glob("*.json")),
+                         ids=lambda path: path.stem)
+def test_every_checked_in_pack_resource_matches_source_bytes(manifest):
+    """Every edition binds exact bytes, including ordinary manuscript packs.
+
+    The split-course checks above verify discovery for those specific courses.
+    This independent content check covers the complete catalogue so a navigation
+    edit cannot silently leave another course with stale offline checksums.
+    """
+    value = json.loads(manifest.read_text(encoding="utf-8"),
+                       object_pairs_hook=pack.unique_object)
+    for resource in value["resources"]:
+        source = pack.plain_path(ROOT, resource["path"])
+        actual = hashlib.sha256(source.read_bytes()).hexdigest()
+        assert actual == resource["sha256"], (
+            str(manifest.relative_to(ROOT)) + ": " + resource["path"])
+

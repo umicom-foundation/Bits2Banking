@@ -67,3 +67,6 @@ Explain the difference between an unknown address and an unused address. The fir
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous: Pause, halt and restart a program](47-pause-halt-and-restart-a-program.md) · [Next: Build separate simulation libraries](49-build-separate-simulation-libraries.md)
+
+
+[Manuscript course contents](index.md)

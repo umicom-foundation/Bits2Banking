@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/lessons/08-describe-and-recreate-environments.html
+
+PURPOSE:
+Teach describe and recreate an environment.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Describe and recreate an environment | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/08-describe-and-recreate-environments.md">Markdown manuscript</a> · <a href="07-keep-native-builds-separate.html" rel="prev">Previous lesson</a> · <a href="09-troubleshoot-one-layer-at-a-time.html" rel="next">Next lesson</a></p></nav><h1>Describe and recreate an environment</h1>
+<p>Lesson 8 of 10 · Suggested study time: 40 minutes. Command exercises are unexecuted teaching examples.</p><h2>What you will learn</h2>
+<p>Distinguish a readable environment specification from a record of resolved packages. You need a working named environment and a practice folder. Choose new output filenames so you do not overwrite a specification you still need.</p>
+<h2>Intent and observation are different records</h2>
+<p>An environment specification says what you ask a package manager to install. An inventory says what was installed on one machine. A successful recreation needs both a usable specification and appropriate checks; a list of package names is not a test result.</p>
+<p>The supplied <a href="../practice/environment.yml">practice environment file</a> requests Python 3.12, pip and packaging from conda-forge. It excludes default channels for this solve. The version constraints are intentionally simple, so it is a teaching specification rather than an exact deployment lock.</p>
+<p>Save that file as environment.yml in your practice folder. Inspect it before use:</p>
+<pre><code class="language-powershell">Get-Content -LiteralPath .\environment.yml
+conda env create --name umicom-env-recreated --file .\environment.yml
+conda run --name umicom-env-recreated python -c &quot;from packaging.version import Version; print(Version(&#39;1.10&#39;) &gt; Version(&#39;1.9&#39;))&quot;
+</code></pre>
+<p>Use a different environment name if this one already exists. The expected comparison result is True, but record the actual result. Environment creation may choose newer compatible package builds than an earlier run.</p>
+<h2>Export with a stated purpose</h2>
+<p>Current Conda supports structured and explicit export formats. Run the following from your practice folder after checking that the output files do not already contain work to preserve:</p>
+<pre><code class="language-powershell">conda export --name umicom-env-lab --from-history --format=environment-yaml --file=environment-intent.yml
+conda export --name umicom-env-lab --format=explicit --file=conda-resolved.txt
+</code></pre>
+<p>The history-based export records explicit Conda requests and avoids capturing every platform-specific transitive choice. Explicit output identifies resolved Conda package artifacts for compatible platforms. It is not a portable all-platform guarantee or a complete pip lock. <a href="https://docs.conda.io/projects/conda/en/stable/commands/export.html">Conda export reference</a>.</p>
+<p>For an older Conda release without that export interface, consult its help and use the established YAML export alternative:</p>
+<pre><code class="language-powershell">conda env export --name umicom-env-lab --from-history --file=environment-intent-legacy.yml
+</code></pre>
+<p><a href="https://docs.conda.io/projects/conda/en/stable/commands/env/export.html">Conda env export reference</a>.</p>
+<h2>Preserve pip requirements separately when needed</h2>
+<p>A history export is not a reliable inventory of all pip-installed dependencies. In a mixed environment, keep the reviewed pip requirements and an observed pip inventory as separate records:</p>
+<pre><code class="language-powershell">conda run --name umicom-env-lab python -m pip freeze | Set-Content -LiteralPath .\pip-observed.txt -Encoding utf8
+</code></pre>
+<p>Do not blindly reinstall this inventory over a Conda environment: it can include distributions Conda already owns. Review package ownership and use the project&#39;s chosen dependency workflow. Before sharing exports, inspect local paths, private repository URLs and credentials. Keep secrets outside public course material.</p>
+<h2>Exercise and answer</h2>
+<p>Two machines recreate a history-based specification and receive different patch versions. Does that prove Conda ignored the file?</p>
+<p><strong>Answer:</strong> no. A broad version request allows multiple solutions. Decide whether you need portable intent or exact artifact selection, then use a suitable record and repeat the relevant checks. Even identical package artifacts do not establish identical GPU drivers, OS state or application input.</p>
+
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/08-describe-and-recreate-environments.md">Markdown manuscript</a> · <a href="07-keep-native-builds-separate.html" rel="prev">Previous lesson</a> · <a href="09-troubleshoot-one-layer-at-a-time.html" rel="next">Next lesson</a></p></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/command-reference.html
+
+PURPOSE:
+Teach conda command reference and glossary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Conda command reference and glossary | Umicom Bits2Banking</title><link rel="stylesheet" href="../assets/umicom-learning.css"><link rel="stylesheet" href="../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="index.html">Course contents</a> · <a href="../../lessons/05-engineering/conda-miniforge-for-developers/command-reference.md">Markdown manuscript</a></p><h1>Conda command reference and glossary</h1>
+<h2>Use this reference after the lessons</h2>
+<p>These are individual interactive commands, not an automation script. Select the operation you intend, review its effect, then run it. Stop after an error. Names beginning umicom-env are disposable examples; inspect existing environments before reusing a name.</p>
+<table>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Command</th>
+<th>What it establishes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Find the shell command</td>
+<td>Get-Command conda -All</td>
+<td>How the current PowerShell session resolves Conda.</td>
+</tr>
+<tr>
+<td>Identify the installation</td>
+<td>conda info --base</td>
+<td>The installation prefix used by this Conda.</td>
+</tr>
+<tr>
+<td>List environments</td>
+<td>conda env list</td>
+<td>Known names and prefixes, not their application health.</td>
+</tr>
+<tr>
+<td>Preview shell integration</td>
+<td>conda init --dry-run powershell</td>
+<td>Proposed startup integration changes.</td>
+</tr>
+<tr>
+<td>Initialize PowerShell</td>
+<td>conda init powershell</td>
+<td>Requests shell integration; reopen the terminal afterwards.</td>
+</tr>
+<tr>
+<td>Keep base inactive at startup</td>
+<td>conda config --set auto_activate false</td>
+<td>Changes Conda&#39;s automatic activation preference.</td>
+</tr>
+<tr>
+<td>Activate the practice environment</td>
+<td>conda activate umicom-env-lab</td>
+<td>Selects its environment in the current shell.</td>
+</tr>
+<tr>
+<td>Leave the active environment</td>
+<td>conda deactivate</td>
+<td>Returns to the previous activation level.</td>
+</tr>
+<tr>
+<td>Identify running Python</td>
+<td>python -c &quot;import sys; print(sys.executable)&quot;</td>
+<td>The actual interpreter running that expression.</td>
+</tr>
+<tr>
+<td>Identify pip</td>
+<td>python -m pip --version</td>
+<td>Pip resolved through that interpreter.</td>
+</tr>
+<tr>
+<td>Inspect packages and sources</td>
+<td>conda list --show-channel-urls</td>
+<td>Conda&#39;s installed package inventory.</td>
+</tr>
+<tr>
+<td>Check Python dependency metadata</td>
+<td>python -m pip check</td>
+<td>Compatibility of declared Python requirements.</td>
+</tr>
+<tr>
+<td>Run in a selected environment</td>
+<td>conda run --name umicom-env-lab python --version</td>
+<td>Starts that child command with the selected environment.</td>
+</tr>
+</tbody></table>
+<h2>Commands that create or install</h2>
+<p>Read the plan and expected effects before using these examples. The first command is a preview; the second applies a creation request. Package versions and download sizes depend on the solve.</p>
+<pre><code class="language-powershell">conda create --name umicom-env-lab --override-channels --channel conda-forge python=3.12 pip --dry-run
+conda create --name umicom-env-lab --override-channels --channel conda-forge python=3.12 pip
+</code></pre>
+<p>Environment files are explained in <a href="lessons/08-describe-and-recreate-environments.html">lesson 8</a>. Do not replace a project&#39;s dependency file with a broad environment export without reviewing package ownership and reproducibility needs.</p>
+<h2>Small glossary</h2>
+<ul>
+<li><strong>Base:</strong> the environment containing the Conda management installation.</li>
+<li><strong>Environment prefix:</strong> the filesystem directory containing an environment&#39;s interpreter and packages.</li>
+<li><strong>Activation:</strong> shell state changes that select an environment&#39;s commands and related settings.</li>
+<li><strong>PATH:</strong> search locations used to find executable commands; shell functions and aliases can also affect resolution.</li>
+<li><strong>Channel:</strong> a Conda package source. A pip index is a separate Python packaging source.</li>
+<li><strong>Solver:</strong> the component that chooses package versions and builds satisfying the request.</li>
+<li><strong>Dependency:</strong> software another package requires.</li>
+<li><strong>Binary compatibility:</strong> agreement about platform, architecture and runtime contracts needed by compiled code.</li>
+<li><strong>Specification:</strong> a description of requested dependencies; broad constraints may allow several solutions.</li>
+<li><strong>Resolved inventory:</strong> a record of selected packages from a particular environment.</li>
+<li><strong>Qualification:</strong> executing a stated check against an identified source and environment, then examining the result.</li>
+</ul>
+<h2>What to do when a command fails</h2>
+<p>Use <a href="lessons/09-troubleshoot-one-layer-at-a-time.html">lesson 9&#39;s decision table</a>. Record the first failure and the selected interpreter before changing versions. The final <a href="lessons/10-capstone-and-knowledge-check.html">capstone</a> demonstrates how to keep an honest result record.</p>
+<h2>Official references</h2>
+<ul>
+<li><a href="https://github.com/conda-forge/miniforge">Miniforge installation and activation</a></li>
+<li><a href="https://docs.conda.io/projects/conda/en/stable/commands/init.html">Conda initialization</a></li>
+<li><a href="https://docs.conda.io/projects/conda/en/stable/commands/create.html">Conda environment creation</a></li>
+<li><a href="https://docs.conda.io/projects/conda/en/stable/commands/run.html">Conda explicit execution</a></li>
+<li><a href="https://docs.conda.io/projects/conda/en/stable/commands/export.html">Conda exports</a></li>
+<li><a href="https://docs.python.org/3/library/venv.html">Python venv</a></li>
+<li><a href="https://pip.pypa.io/en/stable/cli/pip_check/">Pip dependency check</a></li>
+</ul>
+<p>These references document the external tools. None establishes that a particular Umicom product, vendor model SDK or GPU backend has passed its own checks.</p>
+
+<p><a href="index.html">Course contents</a> · <a href="../../lessons/05-engineering/conda-miniforge-for-developers/command-reference.md">Markdown manuscript</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

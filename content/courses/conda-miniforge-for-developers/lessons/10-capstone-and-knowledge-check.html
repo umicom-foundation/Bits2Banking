@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/lessons/10-capstone-and-knowledge-check.html
+
+PURPOSE:
+Teach capstone: prove isolation and document a recreation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capstone: prove isolation and document a recreation | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/10-capstone-and-knowledge-check.md">Markdown manuscript</a> · <a href="09-troubleshoot-one-layer-at-a-time.html" rel="prev">Previous lesson</a></p></nav><h1>Capstone: prove isolation and document a recreation</h1>
+<p>Lesson 10 of 10 · Suggested study time: 50 minutes. Command exercises are unexecuted teaching examples.</p><h2>Your objective</h2>
+<p>Create two disposable environments, compare their interpreters, recreate one from a supplied specification and return to an unactivated native-development shell. This is a hands-on assessment, not evidence that Umicom applications or an AI SDK passed qualification. Read the earlier lessons before executing these steps.</p>
+<h2>Preparation</h2>
+<p>Use a writable practice folder outside a product checkout. Save the supplied <a href="../practice/environment.yml">environment.yml</a> and <a href="../practice/evidence-worksheet.md">evidence worksheet</a> there. Inspect existing environments first; the names below must not already contain work you need.</p>
+<pre><code class="language-powershell">conda env list
+conda env create --name umicom-env-capstone --file .\environment.yml
+conda create --name umicom-env-alternate --override-channels --channel conda-forge python=3.11 pip
+</code></pre>
+<p>The first environment requests Python 3.12; the second requests 3.11. Stop after a failed command. These commands download packages, but they do not require a model, GPU or account with an AI provider.</p>
+<h2>Observe without guessing</h2>
+<pre><code class="language-powershell">conda run --name umicom-env-capstone python -c &quot;import sys; print(sys.version_info[:2]); print(sys.executable)&quot;
+conda run --name umicom-env-alternate python -c &quot;import sys; print(sys.version_info[:2]); print(sys.executable)&quot;
+conda run --name umicom-env-capstone python -c &quot;from packaging.version import Version; print(Version(&#39;1.10&#39;) &gt; Version(&#39;1.9&#39;))&quot;
+conda run --name umicom-env-capstone python -m pip check
+</code></pre>
+<p>Expected observations are (3, 12), (3, 11), different interpreter paths and True for the version comparison. Pip check should either report compatible metadata or explain a dependency problem. Record what you actually see. Do not treat these expectations as a prefilled pass report.</p>
+<h2>Recreate under another name</h2>
+<pre><code class="language-powershell">conda env create --name umicom-env-capstone-copy --file .\environment.yml
+conda run --name umicom-env-capstone-copy python -c &quot;from packaging.version import Version; print(Version(&#39;1.10&#39;) &gt; Version(&#39;1.9&#39;))&quot;
+conda list --name umicom-env-capstone
+conda list --name umicom-env-capstone-copy
+</code></pre>
+<p>Compare requested versions and resolved package versions. Explain differences instead of hiding them. The two prefixes should differ because these are separate environments. The same functional example can pass even when unpinned compatible package builds differ.</p>
+<h2>Return to native work</h2>
+<p>If you activated an environment interactively, deactivate it and inspect CONDA_PREFIX. Open an ordinary PowerShell session and perform the read-only tool inventory from lesson 7. Verify the supported native compiler paths before following your native project&#39;s build guide. This assessment does not run a Framework configure, build or test.</p>
+<h2>Knowledge check with answers</h2>
+<ol>
+<li><strong>Does changing directory activate an environment?</strong> No. Directory selection and interpreter selection are independent.</li>
+<li><strong>Does a missing guessed install folder prove Conda is absent?</strong> No. Find the actual installation and test its supplied prompt.</li>
+<li><strong>Why use python -m pip?</strong> It selects pip through the interpreter you are inspecting, reducing ambiguity about which Python receives the operation.</li>
+<li><strong>Does pip check validate a GPU backend?</strong> No. It checks declared dependency relationships, not every import or runtime path.</li>
+<li><strong>Is a history export an exact all-platform lock?</strong> No. It records requests that can resolve differently.</li>
+<li><strong>Should an external AI experiment replace Umicom&#39;s native toolchain?</strong> No. Keep its environment boundary explicit and qualify the native product separately.</li>
+</ol>
+<h2>Completion criteria</h2>
+<p>Your worksheet identifies the shell, installation, three environment prefixes, expected and actual outputs, any failures, and the native tool paths selected afterwards. Another learner should be able to follow your reasoning without needing access to your private files. Do not claim a successful capstone until you have executed and inspected each required step. Keep practice environments until you have reviewed the evidence; environment removal is not required to complete the course.</p>
+
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/10-capstone-and-knowledge-check.md">Markdown manuscript</a> · <a href="09-troubleshoot-one-layer-at-a-time.html" rel="prev">Previous lesson</a></p></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

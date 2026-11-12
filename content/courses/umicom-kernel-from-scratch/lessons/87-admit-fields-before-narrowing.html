@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/87-admit-fields-before-narrowing.html
+
+PURPOSE:
+Teach admit fields before narrowing through the production Kernel implementation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit fields before narrowing | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="86-encode-a-boot-handoff-through-the-kernel.html">Previous lesson</a> · <a href="88-publish-encoded-bytes-only-after-admission.html">Next lesson</a></p><h1>Admit fields before narrowing</h1>
+<section><h2>Prepare a boundary review</h2><p>A wire format uses small fixed-width fields to keep messages predictable. The in-memory types may be wider. Converting first and validating second can turn an invalid caller value into a valid-looking message. Open kernel/boot_handoff_write.c and the pixel_tag, ram_count and text_termination cases in tests/boot_handoff/write_tests.c.</p>
+<p>Use the host build described in the boot-handoff lab README. Read the code before executing any case. The supplied tests are acceptance checks awaiting qualification, not a record of passing results.</p>
+
+</section>
+<section><h2>Do not let a cast invent validity</h2><p>The pixel format occupies 16 bits on the wire. The value 65537 has low 16 bits equal to 1. If a producer cast that value first, it could appear to be RGBX32. The writer instead compares the complete caller value against the three supported enum values.</p>
+<pre><code>if (record-&gt;framebuffer.format != UMICOM_BOOT_PIXELS_NONE &amp;&amp;
+    record-&gt;framebuffer.format != UMICOM_BOOT_PIXELS_RGBX32 &amp;&amp;
+    record-&gt;framebuffer.format != UMICOM_BOOT_PIXELS_BGRX32) {
+    return UMICOM_BOOT_HANDOFF_UNSUPPORTED;
+}</code></pre>
+<p>Only after this admission may the value be narrowed for Put16. The same principle applies to architecture and firmware tags. A cast changes representation; it does not prove that a value belongs to the protocol.</p>
+</section>
+<section><h2>Bound counts before arithmetic</h2><p>The input object has space for 32 RAM ranges and 64 reserved ranges. The writer rejects zero RAM ranges, excessive RAM counts and excessive reservation counts before indexing either array. It then computes 64 + 16 × (ramCount + reservedCount) + 48 + commandBytes.</p>
+<p>With 32 RAM ranges, 64 reservations and 255 command bytes, that expression is 1903 bytes. This is below the 4096-byte API limit. The proof depends on the earlier limits; moving arithmetic before admission would invalidate that reasoning. Unused array slots are deliberately ignored. They do not become extra ranges because their bytes happen to look plausible.</p>
+
+</section>
+<section><h2>Find the terminator within the object</h2><p>The command array contains 256 characters. The writer searches only inside that array for its first zero terminator. A fully nonzero array is refused with UMICOM_BOOT_HANDOFF_TEXT. The reader then applies printable-ASCII policy to the encoded prefix.</p>
+<p>The zero terminator belongs to the C representation and is omitted from the wire. Bytes after the first zero are unused storage. An embedded newline before the zero is different: it is part of the proposed text and must be refused. The existing bad-text lab case exercises this distinction.</p>
+
+</section>
+<section><h2>Exercise and answer</h2>
+<ol><li>Predict the result for ramCount equal to 65537. It is LIMIT before array access or narrowing.</li><li>Predict the result for a supported pixel tag with stride 63 and width 16. Tag admission succeeds, but reader validation refuses the framebuffer because a 64-byte row does not fit.</li><li>Predict the result for a 256-byte command array with no zero. It is TEXT; the writer must not read a 257th byte.</li><li>Find where the implementation checks destination capacity. A too-small destination can be refused before later semantic checks; callers must not rely on an invalid input producing every possible diagnostic at once.</li></ol></section>
+<section><h2>Use types accurately in diagnostics</h2><p>UmicomSize is an unsigned long long in the Kernel type contract. It is not the host's size_t typedef. The lab's printf now casts its counters to unsigned long long and uses %llu. Keeping a printf conversion matched to its argument is necessary even when two types happen to occupy the same number of bytes on one computer.</p>
+
+</section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/boot-handoff/README.md">Prepare the hosted laboratory</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/boot-handoff/write.c">Read the complete producer example</a></p><p><a href="../index.html">Course contents</a> · <a href="86-encode-a-boot-handoff-through-the-kernel.html">Previous lesson</a> · <a href="88-publish-encoded-bytes-only-after-admission.html">Next lesson</a></p>
+<!-- Repository laboratory sources live outside the published content root.
+Public repository links replace the former local-only routes, retained here for review:
+../../../../labs/native/boot-handoff/README.md
+../../../../labs/native/boot-handoff/write.c
+Offline source files remain available in their listed repository/learning-pack locations. -->
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

@@ -67,3 +67,6 @@ Draw three boxes: testbench, CPU and program memory. Label every arrow with its 
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous: Encode a countdown program](44-encode-a-countdown-program.md) · [Next: Check a program trace](46-check-a-program-trace.md)
+
+
+[Manuscript course contents](index.md)

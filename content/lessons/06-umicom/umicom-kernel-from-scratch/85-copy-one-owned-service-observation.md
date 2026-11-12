@@ -33,3 +33,5 @@ A UI stores the snapshot and later decides to admit work because phase was HEALT
 The authored owned-snapshot and snapshot-refusal cases check independent copies, restart visibility, closed state, zero unused slots and unchanged output on refusal. Callback-reentry also checks BUSY. Run the managed-service suite through the Kernel's documented owner procedure; these additions have only been statically reviewed. Extend the model without treating a host test as proof of RISC-V boot or hardware correctness.
 
 [Course contents](index.md)
+
+[Next lesson](86-encode-a-boot-handoff-through-the-kernel.md)

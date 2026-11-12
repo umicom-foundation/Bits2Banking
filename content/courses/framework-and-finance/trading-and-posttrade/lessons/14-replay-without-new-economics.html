@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/14-replay-without-new-economics.html
+
+PURPOSE:
+Replay an execution without adding its economics twice
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Replay an execution without adding its economics twice | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Replay an execution without adding its economics twice</h1>
+<h2>A repeated message can be normal</h2>
+<p>A sender may retry because it did not observe an acknowledgement. The receiver cannot conclude that every repeated message represents a new trade. The workspace first checks whether the execution identity is already retained. Exact supported field equality returns success without changing the owner.</p>
+<p>Run the replay scenario after the owner builds the laboratory. The first call retains one partial fill. The second call supplies the same report. The program compares workspace revisions and execution counts and checks that the position still contains one filled unit. A success code alone would not prove idempotence.</p>
+<h2>Observe the state, not just status</h2>
+<pre><code class="language-c">UmiStatus first = umi_trading_workspace_record_execution(workspace, &amp;report);
+/* Capture an admitted snapshot here. */
+UmiStatus retry = umi_trading_workspace_record_execution(workspace, &amp;report);
+/* Read again: revision, execution count and position must be unchanged. */</code></pre>
+<p>Idempotence means that repeating this already-accepted operation has no additional effect. It does not mean that every message with a familiar identifier should be accepted. The conflict scenario changes price under the same identifier and expects ALREADY_EXISTS. The original retained report stays authoritative for this local session.</p>
+<h2>Replay after later state changes</h2>
+<p>An earlier exact fill remains a replay after the order is fully filled or cancelled. The workspace checks retained identity before asking whether a new fill is legal in the current order state. Reversing this order would turn harmless recovery traffic into a misleading lifecycle failure.</p>
+<h2>Exercise and answer</h2>
+<p>Why does the low-level umi_order_apply_execution function not provide the same replay guarantee? It owns one order value, not a retained execution catalogue. Calling it twice can apply quantity twice. Use the workspace when your requirement includes retained event identity, and keep the lower-level function for explicitly controlled value calculations.</p>
+<h2>Bound the claim</h2>
+<p>The retained store is finite and local. This lesson does not promise infinite deduplication history, provider reconciliation or crash recovery. A longer-lived system must design those retention boundaries explicitly.</p>
+<h2>Use the complete laboratory</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Read the source, owner commands and expected results</a>. In an offline checkout, open labs/framework/order-lifecycle/README.md. Build and runtime qualification remains unexecuted for this authored continuation.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="13-publish-fill-state-together.html">Previous: Publish the order, position and fill evidence together</a> · <a href="15-cancel-the-unfilled-remainder.html">Next: Cancel the remainder while preserving completed fills</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/14-replay-without-new-economics.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/98-require-the-intended-recovery-cause.html
+
+PURPOSE:
+Teach require the intended recovery cause through the native Kernel coordinator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Require the intended recovery cause | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="97-preserve-startup-stream-identity.html">Previous lesson</a> · <a href="99-qualify-normal-boot-at-separate-boundaries.html">Next lesson</a></p><h1>Require the intended recovery cause</h1>
+<section><h2>A recovery marker is not automatically success</h2>
+<p>A negative test intentionally supplies bad input and checks a refusal. That does not mean every failure is acceptable. If a test intended to reject a malformed program instead fails during memory setup, reaching recovery has not demonstrated the intended check. The coordinator keeps expected selection separate from ordinary recovery reasons.</p>
+</section>
+<section><h2>Inspect the required-job evidence</h2>
+<p>For the dedicated malformed-startup profile, the expected result requires the first job to exhaust two attempts with a load error and the dependent job to remain unattempted. These observations demonstrate more than a generic failure. They link the selected recovery path to the intended cause and dependency policy.</p>
+<pre><code class="language-c">expected = umicomSystemServices.records[0].info.attempts == 2U &amp;&amp;
+    umicomSystemServices.records[0].info.reason == UMICOM_SERVICE_LOAD_ERROR &amp;&amp;
+    umicomSystemServices.records[1].info.attempts == 0U
+        ? UMICOM_TRUE : UMICOM_FALSE;</code></pre>
+</section>
+<section><h2>Distinguish direct recovery</h2>
+<p>The forced-recovery profile follows another contract: it selects recovery before memory allocation or job admission. Its precondition checks that the physical owner is uninitialised. If an owner already exists, the test must fail its selection check. A ready-looking recovery console cannot erase that unexpected earlier activity.</p>
+</section>
+<section><h2>Use mutations that challenge the expectation</h2>
+<p>The hosted retry profile changes one observation at a time: the attempt count, failure reason or dependent admission count. Each altered result must remain a failure and omit the expected-selection marker. The normal profile also rejects an unexpected required-job failure. These tests make accidental acceptance visible without launching a guest or fabricating successful user instructions.</p>
+</section>
+<section><h2>Exercise and recovery</h2>
+<p>A malformed-image test reports two attempts, but the reason is setup error rather than load error. Should the test pass because both are failures? No. Keep the result as a failed expectation and inspect the setup boundary. Do not broaden the accepted marker merely to obtain a green report. The original diagnostic images and real controller regressions remain necessary evidence.</p>
+</section>
+<p>Companion source: umicom-kernel/kernel/normal_boot.c and tests/boot_services/normal_boot_tests.c. Read docs/NORMAL_BOOT_COORDINATOR.md in the same Kernel checkout. Match source revisions before running the exercises.</p><p><a href="../index.html">Course contents</a> · <a href="97-preserve-startup-stream-identity.html">Previous lesson</a> · <a href="99-qualify-normal-boot-at-separate-boundaries.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

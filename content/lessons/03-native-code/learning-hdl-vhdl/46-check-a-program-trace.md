@@ -67,3 +67,6 @@ On paper, place columns for executed address, instruction, next address and next
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous: Connect CPU and memory](45-connect-cpu-and-memory.md) · [Next: Pause, halt and restart a program](47-pause-halt-and-restart-a-program.md)
+
+
+[Manuscript course contents](index.md)

@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/21-environment-pointer-ownership.html
+
+PURPOSE:
+Keep borrowed process pointers inside their receiving owner
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep borrowed process pointers inside their receiving owner | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip-link" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep borrowed process pointers inside their receiving owner</h1>
+<p>A structure can contain both owned arrays and pointers into those arrays. Copying its bytes duplicates the pointer values, not their destination ownership. This is a common lifetime trap in C: the copied text looks correct while a process-facing view still points into the old object.</p>
+<h2>Trace one variable</h2>
+<p>UmiEnvironmentPlan stores names and values in entries. Its process_entries view contains pointers used by the process service. For row i, the name pointer must refer to the receiving entries[i].name array and the value pointer to entries[i].value. A pointer into a temporary candidate becomes invalid when that candidate is released.</p>
+<pre><code class="language-c">const UmiEnvironmentVariable *variables =
+    umi_environment_plan_variables(environment);
+if (variables == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+/* Keep environment alive and stable while the consumer uses variables. */</code></pre>
+<p>This fragment assumes a valid, writable environment owner. The accessor validates and rebinds its process entries. NULL reports an invalid plan. A borrowed view does not transfer ownership: callers must not free its strings or mutate the plan while a consumer uses them.</p>
+<h2>Choose a copy operation with an ownership contract</h2>
+<p>The selection API already rebinds its receiving environment. For general composition, umi_environment_plan_compose stages a new plan and guarantees receiving pointers on success, including supported input/output aliasing. A raw assignment or memcpy does not provide that semantic guarantee. When reviewing code, find the exact point at which the destination view is rebound.</p>
+<h2>Read the regression carefully</h2>
+<p>The Selection scenario compares process-entry pointers directly with the receiving arrays after successful selection. It then copies the entire environment into saved_environment only as a byte snapshot for failure comparison. That snapshot is never passed to the process service. The distinction matters: saving bytes for a comparison is not constructing another independently usable environment owner.</p>
+<h2>Exercise and memory limits</h2>
+<p>Sketch two boxes for candidate and destination, with arrows for their pointer views. Move the arrays, then redraw the arrows that must change. Calculate the approximate owned text storage from the public capacity constants before choosing automatic storage. The lab uses static serial owners to avoid large stack frames; a multi-document IDE should use explicit per-instance lifetime and synchronization instead of sharing these globals.</p>
+<h2>Source and practice</h2><p>Use the <a href="../../../../labs/native/framework-toolchain-selection/README.md">installed C23 lab guide</a> and its <a href="../../../../labs/native/framework-toolchain-selection/main.c">complete source</a>. The examples are authored; no build or execution result is implied.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="20-publish-toolchain-selection.html">Previous: Publish the selected profile only after its environment is ready</a> · <a href="22-synchronize-compiler-selection.html">Next: Replace a compiler provider and profile together</a></p></nav><p><a href="../../../lessons/05-engineering/learning-build-systems/21-environment-pointer-ownership.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

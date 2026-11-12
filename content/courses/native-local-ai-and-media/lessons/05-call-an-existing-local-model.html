@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/05-call-an-existing-local-model.html
+
+PURPOSE:
+Teach call an existing local model through framework.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Call an existing local model through Framework | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/05-call-an-existing-local-model.md">Written lesson</a></p><h1>Call an existing local model through Framework</h1>
+<h2>What you will learn</h2>
+<p>Send one reviewed prompt from C to a trusted local service, and identify the limits of that integration.</p>
+<h2>The actual transport</h2>
+<p>UmiAiWorkspaceLocalProviderCreate targets <a href="http://127.0.0.1:&lt;port&gt;/v1/chat/completions">http://127.0.0.1:&lt;port&gt;/v1/chat/completions</a>. The inspected contract supports ports 1024–65535 and timeouts 100–60000 milliseconds. Its optional libcurl/json-c implementation disables proxies and redirects, bounds response size, validates decoded data and rejects tool-bearing replies. It requests a complete response with streaming disabled.</p>
+<p>An OpenAI-compatible route is a protocol description. It does not imply every server supports the same parameters, response fields or error behavior. A service that forwards requests elsewhere is not private merely because its listening address is loopback.</p>
+<h2>Prepare deliberately</h2>
+<ol>
+<li>Install and qualify a matching Framework SDK with the optional local HTTP provider.</li>
+<li>Start a trusted server separately using its own documented workflow and an approved model.</li>
+<li>Confirm the actual model ID, port, model license, runtime revision and destination behavior.</li>
+<li>Read local.c. Notice the explicit command acknowledgement and the absence of automatic fallback.</li>
+<li>Use a harmless prompt; command-line arguments may appear in shell history or process inspection.</li>
+</ol>
+<p>After adapting the port and model ID to that server:</p>
+<pre><code class="language-powershell">.\build\btb-local-ai-routing.exe local --send-reviewed-prompt 8080 &quot;your-installed-model-id&quot; &quot;Explain what a C pointer stores.&quot;
+</code></pre>
+<p>This command sends a request. It does not launch a server, install dependencies or download a model. The lab uses temperature 0.2, at most 128 output tokens and a 30-second deadline. Those choices keep the exercise bounded, not deterministically correct.</p>
+<h2>Interpret results</h2>
+<p>A zero exit status means the adapter accepted the returned response. Read its finish reason: a length-limited answer may be incomplete. It is not a correctness score. The client escapes ASCII terminal control bytes before display; a richer UI needs its own reviewed Unicode and markup policy.</p>
+<p>Exit 3 reports a missing optional provider in the installed Framework. Exit 2 reports invalid command input. Other failures report the Framework status and must not be presented as a successful answer.</p>
+<h2>Exercise and recovery</h2>
+<p>Try the offline invalid-port check before the live exercise. It must reject 70000 before provider creation. Then plan how to distinguish connection refusal, timeout, unsupported model and malformed JSON.</p>
+<p><strong>Answer:</strong> test these layers separately. Do not install Conda to repair an absent C SDK component. Conda can support separate Python experiments, but this native client does not require a Python environment.</p>
+<nav aria-label="Lesson sequence"><p><a href="04-own-providers-and-requests-in-c.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="06-stream-cancel-and-display-text.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

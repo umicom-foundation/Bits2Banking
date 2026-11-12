@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/20-publish-toolchain-selection.html
+
+PURPOSE:
+Publish the selected profile only after its environment is ready
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish the selected profile only after its environment is ready | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip-link" href="#main">Skip to lesson</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Publish the selected profile only after its environment is ready</h1>
+<p>Imagine an IDE displaying compiler B while its next build still receives compiler A through CC. Each field may look reasonable on its own, but together they describe different execution contexts. A reliable selection operation prepares the dependent values before making the new selection visible.</p>
+<h2>Use the shared publication operation</h2>
+<pre><code class="language-c">UmiStatus status = umi_toolchain_catalogue_select_with_environment(
+    catalogue, &quot;first&quot;, selected_profile, child_environment);
+if (status != UMI_STATUS_OK) return status;</code></pre>
+<p>This fragment assumes a created catalogue, an inserted profile and separate receiving owners. Framework stages a profile copy and child environment. It changes the explicit catalogue selection only after preparation succeeds, then publishes the prepared values and binds the process pointers to their receiving storage.</p>
+<h2>Define exactly what failure preserves</h2>
+<p>For this operation, refusal preserves the catalogue selection and both receiving objects. It does not undo earlier catalogue insertions, discovery observations or unrelated application work. Discovery remains a separate operation that can probe tools and update records incrementally. Do not describe a whole discovery-and-selection workflow as atomic merely because its final selection step preserves its outputs.</p>
+<h2>Inspect both sides of the boundary</h2>
+<p>The Selection lab inserts first and refused profiles before taking its snapshot. It successfully selects first, saves both owners, and attempts refused, whose compiler path contains a newline. The later comparison checks unchanged owner bytes, unchanged catalogue revision and the first identifier. Checking only the error code would miss a partial mutation.</p>
+<h2>Respect caller ownership</h2>
+<p>The output profile and environment must not overlap each other or catalogue storage. Callers also serialize readers and writers across the operation. Preparation on temporary storage does not add a lock or make unsynchronized access safe. A process crash is a separate concern; this in-memory operation is not durable database commit machinery.</p>
+<h2>Exercise</h2>
+<p>Draw the sequence as prepare profile, prepare environment, select catalogue, publish owners. Mark every step that can refuse. Then explain why publishing selected_profile before environment preparation would break the advertised failure guarantee. Extend your review notes with the state that must remain unchanged after an invalid identifier and after malformed environment text. Execute the supplied scenario only in a qualified installed-client environment.</p>
+<h2>Source and practice</h2><p>Use the <a href="../../../../labs/native/framework-toolchain-selection/README.md">installed C23 lab guide</a> and its <a href="../../../../labs/native/framework-toolchain-selection/main.c">complete source</a>. The examples are authored; no build or execution result is implied.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="19-child-environments-and-path.html">Previous: Prepare a child environment without changing the parent shell</a> · <a href="21-environment-pointer-ownership.html">Next: Keep borrowed process pointers inside their receiving owner</a></p></nav><p><a href="../../../lessons/05-engineering/learning-build-systems/20-publish-toolchain-selection.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

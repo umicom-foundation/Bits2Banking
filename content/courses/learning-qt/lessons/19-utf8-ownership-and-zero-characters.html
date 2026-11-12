@@ -1,0 +1,29 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/19-utf8-ownership-and-zero-characters.html
+
+PURPOSE:
+Keep text ownership and byte boundaries explicit
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep text ownership and byte boundaries explicit | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep text ownership and byte boundaries explicit</h1>
+<h2>Follow the lifetime</h2>
+<p>appendButton receives QString references and creates local QByteArray values with toUtf8. The C setters copy bytes into the temporary component specification before those byte arrays leave scope. The registry later copies the admitted specification. No pointer into a temporary Qt string is stored in the model. The rolesAndCopiedOwnership case changes the original Qt strings after insertion and checks that the model still returns the original values.</p>
+<h2>Prevent hidden suffixes</h2>
+<pre><code class="language-cpp">QString input = QStringLiteral(&quot;save&quot;);
+input.append(QChar(0));
+input.append(QStringLiteral(&quot;hidden&quot;));
+const UmiStatus status = model.appendButton(input, &quot;Save&quot;);
+// Expected: UMI_STATUS_INVALID_ARGUMENT; no new row.</code></pre>
+<p>A Qt string can contain a zero character inside its length. A terminated C string ends at that character. Without the explicit adapter check, the C function could see save while the caller supplied a longer value. This check translates between string representations; it does not replace the component validity policy.</p>
+<h2>Count bytes, including the terminator</h2>
+<p>The component text field has 256 bytes. Its largest terminated value uses 255 data bytes. The test builds 127 copies of U+00E9, which need 254 UTF-8 bytes, then adds one ASCII character. That value fits. Adding one more ASCII character does not. The character count and byte count answer different questions. Framework setters enforce the destination capacity.</p>
+<h2>Exercise and recovery</h2>
+<p>Change the boundary test to use a three-byte character and calculate the largest fitting combination before running it. On refusal, inspect the status and UTF-8 byte length rather than truncating the label silently. An application needing larger text should use an appropriate shared contract; changing only the Qt control limit does not enlarge the C record.</p>
+<h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-component-model/component_model.cpp">labs/framework/qt-component-model/component_model.cpp</a>. Use the matching local revision when offline.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="18-map-registry-records-to-qt-roles.html">Previous: Map registry records to rows and roles</a> · <a href="20-prepare-a-model-edit-before-notification.html">Next: Prepare an edit before publishing a Qt row</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/19-utf8-ownership-and-zero-characters.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

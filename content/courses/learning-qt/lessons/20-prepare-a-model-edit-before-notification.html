@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/20-prepare-a-model-edit-before-notification.html
+
+PURPOSE:
+Prepare an edit before publishing a Qt row
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prepare an edit before publishing a Qt row | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Prepare an edit before publishing a Qt row</h1>
+<h2>Separate admission from observation</h2>
+<p>A view observing a model needs a coherent change boundary. The lab first allocates a candidate registry and copies the current owner into it. umi_ui_component_registry_add validates and changes that candidate. A duplicate, invalid specification or full registry is discovered before any insertion notification. The live model remains untouched during this preparation.</p>
+<h2>Publish the admitted owner</h2>
+<pre><code class="language-cpp">const int row = rowCount();
+beginInsertRows(QModelIndex(), row, row);
+registry_.swap(candidate);
+endInsertRows();</code></pre>
+<p>These lines occur only after successful Framework admission. The begin notification exposes the old count; the end notification exposes the new count. The swap itself does not allocate or run another policy check. Afterwards the candidate pointer owns the old registry and releases it automatically.</p>
+<h2>Reason about cost</h2>
+<p>Copying the bounded registry makes this example easy to inspect and keeps rollback simple. It is a tradeoff: each insertion copies the registry and validates its active entries. This is suitable for studying a small component catalogue, not a claim of high-volume performance. Measure a real workload before extending this design. Any optimization must preserve duplicate checks and the visible notification boundary.</p>
+<h2>Exercise and worked answer</h2>
+<p>Suppose allocation were attempted between beginInsertRows and endInsertRows and failed. The view would already have been told an insertion was starting, so an ordinary early return would break the notification contract. Move fallible preparation before begin. In the supplied test, collect rowCount during both signals and verify zero then one for the first insertion. Do not edit the live C array directly to make the assertion pass.</p>
+<h2>Reference</h2><ul><li><a href="https://doc.qt.io/qt-6/qabstractitemmodel.html#beginInsertRows">Qt model insertion contract</a></li></ul><h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-component-model/component_model.cpp">labs/framework/qt-component-model/component_model.cpp</a>. Use the matching local revision when offline.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="19-utf8-ownership-and-zero-characters.html">Previous: Keep text ownership and byte boundaries explicit</a> · <a href="21-refused-edits-are-observable-contracts.html">Next: Test that refused edits preserve the model</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/20-prepare-a-model-edit-before-notification.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

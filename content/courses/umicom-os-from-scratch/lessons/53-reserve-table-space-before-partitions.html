@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/53-reserve-table-space-before-partitions.html
+
+PURPOSE:
+Teach reserve table space before partitions through the installed Framework GPT service.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reserve table space before partitions | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="52-keep-partition-address-units-explicit.html">Previous lesson</a> · <a rel="next" href="54-preserve-an-observation-on-refusal.html">Next lesson</a></nav><h1>Reserve table space before partitions</h1><p>Complete source: <a href="../../../../labs/native/framework-gpt-inspection/image.c">image.c</a> · <a href="../../../../labs/native/framework-gpt-inspection/README.md">Build and run the lab</a> · <a href="../../../../labs/native/framework-gpt-inspection/QUALIFICATION.md">Qualification guide</a></p><p>A small data structure can still require a larger reserved region around it. The synthetic image in this lab declares four partition slots. At 128 bytes per slot, their encoded contents occupy only 512 bytes. The layout deliberately reserves more room, so later partitions do not begin inside space assigned to table metadata.</p>
+<h2>Distinguish occupied bytes from reserved space</h2>
+<p>Seal calculates a CRC over the declared array contents and copies those bytes into the backup array. LabImageCreate separately calculates the reservation used to choose usable addresses. These calculations answer different questions: which bytes participate in this checksum, and where may partition data begin?</p>
+<pre><code class="language-c">size_t length = (size_t)4U * width;
+uint32_t crc = Crc(entries, length);
+memcpy(image-&gt;bytes + backup_table * image-&gt;block,
+    entries, length);</code></pre>
+<p>This teaching fragment names the backup-table address explicitly; the complete source calculates it from the source extent and reservation. Copying only the declared bytes is correct for the fixture. Treating the unused reserved area as partition space is a different decision and is refused by the inspection profile.</p>
+<h2>Create a meaningful negative fixture</h2>
+<p>The reservation scenario changes the first usable address to 3 in both headers, then recomputes their checksums. The first partition itself still begins later. This isolates the reservation rule: a parser checking only partition overlap and checksum consistency would miss the problem.</p>
+<pre><code class="language-c">Put64(primary + 40U, 3U);
+Put64(backup + 40U, 3U);
+Seal(image, 128U);</code></pre>
+<p>The stride scenario keeps a four-slot table but changes the entry width to 384 bytes. The generator recomputes the array and header checksums. Framework must reject the unsupported width even though all the encoded CRC values agree. Updating a checksum should never be a way to bypass a semantic format check.</p>
+<h2>Run and interpret</h2>
+<p>Run gpt-inspection.exe reservation and gpt-inspection.exe stride after the ordinary build. Both scenarios first inspect a valid fixture successfully, then require a parse error for the controlled mutation. Each also checks that the previously accepted output remains unchanged. A zero exit code means those assertions were observed, not that the mutated image was accepted.</p>
+<h2>Exercise</h2>
+<p>Explain why changing only the primary header without recomputing its checksum would make a weaker regression case for the reservation rule. Propose what you should compare in the test output to confirm the intended path.</p>
+<h2>Worked explanation</h2>
+<p>A stale header CRC gives the parser an earlier reason to stop. The test might pass because checksum validation works while the reservation defect remains. Keeping both copies and checksums consistent removes those incidental failures. The remaining expected refusal must arise from the declared geometry. The Framework suite additionally checks individual metadata rules with separate fixtures.</p>
+<h2>Extend carefully</h2>
+<p>Do not broaden an image profile just because one producer creates different metadata. First distinguish a valid but unsupported format from malformed bytes. Compare the format reference, current service contract and actual producer output. Keep the original artifact unchanged and record its identity. The lab constructs only teaching metadata; it supplies neither a filesystem nor executable boot code.</p>
+<p><a href="https://uefi.org/specs/UEFI/2.11/05_GUID_Partition_Table_Format.html">Primary GPT format reference</a> · <a href="../index.html">Course contents</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT for these original lessons and examples. Referenced specifications retain their own rights.</p></footer></body></html>

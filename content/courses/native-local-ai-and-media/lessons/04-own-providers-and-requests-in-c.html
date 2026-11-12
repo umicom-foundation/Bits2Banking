@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/04-own-providers-and-requests-in-c.html
+
+PURPOSE:
+Teach own providers and requests in c.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own providers and requests in C | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/04-own-providers-and-requests-in-c.md">Written lesson</a></p><h1>Own providers and requests in C</h1>
+<h2>What you will learn</h2>
+<p>Use Framework&#39;s C function table without duplicating its registry or policy logic. Track ownership across success and failure.</p>
+<h2>Read the complete client</h2>
+<p>The <a href="../../../../labs/native/local-ai-routing/README.md">lab</a> contains source files, an installed-SDK CMake project and seven offline checks. Its offline callback returns a constant sentence, clearly marked as a fixture. This exercises integration without pretending to be inference.</p>
+<p>A provider table contains a function pointer for generation, an instance pointer and a destroy callback. An instance is adapter-owned state; the registry owns it after successful registration. If registration fails, the creator still owns it and must release it.</p>
+<h2>Follow the lifetime</h2>
+<ol>
+<li>Initialize UmiAiRuntime.</li>
+<li>Create or initialize an adapter and fill its provider table.</li>
+<li>Register it with umi_ai_provider_registry_add.</li>
+<li>Initialize UmiAiRequest, set its bounded identifiers and add messages.</li>
+<li>Dispatch through umi_ai_runtime_generate.</li>
+<li>Inspect status before consuming the response.</li>
+<li>Destroy the runtime after work has finished. Then release objects borrowed by the adapter.</li>
+</ol>
+<p>The local client follows this real sequence:</p>
+<pre><code class="language-c">status = umi_ai_provider_registry_add(&amp;runtime.providers, &amp;provider);
+if (status != UMI_STATUS_OK) {
+    provider.destroy(provider.instance);
+    goto done;
+}
+status = umi_ai_runtime_generate(
+    &amp;runtime, &quot;umicom.local-chat&quot;, 0, &amp;request, &amp;response);
+</code></pre>
+<p>The zero approval argument does not bypass policy. The configured local policy permits this provider; the same argument would fail a remote request requiring approval.</p>
+<h2>Avoid hidden resource errors</h2>
+<p>A fixed-size request is large because it contains many messages. The serial teaching executable uses static storage, with that limitation documented. A GUI must give each operation explicit owned state and a worker lifetime; sharing that static request across threads would be wrong.</p>
+<p>Checks execute through ordinary if statements, not side effects inside assert. Disabling assertions in a release build must not disable setup or validation.</p>
+<h2>Exercise</h2>
+<p>Run offline dispatch and offline policy. The first expects exactly one callback; the second expects zero callbacks because policy refuses the remote fixture. Both verify a single destroy callback after successful registration.</p>
+<p><strong>Answer:</strong> an error return from generation is not permission to destroy the instance twice. Registration, generation and destruction have different ownership transitions.</p>
+<h2>Recovery</h2>
+<p>If a callback sees an unexpected model ID, inspect the complete request and selected provider. Do not substitute a hard-coded answer in the live path. Preserve the error and report the failing layer.</p>
+<nav aria-label="Lesson sequence"><p><a href="03-select-capabilities-and-budget-context.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="05-call-an-existing-local-model.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

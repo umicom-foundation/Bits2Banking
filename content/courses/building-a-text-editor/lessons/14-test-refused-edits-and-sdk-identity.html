@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-text-editor/lessons/14-test-refused-edits-and-sdk-identity.html
+
+PURPOSE:
+Teach check refused edits, preserved state and sdk identity.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check refused edits, preserved state and SDK identity | Umicom Bits2Banking</title><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../assets/umicom-learning.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-traverse-one-shared-document-history.html">Previous lesson</a></nav><h1>Check refused edits, preserved state and SDK identity</h1><p>Complete source: <a href="../../../../labs/native/shared-editor/document.c">document.c</a> · <a href="../../../../labs/native/shared-editor/README.md">Build and run the lab</a> · <a href="../../../../labs/native/shared-editor/QUALIFICATION.md">Qualification guide</a></p><p>A refusal is useful only if it leaves the document in a defined state. Returning an error after changing text or consuming history would make retrying dangerous. The remaining lab scenarios compare both the returned status and the working state after an unsuccessful request.</p>
+<h2>1. Capture the right baseline</h2>
+<p>stale-plan prepares a plan for original, then applies a newer edit that changes the document to newer. Only then does it capture the baseline for the expected refusal. Applying the old plan must fail with INVALID_STATE and retain newer. Comparing against original would incorrectly ask the service to undo the legitimate intervening edit.</p>
+<p>SameWorkingState compares documented fields individually: identity, revision, text length, Undo and Redo counts, dirty flag, path state and view ID. It does not memcmp an entire C structure, because padding bytes are not part of the logical contract. HasText independently compares the complete owned text copy.</p>
+<h2>2. Separate different refusal causes</h2>
+<ul><li>stale-plan: the captured draft is no longer current; preserve the newer edit.</li><li>consumed-plan: a successfully applied plan cannot be applied a second time.</li><li>read-only: selection and capture are permitted, but changing the document is refused.</li><li>invalid-replacement: malformed UTF-8 and an embedded zero byte are refused without changing text or history.</li></ul>
+<p>The invalid-replacement scenario then applies corrected valid text through the same still-current capture. That retry is allowed because neither failed request consumed it or changed its source. In contrast, retrying a stale or consumed plan cannot make it current. A new user action needs a newly prepared plan.</p>
+<h2>3. Run each named observation</h2>
+<pre><code class="language-powershell">&amp; .\build\shared-editor\shared-editor.exe stale-plan
+&amp; .\build\shared-editor\shared-editor.exe consumed-plan
+&amp; .\build\shared-editor\shared-editor.exe read-only
+&amp; .\build\shared-editor\shared-editor.exe invalid-replacement
+ctest --test-dir .\build\shared-editor --output-on-failure --no-tests=error</code></pre>
+<p>Run one command at a time and stop on an unexpected failure. A successful process prints its scenario name and returns zero. CTest should register twelve named scenarios when BUILD_TESTING is enabled. A zero-test listing is missing coverage, not twelve passes. The QUALIFICATION guide gives the complete observation checklist.</p>
+<h2>4. Identify what actually ran</h2>
+<p>Record the compiler, build directory, installed SDK prefix, installed package metadata and executable you launched. The lab checks that its selected package configuration belongs under the requested SDK prefix and asks the SDK to validate its exported layout. These checks reduce accidental mixing, but they do not prove that a later runtime loader selected every intended dependency.</p>
+<p>An undefined symbol usually calls for checking the installed archive and export set before changing a correct function name. A missing declaration calls for checking the specific translation unit and its direct headers. document.c includes umicom/document/edit.h explicitly. A symbol found somewhere in another repository is not evidence that this source file can see its declaration.</p>
+<h2>Exercise and worked explanation</h2>
+<p>Suppose a log says all checks passed, but the binary was built before the newest scenario was registered. Can it validate the new refusal? No. Record the source and binary identities and rebuild through the owner’s qualification workflow. Preserve the old log as historical evidence, then label the new case unexecuted until the matching binary runs.</p>
+<h2>Scope and next steps</h2>
+<p>The twelve scenarios cover deterministic in-memory calls. Allocation exhaustion, the full history byte-budget boundary, native keyboard input, text shaping, IME composition, clipboard services and file saving require additional tests. The course can now connect buffer ownership, exact positions, source ranges and document history without claiming a complete graphical editor. Use the existing Studio design and shared Framework APIs when moving to the native adapter.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-traverse-one-shared-document-history.html">Previous lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original lessons licensed under MIT.</p></footer></body></html>

@@ -1473,3 +1473,13 @@ Preserved alongside Learning C. It is not an additional course you must complete
 ## Finance, Bitcoin and systems
 
 Follow the [ordered course routes](../courses/finance-and-systems.html) for pricing in C, C++ and Java; Bitcoin concepts and source; blockchain construction; Calypso integration; Linux systems; and a web server in C. Each route lists prerequisites and available lessons.
+
+
+## Conda and Miniforge environments
+
+[Read the ten-lesson course](../lessons/05-engineering/conda-miniforge-for-developers/index.md) on Windows installation, PowerShell initialization, package ownership, AI compatibility, reproducibility and separation from native C/Assembly toolchains. Includes worked examples, exercises with answers, a command reference and a capstone. Practical exercises require execution and review.
+
+
+## Native local AI chat and media
+
+[Study the twelve written lessons](../lessons/ai/native-local-ai-and-media/index.md), with [the browser course](../courses/native-local-ai-and-media/index.html) and an original installed-Framework C23 lab. Learn model selection, request ownership, local inference, RAG, media jobs and qualification. Local image/video inference remains separate development work.

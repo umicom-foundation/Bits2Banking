@@ -104,3 +104,6 @@ Why is the largest LOAD immediate 15 even though the accumulator holds 255? The 
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](32-read-ports-and-state.md) · [Next lesson](34-check-fixed-width-arithmetic.md)
+
+
+[Manuscript course contents](index.md)

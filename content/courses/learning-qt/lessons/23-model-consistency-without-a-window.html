@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-qt/lessons/23-model-consistency-without-a-window.html
+
+PURPOSE:
+Check model consistency without launching a GUI
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check model consistency without launching a GUI | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Check model consistency without launching a GUI</h1>
+<h2>Use two complementary observers</h2>
+<p>QAbstractItemModelTester checks general model consistency as the model changes. The explicit Qt Test cases check the laboratory’s domain expectations: copied input, duplicate precedence, byte limits and callback behavior. Neither replaces the other. A structurally valid model could still return the wrong component label.</p>
+<h2>Attach the consistency observer</h2>
+<pre><code class="language-cpp">ComponentModel model;
+QAbstractItemModelTester consistency(&amp;model,
+    QAbstractItemModelTester::FailureReportingMode::QtTest);
+QCOMPARE(model.appendButton(&quot;save&quot;, &quot;Save&quot;), UMI_STATUS_OK);</code></pre>
+<p>The observer lives for the test scope and is destroyed before the model. QTEST_GUILESS_MAIN supplies a QCoreApplication for the suite. No widget or platform window is constructed. QSignalSpy captures notifications so tests can inspect counts and values without inventing a GUI journey.</p>
+<h2>Check stable indexes</h2>
+<p>The rolesAndCopiedOwnership case keeps a QPersistentModelIndex to the first row, appends another row, and reads the original label again. The model still has only one column and no children. Foreign indexes and unsupported roles are checked explicitly. These cases make the contract useful to future views while leaving their visual design untouched.</p>
+<h2>Exercise and evidence</h2>
+<p>Run the named CTest entry after a successful build and retain the full Qt Test output. Identify the six test methods separately from setup and cleanup. If one fails, report its assertion and source revision; do not summarize an incomplete run as a pass. A successful headless suite establishes no visible font, accessibility, focus or DPI behavior. Those remain separate native interface observations.</p>
+<h2>Reference</h2><ul><li><a href="https://doc.qt.io/qt-6/qabstractitemmodeltester.html">QAbstractItemModelTester</a></li><li><a href="https://doc.qt.io/qt-6/qsignalspy.html">QSignalSpy</a></li></ul><h2>Read the source</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/qt-component-model/test_model.cpp">labs/framework/qt-component-model/test_model.cpp</a>. Use the matching local revision when offline.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="22-owner-thread-and-reentrant-callbacks.html">Previous: Keep model mutation on its owner thread</a> · <a href="24-qualify-the-installed-model-lab.html">Next: Qualify the model lab and record its limits</a></p></nav><p><a href="../../../lessons/03-native-code/learning-qt/23-model-consistency-without-a-window.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

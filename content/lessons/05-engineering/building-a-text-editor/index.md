@@ -25,7 +25,25 @@ You should recognise C variables and functions. The project introduces arrays, b
 2. [Insert and erase text without losing the tail](02-insert-and-erase-text.md)
 3. [Undo and save to a chosen path](03-undo-and-save-to-a-chosen-path.md)
 4. [Test the model and the whole editing session](04-test-the-whole-editing-session.md)
+- [Open an existing document without losing work](05-open-an-existing-document.md)
+- [Load into a private candidate before replacing state](06-load-into-a-private-candidate.md)
+- [Recognise line endings and end of file](07-recognise-line-endings-and-eof.md)
+- [Check failure state and command results](08-check-failure-state-and-command-results.md)
 
+
+- [Own a shared text buffer and respect borrowed views](09-own-a-shared-text-buffer.md)
+- [Resolve exact UTF-8 offsets and UTF-16 positions](10-resolve-unicode-positions.md)
+- [Select source words and physical lines without changing text](11-select-source-words-and-lines.md)
+- [Capture an edit for the intended document](12-capture-and-apply-document-edits.md)
+- [Traverse shared undo history and create a new edit branch](13-traverse-one-shared-document-history.md)
+- [Check refused edits, preserved state and SDK identity](14-test-refused-edits-and-sdk-identity.md)
+
+## Continue with shared Framework services
+
+<!-- The original local lab references are retained for source review. Published manuscripts use repository URLs because labs is outside the site content root.
+Lessons 1–8 retain the standalone ASCII editor. Lessons 9–14 use an installed SDK and twelve in-memory scenarios for ownership, Unicode positions, selection and document history. Follow the [shared editor lab guide](../../../../labs/native/shared-editor/README.md) and [qualification checklist](../../../../labs/native/shared-editor/QUALIFICATION.md). The console client creates no native window.
+-->
+Lessons 1–8 retain the standalone ASCII editor. Lessons 9–14 use an installed SDK and twelve in-memory scenarios for ownership, Unicode positions, selection and document history. Follow the [shared editor lab guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/shared-editor/README.md) and [qualification checklist](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/shared-editor/QUALIFICATION.md). The console client creates no native window.
 
 ## Prepare a development environment
 A compiler translates C source. CMake describes which files belong to a program. Ninja performs the build work. CTest runs registered checks. An editor changes the source text. You may use a plain text editor before learning an IDE.

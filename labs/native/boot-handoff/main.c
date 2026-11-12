@@ -43,7 +43,13 @@ int main(void)
     UmicomKernelBootHandoff result;
     if (UmicomKernelBootHandoffRead(record, sizeof record, &result) != UMICOM_BOOT_HANDOFF_OK)
         return 1;
+    /* UmicomSize is an unsigned long long, independently of the host size_t.
+     * Keep the former diagnostic for review; explicit casts match its replacement. */
+#if 0
     printf("Accepted: %zu RAM range, %zu reservation\n", result.ramCount, result.reservedCount);
+#endif
+    printf("Accepted: %llu RAM range, %llu reservation\n",
+        (unsigned long long)result.ramCount, (unsigned long long)result.reservedCount);
     unsigned char snapshot[sizeof result];
     memcpy(snapshot, &result, sizeof result);
     Put(record + 88U, 4096U, 8U); /* Now the reservation ends before the kernel. */

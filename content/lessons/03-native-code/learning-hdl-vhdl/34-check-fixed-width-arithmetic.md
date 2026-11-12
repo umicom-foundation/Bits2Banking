@@ -101,3 +101,6 @@ Would saturation produce the same result as wrapping? No. Saturating addition wo
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](33-decode-an-instruction.md) · [Next lesson](35-follow-branches.md)
+
+
+[Manuscript course contents](index.md)

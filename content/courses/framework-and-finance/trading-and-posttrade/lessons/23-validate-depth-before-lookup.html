@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/23-validate-depth-before-lookup.html
+
+PURPOSE:
+Validate depth before looking up its instrument
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate depth before looking up its instrument | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Validate depth before looking up its instrument</h1>
+<h2>Treat a snapshot as structured input</h2>
+<p>A depth value contains fixed-size identity fields, array counts and numeric levels. Checking only the counts leaves important questions unanswered: does each identity field terminate inside its storage, is the contract multiplier usable, and are the active prices and sizes finite? Framework answers these questions in the shared depth validator before the workspace performs identity lookup.</p>
+
+<h2>Call the canonical validator</h2>
+<pre><code class="language-c">if (!umi_market_depth_valid(&amp;depth)) {
+    /* Reject malformed evidence before publication. */
+}
+UmiStatus status = umi_trading_workspace_update_depth(workspace, &amp;depth);</code></pre>
+
+<p>In an application, return or take an error branch after a failed validation; the snippet shows the two relevant entry points. The complete example checks every result. Its invalid-depth scenario supplies a NaN size and expects INVALID_ARGUMENT with the earlier workspace revision and depth state retained.</p>
+
+<h2>Separate structure from feed policy</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Shared check</th><th scope="col">Adapter responsibility</th></tr></thead><tbody><tr><td>Bounded canonical instrument</td><td>Provider identity mapping</td></tr><tr><td>Counts inside array capacity</td><td>Level ordering</td></tr><tr><td>Finite active prices</td><td>Crossed-book policy</td></tr><tr><td>Finite nonnegative sizes</td><td>Freshness and timestamp interpretation</td></tr></tbody></table></div>
+
+<p>Finite negative prices, zero sizes and empty sides are supported structural values. Inactive array tails are ignored. Do not invent a positive-price rule for every market merely because one risk model uses positive prices. Conversely, structural acceptance does not certify that a provider sorted its levels or supplied current data.</p>
+
+<h2>Compare complete contract metadata</h2>
+<p>The metadata scenario changes the multiplier while retaining the identifier. Standalone depth validation still succeeds, but the workspace rejects the mismatch against its registered instrument. A stable identifier cannot silently replace the economic meaning of a contract.</p>
+
+<h2>Exercise and answer</h2>
+<p>The best-bid accessor returns zero. Is the bid absent? The value alone cannot answer: zero is also a supported price. Inspect validation and bid_count first. The accessor reads the first active level and relies on the adapter to establish its ordering contract.</p>
+
+<h2>Complete source and owner commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md. Installed-SDK builds, scenario checks and native presentation require owner execution.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="22-own-a-market-observation-client.html">Previous: Build a market-observation client around one Framework owner</a> · <a href="24-observe-public-prints-without-fills.html">Next: Pause public prints without inventing account fills</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/23-validate-depth-before-lookup.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -1,5 +1,7 @@
 # Laboratory: read a boot handoff
 
+![Umicom](../../../content/assets/branding/umicom-wordmark-on-dark.svg)
+
 A startup program describes memory to a kernel using a record of bytes. This laboratory builds that record and calls the production reader. The addresses are synthetic numbers and are never dereferenced.
 
 ## Prepare a small host laboratory
@@ -42,3 +44,33 @@ Change the kernel length from 4096 to 8192 while leaving the reservation unchang
 ## Where the behaviour lives
 
 The lab links `kernel/boot_handoff.c` and `kernel/address.c` from the Kernel checkout. It does not implement its own validation. Read `docs/BOOT_HANDOFF.md` in that checkout for the complete wire format. The course continues from bytes to range checks, reservations, optional descriptors and freestanding link checks.
+
+## Encode through the production writer
+
+The original `boot-handoff` executable still constructs wire bytes explicitly. The second executable, `boot-handoff-write`, starts from a typed observation and calls `UmicomKernelBootHandoffWrite`. It shares the production reader's semantic checks instead of reproducing them in the lab.
+
+After the configure and build steps above, run:
+
+~~~powershell
+& .\build\boot-handoff\boot-handoff-write.exe roundtrip
+& .\build\boot-handoff\boot-handoff-write.exe small
+& .\build\boot-handoff\boot-handoff-write.exe unreserved
+& .\build\boot-handoff\boot-handoff-write.exe bad-text
+~~~
+
+On Linux, use `./build/boot-handoff/boot-handoff-write` with the same argument. The round-trip case should print `Encoded 158 bytes; independent reader copy retained console=serial`. The other cases should print `Refused` and explain that bytes and length are unchanged. Each deliberate refusal returns zero only when the expected status and unchanged storage are observed. A nonzero exit means the exercise did not satisfy its contract.
+
+1. Open `write.c`. The input object owns one RAM range, one reservation and the text `console=serial`. Its addresses remain integers.
+2. The destination is filled with 0xa5, a visible sentinel byte. The writer may replace only the encoded prefix after complete validation.
+3. The input needs 158 bytes: 64 header bytes, 32 range bytes, 48 optional-descriptor bytes and 14 text bytes. The wire text has no zero terminator.
+4. Read using the returned length. Passing all 4096 capacity bytes would correctly fail the reader's exact-length rule.
+5. Clear the encoded buffer after reading. The returned observation must still contain its own command text.
+6. Compare the refusal cases. A small destination is a length problem; an uncovered kernel is a memory-ownership problem; a newline is a text-policy problem. The caller receives different statuses but the same unchanged-output guarantee.
+
+These four producer cases supplement the original reader exercise. They are authored acceptance checks; this guide does not establish that they have been executed. Run the Kernel's independent host and freestanding-link checks as described in `docs/BOOT_HANDOFF.md` before integrating a startup adapter.
+
+## Canonical Umicom identity
+
+Both hosted executables use Framework's `umicom_apply_application_branding` helper. It stages the canonical SVG artwork and embeds the supplied ICO and SVG resource in Windows executables. The default Framework path matches the adjacent `Umicom-Applications/framework` checkout. For another layout, add `-DUMICOM_FRAMEWORK_SOURCE=/absolute/path/to/framework` when configuring. A missing helper or artwork stops configuration with the required path.
+
+This is a build-time identity dependency; the freestanding Kernel does not link Framework or GTK. Console text uses the terminal's selected font. The web lessons use the shared Umicom learning stylesheet and its configured installed font families. Do not substitute a drawn approximation for the supplied logo or icon.

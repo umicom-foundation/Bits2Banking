@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/lessons/05-install-packages-with-clear-ownership.html
+
+PURPOSE:
+Teach install packages with clear ownership.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Install packages with clear ownership | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/05-install-packages-with-clear-ownership.md">Markdown manuscript</a> · <a href="04-create-and-inspect-an-environment.html" rel="prev">Previous lesson</a> · <a href="06-plan-a-python-ai-project.html" rel="next">Next lesson</a></p></nav><h1>Install packages with clear ownership</h1>
+<p>Lesson 5 of 10 · Suggested study time: 35 minutes. Command exercises are unexecuted teaching examples.</p><h2>What you will learn</h2>
+<p>Distinguish Conda channels from Python package indexes and install into the intended environment. You should already be able to identify your interpreter. This lesson adds a small package to the disposable practice environment; it does not install an AI SDK.</p>
+<h2>Inspect the sources and installed state</h2>
+<pre><code class="language-powershell">conda activate umicom-env-lab
+conda config --show channels channel_priority
+conda list --show-channel-urls
+python -m pip --version
+</code></pre>
+<p>Conda solves package requirements using configured channels. Mixing channels can change which binary builds are selected. For this course, use conda-forge explicitly for Conda packages rather than adding unrelated channels to repair a solve. Review a solve before applying it. Channel priority influences the available choices. <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-channels.html">Conda channel guidance</a>.</p>
+<h2>A small worked installation</h2>
+<pre><code class="language-powershell">conda install --name umicom-env-lab --override-channels --channel conda-forge packaging --dry-run
+conda install --name umicom-env-lab --override-channels --channel conda-forge packaging
+python -c &quot;from packaging.version import Version; print(Version(&#39;1.10&#39;) &gt; Version(&#39;1.9&#39;))&quot;
+</code></pre>
+<p>The comparison is expected to print True. Version objects compare numeric release components; comparing plain strings would answer a different question. If the import fails, first check the interpreter location. Do not immediately install the same package globally.</p>
+<h2>When a project also requires pip</h2>
+<p>Prefer installing the required Conda packages first and use pip for the remaining reviewed Python requirements. Invoke pip through the chosen interpreter with python -m pip. Do not add --user inside this practice environment. After pip has changed an environment, plan substantial Conda changes in a replacement environment rather than assuming both managers have a complete shared view. <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html#using-pip-in-an-environment">Conda&#39;s pip guidance</a>.</p>
+<p>A requirements file is input to a package manager, not a proof of compatibility. Read it before running python -m pip install -r requirements.txt. The file may include URLs, local paths or options. Keep project credentials out of shared examples. A custom index needs an identified project requirement; do not paste an old vendor index into every environment.</p>
+<h2>Check the installed metadata</h2>
+<pre><code class="language-powershell">python -m pip check
+python -m pip list
+</code></pre>
+<p>Pip check examines declared dependency compatibility. A clean result does not test numerical correctness, DLL loading in every code path, GPU drivers or application behaviour. <a href="https://pip.pypa.io/en/stable/cli/pip_check/">Pip check reference</a>.</p>
+<h2>Exercise and answer</h2>
+<p>A package installs successfully and pip check reports no broken requirements, but the application fails while loading a native library. Has the application passed?</p>
+<p><strong>Answer:</strong> no. Installation and dependency metadata are two checkpoints; the import or launch is another. Preserve the exact first loader error and investigate the required binary architecture and runtime libraries. Do not report an installation success as an application success.</p>
+
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/05-install-packages-with-clear-ownership.md">Markdown manuscript</a> · <a href="04-create-and-inspect-an-environment.html" rel="prev">Previous lesson</a> · <a href="06-plan-a-python-ai-project.html" rel="next">Next lesson</a></p></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

@@ -100,3 +100,29 @@ Follow a bounded language extension from token recognition and precedence to can
 - [Qualify comparison commands through the real CLI](44-qualify-comparison-cli-workflows.md)
 - [Reuse comparisons through Framework preview state](45-reuse-comparisons-in-framework.md)
 - [Qualify comparison execution in a Kernel guest](46-qualify-comparisons-in-a-kernel-guest.md)
+
+
+## Use a Small Language in Studio
+
+Build an arithmetic starter, trace its Framework recipe, select the preview profile, observe incremental checks, exercise negative cases and plan language extensions.
+
+1. [Open an arithmetic project in Studio](17-open-an-arithmetic-project-in-studio.md)
+1. [Follow a Framework project recipe](18-follow-a-framework-project-recipe.md)
+1. [Select the preview build profile](19-select-the-preview-build-profile.md)
+1. [Check only affected preview inputs](20-check-only-affected-preview-inputs.md)
+1. [Test language failures through the tool](21-test-language-failures-through-the-tool.md)
+1. [Separate editor support from language semantics](22-separate-editor-support-from-language-semantics.md)
+
+
+## Inspect and Embed a Small Compiler
+
+Inspect resource requirements without executing a program, trace stack behavior, distinguish structural checks from arithmetic checks, embed the shared library and design precise boundary tests.
+
+1. [Inspect a program before running it](23-inspect-a-program-before-running-it.md)
+1. [Trace the evaluation stack with a table](24-trace-the-stack-with-a-table.md)
+1. [Distinguish structure from arithmetic safety](25-distinguish-structure-from-arithmetic-safety.md)
+1. [Count execution budgets and encoded bytes](26-count-execution-budgets-and-wire-bytes.md)
+1. [Embed the inspector in a C application](27-embed-the-inspector-in-a-c-application.md)
+1. [Preserve output when inspection fails](28-preserve-output-when-inspection-fails.md)
+1. [Design boundary tests for a virtual machine](29-design-boundary-tests-for-a-virtual-machine.md)
+1. [Present program facts in an IDE](30-present-program-facts-in-an-ide.md)

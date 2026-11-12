@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/27-handle-refusal-without-resetting-owners.html
+
+PURPOSE:
+Handle refusal without resetting the owner in place
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Handle refusal without resetting the owner in place | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Handle refusal without resetting the owner in place</h1>
+<h2>An error result describes a boundary</h2>
+<p>A client should distinguish malformed input, unsupported local behavior and exhausted observation capacity. These results call for different responses. Silently replacing an invalid value, changing a requested policy or resetting a revision counter can make a screen appear successful while changing the meaning of the command.</p>
+
+<h2>Use a temporary proposal</h2>
+<ul><li>Keep the proposed input separate from the last accepted snapshot.</li><li>Call the canonical Framework command.</li><li>On success, refresh the view from the owner.</li><li>On refusal, retain accepted state and show the specific returned status.</li><li>Retire an exhausted owner through a deliberate lifecycle workflow.</li></ul>
+
+<p>The draft scenario illustrates evidence invalidation after an accepted edit. It previews a synthetic ticket, confirms that evidence exists, then changes quantity. The earlier risk evidence becomes unavailable because it described the previous ticket. Submission still performs its own evaluation; an old preview is not a transferable approval token.</p>
+
+<h2>Read the changed evidence</h2>
+<pre><code class="language-c">UmiStatus edit = umi_trading_workspace_set_draft_quantity(workspace, 2.0);
+/* After an accepted edit, the previous preview is no longer current. */
+UmiStatus evidence = UmiTradingWorkspaceRiskEvidence(workspace, &amp;copy);</code></pre>
+
+<p>The expected evidence result in this sequence is NOT_FOUND. At revision capacity, by contrast, a refused draft edit leaves the previous ticket and evidence intact. The public example does not manufacture capacity by accessing private workspace storage. Framework regression fixtures inject that boundary separately.</p>
+
+<h2>Build the complete client</h2>
+<p>The laboratory uses the exported trading, ui and trading_ui components. Reconfigure against one matching SDK after integrating the new shared APIs, build btb-market-observation and run its eight named scenarios. A missing symbol requires checking SDK header/library identity, not copying an isolated header or weakening a check.</p>
+
+<h2>Exercise and answer</h2>
+<p>Does a fresh workspace continue the retired one automatically? No. It has a new lifetime. Preserve needed records, reconcile provider sequence and account state deliberately, and qualify restoration separately. The current example is synthetic and does not implement durable restart or external reconciliation.</p>
+
+<h2>Record actual evidence</h2>
+<p>Keep source identity, command, expected result and observed result together. Until the owner executes the build and tests, the example remains authored source with expected outcomes. Native views require their own presentation and lifecycle checks.</p>
+
+<h2>Complete source and owner commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md. Installed-SDK builds, scenario checks and native presentation require owner execution.</p><!-- Earlier end-of-module navigation retained for review; the next module now continues this sequence. -->
+<template data-preserved="previous-lesson-navigation"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="26-preserve-protective-actions-and-status.html">Previous: Keep protective actions available and report their status</a></p></nav></template>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="26-preserve-protective-actions-and-status.html">Previous: Keep protective actions available and report their status</a> · <a href="28-distinguish-identity-from-array-position.html">Next: Distinguish an instrument identity from its array position</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/27-handle-refusal-without-resetting-owners.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

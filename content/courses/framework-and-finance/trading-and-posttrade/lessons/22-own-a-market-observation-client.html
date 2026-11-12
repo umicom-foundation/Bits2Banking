@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/22-own-a-market-observation-client.html
+
+PURPOSE:
+Build a market-observation client around one Framework owner
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build a market-observation client around one Framework owner | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Build a market-observation client around one Framework owner</h1>
+<h2>Start with the state you need</h2>
+<p>A market monitor needs instrument metadata, quotes, public prints, depth and alerts. An account execution changes an order or position; a public print only describes activity reported by a market-data provider. Keeping those concepts separate prevents a display feed from accidentally becoming an account ledger. The new market_observation.c laboratory demonstrates the distinction with synthetic values.</p>
+
+<h2>Create the owner, then add an instrument</h2>
+<pre><code class="language-c">UmiTradingWorkspace *workspace = NULL;
+UmiStatus status = umi_trading_workspace_create(&amp;config, &amp;workspace);
+/* After checking status, add the complete synthetic instrument. */</code></pre>
+
+<p>The workspace pointer is opaque. The client calls public operations and reads copied snapshots; it does not copy private structures or maintain another alert or trade-tape engine. SyntheticInstrument fills fixed lesson identifiers, currency and multiplier. Those literal string copies are bounded by known constants and are not a recipe for accepting arbitrary user input.</p>
+
+<h2>Trace the lifetime</h2>
+<ul><li>Create one workspace and check the result.</li><li>Register the instrument before publishing observations.</li><li>Validate temporary input, call the owner and inspect its status.</li><li>Read a fresh snapshot after an accepted change.</li><li>Destroy the workspace once through the common cleanup path.</li></ul>
+
+<p>The example keeps its checks active in optimized builds. An assertion disabled by a release compiler would otherwise remove required setup or hide a failed operation. Every failed check leads to the same cleanup path, which releases the owner only when creation succeeded.</p>
+
+<h2>Exercise and answer</h2>
+<p>Does a successful public-print update prove that an account traded? No. Run the tape scenario after building the matching SDK client. Its expected observations include two retained public prints and zero executions and positions. That is a local state check, not evidence about an external account or venue.</p>
+
+<h2>Qualification boundary</h2>
+<p>The source and expected results are supplied. Build and run the installed-SDK example separately from native Trader qualification. Neither an authored lesson nor a resolved header reference proves that the executable links or that a screen refreshes correctly.</p>
+
+<h2>Complete source and owner commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md. Installed-SDK builds, scenario checks and native presentation require owner execution.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="21-display-revision-digits-exactly.html">Previous: Display revision digits without signed casts or rounding</a> · <a href="23-validate-depth-before-lookup.html">Next: Validate depth before looking up its instrument</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/22-own-a-market-observation-client.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -49,3 +49,6 @@ Read [the Kernel system-call lesson](../../06-umicom/umicom-kernel-from-scratch/
 [Next lesson: Trace a short sequence of register changes](03-binary-and-instruction-traces.md)
 
 [Previous lesson: Registers, memory and instructions](01-registers-and-memory.md)
+
+
+[Manuscript course contents](index.md)

@@ -1,0 +1,39 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/29-bound-queries-and-protect-output.html
+
+PURPOSE:
+Bound a query and protect the caller output
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bound a query and protect the caller output | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><template data-preserved="offline-logo-alias"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"></template><img src="../../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Bound a query and protect the caller output</h1>
+<h2>A C string needs a terminator</h2>
+<p>A fixed array of characters is not automatically a C string. The terminating zero byte must occur inside readable storage. A direct string comparison can continue looking for that byte beyond the intended field. The watchlist query contract limits inspection to the financial identifier capacity.</p>
+
+<h2>Construct a deliberate refusal</h2>
+<pre><code class="language-c">char query[UMI_FINANCE_ID_CAPACITY];
+memset(query, 'q', sizeof(query));
+size_t index = SIZE_MAX;
+UmiStatus status = umi_watchlist_find(&amp;list, query, &amp;index);
+/* Expect CAPACITY_EXCEEDED and index still equal to SIZE_MAX. */</code></pre>
+
+<p>This fixture deliberately allocates the entire readable query span. The capacity rule does not make an invalid pointer readable. An ordinary short string needs storage through its first zero byte. The service captures admitted query bytes before publishing an output.</p>
+
+<h2>Refusal is an output contract</h2>
+<p>The new watchlist lookup leaves the output index unchanged on every refusal. That makes a sentinel useful in a test, but applications should branch on status rather than mistake an old output for a new match. The order-store lookup has a different established contract: for admitted separate output storage it writes a null pointer on lookup failure. Read each API contract instead of assuming all functions behave alike.</p>
+
+<h2>Keep outputs outside their owner</h2>
+<pre><code class="language-c">UmiStatus status = umi_watchlist_find(&amp;list, &quot;LAB.A&quot;, &amp;list.count);
+/* Refused: publishing an index here would overwrite owner metadata. */</code></pre>
+
+<p>The output pointer in this example is correctly aligned and writable, yet belongs to the owner. The shared overlap check refuses it. Query and output may share a separate allocation because the query is captured before output publication. This distinction is about ownership, not merely pointer equality.</p>
+
+<h2>Exercise and answer</h2>
+<p>Why not shorten an oversized identifier automatically? Truncation can change identity and accidentally select another record. Refuse the input, report the byte limit and let the caller provide a complete intended identifier. Run the query scenario after building the matching SDK client; its printed outcome remains expected until you execute it.</p>
+<h2>Complete source and qualification commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the existing laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md and identity_lifetime.c. Compilation, installed SDK linking and execution remain separate qualification steps.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="28-distinguish-identity-from-array-position.html">Previous lesson</a> · <a href="30-admit-every-active-record.html">Next lesson</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/29-bound-queries-and-protect-output.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

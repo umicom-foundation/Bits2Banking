@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/native-project-result-publication.html
+
+PURPOSE:
+Publish created source and adoption state in separate steps
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish created source and adoption state in separate steps | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Publish created source and adoption state in separate steps</h1><p>Read the focused native project guide first. Code fragments below explain the shared Framework implementation; they are not standalone applications or recorded execution results.</p><h2>Two successes answer different questions</h2>
+<p>Creating source means the shared writer completed its file operations. Opening the project means the host adopted its model and profile into a workspace. The first can succeed while the second fails. Treating both as one boolean encourages retrying generation over files that already exist. Trace the generated flag and identify how it selects the adoption-only path.</p>
+
+<pre><code class="language-c">if (dialog-&gt;generated) {
+    DeveloperProjectCreationAdopt(dialog);
+    dialog-&gt;accepting = 0;
+    DeveloperRelease(dialog);
+    return;
+}</code></pre>
+
+<h2>Publish the identity that was written</h2>
+<p>Completion copies the successful model and profile into the owned form, restores displayed fields from the captured request and changes the action to Open Project. Another callback can change even an insensitive entry programmatically. Displaying that later draft would misidentify the source destination. The captured request is the identity associated with the actual write.</p>
+
+<h2>Guard publication and adoption</h2>
+<p>Opening an editor or updating a model can emit another signal, recursively click the button or retire the host. The accepting and projectCreating guards stay set through completion publication. Native lifetime and visibility are checked before calling the host and again before using its result. A failed adoption remains retryable without submitting another writer.</p>
+
+<div class="table-scroll"><table><thead><tr><th scope="col">Outcome</th><th scope="col">Retained state</th><th scope="col">Next action</th></tr></thead><tbody><tr><td>Writer refused</td><td>Editable draft and progress</td><td>Correct inputs or choose another destination</td></tr><tr><td>Partial write</td><td>Partial files; no adopted project</td><td>Inspect evidence and select a fresh destination</td></tr><tr><td>Adoption failed</td><td>Completed model/profile</td><td>Retry Open Project</td></tr><tr><td>Adoption succeeded</td><td>Host owns copied state</td><td>Review settings and execution trust</td></tr></tbody></table></div>
+
+<h2>Read the regression evidence</h2>
+<p>The adoption-retry scenario expects two adoption calls and one writer invocation. The adoption-reentrant scenario expects a recursive click to create neither another adoption nor another writer. Explain why each counter matters. Partial-file descriptions come from the shared formatter, not a blanket existing-folder message. These are authored expectations until an owner-run test identifies the compiled source and environment.</p>
+<h2>Source and next steps</h2><p><a href="../../../../docs/guides/native-project-forms.md">Native project source and qualification guide</a> · <a href="../../../lessons/umicom-development/native-project-result-publication.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="native-project-task-admission.html">Previous lesson</a> · <a href="native-project-hidden-retired.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

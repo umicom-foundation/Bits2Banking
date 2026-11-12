@@ -69,3 +69,6 @@ Write the words for addresses 0, 3, 4 and 15 without running the program. They a
 
 <!-- Course metadata owns the reading order; retain the existing lesson and add its missing continuation. -->
 [Previous lesson](42-review-cpu-evidence-and-next-steps.md)
+
+
+[Manuscript course contents](index.md)

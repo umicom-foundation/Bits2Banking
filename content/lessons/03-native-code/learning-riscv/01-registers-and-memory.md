@@ -54,3 +54,6 @@ Continue with [program privileges](02-programs-and-privileges.md). For a line-by
 ---
 
 [Read this lesson in HTML](../../../courses/learning-riscv/lessons/01-registers-and-memory.html) · [Learning sequence](../../../start/learning-sequence.md)
+
+
+[Manuscript course contents](index.md)

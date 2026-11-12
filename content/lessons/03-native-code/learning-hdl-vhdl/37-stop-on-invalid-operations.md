@@ -97,3 +97,6 @@ Should a monitoring program treat every halt as an error? No. HALT may be the pr
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](36-control-pause-halt-reset.md) · [Next lesson](38-write-a-clocked-testbench.md)
+
+
+[Manuscript course contents](index.md)

@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/97-preserve-startup-stream-identity.html
+
+PURPOSE:
+Teach preserve startup stream identity through the native Kernel coordinator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve startup stream identity | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="96-read-linker-boundaries-as-addresses.html">Previous lesson</a> · <a href="98-require-the-intended-recovery-cause.html">Next lesson</a></p><h1>Preserve startup stream identity</h1>
+<section><h2>Packets and lines have different boundaries</h2>
+<p>A program can write one line through several calls. Its output queue preserves packets, while the terminal presents lines. Printing a prefix for every packet would split words unnecessarily. Keeping a prefix forever would mix different producers. The coordinator therefore tracks the current job, stream selector and whether a line remains unfinished.</p>
+</section>
+<section><h2>Treat stderr as a separate owner</h2>
+<p>A single job can alternate stdout and stderr. If stdout ends with a partial word, stderr must not inherit that line as though it were ordinary output. A stream change ends the prior line and starts an explicitly labelled one. A different job also ends the prior line. Empty packets contain no bytes and do not change line ownership.</p>
+<pre><code class="language-c">if (!packet-&gt;bytes) return;
+if (umicomStartupOutputOwner != name ||
+    umicomStartupOutputSelector != packet-&gt;selector)
+    UmicomStartupOutputFinish();
+umicomStartupOutputOwner = name;
+umicomStartupOutputSelector = packet-&gt;selector;</code></pre>
+</section>
+<section><h2>Keep status text under Kernel ownership</h2>
+<p>Before a recovery reason or the final startup report is printed, the coordinator finishes any partial job line. Without that boundary, a message could appear as “[job] partialboot memory: reserved”. The bytes might all exist, but their apparent author would be wrong. The fix adds a newline only when the current line needs one; it does not discard accepted job output.</p>
+</section>
+<section><h2>Read escaped bytes literally</h2>
+<p>Startup jobs cannot send terminal escape commands through this path. Printable characters are emitted, newline ends a line, and other bytes are shown as hexadecimal escapes. A displayed backslash-x sequence describes a byte; it is not a request to execute a terminal control. The control-byte regression includes NUL, escape, carriage return, tab and a non-ASCII byte.</p>
+</section>
+<section><h2>Exercise and troubleshooting</h2>
+<p>Trace stdout “one”, an empty stderr packet, and stdout “ two\n”. The expected result is one stdout line with a single prefix. Now replace the empty packet with “warning”: the selector change must introduce a new stderr line. If the result is wrong, inspect ownership transitions before changing packet sizes or suppressing the producer.</p>
+</section>
+<p>Companion source: umicom-kernel/kernel/normal_boot.c and tests/boot_services/normal_boot_tests.c. Read docs/NORMAL_BOOT_COORDINATOR.md in the same Kernel checkout. Match source revisions before running the exercises.</p><p><a href="../index.html">Course contents</a> · <a href="96-read-linker-boundaries-as-addresses.html">Previous lesson</a> · <a href="98-require-the-intended-recovery-cause.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

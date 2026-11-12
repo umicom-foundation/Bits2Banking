@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/project-preview-owned-plan.html
+
+PURPOSE:
+Preview generated files in an owned plan
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preview generated files in an owned plan | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Preview generated files in an owned plan</h1><p>After preparing the installed-SDK lab in its README, run this scenario. Commands below are qualification instructions, not recorded results.</p><pre><code class="language-powershell">&amp; .\build\framework-project-recipes\project-recipes.exe preview</code></pre><h2>Make the preview a real data object</h2>
+<p>A preview should contain the exact paths and text the recipe renderer produced, rather than a hand-written illustration of the expected project. The generation plan stores file content by value. Once rendering returns successfully, the caller can inspect those owned strings without retaining the variable set or temporary recipe strings used during the call. Keep the plan alive for every reader that still refers to it.</p>
+<pre><code class="language-c">UmiDeveloperProjectGenerationPlan *plan = calloc(1, sizeof *plan);
+if (plan == NULL) return 1;
+UmiStatus status = umi_developer_project_generation_plan_build(
+    LabRecipe(), &amp;variables, request.project_root, plan);
+/* Present files only on OK; release the plan after all readers finish. */
+free(plan);</code></pre>
+<h2>Read the lab output</h2>
+<p>The preview scenario derives standard variables, renders the two-file teaching recipe and prints each path with its text-byte count. It requires src/recipe_study.c as the first path. README.md contains the display name and application identifier. No destination is opened. The root string identifies where a later writer could work; this preview does not check that the path exists or grant permission to write there.</p>
+<h2>Budget memory deliberately</h2>
+<p>The public plan reserves bounded storage for many file bodies. Its text arrays alone can exceed half a megabyte. Placing it in a local variable can consume a substantial part of a native worker thread stack. The lab allocates the plan and its comparison snapshot on the heap, checks both allocations and frees both on success or refusal. A production client may keep one reusable owned preview, but must still handle allocation failure and reader lifetime.</p>
+<h2>Do not confuse text rendering with compilation</h2>
+<p>A renderer substitutes values into text. It cannot prove that the resulting C, CMake, YAML or VHDL is valid in its downstream language. The two-file lab recipe deliberately has no complete build system, even though its metadata illustrates a CMake-oriented project. Use a built-in application recipe for the later build exercise. This distinction prevents a small memory fixture from being mistaken for a shipping application template.</p>
+<h2>Explore the output contract</h2>
+<p>After running preview, inspect total_content_bytes in a debugger or add a temporary print in a learner copy. Compare it with the sum of strlen for the rendered file contents. These are byte counts of terminated text, not Unicode character counts and not on-disk allocation sizes. Change only the display name and observe which generated bodies change. Paths should follow TARGET_NAME, demonstrating why the naming fields are separate.</p>
+<h2>Expected result and next step</h2>
+<p>Exit zero means the scenario observed the expected in-memory plan. It says nothing about filesystem creation, installed dependencies or runtime behavior. Keep the next lesson’s refusal case beside the happy path: an editor must preserve the previous useful preview when a new request cannot be prepared.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-project-recipes/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-project-recipes/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/project-preview-owned-plan.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="project-application-identities.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="project-refused-preview-preserves-state.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

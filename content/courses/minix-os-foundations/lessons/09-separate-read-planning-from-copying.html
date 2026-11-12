@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/minix-os-foundations/lessons/09-separate-read-planning-from-copying.html
+
+PURPOSE:
+Teach separate read planning from copying through the original bounded read-only C lab.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate read planning from copying | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="08-compare-recovery-with-umicom-kernel.html">Previous lesson</a> · <a href="10-preserve-failed-copy-outcomes.html">Next lesson</a></p><h1>Separate read planning from copying</h1>
+<h2>A read has two different responsibilities</h2>
+<p>The status driver has a fixed response, but reading it still crosses two boundaries. First, decide which bytes belong to the request. Then ask the operating system to copy those bytes into storage described by the request. A successful range calculation does not prove that the second step is permitted. This lesson separates those responsibilities while keeping the original range helper.</p>
+<p>Open read_window.c, read_reply.h and read_reply.c in labs/minix/status-driver. These are original C teaching sources. The portable helper knows lengths, positions and callback results. It does not know MINIX endpoints, device minors or grant identifiers. status_driver.c supplies those release-specific details in a small adapter. C99 is intentional for the pinned MINIX 3.3.0 example; it does not change the C23 policy of Umicom Framework.</p>
+<h2>Work out the slice before touching a pointer</h2>
+<p>Use the string ABCDEFGHIJ, which has ten data bytes. A request at position seven for six bytes can return only HIJ. The helper first proves that the position is below the length. Only then does it subtract the position from the length and choose the smaller of the remaining and requested sizes. This avoids forming position plus requested, which could overflow.</p>
+<p>The returned offset describes a position in the source text. It is not an offset into the client grant. The adapter continues to copy to grant offset zero for each read request. Keep these coordinate systems separate when drawing the request on paper.</p>
+<pre><code class="language-c">/* This fragment assumes a valid copy callback and separate reply storage. */
+UmiLearningReadReply reply;
+UmiLearningReadResult result = umi_learning_read_reply(
+    &quot;ABCDEFGHIJ&quot;, 10, 7, 6, copy, context, &amp;reply);
+/* On complete copy: reply.offset == 7 and reply.bytes == 3. */</code></pre>
+<h2>Read the ownership contract</h2>
+<p>The source text and callback context are borrowed for the duration of one call. The helper stores neither pointer. The caller must provide accessible source storage of the stated length, a callback and separate reply storage. A null source is accepted only for an empty source. A null callback is refused even when the request would return no bytes; keeping one admission rule makes callers easier to review.</p>
+<p>For valid input, the helper publishes a fresh reply on every outcome. Invalid input leaves the old reply unchanged. This is why callers must branch on the returned result before interpreting a report. When no bytes are needed, the callback is not called. A zero byte result can mean an empty request as well as end of source, so do not infer EOF from a request whose requested count was zero.</p>
+<h2>Follow the existing MINIX adapter</h2>
+<p>The adapter accepts minor zero and constructs a short-lived context containing the endpoint and grant from that request. Its callback invokes the same sys_safecopyto interface used by the earlier implementation. The original inline implementation remains in a disabled block for source comparison. Neither implementation retains a grant after the read returns.</p>
+<p>Read the MINIX memory grants guide alongside the release-specific source. Grants describe controlled access to another process’s memory; a normal C pointer is not an interchangeable capability. The portable callback is a seam for testing outcomes, not an emulation of those access checks.</p>
+<h2>Exercise and review</h2>
+<p>Expected calculations are (0,6), (7,3), (10,0) and (10,0). If your answer exceeds ten source bytes, revisit the subtraction before changing the driver. A failed host build should be diagnosed using its first compiler error and the declared C99 target; changing guest permissions cannot repair a C declaration error.</p>
+<ol><li>Calculate the offset and count for positions zero, seven, ten and UINT64_MAX with a requested count of six.</li><li>Locate the prefix, tail, eof and huge-position cases in read_reply_tests.c. Compare each expected result with your calculation.</li><li>Find every path that reaches the copy callback. Explain why there can be no pointer arithmetic on a null, empty source.</li><li>Record source review separately from a compiled host result or a guest run.</li></ol>
+<h2>Source and further reading</h2><ul><li><a href="../../../../labs/minix/status-driver/README.md">Original Umicom read-only driver and host commands</a></li><li><a href="../../../../labs/minix/status-driver/QUALIFICATION.md">Qualification worksheet</a></li><li><a href="https://github.com/Stichting-MINIX-Research-Foundation/minix/blob/v3.3.0/minix/drivers/examples/hello/hello.c">MINIX 3.3.0 character-driver example</a></li><li><a href="https://wiki.minix3.org/doku.php?id=developersguide:memorygrants">MINIX memory grants guide</a></li></ul><p><a href="../index.html">Course contents</a> · <a href="08-compare-recovery-with-umicom-kernel.html">Previous lesson</a> · <a href="10-preserve-failed-copy-outcomes.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

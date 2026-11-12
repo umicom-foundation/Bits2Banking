@@ -1,0 +1,32 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/11-own-a-workspace-execution-session.html
+
+PURPOSE:
+Own a workspace for a local execution session
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own a workspace for a local execution session | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Own a workspace for a local execution session</h1>
+<h2>Start with one owner</h2>
+<p>The earlier laboratory used a simulated broker table to retain and cancel requests. A fill needs more context: an order, a position and execution history must agree. The Framework trading workspace owns that combined local state. The application receives an opaque pointer, which means it uses public functions instead of editing the private structure.</p>
+<p>Open labs/framework/order-lifecycle/execution.c. The program creates one workspace, adds a synthetic instrument and prepares a limit order. The health flags select local availability for this demonstration; setting them does not connect an account or make a real broker ready. The default workspace environment is simulation.</p>
+<h2>Make lifetime visible</h2>
+<pre><code class="language-c">UmiTradingWorkspace *workspace = NULL;
+UmiTradingWorkspaceConfig config = umi_trading_workspace_config_default();
+UmiStatus status = umi_trading_workspace_create(&amp;config, &amp;workspace);
+/* Check status before using workspace. */
+umi_trading_workspace_destroy(workspace);</code></pre>
+<p>The complete example checks every operation and uses one finish label to destroy the workspace after either success or failure. Its REQUIRE_EXECUTION macro remains active in release builds. Ordinary assert statements can disappear when NDEBUG is defined; placing required service calls only inside assert would change what the example actually does.</p>
+<h2>Keep the client small</h2>
+<ul><li>Construct input values and select the local scenario.</li><li>Call Framework for validation, submission, execution and cancellation.</li><li>Read snapshots and positions to explain the result.</li><li>Release the owner after its last use.</li></ul>
+<h2>Exercise and answer</h2>
+<p>Why does execution.c not copy the workspace structure into the course repository? A copied layout would drift from Framework and invite a second implementation. The public pointer and exported trading target keep ownership in the shared service. The regression fixtures may include the real implementation for fault injection, but this installed-SDK client deliberately uses only public APIs.</p>
+<h2>Expected boundary</h2>
+<p>A successful local run demonstrates that the installed workspace API satisfies these synthetic checks. It does not establish a GUI workflow, market connectivity, persistence or settlement. Record the SDK and executable identities when the owner runs the example.</p>
+<h2>Use the complete laboratory</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Read the source, owner commands and expected results</a>. In an offline checkout, open labs/framework/order-lifecycle/README.md. Build and runtime qualification remains unexecuted for this authored continuation.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="10-connect-a-trading-command-to-framework.html">Previous: Connect a trading command to the shared service</a> · <a href="12-separate-order-and-execution-identities.html">Next: Give orders and executions different identities</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/11-own-a-workspace-execution-session.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

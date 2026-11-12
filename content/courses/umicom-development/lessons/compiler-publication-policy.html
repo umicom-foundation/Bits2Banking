@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/compiler-publication-policy.html
+
+PURPOSE:
+Report unsupported compiler policy without weakening it
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Report unsupported compiler policy without weakening it | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Report unsupported compiler policy without weakening it</h1><h2>Separate requested intent from supported spelling</h2>
+<p>A policy records intent, such as treating warnings as errors or enabling a sanitizer. A driver dialect defines how to request that behavior. Choosing the right text still does not establish that an installed compiler version, target and runtime support it. A dependable application keeps these layers visible instead of translating every unfamiliar family through the same GNU-style arguments.</p>
+
+<p>The Framework policy service currently maps C and C++ compile plans for GCC, Clang and MSVC. Other languages, families and actions are refused by this service. Provider syntax-check planning remains a separate path; its existence does not mean code-generation policy is automatically meaningful for checking. Set plan metadata before composing policy and handle NOT_IMPLEMENTED as an explicit capability result.</p>
+
+<h2>Inspect the result before presenting success</h2>
+<pre><code class="language-c">plan.language = UMI_COMPILER_LANGUAGE_C;
+plan.action = UMI_COMPILER_ACTION_COMPILE;
+UmiCompilerPolicy policy = umi_compiler_policy_debug();
+policy.sanitizers = UMI_COMPILER_SANITIZER_ADDRESS;
+UmiStatus status = umi_compiler_policy_append_arguments(
+    &amp;policy, UMI_COMPILER_FAMILY_MSVC, &amp;plan);</code></pre>
+
+<p>The policy scenario checks the MSVC address-sanitizer spelling in the resulting argument data, then requests an unsupported sanitizer and compares the previous plan bytes. This demonstrates mapping and refusal, not sanitizer execution. Runtime libraries, compatible compiler options and linker configuration require separate qualification. The lab deliberately uses no driver process.</p>
+
+<h2>Preserve an unsupported requirement</h2>
+<p>Reproducible output needs more than a convenient compiler flag. Paths, timestamps, dependencies, environment and toolchain identity can affect bytes. Framework retains reproducible intent in the release-policy factory but currently refuses to append it because the service lacks a complete reproducibility contract. Clearing the field automatically would hide a requirement. An application should report the limitation and let an explicit workflow decide whether a different policy is acceptable.</p>
+
+<p>Atomic composition preserves the old plan when any requested mapping is refused or when a later append reaches capacity. It does not promise that an accepted plan will build everywhere. Some accepted switches remain target dependent, and compilation policy does not configure all linker or runtime requirements. The exact mapping tests and real toolchain experiments therefore belong to different qualification layers.</p>
+
+<h2>Practice</h2>
+<p>Design three status messages: a policy dialect was accepted, a requested intent is unsupported, and a compiler execution failed. State what evidence each message requires. Run the policy scenario after qualifying the installed SDK, then write down the missing evidence for an actual sanitizer-enabled application. Keep the application’s requested policy intact while reporting the current support boundary.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-compiler-publication/README.md">Compiler publication laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/compiler-publication-policy.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="compiler-publication-command-refresh.html">Previous lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

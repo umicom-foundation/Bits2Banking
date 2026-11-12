@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/92-release-owned-pages-as-one-operation.html
+
+PURPOSE:
+Teach release owned pages as one operation through the real Kernel allocator.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Release owned pages as one operation | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="91-explain-fragmentation-before-retrying.html">Previous lesson</a> · <a href="93-qualify-contiguous-memory-without-device-claims.html">Next lesson</a></p><h1>Release owned pages as one operation</h1>
+<section><h2>Release is also a transaction</h2><p>A memory transaction here means an operation whose refusal leaves ownership unchanged. It does not mean a database or CPU transactional-memory instruction. Releasing a run must first prove that every requested page is currently allocated. Clearing early pages before discovering a problem in the last page would leave a partial result that is difficult to recover.</p>
+<p>Run the release scenario after studying the first two lessons. It allocates four pages, then deliberately frees the third page through the existing single-page interface. A request to free all four pages must now return NOT_ALLOCATED. The other three pages remain allocated.</p>
+</section>
+<section><h2>Separate admission from mutation</h2><p>This excerpt describes the deliberate-hole fixture; the complete lab checks every return value. The allocator first validates the aligned starting address and checks count against the remaining managed frames. It then inspects the entire range before clearing any allocated bits. A reserved page produces RESERVED_FRAME instead of being released.</p>
+<pre><code class="language-c">/* first identifies an owned four-page run. */
+UmicomKernelPhysicalMemoryFreeFrame(first + 2U * UMICOM_KERNEL_PAGE_SIZE);
+UmicomKernelMemoryStatus status =
+    UmicomKernelPhysicalMemoryFreeFrames(first, 4U);
+/* The third page is already free: status is NOT_ALLOCATED.
+ * Pages one, two and four retain their allocation state. */</code></pre>
+</section>
+<section><h2>Recover using the ownership you still hold</h2><p>After the refused whole-run release, the lab releases the first two pages as one operation and the fourth page as a single frame. It does not try to free the third page again. The expected final snapshot is allocated=0, reserved=0 and free=16.</p>
+<p>The allocator records state per frame, not an allocation identifier. It permits releasing a subrange, and it cannot prove that two allocated neighbouring pages belong to the same caller. Keep the address, count and remaining ownership in the consumer. A stale address that has been freed and allocated to somebody else cannot be recognized by these bitmaps.</p>
+</section>
+<section><h2>Avoid arithmetic that can wrap</h2><p>The free operation compares frameCount with totalFrames - firstIndex. It does not first compute frameCount * 4096 from unchecked input. This makes a huge count an ordinary refused range instead of allowing multiplication to wrap into a deceptively small number.</p>
+<p>A zero count is invalid. A misaligned starting address is INVALID_ALIGNMENT. A range extending beyond managed RAM is OUTSIDE_RAM. These checks occur before any ownership bit is cleared. Error ordering is useful for diagnosis, but a caller should normally correct the complete request rather than depending on one invalid field hiding another.</p>
+</section>
+<section><h2>Exercise and answer</h2><p>Expected answer: RESERVED_FRAME, with the first three allocations unchanged. The existing free-reserved-tail regression expresses this case. The free-hole-tail and free-hole-middle cases cover missing allocation bits at different positions.</p>
+<p>Failure atomicity assumes serialized access. Another CPU or interrupt modifying the global allocator between validation and commit would violate that assumption. Do not present these routines as an SMP-safe allocator; locking and interrupt ownership remain a separate design task.</p>
+<ol><li>Change the lab so the fourth page is reserved instead of allocated, while the first three are allocated.</li><li>Predict the result of releasing all four pages.</li><li>Capture per-frame state and counters before and after the refused operation.</li><li>Release only the pages and reservation that the synthetic fixture owns.</li></ol>
+</section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-runs/README.md">Prepare the hosted laboratory</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/physical-frame-runs/main.c">Read the complete C example</a></p><p><a href="../index.html">Course contents</a> · <a href="91-explain-fragmentation-before-retrying.html">Previous lesson</a> · <a href="93-qualify-contiguous-memory-without-device-claims.html">Next lesson</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

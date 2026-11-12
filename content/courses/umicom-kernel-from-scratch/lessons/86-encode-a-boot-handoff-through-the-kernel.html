@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/86-encode-a-boot-handoff-through-the-kernel.html
+
+PURPOSE:
+Teach encode a boot handoff through the kernel through the production Kernel implementation.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Encode a boot handoff through the Kernel | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article><p><a href="../index.html">Course contents</a> · <a href="85-copy-one-owned-service-observation.html">Previous lesson</a> · <a href="87-admit-fields-before-narrowing.html">Next lesson</a></p><h1>Encode a boot handoff through the Kernel</h1>
+<section><h2>Prepare the producer exercise</h2><p>A producer creates a message; a consumer reads it. Earlier lessons built bytes by hand to explain the handoff format. A startup adapter needs a maintained producer so that it does not repeat field offsets and memory-admission rules. The Kernel now exposes UmicomKernelBootHandoffWrite beside the existing reader.</p>
+<p>Read lessons 74–81 first, then open labs/native/boot-handoff/write.c and its README. Use the documented C23 host build with the Kernel source checkout. This lesson works with synthetic numbers in ordinary process memory. It needs no administrator rights, emulator, USB device or boot image. The source is authored; compiler and execution qualification must still be obtained.</p>
+
+</section>
+<section><h2>Describe a small machine</h2><p>The following declarations are the beginning of a complete input object. The kernel occupies 4096 bytes starting at 0x80001000. Its containing RAM range begins at 0x80000000 and spans one mebibyte. The reserved range covers the first 8192 bytes, including the whole kernel. Zero initialization makes the optional firmware and framebuffer descriptions absent.</p>
+<pre><code>UmicomKernelBootHandoff record = {0};
+record.architecture = UMICOM_BOOT_RISCV64;
+record.kernel.address = 0x80001000ULL;
+record.kernel.bytes = 4096;
+record.ramCount = 1;
+record.ram[0].address = 0x80000000ULL;
+record.ram[0].bytes = 0x100000;
+record.reservedCount = 1;
+record.reserved[0].address = 0x80000000ULL;
+record.reserved[0].bytes = 8192;</code></pre>
+<p>These addresses are integers describing the fixture. Never convert them to pointers in a hosted exercise. An architecture tag describes the message; selecting x86-64 does not implement an x86 startup path.</p>
+</section>
+<section><h2>Ask the shared producer to encode</h2><p>The caller owns all three storage areas: input object, destination bytes and written-length counter. Keep them separate and stable during the call.</p>
+<pre><code>unsigned char bytes[UMICOM_BOOT_HANDOFF_MAX_BYTES];
+UmicomSize written = 0;
+UmicomBootHandoffStatus status =
+    UmicomKernelBootHandoffWrite(&amp;record, bytes, sizeof bytes, &amp;written);
+if (status != UMICOM_BOOT_HANDOFF_OK) {
+    return 1;
+}</code></pre>
+<p>This minimal record needs 144 bytes. The supplied lab adds the 14 characters console=serial and therefore expects 158 bytes. Pass written, not destination capacity, to the reader. Its exact-length contract rejects a valid record followed by unused tail bytes.</p>
+</section>
+<section><h2>Follow the real implementation</h2>
+<ol><li>The writer checks pointer extents, array counts, enum values and bounded command termination before encoding.</li><li>It writes each little-endian field into private storage. C structure padding and native byte order never become part of the wire format.</li><li>It calls UmicomKernelBootHandoffRead to apply existing semantic rules, then copies the admitted bytes and updates written.</li><li>The original main.c exercise remains available for studying offsets. Production clients should use the shared writer instead of copying that fixture helper.</li></ol></section>
+<section><h2>Exercise and answer</h2><p>Change the reserved length from 8192 to 4096, leaving the kernel unchanged. Predict the result before running the unreserved lab case. Answer: UMICOM_BOOT_HANDOFF_MEMORY, because the reservation ends exactly where the kernel begins. Increasing destination capacity cannot repair this ownership error. Restore the valid input and run the roundtrip case again.</p>
+<p>A successful host exercise would show agreement with the contract on that host. It would not establish physical mapping, allocator reservation, firmware compatibility or a bootable operating system.</p>
+
+</section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/boot-handoff/README.md">Prepare the hosted laboratory</a> · <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/boot-handoff/write.c">Read the complete producer example</a></p><p><a href="../index.html">Course contents</a> · <a href="85-copy-one-owned-service-observation.html">Previous lesson</a> · <a href="87-admit-fields-before-narrowing.html">Next lesson</a></p>
+<!-- Repository laboratory sources live outside the published content root.
+Public repository links replace the former local-only routes, retained here for review:
+../../../../labs/native/boot-handoff/README.md
+../../../../labs/native/boot-handoff/write.c
+Offline source files remain available in their listed repository/learning-pack locations. -->
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer></body></html>

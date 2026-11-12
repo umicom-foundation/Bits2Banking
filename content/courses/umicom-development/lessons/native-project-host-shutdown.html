@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/native-project-host-shutdown.html
+
+PURPOSE:
+Keep a host alive until its shared source writer completes
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep a host alive until its shared source writer completes | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Keep a host alive until its shared source writer completes</h1><p>Read the focused native project guide first. Code fragments below explain the shared Framework implementation; they are not standalone applications or recorded execution results.</p><h2>The host owns normal shutdown</h2>
+<p>Closing the last application window may stop its event loop before a writer completion arrives. Framework exposes UmiGtk4DeveloperDialogWritePending so a host can inspect the shared state instead of maintaining a second busy flag. It covers admission, background writing and completion publication for both project forms. Read-only previews are excluded.</p>
+
+<pre><code class="language-c">/* Fragment in a GTK close-request callback with a live owned form. */
+if (UmiGtk4DeveloperDialogWritePending(host-&gt;project_form)) {
+    /* Use existing host feedback, then keep the native window open. */
+    return TRUE;
+}
+/* Continue existing unsaved-document and running-tool checks. */</code></pre>
+
+<h2>Respect the query contract</h2>
+<p>Call on the GTK thread with a not-yet-destroyed handle. NULL is idle. A pointer used after Destroy is invalid even if a task still retains internal memory. The query performs no callbacks or state changes, but its answer is a snapshot. Do not carry it across unrelated event-loop work and treat it as a reservation.</p>
+
+<h2>Protect replacement too</h2>
+<p>Opening another project form can discard the first owner-visible result while files continue writing. Studio checks shared activity before replacing either project form and returns BUSY while writing. Normal close and Close Anyway also wait. Existing terminal, test and unsaved-document checks remain; this addition does not grant permission to discard other work.</p>
+
+<h2>Require a fresh close decision</h2>
+<p>Do not automatically close after completion. Adoption may open source, change the workspace or display information requiring review. Ask the user to close again after the result. Explicit controller destruction and forced process termination remain separate actions that cannot promise completion or rollback.</p>
+
+<h2>Exercise the integration</h2>
+<p>The three Studio wizard-during-write cases act immediately after the click returns, before GTK processes completion. They check that normal close keeps the host open or form replacement returns BUSY, then await the real writer result. This ordering is deterministic even on a fast disk. Their names are registered in first_use_cases.inc, the same catalogue used for native argument admission. Execution evidence remains owner-run.</p>
+<h2>Source and next steps</h2><p><a href="../../../../docs/guides/native-project-forms.md">Native project source and qualification guide</a> · <a href="../../../lessons/umicom-development/native-project-host-shutdown.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="native-project-hidden-retired.html">Previous lesson</a> · <a href="native-project-qualification-evidence.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

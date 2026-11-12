@@ -1,0 +1,89 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/02-map-framework-and-applications.html
+
+PURPOSE:
+Teach map shared framework services to ai applications.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Map shared Framework services to AI applications | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/02-map-framework-and-applications.md">Written lesson</a></p><h1>Map shared Framework services to AI applications</h1>
+<h2>What you will learn</h2>
+<p>Place reusable behavior in Framework and keep application clients small. Reusing one service also gives different applications the same failure and ownership rules.</p>
+<h2>Start with the existing services</h2>
+<p>The inspected Framework tree already contains these contracts:</p>
+<table>
+<thead>
+<tr>
+<th>Responsibility</th>
+<th>Source contract</th>
+<th>Application use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Provider dispatch and policy</td>
+<td>ai/runtime.h, ai/provider_registry.h, ai/policy.h</td>
+<td>LLM and AI Chat submit a request through one dispatcher</td>
+</tr>
+<tr>
+<td>Runtime descriptions and selection</td>
+<td>ai/runtime_catalogue.h</td>
+<td>Show model, capability, context and observed health</td>
+</tr>
+<tr>
+<td>Source selection and reviewed jobs</td>
+<td>ai_workspace/workspace.h</td>
+<td>RAG prepares bounded evidence and preserves job state</td>
+</tr>
+<tr>
+<td>Conversation records and privacy</td>
+<td>ai/conversation_archive.h, ai/context_broker.h</td>
+<td>Chat can retain explicit history and review context</td>
+</tr>
+<tr>
+<td>Loopback inference transport</td>
+<td>ai_workspace/providers.h</td>
+<td>Send one request to a configured local chat server</td>
+</tr>
+<tr>
+<td>Remote image/video requests</td>
+<td>media_generation/seedream.h, media_generation/pixverse.h</td>
+<td>Media reviews requests and retains receipts</td>
+</tr>
+<tr>
+<td>Creative output and watermarking</td>
+<td>creative_workspace/video_render.h</td>
+<td>Compose and export branded media</td>
+</tr>
+</tbody></table>
+<p>An interface in a header is a source contract, not a completed user journey. Read its implementation and application wiring before describing it as available to an end user.</p>
+<h2>Keep the boundaries visible</h2>
+<p>A useful arrangement is:</p>
+<pre><code class="language-text">LLM / RAG / AI Chat / Media user workflows
+                 |
+Framework requests, policy, evidence, jobs and assets
+                 |
+Native model engine or explicitly selected adapter
+                 |
+Local weights / local service / separately approved remote service
+</code></pre>
+<p>Umicom&#39;s native training and generation code lives under ai/training. A transport adapter that calls another engine does not train or validate Umicom&#39;s model. Likewise, a remote image adapter written in C is native client code, but generation still happens remotely.</p>
+<h2>Guided source reading</h2>
+<ol>
+<li>Open src/ai/runtime.c. Find the policy check before provider-&gt;generate.</li>
+<li>Open include/umicom/ai_workspace/providers.h. Note the unsupported features of its loopback provider.</li>
+<li>Open the LLM, RAG and Media module runtime.c files. Observe delegation to shared application runtime contracts.</li>
+<li>Find adapters/gtk4/ai_workspace_panel_gtk4.c and creative_workspace_panel_gtk4.c. Trace a visible action to its shared service.</li>
+<li>Record the exact SDK revision used for the lab.</li>
+</ol>
+<p><strong>Exercise:</strong> assign “store a prompt,” “draw a toolbar,” “parse a model response” and “decode model tensors” to their owners. Store/parse and model computation belong in reusable native services; the toolbar belongs in the relevant UI adapter.</p>
+<p><strong>Recovery:</strong> if installed headers and libraries disagree, fix the SDK selection. Copying a new header into an old installation can make compilation appear possible while linkage or ABI behavior remains incompatible.</p>
+<nav aria-label="Lesson sequence"><p><a href="01-read-a-local-ai-project.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="03-select-capabilities-and-budget-context.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

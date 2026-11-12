@@ -95,3 +95,6 @@ Why not use only a simulator stop-time and call every stopped run successful? A 
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](39-build-an-independent-cpu-oracle.md) · [Next lesson](41-understand-the-vhdl-build-graph.md)
+
+
+[Manuscript course contents](index.md)

@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/recovery-transactional-import.html
+
+PURPOSE:
+Refuse a damaged document without losing current work
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Refuse a damaged document without losing current work | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Refuse a damaged document without losing current work</h1><h2>Prepare the exercise</h2><p>Use the installed-SDK lab linked below after the earlier Framework ownership lessons. Configure and build once, then run this lesson’s scenario. Commands and expected results are instructions for qualification, not a claim that this revision has been executed.</p><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S .\labs\native\creative-draft-recovery -B .\build\creative-draft-recovery -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_EXPECTED_SDK_PREFIX=C:/umicom/installed/framework -DBUILD_TESTING=ON
+cmake --build .\build\creative-draft-recovery --parallel 2
+ctest --test-dir .\build\creative-draft-recovery --output-on-failure --no-tests=error
+&amp; .\build\creative-draft-recovery\creative-draft-recovery.exe refused</code></pre>
+<h2>Treat an external document as a proposed replacement</h2>
+<p>Opening a file proposes a new editor state. The file may be damaged, produced by a future version or simply unrelated to this application. The current document should remain usable when that proposal is refused. Clearing the editor before parsing would turn a normal input error into lost work.</p>
+<p>Framework imports creation documents into a private candidate. It admits the complete version-one shape, field types, bounded text and creation kind before publishing the candidate to the destination. Unknown or duplicate members are refused. The caller receives a status and keeps its existing destination on every failure. This is a stronger promise than “parsing stopped before the last field.”</p>
+<h2>Make refusal observable</h2>
+<pre><code class="language-c">UmiMediaBriefDocument before;
+memcpy(&amp;before, &amp;document, sizeof(before));
+UmiStatus rejected = UmiMediaBriefDocumentImport(
+    unsupported, sizeof(unsupported) - 1U, NULL, &amp;document);
+if (rejected == UMI_STATUS_OK ||
+    memcmp(&amp;before, &amp;document, sizeof(before)) != 0)
+    return UMI_STATUS_INVALID_STATE;</code></pre>
+<p>The unsupported input in the lab is a complete-looking document with version 99. The test must observe both refusal and preservation. Checking only that the function returns an error would miss a parser that partially overwrites the destination before discovering the unsupported version.</p>
+<p>Here memcpy captures the exact initialized destination representation before the call. The byte comparison is intentional for the “unchanged on failure” contract. For successful round trips the lab compares named fields instead; padding bytes are not part of the meaning of a C structure. Keep these two forms of comparison attached to the property each is meant to establish.</p>
+<h2>Keep format evolution explicit</h2>
+<p>A version number identifies the schema that the reader understands. It is not permission to guess how later fields should be interpreted. A future application may change the meaning of a field while preserving its spelling. Refusing unsupported versions prevents an older reader from silently converting a document it cannot faithfully represent.</p>
+<p>When adding a future format, design a reviewed migration that can state what it preserves, what it transforms and what it cannot represent. Retain the original input until the migrated result has been accepted. Do not “fix” a future-version refusal by changing the number in a user’s file without understanding the schema.</p>
+<h2>Extend coverage with distinct adverse inputs</h2>
+<p>The shared document tests cover more than the one teaching scenario: missing members, wrong types, unknown fields, malformed text, oversized input and cancellation have separate admission paths. The small lab demonstrates how an installed consumer observes the contract. It is not a substitute for the service’s complete regression suite.</p>
+<p>For each additional fixture, write the expected refusal and the preservation requirement before authoring the input. Use short synthetic strings without personal content. If the service reports an unexpected status, retain the input and the tested SDK identity; changing the expected result immediately can conceal a regression.</p>
+<h2>Exercise and answer</h2>
+<ol><li>Run refused and explain why its successful exit means an invalid input was rejected correctly.</li><li>Create a practice fixture with a duplicate prompt field. Check the complete destination after refusal.</li><li>Replace the proposed title with a distinctive marker and verify that the marker never reaches the current document on failure.</li></ol>
+<p>Answer: the destination must preserve every byte on failed import. The application can show an error while leaving the current editor intact. Successful import is a separate replacement decision: a native UI must obtain approval before invoking a load that would replace current work, and must recheck whether that work changed while the load was running.</p><h2>Source and qualification</h2><p><a href="../../../../labs/native/creative-draft-recovery/main.c">Complete C exercise</a> · <a href="../../../../labs/native/creative-draft-recovery/README.md">Lab setup and recovery</a> · <a href="../../../../labs/native/creative-draft-recovery/QUALIFICATION.md">Layered qualification guide</a></p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="recovery-owned-serialized-bytes.html">Previous lesson</a> · <a rel="next" href="recovery-explicit-file-operations.html">Next lesson</a></p></nav><p><a href="../../../lessons/umicom-development/recovery-transactional-import.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -91,6 +91,14 @@ Explain the defect in one sentence: token presence was confused with token lengt
 
 [Open the example source](../../../../../Umicom-Applications/framework/tests/test_developer_command_spans.c).
 
+<!-- Earlier end-of-course navigation is retained for comparison; the active route now continues into shared toolchain selection.
 ## Continue learning
+
+[Course contents](../../../courses/learning-build-systems/index.html) · [Previous: Understand the task grammar and the shell boundary](16-task-grammar-and-shell-boundaries.md)
+
+-->
+## Continue learning
+
+[Next: Distinguish a stored profile from a usable compiler](18-profile-storage-and-tool-usability.md)
 
 [Course contents](../../../courses/learning-build-systems/index.html) · [Previous: Understand the task grammar and the shell boundary](16-task-grammar-and-shell-boundaries.md)

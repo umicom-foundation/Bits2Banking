@@ -1,0 +1,41 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/ui-values-aliased-text.html
+
+PURPOSE:
+Stage aliased text before replacing a display value
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stage aliased text before replacing a display value | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Stage aliased text before replacing a display value</h1><h2>Recognize an input that belongs to the destination</h2>
+<p>An alias is another pointer to the same storage. In C, a function can receive a destination value and a text pointer that points inside that value. This is common when removing a path prefix or reusing part of an edited label. If the implementation clears the destination before reading the input, it destroys the source it was supposed to copy.</p>
+
+<pre><code class="language-c">UmiUiValue label;
+UmiStatus status = umi_ui_value_set_string(&amp;label, &quot;prefix/Umicom&quot;);
+if (status != UMI_STATUS_OK) return status;
+status = umi_ui_value_set_string(&amp;label, label.string_value + 7U);
+if (status != UMI_STATUS_OK) return status;</code></pre>
+
+<p>The suffix begins after seven bytes. The successful result is the owned string Umicom. Framework stages the text in a temporary complete value, finds a terminator within the supported limit, and only then replaces label. The application does not need a second private string implementation or a temporary widget to make this operation safe.</p>
+
+<h2>Treat capacity as part of admission</h2>
+<p>The field holds 512 bytes including the terminator. A maximum-length accepted string therefore has 511 nonzero bytes. This is not a count of user-visible characters: one encoded character may occupy several bytes. The value service copies bytes and does not make an encoding promise beyond the caller's own policy.</p>
+
+<p>The refused-title scenario first stores integer 42, then tries to replace it with oversized text. CAPACITY_EXCEEDED must preserve the whole previous value, including its INTEGER kind. A failure that leaves a truncated STRING is a partial publication. It changes what observers see even though the caller was told the update was not accepted.</p>
+
+<h2>Read the concrete laboratory observation</h2>
+<pre><code class="language-powershell">.\build\btb-framework-ui-values.exe alias
+.\build\btb-framework-ui-values.exe refused-title</code></pre>
+
+<p>These commands are supplied for owner execution. The first should print Title: Umicom. The second should report CAPACITY_EXCEEDED and Previous integer: 42. Exit zero describes the laboratory's successful observation of those expected outcomes; it does not mean oversized text was accepted.</p>
+
+<h2>Extend the reasoning before extending the program</h2>
+<p>Draw the destination, the pointer into its string field and the temporary candidate. Mark the moment at which publication becomes safe. Then predict the result of passing label.string_value itself, a pointer to its terminating zero and a separate 511-byte string. Explain which cases succeed and why all failed cases leave the owner intact.</p>
+
+<p>The caller must provide readable input through a terminator or the supported capacity. A bound does not make an arbitrary pointer readable. Do not demonstrate the rule by pointing beyond an allocation and hoping a zero appears. Use complete arrays and valid suffixes, then retain source, expected output and actual owner-run evidence separately.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-ui-values/README.md">UI value laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/ui-values-aliased-text.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="ui-values-active-payload.html">Previous lesson</a> · <a href="ui-values-property-publication.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

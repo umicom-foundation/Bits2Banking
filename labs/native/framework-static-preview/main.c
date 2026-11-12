@@ -18,6 +18,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+/* Preserve the inline-only lesson client for review. The optional --owned
+ * path now teaches larger immutable responses without changing old commands. */
+#if 0
 static int InspectMain(int argc, char **argv)
 {
     if (argc != 4) {
@@ -59,6 +62,67 @@ static int InspectMain(int argc, char **argv)
         putchar('\n');
         if (ferror(stdout)) status = UMI_STATUS_IO_ERROR;
     } else fprintf(stderr, "Exchange inspection: %s\n", umi_status_text(status));
+    free(wire); free(response); free(request); UmiWebPreviewDestroy(preview);
+    return status == UMI_STATUS_OK ? 0 : 1;
+}
+#endif
+static int InspectMain(int argc, char **argv)
+{
+    if (argc != 4 && !(argc == 5 && strcmp(argv[4], "--owned") == 0)) {
+        fputs("Usage: btb-static-preview ABSOLUTE_ROOT GET|HEAD|POST /url-path [--owned]\n", stderr);
+        return 2;
+    }
+    bool owned = argc == 5;
+    UmiWebResponseBody *body = NULL;
+    UmiWebPreview *preview = NULL;
+    UmiStatus status = UmiWebPreviewCreate(argv[1], 8080U, &preview);
+    if (status != UMI_STATUS_OK) {
+        fprintf(stderr, "Preview admission: %s\n", umi_status_text(status)); return 2;
+    }
+    UmiWebRequest *request = calloc(1U, sizeof(*request));
+    UmiWebResponse *response = calloc(1U, sizeof(*response));
+    unsigned char *wire = malloc(UMI_WEB_CONNECTION_RESPONSE_LIMIT);
+    if (request == NULL || response == NULL || wire == NULL) {
+        free(request); free(response); free(wire); UmiWebPreviewDestroy(preview); return 1;
+    }
+    /* A complete synthetic request exercises the canonical parser and gate.
+     * It does not create a socket or bypass URL/Host policy with direct I/O. */
+    char input[2048];
+    int count = snprintf(input, sizeof(input), "%s %s HTTP/1.1\r\nHost: 127.0.0.1:8080\r\n\r\n",
+        argv[2], argv[3]);
+    if (count < 0 || (size_t)count >= sizeof(input)) status = UMI_STATUS_CAPACITY_EXCEEDED;
+    else status = UmiWebRequestParseStrict(input, (size_t)count, sizeof(input), request);
+    if (status == UMI_STATUS_OK) status = owned ?
+        UmiWebPreviewHandleBody(preview, request, response, &body) :
+        UmiWebPreviewHandle(preview, request, response);
+    size_t wire_bytes = 0U;
+    bool head = request->method == UMI_HTTP_METHOD_HEAD;
+    if (status == UMI_STATUS_OK) {
+        status = body != NULL ?
+            UmiWebResponseFormatClosedHeaders(response, UmiWebResponseBodyLength(body),
+                wire, UMI_WEB_CONNECTION_RESPONSE_LIMIT, &wire_bytes) :
+            UmiWebResponseFormatClosed(response, head, wire, UMI_WEB_CONNECTION_RESPONSE_LIMIT, &wire_bytes);
+        /* This program measures a representation. It opens no transport and
+         * does not claim that a peer received the planned bytes. */
+        if (status == UMI_STATUS_OK && body != NULL && !head && response->status != 204 && response->status != 304)
+            wire_bytes += UmiWebResponseBodyLength(body);
+    }
+    size_t length = body != NULL ? UmiWebResponseBodyLength(body) : response->body_length;
+    const unsigned char *bytes = body != NULL ? UmiWebResponseBodyBytes(body) : (const unsigned char *)response->body;
+    if (status == UMI_STATUS_OK) {
+        printf("HTTP %d\nrepresentation-bytes: %zu\nwire-bytes: %zu\nbody-sent: %s\n",
+            response->status, length, wire_bytes, head ? "no" : "yes");
+        for (size_t i = 0U; i < response->header_count; ++i)
+            printf("%s: %s\n", response->headers[i].name, response->headers[i].value);
+        /* Hex avoids treating binary data or terminal control bytes as text. */
+        fputs("first-bytes:", stdout);
+        size_t shown = length < 32U ? length : 32U;
+        for (size_t i = 0U; i < shown; ++i) printf(" %02x", (unsigned)bytes[i]);
+        putchar('\n');
+        puts("transport: inspection only; no bytes sent to a peer");
+        if (ferror(stdout)) status = UMI_STATUS_IO_ERROR;
+    } else fprintf(stderr, "Exchange inspection: %s\n", umi_status_text(status));
+    UmiWebResponseBodyDestroy(body);
     free(wire); free(response); free(request); UmiWebPreviewDestroy(preview);
     return status == UMI_STATUS_OK ? 0 : 1;
 }

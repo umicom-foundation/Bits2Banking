@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/storage-exclusive-file-publication.html
+
+PURPOSE:
+Create a file without replacing an existing leaf
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create a file without replacing an existing leaf | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Create a file without replacing an existing leaf</h1><p>Prepare the installed-SDK lab using its README. The following command is a qualification step, not a recorded execution result.</p><pre><code class="language-powershell">&amp; .\build\framework-filesystem-clients\filesystem-clients.exe existing-file C:/umicom/Umicom-Bits2Banking/build/framework-filesystem-clients/qualification/existing-file</code></pre><h2>Make the intended effect explicit</h2>
+<p>Saving edits to an existing document and creating a new generated file need different policies. This lesson uses UmiRootedFileCreate, whose final file creation is exclusive. It accepts an explicitly selected root, a portable relative path, bytes and a byte count. It does not create parent directories, remove an earlier file, or grant permission to run generated content. Prepare the parent separately through the shared directory service.</p>
+<pre><code class="language-c">UmiRootedFileCreation progress;
+UmiStatus status = UmiRootedFileCreate(
+    root, &quot;notes/record.bin&quot;, content, content_size, &amp;progress);
+if (status != UMI_STATUS_OK) {
+    /* created and bytes_written may still describe partial work. */
+}</code></pre>
+<h2>Read the native example</h2>
+<p>The lab creates notes, then writes a four-byte binary record. The existing-file scenario attempts a second creation with replacement bytes. It expects ALREADY_EXISTS, created false, complete false and zero accepted bytes for the second attempt. It then reads the original record and compares its exact bytes. That final check matters: a refusal code alone would not establish that earlier content survived.</p>
+<h2>Separate creation from completion</h2>
+<p>A native file can be created successfully before writing, flushing or closing fails. The report records created as soon as the native create succeeds, and bytes_written records accepted bytes. complete becomes true only when the full operation succeeds. An application must keep the returned status alongside those fields. A message saying files written can conceal an incomplete result; files created and bytes accepted describe the observed effects more accurately.</p>
+<h2>Keep failure recovery deliberate</h2>
+<p>If a partial file remains, this API does not delete it or reopen it through replacement mode. Preserve the path and report, diagnose the failed operation, then decide on a separate reviewed recovery action. Retrying Create at the same path may correctly return ALREADY_EXISTS. Automatically switching APIs would turn a safe new-file operation into an overwrite without the caller making that decision.</p>
+<h2>Extend and qualify</h2>
+<p>Run new-file and existing-file in separate retained fixture folders. Compare their observations, then inspect the content of record.bin with a binary-aware tool. Native access, link and short-write behavior needs additional platform qualification; the small lab does not simulate every failure. Framework has dedicated injected-boundary cases for partial progress, which complement rather than replace native evidence.</p>
+<h2>Expected observation</h2>
+<p>Both scenarios should preserve the original byte sequence and exit zero when their expected scoped outcomes match. Record the installed SDK identity and retained fixture path. No application source is compiled or launched by these file operations.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-filesystem-clients/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-filesystem-clients/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/storage-exclusive-file-publication.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="storage-exclusive-directory-reservation.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="storage-empty-files-owned-reads.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

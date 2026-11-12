@@ -1,0 +1,39 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/32-move-chart-state-with-instrument-identity.html
+
+PURPOSE:
+Move chart state with the instrument identity
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Move chart state with the instrument identity | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><template data-preserved="offline-logo-alias"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"></template><img src="../../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Move chart state with the instrument identity</h1>
+<h2>Several arrays describe one logical row</h2>
+<p>The workspace retains market records, candle histories, watchlist instruments and chart navigation in parallel arrays. Each index must refer to the same instrument across all of them. Navigation includes visible bar count, pinned timestamp, pin state and selected interval.</p>
+
+<h2>Trace the removal defect</h2>
+<p>If removing the first market moves prices and candles but leaves navigation behind, the surviving instrument can inherit the removed chart view. All the numeric fields may still be valid. The error is the association between state and identity. A validator for individual navigation values cannot repair that relationship.</p>
+
+<h2>Use the canonical command</h2>
+<pre><code class="language-c">UmiChartNavigation view = {9U, 3000, 1, 900000U};
+UmiStatus status = umi_trading_workspace_select_instrument(workspace, &quot;LAB.B&quot;);
+if (status == UMI_STATUS_OK)
+    status = UmiTradingWorkspaceSetChartNavigation(workspace, &quot;LAB.B&quot;, &amp;view);
+/* Check status, then remove LAB.A through the workspace service. */</code></pre>
+
+<p>The navigation scenario removes LAB.A while LAB.B is selected. It then reads LAB.B again and compares all four fields. Framework compacts navigation with the other arrays, clears the retired tail and initializes a new instrument view. Adding LAB.A again must produce default navigation rather than inherit LAB.B.</p>
+
+<h2>Understand a default view</h2>
+<p>A zero navigation value follows the newest retained candle, fits the retained range and uses the provider source interval. This is a presentation rule. It does not fetch prices or guarantee that data is fresh. A selected-chart operation also checks that its captured instrument is still selected before applying an edit.</p>
+
+<h2>Keep related lifecycle owners explicit</h2>
+<p>Instrument removal is not a general chart-document purge. Drawings, saved documents, undo history and provider subscriptions have separate contracts. The navigation repair makes no claim that those records are deleted or that a broker has acknowledged an unsubscribe.</p>
+
+<h2>Exercise and answer</h2>
+<p>Why test removal of the last row separately? No array compaction is needed there, but stale tail state can still leak into a later addition. Test first, middle, last and sole removal, then re-add an instrument and inspect its default view. Framework regression fixtures cover these cases beyond the small installed-client demonstration.</p>
+<h2>Complete source and qualification commands</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Open the existing laboratory guide</a>. Offline, use labs/framework/order-lifecycle/README.md and identity_lifetime.c. Compilation, installed SDK linking and execution remain separate qualification steps.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="31-treat-zero-as-a-real-timestamp.html">Previous lesson</a> · <a href="33-qualify-identity-lifetime-with-the-installed-sdk.html">Next lesson</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/32-move-chart-state-with-instrument-identity.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

@@ -67,3 +67,6 @@ Find the four source paths and both work directories. Change one comment in the 
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous: Handle unresolved addresses](48-handle-unresolved-addresses.md) · [Next: Investigate a program failure](50-investigate-a-program-failure.md)
+
+
+[Manuscript course contents](index.md)

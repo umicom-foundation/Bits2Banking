@@ -1,0 +1,31 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/storage-exclusive-directory-reservation.html
+
+PURPOSE:
+Distinguish ensuring a directory from creating a new name
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish ensuring a directory from creating a new name | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Distinguish ensuring a directory from creating a new name</h1><p>Prepare the installed-SDK lab using its README. The following command is a qualification step, not a recorded execution result.</p><pre><code class="language-powershell">&amp; .\build\framework-filesystem-clients\filesystem-clients.exe exclusive-directory C:/umicom/Umicom-Bits2Banking/build/framework-filesystem-clients/qualification/exclusive-directory</code></pre><h2>Choose the operation from the workflow</h2>
+<p>Preparing a cache directory and creating a brand-new project are different requests. Ensure accepts an ordinary existing directory, which is useful for repeated preparation. Create requires the final component to be new. Both reuse the same portable path policy and checked parent traversal. A new-project frontend should choose that exclusive contract directly instead of first asking whether a name appears to be available.</p>
+<pre><code class="language-c">UmiRootedDirectoryCreation progress;
+UmiStatus first = UmiRootedDirectoryCreate(root, &quot;project&quot;, &amp;progress);
+/* First success reports one new final directory. */
+UmiStatus second = UmiRootedDirectoryCreate(root, &quot;project&quot;, &amp;progress);
+/* The same existing final name is refused. */</code></pre>
+<h2>Follow the three observations</h2>
+<p>The exclusive-directory exercise creates project, repeats Create, then calls Ensure. It expects success with one creation, ALREADY_EXISTS with zero creations, then success with zero creations. Read files.c and identify which observation belongs to each call. An existing directory is therefore neither a universal success nor a universal error; the answer depends on the operation the caller requested.</p>
+<h2>Avoid a check-then-create decision</h2>
+<p>Another writer can change a destination between an existence query and a later create. The shared Create operation lets the native final-directory creation make the existence decision. The earlier availability of a name is not used as authority to reuse it. A collision tells the application to preserve the destination and choose another name. It does not authorize switching silently to Ensure or the overwrite generator.</p>
+<h2>Do not promise an indefinite reservation</h2>
+<p>The operation releases its handles before returning. A successful final-name creation describes what that attempt did; it does not reserve the path forever. Subsequent file operations need their own checked ownership rules. Prevent external destination mutation during a project workflow, and distinguish a narrowly protected native create from a multi-file transaction or a claim about privileged processes.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Result</th><th scope="col">Appropriate response</th></tr></thead><tbody><tr><td>OK and complete</td><td>Continue within the documented ownership limits</td></tr><tr><td>ALREADY_EXISTS</td><td>Preserve the destination; select another name</td></tr><tr><td>Failure with a nonzero count</td><td>Retain partial directories and diagnose</td></tr><tr><td>Invalid argument</td><td>Correct the request before retrying</td></tr></tbody></table></div>
+<h2>Practice explaining the distinction</h2>
+<p>Write a two-sentence message for a project picker that encounters an existing destination. Include the destination identity and a useful next action without suggesting deletion. Then explain why a preview shown earlier cannot guarantee creation will succeed. The lab should exit zero only after all three operation-specific expectations match.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-filesystem-clients/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-filesystem-clients/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/storage-exclusive-directory-reservation.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="storage-existing-parent-ownership.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="storage-exclusive-file-publication.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

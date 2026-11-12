@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/lessons/06-plan-a-python-ai-project.html
+
+PURPOSE:
+Teach plan an environment for a python ai project.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plan an environment for a Python AI project | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/06-plan-a-python-ai-project.md">Markdown manuscript</a> · <a href="05-install-packages-with-clear-ownership.html" rel="prev">Previous lesson</a> · <a href="07-keep-native-builds-separate.html" rel="next">Next lesson</a></p></nav><h1>Plan an environment for a Python AI project</h1>
+<p>Lesson 6 of 10 · Suggested study time: 35 minutes. Command exercises are unexecuted teaching examples.</p><h2>What you will learn</h2>
+<p>Turn a project&#39;s setup instructions into a compatibility checklist before installing an SDK. You need the project&#39;s README, dependency file and version-control revision. Model downloads and GPU configuration are outside this course&#39;s practice lab.</p>
+<h2>Start from the application&#39;s contract</h2>
+<p>Consider an illustrative model-router project whose README requests Python 3.12, a native inference SDK and a browser interface. Its requirements file lists an SDK package without a version. That is insufficient evidence that the newest package still exposes the API the source imports.</p>
+<p>Before running an installation command, record:</p>
+<ol>
+<li>The application revision and the SDK imports used by that revision.</li>
+<li>The Python versions supported by the matching SDK release.</li>
+<li>Windows architecture and the selected CPU or GPU backend.</li>
+<li>The package source, package version and any required runtime libraries.</li>
+<li>A small, documented import check and an application-specific smoke check.</li>
+</ol>
+<p>This is an engineering compatibility decision. Conda can isolate the chosen interpreter, but it cannot make removed SDK functions reappear. A Mac Metal installation command cannot be treated as a Windows CUDA command.</p>
+<h2>Review a checkout without launching it</h2>
+<p>In your chosen project directory, inspect:</p>
+<pre><code class="language-powershell">git rev-parse HEAD
+Get-Content -LiteralPath .\README.md
+Get-Content -LiteralPath .\requirements.txt
+Get-ChildItem -LiteralPath . -File
+</code></pre>
+<p>These commands are observations. A missing requirements file may mean the project uses another dependency format; inspect the actual tree. Do not manufacture a file just to make a copied command work.</p>
+<p>Use a separate environment name, such as umicom-ai-study, when you have selected a documented Python version. If the reviewed version is 3.12, the environment creation example is:</p>
+<pre><code class="language-powershell">conda create --name umicom-ai-study --override-channels --channel conda-forge python=3.12 pip
+conda activate umicom-ai-study
+python -c &quot;import sys; print(sys.executable)&quot;
+</code></pre>
+<p>Only then follow the matching SDK&#39;s installation guide. This course deliberately does not supply an unversioned universal Nexa, CUDA or other vendor installation command. An actual SDK recipe needs release-specific evidence.</p>
+<h2>Separate the checkpoints</h2>
+<p>Use a record with separate rows for environment creation, dependency installation, import, model loading and one application request. Mark a row not run until you execute it. A model file also has an identity: name, version, checksum where supplied, and licence. A working Python import says nothing about which model weights were loaded.</p>
+<p>A localhost browser address means the interface is local. It does not prove that model retrieval, telemetry or a configured provider stays offline. Check the application&#39;s own network settings and documentation before using sensitive input.</p>
+<h2>Exercise and explained answer</h2>
+<p>A README is two years old and requests an unpinned SDK package. The current package installs but lacks an imported class. Is changing Python versions at random a good first fix?</p>
+<p><strong>Answer:</strong> no. Match application revision to the SDK API and supported interpreter range first. Preserve the exact missing import. Either select an evidenced compatible dependency release or review a deliberate source migration. A new environment makes that experiment repeatable; it does not choose the correct migration for you.</p>
+<h2>Continue learning</h2>
+<p>For native model implementation rather than external SDK setup, follow <a href="../../llm-from-scratch/index.html">Building an LLM from Scratch</a>. Keep experiments and native Umicom model development distinct in your results.</p>
+
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/06-plan-a-python-ai-project.md">Markdown manuscript</a> · <a href="05-install-packages-with-clear-ownership.html" rel="prev">Previous lesson</a> · <a href="07-keep-native-builds-separate.html" rel="next">Next lesson</a></p></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

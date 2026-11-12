@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/lessons/04-create-and-inspect-an-environment.html
+
+PURPOSE:
+Teach create an environment and identify its interpreter.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create an environment and identify its interpreter | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/04-create-and-inspect-an-environment.md">Markdown manuscript</a> · <a href="03-connect-conda-to-powershell.html" rel="prev">Previous lesson</a> · <a href="05-install-packages-with-clear-ownership.html" rel="next">Next lesson</a></p></nav><h1>Create an environment and identify its interpreter</h1>
+<p>Lesson 4 of 10 · Suggested study time: 30 minutes. Command exercises are unexecuted teaching examples.</p><h2>What you will learn</h2>
+<p>Create a named environment and prove which Python interpreter runs. Complete lesson 3 first. Run each command separately and stop on errors. The name umicom-env-lab is reserved for this practice; choose another name if it already contains work you need.</p>
+<h2>A name is not your source folder</h2>
+<p>Your source files stay in the project directory. Conda stores the interpreter and packages in its environment directory. Changing directory with Set-Location does not select a Python environment, and activating an environment does not move your source files.</p>
+<p>Inspect existing environments, preview a creation plan, then create and activate the practice environment:</p>
+<pre><code class="language-powershell">conda env list
+conda create --name umicom-env-lab --override-channels --channel conda-forge python=3.12 pip --dry-run
+conda create --name umicom-env-lab --override-channels --channel conda-forge python=3.12 pip
+conda activate umicom-env-lab
+</code></pre>
+<p>Python 3.12 is the teaching baseline for this exercise, not a promise that every AI SDK supports it. The channel options make the source explicit for this solve. The preview performs dependency resolution without installing its plan; it may still require network metadata. <a href="https://docs.conda.io/projects/conda/en/stable/commands/create.html">Conda create reference</a>.</p>
+<h2>Inspect the running process</h2>
+<pre><code class="language-powershell">$env:CONDA_DEFAULT_ENV
+$env:CONDA_PREFIX
+Get-Command python -All
+python --version
+python -c &quot;import sys; print(sys.executable); print(sys.prefix)&quot;
+python -m pip --version
+</code></pre>
+<p>The two printed paths should identify the selected environment. Pip&#39;s location should agree. A different Python path is a reason to stop before installing anything. An alias, shell function, editor interpreter selection or earlier PATH entry can explain a mismatch. Activation is useful, but the interpreter&#39;s own report is stronger evidence than a prompt label.</p>
+<p>The small Python command is a diagnostic expression: import sys loads Python&#39;s runtime information, then print displays the executable and environment prefix. It performs no model inference and opens no project data.</p>
+<h2>Compare explicit execution</h2>
+<pre><code class="language-powershell">conda deactivate
+conda run --name umicom-env-lab python -c &quot;import sys; print(sys.executable)&quot;
+</code></pre>
+<p>Conda run selects an environment for that child command without requiring it to remain your interactive shell&#39;s active environment. It does not guarantee that every descendant program or external dependency is correctly configured. <a href="https://docs.conda.io/projects/conda/en/stable/commands/run.html">Conda run reference</a>.</p>
+<h2>Worked example and exercise</h2>
+<p>A prompt says umicom-env-lab but python reports a global installation. Which result should guide the next step?</p>
+<p><strong>Answer:</strong> the executable path. Do not install packages until command resolution is understood. Compare Get-Command output and the explicit Conda run command. If the explicit command points to the intended environment, the environment exists; the interactive shell&#39;s resolution needs attention.</p>
+<h2>Checkpoint</h2>
+<p>Record the environment name, prefix, Python version and pip path. Your evidence should let another reader distinguish a shell integration problem from a package problem. An environment successfully starting Python is not proof that an application can run.</p>
+
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/04-create-and-inspect-an-environment.md">Markdown manuscript</a> · <a href="03-connect-conda-to-powershell.html" rel="prev">Previous lesson</a> · <a href="05-install-packages-with-clear-ownership.html" rel="next">Next lesson</a></p></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

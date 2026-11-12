@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/retrieval-and-model-training.html
+
+PURPOSE:
+Separate retrieval from model training
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate retrieval from model training | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" style="object-fit:contain" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate retrieval from model training</h1><h2>Two different ways to use documents</h2>
+<p>Training changes model parameters by comparing predictions with targets and applying an optimization rule. Retrieval searches an existing collection and returns material that may help answer a question. A document can participate in either workflow, but a successful retrieval call does not show that a model learned anything. This module adds retrieval to your native AI knowledge without replacing the earlier decoder and checkpoint lessons.</p>
+
+<p>Begin with C arrays, structures, pointers and status handling. The laboratory uses small original strings and hand-written vectors. No provider generates those vectors. This makes the arithmetic and ownership visible, but it cannot demonstrate semantic search quality. Read the laboratory README before compiling, then locate Lexical and Prepare in main.c.</p>
+
+<h2>Observe a deterministic baseline</h2>
+<pre><code class="language-c">size_t count = umi_ai_retrieval_rank(
+    &quot;target&quot;, chunks, 3U, results, 4U);
+/* Read only results[0] through results[count - 1]. */</code></pre>
+
+<p>The lexical baseline searches for case-insensitive substring matches. In the example, one chunk contains target twice and another contains it once. The repeated match ranks first. This is useful for understanding how records become ordered candidates, although it is not a full language-aware search engine. Case folding uses the C locale rather than a complete Unicode linguistic model.</p>
+
+<h2>Keep an explicit evidence boundary</h2>
+<p>A returned count describes how many result records were written. Zero can mean no match or refusal. The new validators let an application distinguish malformed input before requesting a rank. Do not display a green search-success message solely because a function returned zero; explain whether the input was admitted and whether any candidate matched.</p>
+
+<p>Run the lexical scenario after qualifying the matching installed SDK. It first checks the expected order, then damages a later chunk in an isolated fixture and verifies that the previous output survives. A successful laboratory exit means its assertions held, including the expected refusal. It does not mean that the damaged chunk was accepted.</p>
+
+<h2>Practice</h2>
+<p>Change the repeated text to a different word and predict the new order before running. Record the input strings, actual result IDs and Framework revision. Then write separate statements for storage admission, ranking behavior and model quality. Only the first two are exercised here; learned representations, answer generation and quality evaluation need their own data and experiments.</p>
+<h2>Read and run the client</h2><p><a href="../../../../labs/native/framework-retrieval-ownership/README.md">Setup, expected output and troubleshooting</a> · <a href="../../../../labs/native/framework-retrieval-ownership/main.c">C23 example source</a>.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="report-checkpoint-evidence-and-limits.html">Previous: Report checkpoint evidence clearly</a> · <a href="retrieval-chunk-ownership.html">Next: Keep chunk identity and source ownership intact</a></p></nav><p><a href="../../../lessons/10-native-ai/llm-from-scratch/retrieval-and-model-training.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

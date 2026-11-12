@@ -186,6 +186,7 @@ endif()
 # Validate that distinction while retaining strict local laboratory existence.
 if(BUILD_TESTING)
     foreach(_case IN ITEMS
+        local-nested local-nested-missing local-nested-directory local-nested-parent
         local local-missing local-directory compiler-relative compiler-sibling kernel-sibling framework-sibling compiler-public framework-public kernel-public studio-public unapproved-repository branch-change query fragment empty-segment dot-segment parent-segment extra-parent absolute encoded trailing-slash local-traversal empty os-public)
         add_test(NAME btb.education.source_reference.${_case}
             COMMAND "${CMAKE_COMMAND}" "-DCASE=${_case}"
@@ -212,4 +213,28 @@ if(BUILD_TESTING)
             -P "${CMAKE_CURRENT_LIST_DIR}/check_file_evidence_course.cmake")
     set_tests_properties(btb.education.file_evidence_course PROPERTIES TIMEOUT 30
         LABELS "education;content;framework;evidence")
+endif()
+
+
+# General discovery complements topic-specific teaching checks. New course
+# metadata must remain paired and reachable without relying on a fixed syllabus
+# count or weakening earlier course contracts.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.course_discovery
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_course_discovery.cmake")
+    set_tests_properties(btb.education.course_discovery PROPERTIES TIMEOUT 240
+        LABELS "education;navigation;editions")
+    foreach(_case IN ITEMS valid nested quoted-navigation comment-only title-only
+            trailing-comment other-section missing-mapping duplicate-mapping
+            wrong-mapping missing-html missing-manuscript wrong-depth
+            escaping-manuscript duplicate-lesson shared-manuscript malformed-metadata
+            sibling-course duplicate-normalized escaping-html registry-object course-object)
+        add_test(NAME btb.education.course_discovery.${_case}
+            COMMAND "${CMAKE_COMMAND}" "-DCASE=${_case}"
+                "-DFIXTURE_ROOT=${CMAKE_CURRENT_BINARY_DIR}/course-discovery-fixtures"
+                -P "${CMAKE_CURRENT_LIST_DIR}/test_course_discovery.cmake")
+        set_tests_properties(btb.education.course_discovery.${_case} PROPERTIES
+            TIMEOUT 15 LABELS "education;navigation;editions;contract")
+    endforeach()
 endif()

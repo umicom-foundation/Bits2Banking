@@ -1,0 +1,41 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/34-own-static-response-bytes-until-consumed.html
+
+PURPOSE:
+Own static response bytes until they are consumed
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own static response bytes until they are consumed | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" href="../../../assets/branding/umicom.ico" type="image/vnd.microsoft.icon"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Own static response bytes until they are consumed</h1>
+<section><h2>Separate metadata from storage</h2><p>The body-aware static handler still uses the rooted-file service to admit the URL path and read the complete file. Root selection, one-time URL decoding and refusal of escaped paths remain shared Framework policy. Larger storage does not authorize arbitrary file access. The handler copies an admitted file into an immutable owner and releases the rooted read buffer.</p>
+<p>A successful body-aware call may return an owner for an admitted file, or no owner for an inline error response. Always inspect both the operation status and HTTP status. An intentional 404 can be a successful operation. Do not assume every successful operation returns external bytes.</p></section>
+<section><h2>Use one cleanup point</h2><pre><code class="language-c">/* preview and request are valid objects created by the caller. */
+UmiWebResponseBody *body = NULL;
+UmiStatus status = UmiWebPreviewHandleBody(preview, request, response, &amp;body);
+if (status == UMI_STATUS_OK) {
+    const void *bytes = body != NULL ? UmiWebResponseBodyBytes(body)
+                                      : response-&gt;body;
+    size_t length = body != NULL ? UmiWebResponseBodyLength(body)
+                                : response-&gt;body_length;
+    /* Consume or copy exactly length bytes before the cleanup below. */
+    (void)bytes;
+    (void)length;
+}
+UmiWebResponseBodyDestroy(body);
+body = NULL;</code></pre><p>Read this fragment alongside InspectMain in the installed-SDK lab, which creates and destroys the surrounding objects. It illustrates a borrowed view; it does not send a response. Destroy accepts NULL, making a single cleanup path practical. If another component needs the bytes later, either transfer ownership through an explicit contract or make its own copy before this cleanup. A pointer alone does not extend lifetime.</p></section>
+<section><h2>Keep callbacks unambiguous</h2><p>UmiWebServiceSetBodyFallback registers a borrowed handler context. Keep that context alive until the service stops using it. The service runs its request gate and middleware before selecting the fallback; exact registered routes keep their existing inline dispatch. Clearing the body fallback restores the ordinary router path.</p>
+<p>A body handler transfers a returned owner to the service. It must not also populate response-&gt;body_length with an inline body. Those two representations would be ambiguous, so the service rejects the conflict and destroys the owner. It also destroys an owner returned together with a failed operation. The connection owns an accepted body until writing finishes or fails.</p></section>
+<section><h2>Exercise the failure boundary</h2><p>Read the body-failure, body-conflict, gate and exact-route scenarios in Framework test_response_body.c. For each, predict whether the body callback runs, which component destroys an allocation, and whether a 500 replacement can be formatted. Then compare your predictions with owner-executed results. Authored assertions are expectations, not evidence that the runtime followed them.</p>
+<p>For a debugging exercise, annotate a copy of the source with acquisition and release points. Do not add a second destroy after transferring ownership. If a browser shows a damaged icon, first compare stored and delivered bytes; a lifetime error, truncation and an incorrect media type require different corrections. Avoid treating a different visual appearance as proof of any one cause.</p></section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-static-preview/README.md">Installed-SDK lab setup</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/response_body.h">Body ownership contract</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/web/test_response_body.c">Authored regression scenarios</a> · <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2">HTTP HEAD semantics</a></p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="33-separate-body-capacity-from-public-layout.html">Previous lesson</a> · <a rel="next" href="35-finish-headers-and-partial-body-writes.html">Next lesson</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/34-own-static-response-bytes-until-consumed.md">Markdown manuscript</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer></body></html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/07-ground-answers-with-reviewed-sources.html
+
+PURPOSE:
+Teach ground answers with reviewed sources.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ground answers with reviewed sources | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/07-ground-answers-with-reviewed-sources.md">Written lesson</a></p><h1>Ground answers with reviewed sources</h1>
+<h2>What you will learn</h2>
+<p>Add retrieval without treating documents as instructions or search scores as certainty.</p>
+<h2>Separate retrieval from training</h2>
+<p>Retrieval-augmented generation supplies selected passages alongside a question. It does not update model weights. An embedding is a numerical representation used for comparison; its dimension and model identity must match the index and query.</p>
+<p>Framework already provides chunks, lexical/vector retrieval, hybrid ranking, reranking and citations. The ai_workspace layer records collections, source revisions, reviewed jobs and frozen evidence. Its embedding cache is bounded and revision-bound; the inspected reference embedding capacity is 64 values. A typical external embedding output cannot be truncated to 64 and still be claimed equivalent.</p>
+<h2>Follow a grounded question</h2>
+<ol>
+<li>Import or select a source through the existing source workflow.</li>
+<li>Preserve its identity, revision, title and passage location.</li>
+<li>Retrieve candidate passages using the same embedding model and dimension as the index.</li>
+<li>Review which passages may be sent to the chosen provider.</li>
+<li>Freeze the selected evidence when preparing a job.</li>
+<li>Build the request through the shared workspace service.</li>
+<li>Display the answer with citations that refer to that captured evidence.</li>
+</ol>
+<p>The user&#39;s question “What is the payment cutoff?” should cite a relevant passage. If the selected documents do not contain the answer, the UI should say so. A similar-looking phrase or high vector score cannot supply missing facts.</p>
+<h2>Keep instructions separate</h2>
+<p>A retrieved document can contain text such as “ignore your rules.” Treat it as source content. It must not grant tool access, change provider policy or decide which private files to read. The host owns those decisions.</p>
+<p>Context planning must reserve output tokens and account for all selected passages. Store enough source identity to explain a citation after a document changes. An old answer should not silently point at a newly edited passage.</p>
+<h2>Exercise</h2>
+<p>Create two small public documents with different cutoff times and clear effective dates. Ask a question without a date, then with one. Record which passage was retrieved, which version was sent and whether the answer admits ambiguity.</p>
+<p><strong>Expected result:</strong> an evaluation table separates retrieval relevance, citation fidelity and answer correctness. One metric cannot substitute for the others.</p>
+<h2>Code study and recovery</h2>
+<p>Continue with <a href="../../../../labs/native/framework-retrieval-ownership/README.md">the installed retrieval ownership lab</a>. Its hand-written vectors teach contracts; they are not generated embeddings.</p>
+<p>When a citation is wrong, inspect source revision and captured evidence before changing the model. When an embedding dimension is incompatible, select a supported provider or extend the shared contract with explicit bounds and regression coverage.</p>
+<nav aria-label="Lesson sequence"><p><a href="06-stream-cancel-and-display-text.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="08-design-local-image-generation.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

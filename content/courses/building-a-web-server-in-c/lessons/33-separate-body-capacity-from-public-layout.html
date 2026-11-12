@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/33-separate-body-capacity-from-public-layout.html
+
+PURPOSE:
+Separate body capacity from public C layout
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate body capacity from public C layout | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" href="../../../assets/branding/umicom.ico" type="image/vnd.microsoft.icon"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Separate body capacity from public C layout</h1>
+<section><h2>Start with a file that is too large</h2><p>Complete the static-preview lab first. Its original command uses the inline response API and accepts a complete file of at most 16,383 bytes. Several approved Umicom SVG files exceed that limit, and the Windows ICO is larger again. A 413 response therefore describes an admission decision; it does not prove that the logo file is damaged. Compare the selected file size with the API contract before changing either artwork or networking code.</p>
+<p>The optional --owned lab mode and native preview now use a separate response-body owner with a limit of 1,048,576 bytes. These are authored capabilities requiring a matching installed SDK. The original command and public response structure retain their existing contract.</p></section>
+<section><h2>Why not enlarge the array?</h2><p>A public C structure has a layout: each member has an offset and the complete object has a size. A compiled client may reserve that size on its stack or inside another object. Increasing an embedded response array can change the layout expected by existing clients. Rebuilding one library does not rebuild every caller. This is an application binary interface concern, usually abbreviated ABI.</p>
+<p>An opaque type hides its layout behind a pointer. The new body owner copies a bounded byte sequence, while the response structure continues to hold status and headers. This keeps the old inline representation available and avoids making every small response reserve a megabyte. It also introduces a responsibility: every successful allocation needs exactly one destruction after the last use.</p></section>
+<section><h2>Inspect both contracts</h2><pre><code class="language-c">/* Include umicom/web/response_body.h. */
+UmiWebResponseBody *body = NULL;
+const unsigned char payload[] = {0x55, 0x00, 0x4d, 0x49};
+UmiStatus status = UmiWebResponseBodyCreate(payload, sizeof payload, &amp;body);
+if (status != UMI_STATUS_OK) return status;
+size_t length = UmiWebResponseBodyLength(body);
+/* length is four; the embedded zero is part of the representation. */
+UmiWebResponseBodyDestroy(body);
+body = NULL;</code></pre><p>This fragment belongs inside a function returning UmiStatus. The input is borrowed only for the create call. The returned owner contains a copy, so modifying the input afterwards must not change the copied bytes. Length is explicit; strlen would incorrectly stop at the embedded zero. Destruction ends the lifetime of any pointer obtained from UmiWebResponseBodyBytes.</p></section>
+<section><h2>Exercise and expected observations</h2><p>Use the installed lab README to build its eleven checks. Run the same approved SVG request once with the original command and once with --owned. The original mode should produce HTTP 413 when that file exceeds its inline capacity. The owned mode should describe HTTP 200 and exactly the installed file size when it is within the one-MiB bound. Neither invocation opens a listener.</p>
+<p>Read response_body.h beside the implementation and identify the output state on allocation failure, invalid input and excessive length. Draw the two lifetimes: caller input during copying, then owned bytes until destruction. A compilation error for an unknown new API usually means the header and installed library are from different revisions; inspect the SDK prefix before changing the example.</p></section>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-static-preview/README.md">Installed-SDK lab setup</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/response_body.h">Body ownership contract</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/web/test_response_body.c">Authored regression scenarios</a> · <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2">HTTP HEAD semantics</a></p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a rel="prev" href="32-qualify-static-preview-in-layers.html">Previous lesson</a> · <a rel="next" href="34-own-static-response-bytes-until-consumed.html">Next lesson</a></p></nav><p><a href="../../../lessons/05-engineering/building-a-web-server-in-c/33-separate-body-capacity-from-public-layout.md">Markdown manuscript</a></p></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer></body></html>

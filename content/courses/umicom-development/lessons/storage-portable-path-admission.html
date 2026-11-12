@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/storage-portable-path-admission.html
+
+PURPOSE:
+Admit portable paths before touching the filesystem
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit portable paths before touching the filesystem | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Admit portable paths before touching the filesystem</h1><p>Prepare the installed-SDK lab using its README. The following command is a qualification step, not a recorded execution result.</p><pre><code class="language-powershell">&amp; .\build\framework-filesystem-clients\filesystem-clients.exe path-relations C:/umicom/Umicom-Bits2Banking/build/framework-filesystem-clients/qualification/path-relations</code></pre><h2>Separate a name from an object</h2>
+<p>A file name is a request to locate an object. Checking the spelling of that name cannot establish which object a filesystem will return later. Begin this module by reading names.c and running path-admission, path-relations and invalid-path. These exercises call the shared Framework policy without opening directories. They give every application the same rules instead of allowing a GUI, command line and importer to disagree about a generated destination.</p>
+<pre><code class="language-c">UmiRootedPathRelation relation;
+UmiStatus status = UmiRootedFileCompareRelativePaths(
+    &quot;Src/Main.c&quot;, &quot;src\\main.c&quot;, &amp;relation);
+/* On success, this portable comparison reports EQUAL. */</code></pre>
+<h2>Understand the conservative comparison</h2>
+<p>The comparison normalizes slash and backslash separators and folds ASCII letter case. A generator can therefore refuse two recipe files that would use the same portable name even on a host that permits differently cased names. Parent relationships require a component boundary: src is a parent of src/main.c, but it is not a parent of src-old/main.c. The lab checks both cases so a prefix test cannot quietly replace the shared rule.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Input</th><th scope="col">Expected lexical result</th><th scope="col">Reason</th></tr></thead><tbody><tr><td>source/main.c</td><td>Admitted</td><td>Ordinary portable components</td></tr><tr><td>new/../outside</td><td>Invalid argument</td><td>Traversal component</td></tr><tr><td>new/.git/config</td><td>Permission denied</td><td>Repository metadata boundary</td></tr><tr><td>new/CON.txt</td><td>Invalid argument</td><td>Reserved device spelling</td></tr></tbody></table></div>
+<h2>Keep failure outputs meaningful</h2>
+<p>The invalid-path scenario initializes the relation to a known value and passes a refused second path. The shared comparison must leave the previous value unchanged. Only inspect a newly computed relation after the returned status is OK. This is the same publication discipline used for larger plans: a failed attempt must not make an old result look like a new accepted result.</p>
+<h2>Extend the exercise carefully</h2>
+<p>Add a pair of sibling paths with a common prefix and explain why they remain disjoint. Then add a non-ASCII case pair and record the narrower contract: this API does not implement full Unicode case folding or resolve filesystem aliases. Do not change the expected result merely to match a particular disk. Actual links, access permissions, short names and concurrent changes belong to native qualification after lexical admission.</p>
+<h2>Expected observation</h2>
+<p>The scenario should finish with its scoped portable-name message and exit zero. No file or directory is created by these three name exercises. If an API symbol is missing, check the selected installed SDK and its headers together. If the returned relation differs, retain the exact pair and Framework revision before changing the client.</p>
+<h2>Source and next steps</h2><p><a href="../../../../labs/native/framework-filesystem-clients/README.md">Lab build and source guide</a> · <a href="../../../../labs/native/framework-filesystem-clients/QUALIFICATION.md">Qualification record</a> · <a href="../../../lessons/umicom-development/storage-portable-path-admission.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="project-branding-and-sdk-qualification.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="storage-existing-parent-ownership.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

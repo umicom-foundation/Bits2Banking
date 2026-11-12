@@ -106,3 +106,6 @@ Does changing instruction immediately change the accumulator? No. In this model 
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous lesson](31-create-a-cpu-project.md) · [Next lesson](33-decode-an-instruction.md)
+
+
+[Manuscript course contents](index.md)

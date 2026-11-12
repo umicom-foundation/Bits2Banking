@@ -202,3 +202,27 @@ These are introductory chapters and practical labs. Further topics remain to be 
 - [Test refusal with preserved state](29-test-refusal-with-preserved-state.md)
 
 </details>
+
+
+## Review Bounded Collections in Framework
+
+Follow the data representation, establish the bounds before reading, preserve useful error results, observe rejection without mutation, review ownership, then turn the result into an engineering checklist.
+
+1. [Understand count, capacity and array indices](30-count-capacity-and-index.md)
+1. [Check the count before searching the array](31-validate-before-search.md)
+1. [Keep duplicate and full-list results meaningful](32-full-list-and-duplicate-results.md)
+1. [Verify that rejection leaves the collection unchanged](33-prove-failure-keeps-state.md)
+1. [Understand what a copied watchlist entry owns](34-values-pointers-and-serial-access.md)
+1. [Turn a boundary fix into a repeatable review](35-review-and-qualify-a-boundary-fix.md)
+
+
+## Memory ranges in a real tokenisation API
+
+Six connected lessons use one native laboratory to explain token pairs, element counts, overlapping ranges, ownership, unchanged failure results and focused regression checks.
+
+1. [Read a next-token pair from bytes](36-read-next-token-pairs.md)
+1. [Distinguish elements, bytes and writable capacity](37-elements-bytes-and-capacity.md)
+1. [Recognise overlap between distinct pointers](38-recognise-overlapping-output-ranges.md)
+1. [Keep caller output unchanged when a request fails](39-keep-failed-output-unchanged.md)
+1. [Follow corpus and output lifetimes](40-own-the-corpus-and-borrow-the-window.md)
+1. [Turn a range contract into focused regression checks](41-qualify-the-corpus-range-contract.md)

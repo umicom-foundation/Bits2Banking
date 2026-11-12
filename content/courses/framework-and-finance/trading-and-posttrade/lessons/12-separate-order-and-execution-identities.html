@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/trading-and-posttrade/lessons/12-separate-order-and-execution-identities.html
+
+PURPOSE:
+Give orders and executions different identities
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Give orders and executions different identities | Bits2Banking</title><link rel="stylesheet" href="../../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="39" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Give orders and executions different identities</h1>
+<h2>Two records answer two questions</h2>
+<p>An order identifier answers which request this fill belongs to. An execution identifier answers which event is being reported. Two partial fills can belong to one order while remaining different events. Reusing the order identifier as every execution identifier would make the second fill look like a replay or a conflict.</p>
+<p>The example reads the selected order identifier from an admitted workspace snapshot and copies it into the report. It then assigns LESSON-FILL-1 as a separate synthetic execution identity. The report owns its character arrays; it does not keep a borrowed pointer into the workspace.</p>
+<h2>Construct the report</h2>
+<pre><code class="language-c">UmiExecutionReport report = {0};
+strcpy(report.execution_id.value, &quot;LESSON-FILL-1&quot;);
+/* Copy the checked selected order ID into report.client_order_id. */
+report.fill_quantity = 1.0;
+report.fill_price = 10.0;
+report.event_time_ms = 1001;</code></pre>
+<p>These fixed strings fit their fields. A real input adapter must validate variable lengths, termination, provider identity and event semantics before using them. A timestamp is evidence about the event; it is not a replacement for a stable execution identifier. This example supplies a synthetic nonnegative time and makes no claim about exchange clock synchronization.</p>
+<h2>Compare the records</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Value</th><th scope="col">First fill</th><th scope="col">Second fill</th></tr></thead><tbody><tr><td>Order ID</td><td>Same retained request</td><td>Same retained request</td></tr><tr><td>Execution ID</td><td>LESSON-FILL-1</td><td>LESSON-FILL-2</td></tr><tr><td>Quantity</td><td>Part of requested amount</td><td>Another part of requested amount</td></tr><tr><td>Replay meaning</td><td>Same supported report fields</td><td>Not the same event as the first ID</td></tr></tbody></table></div>
+<h2>Exercise and answer</h2>
+<p>Change only the price while keeping LESSON-FILL-1. Should the workspace silently replace the first report? No. The conflict scenario expects ALREADY_EXISTS and no new revision, execution or position quantity. Retain both incoming observations for investigation instead of manufacturing an ID that bypasses the conflict.</p>
+<h2>Read the shared contract</h2>
+<p>Inspect execution_report.c and execution_store.c in Framework. The validator admits fields before the store compares identifiers. The workspace adds semantic replay handling; adding directly to the store has a different contract and must not be substituted casually.</p>
+<h2>Use the complete laboratory</h2><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/order-lifecycle/README.md">Read the source, owner commands and expected results</a>. In an offline checkout, open labs/framework/order-lifecycle/README.md. Build and runtime qualification remains unexecuted for this authored continuation.</p><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="11-own-a-workspace-execution-session.html">Previous: Own a workspace for a local execution session</a> · <a href="13-publish-fill-state-together.html">Next: Publish the order, position and fill evidence together</a></p></nav><p><a href="../../../../lessons/07-practical-domains/framework-and-finance/trading-and-posttrade/12-separate-order-and-execution-identities.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

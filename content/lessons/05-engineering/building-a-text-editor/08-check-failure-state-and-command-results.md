@@ -55,3 +55,7 @@ Authored assertions are a specification until executed. Keep the tested revision
 
 [Course contents](index.md) · [Previous lesson](07-recognise-line-endings-and-eof.md)
 
+
+## Continue with shared Framework services
+
+[Next lesson: Own a shared text buffer](09-own-a-shared-text-buffer.md) introduces the installed-SDK module while retaining this standalone ASCII lab.

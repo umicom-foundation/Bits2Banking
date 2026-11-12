@@ -36,3 +36,7 @@ Produce a source map, a read-window boundary test report, a guest build record a
 The next course stage can add a stateful service after the read-only boundary is qualified. This introductory module does not claim a complete MINIX course, a new operating system or hardware validation.
 
 [Course contents](index.md)
+
+The following module strengthens this read-only boundary before a stateful service is introduced. It adds a portable copy-result seam and a qualification worksheet while keeping guest execution and live update separate.
+
+[Next lesson: Separate read planning from copying](09-separate-read-planning-from-copying.md)

@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/conda-miniforge-for-developers/lessons/09-troubleshoot-one-layer-at-a-time.html
+
+PURPOSE:
+Teach troubleshoot one layer at a time.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Troubleshoot one layer at a time | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/09-troubleshoot-one-layer-at-a-time.md">Markdown manuscript</a> · <a href="08-describe-and-recreate-environments.html" rel="prev">Previous lesson</a> · <a href="10-capstone-and-knowledge-check.html" rel="next">Next lesson</a></p></nav><h1>Troubleshoot one layer at a time</h1>
+<p>Lesson 9 of 10 · Suggested study time: 35 minutes. Command exercises are unexecuted teaching examples.</p><h2>What you will learn</h2>
+<p>Find the first failing layer and preserve enough evidence to make a useful repair. Work from installation through the shell, interpreter, packages and application in that order. Do not start by reinstalling every tool.</p>
+<h2>A practical decision table</h2>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Next observation</th>
+<th>Avoid assuming</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Conda name is unknown</td>
+<td>Try the installed Miniforge Prompt and inspect Get-Command in the failing shell.</td>
+<td>That every possible install directory is absent.</td>
+</tr>
+<tr>
+<td>Conda runs but activation requests initialization</td>
+<td>Check the shell host, profile and init preview.</td>
+<td>That another package install will fix shell integration.</td>
+</tr>
+<tr>
+<td>Environment name cannot be found</td>
+<td>Run conda env list and conda info --base.</td>
+<td>That two installations share the same environment registry.</td>
+</tr>
+<tr>
+<td>Python path is unexpected</td>
+<td>Inspect Get-Command python -All and sys.executable.</td>
+<td>That the prompt label is proof.</td>
+</tr>
+<tr>
+<td>Dependency solve is unsatisfiable</td>
+<td>Preserve requested versions, channels and the conflicting constraints.</td>
+<td>That removing all pins is a correct repair.</td>
+</tr>
+<tr>
+<td>Import fails after installation</td>
+<td>Confirm the selected interpreter, package version and exact first error.</td>
+<td>That pip metadata checks exercised the import.</td>
+</tr>
+<tr>
+<td>Native library fails to load</td>
+<td>Record architecture, backend and the named library or symbol.</td>
+<td>That Python version alone explains every loader error.</td>
+</tr>
+<tr>
+<td>Download or certificate validation fails</td>
+<td>Check connectivity, proxy and trusted certificate configuration with the responsible administrator.</td>
+<td>That disabling TLS verification is a sound fix.</td>
+</tr>
+</tbody></table>
+<h2>Collect a small record</h2>
+<p>Use these observations in the failing shell. Some may themselves fail; retain that fact and stop dependent actions.</p>
+<pre><code class="language-powershell">$PSVersionTable.PSVersion
+$PROFILE
+Get-Command conda,python -All -ErrorAction SilentlyContinue
+conda info
+conda env list
+python -c &quot;import sys; print(sys.executable); print(sys.version)&quot;
+python -m pip check
+</code></pre>
+<p>Keep the exact command, first diagnostic and exit result together. Package-manager output may include personal paths or repository addresses; remove sensitive information before sharing it publicly. Keep a private original when appropriate.</p>
+<h2>Worked failure trace</h2>
+<p>Ravi installs a Python package in environment A. In a new terminal, an application fails with ModuleNotFoundError. He proposes reinstalling Miniforge. Instead, he checks sys.executable: the application was launched with environment B&#39;s Python. The next experiment is to run the documented application entry point with environment A explicitly selected. That tests a focused cause without disturbing B.</p>
+<p>If the import still fails under A, the original hypothesis was incomplete. Continue with the package&#39;s installed version and API documentation. A diagnostic observation is not itself a repair.</p>
+<h2>Exercise and explained answer</h2>
+<p>A dependency solver reports incompatible constraints. Your first change is to remove every pinned version, and installation succeeds. Can you conclude the original application is fixed?</p>
+<p><strong>Answer:</strong> no. You changed the dependency contract. Preserve the original specification, identify which constraint conflicts and check whether an intentional version change is supported by the application. Demonstrate the relevant behaviour in a separate candidate environment before replacing a working setup.</p>
+<h2>Recovery boundary</h2>
+<p>Use a newly named practice environment to isolate an experiment. Do not delete base, remove production environments, overwrite shell profiles or clear unrelated build caches as generic troubleshooting. Return to <a href="03-connect-conda-to-powershell.html">the PowerShell lesson</a> for initialization and <a href="07-keep-native-builds-separate.html">the native toolchain lesson</a> for mixed tool paths.</p>
+
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="../../../lessons/05-engineering/conda-miniforge-for-developers/09-troubleshoot-one-layer-at-a-time.md">Markdown manuscript</a> · <a href="08-describe-and-recreate-environments.html" rel="prev">Previous lesson</a> · <a href="10-capstone-and-knowledge-check.html" rel="next">Next lesson</a></p></nav></article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material. Practical commands require execution and review on your own system.</div></footer></body></html>

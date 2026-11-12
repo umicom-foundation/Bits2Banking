@@ -20,7 +20,11 @@ cmake --build build/minix-read-window
 ctest --test-dir build/minix-read-window --output-on-failure
 ~~~
 
+<!-- The original single-helper qualification description is retained for review. The expanded host suite adds a copy-outcome boundary while preserving the original range test.
 The expected test checks ordinary, zero, EOF, huge request and invalid output cases. It compiles only the portable helper, not status_driver.c. A passing host test would not prove IPC permissions, grant handling, SEF startup or guest execution.
+-->
+
+The original read-window test remains, and nineteen named read-reply cases extend it. Host compilation covers read_window.c, read_reply.c and their checks, not status_driver.c. A passing host test would not prove IPC permissions, grant handling, SEF startup or guest execution. These cases are authored; no execution result is implied by this guide.
 
 ## Guest compilation
 
@@ -55,3 +59,48 @@ The original files here use MIT. MINIX source retains its own licence and attrib
 - [MINIX 3.3.0 service Makefile](https://github.com/Stichting-MINIX-Research-Foundation/minix/blob/v3.3.0/minix/drivers/examples/hello/Makefile)
 - [MINIX 3.3.0 SEF declarations](https://github.com/Stichting-MINIX-Research-Foundation/minix/blob/v3.3.0/minix/include/minix/sef.h)
 - [MINIX memory grants guide](https://wiki.minix3.org/doku.php?id=developersguide:memorygrants)
+
+## Copy outcomes and retries
+
+read_reply.h defines the new portable boundary. It reuses read_window.c and invokes
+one caller-provided copy callback only for a nonempty admitted slice. Invalid
+arguments preserve the reply. Every valid request publishes a fresh reply,
+including EOF and copy failure. The input text and callback context are borrowed
+until return; the helper retains neither and does not advance a cursor.
+
+A callback reports complete success with zero. Any other integer is preserved as
+copy_status and returns COPY_FAILED with zero acknowledged bytes. This does not
+guarantee that the destination was unchanged. The fault-injection test deliberately
+copies its slice before returning an error so that this distinction is visible.
+
+status_driver.c remains the release-specific adapter. Its local context contains
+only the current endpoint and grant; status_copy uses sys_safecopyto at grant offset
+zero. The old inline status_read is retained in an explained disabled block.
+Minor validation, fixed response text, fresh start and restart remain as before.
+No new live-update or hardware capability is introduced.
+
+The host target expects the shared Framework branding helper in the sibling
+Umicom-Applications/framework checkout. To choose another source checkout:
+
+~~~powershell
+cmake -S labs/minix/status-driver -B build/minix-read-window -G Ninja -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+~~~
+
+This host-only dependency supplies canonical SVG artwork and Windows ICO resources.
+It adds no Framework runtime link and does not alter the guest Makefile's service
+toolchain. If the path is wrong, correct it rather than substituting new logos.
+
+For a focused host check after a successful build:
+
+~~~powershell
+ctest --test-dir build/minix-read-window --output-on-failure --no-tests=error -R "^minix[.]learning[.]read-reply[.]"
+~~~
+
+Expect nineteen registered cases: prefix, tail, whole, eof, beyond, huge-position,
+zero, empty, null-empty, huge-request, positive-failure, negative-failure, retry,
+reuse-eof, null-text, null-copy, null-reply, chunked and null-context. A failed or
+missing test remains a failure to investigate; it is not a guest result.
+
+Follow lessons 09–12 in [MINIX OS Foundations](../../../content/courses/minix-os-foundations/index.html)
+and complete [the evidence worksheet](QUALIFICATION.md). The worksheet separates
+source review, host results, guest compilation, real grant refusal and restart.

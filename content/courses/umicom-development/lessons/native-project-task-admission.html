@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/native-project-task-admission.html
+
+PURPOSE:
+Admit a GTK task before transferring lifetime ownership
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit a GTK task before transferring lifetime ownership | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Admit a GTK task before transferring lifetime ownership</h1><p>Read the focused native project guide first. Code fragments below explain the shared Framework implementation; they are not standalone applications or recorded execution results.</p><h2>A reference is a lifetime promise</h2>
+<p>Each active dialog callback temporarily retains the controller so a GTK notification cannot free memory it is still using. The writer completion must retain that protection after the click handler returns. Follow the acquired reference from CreateClicked into DeveloperProjectCreationCompleted. Identify its completion release and the early-return releases before scheduling.</p>
+
+<pre><code class="language-c">GTask *task = g_task_new(NULL, NULL, DeveloperProjectCreationCompleted, dialog);
+g_task_set_task_data(task, job, g_free);
+g_task_run_in_thread(task, DeveloperProjectCreationWorker);
+g_object_unref(task);
+/* Completion owns the acquired dialog reference. */</code></pre>
+
+<h2>Construct after admission</h2>
+<p>This fragment belongs after copying and validating inputs, disabling controls and rechecking the owner. Control changes can emit notifications that hide or destroy the form before scheduling. The unsubmitted job can then be freed directly. Constructing a GTask earlier would require returning a task result even if admission were subsequently refused. The existing application-module form follows the same corrected ordering.</p>
+
+<h2>Separate the two owners</h2>
+<p>GTask retains itself for worker execution and owns cleanup of the plain job. The dialog reference is a separate GTK-thread responsibility released by completion. Do not put a controller release into a destructor that may execute on another thread. Unreferencing the local task pointer is not the same as releasing the controller.</p>
+
+<h2>Compare the boundaries</h2>
+<ul><li>notify-before-start destroys the ordinary form during a sensitivity notification; no task should be submitted.</li><li>application-admission-hide hides the module form before scheduling; its job is released and controls become editable again.</li><li>owner-retired destroys the owner after scheduling; work completes without adopting into that host.</li></ul>
+
+<h2>Qualification exercise</h2>
+<p>The test dispatcher holds a task, then releases it to a real GTask thread. Completion still uses the event context. Explain which reference keeps each object alive at each boundary. Retain GLib diagnostics and the matching runtime identity during owner qualification. A clean source review cannot prove that the compiled reference-counting paths execute safely.</p>
+<h2>Source and next steps</h2><p><a href="../../../../docs/guides/native-project-forms.md">Native project source and qualification guide</a> · <a href="../../../lessons/umicom-development/native-project-task-admission.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="native-project-captured-inputs.html">Previous lesson</a> · <a href="native-project-result-publication.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

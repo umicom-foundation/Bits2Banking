@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/ui-values-property-publication.html
+
+PURPOSE:
+Publish a copied property without sharing caller storage
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish a copied property without sharing caller storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Publish a copied property without sharing caller storage</h1><h2>Give each record a clear owner</h2>
+<p>A property bag owns a collection of named UI values. It is useful for application presentation because a caller can prepare a value, publish it once and then reuse its own storage. The bag does not retain a pointer into the caller's stack. This lesson follows the publish and invalid-value scenarios to distinguish independent copies from accidental shared storage.</p>
+
+<pre><code class="language-c">UmiUiPropertyBag *properties = NULL;
+UmiUiValue title;
+UmiStatus status = umi_ui_property_bag_create(&amp;properties);
+if (status != UMI_STATUS_OK) return status;
+/* The complete lab checks setters and destroys properties on every exit. */
+status = umi_ui_value_set_string(&amp;title, &quot;Accepted title&quot;);
+if (status == UMI_STATUS_OK)
+    status = umi_ui_property_bag_set(properties, &quot;title&quot;, &amp;title);</code></pre>
+
+<p>After successful publication, the lab changes the caller's title to Caller changed. Reading the bag must still produce Accepted title. Compare the two addresses conceptually: one record belongs to the caller; the other lives inside Framework's property owner. A copied observation returned by get is a third record, with its own lifetime.</p>
+
+<h2>Reject a malformed replacement before publication</h2>
+<p>The invalid-value scenario deliberately changes the incoming kind to 99. The shared value validator rejects that discriminator. The bag returns INVALID_ARGUMENT, keeps its one property and does not advance the revision. The old title remains readable. This is a component-boundary exercise, not a pattern for constructing legitimate application data.</p>
+
+<div class="table-scroll"><table><thead><tr><th scope="col">Stage</th><th scope="col">Caller responsibility</th><th scope="col">Framework responsibility</th></tr></thead><tbody><tr><td>Prepare</td><td>Apply business and encoding policy</td><td>Construct owned values</td></tr><tr><td>Submit</td><td>Keep source readable during the call</td><td>Validate and copy before mutation</td></tr><tr><td>Observe</td><td>Interpret status and property kind</td><td>Return a separate observation</td></tr><tr><td>Release</td><td>End borrowers before owner destruction</td><td>Destroy the bag through its API</td></tr></tbody></table></div>
+
+<h2>Understand what the mutex protects</h2>
+<p>The property bag serializes its own internal mutations. That does not make an external source record safe if another thread writes to it while publication copies it. Serialize access to caller-owned records as well. A lock inside one service cannot retroactively protect memory owned elsewhere.</p>
+
+<p>The lab uses a cleanup label so failed checks still destroy a created bag. Inspect that path before adding another return statement. Cleanup is part of the example's behavior, not a cosmetic detail: a user guide should teach which function releases each resource and what happens when preparation fails halfway through.</p>
+
+<h2>Practice a refusal-aware model update</h2>
+<p>Design a title-edit handler using a draft value and an accepted property. On success, show the accepted title. On refusal, retain the existing title and report the status beside the draft input. Write the control flow first; do not invent a new window layout for this exercise. Existing approved product layouts determine where the presentation belongs.</p>
+
+<p>As a review question, explain why counting a logged setter call is weaker evidence than reading the property afterward. A call can be refused, a stored copy can be independent and a GUI can display an older snapshot. Qualify each boundary deliberately rather than assuming a successful input event proves the whole workflow.</p>
+<h2>Source and practice</h2><p><a href="../../../../labs/native/framework-ui-values/README.md">UI value laboratory and owner commands</a> · <a href="../../../lessons/umicom-development/ui-values-property-publication.md">Markdown edition</a></p><nav aria-label="Lesson navigation"><a href="ui-values-aliased-text.html">Previous lesson</a> · <a href="ui-values-reactive-revisions.html">Next lesson</a> · <a href="../index.html">Course index</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

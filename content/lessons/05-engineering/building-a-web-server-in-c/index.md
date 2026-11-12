@@ -125,3 +125,12 @@ Own one root and routing context; distinguish path admission, HTTP responses, li
 - [Review loopback binding and browser admission](30-review-loopback-and-browser-admission.md)
 - [Run and stop the native preview command](31-run-and-stop-the-native-preview.md)
 - [Qualify a static preview in separate layers](32-qualify-static-preview-in-layers.md)
+
+## Project: deliver approved assets with owned response bodies
+
+Preserve the public C layout, own immutable bytes, finish partial writes and qualify real asset delivery.
+
+- [Separate body capacity from public C layout](33-separate-body-capacity-from-public-layout.md)
+- [Own static response bytes until they are consumed](34-own-static-response-bytes-until-consumed.md)
+- [Finish headers and partial body writes](35-finish-headers-and-partial-body-writes.md)
+- [Qualify approved assets through each delivery layer](36-qualify-approved-assets-through-each-layer.md)

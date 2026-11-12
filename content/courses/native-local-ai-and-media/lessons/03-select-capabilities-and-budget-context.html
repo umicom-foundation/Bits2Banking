@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/03-select-capabilities-and-budget-context.html
+
+PURPOSE:
+Teach select capabilities and budget context.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Select capabilities and budget context | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/03-select-capabilities-and-budget-context.md">Written lesson</a></p><h1>Select capabilities and budget context</h1>
+<h2>What you will learn</h2>
+<p>Choose a runtime using capabilities, health and context capacity. Avoid silently turning a local request into a remote request.</p>
+<h2>A catalogue is a description</h2>
+<p>UmiAiRuntimeDescriptor records identity, transport, capability bits, context capacity, output limit and health. It does not discover hardware by itself. A descriptor with available set to one is not proof that a server was contacted.</p>
+<p>The current umi_ai_runtime_catalogue_select implementation filters unconfigured or unavailable entries, requires all requested capability bits, respects local_only and rejects insufficient context. Among remaining candidates it chooses the smallest sufficient context, then the runtime ID alphabetically. This is deterministic selection, not a speed or quality benchmark.</p>
+<h2>Follow the offline lab</h2>
+<ol>
+<li>Read Descriptor in <a href="../../../../labs/native/local-ai-routing/offline.c">offline.c</a>.</li>
+<li>Predict which of three fixtures will serve a local chat request requiring 1024 tokens.</li>
+<li>Run the selection exercise after building the lab:</li>
+</ol>
+<pre><code class="language-powershell">.\build\btb-local-ai-routing.exe offline selection
+</code></pre>
+<ol start="4">
+<li>Compare the complete output with “Selected lab.small; remote candidate excluded.”</li>
+<li>Run capability, context and health to observe refusal or an alternative eligible local fixture.</li>
+</ol>
+<p>The fixtures intentionally declare their health and capacity. No model is loaded. The capability exercise asks for embeddings; a chat-only fixture must not satisfy that request.</p>
+<h2>Account for the complete prompt</h2>
+<p>The context window contains more than the last typed message. A practical budget includes system instructions, retained history, retrieved passages, formatting tokens and reserved output.</p>
+<p>For a hypothetical 4096-token model, reserve 512 for output and 256 for formatting/margin. That leaves 3328 for all input. These are teaching numbers. Use the actual tokenizer and model metadata before claiming a prompt fits; character counts are not token counts.</p>
+<p>Memory is a separate constraint. Weight storage, key/value cache, temporary tensors and backend overhead all matter. Free disk space does not establish sufficient RAM or VRAM. An estimate should show its assumptions and fail gracefully when the runtime rejects allocation.</p>
+<h2>Exercise and answer</h2>
+<p>Why should a model with a large context limit not always win? A larger limit is not evidence of lower latency, adequate memory or higher quality. The current selector implements one predictable policy; a measured performance selector would require separate observations and rules.</p>
+<h2>Diagnose refusals</h2>
+<p>When selection returns NOT_FOUND, inspect configured state, health, capability bits, context and local_only separately. Do not clear all constraints until something runs. Display the missing requirement and allow the user to change it deliberately.</p>
+<nav aria-label="Lesson sequence"><p><a href="02-map-framework-and-applications.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="04-own-providers-and-requests-in-c.html">Next lesson</a></p></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

@@ -67,3 +67,6 @@ Replace only LOAD 3 with LOAD 2 on a separate learning copy. Write the expected 
 ## Continue learning
 
 [Course contents](../../../courses/learning-hdl-vhdl/index.html) · [Previous: Store an instruction program](43-store-an-instruction-program.md) · [Next: Connect CPU and memory](45-connect-cpu-and-memory.md)
+
+
+[Manuscript course contents](index.md)
