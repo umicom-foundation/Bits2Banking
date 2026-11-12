@@ -61,6 +61,10 @@ The caller must provide readable input through a terminator or the supported cap
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [UI value laboratory and owner commands](../../../labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-aliased-text.html)
+-->
+[UI value laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-aliased-text.html)
 
 [Previous lesson](ui-values-active-payload.md) · [Next lesson](ui-values-property-publication.md) · [Course index](index.md)

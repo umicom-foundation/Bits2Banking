@@ -58,6 +58,10 @@ The scenario should finish with its scoped portable-name message and exit zero. 
 
 ## Source and next steps
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Lab build and source guide](../../../labs/native/framework-filesystem-clients/README.md) · [Qualification record](../../../labs/native/framework-filesystem-clients/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/storage-portable-path-admission.html)
+-->
+[Lab build and source guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-filesystem-clients/README.md) · [Qualification record](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-filesystem-clients/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/storage-portable-path-admission.html)
 
 [Previous lesson](project-branding-and-sdk-qualification.md) · [Course index](index.md) · [Next lesson](storage-existing-parent-ownership.md)

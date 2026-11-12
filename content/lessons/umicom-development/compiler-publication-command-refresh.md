@@ -45,7 +45,11 @@ Write a small state table with an absent source, an existing source, a full data
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Compiler publication laboratory](../../../labs/native/framework-compiler-publication/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-publication-command-refresh.html)
+-->
+[Compiler publication laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-compiler-publication/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-publication-command-refresh.html)
 
 [Previous lesson](compiler-publication-centre.md) · [Next lesson](compiler-publication-policy.md) · [Course index](index.md)
 

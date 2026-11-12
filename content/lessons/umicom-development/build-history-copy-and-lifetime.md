@@ -69,6 +69,10 @@ A copied result remains an observation of one attempt. It is not durable storage
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Build-history laboratory and owner commands](../../../labs/native/framework-build-history/README.md) · [HTML edition](../../courses/umicom-development/lessons/build-history-copy-and-lifetime.html)
+-->
+[Build-history laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-build-history/README.md) · [HTML edition](../../courses/umicom-development/lessons/build-history-copy-and-lifetime.html)
 
 [Previous lesson](build-history-admitted-preparation.md) · [Next lesson](build-history-bounded-identities.md) · [Course index](index.md)

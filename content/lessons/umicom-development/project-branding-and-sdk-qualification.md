@@ -57,7 +57,11 @@ An undefined reference to the new variable validator can mean the headers and in
 
 ## Source and next steps
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Lab build and source guide](../../../labs/native/framework-project-recipes/README.md) · [Qualification record](../../../labs/native/framework-project-recipes/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/project-branding-and-sdk-qualification.html)
+-->
+[Lab build and source guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-project-recipes/README.md) · [Qualification record](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-project-recipes/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/project-branding-and-sdk-qualification.html)
 
 <!-- Earlier end-of-module navigation retained for review:
 [Previous lesson](project-native-cli-explicit-creation.md) · [Course index](../../courses/umicom-development/index.html)

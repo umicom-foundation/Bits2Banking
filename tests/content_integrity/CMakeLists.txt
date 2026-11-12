@@ -238,3 +238,13 @@ if(BUILD_TESTING)
             TIMEOUT 15 LABELS "education;navigation;editions;contract")
     endforeach()
 endif()
+
+# Include the nested module selected by Studio in the owner education suite.
+# Root course catalogues alone cannot detect a stale copy of its resource hashes.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.studio_learning_collection
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_studio_learning_collection.cmake")
+    set_tests_properties(btb.education.studio_learning_collection PROPERTIES
+        TIMEOUT 30 LABELS "education;studio;content;identity")
+endif()

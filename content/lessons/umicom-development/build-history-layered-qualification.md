@@ -69,7 +69,11 @@ Write one paragraph stating which source was authored, which static checks were 
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Build-history laboratory and owner commands](../../../labs/native/framework-build-history/README.md) · [HTML edition](../../courses/umicom-development/lessons/build-history-layered-qualification.html)
+-->
+[Build-history laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-build-history/README.md) · [HTML edition](../../courses/umicom-development/lessons/build-history-layered-qualification.html)
 
 <!-- The course continues into UI value ownership; the former endpoint is retained for review.
 [Previous lesson](build-history-bounded-identities.md) · [Course index](index.md)

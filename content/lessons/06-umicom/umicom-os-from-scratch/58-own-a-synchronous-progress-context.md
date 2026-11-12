@@ -54,6 +54,10 @@ The lab declares MediaLessonStop in MediaLessonMain and calls Apply before that 
 
 The copy-until command prints whether its requested phase was actually observed. A transfer can fail before reaching that phase, so a requested stop is not proof that cancellation caused the final result. Read both the callback observation and returned status. Keep callbacks bounded; a slow callback delays the caller and is not an asynchronous notification queue.
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Complete application](../../../../labs/native/framework-boot-media/main.c) · [Lab setup and recovery](../../../../labs/native/framework-boot-media/README.md)
+-->
+[Complete application](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/main.c) · [Lab setup and recovery](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md)
 
 [Course contents](index.md) · [Previous lesson](57-read-file-effects-separately-from-status.md) · [Next lesson](59-cancel-before-the-first-payload-write.md)

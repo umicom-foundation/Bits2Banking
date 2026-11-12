@@ -63,7 +63,11 @@ For the final exercise, choose one existing application model that publishes a t
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [UI value laboratory and owner commands](../../../labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-installed-qualification.html)
+-->
+[UI value laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-installed-qualification.html)
 
 <!-- The series now continues into compiler ownership. Previous endpoint navigation retained for review:
 [Previous lesson](ui-values-archive-admission.md) · [Course index](index.md)

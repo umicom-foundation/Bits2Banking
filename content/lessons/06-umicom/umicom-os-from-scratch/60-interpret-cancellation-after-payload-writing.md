@@ -52,6 +52,10 @@ r->verified = s == UMI_STATUS_OK;
 
 The synthetic file exercises expect a later comparison to find equal bytes. That later success is a new read-only observation, with no creation or write effect. The CTest script saves cancellation.txt and later-verification.txt separately. A different installed version or unexpected I/O error may produce another result; retain that evidence and diagnose it. None of these checks executes firmware or starts an operating system.
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Complete application](../../../../labs/native/framework-boot-media/main.c) · [Lab setup and recovery](../../../../labs/native/framework-boot-media/README.md)
+-->
+[Complete application](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/main.c) · [Lab setup and recovery](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md)
 
 [Course contents](index.md) · [Previous lesson](59-cancel-before-the-first-payload-write.md) · [Next lesson](61-check-native-release-without-retrying-handles.md)

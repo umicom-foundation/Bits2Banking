@@ -62,6 +62,10 @@ Write down why a provider marked available is not necessarily available now. Reg
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Compiler ownership laboratory and owner commands](../../../labs/native/framework-compiler-ownership/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-catalogue-admission.html)
+-->
+[Compiler ownership laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-compiler-ownership/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-catalogue-admission.html)
 
 [Previous lesson](compiler-record-ownership.md) · [Next lesson](compiler-request-composition.md) · [Course index](index.md)

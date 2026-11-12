@@ -58,6 +58,10 @@ A missing selected parent should be reported as missing; the lab does not create
 
 ## Source and next steps
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Lab build and source guide](../../../labs/native/framework-filesystem-clients/README.md) · [Qualification record](../../../labs/native/framework-filesystem-clients/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/storage-existing-parent-ownership.html)
+-->
+[Lab build and source guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-filesystem-clients/README.md) · [Qualification record](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-filesystem-clients/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/storage-existing-parent-ownership.html)
 
 [Previous lesson](storage-portable-path-admission.md) · [Course index](index.md) · [Next lesson](storage-exclusive-directory-reservation.md)

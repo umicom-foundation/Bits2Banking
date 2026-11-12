@@ -55,3 +55,14 @@ A missing site destination is an error, not skipped coverage. Preview the websit
 ## Introductory C course
 
 The first_c_course structural check verifies lesson navigation and complete displayed examples against the source files in labs/native/first-c-programs. It does not compile those files. Build and run the separate laboratory to check its outputs and count contract. Keyboard, zoom, screen-reader and first-time-learner review remain distinct activities.
+
+## Check the learning collection selected by Studio
+
+Studio bundles `content/courses/framework-and-finance/learning-pack.json`. This is a separate manifest from the course catalogues under `learning-packs/`. Updating one catalogue does not refresh the other.
+
+1. Review any changed collection pages before accepting their new identities. Keep the collection metadata and manifest revision together.
+2. Reconfigure the content-integrity project using the commands above to register `btb.education.studio_learning_collection`.
+3. Run `ctest --test-dir build/content-integrity -R "^btb[.]education[.]studio_learning_collection$" --output-on-failure --no-tests=error`. It compares collection metadata and every declared file digest without changing the sources.
+4. If the check reports changed files, compare their exact bytes with the reviewed edition and prepare the matching manifest. Do not bypass Framework admission. Then configure Applications again.
+
+This check establishes content identity only. Website rendering, offline navigation and the Studio reader each require their own qualification. The Learning C chapter [Read diagnostics at the stage that produced them](../../content/courses/learning-c/lessons/31-read-diagnostics-by-stage.html) explains why later commands cannot repair a failed earlier stage.

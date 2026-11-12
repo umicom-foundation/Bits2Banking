@@ -55,7 +55,11 @@ The installed branding helper stages canonical Umicom SVG resources and embeds t
 
 A successful run reports all twelve cases without failures, while retained artifacts match each case contract. Until that run is executed, this is an expectation and the course remains in development. Return to the OS boot-and-distribution evidence lesson to plan the independent startup checks.
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Complete application](../../../../labs/native/framework-boot-media/main.c) · [Lab setup and recovery](../../../../labs/native/framework-boot-media/README.md)
+-->
+[Complete application](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/main.c) · [Lab setup and recovery](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md)
 
 [Course contents](index.md) · [Previous lesson](62-retain-failed-media-artifacts-for-recovery.md)
 

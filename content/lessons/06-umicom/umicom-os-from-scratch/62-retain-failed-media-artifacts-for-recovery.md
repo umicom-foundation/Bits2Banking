@@ -51,6 +51,10 @@ If a success report accompanies different hashes, stop distribution and retain b
 
 The supplied image is a synthetic partition-table fixture with no working operating system. Copying, hashing and retaining it teach recovery ownership. They do not establish signature trust, removable-device identity, optical burning support or firmware compatibility. Extend the evidence chain only with observations actually made in the appropriate environment.
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Complete application](../../../../labs/native/framework-boot-media/main.c) · [Lab setup and recovery](../../../../labs/native/framework-boot-media/README.md)
+-->
+[Complete application](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/main.c) · [Lab setup and recovery](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md)
 
 [Course contents](index.md) · [Previous lesson](61-check-native-release-without-retrying-handles.md) · [Next lesson](63-qualify-installed-media-recovery-behaviour.md)

@@ -45,6 +45,10 @@ Write down a path with spaces and a definition containing a quoted phrase. Predi
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Compiler preview laboratory and owner commands](../../../labs/native/framework-compiler-preview/README.md) · [Browser edition](../../courses/umicom-development/lessons/compiler-preview-json-arguments.html)
+-->
+[Compiler preview laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-compiler-preview/README.md) · [Browser edition](../../courses/umicom-development/lessons/compiler-preview-json-arguments.html)
 
 [Previous lesson](compiler-preview-driver-identity.md) · [Next lesson](compiler-preview-qualification.md) · [Written course contents](index.md) · [Course index](../../courses/umicom-development/index.html)

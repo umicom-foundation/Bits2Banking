@@ -61,6 +61,10 @@ Copying strings does not make simultaneous mutations safe. Route edits through t
 
 ## Source and next steps
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Lab build and source guide](../../../labs/native/framework-project-recipes/README.md) · [Qualification record](../../../labs/native/framework-project-recipes/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/project-borrowed-recipes-owned-variables.html)
+-->
+[Lab build and source guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-project-recipes/README.md) · [Qualification record](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-project-recipes/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/project-borrowed-recipes-owned-variables.html)
 
 [Previous lesson](project-select-a-catalogue-recipe.md) · [Course index](../../courses/umicom-development/index.html) · [Next lesson](project-application-identities.md)

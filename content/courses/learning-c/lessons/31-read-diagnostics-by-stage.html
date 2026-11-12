@@ -31,6 +31,10 @@ gcc --version</code></pre>
 <h2>Follow a runtime rejection</h2>
 <p>The test passes the text return 6 / 0 inside the supported tiny program. Compiling the outer C file is still valid: the embedded program is a string. Umicom C accepts the grammar and rejects the arithmetic during interpretation. LessonEvaluate reports failure and leaves the caller's old value unchanged.</p>
 <p>The test also supplies a syntax error and null arguments. These are different causes with the same public success/failure result. A production interface may expose richer diagnostics; this small wrapper deliberately teaches the output contract first.</p>
+<h2>Distinguish configuration from compilation</h2>
+<p>CMake can refuse a project before the compiler runs. For example, a learning pack records the SHA-256 digest of each reviewed page. Editing a page changes its bytes, so the old digest no longer identifies that edition. Compare the named page with the intended source, then deliver the reviewed page and matching manifest together. If a collection has both <code>collection.json</code> and <code>learning-pack.json</code>, keep their edition metadata aligned too. Do not disable the checksum check or regenerate identities automatically during configuration.</p>
+<p>A source audit can also reject a C file that contains an actual zero byte. The C character literal <code>'\0'</code> is written as visible source characters; the compiler interprets the escape later. An authoring tool that writes a binary zero into the source instead has changed the file encoding contract. Correct the source spelling and rerun the source audit, then compile and test the affected behavior.</p>
+<p>Stop after a failed configure or build. Tests and installation against an older build directory do not qualify the source that failed to build. Keep the first diagnostic and rerun the failed stage before continuing.</p>
 <h2>Keep a useful record</h2>
 <p>Record the exact command, source revision, compiler version, first meaningful diagnostic and exit status. If you use Tee-Object to save output in PowerShell, inspect the native command's exit code immediately. Printing a log is not evidence of success.</p>
 <p>Do not remove a warning flag merely to make a transcript look clean. Determine whether the warning identifies a real ownership, range or portability issue. The <a href="https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html">GCC warning reference</a> explains individual options.</p>
@@ -41,7 +45,13 @@ gcc --version</code></pre>
 <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/test_runner.c">Open the example source</a>
 -->
 <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/c-build-stages/test_runner.c">Open the example source</a>.</p>
-<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="30-link-with-a-native-sdk.html">Previous: Link a program with an existing native SDK</a> · <a href="32-observe-incremental-rebuilds.html">Next: Observe which files an incremental build rebuilds</a></p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <!-- The original route is retained for review. The active link adds the
+     sequence relation used by readers and the course navigation contract.
+<a href="30-link-with-a-native-sdk.html">Previous: Link a program with an existing native SDK</a> -->
+<a rel="prev" href="30-link-with-a-native-sdk.html">Previous: Link a program with an existing native SDK</a> · <!-- The original route is retained for review. The active link adds the
+     sequence relation used by readers and the course navigation contract.
+<a href="32-observe-incremental-rebuilds.html">Next: Observe which files an incremental build rebuilds</a> -->
+<a rel="next" href="32-observe-incremental-rebuilds.html">Next: Observe which files an incremental build rebuilds</a></p>
 </nav><p><a href="../../../lessons/learning-c/31-read-diagnostics-by-stage.md">Markdown manuscript</a></p>
 <details><summary>Three different failures</summary><p>A missing C semicolon is a compile-stage failure. Omitting runner.o leaves LessonEvaluate unresolved at link time. Division by zero inside the embedded source reaches the built application and is rejected by the Umicom C execution step. The wrapper returns 0 and leaves the old caller value untouched.</p></details>
 <nav aria-label="Learning C reference guides"><a href="../glossary.html">Word explanations</a> · <a href="../practical-guide.html">Practical guide</a> · <a href="../../learning-paths.html">Learning routes</a></nav>

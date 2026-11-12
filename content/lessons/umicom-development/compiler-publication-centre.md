@@ -46,7 +46,11 @@ List every point at which the operation can still return failure. Mark the last 
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Compiler publication laboratory](../../../labs/native/framework-compiler-publication/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-publication-centre.html)
+-->
+[Compiler publication laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-compiler-publication/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-publication-centre.html)
 
 [Previous lesson](compiler-publication-metadata-keys.md) · [Next lesson](compiler-publication-command-refresh.md) · [Course index](index.md)
 

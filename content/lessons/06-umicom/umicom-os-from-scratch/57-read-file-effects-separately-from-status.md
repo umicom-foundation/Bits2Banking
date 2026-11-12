@@ -53,6 +53,10 @@ Framework records creation immediately after the operating system creates the le
 
 A created but unwritten output can have outputCreated equal to one, writeStarted equal to zero and verified equal to zero. Keep it for diagnosis; do not label it an approved distribution image. If a report contradicts the observed artifact, record the executable and SDK identities before changing code. Authored test expectations are not evidence that your installed library contains the fix.
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Complete application](../../../../labs/native/framework-boot-media/main.c) · [Lab setup and recovery](../../../../labs/native/framework-boot-media/README.md)
+-->
+[Complete application](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/main.c) · [Lab setup and recovery](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md)
 
 [Course contents](index.md) · [Previous lesson](56-qualify-an-installed-image-client.md) · [Next lesson](58-own-a-synchronous-progress-context.md)

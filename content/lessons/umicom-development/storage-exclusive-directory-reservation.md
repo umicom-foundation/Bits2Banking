@@ -59,6 +59,10 @@ Write a two-sentence message for a project picker that encounters an existing de
 
 ## Source and next steps
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Lab build and source guide](../../../labs/native/framework-filesystem-clients/README.md) · [Qualification record](../../../labs/native/framework-filesystem-clients/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/storage-exclusive-directory-reservation.html)
+-->
+[Lab build and source guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-filesystem-clients/README.md) · [Qualification record](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-filesystem-clients/QUALIFICATION.md) · [HTML edition](../../courses/umicom-development/lessons/storage-exclusive-directory-reservation.html)
 
 [Previous lesson](storage-existing-parent-ownership.md) · [Course index](index.md) · [Next lesson](storage-exclusive-file-publication.md)

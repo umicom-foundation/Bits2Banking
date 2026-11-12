@@ -65,6 +65,10 @@ If an older installed SDK accepts the malformed record, preserve that observatio
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [UI value laboratory and owner commands](../../../labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-archive-admission.html)
+-->
+[UI value laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-archive-admission.html)
 
 [Previous lesson](ui-values-reactive-revisions.md) · [Next lesson](ui-values-installed-qualification.md) · [Course index](index.md)

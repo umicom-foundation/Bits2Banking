@@ -50,6 +50,10 @@ Use the existing lab README to build against a matching installed Framework and 
 
 An empty file after the write-phase stop is consistent with exclusive creation; it is not evidence of an unexpected payload write. A second attempt using that same path should be refused because it now exists. Preserve it, choose another path and review again. Do not weaken exclusive creation to make a lesson retry appear successful, and do not substitute a physical drive for the regular-file output.
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Complete application](../../../../labs/native/framework-boot-media/main.c) · [Lab setup and recovery](../../../../labs/native/framework-boot-media/README.md)
+-->
+[Complete application](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/main.c) · [Lab setup and recovery](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md)
 
 [Course contents](index.md) · [Previous lesson](58-own-a-synchronous-progress-context.md) · [Next lesson](60-interpret-cancellation-after-payload-writing.md)

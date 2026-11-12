@@ -18,7 +18,11 @@ MIT
 
 # Recognise truncation before format fallback
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Course contents](../../../courses/umicom-os-from-scratch/index.html) · [HTML edition](../../../courses/umicom-os-from-scratch/lessons/64-recognise-truncation-before-format-fallback.html) · [Complete lab](../../../../labs/native/framework-iso-inspection/README.md)
+-->
+[Course contents](../../../courses/umicom-os-from-scratch/index.html) · [HTML edition](../../../courses/umicom-os-from-scratch/lessons/64-recognise-truncation-before-format-fallback.html) · [Complete lab](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-iso-inspection/README.md)
 
 ## Start with three different questions
 

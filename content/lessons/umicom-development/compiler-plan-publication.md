@@ -57,6 +57,10 @@ For the review exercise, compare a temporary plan with a plain struct copy that 
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Compiler ownership laboratory and owner commands](../../../labs/native/framework-compiler-ownership/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-plan-publication.html)
+-->
+[Compiler ownership laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-compiler-ownership/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-plan-publication.html)
 
 [Previous lesson](compiler-request-composition.md) · [Next lesson](compiler-borrowed-arguments.md) · [Course index](index.md)

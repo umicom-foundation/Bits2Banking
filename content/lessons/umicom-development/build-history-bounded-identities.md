@@ -78,6 +78,10 @@ Investigate the failing profile and submit a new attempt after correcting it. Do
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Build-history laboratory and owner commands](../../../labs/native/framework-build-history/README.md) · [HTML edition](../../courses/umicom-development/lessons/build-history-bounded-identities.html)
+-->
+[Build-history laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-build-history/README.md) · [HTML edition](../../courses/umicom-development/lessons/build-history-bounded-identities.html)
 
 [Previous lesson](build-history-copy-and-lifetime.md) · [Next lesson](build-history-layered-qualification.md) · [Course index](index.md)

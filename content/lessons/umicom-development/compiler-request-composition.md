@@ -57,6 +57,10 @@ For an exercise, propose a request with a source path that fits its path array b
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Compiler ownership laboratory and owner commands](../../../labs/native/framework-compiler-ownership/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-request-composition.html)
+-->
+[Compiler ownership laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-compiler-ownership/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-request-composition.html)
 
 [Previous lesson](compiler-catalogue-admission.md) · [Next lesson](compiler-plan-publication.md) · [Course index](index.md)

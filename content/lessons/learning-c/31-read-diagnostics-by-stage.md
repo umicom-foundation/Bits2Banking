@@ -52,6 +52,14 @@ The test passes the text return 6 / 0 inside the supported tiny program. Compili
 
 The test also supplies a syntax error and null arguments. These are different causes with the same public success/failure result. A production interface may expose richer diagnostics; this small wrapper deliberately teaches the output contract first.
 
+## Distinguish configuration from compilation
+
+CMake can refuse a project before the compiler runs. For example, a learning pack records the SHA-256 digest of each reviewed page. Editing a page changes its bytes, so the old digest no longer identifies that edition. Compare the named page with the intended source, then deliver the reviewed page and matching manifest together. If a collection has both `collection.json` and `learning-pack.json`, keep their edition metadata aligned too. Do not disable the checksum check or regenerate identities automatically during configuration.
+
+A source audit can also reject a C file that contains an actual zero byte. The C character literal `'\0'` is written as visible source characters; the compiler interprets the escape later. An authoring tool that writes a binary zero into the source instead has changed the file encoding contract. Correct the source spelling and rerun the source audit, then compile and test the affected behavior.
+
+Stop after a failed configure or build. Tests and installation against an older build directory do not qualify the source that failed to build. Keep the first diagnostic and rerun the failed stage before continuing.
+
 ## Keep a useful record
 
 Record the exact command, source revision, compiler version, first meaningful diagnostic and exit status. If you use Tee-Object to save output in PowerShell, inspect the native command's exit code immediately. Printing a log is not evidence of success.

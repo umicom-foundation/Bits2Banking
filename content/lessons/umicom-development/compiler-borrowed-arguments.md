@@ -58,6 +58,10 @@ For the exercise, sketch two plan objects and draw where each pointer goes befor
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Compiler ownership laboratory and owner commands](../../../labs/native/framework-compiler-ownership/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-borrowed-arguments.html)
+-->
+[Compiler ownership laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-compiler-ownership/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-borrowed-arguments.html)
 
 [Previous lesson](compiler-plan-publication.md) · [Next lesson](compiler-installed-qualification.md) · [Course index](index.md)

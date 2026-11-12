@@ -47,7 +47,11 @@ Draw two columns headed metadata identity and reuse evidence. Place working dire
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Compiler publication laboratory](../../../labs/native/framework-compiler-publication/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-publication-metadata-keys.html)
+-->
+[Compiler publication laboratory](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-compiler-publication/README.md) · [HTML edition](../../courses/umicom-development/lessons/compiler-publication-metadata-keys.html)
 
 [Previous lesson](compiler-preview-qualification.md) · [Next lesson](compiler-publication-centre.md) · [Course index](index.md)
 

@@ -51,6 +51,10 @@ The helper consumes its wrapper on every result. On Linux it attempts close once
 
 Consult the Linux close manual and Microsoft CloseHandle documentation linked from the Framework boot-media guide. Successful close is not a substitute for flush, readback or a boot test. The lab consumes the resulting public status; native-platform qualification remains a separate owner-run exercise.
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [Complete application](../../../../labs/native/framework-boot-media/main.c) · [Lab setup and recovery](../../../../labs/native/framework-boot-media/README.md)
+-->
+[Complete application](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/main.c) · [Lab setup and recovery](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-boot-media/README.md)
 
 [Course contents](index.md) · [Previous lesson](60-interpret-cancellation-after-payload-writing.md) · [Next lesson](62-retain-failed-media-artifacts-for-recovery.md)

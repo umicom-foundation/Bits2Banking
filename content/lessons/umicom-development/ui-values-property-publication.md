@@ -66,6 +66,10 @@ As a review question, explain why counting a logged setter call is weaker eviden
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [UI value laboratory and owner commands](../../../labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-property-publication.html)
+-->
+[UI value laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-property-publication.html)
 
 [Previous lesson](ui-values-aliased-text.md) · [Next lesson](ui-values-reactive-revisions.md) · [Course index](index.md)

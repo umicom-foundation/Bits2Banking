@@ -60,6 +60,10 @@ For a second exercise, decide whether an unavailable temperature should be NONE 
 
 ## Source and practice
 
+<!-- Previous source-tree links are retained for review; public repository routes
+     below remain usable after the lesson is published.
 [UI value laboratory and owner commands](../../../labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-active-payload.html)
+-->
+[UI value laboratory and owner commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-ui-values/README.md) · [HTML edition](../../courses/umicom-development/lessons/ui-values-active-payload.html)
 
 [Previous lesson](build-history-layered-qualification.md) · [Next lesson](ui-values-aliased-text.md) · [Course index](index.md)

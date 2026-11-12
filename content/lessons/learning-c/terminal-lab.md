@@ -4,6 +4,8 @@ This lab begins with an empty practice folder. You will install tools, write a C
 
 ## Setup recap: Install the development tools
 
+Choose the instructions for your operating system below. Install the compiler, CMake, Ninja and debugger before creating the exercise files; then check that their version commands work in the terminal you will use for the lesson.
+
 ### Windows
 
 1. Install MSYS2 from [its official installation guide](https://www.msys2.org/). The examples below assume its usual `C:\msys64` location; adapt it if you chose another.
