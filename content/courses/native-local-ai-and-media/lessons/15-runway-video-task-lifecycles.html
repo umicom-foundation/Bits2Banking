@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/15-runway-video-task-lifecycles.html
+
+PURPOSE:
+Teach runwayML video tasks and recovery.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RunwayML video tasks and recovery | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/15-runway-video-task-lifecycles.md">Written lesson</a></p><h1>RunwayML video tasks and recovery</h1>
+<p>RunwayML provides hosted media generation. Treat it as an external provider with its own account, billing, model capabilities and API version. A local C application can call a remote HTTP API without changing its implementation language, but the request still leaves the machine. Review the exact prompt and source asset before submitting it.</p>
+<h2>Follow a task receipt</h2>
+<p>The <a href="https://docs.dev.runwayml.com/api-details/sdks/">Runway SDK guide</a> maps image-to-video generation to POST /v1/image_to_video and task inspection to GET /v1/tasks/{id}. A generation response supplies a task ID. The ID is a receipt for an operation, not the resulting video. Check the current model-specific input schema rather than inventing a universal duration, resolution or model name.</p>
+<ol><li>Prepare a draft containing the reviewed prompt, source asset identity and supported model settings. Keep credentials outside the draft.</li>
+<li>Persist a local operation ID before dispatch. Record the provider task ID as soon as a valid receipt arrives.</li>
+<li>Perform bounded status checks with a deadline and a documented delay policy. Repeated transport failure is not a terminal provider state.</li>
+<li>After success, inspect the returned asset references, download through a controlled transport and verify the bytes.</li>
+<li>Import the media through the creative workspace, add the approved Umicom watermark to the export, and separately check playback and provenance.</li></ol>
+<h2>Model uncertainty explicitly</h2>
+<pre><code class="language-text">Prepared -&gt; dispatch began -&gt; receipt known -&gt; provider processing
+                                          -&gt; terminal failure
+                                          -&gt; output available -&gt; verified import
+Dispatch began + timeout -&gt; outcome unknown -&gt; reconcile, never assume no job</code></pre>
+<p>This is an educational state model, not a set of Runway wire-state spellings. A timeout can happen after the service accepted a charged request. Unless the selected protocol supplies a verified idempotency contract, retrying creation can produce a second job. A cancellation request and confirmed cancellation must also be recorded separately.</p>
+<h2>Reuse existing Framework ownership rules</h2>
+<p>Inspect media_generation/pixverse.h as an existing Framework example of separate prepare, review and execute operations. UmiPixVerseResult retains creation_may_exist and creation_confirmed. Its provider endpoints and numeric states belong to PixVerse and must not be relabelled as Runway support. A new adapter should share suitable lower-level transport and persistence services while implementing Runway-specific parsing.</p>
+<h2>Exercise and troubleshooting</h2>
+<p>Design fixtures for invalid input, a valid task receipt, an interrupted status check, terminal failure and an expired output reference. The expected result must state what the application knows, what remains unknown and whether another creation is allowed. Keep secret keys and signed asset URLs out of public logs.</p>
+<p>The useful Framework additions are durable job receipts, bounded polling, explicit cancellation scope and artifact admission. They benefit Media and LLM clients without embedding billing or provider logic in each UI. No live Runway request or native Runway adapter is qualified by this lesson.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="14-comfyui-workflows-and-local-jobs.html">Previous lesson</a> · <a href="16-langchain-retrieval-and-native-boundaries.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/17-tensorflow-models-and-c-ownership.html
+
+PURPOSE:
+Teach tensorFlow model export and C tensor ownership.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TensorFlow model export and C tensor ownership | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/17-tensorflow-models-and-c-ownership.md">Written lesson</a></p><h1>TensorFlow model export and C tensor ownership</h1>
+<p>TensorFlow separates model authoring, saved model artifacts and inference runtimes. A tensor is a typed multidimensional array. A native application must agree with a model on element type, shape, ordering and preprocessing; a buffer with the right byte count can still represent the wrong input.</p>
+<h2>Understand the deployment boundary</h2>
+<p>The <a href="https://www.tensorflow.org/guide/saved_model">TensorFlow SavedModel guide</a> describes an artifact containing computation and trained parameters that can run without the original model-building source. The <a href="https://www.tensorflow.org/install/lang_c">TensorFlow C installation guide</a> exposes the public c_api.h interface. This is a C-facing interface to an external runtime, not proof that TensorFlow itself is implemented entirely in C.</p>
+<p>Select a reviewed runtime version and supported target before building. The C installation page includes platform-specific release limits; do not assume the latest Python wheel and a downloaded C library have matching versions or GPU support. Keep headers and binaries from the same reviewed distribution.</p>
+<h2>Start with an allocation exercise</h2>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;tensorflow/c/c_api.h&gt;
+
+int main(void)
+{
+    const int64_t shape[2] = {1, 4};
+    TF_Tensor *input = TF_AllocateTensor(TF_FLOAT, shape, 2, 4 * sizeof(float));
+    if (input == NULL) return 1;
+    float *values = (float *)TF_TensorData(input);
+    if (values == NULL) { TF_DeleteTensor(input); return 1; }
+    for (int i = 0; i &lt; 4; ++i) values[i] = (float)i;
+    printf("runtime=%s, input-bytes=%zu\n", TF_Version(), TF_TensorByteSize(input));
+    TF_DeleteTensor(input);
+    return 0;
+}</code></pre>
+<p>This complete C example checks tensor allocation and ownership only. It does not load a model or perform inference. Compile it against the reviewed TensorFlow C headers and library for your platform. On the conventional four-byte float ABI the expected byte count is 16; the runtime version is reported by the actual linked library. Keep the real output instead of substituting that expected value.</p>
+<h2>Move from tensors to inference</h2>
+<ol><li>Export a tiny model with an explicit input signature and retain reference input/output arrays.</li>
+<li>Inspect the exported signature and actual graph operation names. A friendly signature alias is not automatically the operation name required by a low-level C API.</li>
+<li>Load the model using the documented session API, check TF_Status after each fallible call, and bind the admitted input/output operations.</li>
+<li>Compare native results with the reference using a stated numerical tolerance. Try a wrong shape and wrong type and record the actual refusal.</li>
+<li>Destroy tensors, sessions, graphs and status objects according to their ownership contracts on every exit path.</li></ol>
+<h2>Framework extension exercise</h2>
+<p>Design a C adapter with an opaque model handle, a borrowed input view and a caller-visible output ownership rule. Admit dimension products before multiplying by element width so hostile dimensions cannot overflow allocation sizes. Put device selection and runtime lifetime in Framework; let Media choose a task and display results.</p>
+<p>This lesson identifies an integration boundary. It does not add or qualify a TensorFlow provider in Umicom, redistribute the TensorFlow runtime or translate general Python source into C.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="16-langchain-retrieval-and-native-boundaries.html">Previous lesson</a> · <a href="18-pytorch-export-and-target-runtimes.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

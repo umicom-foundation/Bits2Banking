@@ -68,4 +68,4 @@ The validator now uses bounded per-record stack-depth and local-initialization a
 
 Explain why the one-arm local fixture is rejected before the trace capacity is considered. Then compare a host trace with a guest selector result: identify which evidence proves path behavior, which proves process cleanup, and what neither proves about physical hardware. QEMU user-mode qualification does not validate a real board, a NIC, a filesystem or other Kernel subsystems.
 
-[Course contents](index.md) · [Previous lesson](114-qualify-private-vm-locals-in-user-mode.md)
+[Course contents](index.md) · [Previous lesson](114-qualify-private-vm-locals-in-user-mode.md) · [Next lesson](116-admit-icmp-echo-without-trusting-the-sender.md)

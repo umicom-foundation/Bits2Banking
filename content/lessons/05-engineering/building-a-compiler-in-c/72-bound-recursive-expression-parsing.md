@@ -66,4 +66,4 @@ The neighboring wire-trace case uses the exact text int main(void){return 0?7:42
 
 Wrap a conditional in several pairs of parentheses and add unary negation inside one arm. Trace how the shared depth changes and predict which operand reaches the limit first. Keep a separate instruction count. If a test reports program capacity before depth, redesign the fixture to reach its intended boundary; do not weaken either guard.
 
-[Course contents](index.md) · [Previous lesson](71-select-values-with-conditional-expressions.md)
+[Course contents](index.md) · [Previous lesson](71-select-values-with-conditional-expressions.md) · [Next lesson](73-lower-checked-compound-assignments.md)

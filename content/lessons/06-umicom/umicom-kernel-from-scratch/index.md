@@ -367,3 +367,16 @@ Follow the real Kernel coordinator, distinguish image purposes, preserve output 
 ## Forward VM paths in user mode
 
 - [Execute forward VM paths in user mode](115-execute-forward-vm-paths-in-user-mode.md)
+
+
+## ICMP echo admission and ownership
+
+Trace mandatory checksums and copied observations without confusing accepted bytes with sender trust or a live network.
+
+1. [Admit ICMP echo without trusting the sender](116-admit-icmp-echo-without-trusting-the-sender.md)
+
+## TCP capture inspection and connection boundaries
+
+Inspect a fixed TCP header and mandatory pseudo-header checksum while keeping payload ownership and endpoint state separate.
+
+1. [Inspect TCP without claiming a connection](117-inspect-tcp-without-claiming-a-connection.md)

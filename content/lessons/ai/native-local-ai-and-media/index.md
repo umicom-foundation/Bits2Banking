@@ -37,6 +37,15 @@ Read without an account or installation. The native lab needs CMake, a C23-capab
 11. [Build native engines with measured kernels](../../../courses/native-local-ai-and-media/lessons/11-build-native-engines-with-measured-kernels.html)
 12. [Qualify a complete AI workflow](../../../courses/native-local-ai-and-media/lessons/12-qualify-a-complete-ai-workflow.html)
 
+13. [Use an installed Framework SDK in an independent application](../../../courses/native-local-ai-and-media/lessons/13-use-an-installed-framework-sdk.html)
+14. [ComfyUI workflows and local generation jobs](../../../courses/native-local-ai-and-media/lessons/14-comfyui-workflows-and-local-jobs.html)
+15. [RunwayML video tasks and recovery](../../../courses/native-local-ai-and-media/lessons/15-runway-video-task-lifecycles.html)
+16. [LangChain retrieval concepts and native Framework boundaries](../../../courses/native-local-ai-and-media/lessons/16-langchain-retrieval-and-native-boundaries.html)
+17. [TensorFlow model export and C tensor ownership](../../../courses/native-local-ai-and-media/lessons/17-tensorflow-models-and-c-ownership.html)
+18. [PyTorch export and target runtime qualification](../../../courses/native-local-ai-and-media/lessons/18-pytorch-export-and-target-runtimes.html)
+19. [Why Python or Java to C needs a language contract](../../../courses/native-local-ai-and-media/lessons/19-language-translation-and-runtime-contracts.html)
+20. [Plan reusable AI services for Media and LLM applications](../../../courses/native-local-ai-and-media/lessons/20-plan-shared-ai-services.html)
+
 ## Native lab and capability limits
 [Open the complete C23 lab](../../../../labs/native/local-ai-routing/README.md). Six deterministic scenarios exercise shared routing/policy contracts; a seventh check rejects an invalid port. A separate explicit command sends one prompt through Framework's existing loopback provider.
 

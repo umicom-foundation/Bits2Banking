@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-local-ai-and-media/lessons/19-language-translation-and-runtime-contracts.html
+
+PURPOSE:
+Teach why Python or Java to C needs a language contract.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original material; cited sources retain their own terms.
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Why Python or Java to C needs a language contract | Umicom Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="159" height="40"><span>Bits2Banking</span></a><nav aria-label="Learning navigation"><a href="../../course-series.html">Choose a subject</a></nav></div></header>
+<main id="main" class="simple-page"><article class="article-content"><p><a href="../../../lessons/ai/native-local-ai-and-media/19-language-translation-and-runtime-contracts.md">Written lesson</a></p><h1>Why Python or Java to C needs a language contract</h1>
+<p>Translating a language means preserving its observable behavior, including errors and resource ownership. Replacing familiar-looking syntax is insufficient. A compiler needs a parser, semantic rules, an intermediate representation, code generation and whatever runtime services the language requires.</p>
+<h2>Choose a small supported subset</h2>
+<p>Umicom C currently documents a bounded integer language and bytecode runtime. It supports specified arithmetic, comparisons, local integer values and forward-expression control flow. Its capability profile reports the linked implementation. It is not yet a general native C23 compiler with all headers, external symbols, object files and system-library linkage.</p>
+<p>Making Framework easier to find is a toolchain integration task: include paths, package discovery, library selection and ABI checks. It should remain an explicit SDK dependency. Automatically injecting every Framework library into every program would hide size, platform and dependency choices. It also would not implement Python or Java semantics.</p>
+<h2>Use a counterexample before designing a translator</h2>
+<pre><code class="language-text">Python integer: 2147483647 + 1 -&gt; 2147483648
+Java int addition at runtime: 2147483647 + 1 -&gt; -2147483648
+C signed 32-bit overflow: undefined behavior</code></pre>
+<p>Those expressions look similar but require different lowering rules. A Python-compatible implementation needs arbitrary-precision arithmetic for that case. A Java-compatible implementation needs the specified wrap behavior. A bounded educational language may reject overflow instead. Choose and document the language rather than silently borrowing the host C behavior. See the <a href="https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex">Python numeric types</a> and <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2.2">Java integer operations</a> specifications.</p>
+<h2>Plan a staged implementation</h2>
+<ol><li>Publish a subset grammar and explicitly reject unsupported constructs with source locations. Start with pure typed expressions, not arbitrary libraries.</li>
+<li>Define integer widths, overflow, booleans, evaluation order and exceptions before emitting C.</li>
+<li>Lower to a typed intermediate representation whose operations have explicit semantics.</li>
+<li>Generate C that implements those semantics using checked or defined operations. Keep a source map for diagnostics.</li>
+<li>Compile the generated C with an identified native compiler. Link only the required runtime and optional Framework components.</li>
+<li>Compare source-interpreter and generated-program results over both valid and rejected cases. Include failures, not just successful arithmetic.</li></ol>
+<h2>Runtime questions</h2>
+<p>For a larger Python subset, decide how objects, reference lifetimes, imports and dynamic dispatch work. For Java, address classes, initialization, garbage collection, exceptions and library behavior. Converting TensorFlow or PyTorch model artifacts is a different project from preserving every behavior of their Python authoring programs.</p>
+<h2>Exercise</h2>
+<p>Specify a translator for a function taking two signed 32-bit integers and returning their sum. List its accepted syntax, overflow outcome, generated function ABI and diagnostic location rules. Do not implement a regex-based source rewrite and call it a compiler. The expected deliverable is a precise, testable contract; this lesson does not claim an implemented Python or Java frontend.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="18-pytorch-export-and-target-runtimes.html">Previous lesson</a> · <a href="20-plan-shared-ai-services.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · Original educational material</p></footer></body></html>

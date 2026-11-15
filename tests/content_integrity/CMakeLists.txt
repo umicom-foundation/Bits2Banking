@@ -229,7 +229,7 @@ if(BUILD_TESTING)
             trailing-comment other-section missing-mapping duplicate-mapping
             wrong-mapping missing-html missing-manuscript wrong-depth
             escaping-manuscript duplicate-lesson shared-manuscript malformed-metadata
-            sibling-course duplicate-normalized escaping-html registry-object course-object)
+            sibling-course duplicate-normalized escaping-html registry-object course-object module-valid module-normalized module-uncatalogued module-object module-path-object module-paths-missing)
         add_test(NAME btb.education.course_discovery.${_case}
             COMMAND "${CMAKE_COMMAND}" "-DCASE=${_case}"
                 "-DFIXTURE_ROOT=${CMAKE_CURRENT_BINARY_DIR}/course-discovery-fixtures"

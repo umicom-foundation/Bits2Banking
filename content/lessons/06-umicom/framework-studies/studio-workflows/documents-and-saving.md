@@ -2,7 +2,7 @@
 
 Understand editing, saving and visual components through the same Framework state model.
 
-Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.
+Lesson 1 of 3. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.
 
 A **file** is named data stored on a device. A document opened in an editor usually has a working copy in memory. That working copy is a **draft**. Changing the draft does not necessarily change the file. The word **dirty** means the draft contains changes that have not been saved.
 

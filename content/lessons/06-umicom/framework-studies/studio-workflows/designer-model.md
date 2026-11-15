@@ -2,7 +2,7 @@
 
 Understand editing, saving and visual components through the same Framework state model.
 
-Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.
+Lesson 2 of 3. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.
 
 A **component** is a reusable interface part, such as a text field or button. A visual designer lets you arrange components. Its picture is a **view** of a document model: the stored description of components, properties and relationships.
 
@@ -74,3 +74,5 @@ Write one observation, one unanswered question and the result of the exercise. I
 ---
 
 [Read this lesson in HTML](../../../../courses/framework-and-finance/studio-workflows/lessons/designer-model.html) · [Learning sequence](../../../../start/learning-sequence.md)
+
+[Next: source navigation commands](source-navigation-commands.md)

@@ -1,0 +1,109 @@
+<!--
+Umicom Bits2Banking
+File: content/lessons/05-engineering/building-a-compiler-in-c/77-lower-signed-bitwise-complement.md
+
+PURPOSE:
+Teach signed complement lowering and independent consumer qualification.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+![Umicom](../../../assets/branding/umicom-wordmark.svg)
+
+# Lower signed bitwise complement through checked arithmetic
+
+[Course contents](index.md) · [Previous lesson](76-add-checked-signed-remainder.md) · [Next lesson](78-add-binary-bitwise-operators.md)
+
+Bitwise complement flips every bit in an integer. Logical negation asks whether a value is zero. They differ: ~1 is -2 in this signed 32-bit language, while !1 is 0. This lesson adds unary complement to the existing Umicom C parser without a new runtime opcode. Follow src/lexer.c and src/compiler.c, then use independent runtime fixtures to check the boundary. Umicom C remains a bounded teaching language written in C23, not a complete C23 compiler.
+
+## 1. Predict values before choosing an implementation
+
+Umicom C values range from -2147483648 to 2147483647. In two’s-complement representation, flipping every bit of x gives -1 - x. Zero becomes -1; -1 becomes zero. The minimum signed value becomes the maximum, and the maximum becomes the minimum. These endpoints matter because an implementation that works for small positive numbers may fail at the type boundary.
+
+~~~c
+int main(void)
+{
+    return ~-43;
+}
+~~~
+
+The example returns 42. Unary operators group from the right, so this means ~(-43). The minus and tilde are separate tokens. A positive integer token cannot exceed 2147483647; write the minimum as (-2147483647 - 1). Neither ~0x80000000 nor -2147483648 bypasses that literal bound. The operator adds no unsigned types or wider integer representation.
+
+## 2. Lower through checked subtraction
+
+~~~text
+PUSH -1
+PUSH 43
+NEGATE
+SUBTRACT
+RETURN
+~~~
+
+Lowering expresses a source operation through instructions already understood by the runtime. Push -1 before compiling the operand, emit the operand exactly once, then subtract it. For every admitted signed 32-bit operand, -1 - x fits in the same range. Do not lower through NEGATE followed by subtraction of one: negating the minimum signed value would overflow before producing the final answer. Algebraically equivalent expressions can have different intermediate failures on bounded machine integers.
+
+The prefix constant stays below the operand’s temporary values on the stack. A parenthesized conditional or short-circuit expression must preserve that common prefix on every forward path. Existing graph validation checks those joins. Keep unary precedence and the shared recursion counter instead of creating a second unchecked recursive parser for the new token.
+
+## 3. Keep lexical and source boundaries explicit
+
+The lexer consumes one tilde and emits a private complement token without lookahead. The parser recognizes it beside unary plus, minus and logical not. A space or comment after the tilde is allowed; a missing operand is a syntax error. The language still refuses ~=, binary &, |, ^, shifts, floating-point operands and integer suffixes. One unary feature does not establish a complete bit-manipulation language.
+
+Source is a borrowed byte span and need not end in NUL. A regression passes a span ending immediately after the tilde even when the allocation contains more characters. The parser must report the span’s end instead of reading an apparent operand beyond it. Another test inserts a NUL inside the span and expects rejection. On compilation failure the published instruction count is zero; partially written caller storage must not be executed.
+
+## 4. Preserve diagnostics and observable cost
+
+The generated PUSH -1 and SUBTRACT both carry the tilde’s source offset. Operand instructions retain their own locations. For ~(1 / 0), division fails at the slash and complement subtraction never runs. For ~(2147483647 + 1), addition fails at its own operator. Complement does not conceal an invalid operand. The VM leaves the caller’s previous completed result unchanged on execution failure.
+
+Each complement adds two executable records. The example needs exactly five units of instruction fuel. Four units reach RETURN but cannot complete it, so no result is published. Traces record attempted instructions and failure locations. Check actual indices, statuses and stack depths instead of treating any nonzero exit code as evidence of the intended failure.
+
+## 5. Reuse canonical bytecode
+
+No serialized complement opcode is introduced. The arithmetic example uses format 1. Complement around a comparison needs format 2, around a local load format 3, around a conditional format 4, and around remainder format 5. The highest operation requirement anywhere in the program selects its canonical version. An unselected branch still belongs to the encoded program. Earlier artifact bytes retain their runtime contract.
+
+~~~text
+55 4d 43 42 01 00 04 00
+01 ff ff ff ff 0a 00 00 00
+01 00 00 00 80 14 00 00 00
+03 00 00 00 00 0a 00 00 00
+07 00 00 00 00 1e 00 00 00
+~~~
+
+This independent fixture encodes PUSH -1, PUSH -2147483648, SUBTRACT and RETURN. It produces 2147483647 in four steps. Source offsets are 10, 20, 10 and 30. A literal fixture checks serialization and execution against an external expectation. A compiler/decoder round trip alone could allow matching mistakes to go unnoticed.
+
+## 6. Distinguish source capabilities from runtime operations
+
+<!-- Earlier capability snapshot retained: UMC_FEATURE_BITWISE_COMPLEMENT is compiler bit 32768. Its current complete mask is 65255. Runtime features remain 16795 and wire versions remain 62. A runtime-only consumer must not report the complement source bit: it executes subtraction but contains no tilde parser. Test individual capability bits in applications instead of freezing complete masks. A new header cannot give an older linked library new syntax. -->
+UMC_FEATURE_BITWISE_COMPLEMENT is compiler bit 32768. The current complete compiler mask is 130791. Runtime features are 82331 and wire versions are 126 after the separate binary bitwise extension. A runtime-only consumer must not report the complement source bit: it executes subtraction but contains no tilde parser. Test individual capability bits in applications instead of freezing complete masks. A new header cannot give an older linked library new syntax.
+
+## 7. Run the example and regressions
+
+~~~powershell
+.\build\bin\umicom-c.exe profile
+.\build\bin\umicom-c.exe check examples\complement.uc
+.\build\bin\umicom-c.exe run examples\complement.uc --max-steps 5
+.\build\bin\umicom-c.exe compile examples\complement.uc complement.umcb
+.\build\bin\umicom-c.exe exec complement.umcb --max-steps 5
+.\build\bin\umicom-c.exe trace-bytecode complement.umcb
+ctest --test-dir build -R "umicom.c.(complement|cli-complement)" --output-on-failure --no-tests=error
+~~~
+
+Use your actual build directory and a new output filename. Expect result 42, five instructions, and existing arithmetic records in disassembly. Repeat with four steps to observe budget exhaustion. If the CLI rejects the tilde, inspect its compiler feature report and executable path: an older binary can remain on PATH after source changes. If compile refuses an existing artifact, use a fresh destination instead of overwriting earlier evidence.
+
+## 8. Check depth, storage and independent consumers
+
+A chain of 63 tildes around zero reaches the allowed unary depth and uses 64 stack values. It produces 128 instructions including RETURN. One more tilde exceeds the shared depth limit. Each pending prefix occupies stack space before its operand is complete. Capacity failures remain distinct: compiler instruction exhaustion reports UMC_PROGRAM_TOO_LARGE; an undersized serialized output reports UMC_BUFFER_TOO_SMALL.
+
+The Kernel guest uses independent format-1 bytes for minimum, maximum, zero, fuel and wire/capability checks. The same entry runs in a host envelope and real RISC-V user mode at O0 and O2. Its helper header belongs in the image receipt, so changing it invalidates earlier evidence. These checks validate lowering compatibility, not source compilation inside the Kernel. The compiler suite separately compares a defined corpus against native C.
+
+Framework preview delegates to the canonical compiler and runtime. Its tests check that a successful result is cleared when a later request fails through fuel, syntax or operand arithmetic. Registering a test does not prove the application was built or Studio displayed the correct result. Keep compiler, host, guest, Framework and GUI qualification as separate observations.
+
+## Exercise
+
+1. Predict ~0, ~-1, ~~41, ~0 + 2 and ~(0 + 2), then verify them with the CLI. Explain why !0 and ~0 differ.
+2. Put division by zero in an unselected conditional under complement. Verify the selected value, inspect format-4 records and explain why structural validation still visits both arms.
+3. Inspect the trace for ~(1 / 0). Confirm its failure belongs to division, not generated subtraction. A different failure is not a passing regression.
+4. Compare signed endpoints with native C and test the shortest rejected span ending at tilde. State which contract each test proves.

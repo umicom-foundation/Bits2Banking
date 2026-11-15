@@ -185,3 +185,24 @@ Inspect resource requirements without executing a program, trace stack behavior,
 
 - [Select values with conditional expressions](71-select-values-with-conditional-expressions.md)
 - [Bound recursive expression parsing](72-bound-recursive-expression-parsing.md)
+
+## Checked compound assignments
+
+- [Lower checked compound assignments](73-lower-checked-compound-assignments.md)
+
+## Braced conditional statements
+
+- [Lower braced conditional statements](74-lower-braced-conditional-statements.md)
+
+## Ordered else-if chains
+
+- [Lower ordered else-if chains](75-lower-ordered-else-if-chains.md)
+
+## Checked signed remainder
+
+- [Add checked signed remainder without breaking bytecode](76-add-checked-signed-remainder.md)
+
+## Signed unary complement
+
+- [Lower signed bitwise complement through checked arithmetic](77-lower-signed-bitwise-complement.md)
+- [Add binary bitwise operators and preserve bytecode compatibility](78-add-binary-bitwise-operators.md)

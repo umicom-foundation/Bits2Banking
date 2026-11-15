@@ -57,3 +57,5 @@ Award credit for a correctly bounded request, truthful capability display, prese
 Work from the first failing layer upward. Fix transport before judging model responses, and fix evidence capture before tuning prompts. Keep private logs and credentials outside public lessons. Extend shared Framework services once, then wire each application to the same qualified boundary.
 
 [Course contents](index.md)
+
+Continue with [installed Framework SDKs](13-use-an-installed-framework-sdk.md) and the external AI tool lessons.
