@@ -269,3 +269,10 @@ Each course starts with its own setup summary. These routes currently contain tw
 - [Learning D Language](../lessons/03-native-code/learning-d/index.md) — Create a native program with the D compiler. Learn how source becomes an executable, then check a function with input validation and unit tests.
 - [Android Development](../lessons/15-mobile-development/learning-android/index.md) — Build a small lesson counter for an Android device or emulator. Begin with the development tools, run the generated application, then connect a button to visible screen state.
 - [Learning Flutter](../lessons/15-mobile-development/learning-flutter/index.md) — Create a small lesson counter using Dart and Flutter. Begin by running the generated project, then learn widgets, state, callbacks and automated interaction checks.
+
+## Native languages through C
+
+- [Native languages working together through C](../lessons/03-native-code/native-language-interoperability/index.md)
+- [Learning Fortran](../lessons/03-native-code/learning-fortran/index.md)
+- [Learning Odin](../lessons/03-native-code/learning-odin/index.md)
+- [Learning Nim](../lessons/03-native-code/learning-nim/index.md)

@@ -1,0 +1,28 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/05-call-c-from-zig.html
+
+PURPOSE:
+Teach keep zig errors separate from c status values.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep Zig errors separate from C status values | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Keep Zig errors separate from C status values</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-call-c-from-rust.html">Previous</a> · <a rel="next" href="06-call-c-from-fortran.html">Next</a></nav><h2>Read a boundary before building it</h2>
+<p>Zig can call a C ABI function. In the existing example, c_int describes the platform's C int, while a Zig error union represents the wrapper's success-or-failure result. These are different contracts connected by a small translation function.</p>
+<h2>Follow the files in order</h2>
+<ol><li>Read bridge.h to learn the C function name and rejection sentinel.</li><li>Open labs/languages/zig-activity/activity.zig. Locate the external function declaration and the advance wrapper.</li><li>Open main.zig. The catch branch prints refused and continues to the next input; it does not pretend that the count advanced.</li><li>Check zig version and read the lab README before running its build-exe and test commands. Zig compiler interfaces can change between releases; use the source and flags for the version you actually installed.</li><li>Link the same archive created in lesson 1, with a target matching that archive. Keep runtime checks enabled while learning.</li></ol>
+<h2>Expected behaviour</h2>
+<p>The four demonstration inputs have the same answers as the Rust and C++ clients. Debug output can appear on standard error; a terminal displaying it does not by itself indicate a failed process. Check the process exit status and the separate Zig test results.</p>
+<h2>Memory and ABI responsibilities</h2>
+<p>A Zig allocator is not automatically interchangeable with C malloc. If a later Framework API creates an object, release it with the function specified by that API. Do not free it through a different language allocator. Never retain a temporary slice or return an address into a function's local storage.</p>
+<h2>Exercise and answer</h2>
+<p>Why does the wrapper translate -1 instead of adding one itself? Because the C model owns validation and the upper bound. Why should the lab not declare every language as equally fast? This tiny example measures neither realistic workload nor memory behaviour, and foreign-call overhead may dominate it.</p>
+<p><a href="https://ziglang.org/documentation/">Zig documentation</a> explains C interoperability. The existing Learning Zig sequence gives the complete example and build commands without replacing the Framework boundary.</p><h2>Read the complete source</h2><p><a href="../../../../labs/languages/zig-activity/activity.zig">labs/languages/zig-activity/activity.zig</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-call-c-from-rust.html">Previous</a> · <a rel="next" href="06-call-c-from-fortran.html">Next</a></nav>
+</article></main></body></html>

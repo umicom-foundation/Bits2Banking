@@ -196,3 +196,7 @@ If a pack is refused, inspect the reported manifest and path. Restore the review
 <!-- Previous trading course row retained for review after course expansion:
 | Introduction to Trading and Post-Trade Systems | `learning-packs/framework-and-finance-trading-and-posttrade.json` | 10 |
 The active table reflects all thirty-three declared lessons. -->
+
+## Native languages through C and assembly
+
+Select learning-packs/native-language-interoperability.json with the complete Bits2Banking checkout as the library root. It contains the twelve-lesson shared ABI course, three two-lesson language introductions and the complete lab sources. Existing C, C++, Rust, Zig and D courses remain available separately. Optional compilers and installed-SDK examples require their own qualification.

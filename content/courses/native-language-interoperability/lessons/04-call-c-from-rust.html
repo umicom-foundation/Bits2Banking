@@ -1,0 +1,27 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/04-call-c-from-rust.html
+
+PURPOSE:
+Teach use a narrow rust foreign-function boundary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use a narrow Rust foreign-function boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Use a narrow Rust foreign-function boundary</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-call-c-from-cpp.html">Previous</a> · <a rel="next" href="05-call-c-from-zig.html">Next</a></nav><h2>Start with the existing Rust course</h2>
+<p>Rust distinguishes owned values from borrowed references and checks many rules during compilation. That checking cannot prove the behaviour of an arbitrary C library. A foreign-function declaration is therefore a promise the author must verify.</p>
+<h2>Follow the existing client</h2>
+<ol><li>Open activity.rs and main.rs in labs/languages/rust-activity.</li><li>Read the external declaration and its C-compatible integer type. Match it to bridge.h rather than choosing Rust's default integer by habit.</li><li>Find the narrow unsafe call. Its argument is a value, the C function keeps no pointer, and the linked library must export the declared function.</li><li>Observe how the wrapper translates rejection into a Result. The application can then handle refusal without repeating the counting rule.</li><li>Use the complete Windows GNU or Linux commands in that directory's README. Check rustc --version first; the example uses edition 2024.</li></ol>
+<p>On Windows the documented Rust target is x86_64-pc-windows-gnu with the matching GNU linker. Do not mix it accidentally with an MSVC-targeted archive or a 32-bit object. Installing a target is a separate setup step; opening the source does not install one.</p>
+<h2>Expected result and verification</h2>
+<p>The client prints 0 -&gt; 1, 41 -&gt; 42, 999 -&gt; 1000 and 1000 -&gt; refused. Its separate test build checks invalid input and independent calls. Run both commands from the README. If the compiler or target is missing, record the example as not run rather than passed.</p>
+<h2>Exercise and answer</h2>
+<p>Would a Rust reference guarantee that C never keeps its address? No. A reference does not rewrite the C implementation or its lifetime contract. This example avoids that issue by passing only one integer value. For a buffer API, review length, lifetime, mutability and whether the callee stores the address before writing the unsafe wrapper.</p>
+<p><a href="https://doc.rust-lang.org/nomicon/ffi.html">Read the Rust foreign-function guide</a> for the language boundary. Continue Learning Rust for values, borrowing and Result before adding callbacks or owned buffers.</p><h2>Read the complete source</h2><p><a href="../../../../labs/languages/rust-activity/activity.rs">labs/languages/rust-activity/activity.rs</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-call-c-from-cpp.html">Previous</a> · <a rel="next" href="05-call-c-from-zig.html">Next</a></nav>
+</article></main></body></html>

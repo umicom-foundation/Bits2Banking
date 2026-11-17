@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/02-follow-the-c-contract.html
+
+PURPOSE:
+Teach follow the c contract and its failure path.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow the C contract and its failure path | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Follow the C contract and its failure path</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-prepare-a-shared-boundary.html">Previous</a> · <a rel="next" href="03-call-c-from-cpp.html">Next</a></nav><h2>Read the public declaration</h2>
+<pre><code class="language-c">int BtbActivityNext(int current);</code></pre>
+<p>The first int is the return type. current is the name of the input parameter. The semicolon ends a declaration: this header describes the function but does not contain its implementation. The C bridge calls BtbActivityAdvance, which already owns the counting rule.</p>
+<h2>Follow a valid call</h2>
+<ol><li>Open bridge.c and activity.c side by side.</li><li>Find the negative-input check. It runs before conversion to unsigned. Converting -1 first would produce a large unsigned value, hiding the original meaning.</li><li>Follow current = 41 into BtbActivityAdvance. The model checks the output pointer and upper bound before addition.</li><li>Observe the local next variable. The bridge owns its storage; the C model writes it only on success and retains no pointer.</li><li>Follow current = 1000. The model returns a capacity status; the bridge returns -1. A caller must not treat -1 as a new count.</li></ol>
+<h2>Run the existing tests</h2>
+<p>After lesson 1, run ctest --test-dir build/activity-adapters --output-on-failure --no-tests=error. Read test_bridge.c before changing anything. It checks values near both accepted and rejected boundaries.</p>
+<h2>A deliberately small ABI</h2>
+<p>This interface uses a C int on both sides, not a language-default integer guessed to be equivalent. A future interface with text must specify encoding, length, allocation ownership and lifetime. A future interface with structures must specify layout and versioning. C linkage alone does not answer these questions.</p>
+<p>The bridge is a teaching adapter owned by Bits2Banking. It uses Framework status values but is not advertised as a new Framework SDK API. Real reusable application services should expose their own documented Framework contracts.</p>
+<h2>Exercise and worked answer</h2>
+<p>Would returning current + 1 in every language make the system easier to maintain? It would duplicate the rule and allow different limits or errors to drift apart. Keep the rule in C and translate only the interface. What should happen for -1? Rejection before the signed-to-unsigned conversion. Explain both answers before editing the next client.</p><h2>Read the complete source</h2><p><a href="../../../../labs/native/activity-adapters/bridge.c">labs/native/activity-adapters/bridge.c</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-prepare-a-shared-boundary.html">Previous</a> · <a rel="next" href="03-call-c-from-cpp.html">Next</a></nav>
+</article></main></body></html>

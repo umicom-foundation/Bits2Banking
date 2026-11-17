@@ -1,0 +1,30 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/06-call-c-from-fortran.html
+
+PURPOSE:
+Teach pass a c integer correctly from fortran.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pass a C integer correctly from Fortran | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Pass a C integer correctly from Fortran</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-call-c-from-zig.html">Previous</a> · <a rel="next" href="07-call-c-from-d.html">Next</a></nav><h2>Understand the three essential declarations</h2>
+<p>Fortran is often used for scientific and numerical programs. A .f90 file uses free-form source: statements are not tied to the old fixed-form columns. The sample's iso_c_binding module supplies c_int, the kind of integer corresponding to C int.</p>
+<p>BIND(C, name=&quot;BtbActivityNext&quot;) selects C interoperability and the exact external name. VALUE on current passes the integer itself. Without VALUE, a scalar argument is normally passed using reference-like behaviour; C would interpret an address as the integer input. A matching name alone cannot repair that error.</p>
+<h2>Build and run</h2>
+<ol><li>Finish the common archive in lesson 1.</li><li>Install or select a GNU Fortran compiler for the same target and runtime as the C compiler. Check gfortran --version; do not confuse an MSYS tool with a UCRT64 tool.</li><li>Read the full main.f90 source linked below. The interface block describes the C function; it does not implement the counting rule.</li><li>From the repository root, run:</li></ol>
+<pre><code class="language-powershell">gfortran -Wall -Wextra -Werror -fcheck=all labs/languages/fortran-activity/main.f90 build/activity-adapters/libbtb-activity-adapters.a -o build/fortran-activity.exe
+&amp; .\build\fortran-activity.exe</code></pre>
+<p>Expected lines are -1 -&gt; -1, 0 -&gt; 1, 41 -&gt; 42, 999 -&gt; 1000 and 1000 -&gt; -1. The program checks each value and ends with a nonzero status if a result differs. The loop index starts at 1 because these Fortran arrays use their default lower bound.</p>
+<h2>Diagnose before changing the model</h2>
+<p>An unknown symbol points to the external name or archive. Nonsensical values point to ABI declarations, architecture or the wrong linked implementation. Do not remove VALUE to quiet an unrelated warning. An absent gfortran command is an unexecuted lab, not a language failure.</p>
+<h2>Exercise and answer</h2>
+<p>Which three details must agree with int BtbActivityNext(int)? Answer: C linkage and external name, c_int for input and result, and VALUE for the input. Ordinary Fortran character strings are not C strings; a later text example needs a separate encoding and termination contract.</p>
+<p><a href="https://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html">GNU Fortran C interoperability</a> documents these declarations. Start Learning Fortran if program, implicit none and array indexing are unfamiliar.</p><h2>Read the complete source</h2><p><a href="../../../../labs/languages/fortran-activity/main.f90">labs/languages/fortran-activity/main.f90</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="05-call-c-from-zig.html">Previous</a> · <a rel="next" href="07-call-c-from-d.html">Next</a></nav>
+</article></main></body></html>

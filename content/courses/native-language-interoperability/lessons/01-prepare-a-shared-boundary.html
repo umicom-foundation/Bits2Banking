@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/01-prepare-a-shared-boundary.html
+
+PURPOSE:
+Teach prepare one shared c boundary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prepare one shared C boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Prepare one shared C boundary</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-follow-the-c-contract.html">Next</a></nav><h2>What you will learn</h2>
+<p>A language is a way to write instructions. A compiler translates a source file into machine instructions. An object file contains compiled instructions and names that still need to be connected. A linker joins object files and libraries into an executable program. An archive is a container of object files, not a program you can launch.</p>
+<p>An application binary interface, abbreviated ABI, is the agreement between compiled functions: argument sizes, registers, stack layout, exported names and return values. Different source languages can cooperate when they deliberately use the same ABI. This does not mean that arbitrary source syntax can be pasted into another language.</p>
+<h2>Before you type commands</h2>
+<ol><li>If files, folders or terminals are unfamiliar, begin with <a href="../../computing-from-the-beginning/index.html">Computing from the beginning</a>, then <a href="../../learning-c/index.html">Learning C</a>. Return when you can create a file and recognise a function call.</li><li>Open the Bits2Banking checkout in a terminal. Keep practice output in its build folder. Never use a system directory for exercises.</li><li>Check cmake --version and gcc --version. This series needs CMake, Ninja and a C23 compiler. A missing command means the tool is absent or its directory is not on PATH; it does not mean your program is wrong.</li><li>Obtain an installed Umicom Framework SDK for the same operating system and processor as your compiler. Its prefix is the directory containing lib/cmake/UmicomFramework. A source checkout alone is not an installed SDK.</li><li>Read the existing activity-adapters README. Do not download a model, run a full application build or install every language to start this lab.</li></ol>
+<h2>Build the common archive</h2>
+<p>Run these PowerShell commands separately from the Bits2Banking repository. Replace the SDK prefix if your installation differs. Stop at the first error.</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/native/activity-adapters -B build/activity-adapters -G Ninja -DCMAKE_C_COMPILER=gcc &quot;-DCMAKE_PREFIX_PATH=C:/umicom/installed/framework&quot;
+cmake --build build/activity-adapters --parallel 2
+ctest --test-dir build/activity-adapters --output-on-failure --no-tests=error</code></pre>
+<p>Expected artifacts include libbtb-activity-adapters.a with a GNU toolchain and two registered C checks. A successful configure is not a successful build. Missing UmicomFrameworkConfig.cmake means the SDK prefix needs correction. Do not copy arbitrary headers to silence it.</p>
+<pre><code class="language-text">C / C++ / Rust / Zig / Fortran / D / Odin / Nim caller
+                         |
+                  BtbActivityNext(int)
+                         |
+          existing C activity model + Framework status</code></pre>
+<h2>Try it and explain it</h2>
+<p>Predict the result of BtbActivityNext(41) and BtbActivityNext(1000). The answers are 42 and -1. The limit is checked in one C implementation; each foreign-language client must preserve the rejection result. Record the compiler version, target and exact command with every experiment. No timing ranking can be inferred from this tiny demonstration.</p><h2>Read the complete source</h2><p><a href="../../../../labs/native/activity-adapters/bridge.h">labs/native/activity-adapters/bridge.h</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-follow-the-c-contract.html">Next</a></nav>
+</article></main></body></html>

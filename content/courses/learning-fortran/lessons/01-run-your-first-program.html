@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-fortran/lessons/01-run-your-first-program.html
+
+PURPOSE:
+Teach run your first fortran program.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Run your first Fortran program | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Run your first Fortran program</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-connect-values-to-c.html">Next</a></nav><h2>Start here</h2>
+<p>This is a first reading course in Fortran. A source file is an ordinary text file containing instructions. A compiler reads it and reports errors before producing an executable. A terminal is a text interface where you enter commands; it is not the same thing as your source editor. If you have never created or saved a file, begin with the existing computer-architecture and C introductory courses.</p>
+<h2>Prepare the tools</h2>
+<ol><li>Read the <a href="https://gcc.gnu.org/onlinedocs/gfortran/">official Fortran documentation</a>. Follow its setup instructions for your operating system. Check the compiler version in a new terminal after installation.</li><li>Keep C and native toolchains separate from Python environment activation. A missing compiler command is a PATH or installation issue.</li><li>Open the Bits2Banking repository in a terminal and create a build folder if it does not exist: New-Item -ItemType Directory -Force build.</li><li>Open the complete hello source linked below. Read it before running a command.</li></ol>
+<h2>Understand every line</h2>
+<p>program and end program enclose the executable statements. implicit none requires each variable to be declared, so a misspelled name becomes a compiler diagnostic instead of silently creating another variable. integer declares a whole number. The formatted print uses A for text and I0 for an integer without padding.</p>
+<pre><code class="language-text">program first_value
+  implicit none
+  integer :: completed
+  completed = 41
+  print '(A,I0)', 'Completed: ', completed
+end program first_value</code></pre>
+<h2>Compile, then execute</h2>
+<p>Run these PowerShell commands separately. Stop if the compiler reports an error; an old executable is not evidence that the new source compiled.</p>
+<pre><code class="language-powershell">gfortran -Wall -Wextra -fcheck=all labs/languages/fortran-activity/hello.f90 -o build/fortran-hello.exe
+&amp; .\build\fortran-hello.exe</code></pre>
+<p>Expected output is Completed: 41. This expectation is a prediction to check on your machine, not a claim that your compiler has been installed. On Linux choose a filename without .exe and run it using ./build/fortran-hello.</p>
+<h2>Exercise and worked answer</h2>
+<p>Change completed to 42, rebuild, then run again. Next misspell completed as completde in the assignment. With implicit none, the compiler should reject the undeclared name. Restore the spelling. A compiler error is useful feedback; do not remove implicit none to hide it.</p>
+<p>If nothing appears, check the executable path, process status and whether you compiled the file you edited. Save the first diagnostic before changing settings.</p><h2>Read the complete source</h2><p><a href="../../../../labs/languages/fortran-activity/hello.f90">labs/languages/fortran-activity/hello.f90</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-connect-values-to-c.html">Next</a></nav>
+</article></main></body></html>

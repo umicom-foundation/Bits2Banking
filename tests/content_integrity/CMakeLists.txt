@@ -283,3 +283,11 @@ if(BUILD_TESTING)
     add_test(NAME btb.education.lesson_tables.parse-bounds
         COMMAND btb-lesson-tables-test "${_btb_repo_root}/content/courses/building-a-compiler-in-c/lessons/72-bound-recursive-expression-parsing.html" 3 4)
 endif()
+
+# Native language examples and their course pack form one reviewable payload.
+if(BUILD_TESTING)
+    add_test(NAME btb.education.native_language_course
+        COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
+            -P "${CMAKE_CURRENT_LIST_DIR}/check_native_language_course.cmake")
+    set_tests_properties(btb.education.native_language_course PROPERTIES TIMEOUT 30 LABELS "education;native;interop;identity")
+endif()

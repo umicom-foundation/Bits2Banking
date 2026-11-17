@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/08-call-c-from-odin.html
+
+PURPOSE:
+Teach select an explicit c library from odin.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Select an explicit C library from Odin | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Select an explicit C library from Odin</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-call-c-from-d.html">Previous</a> · <a rel="next" href="09-call-c-from-nim.html">Next</a></nav><h2>Learn the source vocabulary</h2>
+<p>A package groups Odin source files. import loads Odin code such as core:fmt. foreign import names a compiled library instead. The activity collection is a build-time location supplied by the user, so the source does not embed a private drive path.</p>
+<p>The foreign block declares BtbActivityNext using proc &quot;c&quot; and c.int. The trailing three hyphens mean that another object supplies the body. Odin's default int must not be assumed to be the same as C int on every target.</p>
+<h2>Prepare and build</h2>
+<ol><li>Build libbtb-activity-adapters.a with lesson 1's matching C toolchain.</li><li>Check odin version and install the compiler's required platform linker. Consult the official Odin setup instructions for your platform.</li><li>Read the source before building. It performs five calls and returns process status 1 on any unexpected value.</li><li>Run from the repository root:</li></ol>
+<pre><code class="language-powershell">$activityLibrary = (Resolve-Path build/activity-adapters).Path
+odin build labs/languages/odin-activity/main.odin -file &quot;-collection:activity=$activityLibrary&quot; -out:build/odin-activity.exe
+&amp; .\build\odin-activity.exe</code></pre>
+<p>On Linux, use an absolute archive directory for the same collection and an output name without .exe. The source intentionally names the GNU archive. A library produced by a different object format or architecture must be rebuilt for the selected target; renaming a library is not a conversion.</p>
+<h2>What success means</h2>
+<p>Expected output is the five-line sequence described in the Fortran lesson. It establishes this small integer boundary only. It does not establish a full Framework binding, GUI backend or debugger integration for Odin. If the linker rejects the archive, keep the diagnostic and inspect target compatibility before changing source.</p>
+<h2>Exercise and answer</h2>
+<p>Why supply a library collection? It keeps the source portable and makes the chosen dependency visible in the build command. Why use c.int? It records the C ABI width rather than guessing from Odin's convenient native integer type.</p>
+<p><a href="https://odin-lang.org/docs/overview/#foreign-system">Odin foreign-system documentation</a> explains library collections and calling conventions. The introductory Odin course explains packages and procedures before this exercise.</p><h2>Read the complete source</h2><p><a href="../../../../labs/languages/odin-activity/main.odin">labs/languages/odin-activity/main.odin</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="07-call-c-from-d.html">Previous</a> · <a rel="next" href="09-call-c-from-nim.html">Next</a></nav>
+</article></main></body></html>

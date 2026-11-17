@@ -1,0 +1,30 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/07-call-c-from-d.html
+
+PURPOSE:
+Teach call the c bridge with d betterc.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Call the C bridge with D BetterC | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Call the C bridge with D BetterC</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-call-c-from-fortran.html">Previous</a> · <a rel="next" href="08-call-c-from-odin.html">Next</a></nav><h2>Distinguish D from BetterC</h2>
+<p>D is a native language with a larger runtime and standard library. BetterC selects a restricted mode useful for embedding in C programs. It does not make arbitrary D code valid without a runtime. This example uses fixed arrays, C linkage and C printf; it does not use classes, garbage collection or exceptions.</p>
+<h2>Read the example</h2>
+<ol><li>Find extern(C) on BtbActivityNext. This preserves the name and calling convention expected by the C archive.</li><li>Find extern(C) int main. This program uses a C entry point.</li><li>Read nothrow and @nogc. They constrain this D code; they cannot inspect the internals of an external C function automatically. Our known C model does not allocate or throw.</li><li>Follow the fixed input and expected arrays. A mismatched result returns 1 even when assertions are disabled.</li></ol>
+<h2>Compile with LDC</h2>
+<p>Check ldc2 --version, then use an LDC target and linker compatible with the archive from lesson 1. On a native Linux host, from the repository root:</p>
+<pre><code class="language-bash">ldc2 -betterC labs/languages/d-activity/main.d build/activity-adapters/libbtb-activity-adapters.a -of=build/d-activity
+./build/d-activity</code></pre>
+<p>On Windows, use the same source and archive with a compatible LDC Windows target, and use -of=build/d-activity.exe. Run it with &amp; .\build\d-activity.exe in PowerShell. Linker and C runtime configuration must match the installed toolchain; a Linux command copied into Windows does not establish compatibility.</p>
+<p>Expect the same five lines as the Fortran client, including rejection of -1 and 1000. If LDC is not installed, record that result explicitly. Do not describe a source inspection as an executed BetterC test.</p>
+<h2>Exercise and answer</h2>
+<p>Can you replace printf with an arbitrary managed-library function because the source is D? No. BetterC deliberately removes runtime facilities. Read the function's requirements before using it. Continue the existing Learning D course for modules, slices and contracts, then compare the two runtime modes.</p>
+<p><a href="https://dlang.org/spec/betterc.html">D BetterC documentation</a> lists supported and unavailable facilities.</p><h2>Read the complete source</h2><p><a href="../../../../labs/languages/d-activity/main.d">labs/languages/d-activity/main.d</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-call-c-from-fortran.html">Previous</a> · <a rel="next" href="08-call-c-from-odin.html">Next</a></nav>
+</article></main></body></html>

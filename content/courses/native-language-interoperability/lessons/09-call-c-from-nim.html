@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/09-call-c-from-nim.html
+
+PURPOSE:
+Teach generate c from nim while preserving the boundary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Generate C from Nim while preserving the boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Generate C from Nim while preserving the boundary</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-call-c-from-odin.html">Previous</a> · <a rel="next" href="10-forward-a-call-in-assembly.html">Next</a></nav><h2>Two compilation stages</h2>
+<p>The Nim C backend produces C source and then uses a C compiler to create machine code. The resulting executable still needs correct types and ownership. Generated C is not automatically a promise that any C library can free Nim objects.</p>
+<p>The declaration uses cint, importc with the exact C symbol, and cdecl for the C calling convention. It passes an integer value, not a Nim string, sequence or managed object. The counting function remains in the existing C archive.</p>
+<h2>Build a small program</h2>
+<ol><li>Check nim --version and gcc --version. Select the same target as the common archive.</li><li>Read main.nim. Indentation groups the statements inside the loop and if branch.</li><li>Keep checks enabled. The explicit mismatch branch calls quit with status 1.</li><li>From the repository root, run:</li></ol>
+<pre><code class="language-powershell">$activityArchive = (Resolve-Path build/activity-adapters/libbtb-activity-adapters.a).Path
+nim c --cc:gcc --mm:orc &quot;--passL:$activityArchive&quot; --nimcache:build/nim-cache --out:build/nim-activity.exe labs/languages/nim-activity/main.nim
+&amp; .\build\nim-activity.exe</code></pre>
+<p>The C backend may place generated files under build/nim-cache. Inspect them after a successful compile to see the external call, but make changes in the Nim source; generated files can be replaced on the next build.</p>
+<h2>Interpret results and memory behaviour</h2>
+<p>Expect the same five checked lines as the Fortran example. ORC is a Nim memory-management mode; it does not change who owns an arbitrary C allocation. If a Framework API returns an owned object, use its documented destroy function. If it borrows a buffer only during a call, keep that buffer alive for the whole call.</p>
+<h2>Exercise and answer</h2>
+<p>Why use cint instead of int? The C function declares int, while Nim's general integer follows its own platform rules. Does compiling through C remove Nim's runtime requirements? No. The generated program can still contain runtime support. This example avoids passing managed storage across the ABI rather than pretending that support does not exist.</p>
+<p><a href="https://nim-lang.org/docs/manual.html#foreign-function-interface-importc-pragma">Nim's foreign-function manual</a> explains importc. Start Learning Nim for indentation, let and proc before this lesson.</p><h2>Read the complete source</h2><p><a href="../../../../labs/languages/nim-activity/main.nim">labs/languages/nim-activity/main.nim</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-call-c-from-odin.html">Previous</a> · <a rel="next" href="10-forward-a-call-in-assembly.html">Next</a></nav>
+</article></main></body></html>

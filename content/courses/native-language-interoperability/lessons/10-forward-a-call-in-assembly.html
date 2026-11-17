@@ -1,0 +1,30 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/10-forward-a-call-in-assembly.html
+
+PURPOSE:
+Teach connect assembly to the same c function.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect assembly to the same C function | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Connect assembly to the same C function</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-call-c-from-nim.html">Previous</a> · <a rel="next" href="11-test-errors-and-ownership.html">Next</a></nav><h2>Scope of this experiment</h2>
+<p>Assembly names processor instructions directly. It is specific to the processor and object format. This lab covers GNU-style assembly on Windows x64 and Linux x86-64. It deliberately rejects other targets during preprocessing. It is not a bootloader or a faster implementation of the counting rule.</p>
+<h2>Follow the call</h2>
+<ol><li>Open forward.S and main.c. The capital S tells the GNU toolchain to preprocess the assembly source.</li><li>Find the global BtbAssemblyActivityNext symbol. The C caller declares the same function.</li><li>Observe the single jump to BtbActivityNext. A tail jump reuses the original return address. No new stack frame or return address is created.</li><li>On Windows x64 the first integer argument arrives in ECX; on Linux x86-64 it arrives in EDI. The wrapper changes neither register. The two called functions use the same ABI on each platform.</li><li>The C function returns its integer result in EAX and returns directly to the original caller.</li></ol>
+<h2>Build and compare</h2>
+<p>Use the SDK prefix from lesson 1:</p>
+<pre><code class="language-powershell">cmake -S labs/native/assembly-activity -B build/assembly-activity -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_ASM_COMPILER=gcc &quot;-DCMAKE_PREFIX_PATH=C:/umicom/installed/framework&quot;
+cmake --build build/assembly-activity --parallel 2
+ctest --test-dir build/assembly-activity --output-on-failure --no-tests=error</code></pre>
+<p>The C driver checks INT_MIN, -1, 0, 41, 999, 1000 and INT_MAX against explicit answers and the direct C call. This tests both rejected extremes and valid transitions. The lab does not benchmark performance.</p>
+<h2>Exercise and recovery</h2>
+<p>Would replacing jmp with call and leaving the rest unchanged work? No: call adds another return address and requires a valid return path and ABI-compliant stack handling. This particular wrapper needs none of those changes because it forwards the original call unchanged.</p>
+<p>If the assembler reports an unsupported target, use the C-only client or provide a separately reviewed implementation for that target. Do not remove the guard to claim portability. The GNU stack-note section on Linux marks the object as not requesting an executable stack; Windows uses a different object format.</p><h2>Read the complete source</h2><p><a href="../../../../labs/native/assembly-activity/forward.S">labs/native/assembly-activity/forward.S</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-call-c-from-nim.html">Previous</a> · <a rel="next" href="11-test-errors-and-ownership.html">Next</a></nav>
+</article></main></body></html>

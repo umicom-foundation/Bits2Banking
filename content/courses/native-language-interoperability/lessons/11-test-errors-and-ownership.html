@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/11-test-errors-and-ownership.html
+
+PURPOSE:
+Teach test errors, lifetimes and realistic performance.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test errors, lifetimes and realistic performance | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Test errors, lifetimes and realistic performance</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-forward-a-call-in-assembly.html">Previous</a> · <a rel="next" href="12-use-the-course-in-studio.html">Next</a></nav><h2>Separate four kinds of evidence</h2>
+<p>A source review asks whether the declarations and logic agree. A compile checks syntax and target rules. A link checks that required symbols can be resolved. An executed test checks behaviour for its actual inputs and environment. None substitutes for all the others.</p>
+<h2>Make a test record</h2>
+<ol><li>Record the source revision or file hashes, compiler version, operating system and target.</li><li>Build with warnings enabled. Read the first diagnostic before repeating a full build.</li><li>Run negative input, the lowest valid input, an ordinary value, the last valid input and the rejected boundary.</li><li>Run the same calls repeatedly and in different orders. A stateless value function should not retain the previous result.</li><li>Record failures and unavailable compilers separately. A skipped language is not a passed language.</li></ol>
+<h2>Why this example is memory-simple</h2>
+<p>The boundary passes one integer value and returns one integer value. The C implementation keeps no caller pointer and performs no heap allocation. That makes its ownership review small. Larger Framework APIs still need explicit create/destroy pairs, borrowed-buffer lifetimes, capacity checks and failure paths that leave outputs unchanged.</p>
+<p>A native implementation can still leak, read freed storage or corrupt memory. Rewriting Python in C or assembly does not automatically remove those bugs. For supported toolchains, use sanitizers and repeated workload measurements. Measure peak memory and retained memory after cleanup separately; model weights and caches are not necessarily leaks.</p>
+<h2>Compare performance fairly</h2>
+<p>Use the same algorithm, input, target and optimisation level. Separate compilation time, startup time, foreign-call overhead and steady-state throughput. Run several trials and report their variation. A five-call activity demonstration is for correctness; its timing does not rank languages.</p>
+<h2>Exercise and worked answer</h2>
+<p>A client compiles successfully but crashes on the first call. Which facts should you inspect first? Check the linked library identity, argument and return types, calling convention and target architecture. Do not begin by removing runtime checks. A client gives 1001 for input 1000: verify that it actually calls the shared implementation rather than a duplicate rule.</p>
+<p>For the next real API, write an ownership table before code: who allocates, who may mutate, who frees and whether the callee retains data. Keep unknown answers explicit.</p><h2>Read the complete source</h2><p><a href="../../../../labs/native/activity-adapters/test_bridge.c">labs/native/activity-adapters/test_bridge.c</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="10-forward-a-call-in-assembly.html">Previous</a> · <a rel="next" href="12-use-the-course-in-studio.html">Next</a></nav>
+</article></main></body></html>

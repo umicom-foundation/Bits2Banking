@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-language-interoperability/lessons/03-call-c-from-cpp.html
+
+PURPOSE:
+Teach call c from c++ without changing ownership.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Call C from C++ without changing ownership | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Call C from C++ without changing ownership</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-follow-the-c-contract.html">Previous</a> · <a rel="next" href="04-call-c-from-rust.html">Next</a></nav><h2>Two languages, one implementation</h2>
+<p>C++ supports objects and destructors, but it can also call C functions. A C++ compiler normally encodes extra type information into function names. The extern &quot;C&quot; wrapper in bridge.h asks for C language linkage. It does not convert C++ objects into a portable binary format.</p>
+<h2>Inspect and build the existing lab</h2>
+<ol><li>Read bridge.h. Notice that __cplusplus guards the extern &quot;C&quot; block so the same header remains valid in C.</li><li>Read main.cpp and test_client.cpp in the cpp-activity-client directory.</li><li>Inspect CMakeLists.txt. It compiles activity.c as C and the client as C++; the source extensions retain their intended languages.</li><li>Run the following commands with the installed SDK from lesson 1.</li></ol>
+<pre><code class="language-powershell">cmake -S labs/native/cpp-activity-client -B build/cpp-activity -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ &quot;-DCMAKE_PREFIX_PATH=C:/umicom/installed/framework&quot;
+cmake --build build/cpp-activity --parallel 2
+ctest --test-dir build/cpp-activity --output-on-failure --no-tests=error
+&amp; .\build\cpp-activity\btb-cpp-activity.exe</code></pre>
+<p>Expected behaviour is the same checked progression and rejection as the C model. The existing client test is the executable check; reading a plausible console transcript is not a substitute.</p>
+<h2>Keep the boundary narrow</h2>
+<p>Do not expose std::string, std::vector, exceptions or compiler-specific class layouts through a C header. A C caller cannot understand them. If a C++ implementation can throw, catch its exceptions inside the C++ side and translate them into the documented C result. A pointer still needs a clear owner; extern &quot;C&quot; does not manage memory.</p>
+<h2>Recovery and exercise</h2>
+<p>An unresolved BtbActivityNext symbol usually means the C archive was omitted or the declaration used C++ linkage. An incompatible-object error usually points to a target or toolchain mismatch. Keep separate build directories when changing toolchains.</p>
+<p>Explain why compiling activity.c with a C++ compiler is not the intended fix. Answer: that changes the language used for the implementation and can alter accepted syntax and linkage. Connect the two correctly compiled objects instead. Continue the existing Learning C++ course for object lifetime and file ownership.</p><h2>Read the complete source</h2><p><a href="../../../../labs/native/cpp-activity-client/main.cpp">labs/native/cpp-activity-client/main.cpp</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-follow-the-c-contract.html">Previous</a> · <a rel="next" href="04-call-c-from-rust.html">Next</a></nav>
+</article></main></body></html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-fortran/lessons/02-connect-values-to-c.html
+
+PURPOSE:
+Teach connect fortran values to the c contract.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connect Fortran values to the C contract | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Connect Fortran values to the C contract</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-run-your-first-program.html">Previous</a></nav><h2>Move from a value to a function call</h2>
+<p>The first lesson printed a local value. This lesson sends a value to an existing C function and checks its answer. A function is a named operation with declared inputs and an output. A foreign-function interface describes a call into code compiled from another language.</p>
+<h2>Work in a deliberate order</h2>
+<ol><li>Read <a href="../../native-language-interoperability/lessons/01-prepare-a-shared-boundary.html">Prepare one shared C boundary</a>. Build the C archive and run its checks before adding another compiler.</li><li>Read <a href="../../native-language-interoperability/lessons/06-call-c-from-fortran.html">the Fortran interoperability lesson</a>. Match every declared type and external name to bridge.h.</li><li>Open this course's main example, which is separate from hello. Do not compile both entry points together.</li><li>Write down your expected answers for inputs -1, 0, 41, 999 and 1000.</li><li>Build using the full command in the interoperability lesson, then compare all five results. Keep a missing compiler or linker recorded as not run.</li></ol>
+<h2>Read the error contract</h2>
+<p>A result of -1 means refusal; it is not a valid next count. The C model accepts 0 through 999 and produces 1 through 1000. The caller must preserve that distinction. A successful result from 41 is 42, but that does not prove the boundary inputs work.</p>
+<h2>Ownership without hidden allocations</h2>
+<p>Only integer values cross this boundary. No address is retained and no managed-language object is passed to C. This small design makes it possible to study linkage independently of allocation and garbage collection. Later text or image APIs require separate lifetime and capacity rules.</p>
+<h2>Exercise and worked answer</h2>
+<p>Explain why adding one directly in the Fortran client is not equivalent. Answer: it duplicates the rule and can skip its rejection cases. Explain why passing an integer with the wrong width is dangerous even if 41 appears to work. Answer: the caller and callee may read different register or stack bytes, and larger or negative values expose the mismatch. Keep the implementation in C and correct the interface declaration instead.</p><h2>Read the complete source</h2><p><a href="../../../../labs/languages/fortran-activity/main.f90">labs/languages/fortran-activity/main.f90</a></p><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-run-your-first-program.html">Previous</a></nav>
+</article></main></body></html>
