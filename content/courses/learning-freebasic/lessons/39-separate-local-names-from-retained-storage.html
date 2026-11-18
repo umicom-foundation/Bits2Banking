@@ -1,0 +1,72 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/39-separate-local-names-from-retained-storage.html
+
+PURPOSE:
+Separate local names from retained storage
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate local names from retained storage | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate local names from retained storage</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>A name can be local while its value survives</h2>
+<p>A function can hide a variable name from the rest of the program without discarding that variable after every call. This lesson separates visibility, lifetime and ownership. Visibility describes where you can write a name in source. Lifetime describes how long its stored value exists. Ownership describes which part of your application is responsible for that state. None of those words means that the value has been saved to disk.</p>
+<h2>Read the three experiments</h2>
+<table><thead><tr><th scope="col">Function</th><th scope="col">Where its counter comes from</th><th scope="col">Two calls produce</th></tr></thead><tbody><tr><td>NextAutomatic</td><td>Creates and resets a Counter on each call</td><td>1, then 1</td></tr><tr><td>NextHidden</td><td>Uses a Static Counter inside the function</td><td>1, then 2</td></tr><tr><td>NextOwned</td><td>Receives the caller's Counter through ByRef</td><td>Depends on which owner you pass</td></tr></tbody></table>
+<h2>Begin with the ordinary local</h2>
+<pre><code class="language-freebasic">Function NextAutomatic(ByRef outputValue As ULong) As Boolean
+    Dim state As Counter
+    state.value = 0
+    Return NextOwned(state, outputValue)
+End Function</code></pre>
+<h2>Follow the first call</h2>
+<ol><li>Dim declares state inside this function. The name does not become a global name.</li><li>The explicit assignment sets this call's counter value to zero.</li><li>NextOwned admits the update and changes it to one. ByRef outputValue refers to the caller's output variable.</li><li>Return passes the Boolean success result back. The automatic state is no longer available after this call returns.</li><li>Call the function again. It creates a fresh state and sets that state to zero, so the next result is one again.</li></ol>
+<h2>Keep one local variable between calls</h2>
+<pre><code class="language-freebasic">Function NextHidden(ByRef outputValue As ULong) As Boolean
+    Static state As Counter
+    Return NextOwned(state, outputValue)
+End Function</code></pre>
+<h2>What Static changes</h2>
+<p>Static retains this variable between calls, although the name state is still local to the function. The numeric field starts at zero. The first call changes it to one; the second sees that retained value and changes it to two. This is one hidden state object for that function, not a new counter for every window, document or caller. Restarting the executable starts a new process; this example does not save the counter to a file. Static can also appear in other FreeBASIC contexts, including procedure and member declarations; this example uses the variable declaration form.</p>
+<h2>Prefer an explicit owner when callers need independence</h2>
+<pre><code class="language-freebasic">Type Counter
+    value As ULong
+End Type
+
+Function NextOwned(ByRef state As Counter, ByRef outputValue As ULong) As Boolean
+    If state.value &gt;= 3 Then Return False
+    Dim candidate As ULong = state.value + 1
+    state.value = candidate
+    outputValue = candidate
+    Return True
+End Function</code></pre>
+<h2>Read each part of the bounded update</h2>
+<p>Type names a record containing a value field. ULong is an unsigned 32-bit FreeBASIC integer. ByRef permits the function to refer to the caller's actual variable. Boolean communicates success separately from the numeric output. The cap of three is deliberately small so you can reach refusal quickly. The function checks the cap before adding. candidate names the admitted next value. If the cap is reached, neither assignment executes, so both state and the output remain unchanged. This is a teaching counter, not a bank transaction ID generator.</p>
+<h2>Trace two independent owners</h2>
+<table><thead><tr><th scope="col">Step</th><th scope="col">Owner passed</th><th scope="col">Left value</th><th scope="col">Right value</th><th scope="col">Returned output</th></tr></thead><tbody><tr><td>Start</td><td>None</td><td>0</td><td>0</td><td>Not yet used</td></tr><tr><td>1</td><td>Left</td><td>1</td><td>0</td><td>1</td></tr><tr><td>2</td><td>Right</td><td>1</td><td>1</td><td>1</td></tr><tr><td>3</td><td>Left</td><td>2</td><td>1</td><td>2</td></tr><tr><td>4</td><td>Left</td><td>3</td><td>1</td><td>3</td></tr><tr><td>5</td><td>Left at its cap</td><td>3</td><td>1</td><td>Unchanged sentinel 99; False result</td></tr></tbody></table>
+<h2>Build the complete example</h2>
+<ol><li>Open the repository's labs/languages/native-language-boundary directory. Use local_storage.bas as the complete program, not just a fragment from this page.</li><li>Check Get-Command fbc and fbc -version in PowerShell. If the compiler is absent, return to the setup lesson and choose the approved FreeBASIC toolchain.</li><li>Compile in the modern fb dialect with additional runtime checks. Run the resulting program only after compilation succeeds.</li><li>Compare the three printed lines with the expectations below.</li><li>Run the executable again. The new process should repeat the same output; the Static value was retained between calls, not across process restarts.</li></ol>
+<h2>Commands and expected output</h2>
+<pre><code class="language-powershell">fbc -lang fb -exx local_storage.bas -o local_storage.exe
+.\local_storage.exe</code></pre>
+<pre><code class="language-text">Automatic calls: 1, 1
+Static calls: 1, 2
+Owned counters: left 3, right 1; refusal preserved 99</code></pre>
+<h2>Inspect the failure case</h2>
+<p>The complete program sets the output to 99 before asking a capped owner for another value. A sentinel is a recognizable value chosen to reveal an unwanted write. False plus an unchanged 99 proves the intended refusal path for this fixture. It does not prove every possible application state or concurrent call is safe. The source also checks that the other owner's value remains one.</p>
+<h2>Compare with C and D carefully</h2>
+<p>The adjacent local_storage.c program is a host C23 comparison. Its static local is shared storage; the example is single-threaded and supplies no locking. FreeBASIC's retained local also needs a synchronization design if multiple threads mutate it. D's ordinary mutable static local is thread-local by default. The same word therefore does not imply the same cross-thread ownership in all languages. These examples do not start threads or measure concurrency.</p>
+<h2>Using this idea in Umicom projects</h2>
+<p>A Studio document, a Media job and a Trader data view can each need their own progress state. An explicit owner object makes that relationship visible, permits independent tests and gives cleanup a clear home. A hidden static counter can accidentally couple two callers. Reusable production services still belong in native Framework with their existing ownership and synchronization rules. This FreeBASIC program teaches the distinction; it is not a replacement product service or a supported compiler extension in Umicom C.</p>
+<h2>Exercises</h2>
+<ol><li>Predict three calls to NextAutomatic, then add the third call: expect 1, 1, 1.</li><li>Predict three calls to NextHidden within one execution: expect 1, 2, 3. A fourth call must return False without overwriting the caller's output.</li><li>Create a third explicit Counter owner and interleave updates. Write down its state before running the example.</li><li>Explain why declaring a Static variable inside a function does not create a separate value for every caller.</li><li>Explain why a local variable that contains a pointer needs a separate pointed-to-object lifetime analysis. A pointer's visibility alone does not establish ownership.</li></ol>
+<h2>Qualification and troubleshooting</h2>
+<p>The C comparison has its own CMake/CTest path in the laboratory README. A passing C check does not compile or validate FreeBASIC. Treat this BASIC source as an authored example until you run it with the selected FreeBASIC compiler. If output differs, check the file, selected dialect, compiler version and whether you are repeatedly calling a function in one process or restarting the program. Do not repair a failed test by changing the expected values without understanding the storage lifetime.</p>
+<h2>Further reading</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgStatic">FreeBASIC STATIC variable declarations</a></li><li><a href="https://www.freebasic.net/wiki/TutIntroScope">FreeBASIC introduction to scope</a></li><li><a href="https://www.freebasic.net/wiki/ProPgStorageClasses">FreeBASIC storage classes</a></li></ul>
+<nav aria-label="Previous lesson"><a href="38-observe-which-conditional-expression-runs.html">Previous: Observe which conditional expression runs</a></nav><nav aria-label="Continuing practice"><a href="40-read-nested-comments-and-logical-lines.html">Next: Read nested comments and logical lines</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

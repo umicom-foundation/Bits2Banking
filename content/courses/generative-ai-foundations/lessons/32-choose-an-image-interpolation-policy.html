@@ -1,0 +1,66 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/generative-ai-foundations/lessons/32-choose-an-image-interpolation-policy.html
+
+PURPOSE:
+Choose an image interpolation policy
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose an image interpolation policy | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Choose an image interpolation policy</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>What you will make</h2>
+<p>You will shrink a tiny two-by-two image to one pixel twice: once by selecting a nearby pixel and once by mixing neighboring pixels. You will predict the numbers before running the program. This is a preprocessing lesson, not a model-training run. Preprocessing means changing input data into the form expected by a model. A different resizing rule can produce different training data even when the source files are identical.</p>
+<h2>Start with pixels, channels and rows</h2>
+<p>An image is a rectangular grid. One position in that grid is a pixel. Our example stores three numbers per pixel: red, green and blue, abbreviated RGB. Each number is an unsigned byte, so it can hold an integer from 0 through 255. The numbers here are already decoded pixels in memory. A PNG or JPEG file has a different encoded file structure; passing its file bytes directly to this API would not decode it.</p>
+<table><thead><tr><th scope="col">Position</th><th scope="col">Red</th><th scope="col">Green</th><th scope="col">Blue</th></tr></thead><tbody><tr><td>Top left</td><td>0</td><td>10</td><td>20</td></tr><tr><td>Top right</td><td>100</td><td>110</td><td>120</td></tr><tr><td>Bottom left</td><td>200</td><td>210</td><td>220</td></tr><tr><td>Bottom right</td><td>240</td><td>250</td><td>255</td></tr></tbody></table>
+<h2>Locate a destination pixel in the source</h2>
+<p>Coordinates count from zero. In a two-pixel row, the source centers are called 0 and 1. Resizing to one pixel places its center halfway between those source centers. The center-mapping formula is (d + 0.5) × sourceSize / targetSize − 0.5. Here d is the destination coordinate; sourceSize and targetSize are the widths for a horizontal calculation or the heights for a vertical calculation. For 2 to 1, d is 0, so the result is 0.5. A coordinate outside the source is clamped to its nearest border: clamping means limiting a value to an allowed range.</p>
+<ol><li>Write d = 0, sourceSize = 2 and targetSize = 1 on paper.</li><li>Calculate (0 + 0.5) × 2 / 1 − 0.5 = 0.5.</li><li>Repeat for height. The destination center is at source position (0.5, 0.5).</li><li>Notice that all four source pixels are equally distant. A policy must specify what to do with this tie.</li></ol>
+<h2>Nearest and bilinear answer different questions</h2>
+<p>Nearest sampling selects one source pixel. Framework resolves equal-distance nearest ties toward the higher coordinate, so this example chooses the bottom-right RGB value: 240, 250, 255. Bilinear interpolation mixes two neighbors horizontally and two vertically. A weight is the fraction contributed by a neighbor. At the center, each horizontal weight is one half and each vertical weight is one half. Multiplying them gives one quarter for each of the four pixels. Bilinear is not a promise to invent missing detail.</p>
+<figure><img src="../../../assets/diagrams/bilinear-center-weights.svg" alt="Four source red values contribute one quarter each to the center value 135; nearest chooses 240." style="width:100%;height:auto"><figcaption>The drawing shows sample centers, not the area covered by a shrinking pixel.</figcaption></figure>
+<h2>Compute the weighted result by hand</h2>
+<p>A byte cannot hold 153.75. The Framework policy rounds to the nearest integer, sending exact half ties upward: 127.5 becomes 128. It rounds once after combining both axes. Rounding each horizontal result before the vertical calculation is a different algorithm. For four scalar values 0, 0, 0 and 1, the exact center average is 0.25 and rounds to 0. Prematurely rounding the lower row average 0.5 to 1 and then averaging rows would produce 1 instead.</p>
+<table><thead><tr><th scope="col">Channel</th><th scope="col">Weighted calculation before rounding</th><th scope="col">Final byte</th></tr></thead><tbody><tr><td>Red</td><td>(0 + 100 + 200 + 240) / 4 = 135</td><td>135</td></tr><tr><td>Green</td><td>(10 + 110 + 210 + 250) / 4 = 145</td><td>145</td></tr><tr><td>Blue</td><td>(20 + 120 + 220 + 255) / 4 = 153.75</td><td>154</td></tr></tbody></table>
+<h2>Read the C data declaration</h2>
+<p>uint8_t names an unsigned eight-bit integer type. The square brackets create an array, a sequence of values stored next to one another. sizeof pixels gives its byte size. The five view fields are pixel address, accessible byte count, width, height and row stride. Row stride is the number of bytes from the start of one row to the start of the next; two RGB pixels need six bytes here. The ampersand in &amp;source passes the descriptor address. The output array belongs to the caller and has room for one RGB pixel. Check status before using a result. The complete laboratory below includes those checks.</p>
+<pre><code class="language-c">const uint8_t pixels[] = {
+    0,10,20, 100,110,120,
+    200,210,220, 240,250,255
+};
+const UmiAiTrainingRgb8View source = {pixels,sizeof pixels,2,2,6};
+uint8_t output[3];
+UmiStatus status = UmiAiTrainingImageResizeBilinearRgb8(
+    &amp;source, 1, 1, output, sizeof output);</code></pre>
+<h2>Prepare the existing projects</h2>
+<ol><li>Use the Umicom Framework and Bits2Banking checkouts from the same integrated source delivery. You need a C23-capable compiler, CMake and Ninja. These are build tools: the compiler translates C, CMake prepares build instructions, and Ninja executes the required compilation steps.</li><li>On Windows, open PowerShell. Check the paths in the commands below against your installed folders before running them. The example assumes the UCRT64 GCC toolchain is installed under C:\msys64.</li><li>Open labs/framework/image-resize/bilinear.c in a text editor. Compare its pixels array with the table above. Do not replace the entire Framework with a local copy inside the lesson.</li><li>Run each command separately. Stop if a command reports an error. The configure step selects an existing Framework source tree for a narrow teaching build; it does not prove that a separately installed SDK package works.</li></ol>
+<h2>Configure, compile, check and run</h2>
+<p>The build directory holds generated files and executables. It is separate from the source directory. The test command runs both the original nearest lesson and this bilinear comparison. The final command runs the comparison program directly. It neither downloads a model nor writes an image file.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+cmake -S labs/framework/image-resize -B build/image-resize -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/image-resize --parallel 2
+ctest --test-dir build/image-resize --output-on-failure
+&amp; .\build\image-resize\umicom-image-bilinear.exe</code></pre>
+<h2>Compare the observed output</h2>
+<p>The first two lines should match your paper calculation. The third line comes from an intentional refusal: a three-byte pixel cannot fit in a capacity of two bytes. The program checks that the previous output stays unchanged. A passed assertion establishes this specific behavior for the tested input; it does not establish that every possible caller supplies valid pointers.</p>
+<pre><code class="language-text">Nearest center: 240 250 255
+Bilinear center: 135 145 154
+Short output leaves the previous image unchanged.
+Six stripes to two: 255 0; no area antialiasing.</code></pre>
+<h2>Why smoothing is not complete antialiasing</h2>
+<p>Aliasing occurs when fine patterns are represented incorrectly at a lower sampling resolution. Imagine six alternating black and white columns. When the example shrinks them to two columns, the mapped source positions are exactly 1 and 4. Bilinear then reads white and black at those positions. It does not average all pixels covered by each new pixel. An area filter or other suitable low-pass filter can use a wider footprint when shrinking, but this API does not implement that. Neither resizing method can reconstruct detail discarded by an earlier reduction.</p>
+<h2>Choose the policy for the actual data</h2>
+<table><thead><tr><th scope="col">Data or requirement</th><th scope="col">Decision to make</th></tr></thead><tbody><tr><td>Ordinary RGB image</td><td>Match the model documentation: size, crop, interpolation, color handling and normalization.</td></tr><tr><td>Categorical mask: numbers mean classes</td><td>Use a label-preserving method. Mixing class 0 with class 2 must not silently invent class 1.</td></tr><tr><td>Light or color accuracy</td><td>Determine whether the workflow requires linear-light interpolation; these routines mix encoded byte values.</td></tr><tr><td>Small textures during substantial shrinking</td><td>Check aliasing and use a qualified antialiasing policy if required.</td></tr><tr><td>Reproducible dataset</td><td>Record the chosen algorithm and parameters alongside the dataset version. A filename does not capture preprocessing.</td></tr></tbody></table>
+<h2>Keep the C memory contract visible</h2>
+<p>A borrowed view does not own or copy its pixels. Keep the pixel storage alive and unchanged until the call completes. Source descriptor, readable source bytes and writable destination storage must be disjoint; in-place overlap is not supported. Framework validates dimensions, stride, declared capacity and the limit of 16,384 channel values per input and output. It cannot discover whether a pointer actually refers to accessible memory. The bounded implementation performs no heap allocation and retains no pointer. This makes its resource use predictable, but does not turn all surrounding C code into memory-safe code.</p>
+<h2>Troubleshoot before changing data</h2>
+<table><thead><tr><th scope="col">Symptom</th><th scope="col">Check</th></tr></thead><tbody><tr><td>The new function is not declared</td><td>Verify that the header and source come from the same integrated Framework version.</td></tr><tr><td>Configure cannot find a Framework file</td><td>Correct UMICOM_FRAMEWORK_SOURCE; it must name the Framework root.</td></tr><tr><td>Capacity-exceeded status</td><td>Check width × height × 3, output capacity and the bounded image limit.</td></tr><tr><td>Unexpected colors</td><td>Confirm RGB channel order, row stride and encoded-byte versus linear-light expectations.</td></tr><tr><td>The output differs only at borders</td><td>Check center alignment and clamping rules, not just the algorithm name.</td></tr><tr><td>The program crashes before returning a status</td><td>Inspect object lifetime, actual allocation size and overlap. A declared byte count does not allocate memory.</td></tr></tbody></table>
+<h2>Practice and answers</h2>
+<ol><li>Change the four blue values to 0, 0, 0 and 1 in a copy of the exercise. Predict the exact average and rounded output before editing its expected-value assertion. Answer: 0.25, then 0.</li><li>Make all four pixels equal to 70, 80, 90. Predict both policies. Answer: both return the same constant color.</li><li>Explain why passing JPEG file bytes as the source array is wrong. Answer: the API requires decoded pixels and does not parse compressed image files.</li><li>Write a short dataset note listing source resolution, output resolution, crop, interpolation, color convention and normalization. This note makes later training and inference preparation easier to compare.</li></ol>
+<nav aria-label="Previous lesson"><a href="31-validate-every-frame-before-publishing-a-clip.html">Previous: Validate every frame before publishing a clip</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

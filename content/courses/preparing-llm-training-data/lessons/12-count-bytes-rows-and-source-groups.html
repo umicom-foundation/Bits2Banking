@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/12-count-bytes-rows-and-source-groups.html
+
+PURPOSE:
+Count bytes, rows and source groups before tokenization
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Count bytes, rows and source groups before tokenization | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Count bytes, rows and source groups before tokenization</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>Before choosing a model, inspect what you actually have. A row is one example. A source group links examples that came from the same independent document, recording or other origin. A byte is one unit of stored data. A token is an item produced by a particular model tokenizer. These counts answer different questions; substituting one for another can produce poor evaluation splits or incorrect memory estimates.</p>
+<h2>Work through three records on paper</h2>
+<pre><code class="language-jsonl">{&quot;source_id&quot;:&quot;note-a&quot;,&quot;prompt&quot;:&quot;p&quot;,&quot;completion&quot;:&quot;c&quot;}
+{&quot;source_id&quot;:&quot;note-b&quot;,&quot;prompt&quot;:&quot;&quot;,&quot;completion&quot;:&quot;xyz&quot;}
+{&quot;source_id&quot;:&quot;note-a&quot;,&quot;prompt&quot;:&quot;uv&quot;,&quot;completion&quot;:&quot;cd&quot;}</code></pre>
+<ol><li>Draw one box per row. There are three boxes.</li><li>Label two boxes note-a and one note-b. There are two source groups, and the largest contains two rows.</li><li>Count the prompt bytes: p has 1, the empty string has 0, and uv has 2. The total is 3 and the longest is 2.</li><li>Count completion bytes: 1 + 3 + 2 = 6. The longest completion has 3 bytes.</li><li>Choose note-b for evaluation. You selected half the source groups, but only one third of the rows. Choosing note-a instead would put two thirds of the rows in evaluation.</li></ol>
+<p>A random group split preserves the group boundary; it does not promise an exact row percentage or balanced topics. If rows from one source are split apart, closely related passages can appear in both training and evaluation. That can make a model seem better at generalizing than it is. A grouping rule must be chosen before chunking, and must follow actual provenance rather than a different invented ID for each chunk.</p>
+<h2>Use the shared native summary</h2>
+<pre><code class="language-c">#include &quot;umicom/ai/training/jsonl_summary.h&quot;
+
+UmiAiTrainingJsonlSummary summary = {0};
+UmiAiTrainingJsonlReport report;
+UmiStatus status = UmiAiTrainingJsonlSummarize(
+    jsonl_bytes, byte_length, NULL, &amp;summary, &amp;report);
+if (status == UMI_STATUS_OK) {
+    /* summary.rows, sourceGroups and byte counts are complete. */
+} else {
+    /* summary is unchanged; report explains parsing progress. */
+}</code></pre>
+<p>This is an API fragment: jsonl_bytes and byte_length stand for your readable input span. The complete runnable example is the Framework SDK examples/training_data project from the preceding lesson. It validates embedded original examples, prints two rows and two groups, then checks that malformed data cannot replace the previous complete summary. Use that project's existing CMake instructions and matching SDK. Merely copying a new header does not update an older library.</p>
+<ol><li>Open the SDK example main.c and locate UmiAiTrainingJsonlSummarize. Read the status check before the printing code.</li><li>Build the example with the matching SDK as described in lesson 11. Stop if configuration or compilation fails.</li><li>Run it and look for: Dataset: 2 rows; 2 source groups; largest group 1 rows.</li><li>Find the separate malformed-input example. Explain why report.failedLine can be 2 while the previous summary remains unchanged.</li><li>In a separate practice copy, assign the same source_id to both valid records. Update the example's expected sourceGroups to 1 and largestSourceGroupRows to 2. Rebuild and verify the changed prediction. Do not alter the library test expectations to hide unrelated failures.</li></ol>
+<h2>Understand Unicode and temporary storage</h2>
+<p>The letter é encoded as UTF-8 occupies two bytes even though it is one Unicode scalar. An emoji such as 🚀 occupies four UTF-8 bytes. The JSON escape text \u00e9 has six ASCII bytes in the file, but the decoded prompt contains two bytes. The summary counts decoded text, not escape spelling. A model may tokenize either example into one or several tokens; run its actual tokenizer after formatting its exact chat template.</p>
+<p>The service copies only bounded source IDs for sorting, then clears and frees that temporary storage. It does not accumulate prompts or completions into another corpus. Identical decoded source IDs belong to one group, so a and \u0061 coincide. A and a remain different, and canonically equivalent Unicode spellings are not normalized automatically. This is grouping, not text deduplication, rights verification, training or a vector database.</p>
+<h2>Recover from a refusal</h2>
+<p>On malformed JSON, inspect the reported line and correct the source record. On a capacity error, check whole-input, line, decoded-field and row limits separately. Do not silently truncate an answer. LF and Windows CRLF delimiters have the same record-size allowance; delimiter bytes still count toward the whole input size. Cancellation leaves the summary unchanged. Record the dataset identity, grouping rule and tokenizer version before using the counts in an experiment.</p>
+<h2>Check your understanding</h2>
+<p>Why can 50% of source groups mean 33% of rows? Why does counting UTF-8 bytes not establish a model context length? Answers: groups have different sizes, and tokenization depends on the selected vocabulary and template. Neither changing JSON into a dictionary nor putting it in a vector database performs a training update.</p>
+<nav aria-label="Continuing practice"><a href="11-read-jsonl-with-native-framework.html">Previous: Validate training records with native Framework code</a></nav><nav aria-label="Dataset inspection reading order"><a href="13-inspect-a-local-jsonl-file.html">Next: inspect a local file</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/13-values-types-and-expressions.html
+
+PURPOSE:
+Read D values, types and expressions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read D values, types and expressions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read D values, types and expressions</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>D is a compiled language with C-like punctuation, its own type system and an optional runtime. A type describes a value’s representation and permitted operations. A statement performs a step. An expression produces a value. The introductory lessons showed how to install DMD; use that same terminal and practice folder here.</p>
+<pre><code class="language-d">import std.stdio : writeln;
+void main()
+{
+    int completed = 2;
+    immutable int total = 8;
+    auto percent = completed * 100 / total;
+    bool finished = completed == total;
+    writeln(percent);
+    writeln(finished);
+}</code></pre>
+<ol><li>Save the code as values.d. Compile with dmd -w -g values.d and run the generated program. On Windows use .\values.exe.</li><li>Expect 25 and false. Write down the intermediate values 200 and 25.</li><li>Change completed to 8 and rebuild. Expect 100 and true.</li><li>Replace == with = in the boolean expression and inspect the diagnostic or changed expression meaning; restore the equality comparison. Assignment and equality are different operations.</li></ol>
+<p>D int is signed 32-bit; long is signed 64-bit. The unsigned partners begin with u, such as uint and ulong. auto asks the compiler to infer a type from the initializer; it does not make the variable dynamically typed. immutable says the value cannot change through any permitted alias. A const view is read-only through that view but can refer to mutable storage elsewhere.</p>
+<p>Integer division discards the fractional part. Floating-point float and double approximate values and can represent fractions; real has platform-specific precision. A decimal spelling is not a guarantee of exact financial arithmetic. Validate total before dividing when it comes from input. The small constants here are chosen to avoid overflow; use the companion C boundary for a bounded percentage contract.</p>
+<h2>Check and recover</h2>
+<p>If the compiler reports an undefined identifier, check its spelling and scope. D names are case sensitive. If the terminal says dmd is unknown, repair compiler discovery before changing the source. Read the first diagnostic and preserve a working copy before experimenting.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="14-control-flow-and-collections.html">Next: Choose paths and traverse D collections</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

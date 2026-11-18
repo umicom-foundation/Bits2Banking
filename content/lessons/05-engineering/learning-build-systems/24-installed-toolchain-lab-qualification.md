@@ -40,3 +40,5 @@ Use the [installed C23 lab guide](../../../../labs/native/framework-toolchain-se
 [HTML lesson](../../../courses/learning-build-systems/lessons/24-installed-toolchain-lab-qualification.html)
 
 Sammy Hegab · Umicom Foundation · MIT
+
+[Next: Detect incomplete source before a long compilation](25-detect-incomplete-source-before-compilation.md)

@@ -1,0 +1,26 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/03-json-jsonl-and-chat-records.html
+
+PURPOSE:
+Read JSON, JSONL and conversational records
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read JSON, JSONL and conversational records | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read JSON, JSONL and conversational records</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>JSON represents values using objects, arrays, strings, numbers, true, false and null. An object contains named fields between braces. An array contains ordered values between square brackets. JSONL stores one complete JSON value per line. It is convenient for processing records incrementally, but a file extension alone does not establish a valid schema.</p>
+<pre><code class="language-jsonl">{&quot;id&quot;:&quot;demo-1&quot;,&quot;group_id&quot;:100,&quot;text&quot;:&quot;A byte contains eight bits.&quot;}
+{&quot;id&quot;:&quot;demo-2&quot;,&quot;group_id&quot;:200,&quot;text&quot;:&quot;A compiler translates a source program.&quot;}</code></pre>
+<ol><li>Save these two lines as corpus.jsonl in a text editor using UTF-8. Keep each record on one line.</li><li>Identify the three field names in the first object. id is a string; group_id is a number; text is a string.</li><li>If a string needs a newline, encode it as \n within the JSON string rather than inserting a physical line break into the record. Escape an embedded quotation mark as \&quot;.</li><li>Open the file with a JSONL-aware validator or parse each line separately. A single JSON parser applied to the whole file may reject two adjacent objects because they are not one JSON document.</li></ol>
+<p>Continued pretraining may consume a text field. A supervised chat trainer may consume a messages array with role and content. A preference trainer may need chosen and rejected alternatives. Do not rename fields by guesswork: read the selected trainer’s documented format and validate a tiny batch before a long run.</p>
+<pre><code class="language-jsonl">{&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;How many bits are in a byte?&quot;},{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;Eight bits.&quot;}]}</code></pre>
+<p>This is a common conversational representation, not a universal model file. The tokenizer’s chat template later turns roles and content into the token sequence expected by that model. A schema can include metadata that the loader ignores, or accidentally train on metadata if a formatting function concatenates every field. Inspect the final formatted sample.</p>
+<h2>Check</h2>
+<p>A dictionary is an in-memory name/value collection in some languages. A JSON object is a serialized representation. Neither is a vector database. The two formats solve storage and structure problems; they do not decide what the model should learn.</p>
+<h2>Further reading</h2><ul><li><a href="https://github.com/huggingface/trl/blob/main/docs/source/dataset_formats.md">TRL dataset formats source documentation</a></li></ul><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="02-turn-documents-into-reviewed-text.html">Previous: Turn documents into reviewed text without losing provenance</a> · <a href="04-quality-deduplication-and-rights.html">Next: Review quality, duplicates and allowed use</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

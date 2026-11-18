@@ -104,3 +104,5 @@ The guest retains the previous fifteen packet groups and appends tcp-golden, tcp
 Read the TCP header and checksum definition in [RFC 9293, section 3.1](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.1), and the checksum arithmetic discussion in [RFC 1071](https://www.rfc-editor.org/rfc/rfc1071.html). The examples and bounded Umicom API in this lesson are original; referenced standards retain their own terms.
 
 [Course contents](index.md) · [Previous lesson](116-admit-icmp-echo-without-trusting-the-sender.md)
+
+[Next lesson](118-account-for-outbound-tcp-sequences.md)

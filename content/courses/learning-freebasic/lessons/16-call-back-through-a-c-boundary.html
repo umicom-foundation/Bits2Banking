@@ -1,0 +1,75 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/16-call-back-through-a-c-boundary.html
+
+PURPOSE:
+Pass a BASIC callback to C with an explicit lifetime
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pass a BASIC callback to C with an explicit lifetime | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Pass a BASIC callback to C with an explicit lifetime</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A callback is a function that you give to another function so it can call you at a documented point. Instead of repeatedly asking C for a percentage, this lesson passes a BASIC function that C invokes for each reviewed row. The idea appears in progress reporting, event handling and streaming output. It introduces a new responsibility: the code address, parameter types and context data must remain valid for every call.</p>
+<h2>1. Read the contract before the syntax</h2>
+<p>The teaching C function bounded_progress_visit receives two arrays of 32-bit integers, a count, a visitor function, a context pointer and an output counter. It validates all rows before calling the visitor. It supports at most 64 rows, performs no allocation, and calls back synchronously on the calling thread. Synchronous means the callbacks finish before bounded_progress_visit returns. Neither the function pointer nor the context pointer is retained.</p>
+<p>The C result is zero for completion, one for invalid input and two when the callback asks to stop. The accepted counter counts only callbacks that returned zero. A stopping callback can already have printed text or changed state. Those effects are not automatically reversed. Input validation can be all-or-nothing while callback side effects are not.</p>
+<h2>2. Verify the C half first</h2>
+<ol><li>Complete lesson 8 and its matching C/FreeBASIC object-toolchain setup. A calling convention describes how arguments and return values cross a compiled function boundary. Do not change it to silence a linker or runtime failure.</li><li>Read boundary.h and boundary.c in labs/languages/native-language-boundary. Locate ProgressVisitor and bounded_progress_visit.</li><li>Run the CMake configure/build/CTest sequence from this lab’s README. Expect two C tests: percentage arithmetic and callback ownership.</li><li>Open callback_client.bas. The BASIC code below must still be compiled and executed separately; the C tests do not check the FreeBASIC declarations.</li></ol>
+<h2>3. Read the complete BASIC client</h2>
+<pre><code class="language-basic">Type ProgressVisitor As Function Cdecl (ByVal rowIndex As Long, _
+    ByVal percent As Long, ByVal context As Any Ptr) As Long
+Extern &quot;C&quot;
+    Declare Function bounded_progress_visit Cdecl Alias &quot;bounded_progress_visit&quot; _
+        (ByVal completed As Const Long Ptr, ByVal totals As Const Long Ptr, _
+         ByVal count As Long, ByVal visitor As ProgressVisitor, _
+         ByVal context As Any Ptr, ByVal accepted As Long Ptr) As Long
+End Extern
+Type CallbackState
+    calls As Long
+    stopAt As Long
+End Type
+Function OnProgress Cdecl (ByVal rowIndex As Long, ByVal percent As Long, _
+    ByVal context As Any Ptr) As Long
+    If context = 0 Then Return 99
+    Dim As CallbackState Ptr state = CPtr(CallbackState Ptr, context)
+    If rowIndex &lt;&gt; state-&gt;calls Then Return 99
+    state-&gt;calls += 1
+    Print &quot;Row &quot;; rowIndex; &quot; percent &quot;; percent
+    If rowIndex = state-&gt;stopAt Then Return 17
+    Return 0
+End Function
+Dim As Long completed(0 To 2) = {1, 2, 3}
+Dim As Long totals(0 To 2) = {4, 4, 4}
+Dim As CallbackState state = (0, 1)
+Dim As Long accepted = -1
+Dim As Long status = bounded_progress_visit(@completed(0), @totals(0), 3, _
+    @OnProgress, @state, @accepted)
+If status &lt;&gt; 2 OrElse accepted &lt;&gt; 1 OrElse state.calls &lt;&gt; 2 Then End 1
+Print &quot;FreeBASIC callback checks passed&quot;
+End 0
+</code></pre>
+<p>Type ProgressVisitor As Function defines a function-pointer type. Cdecl selects the C calling convention used by this teaching boundary. Long is the 32-bit integer counterpart to int32_t. Any Ptr is an untyped address used only to carry the context back to the caller’s function. Extern &quot;C&quot; and Alias describe the external symbol name and linkage; they do not automatically validate the implementation on the other side.</p>
+<p>The array arguments point to their first elements. @completed(0) means the address of the first element of completed. @OnProgress is the callback’s code address. @state identifies the context record, and @accepted points to the output counter. There is no implicit transfer of ownership. The C function receives addresses that remain the BASIC caller’s responsibility.</p>
+<h2>4. Recover the context only under an agreed type</h2>
+<p>OnProgress first rejects a null context. CPtr converts the untyped address back to CallbackState Ptr. That conversion is justified only because this caller passed @state of exactly that type. A cast does not discover whether an arbitrary pointer is valid. The arrow operator selects a field through a pointer. The function checks the expected row index, increments calls, prints the percentage, and returns 17 at the chosen stopping row. Any nonzero visitor result asks this C API to stop; 17 is a deliberate teaching value, not a Framework status code.</p>
+<p>The callback should contain bounded work and handle errors through the documented return value. Do not allow another language’s exception or an uncontrolled error handler to unwind through C. This simple function prints to the console, so it is not a real-time or allocation-free callback. Production callbacks must meet their own thread and performance contracts. A GUI callback from a worker thread would usually need to enqueue work for the GUI thread instead of touching widgets directly.</p>
+<h2>5. Build with one matching object toolchain</h2>
+<pre><code class="language-powershell">Set-Location labs/languages/native-language-boundary
+gcc --version
+fbc -version
+gcc -std=c23 -Wall -Wextra -c boundary.c -o boundary.o
+fbc -lang fb -w all -exx callback_client.bas boundary.o -x basic-callback.exe
+.\basic-callback.exe</code></pre>
+<p>Run these from the Bits2Banking repository after the earlier setup, one command at a time. Stop on a failure. Use matching architecture GNU/FreeBASIC tools; do not mix an unrelated Microsoft object with this block. On a supported Unix target, choose basic-callback as the output name and run ./basic-callback. Record compiler versions and architecture. The expected console output reports row zero at 25 percent, row one at 50 percent, then FreeBASIC callback checks passed. BASIC number formatting may add spaces.</p>
+<h2>6. Distinguish attempted from accepted work</h2>
+<p>The first row returns zero, so accepted becomes one. The second callback increments calls and prints 50, then returns 17. C stops and returns two. The callback count is two, while accepted remains one. Row two never runs. This distinction matters when callbacks write files, append messages or update a database. A report of one accepted row cannot erase a message already printed by the stopping callback.</p>
+<ol><li>Predict status, accepted and state.calls before running the reference client. Compare your prediction with its final condition.</li><li>In a learning copy, set stopAt to -1. Change the stated expected completion to status zero, accepted three and calls three. All percentages should then be printed. Keep the reference client unchanged.</li><li>Set the final total to zero. Expect C to reject the input before any callback runs: status one, accepted zero and calls zero. Restore the data afterward.</li><li>Explain why returning a pointer to a temporary local context from a setup function would be dangerous if the caller later passed that pointer to C.</li><li>Describe how the design would need to change for an asynchronous API that retained the callback. Include registration, cancellation, final callback completion and context release. This synchronous exercise does not implement that protocol.</li></ol>
+<h2>7. Apply the lesson to Framework</h2>
+<p>When wrapping a real Framework callback, copy its declaration exactly from the matching public C header and preserve its status, string-length and ownership rules. This lab’s return codes and limits are educational and must not be substituted for an actual Framework contract. Pass UTF-8 data and lengths only where the C interface explicitly requires them. A BASIC String or record can contain runtime-managed storage; it is not automatically a portable C structure.</p>
+<p>Before using callbacks in a product, answer five questions: which thread calls them, when the context may be released, whether re-entry is allowed, how errors stop work, and whether any callback can still arrive after cancellation. A working small example answers only its own contract. Compiler execution, ABI checks and application lifecycle tests remain separate evidence.</p>
+<nav aria-label="Previous lesson"><a href="15-parse-a-complete-bounded-number.html">Previous: Validate every input character before accepting a number</a></nav><nav aria-label="Continuing practice"><a href="17-encode-a-portable-binary-record.html">Next: Encode a portable four-byte record</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,62 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/50-follow-comment-and-string-boundaries.html
+
+PURPOSE:
+Follow comment and string boundaries
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow comment and string boundaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Follow comment and string boundaries</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>The same characters can be code or data</h2>
+<p>A compiler does not interpret every character in a file as an instruction. It first identifies words, punctuation, strings and comments. A string stores text as a value. A comment explains source without becoming an executable expression. A lexical scanner tracks these boundaries. This lesson uses a small D program and Umicom C’s separate source-region inspector to show why a delimiter inside text must not be mistaken for a command.</p>
+<ol><li>Open labs/languages/native-language-boundary/comment_boundaries.d in Bits2Banking. It is a standalone D example, not a program for the bounded Umicom C integer compiler.</li><li>Review the earlier lesson on bytes and code points. The examples here use ASCII characters so their byte positions are easy to count.</li><li>Write down where each string and comment starts and ends before attempting a build.</li></ol>
+<h2>Compare escaped text with raw text</h2>
+<p>Ordinary double-quoted D strings interpret escape sequences. A backslash can introduce an escape, so representing a literal backslash requires the appropriate escaped spelling. An r-prefixed string and a backtick string keep their content raw. Backticks make embedded double quotes convenient. These are spelling choices for text values; they do not request code execution.</p>
+<pre><code class="language-d">enum string rawPath = r&quot;C:\courses\umicom&quot;;
+enum string escapedPath = &quot;C:\\courses\\umicom&quot;;
+static assert(rawPath == escapedPath);</code></pre>
+<h2>Read the declarations one part at a time</h2>
+<p>Here enum declares a compile-time constant value. string names a sequence of immutable characters. The equals sign initializes that value. A semicolon ends the declaration. static assert asks the D compiler to reject the program if its condition is false during compilation. The equality comparison checks the text values, not whether the two source spellings look alike. This example can therefore catch a misspelled escape before main runs.</p>
+<h2>Track nested comments with a depth counter</h2>
+<p>D has line comments, non-nesting slash-star block comments and nesting slash-plus comments. Inside a nesting comment, each slash-plus opens another level and each plus-slash closes one. Quotes there are comment content, so an apparent quoted marker still affects nesting. A scanner can track the depth with one counter instead of recursive calls.</p>
+<pre><code class="language-text">start outside comment: depth 0
+read /+              : depth 1
+read another /+      : depth 2
+read +/              : depth 1
+read final +/        : depth 0, resume ordinary source</code></pre>
+<h2>Build the standalone D example</h2>
+<p>Use an installed D compiler such as DMD for this file. The commands below assume dmd is on PATH. The example has been authored for the lesson; if a D compiler is unavailable, source inspection is not an execution pass. The program uses the D runtime for output and exceptions and is not a BetterC-only program.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+dmd -checkaction=context comment_boundaries.d -of=comment_boundaries.exe
+&amp; &quot;.\comment_boundaries.exe&quot;</code></pre>
+<h2>Expected output</h2>
+<p>No model, network service or other compiler is started by the program. The displayed delimiter is ordinary output data.</p>
+<pre><code class="language-text">Raw and escaped paths contain the same bytes.
+Show &quot;quotes&quot;, ?&gt; and /+ as text.
+Source text is data unless a separate compiler or evaluator is invoked.</code></pre>
+<h2>Inspect a D envelope with Umicom C</h2>
+<p>Umicom C has an experimental regions command that classifies spans in a file containing explicit language tags. The new D tag is lowercase &lt;?d followed by whitespace and closed by ?&gt;. Classification reports the original byte offset and length. It does not compile the D code, resolve imports or link a D runtime. The integer compiler continues to refuse such a mixed envelope.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicom-c&quot;
+cmake --preset windows-ucrt64-debug
+cmake --build --preset windows-ucrt64-debug
+&amp; &quot;.\build\windows-ucrt64-debug\bin\umicom-c.exe&quot; regions examples/d_regions.umc</code></pre>
+<h2>Understand the bounded inspector’s support</h2>
+<p>A full D compiler handles more syntax than this envelope inspector. The inspector protects ordinary quoted strings and characters, r-prefixed and backtick raw strings, ordinary comments and nested slash-plus comments. Its nesting bound is 32, which is an Umicom envelope limit, not a claimed D language limit. q-delimited or token strings, x-prefixed hex strings and i-prefixed interpolation are refused explicitly. Keep those forms in separate D files and use the D compiler.</p>
+<table><thead><tr><th scope="col">Operation</th><th scope="col">What it establishes</th></tr></thead><tbody><tr><td>D compiler accepts comment_boundaries.d</td><td>The standalone D source fits that compiler’s supported language and toolchain</td></tr><tr><td>Umicom C regions accepts d_regions.umc</td><td>The documented lexical subset has bounded, identifiable spans</td></tr><tr><td>Umicom C check refuses d_regions.umc</td><td>The bounded integer compiler has not acquired a D frontend</td></tr><tr><td>A course link check passes</td><td>The educational files and references are connected; it does not execute D</td></tr></tbody></table>
+<h2>Preserve errors and original positions</h2>
+<p>If a comment never closes, reporting an apparently valid region would hide the real cause. The inspector returns zero published regions and points to the opening comment. If nesting exceeds its bound, it identifies the opening marker that exceeds the limit. Unsupported string forms get their own diagnostic. Consumers must ignore any partial array contents when the returned count is zero after failure.</p>
+<h2>Practice without confusing classification with execution</h2>
+<p>Make one change at a time and predict which tool should reject it.</p>
+<ol><li>Remove one backslash from the escaped path. Check whether the D compiler rejects an invalid escape or the compile-time equality assertion fails.</li><li>Add a balanced nested slash-plus comment and confirm the surrounding code remains unchanged.</li><li>Remove the outer comment terminator from a copy of the envelope. Expect an unterminated-comment diagnostic and no published regions.</li><li>Put ?&gt; inside the raw string. Expect the inspector to retain it inside the same D span.</li><li>Replace a raw string with a q-token string in an envelope copy. Expect an explicit unsupported-form diagnostic, even if a D compiler could compile that form in a separate .d file.</li><li>Explain why adding lexical support does not provide reflection, machine-code generation or cross-language calling. Those need separate compiler and ABI work.</li></ol>
+<h2>Extend a tool only after identifying its layer</h2>
+<p>Studio can use lexical spans for navigation or presentation, while a compiler service checks syntax and an ABI boundary connects compiled modules. Keeping these roles separate prevents a colored editor tab from being advertised as executable language support. Framework remains the reusable application service boundary; this change lives in Umicom C’s existing scanner rather than duplicating a compiler inside each application.</p>
+<h2>Reference</h2>
+<ul><li><a href="https://dlang.org/spec/lex.html">D lexical reference: comments and string forms</a></li></ul>
+<nav aria-label="Previous lesson"><a href="49-constrain-operator-templates-and-test-their-meaning.html">Previous: Constrain operator templates and test their meaning</a></nav><nav aria-label="Continuing practice"><a href="51-admit-values-before-exhaustive-state-dispatch.html">Next: Admit values before exhaustive state dispatch</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

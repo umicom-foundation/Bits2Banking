@@ -1,0 +1,63 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/34-distinguish-lazy-evaluation-from-caching.html
+
+PURPOSE:
+Distinguish lazy evaluation from caching
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish lazy evaluation from caching | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Distinguish lazy evaluation from caching</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Start with an observable operation</h2>
+<p>A normal function call generally obtains the values of its ordinary arguments before the function body uses its parameters. D can also declare a lazy parameter. That parameter represents deferred work: the caller’s expression can be evaluated when the function reads the parameter. The important question is how many reads occur. Lazy does not automatically mean “run once and remember the answer.” It also does not mean “run on a background thread.” We will count evaluations using a tiny function that increments an integer and returns its new value.</p>
+<h2>Read the counter function</h2>
+<p>The function nextValue takes a ref int. ref means the parameter refers to the caller’s integer storage rather than an independent value. The prefix ++ increments the integer. Returning calls gives the new number to the caller. Starting at zero, successive calls return one, two and three. This deliberate side effect makes repeated evaluation visible. It is a teaching device: unnecessary hidden side effects make real deferred computations harder to reason about.</p>
+<pre><code class="language-d">int nextValue(ref int calls)
+{
+    ++calls;
+    return calls;
+}</code></pre>
+<h2>Define three consumers of deferred work</h2>
+<p>Each consumer declares lazy int candidate. The argument expression is not evaluated merely to enter the function. ignoreCandidate never reads candidate, so the expression is never evaluated. readTwice stores candidate into two local constants in separate statements, causing two evaluations. snapshotOnce reads it into one local constant and then uses that stored value twice. const makes that local value read-only; it does not cause the expression to run again. The separate statements in readTwice make the observation sequence clear without relying on the evaluation order of two operands in one addition.</p>
+<pre><code class="language-d">int ignoreCandidate(lazy int candidate)
+{
+    return 40;
+}
+int readTwice(lazy int candidate)
+{
+    const int first = candidate;
+    const int second = candidate;
+    return first + second;
+}
+int snapshotOnce(lazy int candidate)
+{
+    const int value = candidate;
+    return value + value;
+}</code></pre>
+<h2>Work through the calls by hand</h2>
+<p>Begin with calls equal to zero. ignoreCandidate(nextValue(calls)) returns 40 without using its argument, so calls stays zero. Next, readTwice receives the same expression. The first access increments calls to one and produces one. The second access increments it to two and produces two. The sum is three. Reset calls to zero before the last experiment. snapshotOnce evaluates nextValue once, stores one, then returns one plus one. Its result is two and the counter is one.</p>
+<table><thead><tr><th scope="col">Consumer</th><th scope="col">Evaluations</th><th scope="col">Returned value</th><th scope="col">Final counter</th></tr></thead><tbody><tr><td>ignoreCandidate</td><td>0</td><td>40</td><td>0</td></tr><tr><td>readTwice</td><td>2</td><td>3</td><td>2</td></tr><tr><td>snapshotOnce after reset</td><td>1</td><td>2</td><td>1</td></tr></tbody></table>
+<h2>Separate deferral, caching and concurrency</h2>
+<p>Deferral means postponing work until it is needed. Caching means retaining a computed result for later reuse. Concurrency means overlapping activities, for example through multiple tasks or threads. The lazy keyword alone promises neither caching nor concurrency. A deferred expression that reads the current time may produce a different value on each use. One that opens a file may do that work repeatedly. If a computation must run once, decide explicitly where its result is stored and how long that storage lives. Our snapshotOnce function stores one integer for the duration of its call; it is not a global cache.</p>
+<h2>Build and run with unit tests</h2>
+<p>Use the open-source D compiler installed in the earlier setup lesson. The commands below use DMD syntax; use that compiler’s documented equivalents if you selected LDC or GDC. -unittest includes the unittest block, while -checkaction=context helps explain failed assertions. Leave release-mode assertion removal off during these exercises. A compiler warning about an intentionally unused lazy parameter should be understood from ignoreCandidate’s purpose, rather than suppressed globally. The source is a normal D program, not a BetterC example: it imports std.stdio for output.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+New-Item -ItemType Directory -Force build/learning-languages | Out-Null
+dmd -unittest -checkaction=context -of=build/learning-languages/lazy-evaluation.exe labs/languages/native-language-boundary/lazy_evaluation.d
+&amp; &quot;.\build\learning-languages\lazy-evaluation.exe&quot;
+$LASTEXITCODE</code></pre>
+<h2>Read the expected observations</h2>
+<p>The unittest block and main both check the arithmetic and the number of evaluations. A successful run prints the three lines below and returns normally. If the compiler is unavailable, keep the example labelled uncompiled; reading expected output is not execution. If an assertion fails, compare the counter reset and the number of accesses to candidate before changing the expected values. Adding a debug print that reads candidate is itself another evaluation and can change the experiment.</p>
+<pre><code class="language-text">ignored: result=40 evaluations=0
+repeated: result=3 evaluations=2
+snapshot: result=2 evaluations=1</code></pre>
+<ol><li>Add a third separate read inside readTwice, rename the function for that exercise, and predict both the result and final counter.</li><li>Replace nextValue(calls) with the constant expression 7. Explain why equal results no longer reveal how many evaluations occurred.</li><li>Move the read in snapshotOnce below a conditional return. Predict a path with zero evaluations and a path with one.</li><li>Describe why measuring elapsed time alone is a weaker test of evaluation count than this explicit counter.</li></ol>
+<h2>Apply the lesson without changing Framework’s language boundary</h2>
+<p>Deferred work can be useful for optional diagnostics or calculations whose result is needed only on one branch. It is dangerous to assume that deferral automatically reduces memory or makes a computation thread-safe. In a native C API, similar choices are usually explicit: pass a computed value, or pass a callback function and a separate context with documented lifetime and call-count rules. A D lazy parameter is a D language contract, not a portable C parameter type. Do not place it directly into an extern(C) interface. Keep Framework services in C and write a thin, reviewed D adapter when a D application needs them.</p>
+<h2>Further reading</h2><ul><li><a href="https://dlang.org/spec/function.html#lazy-parameters">D language specification: lazy parameters</a></li></ul><nav aria-label="Previous lesson"><a href="33-admit-enumerated-states-before-dispatch.html">Previous: Admit enumerated states before exhaustive dispatch</a></nav><nav aria-label="Continuing practice"><a href="35-separate-invariants-from-input-validation.html">Next: Separate invariants from input validation</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

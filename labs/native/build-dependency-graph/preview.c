@@ -16,6 +16,13 @@
 #include "lesson_config.h"
 #include <stdio.h>
 
+/* This opt-in teaching failure lets a separate build directory demonstrate
+ * that a retained executable is not evidence of a successful rebuild. Normal
+ * builds do not define this symbol; no existing preview logic is replaced. */
+#if defined(LESSON_REFUSE_PREVIEW_BUILD)
+#error Deliberate preview compilation refusal for the stale-artifact lesson
+#endif
+
 int main(void)
 {
     UmicomNote note = {{0}, 0U};

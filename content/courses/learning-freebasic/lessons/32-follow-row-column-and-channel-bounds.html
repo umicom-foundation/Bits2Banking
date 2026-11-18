@@ -1,0 +1,59 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/32-follow-row-column-and-channel-bounds.html
+
+PURPOSE:
+Follow row, column and channel bounds
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow row, column and channel bounds | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Follow row, column and channel bounds</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Give each index a meaning</h2>
+<p>A one-dimensional array is like a numbered shelf. A multidimensional array lets you select an element with several coordinates. In this exercise the first coordinate is a row, the second is a column and the third is a color channel. A channel is one component of a pixel; RGB uses red, green and blue. We use a two-row, two-column image so that every value can be checked by hand. Nothing in the array itself knows that it represents an image. Those meanings come from our program’s documented convention.</p>
+<ol><li>Draw a two-by-two grid on paper. Put red at the top left, green at the top right, blue at the bottom left and white at the bottom right.</li><li>Label rows zero and one from top to bottom, and columns zero and one from left to right.</li><li>Label channels zero=red, one=green and two=blue. A pixel therefore needs three stored values.</li></ol>
+<h2>Read the declaration one part at a time</h2>
+<p>Dim introduces the array. Each To range states inclusive lower and upper bounds. The three comma-separated ranges describe three dimensions. As UByte selects unsigned eight-bit elements, which can hold integers zero through 255. The declared counts are two rows, two columns and three channels: twelve elements in total. Twelve is an element count, not the number of pixels. There are four pixels, each with three elements.</p>
+<pre><code class="language-basic">Dim pixels(0 To 1, 0 To 1, 0 To 2) As UByte</code></pre>
+<h2>Distinguish a dimension number from an element index</h2>
+<p>LBound and UBound ask for a particular dimension’s smallest and largest index. Their dimension argument is numbered from one. In this declaration, dimension one is the row dimension even though its first element index is zero. UBound(pixels,0) has a separate purpose: it reports the number of dimensions, which is three here. Do not confuse that query with reading pixel zero. The diagram below is a record of our chosen meanings, not a promise that every library uses this convention.</p>
+<table><thead><tr><th scope="col">Query or coordinate</th><th scope="col">Meaning in this exercise</th><th scope="col">Result</th></tr></thead><tbody><tr><td>LBound(pixels,1)</td><td>First row index</td><td>0</td></tr><tr><td>UBound(pixels,1)</td><td>Last row index</td><td>1</td></tr><tr><td>UBound(pixels,2)</td><td>Last column index</td><td>1</td></tr><tr><td>UBound(pixels,3)</td><td>Last channel index</td><td>2</td></tr><tr><td>UBound(pixels,0)</td><td>Number of dimensions</td><td>3</td></tr><tr><td>pixels(1,0,2)</td><td>Blue component of bottom-left pixel</td><td>255 after initialization</td></tr></tbody></table>
+<h2>Trace initialization through three nested loops</h2>
+<p>A nested loop is a loop inside another loop. For each row, our program visits each column. For each selected pixel, it visits each channel. The innermost assignment sets that element to zero. The innermost loop completes all three channels before the column advances, and both columns complete before the row advances. Writing the initialization explicitly makes the traversal visible. Next channel, Next column and Next row close the matching loops; indentation helps you see which work belongs to each.</p>
+<pre><code class="language-basic">For row As Integer = LBound(pixels, 1) To UBound(pixels, 1)
+    For column As Integer = LBound(pixels, 2) To UBound(pixels, 2)
+        For channel As Integer = LBound(pixels, 3) To UBound(pixels, 3)
+            pixels(row, column, channel) = 0
+        Next channel
+    Next column
+Next row</code></pre>
+<h2>Turn zero channels into four visible colors</h2>
+<p>A zero RGB triple is black in this encoded example. To make the top-left pixel red, the program changes only pixels(0,0,0) to 255. To make the top-right pixel green, it changes pixels(0,1,1). The bottom-left pixel uses pixels(1,0,2) for blue. Finally, the white pixel needs all three components set to 255. We are manipulating already decoded color samples. A PNG or JPEG file has its own encoding and cannot simply be substituted for this array.</p>
+<ol><li>Find each assignment in pixel_grid.bas and point to the corresponding square in your drawing.</li><li>For the white pixel’s loop, hold row one and column one fixed while channel moves from zero to two.</li><li>Write the completed triples: red=(255,0,0), green=(0,255,0), blue=(0,0,255), white=(255,255,255).</li></ol>
+<h2>Use a wider accumulator for a sum</h2>
+<p>A UByte can hold one channel but cannot hold the sum of three maximum channels, which is 765. The program uses a ULong accumulator for pixelTotal and channelTotal. Accumulator means a variable that collects partial results. Each pixel starts with a new pixelTotal of zero; its three channels are then added. If pixelTotal were not reset inside the column loop, later pixels would incorrectly include earlier pixels. This example’s maximum total is small and known. A general image reader must also bound dimensions and total arithmetic before processing untrusted input.</p>
+<table><thead><tr><th scope="col">Pixel</th><th scope="col">Addition</th><th scope="col">Expected sum</th></tr></thead><tbody><tr><td>Red</td><td>255+0+0</td><td>255</td></tr><tr><td>Green</td><td>0+255+0</td><td>255</td></tr><tr><td>Blue</td><td>0+0+255</td><td>255</td></tr><tr><td>White</td><td>255+255+255</td><td>765</td></tr><tr><td>All four</td><td>255+255+255+765</td><td>1530</td></tr></tbody></table>
+<h2>Check values instead of trusting a printed label</h2>
+<p>The expected array stores one known channel sum for each row and column. Before printing a pixel, the program compares its calculated sum with that expected entry. A mismatch ends with code one. At the end it checks three dimensions, four visited pixels and total 1530; a mismatch ends with code two. A zero exit code means those bounded exercise checks passed. It is not evidence of image quality, correct decoding, a trained model or a production graphics pipeline. The use of OrElse in the final check combines independent refusal conditions; each condition describes a different assumption.</p>
+<h2>Build and run the complete source</h2>
+<p>Use a working FreeBASIC installation from the earlier setup lesson. Open PowerShell in the example directory. The compiler translates the source into an executable; the second command runs it. The -lang fb option selects the modern FreeBASIC dialect. The -w all and -exx options request useful warnings and additional runtime checks during learning. Run the commands separately and stop if compilation fails; a previous executable may still be present.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -lang fb -w all -exx pixel_grid.bas -x pixel_grid.exe
+&amp; .\pixel_grid.exe
+$LASTEXITCODE</code></pre>
+<h2>Read the result by coordinates</h2>
+<p>Expect four pixel lines in this order: row zero/column zero, row zero/column one, row one/column zero and row one/column one. Their sums are 255, 255, 255 and 765. The final line reports total 1530 and the process should return zero. Printed spacing around integers may differ. Compare the numerical values and coordinates, not the number of blank spaces. If fbc is not recognized, return to the installation lesson and check the compiler location. Do not interpret a shell command-not-found error as a language error in the example.</p>
+<ol><li>Compare each printed row and column with your drawing.</li><li>If a sum is wrong, inspect that pixel’s three channel assignments before changing the expected array.</li><li>If the final total is wrong but individual sums are right, inspect where channelTotal is initialized and updated.</li><li>If a bounds check fails, identify the dimension and its declared interval rather than disabling runtime checks.</li></ol>
+<h2>Keep the language array separate from a native storage contract</h2>
+<p>This program teaches indexed access; it does not promise that a pointer to a multidimensional BASIC array is a portable C image format. A Framework API needs explicit channel order, row stride, byte count, ownership and lifetime. Row stride is the byte distance between consecutive row starts; it may include padding. A tensor also needs a selected dimension order and numerical range. The separate Framework image-tensor laboratory uses a defined RGB8 byte span and a shared C converter. Reuse that public operation at a reviewed language boundary instead of assuming that similar-looking array declarations are interchangeable.</p>
+<h2>Practice one deliberate change</h2>
+<p>Change only one assumption at a time and predict the new result before compiling. This is how a small fixture becomes a useful reasoning tool rather than a program that merely prints numbers.</p>
+<ol><li>Change the white pixel to black by setting its three channels to zero. Predict a total of 765 and update the expected white-pixel sum deliberately.</li><li>Change one channel from 255 to 128. Calculate the new affected pixel sum and overall total on paper.</li><li>Explain why a dimension with bounds 0 To 2 has three elements, while an upper bound of two alone is not an element count.</li><li>Add a second expected check for a particular channel so that two wrong channel values cannot accidentally cancel in a sum.</li><li>Describe what must change if the image gains an alpha channel; increasing a dimension alone does not define alpha compositing.</li></ol>
+<h2>Reference and next connection</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgLbound">FreeBASIC LBound reference</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgUbound">FreeBASIC UBound reference</a></li><li><a href="../../generative-ai-foundations/lessons/20-read-pixels-as-an-explicit-tensor.html">Read pixels as an explicit Framework tensor</a></li></ul>
+<nav aria-label="Previous lesson"><a href="31-edit-records-with-an-explicit-candidate.html">Previous: Edit record fields with an explicit candidate</a></nav><nav aria-label="Continuing practice"><a href="33-format-fixed-ascii-fields-without-losing-data.html">Next: Format fixed ASCII fields without losing data</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,65 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/44-give-operators-a-clear-domain-meaning.html
+
+PURPOSE:
+Give operators a clear domain meaning
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Give operators a clear domain meaning | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Give operators a clear domain meaning</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>An operator is a short way to request an operation</h2>
+<p>You have already used symbols and words such as +, And and Or. Their ordinary numeric meanings are built into the language. Operator overloading lets a program define selected operations for a user-defined type. It does not make every symbol sensible for every type. In this original exercise a FlagSet holds a collection of independent bit flags. Or means set union and And means intersection. Neither operation changes an input.</p>
+<ol><li>Review the earlier bit-mask lesson: 1, 2 and 4 select three different binary positions.</li><li>Open labs/languages/native-language-boundary/flag_operators.bas. Use the FreeBASIC fb dialect, not an older BASIC dialect.</li><li>Keep this exercise separate from permission enforcement. The names read, write and inspect are labels in a local example; no filesystem or application access is granted.</li></ol>
+<h2>Define the value before defining its syntax</h2>
+<p>Type introduces a record and End Type closes its declaration. The bits field has type ULong, a 32-bit unsigned integer in FreeBASIC. Each bit is either zero or one. An unsigned bit mask naturally represents a set because each position can indicate whether one member is present. The public field keeps the exercise short; it also means callers can construct unknown bit patterns directly. That is why admission of external data stays a separate function.</p>
+<pre><code class="language-basic">Type FlagSet
+    bits As ULong
+End Type</code></pre>
+<h2>Work out the expected answers on paper</h2>
+<table><thead><tr><th scope="col">Expression meaning</th><th scope="col">Binary</th><th scope="col">Decimal</th></tr></thead><tbody><tr><td>Read flag</td><td>001</td><td>1</td></tr><tr><td>Write flag</td><td>010</td><td>2</td></tr><tr><td>Inspect flag</td><td>100</td><td>4</td></tr><tr><td>Read union inspect</td><td>101</td><td>5</td></tr><tr><td>That union intersect read</td><td>001</td><td>1</td></tr><tr><td>Read union read</td><td>001</td><td>1</td></tr></tbody></table>
+<h2>Define the two global operations</h2>
+<p>For the two-operand operations used here, Operator begins a global definition outside the record. ByVal gives the function its own value copies. As FlagSet declares the returned type. Type&lt;FlagSet&gt;(...) constructs the result from its field value. End Operator ends the body. The field expression uses ordinary integer Or or And; the outer expression uses the overload because its operands are FlagSet values.</p>
+<pre><code class="language-basic">Operator Or(ByVal lhs As FlagSet, ByVal rhs As FlagSet) As FlagSet
+    Return Type&lt;FlagSet&gt;(lhs.bits Or rhs.bits)
+End Operator
+
+Operator And(ByVal lhs As FlagSet, ByVal rhs As FlagSet) As FlagSet
+    Return Type&lt;FlagSet&gt;(lhs.bits And rhs.bits)
+End Operator</code></pre>
+<h2>Trace one expression through the function</h2>
+<ol><li>readFlag has bits equal to 1 and inspectFlag has bits equal to 4.</li><li>The expression readFlag Or inspectFlag selects the overload because both operands have type FlagSet.</li><li>The function copies the operands into lhs and rhs, evaluates the built-in integer operation 1 Or 4, and obtains 5.</li><li>It constructs a separate FlagSet whose bits field is 5 and returns it.</li><li>The caller stores that result in combined. readFlag and inspectFlag retain their original values.</li></ol>
+<h2>Why addition would be a misleading substitute</h2>
+<p>For different bits, 1 + 4 happens to equal 1 Or 4. But repeating a member reveals the difference: 1 + 1 is 2, while 1 Or 1 is 1. A union should not invent the write flag merely because the read flag was supplied twice. This is an example of a domain law: a rule the operation must preserve. Choose tests from those laws, rather than checking only one convenient pair of numbers.</p>
+<h2>Validate raw values before trusting their meaning</h2>
+<p>The example defines only bits 1, 2 and 4. Its allowed mask is 7. Not allowed flips the 32 bit positions; raw And (Not allowed) isolates any bits outside the allowed set. If that expression is nonzero, TryAdmitFlags returns False before assigning destination.bits. ByRef means destination refers to the caller’s variable, so the order of that assignment matters. On success it publishes the accepted value.</p>
+<pre><code class="language-basic">Function TryAdmitFlags(ByVal raw As ULong, ByRef destination As FlagSet) As Boolean
+    Dim allowed As ULong = 7
+    If (raw And (Not allowed)) &lt;&gt; 0 Then Return False
+    destination.bits = raw
+    Return True
+End Function</code></pre>
+<h2>Build the standalone language example</h2>
+<p>Install and select a FreeBASIC compiler using the earlier setup lesson. This source was authored and reviewed, but has not been compiled in the current mirror environment. Run the commands in PowerShell from the Bits2Banking checkout. Stop if compilation fails; do not run a stale executable.</p>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary
+fbc -lang fb -exx -w all flag_operators.bas -x flag_operators.exe
+.\flag_operators.exe</code></pre>
+<h2>Read the expected result</h2>
+<p>Require is a small test helper in the complete example. It prints a failure description and exits with a nonzero code if an expectation is false. The executable checks the union, intersection, repeated flag, unchanged operands, refusal of raw value 8, preservation of the old output, and acceptance of 7. No C ABI or installed Framework behavior is qualified by this standalone language exercise.</p>
+<pre><code class="language-text">Umicom BASIC flags: union 5, intersection 1, repeated flag 1.
+Unknown input refused; operator syntax does not grant permission.</code></pre>
+<h2>Apply the idea at an Umicom boundary</h2>
+<p>A BASIC teaching client could use FlagSet to express local selections while presenting an explicit uint32_t mask to a reviewed C API. The shared C service must still validate known bits, combinations, authorization and lifetime. Do not pass the record’s raw bytes as a portable wire format: use the earlier serialization and ABI lessons. Do not hide file writes, network calls or expensive allocation inside a seemingly harmless Or operation.</p>
+<h2>Distinguish nearby language concepts</h2>
+<table><thead><tr><th scope="col">Concept</th><th scope="col">Question it answers</th></tr></thead><tbody><tr><td>Procedure overloading</td><td>Which function declaration matches these argument types?</td></tr><tr><td>Operator overloading</td><td>Which declared operation represents this operator on this type?</td></tr><tr><td>Assignment</td><td>Which destination receives a value? It is not a union operation.</td></tr><tr><td>Input admission</td><td>Does this external bit pattern satisfy the published contract?</td></tr><tr><td>Authorization</td><td>May this caller perform the real operation now?</td></tr></tbody></table>
+<h2>Practice and recovery</h2>
+<ol><li>Change the repeated-flag expectation to 2. The example should fail because union is not addition. Restore the correct expectation afterward.</li><li>Try raw value 0. It represents an empty set and the current admission rule accepts it. A real API may impose a separate nonempty requirement.</li><li>Try raw value 9. Its low read bit is known, but its bit valued 8 is unknown; the whole raw value is refused.</li><li>If a compiler reports that an operator definition belongs outside the type, check the placement of the global binary definitions. Member assignment and conversion operators have different declaration rules.</li><li>If an operator unexpectedly mutates an operand, inspect parameter passing and side effects. This exercise deliberately uses value copies and fresh results.</li></ol>
+<h2>Language reference</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgOperator">FreeBASIC manual: Operator declaration and definition rules</a></li></ul>
+<nav aria-label="Previous lesson"><a href="43-choose-a-rounding-rule-before-conversion.html">Previous: Choose a rounding rule before conversion</a></nav><nav aria-label="Continuing practice"><a href="45-select-ranges-and-test-every-boundary.html">Next: Select ranges and test every boundary</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

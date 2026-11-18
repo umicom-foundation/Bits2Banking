@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/25-diagnose-an-unexpected-full-rebuild.html
+
+PURPOSE:
+Diagnose an unexpected full rebuild
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diagnose an unexpected full rebuild | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Diagnose an unexpected full rebuild</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>An incremental build reuses outputs whose inputs have not changed. It still must rebuild the dependencies of the selected target. A small command can therefore trigger substantial work if that target depends on many libraries. Measure the actual reason before deleting the build directory: deleting it also removes the reusable outputs.</p>
+<h2>Inspect the build plan first</h2>
+<p>Use the source-study build from lesson 22. The following PowerShell commands inspect a configured Ninja build. The -n option requests a dry run; -d explain asks Ninja why work is considered necessary. These commands do not execute compile or link commands.</p>
+<pre><code class="language-powershell">ninja -C build/preview-study -n -d explain btb-preview-revisions
+ninja -C build/preview-study -t targets</code></pre>
+<ol><li>Run the dry plan immediately after a successful build and save its output.</li><li>Edit a comment in the lab's main.c and save it. A source timestamp can trigger recompilation even when the resulting machine code would be identical.</li><li>Run the dry plan again. Expect main.c's object and the executable link to be affected; inspect the actual explanation.</li><li>Build only btb-preview-revisions, then run its CTest check.</li><li>Repeat with an unchanged file. If a generator rewrites a header every time, inspect that generator rather than assuming the compiler is ignoring dependencies.</li></ol>
+<h2>Understand the dependency chain</h2>
+<pre><code class="language-text">main.c -------------------+
+hot_reload.h -&gt; main.c.o --+-&gt; btb-preview-revisions
+hot_reload.c -&gt; service.o -+
+dev_types.c -&gt; text.o -----+
+
+Changing a shared header may affect more than one object.</code></pre>
+<p>A compilation database records commands used to compile translation units. Enable CMAKE_EXPORT_COMPILE_COMMANDS during configuration when the chosen generator supports it. Read compile_commands.json to compare include directories, definitions and language options. Running gcc on one file with different flags is not an equivalent project check.</p>
+<pre><code class="language-powershell">cmake -S labs/native/framework-preview-revisions -B build/preview-study -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build/preview-study --target btb-preview-revisions --parallel 2</code></pre>
+<p>Keep a short table of edit type, planned object count, build elapsed time and observed result. An empty plan is different from a fast compile. A successful compile is different from a passing behavioural check. A cache can reduce repeated compilation but cannot fix a missing dependency or a wrong target.</p>
+<h2>Recovery</h2>
+<p>If Ninja cannot find its build file, confirm that CMake successfully configured the exact directory passed to -C. If the compiler path changed, inspect the cache and use a separate build directory for the different toolchain. Avoid mixing UCRT64 objects with an unrelated compiler environment. Do not delete evidence before understanding a failure.</p>
+<p>Exercise: a header shared by fifty targets changes. Is recompiling all affected users necessarily a defect? No. The useful question is whether those targets are required by the selected output and whether the dependency is accurate.</p>
+<nav aria-label="Reading order"><a rel="prev" href="24-preserve-edits-during-a-preview-build.html">Previous lesson</a> · <a rel="next" href="26-qualify-a-current-interactive-preview.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

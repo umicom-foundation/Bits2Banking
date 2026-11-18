@@ -1,0 +1,89 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/30-state-the-effects-of-a-binary-reader.html
+
+PURPOSE:
+State the effects of a binary reader
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>State the effects of a binary reader | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>State the effects of a binary reader</h1><figure><img src="../../../assets/diagrams/umicom-bytecode-envelope.svg" alt="Eight header bytes describe two nine-byte records; complete runtime validation remains separate." style="max-width:100%;height:auto"><figcaption>Both language examples inspect the same existing Umicom C envelope.</figcaption></figure><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Make a small function's promises visible</h2>
+<p>A function can describe more than the types of its inputs and result. It can also state which kinds of effects it permits. This lesson uses D to read the envelope of an Umicom C bytecode artifact. The exercise makes its borrowing, output and allocation rules explicit, then compares that limited reader with the complete native runtime. The goal is to understand each promise and its limits, not to assume that an impressive-looking declaration proves every property of a program.</p>
+<p>Read the earlier lessons about slices, structs, ref parameters, unit tests and C linkage first. The example is normal D source with a small restricted function inside it. The surrounding console program uses the standard D runtime and std.stdio. It is not a BetterC executable and is not compiled into Framework production code. D compilation has not been performed in the current authoring environment; keep that qualification distinct from the separate native C fixture check.</p>
+<h2>Start with the actual byte layout</h2>
+<p>The first eight bytes of the Umicom C artifact contain four identifying bytes, a wire profile, a reserved byte and a two-byte instruction count. The identifying bytes spell UMCB in ASCII. Current profiles are one through six, the reserved byte is zero, and the count lies between one and 256. Each instruction occupies nine more bytes. Our literal fixture contains two instructions, so its total length is 26 bytes.</p>
+<pre><code class="language-text">Offsets 0..3 : 55 4D 43 42  (UMCB)
+Offset  4    : 01           (wire profile)
+Offset  5    : 00           (reserved)
+Offsets 6..7 : 02 00        (two records, low byte first)
+Offsets 8..25: two nine-byte instructions</code></pre>
+<p>Do not cast this storage to a native struct. A struct's alignment, padding and member layout are not the serialized contract. The example reads individual bytes and produces an ordinary result value after validation. This works conceptually on either host byte order because the byte-order conversion is explicit.</p>
+<h2>Separate the result type from the file</h2>
+<pre><code class="language-d">struct EnvelopeInfo
+{
+    ubyte profile;
+    ushort instructionCount;
+    size_t encodedBytes;
+}</code></pre>
+<p>struct groups three named values. ubyte and ushort are unsigned integer types suitable for the accepted profile and count. size_t represents sizes for the selected target and may have a different width on different architectures. This result is private to the D example. Its use of size_t does not define a stable cross-language wire or C ABI layout. A public ABI would need a separately reviewed representation.</p>
+<h2>Read the complete function declaration</h2>
+<pre><code class="language-d">bool inspectEnvelope(scope const(ubyte)[] bytes, ref EnvelopeInfo result)
+    @safe pure nothrow @nogc</code></pre>
+<p>bool is the success/refusal answer. const(ubyte)[] is a counted view of bytes that this function cannot modify through that view. It is not an independent copy or proof that no other alias can change the underlying storage. The caller must keep the input alive and stable for the call. scope expresses that the borrowed view must not escape this parameter boundary. The implementation stores only decoded scalar facts, not the input slice.</p>
+<h2>Why this output uses ref rather than out</h2>
+<p>ref lets the function access the caller's existing EnvelopeInfo. The code leaves that value alone until all checks pass. An out parameter initializes its argument on entry, before the function body performs these checks. Using out here would therefore erase the previous result even when the first condition returns false. Parameter spelling is part of behavior, not just style.</p>
+<pre><code class="language-d">const sentinel = EnvelopeInfo(99, 77, 66);
+auto result = sentinel;
+assert(!inspectEnvelope(truncatedBytes, result));
+assert(result == sentinel);</code></pre>
+<p>The unit-test helper follows this pattern for each rejected input. The first assertion checks refusal; the second checks preservation. Testing only the return value would miss a function that correctly says false but has already overwritten useful state. This pattern also applies to a native settings preview or a proposed transaction that must not become visible until it is complete.</p>
+<p>The source also contains no explicit native allocation and keeps no data after return. Those are properties of this inspected implementation, not consequences of the attribute names alone. main writes to the console and uses the normal runtime. A restricted helper does not make its callers, imported modules or entire executable allocation-free.</p>
+<h2>Interpret the four attributes carefully</h2>
+<table><thead><tr><th scope="col">Attribute</th><th scope="col">Promise relevant to this function</th><th scope="col">What it does not establish</th></tr></thead><tbody><tr><td>@safe</td><td>Uses the language's checked memory-safety subset</td><td>Correct file format or permission to execute</td></tr><tr><td>pure</td><td>Restricts access to mutable external state; ref arguments can still be modified</td><td>A mathematical function with no possible argument mutation</td></tr><tr><td>nothrow</td><td>Does not propagate ordinary Exception failures</td><td>Immunity to Error conditions such as a failed bounds check</td></tr><tr><td>@nogc</td><td>Does not use the D garbage collector in this function</td><td>A whole-program memory cap or a ban on every possible native allocation</td></tr></tbody></table>
+<h2>Check length before accessing storage</h2>
+<pre><code class="language-d">if (bytes.length &lt; 8 || bytes.length &gt; 2312) return false;
+if (bytes[0] != 0x55 || bytes[1] != 0x4D ||
+    bytes[2] != 0x43 || bytes[3] != 0x42) return false;</code></pre>
+<p>A slice carries a length, so the reader need not search for a terminating zero. Zero is an ordinary byte inside this format. The first condition rejects both a short header and an input larger than the current maximum envelope. Only afterward does the code access positions zero through seven. Keep checks enabled during learning; the explicit shape check and the language's bounds checks serve different purposes.</p>
+<h2>Widen before combining bytes</h2>
+<pre><code class="language-d">const count = cast(uint)bytes[6] | (cast(uint)bytes[7] &lt;&lt; 8);
+if (count == 0 || count &gt; 256) return false;
+const size_t needed = 8 + cast(size_t)count * 9;
+if (bytes.length != needed) return false;</code></pre>
+<p>cast(uint) makes the arithmetic type explicit. Shifting the high byte by eight places gives it weight 256, and bitwise OR combines the two disjoint bit groups. The count bound is established before computing the total size. That order makes the multiplication small and auditable. The exact length check rejects both missing records and unexplained trailing bytes.</p>
+<p>Notice the difference between const and immutable in the file. The decoded local count is const because it will not be reassigned through that name. The literal fixture is immutable data shared by the tests. Mutable damaged arrays receive copied element values through slice assignment; the tests never try to modify the immutable reference. A const view alone would not have created that independent test storage.</p>
+<h2>Publish a local candidate at the end</h2>
+<pre><code class="language-d">const candidate = EnvelopeInfo(bytes[4], cast(ushort)count, needed);
+result = candidate;
+return true;</code></pre>
+<p>The narrowing cast to ushort occurs only after count is known to be at most 256. All result fields are available together when the assignment happens. Earlier return statements have no result assignment. No input view is kept in the result, so its scalar facts remain usable after the input slice's owner releases its storage. That does not make the facts current if somebody later changes the original artifact.</p>
+<h2>Compile the D example separately</h2>
+<ol><li>Open the native-language-boundary folder in Bits2Banking and read inspect_umc_header.d.</li><li>Check that dmd identifies the intended D compiler. If using LDC or GDC, consult that compiler's command-line reference instead of assuming DMD options are interchangeable.</li><li>Compile with unit tests and diagnostic context enabled. Keep runtime checks enabled.</li><li>Run the new executable only after compilation succeeds. Record the actual compiler version and result.</li></ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+dmd --version
+dmd -unittest -g -checkaction=context inspect_umc_header.d -of=inspect_umc_header.exe
+&amp; &quot;.\inspect_umc_header.exe&quot;</code></pre>
+<p>The expected summary reports profile 1, two instructions and 26 bytes. The unittest block runs before main in this normal D program when -unittest is enabled. A build without that option does not execute those tests. A printed summary is therefore not equivalent to recorded unit-test qualification. These commands remain unexecuted in the current authoring environment.</p>
+<h2>Understand the malformed cases</h2>
+<p>The tests pass every shorter prefix of the fixture to the refusal helper, then add a trailing byte and alter header fields one at a time. The half-open range 0 .. fixture.length includes zero and excludes the complete length. The slice fixture[0 .. length] borrows exactly that prefix. The reader must refuse it without changing the sentinel. The damaged-array cases use copies, preserving the original reference for the next case.</p>
+<p>A final case changes the first opcode to 255. The header reader still returns true because the header and size remain correct. It has not inspected the instruction body. Changing the profile from one to six also leaves a superficially supported envelope, but the complete Umicom C decoder rejects an unnecessarily high profile for an arithmetic-only program. Canonical encoding means one agreed minimal encoding for that program; simply choosing the newest version number is not an upgrade.</p>
+<h2>Use the production runtime for the stronger check</h2>
+<p>The companion C fixture calls umc_decode, umc_inspect and umc_execute from the actual runtime source. It verifies that the valid literal returns 42, every truncated prefix is rejected, and the two body/profile corruptions fail admission. The language exercises teach how to inspect a format; the C runtime continues to own full instruction semantics. This avoids growing a second incompatible interpreter inside a language demo.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+cmake -S labs/languages/native-language-boundary -B build/native-wire-lesson -G Ninja -DUMICOM_C_SOURCE=C:/umicom/umicom-c -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/native-wire-lesson
+ctest --test-dir build/native-wire-lesson --output-on-failure --no-tests=error</code></pre>
+<p>Use an installed C23 compiler and replace paths to match your own checkout. The Framework source option supplies approved branding resources. This small exercise does not configure a full GUI application or claim installed-SDK qualification. Passing its C tests says nothing about whether the D source compiles; record both results independently.</p>
+<h2>Apply the lesson to Umicom applications</h2>
+<p>A D teaching client can inspect a proposed artifact, organize metadata or demonstrate a contract. Production reusable behavior remains in C and Assembly under the Framework and Umicom C ownership rules. To call a native library, use a separately reviewed extern(C) boundary with exact widths, calling convention, ownership and error semantics. The D slice and this result struct are not automatically that boundary.</p>
+<p>Compile-time reflection can help generate repetitive field checks, as the earlier lessons show, but it cannot infer the meaning of external bytes. Reflection over EnvelopeInfo would describe an in-memory type, not establish the bytecode's canonical profile, instruction graph or origin. Keep the protocol definition and the actual admission service explicit.</p>
+<h2>Check your understanding</h2>
+<ol><li>Explain why replacing ref with out would change the rejected-input behavior.</li><li>For the bytes 00 01 at offsets six and seven, calculate the count and required complete length.</li><li>Explain why @safe does not make opcode 255 valid.</li><li>Name one ordinary runtime operation in main that is outside the restricted inspector's effects.</li><li>Explain why a const byte slice is a view, while assigning fixture elements into a separate fixed array creates separate element storage.</li><li>Compare the FreeBASIC and D readers. Identify which syntax differs and which format checks are exactly the same.</li><li>Describe which stronger checks must happen before executing the bytecode, and why a valid header is neither an authenticity signature nor authorization.</li></ol>
+<h2>Further reading</h2><ul><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/native-language-boundary/inspect_umc_header.d">Complete D envelope example</a></li><li><a href="https://dlang.org/spec/function.html">D function and parameter reference</a></li><li><a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/bytecode.md">Umicom C bytecode contract</a></li><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/native-language-boundary/check_umc_fixture.c">Real native runtime fixture</a></li></ul><nav aria-label="Previous lesson"><a href="29-turn-field-metadata-into-explicit-checks.html">Previous: Turn field metadata into explicit checks</a></nav><nav aria-label="Continuing practice"><a href="31-follow-the-lifetime-of-input-range-data.html">Next: Follow the lifetime of input-range data</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

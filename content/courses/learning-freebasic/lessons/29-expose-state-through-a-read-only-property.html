@@ -1,0 +1,65 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/29-expose-state-through-a-read-only-property.html
+
+PURPOSE:
+Expose state through a read-only property
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Expose state through a read-only property | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Expose state through a read-only property</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Start with a small rule</h2>
+<p>A request budget is a count of how many operations are still allowed in a small exercise. We allow values from zero through 1,024. Consuming work must reduce the count without making it wrap around to a very large number. Resetting the count must refuse a value above the limit. This lesson introduces Property, Private and Public while keeping those rules visible. It is a teaching value object, not an implementation of billing, security or a production queue.</p>
+<h2>Separate stored data from an interface</h2>
+<p>A field is a value stored inside a Type. A method is a procedure associated with that Type. An interface is the set of operations a caller is allowed to use. If a caller can assign any value directly to the stored count, the Type cannot reliably maintain its own limit. We therefore keep remaining_ private and expose a getter named Remaining. A getter retrieves a value. A setter assigns one through a procedure. This example deliberately declares only the getter.</p>
+<h2>Read the declaration</h2>
+<p>Type starts the record-like definition and End Type closes it. Private: applies to following member declarations until another visibility label. Public: exposes the operations that follow. UInteger is an unsigned integer type: it represents nonnegative values, but its size is target-dependent. It is not a portable on-disk format. Declare announces a procedure whose body appears later. Constructor initializes a new object. The two Function declarations return Boolean results so callers can distinguish accepted and refused operations.</p>
+<pre><code class="language-freebasic">Type RequestBudget
+Private:
+    remaining_ As UInteger
+Public:
+    Declare Constructor()
+    Declare Property Remaining() As UInteger
+    Declare Function TryReset(ByVal requested As UInteger) As Boolean
+    Declare Function TryConsume(ByVal count As UInteger) As Boolean
+End Type</code></pre>
+<h2>A property looks like a field access</h2>
+<p>The expression budget.Remaining calls the getter even though it looks like reading a field. Inside the getter, Return sends back the stored count. Reading this property performs no mutation or I/O. Keep getters like this predictable: hiding expensive work or surprising side effects behind a field-like expression makes a program harder to understand.</p>
+<pre><code class="language-freebasic">Property RequestBudget.Remaining() As UInteger
+    Return remaining_
+End Property</code></pre>
+<h2>Why the update is an explicit method</h2>
+<p>A setter can be useful, but an assignment-looking operation does not naturally show a Boolean refusal result. Here we use TryReset and TryConsume to make failure visible. TryReset checks the requested value before assigning it. TryConsume checks whether the requested count exceeds what remains before subtracting. Returning False leaves the old state intact. Returning True means the complete update was accepted.</p>
+<pre><code class="language-freebasic">Function RequestBudget.TryConsume(ByVal count As UInteger) As Boolean
+    If count &gt; remaining_ Then Return False
+    remaining_ -= count
+    Return True
+End Function</code></pre>
+<h2>Understand unsigned subtraction</h2>
+<p>Unsigned types cannot represent a negative result. Subtracting a larger count without checking can wrap according to the integer representation rather than producing a useful negative budget. Checking first is clearer than subtracting and trying to detect the problem afterwards. In our example, consuming four when three remain returns False and preserves three. Consuming exactly three succeeds and leaves zero. Consuming zero succeeds without changing the count. These are explicit choices in the contract.</p>
+<h2>Compile the complete example</h2>
+<p>Use the FreeBASIC setup from the first course lesson. Open a terminal in the native-language-boundary lab directory. The -lang fb option selects the modern FreeBASIC dialect. -exx enables extra runtime error checking for this learning run. -x names the output executable. Execute each command separately and stop after a compiler error; an older executable with the same name is not proof that the new source compiled.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -lang fb -exx read_only_properties.bas -x read_only_properties.exe
+.\read_only_properties.exe</code></pre>
+<h2>Follow the state by hand</h2>
+<table><thead><tr><th scope="col">Operation</th><th scope="col">Result</th><th scope="col">Remaining</th></tr></thead><tbody><tr><td>Construct budget</td><td>Initialized</td><td>0</td></tr><tr><td>TryReset(5)</td><td>True</td><td>5</td></tr><tr><td>TryConsume(2)</td><td>True</td><td>3</td></tr><tr><td>TryConsume(4)</td><td>False</td><td>3</td></tr><tr><td>TryReset(1025)</td><td>False</td><td>3</td></tr><tr><td>TryConsume(3)</td><td>True</td><td>0</td></tr><tr><td>TryConsume(0)</td><td>True</td><td>0</td></tr></tbody></table>
+<h2>Check the expected outcome</h2>
+<p>The complete file checks each result and terminates with exit code one if an expectation is wrong. A successful run prints: Read-only property: refused updates preserved 3; exact consumption reached 0. The final End 0 reports normal completion. These are expected results for you to verify with your installed compiler; reading the example alone is not runtime evidence.</p>
+<h2>Try a deliberate compiler refusal</h2>
+<p>The final source comment shows budget.Remaining = 7. If you copy the file to your own experiment and uncomment that assignment, the Type has no setter for it and compilation should refuse the operation. Restore the comment before continuing. This teaches the difference between a readable public property and a freely writable public field. Do not remove Private or expose remaining_ merely to silence the error; use the checked method.</p>
+<h2>Validate text before converting it</h2>
+<p>These methods take already typed unsigned values. They do not parse user input, and a Property does not validate arbitrary text. Use the earlier strict-number lesson before converting terminal or file text into UInteger. Reject negative spelling, overflow and extra characters under an explicit input policy. Do not assume that changing a signed value to unsigned preserves the meaning you intended.</p>
+<h2>Use the idea at a native application boundary</h2>
+<p>A BASIC teaching tool could display a Framework-owned job budget through a read-only getter and call a C function to request an update. Keep the real state and validation in the shared native service when integrating with Umicom applications. A BASIC Type with methods is not automatically a C struct with the same layout. Use the earlier C interoperability lesson for explicit linkage, fixed-width fields where required, ownership and return-status handling.</p>
+<h2>Practice</h2>
+<ol><li>Predict the result of TryReset(1024), then TryConsume(1024). Both succeed and the final count is zero.</li><li>Explain why TryReset(1025) must check before assignment. Otherwise a refused request would leave invalid state behind.</li><li>Explain the roles of Private, Public, Property, Function, ByVal, Boolean and Return in this file.</li><li>Design a test that records Remaining before a refused request and compares it afterwards. Refusal must preserve the state, not just return False.</li></ol>
+<h2>Official language references</h2>
+<ul><li><a href="https://freebasic.net/wiki/KeyPgProperty">FreeBASIC Property reference</a></li><li><a href="https://www.freebasic.net/wiki/TutBeginnersGuideToTypesAsObjects">FreeBASIC types as objects</a></li></ul>
+<nav aria-label="Previous lesson"><a href="28-guard-a-read-with-short-circuit-operators.html">Previous: Guard a read with short-circuit operators</a></nav><nav aria-label="Continuing practice"><a href="30-read-fixed-data-records-and-reset-the-cursor.html">Next: Read fixed data records and reset the cursor</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

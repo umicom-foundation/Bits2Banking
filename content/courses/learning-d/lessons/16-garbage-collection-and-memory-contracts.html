@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/16-garbage-collection-and-memory-contracts.html
+
+PURPOSE:
+Understand D memory management and safety attributes
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand D memory management and safety attributes | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Understand D memory management and safety attributes</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>Garbage collection reclaims some allocations after they are no longer reachable. It does not make unlimited allocation cheap or guarantee a pause duration. A leaked operating-system handle, a retained reference to a huge array and a C allocation never freed are different problems. Changing a language does not eliminate all three.</p>
+<pre><code class="language-d">int clampPercent(int value) @safe pure nothrow @nogc
+{
+    if (value &lt; 0) return 0;
+    if (value &gt; 100) return 100;
+    return value;
+}
+unittest
+{
+    assert(clampPercent(-1) == 0);
+    assert(clampPercent(45) == 45);
+    assert(clampPercent(101) == 100);
+}
+void main() {}</code></pre>
+<ol><li>Save as memory_contract.d. Compile with dmd -w -unittest -g memory_contract.d and run it. Success produces no assertion failure.</li><li>Change one expected value deliberately and verify that the test catches it. Restore it.</li><li>Explain why this function needs no allocation: it reads one integer and returns one integer.</li><li>Keep the attributes and experiment with adding an operation that allocates through the garbage collector. Read the compiler’s rejection rather than deleting @nogc immediately.</li></ol>
+<p>@nogc restricts GC allocation; it does not mean no C malloc, no system calls, no blocking and no resource leak. nothrow restricts exception throwing, not all possible program faults. @safe restricts memory-unsafe operations in checked code. @system allows operations needing manual review. @trusted marks a programmer-reviewed boundary callable from safe code; it is an obligation, not a mechanism that verifies arbitrary pointer code.</p>
+<p>pure constrains dependencies on mutable external state. scope can express a bounded lifetime context, and scope(exit) runs cleanup when a scope is left. A C allocation must be released by its matching allocator contract. Do not let a GC-managed reference disappear while a C service retains a raw pointer unless the binding explicitly keeps the storage alive.</p>
+<h2>Apply to Umicom</h2>
+<p>Keep Framework buffer capacities, ownership and cancellation visible in a D binding. A native Media preview should have a maximum working set and release old frames promptly. Those properties require measurement and tests even when the wrapper is written in D. The lesson function is a small example, not proof of whole-application memory safety.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="15-structs-classes-and-interfaces.html">Previous: Choose a struct, class or interface</a> · <a href="17-templates-and-compile-time-work.html">Next: Use templates and compile-time evaluation</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

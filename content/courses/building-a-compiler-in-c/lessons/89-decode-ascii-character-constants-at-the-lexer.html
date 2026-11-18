@@ -1,0 +1,74 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/89-decode-ascii-character-constants-at-the-lexer.html
+
+PURPOSE:
+Decode ASCII character constants at the lexer
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Decode ASCII character constants at the lexer | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Decode ASCII character constants at the lexer</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Give a quoted mark an integer meaning</h2>
+<p>A computer stores numbers. A character encoding assigns numbers to text characters so that programs can agree on their meaning. ASCII assigns 65 to uppercase A and 42 to the star. In this lesson you will follow a quoted character through source text, a token, an instruction and a returned integer. Umicom C accepts this deliberately bounded ASCII form. It does not yet provide a char storage type, strings, general Unicode character constants or a complete C23 compiler.</p>
+<h2>Start with four different kinds of object</h2>
+<p>An apostrophe in a source file is a byte. A lexer recognizes a pair of apostrophes and the permitted content between them as one token. A token describes a piece of source for the parser. An instruction is an operation the runtime will execute. Keeping those objects separate prevents a source spelling feature from unnecessarily expanding the virtual machine.</p>
+<table><thead><tr><th scope="col">Object</th><th scope="col">Our example</th><th scope="col">What it means</th></tr></thead><tbody><tr><td>Source bytes</td><td>'*'</td><td>Opening quote, star, closing quote</td></tr><tr><td>Integer token</td><td>value=42, length=3</td><td>One value with a source span</td></tr><tr><td>Instruction</td><td>PUSH 42</td><td>Place the existing integer on the evaluation stack</td></tr><tr><td>Program result</td><td>42</td><td>Return the integer; do not print a star glyph</td></tr></tbody></table>
+<h2>Read the complete smallest program</h2>
+<p>main names the entry function. int declares its result type, and void describes the accepted no-parameter entry form. The braces enclose the body. return supplies its final value. The quoted star is a character constant; the semicolon terminates the return statement. Without quotes, a star is an operator and cannot stand alone as this expression.</p>
+<pre><code class="language-c">int main(void) {
+    return '*';
+}</code></pre>
+<h2>Configure and compile the tool first</h2>
+<p>Open PowerShell in the Umicom C checkout. These commands select the UCRT64 toolchain and the matching Windows preset. Configuration writes the build rules; building creates the compiler executable. Run commands separately and stop at an unexpected error, because a failed build can leave an older executable in place. The example already lives in examples/ascii_characters.uc.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicom-c&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --preset windows-ucrt64-debug
+cmake --build --preset windows-ucrt64-debug --parallel 2
+.\build\windows-ucrt64-debug\bin\umicom-c.exe check examples/ascii_characters.uc</code></pre>
+<h2>Predict the instruction budget</h2>
+<p>Check should accept two instructions. PUSH stores the integer 42 on the evaluation stack. RETURN takes it as the result. Fuel limits the number of executed instructions, not the number of characters in the source or elapsed milliseconds. With two units, run should print Result: 42 and Instructions: 2. With one, it should refuse before publishing a result because RETURN has not executed.</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe run examples/ascii_characters.uc --max-steps 2
+.\build\windows-ucrt64-debug\bin\umicom-c.exe run examples/ascii_characters.uc --max-steps 1</code></pre>
+<h2>Use escapes for values you cannot type directly</h2>
+<p>An escape starts with a backslash inside the quotes. Its source spelling contains several bytes, but the lexer converts it into one integer. For example, backslash followed by n represents the ASCII line-feed value 10. It does not insert a raw line break into the source token. A quoted backslash needs another backslash, and a quoted apostrophe needs a preceding backslash. The implementation maps each accepted spelling explicitly so that a host compiler’s char signedness cannot change the language value.</p>
+<table><thead><tr><th scope="col">Spelling</th><th scope="col">Decoded integer</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>'\n'</td><td>10</td><td>Line feed</td></tr><tr><td>'\r'</td><td>13</td><td>Carriage return</td></tr><tr><td>'\t'</td><td>9</td><td>Horizontal tab</td></tr><tr><td>'\\'</td><td>92</td><td>Backslash</td></tr><tr><td>'\''</td><td>39</td><td>Apostrophe</td></tr><tr><td>'\0'</td><td>0</td><td>Zero value, not an empty token</td></tr></tbody></table>
+<h2>Understand base eight and base sixteen</h2>
+<p>Octal notation uses digits zero through seven. Each position is worth eight times the position to its right. Hexadecimal uses digits zero through nine and A through F, with sixteen times the weight per position. In an octal escape, backslash 101 means 1×64 + 0×8 + 1, which is 65. In a hexadecimal escape, backslash x41 means 4×16 + 1, also 65. Both represent uppercase A. These forms are useful when the source must make an exact encoded value visible.</p>
+<pre><code class="language-c">int main(void) {
+    return 'A' + '\101' + '\x41';
+}</code></pre>
+<h2>Apply the bounded numeric contract</h2>
+<p>The preceding expression returns 195, because it adds three integers equal to 65. Each individual character constant must still lie between zero and 127. Octal accepts one to three digits. Hexadecimal uses a lowercase x prefix followed by at least one digit; either letter case is accepted for the digits themselves. Hexadecimal scans the entire digit run before expecting the closing quote. Long leading-zero escapes remain limited by the source-byte budget. The arithmetic result of a larger expression follows the existing checked integer rules, rather than being limited to ASCII.</p>
+<h2>Check range before multiplying</h2>
+<p>Suppose the decoded value so far is value, the next digit is digit and the base is radix. The next value would be value×radix+digit. Before performing that calculation, the lexer checks whether value exceeds (127-digit)/radix. A refusal at that point avoids computing an overflowing intermediate. This is a reusable technique for parsers: validate the next operation’s bounds before it changes state. It is different from multiplying first and hoping to detect overflow afterward.</p>
+<h2>Follow source ownership through the helper</h2>
+<p>Open src/lexer.c and find ascii_character. The lexer receives a borrowed source span with an explicit length. Borrowed means the caller owns the bytes and must keep them alive during the call. The helper advances only while an index is inside that length. It remembers the opening quote for diagnostics, consumes the closing quote, and emits an existing integer token. It neither allocates a string nor stores a pointer for later execution. The parser and emitter can therefore reuse their ordinary integer path.</p>
+<h2>Keep lookalike spellings distinct</h2>
+<p>A quote inside an already-started number has a different job: 1'000 is a numeric digit separator. A quote at the beginning of a token starts a character constant. The lexer already knows which rule owns the current token. It must not scan comment markers inside a valid constant as if they were source comments: the quoted slash and star are just integer values. Two adjacent character constants without an operator are refused; they do not concatenate into a string.</p>
+<pre><code class="language-c">int main(void) {
+    return '/' + '*';
+}</code></pre>
+<h2>Make malformed examples deliberately</h2>
+<p>Use a separate scratch source and change one item at a time. Empty quotes have no value. Two letters contain too many values for this profile. An unknown escape has no defined interpretation. A raw non-ASCII byte is outside the direct-character rule. Unicode prefixes and escapes are unsupported rather than silently reduced to a byte. Keep the original examples so that a refused experiment cannot be mistaken for a failed baseline.</p>
+<table><thead><tr><th scope="col">Input</th><th scope="col">Why it is refused</th></tr></thead><tbody><tr><td>''</td><td>No character</td></tr><tr><td>'ab'</td><td>More than one character</td></tr><tr><td>'\q'</td><td>Unknown escape</td></tr><tr><td>'\200'</td><td>Octal value 128 exceeds 127</td></tr><tr><td>'\x80'</td><td>Hexadecimal value 128 exceeds 127</td></tr><tr><td>'\0000'</td><td>Fourth octal digit remains before closing quote</td></tr><tr><td>u8'A'</td><td>Unsupported character-prefix grammar</td></tr></tbody></table>
+<h2>Separate source names from literal content</h2>
+<p>In int main(void){int A=1;return 'A';}, A is a local variable name in the declaration. Inside the quotes it is literal content, not a reference to that local. The source-warning collector must report the local as never read. A string search for the letter A would produce the wrong answer. Correct warnings use the compiler’s token and name-resolution rules.</p>
+<h2>Reuse the existing saved representation</h2>
+<p>Compile writes the integer instructions into the existing format-1 bytecode representation. The PUSH source offset continues to point at the opening quote, so diagnostics can identify the original spelling. No new wire opcode is needed. Use a fresh filename because compile refuses to overwrite an existing artifact. Then execute that artifact with fuel two and compare the result to the source run.</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe compile examples/ascii_characters.uc build/ascii-lesson.umcb
+.\build\windows-ucrt64-debug\bin\umicom-c.exe exec build/ascii-lesson.umcb --max-steps 2
+.\build\windows-ucrt64-debug\bin\umicom-c.exe trace-bytecode build/ascii-lesson.umcb</code></pre>
+<h2>Check the component that actually parses</h2>
+<p>UMC_FEATURE_ASCII_CHARACTER_LITERALS has value 33554432. Query umc_compiler_profile(UMC_PROFILE_FEATURES) and test that bit before offering the syntax through an editor integration. The runtime-only profile must not claim this parser feature, because it sees integer records and never reads the quotes. A newer header alone cannot update an older linked library. Compiler identity, runtime identity and source identity are separate facts.</p>
+<h2>Run regression checks and explain their limits</h2>
+<p>The tests cover every direct printable ASCII value, numeric escape values zero through 127, malformed spans, long escapes, source offsets, warnings, fuel and bytecode round trips. They also preserve numeric digit-separator behavior. Passing these cases establishes the bounded implementation exercised by the selected build; it is not proof of Unicode support or a complete C23 conformance suite.</p>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-debug -R &quot;umicom.c.(ascii-characters|cli-ascii-characters|profile|cli-profile)&quot; --output-on-failure --no-tests=error</code></pre>
+<h2>Try a small text rule without pretending it is Unicode</h2>
+<p>Create an int local c initialized to uppercase A. Inside a braced if, check c &gt;= 'A' and c &lt;= 'Z', then add 'a' - 'A'. Return c and predict 97. Change the input to a digit and predict that it remains unchanged. This rule uses the contiguous ASCII letter ranges. It does not handle accented letters, language-sensitive casing, Unicode normalization or text encoding conversion. Keeping the limitation explicit is part of designing a trustworthy language feature.</p>
+<nav aria-label="Previous lesson"><a href="88-parse-an-empty-statement-without-emitting-code.html">Previous: Parse an empty statement without emitting code</a></nav><nav aria-label="Continuing practice"><a href="90-parse-initialized-declaration-lists.html">Next: Parse initialized declaration lists without changing the virtual machine</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

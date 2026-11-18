@@ -189,6 +189,17 @@ function(CheckCourseDiscovery root out_error out_count)
                 set(${out_error} "${_error}" PARENT_SCOPE)
                 return()
             endif()
+            # Catch known incomplete authoring output in both paired editions.
+            # This is a narrow sentinel check, not a prose-quality or HTML parser.
+            file(READ "${_html_file}" _html_text)
+            file(READ "${_md_file}" _md_text)
+            if(_html_text MATCHES "<h2>undefined</h2>" OR
+               _md_text MATCHES "(^|\n)## undefined(\r?\n|$)" OR
+               _html_text MATCHES "UMICOM_TABLE_INSERT_[0-9]+" OR
+               _md_text MATCHES "UMICOM_TABLE_INSERT_[0-9]+")
+                set(${out_error} "content_placeholder: ${_relative}" PARENT_SCOPE)
+                return()
+            endif()
             if(_html_file IN_LIST _seen)
                 set(${out_error} "course_duplicate: ${_relative}" PARENT_SCOPE)
                 return()

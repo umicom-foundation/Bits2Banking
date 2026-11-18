@@ -1,0 +1,100 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/51-admit-values-before-exhaustive-state-dispatch.html
+
+PURPOSE:
+Admit values before exhaustive state dispatch
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admit values before exhaustive state dispatch | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Admit values before exhaustive state dispatch</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>A named state describes one fact</h2>
+<p>Imagine a launcher with four observations: a request is queued, a process has been created, an application has acknowledged readiness, or startup has failed. These observations are different. A process can exist before its first window appears. A useful program keeps those facts separate instead of showing success too early. This laboratory models the distinctions with values only; it does not start a process or implement an application readiness protocol.</p>
+<ol><li>Open labs/languages/native-language-boundary/exhaustive_states.d. Review the earlier enum, function, ref parameter and unittest lessons.</li><li>Write four cards on paper: queued, created, ready and failed. Put created before ready.</li><li>Consider a program that starts but never displays a window. It has evidence for created, but you must not silently promote it to ready.</li></ol>
+<h2>Give states explicit names and numbers</h2>
+<p>enum declares a named type with named members. LaunchState is the type name, uint is its unsigned 32-bit base type, and each assignment gives a member an explicit number. These numbers are a tiny invented protocol for the exercise. A protocol is an agreed representation exchanged between components. The gaps leave room for future decisions; they do not prove an unknown number is safe.</p>
+<pre><code class="language-d">enum LaunchState : uint { queued = 10, created = 20, ready = 30, failed = 40 }</code></pre>
+<h2>Separate representation from meaning</h2>
+<table><thead><tr><th scope="col">Received number</th><th scope="col">Accepted state</th><th scope="col">Meaning in this exercise</th></tr></thead><tbody><tr><td>10</td><td>queued</td><td>The request is waiting</td></tr><tr><td>20</td><td>created</td><td>A process exists; readiness is not established</td></tr><tr><td>30</td><td>ready</td><td>A separate readiness acknowledgement exists</td></tr><tr><td>40</td><td>failed</td><td>The attempted startup failed</td></tr><tr><td>0, 11 or any other number</td><td>Refused</td><td>Keep the previous accepted output</td></tr></tbody></table>
+<h2>Decode external values with an ordinary switch</h2>
+<p>tryDecodeState receives a raw number and a reference to the caller’s output. candidate is local temporary storage. Each recognized number assigns it and uses break to leave the switch. default returns false before publication. Only accepted values reach output = candidate. This lets the caller distinguish refusal from a successful new value without overwriting the old state.</p>
+<pre><code class="language-d">bool tryDecodeState(uint raw, ref LaunchState output) @safe pure nothrow @nogc
+{
+    LaunchState candidate;
+    switch (raw) {
+        case 10: candidate = LaunchState.queued; break;
+        case 20: candidate = LaunchState.created; break;
+        case 30: candidate = LaunchState.ready; break;
+        case 40: candidate = LaunchState.failed; break;
+        default: return false;
+    }
+    output = candidate;
+    return true;
+}
+
+</code></pre>
+<h2>Read the function promises</h2>
+<table><thead><tr><th scope="col">Declaration</th><th scope="col">Meaning here</th></tr></thead><tbody><tr><td>bool</td><td>The result reports acceptance or refusal</td></tr><tr><td>uint raw</td><td>The function receives a copy of the external number</td></tr><tr><td>ref LaunchState output</td><td>Success may update the caller’s variable</td></tr><tr><td>@safe</td><td>The compiler applies D memory-safety restrictions</td></tr><tr><td>pure</td><td>The function has no unrestricted global side effects; a ref output can still change</td></tr><tr><td>nothrow</td><td>The function does not throw an Exception</td></tr><tr><td>@nogc</td><td>The function cannot require D garbage-collector allocation</td></tr></tbody></table>
+<h2>Trace one refused update</h2>
+<ol><li>The caller initializes current to LaunchState.ready. That is an explicit value, not an assumption about the enum’s default.</li><li>The caller supplies raw value 11. None of the recognized numeric cases matches.</li><li>default returns false. The assignment to output is never reached.</li><li>The test checks both facts: the result is false and current still equals ready.</li><li>A real user interface should also indicate the refusal. Retaining old data is not permission to present it as a fresh response.</li></ol>
+<h2>Map admitted states exhaustively</h2>
+<p>A final switch has no default branch and requires every member of a named enum to appear. It also excludes case ranges and runtime case expressions. Our mapping returns a different string for each observation. Adding a new member therefore requires a deliberate mapping decision. This is a compile-time completeness check, not validation of arbitrary external integers.</p>
+<pre><code class="language-d">string labelFor(LaunchState state) @safe pure nothrow @nogc
+{
+    final switch (state) {
+        case LaunchState.queued: return &quot;request queued&quot;;
+        case LaunchState.created: return &quot;process created; readiness unknown&quot;;
+        case LaunchState.ready: return &quot;application readiness acknowledged&quot;;
+        case LaunchState.failed: return &quot;startup failed&quot;;
+    }
+}
+</code></pre>
+<h2>Why an unchecked cast is insufficient</h2>
+<p>D permits an explicit cast from a base integer to an enum. That operation is not the admission function above. Do not use cast(LaunchState)raw as proof that a network message or file contains a recognized state. An exhaustive mapping is useful after admission. Unknown values need a checked boundary and a clear error path before the mapping is called.</p>
+<pre><code class="language-d">// Do not replace input validation with this cast:
+// auto state = cast(LaunchState)raw;
+
+LaunchState accepted = LaunchState.queued;
+if (tryDecodeState(20, accepted)) {
+    // It is now appropriate to call labelFor(accepted).
+}</code></pre>
+<h2>Use reflection to enumerate a test domain</h2>
+<p>EnumMembers is a library template that exposes the enum’s named members. static foreach expands the enclosed test statements at compile time for each member. The assertions still execute when the test program runs. They check decoding and a nonempty label for every declared member. Reflection helps enumerate cases; it does not invent a correct meaning for a new state.</p>
+<pre><code class="language-d">unittest {
+    LaunchState current = LaunchState.ready;
+    assert(!tryDecodeState(0, current) &amp;&amp; current == LaunchState.ready);
+    assert(!tryDecodeState(11, current) &amp;&amp; current == LaunchState.ready);
+    assert(!tryDecodeState(uint.max, current) &amp;&amp; current == LaunchState.ready);
+    static foreach (member; EnumMembers!LaunchState) {
+        assert(tryDecodeState(cast(uint)member, current));
+        assert(current == member);
+        assert(labelFor(current).length != 0);
+    }
+    assert(labelFor(LaunchState.created) != labelFor(LaunchState.ready));
+}
+</code></pre>
+<h2>Keep three checks distinct</h2>
+<table><thead><tr><th scope="col">Check</th><th scope="col">What it detects</th><th scope="col">What it cannot establish</th></tr></thead><tbody><tr><td>final switch completeness</td><td>A declared enum member lacks a case</td><td>Whether the chosen label is truthful</td></tr><tr><td>Decoder refusal tests</td><td>Unknown numbers are admitted or corrupt prior output</td><td>Whether every external message is authentic</td></tr><tr><td>created differs from ready assertion</td><td>Two important observations become the same label</td><td>Whether a real application created a usable window</td></tr></tbody></table>
+<h2>Compile the standalone teaching program</h2>
+<p>Use the D compiler selected in the setup lesson. The following DMD command enables unittest blocks and warnings. The sample remains uncompiled in the current mirror environment. Stop on a compiler error before running the executable; avoid -release while learning because assertions are part of this exercise.</p>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary
+dmd -unittest -w -ofexhaustive_states.exe exhaustive_states.d
+.\exhaustive_states.exe</code></pre>
+<h2>Understand the expected output</h2>
+<p>main decodes the invented number 20 and prints its label. It never starts another program. The unittest blocks are normally quiet on success; a failed assertion interrupts the run. This expected text therefore demonstrates the value mapping only.</p>
+<pre><code class="language-text">Umicom D state example: process created; readiness unknown</code></pre>
+<h2>Try an intentional completeness failure</h2>
+<ol><li>Add cancelled = 50 to LaunchState and compile without editing labelFor. The compiler should report the missing enum case.</li><li>Add a case for cancelled with a suitable label. Then review the decoder: do you intend to accept protocol value 50? Add that decision explicitly.</li><li>The reflective test now visits cancelled and will expose a decoder that still refuses its value. Run with -unittest to exercise the assertions.</li><li>Add a refusal test for 51. Verify both a false result and preservation of the previous accepted output.</li><li>Do not add default to final switch merely to silence a missing-case error. Use ordinary switch for open-ended external input and final switch for an intentionally closed internal mapping.</li></ol>
+<h2>Apply the boundary in Umicom projects</h2>
+<p>The primary Framework services remain C23. A D teaching client can decode its own explicit wire representation and call a reviewed C interface. Match the interface’s actual integer widths and documented status codes; these four invented values are not Framework ABI constants. In an asynchronous workflow, track request acceptance, native creation, readiness and failure from their respective evidence sources. Exhaustive syntax cannot supply an observation that the program never collected.</p>
+<h2>Recovery and further exploration</h2>
+<ol><li>If dmd is not recognized, check the earlier setup and compiler PATH instructions. Do not substitute the Umicom C compiler and claim it supports complete D compilation.</li><li>If a ref argument is rejected, supply a mutable variable rather than an immutable value or a temporary expression.</li><li>If an @nogc diagnostic appears after an edit, inspect the operation you added. Building a new dynamic string differs from returning an existing string literal.</li><li>Keep a small table of external numeric values beside your decoder and review changes to it as protocol changes, independently of source enum ordering.</li></ol>
+<h2>Language references</h2>
+<ul><li><a href="https://dlang.org/spec/statement.html#FinalSwitchStatement">D language reference: final switch</a></li><li><a href="https://dlang.org/spec/enum.html">D language reference: named enums and conversions</a></li></ul>
+<nav aria-label="Previous lesson"><a href="50-follow-comment-and-string-boundaries.html">Previous: Follow comment and string boundaries</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

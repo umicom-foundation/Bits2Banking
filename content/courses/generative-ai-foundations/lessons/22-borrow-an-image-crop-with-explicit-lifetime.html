@@ -1,0 +1,74 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/generative-ai-foundations/lessons/22-borrow-an-image-crop-with-explicit-lifetime.html
+
+PURPOSE:
+Borrow an image crop with explicit lifetime
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Borrow an image crop with explicit lifetime | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Borrow an image crop with explicit lifetime</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Why a training pipeline needs careful image preparation</h2>
+<p>A model expects numerical inputs with a particular shape, channel order and range. A source image may have a different shape or contain a region you do not want to use. Cropping selects a rectangle; resizing changes the sampling grid. They are different operations. In this lesson you will select a small rectangle without allocating a second pixel image, then feed it to Framework’s existing tensor packer. The exercise prepares data. It does not decode a file, run a generative model or train weights.</p>
+<h2>Review the storage vocabulary</h2>
+<p>RGB stores red, green and blue channel values for each pixel. RGB8 gives each channel one unsigned byte from zero through 255. Width counts pixels across a row. Height counts rows. Row stride is the byte distance between the starts of consecutive rows. Stride can be larger than width times three because a buffer may include padding or share storage with a larger image. A pointer identifies a starting location; it does not say how many bytes are valid there.</p>
+<h2>Draw the original source</h2>
+<p>The laboratory source has three pixels in each of two rows. Row zero contains red, green and blue. Row one contains cyan, magenta and yellow. Row zero also has three padding bytes. The final row needs no padding because no later row follows it. The complete readable source span is therefore 12 + 9 = 21 bytes. These colors are original synthetic data chosen so that every expected channel can be checked manually.</p>
+<table><thead><tr><th scope="col">Row</th><th scope="col">Column 0</th><th scope="col">Column 1</th><th scope="col">Column 2</th><th scope="col">Extra bytes</th></tr></thead><tbody><tr><td>0</td><td>red at 0–2</td><td>green at 3–5</td><td>blue at 6–8</td><td>padding at 9–11</td></tr><tr><td>1</td><td>cyan at 12–14</td><td>magenta at 15–17</td><td>yellow at 18–20</td><td>none required</td></tr></tbody></table>
+<h2>Select a rectangle with counts</h2>
+<p>Choose left=1 and top=0, then width=2 and height=2. left and top are zero-based pixel coordinates. Width and height are positive counts, not inclusive ending coordinates. The result includes green and blue in its first row, then magenta and yellow. It excludes red and cyan. Asking for left=3 is outside this three-column image, even if the requested rectangle has width one.</p>
+<h2>Create a descriptor instead of another image</h2>
+<p>UmiAiTrainingRgb8View is a small descriptor containing a pixel pointer, readable byte span, width, height and row stride. A descriptor describes storage; it does not own it. UmiAiTrainingImageCropRgb8 validates the whole source and rectangle, then publishes a new descriptor. In this exercise its pointer is source.pixels + 3, its dimensions are two by two, and its stride remains 12. No pixels move.</p>
+<pre><code class="language-c">const UmiAiTrainingRgb8View source = {
+    pixels, sizeof pixels, 3U, 2U, 12U
+};
+UmiAiTrainingRgb8View crop = {0};
+UmiStatus status = UmiAiTrainingImageCropRgb8(
+    &amp;source, 1U, 0U, 2U, 2U, &amp;crop);</code></pre>
+<h2>Read the ownership diagram</h2>
+<figure><img src="../../../assets/diagrams/borrowed-image-crop.svg" alt="A crop view retains source row stride and includes inter-row gaps in its readable span" style="width:100%;height:auto"><figcaption>Selected pixels and the contiguous readable span are different quantities.</figcaption></figure>
+<p>The outline marks the selected rectangle while the descriptor still refers to the original allocation. The lower strip expands the contiguous readable span starting at source byte three. It includes a gap between selected rows. The packer skips that gap using the original stride. A view is useful because it preserves this relationship explicitly; pretending the crop is tightly packed would read the wrong colors.</p>
+<h2>Distinguish selected data from readable span</h2>
+<p>Four selected pixels contain 4×3 = 12 channel bytes. The crop’s readable span is (height−1)×stride + width×3 = 12 + 6 = 18 bytes. Between its first six selected bytes and its final six selected bytes lie six gap bytes: the original row padding and the excluded cyan pixel. The larger span is needed to reach the second selected row. It is not permission to treat every byte in that span as a selected pixel.</p>
+<table><thead><tr><th scope="col">Quantity</th><th scope="col">This crop</th><th scope="col">Use</th></tr></thead><tbody><tr><td>Visible RGB bytes</td><td>12</td><td>Number of selected channel values</td></tr><tr><td>Readable span</td><td>18</td><td>Bound through the last selected row</td></tr><tr><td>Row stride</td><td>12</td><td>Move from one selected row start to the next</td></tr><tr><td>Tensor values</td><td>12 floats</td><td>Model-facing output element count</td></tr><tr><td>Tensor payload</td><td>48 bytes with four-byte float</td><td>Actual output storage in this build</td></tr></tbody></table>
+<h2>Keep the owner alive</h2>
+<p>The source array in main remains alive until the function returns. Both crop selection and packing happen synchronously before that return. Copying the descriptor only copies the pointer and metadata; it does not duplicate or retain the allocation. Returning a view of a local stack array would leave a dangling pointer after the function ends. A background job needs an explicit owner that remains alive for the entire job, or a deliberate copy into job-owned storage. Zero-copy is a choice about ownership, not a free lifetime extension.</p>
+<h2>Use the shared admission rules</h2>
+<p>The crop service calls the same ImageDescribeRgb8 shape validator as the tensor converter. It validates the complete source even if the requested rectangle is tiny. A source with a missing final row must be refused rather than made to look valid through a smaller view. The bounded training image profile accepts at most 16,384 channel values. That is a small reference contract, not a claim that arbitrary full-resolution photographs are supported by this service.</p>
+<h2>Avoid overflowing coordinate arithmetic</h2>
+<p>A naive test might calculate left + width and compare it with source width. That addition could wrap for a very large hostile value. The service first checks that left is inside the source, then compares width with source.width - left. It does the equivalent check for top and height. The shared span validator checks multiplication and addition bounds before a pointer offset is formed. This illustrates why validating metadata belongs before memory access.</p>
+<h2>Pack only the selected pixels</h2>
+<p>Pass the view’s pointer, span, dimensions and stride to UmiAiTrainingImagePackRgb8. HWC means height, width, channel: visit each selected pixel’s red, green and blue values before moving to the next pixel. Unit range divides byte values by 255. Our synthetic colors use only zero and 255, so the packed floats are exactly zero or one. The output still needs its own storage; the optimization removes an intermediate RGB copy, not the final tensor.</p>
+<pre><code class="language-c">float tensor[12];
+status = UmiAiTrainingImagePackRgb8(
+    crop.pixels, crop.bytes, crop.width, crop.height,
+    crop.row_stride_bytes, UMI_AI_TRAINING_IMAGE_HWC,
+    UMI_AI_TRAINING_IMAGE_UNIT, tensor, 12U);</code></pre>
+<h2>Predict every output value</h2>
+<p>Green becomes 0,1,0. Blue becomes 0,0,1. Magenta becomes 1,0,1. Yellow becomes 1,1,0. Joining those triples in row order gives the expected tensor below. A wrong stride would read padding or cyan instead. A wrong layout would rearrange values into channel planes. A correct memory span alone therefore does not establish that a model receives the layout it expects.</p>
+<pre><code class="language-text">0 1 0   0 0 1   1 0 1   1 1 0</code></pre>
+<h2>Build the focused learning consumer</h2>
+<p>Open PowerShell in Bits2Banking. Point UMICOM_FRAMEWORK_SOURCE at the matching Framework checkout. This small CMake project compiles the production crop and tensor sources directly and applies the approved Umicom icon. It does not build or launch the entire Media application. Run each command separately and stop on errors. A source-based learning consumer is not evidence that an independently installed SDK package has been qualified.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/framework/borrowed-image-crop -B build/borrowed-image-crop -G Ninja -DCMAKE_BUILD_TYPE=Debug -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/borrowed-image-crop --parallel 2
+ctest --test-dir build/borrowed-image-crop --output-on-failure
+.\build\borrowed-image-crop\umicom-borrowed-image-crop.exe</code></pre>
+<h2>Check status and retained output together</h2>
+<p>The program checks pointer identity, span, stride and all twelve float values. It then requests an outside rectangle and expects INVALID_ARGUMENT. The existing crop descriptor must remain unchanged after that refusal. This is a small publication contract: failed admission does not replace a previously valid view. The caller still checks the returned status before using a newly requested result. The service allows narrowing the same descriptor in place only because all checks finish before the final assignment.</p>
+<h2>Understand what cropping cannot promise</h2>
+<p>A borrowed view does not erase excluded pixels from the underlying allocation. Saving its whole readable span could expose gap data that is outside the crop. Use a proper encoder or packer that walks only selected pixels when creating an exported artifact. Cropping also does not automatically update a caption, bounding box, segmentation mask or consent record. A caption saying there is a red object may become false after the red region is removed. Training quality depends on keeping data and labels consistent, not merely on making dimensions fit.</p>
+<h2>Place augmentation after the split decision</h2>
+<p>Augmentation creates changed training examples, such as selected crops or flips. If variants of the same original image appear in both training and evaluation sets, evaluation can become misleading because the model has already seen closely related content. Establish source-level grouping and split membership before generating variants. Keep the original identifier and recorded crop coordinates with each variant. This service selects explicit coordinates and uses no random generator; random augmentation policy and reproducible seed handling belong in a separate reviewed pipeline.</p>
+<h2>Relate the exercise to image and video generation</h2>
+<p>A generative training system may next normalize colors, encode images into a latent representation, select timesteps, add noise, run a model and compute a loss. None of those stages is created by a crop view. For video, independent frame crops can make content jump over time, so temporal consistency needs its own policy. The preceding video lesson handles explicit frame order; this lesson handles one frame’s borrowed spatial region. Keeping those stages separate makes both memory use and data transformations easier to inspect.</p>
+<h2>Practice safely with the synthetic source</h2>
+<ol><li>Select only the yellow pixel using left=2, top=1, width=1, height=1. Predict pointer offset 18 and readable span three.</li><li>Select the full source and explain why its descriptor still has a 12-byte stride and 21-byte readable span.</li><li>Request a crop extending beyond the right edge. Verify refusal and retention of the old descriptor.</li><li>Create a crop of an existing crop and compare its pointer and dimensions with a directly selected equivalent rectangle.</li><li>Explain why a copied view cannot outlive the source array and why serializing crop.bytes bytes is not the same as exporting the selected image.</li></ol>
+<nav aria-label="Previous lesson"><a href="21-prepare-a-video-sample-with-explicit-frame-order.html">Previous: Prepare a video sample with explicit frame order</a></nav><nav aria-label="Continuing practice"><a href="23-transform-pixels-without-changing-their-labels-by-accident.html">Next: Transform pixels without changing their labels by accident</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

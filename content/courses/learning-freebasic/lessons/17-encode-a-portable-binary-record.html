@@ -1,0 +1,63 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/17-encode-a-portable-binary-record.html
+
+PURPOSE:
+Encode a portable four-byte record
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Encode a portable four-byte record | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Encode a portable four-byte record</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>Two programs can agree on a number and still disagree about the bytes used to store it. A file contains bytes, not a BASIC variable declaration. This lesson starts with the number written as hexadecimal 12345678, gives each of its four bytes an explicit position, and reconstructs the number. You will learn the difference between a numeric value, a printed representation, a memory layout and a file format. The exercise stays in memory; it does not open or overwrite any file.</p>
+<h2>1. Prepare the small exercise</h2>
+<p>Finish the earlier lessons on integer types, arrays and procedures first. Open labs/languages/native-language-boundary/encode_record.bas in your Bits2Banking checkout. This complete, original teaching example needs FreeBASIC in its fb dialect. It does not call Umicom Framework or link the C boundary object. It has been authored and source-reviewed; execution with a FreeBASIC compiler remains to be performed. Passing the separate C lab tests would not validate this program.</p>
+<h2>2. Count bits, bytes and possible values</h2>
+<p>A bit is one binary digit: zero or one. A byte contains eight bits and has 256 possible bit patterns. An unsigned byte interprets those patterns as integers from zero through 255. Four bytes contain 32 bits and can represent unsigned values from zero through 4,294,967,295. FreeBASIC UByte supplies an unsigned 8-bit integer and ULong supplies an unsigned 32-bit integer. Integer and UInteger have target-dependent size, so they are not substitutes for a specified 32-bit field. Our loop index may use Integer because the index is not stored in the record.</p>
+<p>Dim declares storage. As gives its type. The array has indexes zero, one, two and three: four elements in total. &amp;h introduces hexadecimal, a base-16 notation using digits 0–9 and letters A–F. Each hexadecimal digit describes four bits; two digits describe one byte. CULng explicitly converts a value to ULong. The hexadecimal text 12345678 represents the decimal value 305419896. Changing the notation does not change that value.</p>
+<pre><code class="language-basic">Dim As ULong value = CULng(&amp;h12345678)
+Dim bytes(0 To 3) As UByte</code></pre>
+<h2>3. Choose an order before writing bytes</h2>
+<p>The byte containing the lowest eight bits is called the least significant byte. A little-endian format places that byte first. A big-endian format places the most significant byte first. Neither choice is a quality ranking. Network protocols and file formats choose an order so every reader can reconstruct the same value. Our format requires exactly four bytes, little-endian, with no header, length field or checksum. It is a teaching field format, not a complete file container.</p>
+<p>Read the diagram as hexadecimal byte values, not decimal numbers. On a big-endian machine this same encoder still produces 78 56 34 12 because it uses arithmetic on the value. It does not inspect the host representation. Writing a Type variable directly with a binary file operation could instead expose padding, field layout and target-specific representations. An explicit encoder avoids relying on those details.</p>
+<pre><code class="language-text">Value:                 0x12345678
+Byte index:            0    1    2    3
+Our little-endian bytes:78   56   34   12
+Big-endian alternative:12   34   56   78</code></pre>
+<h2>4. Extract each byte with a shift and a mask</h2>
+<p>Shr shifts the unsigned value right. At position zero the shift is zero; at position one it is eight bits; the final shift is 24 bits. And here is a bitwise operation: a bit is retained only when both operands have that bit set. The mask 255 has its lowest eight bits set. Masking therefore retains exactly one byte after the shift. CUByte converts that bounded value to UByte. The parentheses state the intended evaluation order explicitly. No shift reaches 32 bits, and no conversion is asked to preserve a value above 255.</p>
+<pre><code class="language-basic">For position As Integer = 0 To 3
+    bytes(position) = CUByte((value Shr (8 * position)) And CULng(255))
+Next position</code></pre>
+<h2>5. Check the entire output contract first</h2>
+<p>LBound and UBound report the lowest and highest array indexes. &lt;&gt; means not equal. OrElse combines Boolean conditions with short-circuit evaluation. The array parameter uses bytes() As UByte; FreeBASIC passes the array by reference, so writing an element changes the caller’s array. The encoder accepts only bounds zero through three. An array from one through four also has four elements, but does not satisfy this function’s declared indexing contract. Returning False before the loop leaves rejected output unchanged. This is a deliberate narrow contract, not a general array serializer.</p>
+<pre><code class="language-basic">If LBound(bytes) &lt;&gt; 0 OrElse UBound(bytes) &lt;&gt; 3 Then Return False</code></pre>
+<h2>6. Reconstruct the value without partial output</h2>
+<p>Shl moves each byte into its assigned bit position. Converting to ULong before shifting prevents the calculation from being expressed as a narrow byte operation. Bitwise Or combines the disjoint bit groups. candidate is local scratch storage. The ByRef output parameter is assigned only after every byte has been processed. As with the encoder, the decoder checks bounds before the loop. A rejected input keeps the caller’s previous output value. These functions contain no allocation or retained pointer; callers own the arrays and output variables.</p>
+<pre><code class="language-basic">Dim As ULong candidate = 0
+For position As Integer = 0 To 3
+    candidate = candidate Or (CULng(bytes(position)) Shl (8 * position))
+Next position
+output = candidate
+Return True</code></pre>
+<h2>7. Compile and run one command at a time</h2>
+<p>Use the path of your own checkout if it differs. Run each command separately and stop if it fails. The version command identifies the compiler. -lang fb selects the language dialect, -w all requests warnings, and -exx enables runtime checks such as array bounds checking. -x names the executable. The last line runs it. The expected output is shown next; it is an expectation for owner qualification, not a claimed execution result.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -version
+fbc -lang fb -w all -exx encode_record.bas -x encode-record.exe
+.\encode-record.exe</code></pre>
+<p>The program checks the exact encoded bytes before printing them. It then checks that zero, one, 12345678, the highest single bit and all 32 bits set survive encode/decode. A round trip alone is insufficient: two equally mistaken functions could agree with each other. That is why the independently specified byte sequence is also checked. Invalid-size and invalid-lower-bound cases confirm that both rejection and unchanged output occur.</p>
+<pre><code class="language-text">78 56 34 12
+Explicit byte-format checks passed</code></pre>
+<h2>8. Try controlled changes and understand the failure</h2>
+<ol><li>Make a separate practice copy. Change one expected byte from &amp;h78 to &amp;h79. Run the same build and execution commands for that copy. The test should report unexpected byte order and exit with a nonzero code.</li><li>Restore the expected byte. Change the array declaration in the main example to indexes one through four. The encoder should reject it before writing. Do not remove the bound check just to obtain a passing result.</li><li>Restore the declaration. Reverse the encoder’s byte order without changing the decoder. Observe which checks reject the inconsistency. Then explain what a matching big-endian decoder would have to change.</li><li>Write down the format in plain English before designing a second field. Specify width, signedness, byte order and permitted values. A field name or a BASIC Type declaration alone is not a portable format.</li></ol>
+<h2>9. Relate this to Umicom’s native interfaces</h2>
+<p>An SDK C function and a stored record are different contracts. A C ABI describes how compiled functions exchange parameters on a particular platform. A wire or disk format describes bytes that may survive different platforms and software versions. At the Framework boundary, use its actual public fixed-width types and ownership rules; for persisted data, use an existing reviewed Framework format service when one meets the requirement. Do not pass a BASIC array descriptor as an undocumented C byte pointer. Do not invent a new format when an application can use an existing supported format.</p>
+<h2>10. Recover from common problems</h2>
+<p>If fbc is not recognized, the compiler is not available in that terminal; install a suitable release through your normal toolchain procedure and verify its version. If compilation reports syntax or type errors, compare the complete example and the selected fb dialect before altering operations. If the expected bytes differ, check the declared order and integer types first. This example does not cover variable-length records, Unicode strings, signed encodings, authentication, checksums or concurrent array mutation. Those need their own contracts and tests.</p>
+<h2>Keep the six ideas separate</h2><table><thead><tr><th scope="col">Term</th><th scope="col">Meaning in this example</th></tr></thead><tbody><tr><td>Value</td><td>The unsigned integer 305419896</td></tr><tr><td>Notation</td><td>Hexadecimal 12345678 or decimal 305419896</td></tr><tr><td>Layout</td><td>The compiler’s placement of a variable in memory</td></tr><tr><td>Format</td><td>The agreed four bytes 78 56 34 12</td></tr><tr><td>Serialization</td><td>Converting a value into the specified byte sequence</td></tr><tr><td>Deserialization</td><td>Reconstructing a value from that sequence</td></tr></tbody></table><h2>Further reading</h2><ul><li><a href="https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgUlong">FreeBASIC manual: ULong</a></li><li><a href="https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpShl">FreeBASIC manual: bit shifting</a></li><li><a href="https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgLbound">FreeBASIC manual: array bounds</a></li></ul><nav aria-label="Previous lesson"><a href="16-call-back-through-a-c-boundary.html">Previous: Pass a BASIC callback to C with an explicit lifetime</a></nav><nav aria-label="Continuing practice"><a href="18-comments-and-language-boundaries.html">Next: Distinguish comments, strings and language boundaries</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

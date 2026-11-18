@@ -1,0 +1,62 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/87-inspect-managed-memory-without-collecting.html
+
+PURPOSE:
+Inspect managed memory without collecting
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect managed memory without collecting | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Inspect managed memory without collecting</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Begin with a storage question</h2>
+<p>Suppose a program says that it has only two bytes of useful data. Does that mean the program occupies two bytes of memory? No. It also needs storage for instructions, metadata, buffers and other values. This lesson uses Umicom C’s small optional managed heap to distinguish useful payload, object occupancy and reserved storage. You will inspect a graph before deciding whether to collect it. This is an original bounded teaching runtime, not a replacement for every allocation made by a native application.</p>
+<h2>Recall objects, handles and roots</h2>
+<p>An object is one slot containing a declared payload and explicit references to other objects. The payload is the object’s user data. A handle is an integer identifying a slot and its current generation. Reusing a slot advances its generation so an older handle is refused. A root is a handle that the caller explicitly supplies as a starting point for reachability. The runtime follows the declared references from these roots. A handle stored only in an ordinary C variable or hidden among payload bytes is not automatically a root.</p>
+<ol><li>Open include/umicom_c/managed_heap.h in the Umicom C checkout. Find the limits: 32 slots, 128 payload bytes per slot and four edges per object.</li><li>An edge is one declared outgoing reference. Follow umc_heap_set_edge to see how that relationship is recorded.</li><li>Open examples/managed_cycle.c. Identify the two handles first and second, the static arena, and the two-byte message O and K.</li></ol>
+<figure><img src="../../../assets/diagrams/managed-heap-inspection.svg" alt="A two-object cycle is reachable with an explicit root, collectable without roots, and unchanged by inspection" width="1280" height="780"><figcaption>Inspection reports what the supplied roots reach; only collection reclaims objects.</figcaption></figure><h2>Draw the reachability before running it</h2>
+<p>The example creates first → second and second → first. Together they form a cycle. If first is a root, both objects are reachable. If no roots are supplied, both are unreachable even though they still point to one another. The first object has two logical payload bytes; the second has zero. Both occupy a slot. A zero-length object can still participate in a graph.</p>
+<table><thead><tr><th scope="col">Question</th><th scope="col">With first as a root</th><th scope="col">With no roots</th></tr></thead><tbody><tr><td>Live objects before collection</td><td>2</td><td>2</td></tr><tr><td>Reachable objects</td><td>2</td><td>0</td></tr><tr><td>Collectable objects</td><td>0</td><td>2</td></tr><tr><td>Logical payload bytes</td><td>2</td><td>2</td></tr><tr><td>Does inspection mutate the graph?</td><td>No</td><td>No</td></tr></tbody></table>
+<h2>Call the read-only service</h2>
+<p>UmcHeapReport is a structure containing the result fields. The caller owns its storage separately from the heap and roots. umc_heap_inspect validates the entire graph and the supplied roots before publishing a report. Always check its status. On failure the report is unchanged, so an old report must not be mistaken for a successful new one. The heap parameter is const, expressing that this operation does not modify the heap through that pointer.</p>
+<pre><code class="language-c">UmcHeapReport report;
+UmcHeapStatus status = umc_heap_inspect(&amp;heap, &amp;first, 1, &amp;report);
+if (status != UMC_HEAP_OK) {
+    return 1;
+}
+printf(&quot;%zu reachable; %zu collectable\n&quot;,
+       report.reachable_objects, report.collectable_objects);</code></pre>
+<h2>Understand the ampersand and count</h2>
+<p>&amp;heap passes the address of the arena. &amp;first passes the address of the one handle used here as a root. The count 1 says that this root array has one entry. &amp;report passes the address of the result structure. A pointer alone does not tell C how many elements can be read. The count is therefore part of the contract. Pass NULL and zero for an empty root set. NULL with a nonzero count is refused. More than 32 root entries is refused before reading them.</p>
+<h2>Build the example step by step</h2>
+<p>The example is ordinary host C compiled by GCC, Clang or another supported C23 compiler. It is not source accepted by the small Umicom C integer-language frontend. You need CMake and Ninja as well as the compiler. Configure the Umicom C checkout using the existing first-program setup if this is your first build. Run one command at a time and stop after any failure. The last command selects both the existing collector tests and the new inspection tests.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicom-c&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build/debug -G Ninja -DUMICOM_C_BUILD_TESTS=ON
+cmake --build build/debug --parallel 2
+ctest --test-dir build/debug -R &quot;umicom.c.(managed-heap|heap-inspection)&quot; --output-on-failure --no-tests=error</code></pre>
+<h2>Observe expected output</h2>
+<p>The example prints an inspection with two live and two reachable objects, none collectable, and two payload bytes. It then inspects with no roots and reports two collectable objects without deleting them. A real collection with first as a root still retains the cycle and reads OK. Finally a collection with no roots clears both objects and an old handle is refused. The last line says that 32 slots are reusable and arena storage is unchanged. The test verifies these conditions; it does not rely only on printing plausible numbers.</p>
+<pre><code class="language-text">Inspection: 2 live, 2 reachable, 0 collectable, 2 payload bytes
+Inspection with no roots: 2 collectable; heap unchanged
+Rooted cycle retained: OK
+Unrooted cycle collected: 2; old handle refused
+After collection: 32 reusable slots; arena storage unchanged</code></pre>
+<h2>Separate logical bytes from arena bytes</h2>
+<p>live_payload_bytes adds the requested lengths of live objects. It does not add all 128 bytes reserved inside each slot. arena_bytes is sizeof(UmcManagedHeap), which includes every fixed slot and its metadata. The exact value can depend on target layout and alignment, so read the field instead of guessing a universal number. Collection clears unreachable slots; it does not shrink the caller-owned structure. This is why the arena size stays the same after collection. Neither field includes native malloc allocations, graphics resources, the executable, the traversal stack or all memory used by the process.</p>
+<h2>Read the slot accounting</h2>
+<p>live_objects + reusable_slots + retired_slots equals 32. A reusable slot is unused and can advance its generation. A retired slot is unused and already has the largest generation value. Reusing a retired slot would wrap the generation and could make an ancient handle appear valid again, so allocation skips it. A live object at the final generation remains live until collected; it is not counted as retired early. Collectable objects therefore do not always translate into the same number of newly reusable slots.</p>
+<h2>Share graph logic instead of copying it</h2>
+<p>Open src/managed_heap.c and find reachable. It validates object metadata, checks every root and marks each encountered slot when adding it to a bounded work stack. Marking at insertion means duplicate roots, repeated edges and cycles cannot enqueue the same object repeatedly. Inspection and collection call this same helper. Inspection reads the marked set to form counters. Collection clears unmarked live objects. Keeping these two operations on one traversal prevents them drifting into contradictory definitions of reachable.</p>
+<h2>Test the contract independently</h2>
+<p>The regression file tests known graphs and a separate matrix-based transitive-closure oracle. An oracle is another way to calculate the expected result. The matrix algorithm does not reuse the production traversal stack, reducing the chance that the test merely repeats the same mistake. Failure tests prefill the report with a recognizable pattern and verify that invalid roots or graph metadata preserve it. Heap snapshots are compared before and after successful inspection. Generation-boundary tests inject controlled metadata only inside the test; application code must not modify heap fields directly.</p>
+<h2>Use reports carefully in tools</h2>
+<p>A debugger could show these counters without collecting a paused graph. A lesson viewer could explain why one root keeps a cycle alive. Such clients must supply complete roots and serialize access. A report becomes historical when roots, edges or allocations change. Recompute it before presenting a current view. This service does not enumerate roots from native stacks, make collection concurrent, close files, release GPU resources or diagnose an unrelated application crash. Those require their own ownership and measurement work.</p>
+<h2>Practice before moving on</h2>
+<ol><li>Predict the report if first keeps its reference to second but second no longer references first. With first as a root, both remain reachable.</li><li>Predict the report if the only root is second and its edge back to first is cleared. Only second remains reachable; first becomes collectable.</li><li>Explain why a zero-length object still reduces reusable_slots by one. It occupies a metadata and storage slot even without logical payload bytes.</li><li>Explain why a successful inspection with no roots is not permission to collect a real application whose current roots you forgot to supply. Completeness of the root set is the caller’s responsibility.</li></ol>
+<nav aria-label="Previous lesson"><a href="86-check-bit-shifts-before-publishing-a-result.html">Previous: Check bit shifts before publishing a result</a></nav><nav aria-label="Continuing practice"><a href="88-parse-an-empty-statement-without-emitting-code.html">Next: Parse an empty statement without emitting code</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

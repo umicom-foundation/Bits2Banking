@@ -380,3 +380,23 @@ Trace mandatory checksums and copied observations without confusing accepted byt
 Inspect a fixed TCP header and mandatory pseudo-header checksum while keeping payload ownership and endpoint state separate.
 
 1. [Inspect TCP without claiming a connection](117-inspect-tcp-without-claiming-a-connection.md)
+
+## Outbound sequence accounting and VM slices
+
+- [Account for outbound TCP sequence positions](118-account-for-outbound-tcp-sequences.md)
+- [Test wraparound and refused acknowledgments](119-test-wraparound-and-refused-acknowledgments.md)
+- [Qualify shared VM slices in a guest](120-qualify-shared-vm-slices-in-a-guest.md)
+
+1. [Encode a UDP frame without sending it](121-encode-a-udp-frame-without-sending-it.md)
+
+1. [Encode and check an ICMP echo message in RAM](122-encode-and-check-an-icmp-echo-message.md)
+
+1. [Own received bytes before advancing the stream](123-own-received-bytes-before-advancing.md)
+
+1. [Keep sent bytes until they are acknowledged](124-keep-sent-bytes-until-they-are-acknowledged.md)
+
+1. [Construct a TCP capture before transmission](125-construct-a-tcp-capture-before-transmission.md)
+
+1. [Walk TCP options without trusting lengths](126-walk-tcp-options-without-trusting-lengths.md)
+
+1. [Decode option values before changing connection state](127-decode-option-values-before-changing-connection-state.md)

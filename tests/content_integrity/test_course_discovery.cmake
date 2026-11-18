@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.24)
 include("${CMAKE_CURRENT_LIST_DIR}/course_discovery.cmake")
-set(_cases valid nested quoted-navigation comment-only title-only trailing-comment
+set(_cases placeholder-html placeholder-markdown marker-html marker-markdown ordinary-undefined valid nested quoted-navigation comment-only title-only trailing-comment
     other-section missing-mapping duplicate-mapping wrong-mapping missing-html
     missing-manuscript wrong-depth escaping-manuscript duplicate-lesson
     shared-manuscript malformed-metadata sibling-course duplicate-normalized escaping-html registry-object course-object module-valid module-normalized module-uncatalogued module-object module-path-object module-paths-missing)
@@ -63,7 +63,22 @@ set(_lessons "${_lesson}")
 set(_navigation "nav:\n  - \"Course\":\n      - \"A\": lessons/demo/a.md\n")
 set(_expected "")
 set(_expected_count 1)
-if(CASE STREQUAL "quoted-navigation")
+if(CASE STREQUAL "placeholder-html")
+    file(APPEND "${_root}/${_html}" "<h2>undefined</h2><table></table>")
+    set(_expected "content_placeholder:")
+elseif(CASE STREQUAL "placeholder-markdown")
+    file(APPEND "${_root}/${_md}" "\n## undefined\n\n| Missing title |\n")
+    set(_expected "content_placeholder:")
+elseif(CASE STREQUAL "marker-html")
+    file(APPEND "${_root}/${_html}" "<h2>UMICOM_TABLE_INSERT_0</h2>")
+    set(_expected "content_placeholder:")
+elseif(CASE STREQUAL "marker-markdown")
+    file(APPEND "${_root}/${_md}" "\n## UMICOM_TABLE_INSERT_7\n")
+    set(_expected "content_placeholder:")
+elseif(CASE STREQUAL "ordinary-undefined")
+    file(APPEND "${_root}/${_html}" "<h2>Understand undefined behavior</h2>")
+    file(APPEND "${_root}/${_md}" "\n## Understand undefined behavior\n")
+elseif(CASE STREQUAL "quoted-navigation")
     set(_navigation "nav:\n  - \"A: \\\"quoted\\\" # label\": \"lessons/demo/a.md\" # allowed note\n")
 elseif(CASE STREQUAL "comment-only")
     set(_navigation "nav:\n  # - \"A\": lessons/demo/a.md\n")

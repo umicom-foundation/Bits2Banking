@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/dense-kv-cache-geometry.html
+
+PURPOSE:
+Calculate dense key and value cache geometry
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calculate dense key and value cache geometry | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Calculate dense key and value cache geometry</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="retrieval-installed-qualification.html">Previous lesson</a> · <a rel="next" href="plan-context-from-a-cache-budget.html">Next lesson</a></nav>
+<p>A language model processes tokens, which are pieces of text chosen by its tokenizer. During generation, many transformer implementations keep key and value arrays from earlier tokens. This KV cache avoids recomputing some earlier work. More retained tokens usually require more cache memory. Model weights and the cache are different resources.</p>
+<h2>1. Name every dimension</h2>
+<p>A layer is one repeated processing stage in the model. A head is a group used by the attention computation. Each key or value head contains a fixed number of numeric elements per token. An element width is the number of bytes used to store one number. Sequence capacity counts how many independent sequences this allocation supports. These values must come from the actual backend's cache layout, not from guessing the model name.</p>
+<pre><code class="language-text">key bytes per token = sequences * layers * key_heads * key_dimensions * key_element_bytes
+value bytes per token = sequences * layers * value_heads * value_dimensions * value_element_bytes
+cache bytes = tokens * (key bytes per token + value bytes per token)</code></pre>
+<h2>2. Work a small example by hand</h2>
+<p>Take two sequences, three layers, two key heads, two value heads, four dimensions per head and two bytes per element. Key storage is 2 × 3 × 2 × 4 × 2 = 96 bytes per token. Values need another 96. Ten tokens therefore need 1,920 bytes of dense payload. Small numbers make the arithmetic easy to check independently.</p>
+<h2>3. Use Framework's checked service</h2>
+<pre><code class="language-c">UmiModelDenseKvShape shape = {10, 2, 3, 2, 2, 4, 4, 2, 2};
+UmiModelKvFootprint footprint;
+UmiStatus status = UmiModelDenseKvCacheBytes(&amp;shape, &amp;footprint);
+/* On UMI_STATUS_OK, total_bytes is 1920 for this supplied geometry. */</code></pre>
+<p>Include umicom/local_models/memory_plan.h and link the SDK's Umicom::local_models target. The service checks each multiplication and addition before publishing output. Without those checks, a very large product could wrap around to a small integer and make an impossible allocation appear affordable.</p>
+<h2>4. State the supported layout</h2>
+<p>This API models dense arrays with element widths of one, two, four or eight bytes. It is not a universal model-memory estimator. Quantized packed caches, sliding windows, paged allocation, recurrent state and hybrid architectures can use different layouts. A valid calculation for the wrong layout is still a wrong estimate for the selected backend.</p>
+<h2>5. Keep other costs separate</h2>
+<p>Weights may be mapped from a file, copied, converted or split between devices. Temporary workspace is used while loading or computing. The runtime and allocator also consume memory. None of these are included in the dense KV formula. Add them through a separate declared memory assessment, and mark unknown components as unknown.</p>
+<p>Exercise: one sequence, 32 layers, eight key heads, eight value heads, 128 dimensions and two-byte elements require 131,072 bytes per token. Multiply by 4,096 tokens to obtain 536,870,912 bytes, or 512 MiB. MiB means 1,048,576 bytes; it is not the decimal MB unit of 1,000,000 bytes.</p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/09-fine-tuning-adapters-and-checkpoints.html
+
+PURPOSE:
+Choose a fine-tuning method and save recoverable state
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose a fine-tuning method and save recoverable state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Choose a fine-tuning method and save recoverable state</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>Fine-tuning starts from an existing model. Full fine-tuning updates its selected base weights directly. Adapter methods add or train a smaller set of parameters. LoRA, low-rank adaptation, represents certain updates through smaller matrices. It can reduce trainable state, but it still needs the base model and working memory.</p>
+<ol><li>Record the base model identifier and exact revision, license, tokenizer and template.</li><li>Choose the task and compatible trainer. Verify that its target modules and adapter format match the architecture.</li><li>Prepare training and validation partitions and run a formatting/tokenization check on a few examples.</li><li>Run a short experiment with recorded seed, precision, learning rate and update count.</li><li>Save model or adapter state together with enough configuration to load it. For exact training resumption, preserve the required optimizer, scheduler, random-generator and data-position state too.</li><li>Reload in a separate verification step and evaluate held-out examples. A file existing on disk does not prove it can resume or generate correctly.</li></ol>
+<p>A checkpoint is a saved state. An adapter checkpoint is not a complete standalone base model. Merging an adapter changes the deployment artifact and may require separate memory and numeric checks. Some inference quantization formats are unsuitable as direct full-training inputs. Compatibility is architecture- and tool-specific.</p>
+<p>Learning rate controls update size. Too large can destabilize training; too small can make progress slow. A scheduler changes that rate over time. Loss is a training objective value, not a universal quality score. Overfitting means learning training examples in a way that does not generalize to held-out inputs.</p>
+<h2>Exercise</h2>
+<p>Write a manifest for a hypothetical adapter with base revision, tokenizer revision, dataset version, group-split record and training settings. Leave actual values unknown until measured or selected. Do not invent a “trained successfully” result for a planned experiment.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="08-batches-epochs-and-memory.html">Previous: Plan batches, epochs and memory before training</a> · <a href="10-evaluate-and-publish-a-dataset.html">Next: Evaluate changes and publish a reproducible dataset package</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

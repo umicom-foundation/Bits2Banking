@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/02-turn-documents-into-reviewed-text.html
+
+PURPOSE:
+Turn documents into reviewed text without losing provenance
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Turn documents into reviewed text without losing provenance | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Turn documents into reviewed text without losing provenance</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A dataset is a collection of examples used by a program. Provenance is a record of where each example came from and what happened to it. Begin with material you own or have permission to use. This course supplies invented examples so you can learn without collecting personal or proprietary records.</p>
+<ol><li>Create separate raw, reviewed and reports folders inside an empty practice directory. Raw means unchanged originals; reviewed means text approved for the next step.</li><li>Copy a small document you created into raw. Record a stable source identifier, a content digest and its usage permission in a manifest. A digest is a compact fingerprint of bytes, not a privacy guarantee.</li><li>Extract readable text into reviewed using a format-appropriate tool. A scanned PDF may need optical character recognition, or OCR, which guesses text from pixels.</li><li>Compare the extraction with the original. Check reading order, headings, table columns, code indentation, equations, accents and repeated page headers.</li><li>Keep a record of corrections and the extraction tool/version. Never overwrite the only original.</li></ol>
+<p>UTF-8 is a way to encode Unicode characters as bytes. A text file containing accented names is not necessarily one byte per character. A PDF is a structured container; feeding its binary bytes as ordinary training text creates noise. HTML may contain navigation, scripts and repeated menus that are not the teaching content you want.</p>
+<pre><code class="language-text">source_id: handbook-demo
+source_revision: authored-example-1
+permission: original teaching text
+raw_file: raw/handbook.txt
+reviewed_file: reviewed/handbook.txt
+group_id: 100
+review_state: accepted</code></pre>
+<p>These labels illustrate metadata. They are not a required trainer schema. Keep source identity outside the prose unless the chosen task intentionally teaches citations. A path in a record must be resolved against a defined dataset root; do not allow an imported record to request arbitrary files on the computer.</p>
+<h2>Exercise and answer</h2>
+<p>Imagine OCR changes “do not delete” into “do delete.” A valid UTF-8 file and a passing JSON parser would not catch that meaning change. Human comparison or task-specific checks remain necessary. Mark uncertain passages for review rather than converting uncertainty into an authoritative answer.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="01-choose-retrieval-or-training.html">Previous: Choose retrieval, fine-tuning or training from scratch</a> · <a href="03-json-jsonl-and-chat-records.html">Next: Read JSON, JSONL and conversational records</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

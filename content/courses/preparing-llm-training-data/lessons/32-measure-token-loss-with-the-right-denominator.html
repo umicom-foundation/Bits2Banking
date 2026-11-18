@@ -1,0 +1,88 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/32-measure-token-loss-with-the-right-denominator.html
+
+PURPOSE:
+Measure token loss with the right denominator
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Measure token loss with the right denominator | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Measure token loss with the right denominator</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>What does a prediction score tell us?</h2>
+<p>A language model predicts a next token, which is one item from its vocabulary. A token can be a whole word, part of a word, punctuation or another encoded unit. A vocabulary assigns an integer identifier to each item. For this small laboratory there are only two possible tokens, identified by 0 and 1. Four rows of invented scores stand in for four predictions. No downloaded model, document collection or training run is required.</p>
+<ol><li>Complete the earlier lesson on selected prediction counts. Accuracy asks whether the highest-ranked token matches a target; this lesson measures how much probability a prediction gives that target.</li><li>Open labs/framework/prediction-metrics/loss.c in Bits2Banking. Open prediction_metrics.h in Framework beside it. A declaration describes how to call a service; the .c file demonstrates a caller.</li><li>Treat the expected numerical results as a worked arithmetic example. They do not measure any real Umicom model.</li></ol>
+<h2>From logits to probability</h2>
+<p>A logit is a score before conversion to probability. A larger logit means a more favored token. Softmax exponentiates each score and divides by the sum of all exponentiated scores in that row. Probabilities are nonnegative and add to one, apart from rounding. A target is the token identifier supplied by the evaluation data. Here all four targets are token 0. This exercise assumes the target is appropriate; a low numerical loss cannot prove that the source labels are correct.</p>
+<pre><code class="language-text">scores [0, 0] -&gt; probabilities [0.5, 0.5]
+scores [0, 4] -&gt; probabilities about [0.017986, 0.982014]
+
+probability(target) = exp(score[target]) / sum(exp(each score))</code></pre>
+<h2>Loss is a penalty for assigning too little probability</h2>
+<p>Negative log likelihood is minus the logarithm of the probability assigned to the target. The natural logarithm uses the mathematical constant e as its base; its unit is called a nat. A probability of 1 has zero loss. A probability of 0.5 has loss about 0.693147. Assigning a very small probability to the target gives a large loss. Cross entropy on one-hot targets is this same quantity, usually averaged over the selected positions. One-hot means a target distribution that puts all its mass on one token.</p>
+<table><thead><tr><th scope="col">Prediction row</th><th scope="col">Scores for tokens 0, 1</th><th scope="col">Target</th><th scope="col">Loss in nats</th></tr></thead><tbody><tr><td>First</td><td>0, 0</td><td>0</td><td>0.693147</td></tr><tr><td>Second</td><td>0, 0</td><td>0</td><td>0.693147</td></tr><tr><td>Third</td><td>0, 0</td><td>0</td><td>0.693147</td></tr><tr><td>Fourth</td><td>0, 4</td><td>0</td><td>4.018150</td></tr></tbody></table>
+<h2>Why the implementation does not exponentiate the raw scores</h2>
+<p>The exponential of a very large positive number cannot fit in an ordinary floating-point value. Framework finds the maximum score m, exponentiates differences from m, and evaluates (m - target_score) + log(sum(exp(score - m))). Every exponent input is zero or negative. Subtracting m does not change the probabilities. The parentheses also matter: at an enormous common score such as 1e20, adding a small logarithm to m and then subtracting the target can erase that small result through rounding. Subtracting the large equal values first preserves the log of the sum.</p>
+<pre><code class="language-text">m = maximum score in this row
+s = sum of exp(score - m) across the vocabulary
+row_loss = (m - score[target]) + log(s)
+
+Equal scores always give uniform probabilities.
+With three equal scores, loss should be log(3),
+even when every score has a large common offset.</code></pre>
+<h2>Keep the sum and the number of selected tokens together</h2>
+<p>A batch is a group of examples processed together. Batches can have different lengths. Adding each batch mean and dividing by the number of batches gives each batch equal weight, even when one contains more tokens. For the token-weighted question, add loss sums, add selected-token counts, and divide once. The first batch below contains three easy uniform predictions; the second contains one badly scored target. A mean of their means overweights that last token.</p>
+<pre><code class="language-text">batch A: sum = 3 * log(2), count = 3
+batch B: sum = log(1 + exp(4)), count = 1
+
+correct mean = (sum_A + sum_B) / (count_A + count_B)
+             = 1.524398 nats per token
+
+mean of batch means = (sum_A / 3 + sum_B / 1) / 2
+                    = 2.355649  [different weighting]</code></pre>
+<figure><img src="../../../assets/diagrams/token-loss-denominator.svg" alt="Two unequal batches combine their loss sums and token counts before division" style="max-width:100%;height:auto"><figcaption>Keep the numerator and denominator together.</figcaption></figure>
+<h2>Read the native result structure</h2>
+<p>The service returns three values: rows is the number of supplied rows, selectedRows is the number deliberately included, and negativeLogLikelihoodSum is the double-precision loss sum for those selected rows. A double is a floating-point C type with at least as much precision as float. The input logits use float; intermediate loss arithmetic uses double. The caller owns the input arrays and output structure. This service creates no training graph, changes no model weights and allocates no storage.</p>
+<pre><code class="language-c">UmiAiTrainingPredictionLossSummary result;
+UmiStatus status = UmiAiTrainingPredictionLoss(
+    logits, 4, 2, targets, NULL, 0, &amp;result);
+if (status != UMI_STATUS_OK) {
+    /* Report the refusal; do not use an uninitialized result. */
+}
+/* NULL plus a zero selection count means include every row. */</code></pre>
+<h2>Selection changes the denominator deliberately</h2>
+<p>A selection array contains one byte per row: 1 includes that prediction and 0 excludes it. For supervised answer training, a training pipeline might evaluate answer positions and exclude prompt or padding positions. This function receives the decisions; it does not invent them. An all-zero array returns a valid sum of zero and a selected count of zero. There is no mean or perplexity in that case because division by zero is undefined. Empty evaluation is not perfect performance. Even excluded rows must have finite scores and valid target identifiers so hidden corrupt inputs cannot pass admission.</p>
+<table><thead><tr><th scope="col">Input requirement</th><th scope="col">Reason</th></tr></thead><tbody><tr><td>Positive row and vocabulary counts; at most 16,384 score values</td><td>Bound the work and prevent size overflow</td></tr><tr><td>Each target is below the vocabulary size</td><td>A target must refer to an existing column</td></tr><tr><td>Every logit is finite</td><td>NaN and infinity do not describe an admitted score row</td></tr><tr><td>Selection is absent with count zero, or has exactly one 0/1 byte per row</td><td>Avoid ambiguous masks and truncated arrays</td></tr><tr><td>Accessible, stable and disjoint inputs and output</td><td>The caller must supply real storage for the stated lengths</td></tr></tbody></table>
+<h2>Perplexity is a transformed mean, not a correctness percentage</h2>
+<p>Perplexity is exp(mean loss) when the same natural-log convention is used. For this fixture it is about 4.592378. It can exceed the vocabulary size if the target is repeatedly assigned very small probability, so it is not a count of available vocabulary items. Smaller perplexity indicates greater probability assigned to these targets under the same evaluation setup; it does not establish factual accuracy, safety or usefulness. Compare models only when the tokenizer, data, context and selection rules match. Different tokenizations divide the same text differently.</p>
+<ol><li>Check selectedRows is nonzero before dividing.</li><li>Keep the mean in log space as the primary numerical result.</li><li>Before exponentiating, compare the mean with log(DBL_MAX), where DBL_MAX is the largest finite double value. Check the exponentiation result is finite too.</li><li>If exponentiation cannot be represented, report perplexity as unavailable or beyond the numeric range. Do not replace it with zero.</li></ol>
+<h2>Configure, build and run the laboratory</h2>
+<p>PowerShell runs one command at a time. CMake writes a build description, Ninja compiles the C files, and CTest runs the example as a check. Use matching Framework and Bits2Banking source trees. Stop on a nonzero exit code and read the first diagnostic before continuing. These commands are for a Windows UCRT64 toolchain already installed in C:/msys64; adapt the compiler path only if your installation differs.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/framework/prediction-metrics -B build/learning-prediction-metrics -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/learning-prediction-metrics
+ctest --test-dir build/learning-prediction-metrics --output-on-failure
+&amp; &quot;.\build\learning-prediction-metrics\umicom-prediction-loss.exe&quot;</code></pre>
+<h2>Expected output and what it proves</h2>
+<p>This example compiles the shared Framework implementation in a narrow source composition. It is not an installed SDK or real-model qualification. The Windows icon and staged scalable artwork use Framework’s existing branding helper.</p>
+<pre><code class="language-text">Evaluated tokens: 4
+Sum then divide: 1.524398 nats per token
+Mean of batch means (wrong here): 2.355649
+Fixture perplexity: 4.592378
+No selected tokens: mean and perplexity are unavailable.
+Invented logits only; no training graph, model or weight update.</code></pre>
+<h2>Investigate a refusal without losing the previous result</h2>
+<p>The API validates the full input before publishing a result. If it refuses the call, an already initialized output summary stays unchanged. This is useful for an interface showing the last valid evaluation: keep that value labeled with its original dataset identity, display the new error separately, and do not pretend the old result came from the refused request.</p>
+<ol><li>For a missing categorical_loss.h configure diagnostic, integrate the matching internal header and public/source files together. Do not bypass the source-admission guard.</li><li>For a target error, compare each target identifier with the vocabulary count, not with the row count.</li><li>For nonfinite logits, trace the upstream model arithmetic or input conversion. Clamping NaN to zero would hide the defect.</li><li>For a denominator mismatch, print the selected token counts for each batch before calculating a mean.</li><li>For a link error involving exp or log on a Unix-like toolchain, check the math library linkage. The laboratory CMake file links m where required.</li></ol>
+<h2>Practice and explain the result</h2>
+<p>Change the fixture only after recording the baseline output. Rebuild after each edit and write the prediction before running it.</p>
+<ol><li>Replace the fourth score row [0,4] with [4,0]. The target stays 0. Explain why its loss falls.</li><li>Select only the first three rows. Predict log(2) as the mean and 2 as perplexity.</li><li>Add 1024 to every score in each row. Predict unchanged probabilities and loss within floating-point tolerance.</li><li>Use an all-zero selection. Explain why an unavailable metric is more truthful than a pass badge.</li><li>Compare two different data splits only after checking overlap and source identities using the earlier review lesson. A numerically correct calculation does not remove training/evaluation leakage.</li></ol>
+<h2>Where this fits into model training</h2>
+<p>Preparing data, training and evaluating are different operations. A document format such as JSONL carries examples. A tokenizer turns text into token identifiers. A model produces scores. A loss measures those scores against targets. A training graph records operations so gradients can update weights; a read-only evaluator needs only the scores and targets. A vector database supports retrieval and is not a replacement for these training examples or an evaluation denominator. This laboratory teaches the evaluation step without claiming to train a language model.</p>
+<nav aria-label="Previous lesson"><a href="31-review-one-snapshot-before-using-a-split.html">Previous: Review one snapshot before using a split</a></nav><nav aria-label="Continuing practice"><a href="33-aggregate-evaluation-with-checked-summaries.html">Next: Aggregate evaluation with checked summaries</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

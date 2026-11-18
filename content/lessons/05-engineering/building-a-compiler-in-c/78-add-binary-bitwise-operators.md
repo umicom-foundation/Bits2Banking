@@ -98,3 +98,5 @@ The Kernel CVM uses independent literal format-6 bytes in programs/cvm/bitwise_c
 3. Change the local example to flags &= ~16; flags ^= 5; and derive the complement instruction cost before running it.
 4. Use literal bytes independent of the encoder to test valid format 6 and a nonzero reserved operand. Explain why encoder/decoder agreement alone is insufficient.
 5. Inspect tests/test_bitwise.c for capacity, spans, fuel, endpoints and native comparison coverage. Add a boundary case with an explicit expected value rather than copying the implementation into the assertion.
+
+[Next lesson](79-run-bytecode-in-bounded-slices.md)

@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/04-expressions-decisions-and-operators.html
+
+PURPOSE:
+Expressions, comparisons and decisions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Expressions, comparisons and decisions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Expressions, comparisons and decisions</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>An expression computes a value. An operator combines or changes values. Arithmetic operators, comparisons and logical operators solve different problems. In BASIC, context determines whether = assigns a value or compares two values. In an If expression it asks whether values are equal.</p>
+<pre><code class="language-basic">Dim As Long count = 7
+Print count \ 3
+Print count Mod 3
+Print count / 3
+If count &gt;= 1 AndAlso count &lt;= 10 Then
+    Print &quot;Small positive batch&quot;
+End If
+Dim As Long divisor = 0
+If divisor &lt;&gt; 0 AndAlso count \ divisor &gt; 1 Then
+    Print &quot;Quotient is above one&quot;
+End If</code></pre>
+<p>Integer division, written with a backslash, gives a whole-number quotient. Mod gives the remainder. Ordinary / performs division with a fractional result. The first outputs therefore represent 2, 1 and approximately 2.333. &gt;= and &lt;= include the boundary; &lt;&gt; means not equal. AndAlso stops evaluating when its left side is false. That is why the last condition does not divide by zero.</p>
+<ol><li>Compile the example as expressions.bas. Predict each result on paper before running.</li><li>Change count to 10 and check the boundary condition. Change it to 11 and confirm that the batch message disappears.</li><li>Leave divisor at zero and keep AndAlso. Then explain why replacing it with a non-short-circuit operator would be unsafe. Do not execute intentionally unsafe division.</li><li>Add parentheses to make a mixed arithmetic expression’s intended order visible. Check (2 + 3) * 4 against 2 + 3 * 4.</li></ol>
+<p>And, Or, Xor and Not also operate on integer bits. Do not confuse bit masks with a sentence about true and false. FreeBASIC’s comparison result is not a portable C boolean representation to export without conversion. Use explicitly documented status values at the C boundary.</p>
+<p>Select Case can express several alternatives for one value. Use Case Else for unknown choices. Decisions should cover invalid values as well as ordinary ones; accepting an unknown mode silently is particularly dangerous in a download, trading or media-generation workflow.</p>
+<pre><code class="language-basic">Dim As Long mode = 2
+Select Case mode
+Case 1
+    Print &quot;Preview&quot;
+Case 2
+    Print &quot;Validate&quot;
+Case Else
+    Print &quot;Unknown mode&quot;
+End Select</code></pre>
+<h2>Check</h2>
+<p>A batch limit of ten includes ten. A divisor check must happen before division. Parentheses document intent but do not enlarge the range of a number type. These are separate correctness concerns.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="03-text-input-and-validation.html">Previous: Text input, strings and validation</a> · <a href="05-loops-arrays-and-bounds.html">Next: Loops, arrays and bounds</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

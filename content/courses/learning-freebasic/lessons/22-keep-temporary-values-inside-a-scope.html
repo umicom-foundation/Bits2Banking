@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/22-keep-temporary-values-inside-a-scope.html
+
+PURPOSE:
+Keep temporary values inside a scope
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep temporary values inside a scope | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Keep temporary values inside a scope</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Build a small review calculation</h2>
+<p>You will calculate a reviewed-record total using an outer count and a temporary count. The program deliberately gives two variables the same name so you can see which one is being read. It then copies the useful result into a clearly named outer variable. This is a language exercise with small integers; it does not read a dataset, train a model or change a Framework service.</p>
+<p>Complete the earlier lessons on variables, procedures, decisions and array lifetime first. Use the FreeBASIC compiler in its fb dialect. The complete source is scoped_values.bas in the native-language-boundary lab. The example is provided for compilation with your installed FreeBASIC toolchain; its execution is not claimed by the native C checks in the repository.</p>
+<h2>Learn the rule before running the program</h2>
+<p>Scope opens an explicit local block and End Scope closes it. A local declared there is available from its declaration to the end of that block. A declaration can hide a same-named outer variable; this is called shadowing. Before that declaration, a use still refers to the visible outer name. After the block, the outer name is available again. Explicit Scope blocks belong to the fb and deprecated dialects, not qb or fblite. Consult the linked FreeBASIC manual for the precise language rule.</p>
+<h2>Read the declarations</h2>
+<pre><code class="language-basic">Dim As Integer selectedCount = 4
+Dim As Integer reviewedTotal = 0
+
+Scope
+    Dim As Integer originalCount = selectedCount
+    Dim As Integer selectedCount = 7
+    reviewedTotal = originalCount + selectedCount
+End Scope</code></pre>
+<p>There are two different objects named selectedCount in this fragment. The first holds four. originalCount captures that four before the second selectedCount is declared. The second declaration initializes a distinct temporary integer to seven. The assignment adds four and seven and stores eleven in reviewedTotal, which was declared outside the block. The arithmetic is intentionally small enough to avoid a distracting integer-range issue.</p>
+<p>It is tempting to describe the inner declaration as changing selectedCount from four to seven. That description loses the distinction between two objects. In your notebook, give them temporary labels such as outer selectedCount and inner selectedCount. These labels are for your reasoning; they are not extra source-code names. Draw a box around the inner declarations and keep reviewedTotal outside the box.</p>
+<h2>Compile and run the complete source</h2>
+<pre><code class="language-powershell">Set-Location .\labs\languages\native-language-boundary
+fbc -version
+fbc -lang fb scoped_values.bas -x scoped_values.exe
+.\scoped_values.exe</code></pre>
+<ol><li>Open PowerShell in the Bits2Banking checkout. Change to labs/languages/native-language-boundary.</li><li>Run fbc -version to check that PowerShell can find the installed compiler. If it cannot, use its full executable path or configure that toolchain before continuing. Installing a C compiler alone does not install FreeBASIC.</li><li>Open scoped_values.bas and read the Require procedure. Each call checks an expected relationship and ends with a nonzero code if the relationship is false.</li><li>Compile with the fb dialect and run the resulting executable. Stop if compilation fails; do not run an older executable left from a previous attempt.</li></ol>
+<p>Expect the inner count to be seven, the outer count to be four, the reviewed total to be eleven and the final total to be fifteen. FreeBASIC numeric printing can include spacing around values; compare the numbers and labels rather than assuming an exact whitespace layout. The complete program ends with code zero after its assertions pass. If a Require check fails, read its message before changing the expected answer.</p>
+<h2>Follow the second block</h2>
+<p>The second Scope block declares originalCount again. Its first declaration is no longer visible, so this is a new temporary. It captures the outer selectedCount, still four, and adds it to reviewedTotal. Eleven plus four gives fifteen. This gives a useful pattern for application code: keep a short calculation close to its use, then copy the intended result to an explicitly owned outer value.</p>
+<h2>Compare declaration with assignment</h2>
+<ol><li>Make a separate practice copy. Replace the inner declaration Dim As Integer selectedCount = 7 with the assignment selectedCount = 7.</li><li>Before compiling, predict which value the later outer-count check will see. An assignment updates the existing visible variable; it does not create the hidden temporary from the original example.</li><li>Compile the copy under a new executable name. Its existing assertion that the outer count remains four should fail. That failure is the intended observation.</li><li>Restore the declaration or give the temporary a distinct descriptive name. Do not merely change the assertion to hide the difference.</li></ol>
+<p>In production code, clear names often make review easier than intentional shadowing. You might choose requestedCount and temporaryCount. Learning the rule is useful because you will encounter shadowing in existing code, debugger displays and code reviews. It is not a recommendation to reuse names wherever the compiler permits it.</p>
+<h2>Try an out-of-scope reference</h2>
+<ol><li>In a new copy, add Print originalCount immediately after the first End Scope.</li><li>Compile the copy. With the explicit-declaration discipline used here, the inner originalCount is unavailable at that point. Read the compiler diagnostic and its source location.</li><li>Move the print into the block if you only need a temporary observation, or copy the intended value into a deliberately declared outer result.</li><li>Keep the original working file and compare the two versions. A compiler diagnostic is evidence about the source you compiled, not about an unrelated old executable.</li></ol>
+<h2>Separate visibility from resource lifetime</h2>
+<p>A name disappearing from source lookup is not a general instruction to wipe every byte associated with a calculation. This example uses only small integer locals. It does not establish what happens to a heap allocation, an open file, a model process or a native callback registration. For those resources, follow the API ownership contract and pair acquisition with the required release. The earlier pointer and callback lessons explain why a borrowed address must not outlive the object it refers to.</p>
+<p>The distinction matters when a BASIC application calls a C service. Passing a pointer to a local for a synchronous call can be valid when the C contract only borrows it during that call. If the C service retains the pointer, the caller needs storage whose lifetime covers that retention and a clear release protocol. Putting the call inside Scope does not create that protocol. Do not add a pointer to this exercise merely to bypass a scope diagnostic.</p>
+<h2>Compare with the bounded Umicom C compiler</h2>
+<p>The current Umicom C teaching compiler supports initialized declarations inside conditional bodies, removes their names after each body and reuses existing local slots. It deliberately refuses shadowing an already visible name and does not accept standalone nested blocks. Therefore the exact FreeBASIC exercise cannot be translated by replacing Scope with braces. A compatible Umicom C version must use distinct names and an admitted conditional body. These limits belong to that compiler implementation, not to the full C23 language.</p>
+<h2>Check your understanding</h2>
+<ol><li>Explain why the outer count remains four in the original program.</li><li>Identify the precise assignment that carries eleven outside the first block.</li><li>Predict the effect of changing the temporary seven to nine: the reviewed total should become thirteen and the final total seventeen. Update a practice copy and its intentionally related assertions together.</li><li>Explain why the assignment-only experiment fails the original outer-count assertion.</li><li>Give one example of a resource that needs an explicit lifetime contract beyond name visibility.</li></ol>
+<h2>Further reading</h2><ul><li><a href="https://freebasic.net/wiki/KeyPgScope">FreeBASIC Scope and End Scope reference</a></li><li><a href="https://www.freebasic.net/wiki/ProPgVariableScope">FreeBASIC variable scope reference</a></li><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/native-language-boundary/scoped_values.bas">Complete scoped-values example</a></li><li><a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/branch-local-scope.md">Umicom C branch-local guide</a></li></ul><nav aria-label="Previous lesson"><a href="21-resize-a-bounded-dynamic-array.html">Previous: Resize a bounded dynamic array and follow its lifetime</a></nav><nav aria-label="Continuing practice"><a href="23-distinguish-text-from-its-stored-bytes.html">Next: Distinguish text from its stored bytes</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

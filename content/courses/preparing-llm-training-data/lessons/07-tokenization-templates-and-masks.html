@@ -1,0 +1,27 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/07-tokenization-templates-and-masks.html
+
+PURPOSE:
+Understand tokens, chat templates and loss masks
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand tokens, chat templates and loss masks | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Understand tokens, chat templates and loss masks</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A tokenizer converts text into integer identifiers. A token may be a word, part of a word, punctuation or encoded bytes. The same text can produce different identifiers under different tokenizers. A model’s embedding table expects its compatible tokenizer, vocabulary and special-token rules.</p>
+<p>A chat template is a model-specific formatting rule that marks roles and turn boundaries before tokenization. A messages array is not yet the exact tensor the model sees. Adding a generic “User:” prefix to every model can produce the wrong format. Use the chosen tokenizer’s documented template and inspect its rendered text and identifiers.</p>
+<ol><li>Record model revision, tokenizer revision and chat-template identity alongside the dataset.</li><li>Format one short conversation, then inspect it before tokenization. Check role order and end-of-turn markers.</li><li>Tokenize it with the exact tokenizer. Count tokens rather than guessing from character count.</li><li>Choose a maximum sequence length and an explicit policy for examples that exceed it. Review truncation so an answer or closing marker is not silently removed.</li><li>Inspect loss masks and padding masks in a tiny batch before starting training.</li></ol>
+<p>A padding mask identifies positions added only to make batch shapes compatible. A loss mask identifies positions that contribute to the objective. Some supervised training learns only assistant responses; some learns all selected tokens. These are trainer settings and template capabilities, not properties guaranteed by JSONL. A shifted next-token target must align prediction positions with the intended labels.</p>
+<pre><code class="language-text">Illustrative positions, not real tokenizer IDs:
+position       0       1       2       3       4
+role         user    user   assistant assistant padding
+loss used?     no      no      yes      yes      no</code></pre>
+<h2>Check</h2>
+<p>A text file with one thousand characters does not necessarily contain one thousand tokens. A padded batch with eight slots does not necessarily contain eight meaningful target tokens. If every loss position is masked, a training loop can run without learning the desired behavior. Check these quantities explicitly.</p>
+<h2>Further reading</h2><ul><li><a href="https://huggingface.co/docs/trl/sft_trainer">TRL supervised fine-tuning documentation</a></li></ul><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="06-run-the-framework-group-lab.html">Previous: Run a native Framework dataset-partition lab</a> · <a href="08-batches-epochs-and-memory.html">Next: Plan batches, epochs and memory before training</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

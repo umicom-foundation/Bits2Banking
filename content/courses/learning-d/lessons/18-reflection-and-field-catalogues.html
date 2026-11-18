@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/18-reflection-and-field-catalogues.html
+
+PURPOSE:
+Inspect fields with compile-time reflection
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect fields with compile-time reflection | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Inspect fields with compile-time reflection</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>Reflection means inspecting information about a program’s types or members. D can perform substantial inspection at compile time. This can generate repetitive adapters while preserving explicit types. Runtime reflection is a different question: what metadata remains available after the executable starts?</p>
+<pre><code class="language-d">import std.stdio : writeln;
+import std.traits : FieldNameTuple;
+struct MediaOptions
+{
+    uint width = 640;
+    uint height = 360;
+    bool preview = true;
+}
+void main()
+{
+    MediaOptions options;
+    static foreach (name; FieldNameTuple!MediaOptions)
+        writeln(name, &quot; = &quot;, __traits(getMember, options, name));
+}</code></pre>
+<ol><li>Save as reflection.d. Compile with dmd -w -g reflection.d and run. Expect width = 640, height = 360 and preview = true.</li><li>FieldNameTuple obtains the field names; the exclamation mark instantiates a template. static foreach expands the body for each name during compilation.</li><li>__traits(getMember, options, name) selects the named field. It does not execute a text command from an end user.</li><li>Add a uint frames = 1 field and rebuild. The catalogue expands because the compiler sees the new definition. The old executable cannot discover that source change until rebuilt.</li></ol>
+<p>__traits(allMembers, SomeType) can inspect a broader member set than only data fields. typeof obtains a type; is expressions can check type relationships. User-defined attributes attach programmer-chosen metadata. A string mixin creates source text during compilation, so its input must be controlled and reviewable; reflection is not a reason to compile untrusted model output.</p>
+<p>A useful Umicom application could derive a settings descriptor table from approved declarations, then expose that table through a C ABI for Studio property editors. Stable field identifiers, privacy rules, valid ranges and serialization migrations still require design. Automatically listing a secret field would be a defect. This lesson demonstrates D inspection; it does not claim that Framework currently imports D types or offers a new designer UI.</p>
+<h2>Practice</h2>
+<p>Add a private implementation detail and decide whether it belongs in a public settings catalogue. Explain why a hand-reviewed allowlist can be more appropriate than exposing every discovered member.</p>
+<h2>Further reading</h2><ul><li><a href="https://dlang.org/spec/traits.html">D traits reference</a></li><li><a href="https://dlang.org/phobos/std_traits.html">D std.traits</a></li></ul><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="17-templates-and-compile-time-work.html">Previous: Use templates and compile-time evaluation</a> · <a href="19-c-abi-and-betterc.html">Next: Separate C linkage from the BetterC subset</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

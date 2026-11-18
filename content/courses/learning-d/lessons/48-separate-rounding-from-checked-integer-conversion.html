@@ -1,0 +1,60 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/48-separate-rounding-from-checked-integer-conversion.html
+
+PURPOSE:
+Separate rounding from checked integer conversion
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate rounding from checked integer conversion | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate rounding from checked integer conversion</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<figure><img src="../../../assets/diagrams/numeric-rounding-policies.svg" alt="On a number line negative 2.5 lies between negative 3 and negative 2; different rounding rules choose different neighbors." style="width:100%;height:auto"><figcaption>Start with exact halves, then consider finite range and ownership.</figcaption></figure><h2>A cast does not choose your application policy</h2>
+<p>A measurement, a pixel channel and an exact cash amount can all be displayed as numbers, but their conversion rules need not match. This lesson uses six original values to separate a D cast, mathematical rounding, validation and publication. You will also examine a small function with a caller-owned output and explicit effect attributes. The example is a language laboratory; reusable Umicom product behavior remains in the shared C Framework.</p>
+<h2>Set up the experiment</h2>
+<ol><li>Review the previous D lessons about int, double, arrays, ref and Boolean status. An int here is a signed 32-bit integer; double is a binary floating-point type.</li><li>Open labs/languages/native-language-boundary/rounding_policy.d and locate the six-value array. The selected halves and quarters have exact binary representations.</li><li>Write your own predicted results before compiling. Use a number line for the negative values rather than assuming all operations drop the fraction.</li><li>Use a reviewed DMD or LDC installation from the setup course. This exercise needs the normal D runtime and Phobos standard library; it is not a BetterC program.</li></ol>
+<h2>Compare the operations</h2>
+<table><thead><tr><th scope="col">Operation</th><th scope="col">Policy for these admitted inputs</th><th scope="col">Important distinction</th></tr></thead><tbody><tr><td>cast(int)x</td><td>Discard the fraction toward zero</td><td>Changes the storage type; it is not a range check.</td></tr><tr><td>trunc(x)</td><td>Discard the fraction toward zero</td><td>Produces a floating-point integral value.</td></tr><tr><td>floor(x)</td><td>Move downward to the lower integer value</td><td>Negative fractions move farther from zero.</td></tr><tr><td>ceil(x)</td><td>Move upward to the higher integer value</td><td>Negative fractions move toward zero.</td></tr><tr><td>round(x)</td><td>Nearest; exact halfway ties go away from zero</td><td>Different from FreeBASIC CInt’s even-tie rule.</td></tr></tbody></table>
+<h2>Work through the six rows</h2>
+<table><thead><tr><th scope="col">Input</th><th scope="col">cast / trunc</th><th scope="col">floor</th><th scope="col">ceil</th><th scope="col">round</th></tr></thead><tbody><tr><td>2.5</td><td>2</td><td>2</td><td>3</td><td>3</td></tr><tr><td>3.5</td><td>3</td><td>3</td><td>4</td><td>4</td></tr><tr><td>-2.5</td><td>-2</td><td>-3</td><td>-2</td><td>-3</td></tr><tr><td>-3.5</td><td>-3</td><td>-4</td><td>-3</td><td>-4</td></tr><tr><td>1.75</td><td>1</td><td>1</td><td>2</td><td>2</td></tr><tr><td>-1.75</td><td>-1</td><td>-2</td><td>-1</td><td>-2</td></tr></tbody></table>
+<h2>Which names come from the language?</h2>
+<p>cast, int, double, ref, if and return are language syntax. floor, ceil, trunc and round are library functions imported from std.math.rounding. isFinite comes from std.math.traits. The selective import syntax after a colon names the specific symbols this module needs. A compiler can accept the syntax of a call while the linker still needs its runtime or library implementation. Keeping those layers distinct helps explain why copying a function name into C does not provide a C implementation.</p>
+<h2>Admit before conversion</h2>
+<p>The original input must be finite and inside the signed int interval before the cast. The bounds are intentionally applied to the original value: 2147483647.5 is refused even though truncating first could yield int.max. This choice is conservative and documented, rather than an accidental compiler-dependent overflow behavior. The function does not clip or wrap an invalid request.</p>
+<pre><code class="language-d">bool tryTruncateInt(double value, ref int destination) @safe pure nothrow @nogc
+{
+    if (!isFinite(value) || value &lt; int.min || value &gt; int.max) return false;
+    destination = cast(int)value;
+    return true;
+}</code></pre>
+<h2>Read the short-circuit condition</h2>
+<ol><li>Evaluate isFinite(value). It rejects NaN and either infinity. The exclamation mark reverses that result.</li><li>If the value is nonfinite, || short-circuits and the function returns false. No cast occurs.</li><li>For a finite value, compare against int.min and int.max. These named type properties avoid repeating width-dependent assumptions in the implementation.</li><li>Only after admission does cast(int)value produce the destination integer. The final true reports successful publication.</li></ol>
+<h2>Why ref matters here</h2>
+<p>The caller gives the function access to an existing destination. A refused call returns before modifying it, so a previous value such as 77 survives. ref preserves that incoming state. An out parameter has initialization semantics that would change this contract before the body begins, so substituting out is not a cosmetic change. Status and data remain separate: false means refusal, not that the result happened to be numeric zero.</p>
+<h2>What the attributes establish</h2>
+<table><thead><tr><th scope="col">Attribute</th><th scope="col">Useful guarantee for this small helper</th><th scope="col">What it does not establish</th></tr></thead><tbody><tr><td>@safe</td><td>Language memory-safety checking applies</td><td>It does not know your business rounding policy.</td></tr><tr><td>pure</td><td>No untracked mutable global dependency</td><td>The function may still update the explicitly passed ref destination.</td></tr><tr><td>nothrow</td><td>No ordinary D exception escapes this helper</td><td>It does not mean every possible runtime failure is impossible.</td></tr><tr><td>@nogc</td><td>The helper does not allocate through the garbage collector</td><td>It is not a claim about the whole program or every library.</td></tr></tbody></table>
+<h2>The executable includes more than the helper</h2>
+<p>The exercise’s require procedure can throw an Exception, and main writes text through std.stdio. Those parts are not advertised as pure, nothrow or @nogc. Unit tests call the checks when built with -unittest, and main also calls them explicitly. Required calls do not appear only inside an assert expression, so a release build does not silently skip the operation being examined.</p>
+<h2>Build and execute</h2>
+<p>Create the build folder if needed, run one command at a time and stop on failure. A reviewed LDC setup can use ldc2 -unittest -of=build/rounding-policy-d.exe with the same source. No D compiler was available for this mirror continuation, so these subject-language commands remain unexecuted. Do not infer a D pass from the separate C Framework tests.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+dmd -unittest -of=build/rounding-policy-d.exe labs/languages/native-language-boundary/rounding_policy.d
+&amp; &quot;.\build\rounding-policy-d.exe&quot;</code></pre>
+<h2>Expected output</h2>
+<p>The source tests all six rows, ordinary admitted input, both exact integer endpoints, finite overshoots, a very large finite number, NaN and both infinities. Each refused conversion begins with a known destination and checks that it remains intact. This is more informative than testing only that the helper returned false.</p>
+<pre><code class="language-text">Umicom D rounding: six rows checked.
+Refused conversions preserve the caller's integer.</code></pre>
+<h2>Reflection cannot infer numerical intent</h2>
+<p>D can inspect types at compile time with facilities taught in the reflection lessons. That can help generate a field catalogue or require an integer destination type. It cannot deduce whether an application wants floor, ties-to-even, ties-away, clipping or refusal from the spelling double alone. Store policy as reviewed metadata or an explicit argument and test its meaning. If a D tool generates C-facing declarations, the shared C API still owns its value, lifetime and failure contracts.</p>
+<h2>Connection to image and financial code</h2>
+<p>The Framework image-output API rounds nonnegative scaled unit values with exact halfway cases upward. That is an explicitly documented pixel contract, not a promise that arbitrary signed values follow D round. An image decoded from a latent also needs a declared range, channel layout and color interpretation before quantization. Financial code has further requirements: amounts, currency scale and settlement rounding need an exact domain contract. Avoid using floating-point display conversion as a substitute for the existing money service.</p>
+<h2>Practice and recovery</h2>
+<ol><li>Explain why floor(-2.5) gives -3 while ceil(-2.5) gives -2. Mark both on a number line.</li><li>Compare D round(2.5) with FreeBASIC CInt(2.5). State the tie rule in words rather than blaming one language for being wrong.</li><li>Change a refusal fixture’s starting destination and confirm the caller’s new value remains unchanged.</li><li>Temporarily substitute out for ref in a separate exercise copy, observe the changed entry behavior, then restore the production example. Preserve the original file.</li><li>If the compiler rejects a library import, check your installed Phobos version and module name. If an attribute is rejected, inspect the called declaration rather than removing all attributes silently.</li></ol>
+<h2>Official references</h2>
+<ul><li><a href="https://dlang.org/spec/expression.html#cast_expressions">D expression specification: numeric casts</a></li><li><a href="https://dlang.org/phobos/std_math_rounding.html">Phobos rounding functions</a></li></ul>
+<nav aria-label="Previous lesson"><a href="47-validate-bytes-before-converting-to-bool.html">Previous: Validate bytes before converting to bool</a></nav><nav aria-label="Continuing practice"><a href="49-constrain-operator-templates-and-test-their-meaning.html">Next: Constrain operator templates and test their meaning</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

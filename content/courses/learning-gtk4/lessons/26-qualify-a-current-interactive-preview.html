@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/26-qualify-a-current-interactive-preview.html
+
+PURPOSE:
+Qualify a current interactive preview
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify a current interactive preview | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Qualify a current interactive preview</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A preview is useful when its identity and behaviour are clear. A visible window alone is weak evidence. This final exercise combines the earlier GTK callback study with the revision lab. It produces a repeatable checklist for an eventual Studio preview integration; it does not claim that integration already exists.</p>
+<h2>Define the evidence</h2>
+<ol><li>Choose one existing approved window or control from the earlier GTK lab. Record its initial state and the action to test.</li><li>Record the exact source revision, build directory, executable path and candidate batch. Keep the identity of the currently running preview separately.</li><li>Perform one real action, such as clicking the counter button. Observe the model change and the displayed value.</li><li>Introduce a controlled error in a separate learning copy. Confirm that the compiler or layout loader reports failure and the existing preview remains identified as older.</li><li>Correct the error, build the small target and start or refresh it through a supported host operation.</li><li>Close the window during a pending operation. Verify that a late completion cannot access destroyed widgets or falsely report the new preview as current.</li></ol>
+<h2>Distinguish the stages</h2>
+<pre><code class="language-text">Edited source -&gt; candidate batch -&gt; build/load result -&gt; applied runtime
+                      |                    |
+                      | failure            | success
+                      v                    v
+                 retain pending       acknowledge matching revisions
+                 keep older identity  retain newer pending revisions</code></pre>
+<p>The current Framework service implements the last bookkeeping boundary. Its focused tests cover later edits, failed-work retention, competing completions, invalid bounded state and generation limits. They do not prove GTK rendering, main-context scheduling, child-process supervision, debugger integration or SDK installation. Those need their own integration checks.</p>
+<p>A stale completion is one whose assumptions no longer match the current owner state. A second successful completion advances the generation, so a competing batch from the old generation is refused. This prevents an older result from silently clearing newer work. Do not acknowledge a failed build merely to make the queue look empty.</p>
+<h2>Assess memory deliberately</h2>
+<p>C gives control over allocation and layout; it does not automatically prevent leaks or invalid access. Track who owns each resource, which callbacks borrow it and when those callbacks stop. Check each failure path as carefully as the successful path. Measure process memory over repeated open, edit, refresh and close cycles with a fixed workload. Different model sizes and allocator caches can change memory use without establishing a leak.</p>
+<p>Use compiler warnings and suitable analysis or sanitizers when supported by the actual toolchain. A warning-free build and a passing test are useful observations, not a proof that all executions are safe. Keep measurements, the exact operation and the source identity together so another contributor can reproduce the result.</p>
+<h2>Completion exercise</h2>
+<p>Explain the difference between source-study qualification, installed-SDK qualification and GUI qualification. Then draw the ownership chain for the chosen callback. You have completed this module when you can build the small lab, predict its output and identify what remains untested in a proposed native preview.</p>
+<h2>Further reading</h2>
+<p>This module develops ideas from C GTK and Interactive Development, especially its chapters on callbacks, preview boundaries and Ninja rebuilds. Consult GTK's GtkBuilder, signals and threading documentation, the CMake manual and the Ninja manual for the exact installed versions. External REPL tool support remains version and platform dependent.</p>
+<ul><li><a href="https://docs.gtk.org/gobject/signals.html">GTK signals and handler lifetime</a></li><li><a href="https://docs.gtk.org/gtk4/section-threading.html">GTK threading and main context</a></li><li><a href="https://docs.gtk.org/gtk4/class.Builder.html">GtkBuilder</a></li><li><a href="https://clang.llvm.org/docs/ClangRepl.html">Clang-Repl</a></li><li><a href="https://ninja-build.org/manual.html">Ninja manual</a></li><li><a href="https://cmake.org/cmake/help/latest/manual/cmake.1.html">CMake command-line manual</a></li></ul><nav aria-label="Reading order"><a rel="prev" href="25-diagnose-an-unexpected-full-rebuild.html">Previous lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

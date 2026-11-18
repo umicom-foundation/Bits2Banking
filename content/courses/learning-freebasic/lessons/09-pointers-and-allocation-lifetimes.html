@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/09-pointers-and-allocation-lifetimes.html
+
+PURPOSE:
+Follow pointers and allocation lifetimes
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow pointers and allocation lifetimes | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Follow pointers and allocation lifetimes</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A pointer stores an address, not the object itself. Dereferencing follows that address to access storage. A pointer can be null, stale or outside a valid object. Knowing its numeric value does not prove that it is safe to use. The owner of an allocation is responsible for releasing it exactly once under the matching API.</p>
+<pre><code class="language-basic">Dim As Long value = 12
+Dim As Long Ptr address = @value
+Print *address
+*address = 19
+Print value
+Dim As Long Ptr numbers = CPtr(Long Ptr, Callocate(4, SizeOf(Long)))
+If numbers = 0 Then
+    Print &quot;Allocation failed&quot;
+    End 1
+End If
+numbers[0] = 7
+numbers[3] = 9
+Print numbers[0] + numbers[3]
+Deallocate(numbers)
+numbers = 0</code></pre>
+<ol><li>Compile pointers.bas with -lang fb -w all -exx and run. Expect 12, 19 and 16.</li><li>Draw value as a box and address as an arrow to it. Assignment through *address changes the box.</li><li>Draw the separate four-element allocation. Valid element indexes are 0 through 3.</li><li>After Deallocate, cross out the allocation and set the pointer to zero. Explain why another copied pointer would still be stale.</li><li>Do not add a read after Deallocate as a normal test: that is undefined access, not a value you can reliably predict.</li></ol>
+<p>@ obtains an address and * dereferences it. Ptr declares a pointer type. CPtr expresses a pointer conversion; it does not validate the address. Callocate requests zero-filled storage, SizeOf reports a representation size, and Deallocate releases storage from the compatible allocation family. These are runtime operations with failure and lifetime contracts.</p>
+<p>New and Delete belong to another allocation/construction pattern. Match New with Delete, and array New with its matching array deletion syntax. Do not mix Deallocate with an allocation whose contract requires a different release function. A Framework-owned handle must use the documented Framework release function, not a guessed BASIC deallocator.</p>
+<h2>Check</h2>
+<p>For input-controlled counts, validate a maximum and multiplication overflow before allocating. A fixed four-element example avoids that calculation hazard deliberately. A garbage-collected wrapper or a pointer cast cannot repair an invalid underlying lifetime.</p>
+<nav aria-label="Next lesson"><a href="08-a-reviewed-c-boundary.html">Previous: Call a small C service from FreeBASIC</a> · <a href="../index.html">Course contents</a> · <a href="10-declarations-includes-and-namespaces.html">Next: Separate declarations, implementations and namespaces</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

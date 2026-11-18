@@ -1,0 +1,28 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/06-run-the-framework-group-lab.html
+
+PURPOSE:
+Run a native Framework dataset-partition lab
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Run a native Framework dataset-partition lab | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Run a native Framework dataset-partition lab</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>This lesson uses the actual C API rather than a second implementation of the splitting algorithm. An array of uint64_t values holds source-group identifiers. An array of unsigned char receives one byte per row: zero for training, one for evaluation. The caller owns both arrays.</p>
+<pre><code class="language-c">#include &lt;umicom/ai/training/dataset_split.h&gt;
+uint64_t groups[] = {100, 100, 200, 300, 300, 400};
+unsigned char evaluation[6] = {0};
+UmiStatus status = UmiAiTrainingSplitGroups(
+    groups, 6, 1, 42, evaluation, 6);</code></pre>
+<ol><li>Open labs/framework/training-groups in the Bits2Banking repository. Read its README before using the source-checkout teaching harness; this lab does not claim installed-SDK support.</li><li>Configure in an empty build directory, then build and run CTest using the documented commands.</li><li>Read each output row. Rows zero and one must have identical membership, as must rows three and four.</li><li>Run with the same group set and seed again. Membership is deterministic.</li><li>Read the test that passes an invalid evaluation count. Its sentinel output remains unchanged; callers must check status before consuming results.</li></ol>
+<p>The four numeric arguments after the arrays are row count, evaluation-group count, seed and output capacity in their declared positions. A seed initializes a deterministic pseudo-random generator. It is not a security key. Output capacity is the number of bytes available to receive row membership. Keeping count and capacity explicit helps prevent buffer overruns in C.</p>
+<p>The implementation sorts unique group IDs before shuffling. Reordering rows or adding another row to an existing group does not alter group membership when the unique set, seed and selected group count stay the same. Adding a new unique group can alter the partition; persist a dataset version and reviewed split rather than promising append-only stability.</p>
+<h2>Limits and recovery</h2>
+<p>Use the matching Framework source revision containing this API. Do not paste a guessed declaration into the client. The source-checkout harness tests selected production sources; installed-SDK packaging and consumer qualification are separate work. The lab does not tokenize text or train a model.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="05-split-sources-before-chunking.html">Previous: Keep related sources out of different partitions</a> · <a href="07-tokenization-templates-and-masks.html">Next: Understand tokens, chat templates and loss masks</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/81-share-slices-with-framework-and-os.html
+
+PURPOSE:
+Share slices with Framework and OS
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Share slices with Framework and OS | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Share slices with Framework and OS</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="80-preserve-progress-when-a-slice-fails.html">Previous lesson</a></nav>
+<p>A compiler runtime, an editor and an operating-system tool need different responsibilities. Umicom C validates and executes bytecode. Framework owns the source-facing debug session. The OS preview tool reuses that Framework service. Keeping one execution engine prevents each product from inventing different arithmetic, fuel or error behavior.</p>
+<h2>1. Read the session states</h2>
+<pre><code class="language-text">start -&gt; PAUSED
+resume -&gt; PAUSED or COMPLETE or FAILED
+cancel(PAUSED) -&gt; CANCELLED
+start again -&gt; a fresh admitted session</code></pre>
+<p>PAUSED means the program may continue. COMPLETE means RETURN succeeded and a result is available. FAILED means an operation was refused. CANCELLED means the owner chose not to resume. These are states, not progress percentages. A cancelled session cannot be resumed as though nothing happened.</p>
+<h2>2. Use the shared resume boundary</h2>
+<pre><code class="language-c">UmcStatus status = umi_cvm_debug_resume(
+    &amp;session, sizeof session, 16);
+if (status == UMC_OK &amp;&amp; session.phase == UMI_CVM_DEBUG_COMPLETE) {
+    /* Display session.result.value. */
+}
+/* A PAUSED session can be scheduled for a later event. */</code></pre>
+<p>Initialize session with umi_cvm_debug_start first. The exact sizeof value helps reject incompatible caller storage. The service retains source coordinates, so the source buffer can be released after a successful start. It does not retain a live editable document, and changing the editor text does not change the already admitted program.</p>
+<h2>3. Configure the OS consumer explicitly</h2>
+<pre><code class="language-powershell">Set-Location C:/umicom/umicomOS
+cmake -S tools/cvm-preview -B build/cvm-preview-debug -G Ninja -DCMAKE_C_COMPILER=gcc -DUMICOM_OS_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework -DUMICOM_C_PREVIEW_SOURCE=C:/umicom/umicom-c -DBUILD_TESTING=ON
+cmake --build build/cvm-preview-debug --parallel 2
+ctest --test-dir build/cvm-preview-debug --output-on-failure --no-tests=error
+&amp; ./build/cvm-preview-debug/framework-preview/umicom-cvm-preview.exe --slice 2 'int main(void){return 6*7;}'</code></pre>
+<p>These commands select the primary Framework checkout explicitly. Run them separately and stop on errors. An integrated OS checkout can instead use its reviewed Framework dependency once that dependency includes the same API. Never copy a newer header over an older library and assume the package is compatible.</p>
+<h2>4. Recognize stale dependency errors</h2>
+<p>If configuration says the bounded resume API is missing, inspect UMICOM_OS_FRAMEWORK_SOURCE in CMakeCache.txt. A cache stores earlier configuration choices. Confirm that it names the intended checkout, and check that its cvm_debug.h declares umi_cvm_debug_resume. If linking reports a missing umc_machine_run_slice symbol, the Umicom C headers and library may come from different revisions. Rebuild the selected SDK or use the explicit source path above.</p>
+<h2>5. Keep product claims precise</h2>
+<p>The console demonstration drains slices synchronously. It proves that a shared consumer can use the API; it does not prove an editor remains responsive under load. Native breakpoints, source replacement, GUI event scheduling and background-worker lifetime need their own integration and tests. The OS wrapper is a user-space tool; it is not the Kernel's freestanding guest interpreter.</p>
+<p>Exercise: design a Cancel button handler in words. It should mark a paused session cancelled, remove any pending scheduling callback that owns it, and avoid freeing session storage while another callback is still using it. Cancellation between slices is straightforward only when ownership and callback lifetime are explicit.</p>
+<nav aria-label="Continuing practice"><a href="82-give-branch-locals-a-lexical-scope.html">Next: Give branch locals a lexical scope without changing the VM</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,71 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/82-give-branch-locals-a-lexical-scope.html
+
+PURPOSE:
+Give branch locals a lexical scope without changing the VM
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Give branch locals a lexical scope without changing the VM | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Give branch locals a lexical scope without changing the VM</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>What you will learn</h2>
+<p>A compiler needs to decide which declaration each name refers to. That decision happens before a program executes. In this lesson you will follow a temporary name through a conditional body, see why it cannot be used afterward, and inspect how the compiler reuses a bounded symbol table. You will also separate three different ideas: the name written in source, a runtime storage slot and the value currently stored there. Confusing them can produce incorrect scope rules or misleading memory-safety claims.</p>
+<p>Use the earlier lessons about initialized local integers, braced conditionals, the VM instruction budget and source diagnostics first. The example uses the current small Umicom C source language. The implementation is compiled by a host C23 compiler, but the language it accepts remains a restricted integer language. You do not need to change the Kernel, install a GUI or run an external language server for this exercise.</p>
+<h2>Start with an outer result and an inner calculation</h2>
+<pre><code class="language-c">int main(void) {
+    int result = 0;
+    if (1) {
+        const int answer = 42;
+        result = answer;
+    }
+    return result;
+}</code></pre>
+<p>Read the program from top to bottom. int says that result holds an integer. The initializer = 0 supplies its first value. if (1) selects its braced body because one is nonzero. const int answer = 42 initializes a second integer whose source-level updates are forbidden. result = answer copies that value into the existing outer variable. The final return reads result after the body has ended. It does not need the name answer to remain available.</p>
+<p>A scope is a region of source in which a name is available. The name result belongs to the main statement sequence. The name answer belongs to the selected conditional body. Source visibility is decided from the program structure, not from whether a human knows that this particular condition is always true. A later return answer is therefore refused even for if (1). This keeps the rule consistent for conditions that are not constants.</p>
+<h2>Run the checked example</h2>
+<pre><code class="language-powershell">.\build\bin\umicom-c.exe check .\examples\branch_locals.uc
+.\build\bin\umicom-c.exe run .\examples\branch_locals.uc --max-steps 10
+.\build\bin\umicom-c.exe trace .\examples\branch_locals.uc</code></pre>
+<ol><li>Open PowerShell in your Umicom C checkout. Use a configured hosted build containing the current compiler and runtime. The commands below assume build/bin; replace that directory if your executable is elsewhere.</li><li>Open examples/branch_locals.uc and identify the opening and closing braces of the conditional body. Do not confuse them with the braces surrounding main.</li><li>Run check, then run with ten steps, then trace. Execute each command separately and stop when a command reports an error.</li><li>Record both the compiled instruction count and the number actually executed. They are different concepts even when this example gives the same number.</li></ol>
+<p>Check should accept ten instructions. Run should report Result: 42 and Instructions: 10. The const spelling is enforced by the compiler and emits no separate runtime operation. A nine-step budget is too small. The runtime must report instruction-budget exhaustion and leave the caller result unpublished. A successful syntax check does not promise that every runtime arithmetic operation will succeed.</p>
+<h2>Trace the symbol table by hand</h2>
+<p>The symbol table is a compiler data structure that connects a source name to information about it. In this implementation the table records source spans, the corresponding local slot and whether a source update is permitted. It borrows the source bytes for the duration of compilation. It does not copy the source names into the executable bytecode. There is no need to allocate a separate table for every nested body.</p>
+<ol><li>After compiling result, the visible-name count is one and result uses slot zero.</li><li>Before parsing the conditional body, save that count as a mark. A mark is simply the number of outer names that must remain visible.</li><li>Compile the initializer 42 before registering answer. Then answer becomes the second visible name and uses slot one.</li><li>Compile result = answer by resolving both names while they are visible.</li><li>After the closing brace, restore the visible-name count to the saved mark, one. The subsequent return can resolve result but cannot resolve answer.</li></ol>
+<p>The actual parser restores the count even if the body fails to parse. That makes ownership of parser state explicit and prevents a failed nested parse from leaving extra names visible. The compiler already refuses publication of a failed program; restoring the mark is still useful because it keeps the internal state consistent and makes future error handling easier to reason about. Inspect if_body in src/compiler.c and compare the active implementation with its preserved predecessor.</p>
+<h2>Make three deliberate mistakes</h2>
+<ol><li>Copy the example to a separate practice file and change return result to return answer. Run check. The diagnostic should say that a local must be declared and initialized before use, at the escaped name. Restore the original return.</li><li>Inside the body, write int result = 7. The current compiler refuses this duplicate visible name. Full C permits some forms of shadowing; this bounded Umicom C grammar deliberately does not.</li><li>Try const int answer = answer. The new name is not registered until its initializer has compiled, so it cannot initialize itself. Give it a valid literal or an earlier visible local instead.</li></ol>
+<p>Testing a refusal is useful only when the source is supposed to be invalid under the current language contract. When a language gains a feature, a former negative fixture may need to become a positive example. Keep the older case for review, exercise the newly accepted behavior and retain the genuinely invalid cases. Otherwise a passing implementation can appear to be a regression merely because the test still describes an older grammar.</p>
+<h2>Use the same temporary name in separate branches</h2>
+<pre><code class="language-c">int main(void) {
+    int result = 0;
+    if (0) {
+        int value = 7;
+        result = value;
+    } else {
+        const int value = 42;
+        result = value;
+    }
+    return result;
+}</code></pre>
+<p>The two declarations named value belong to separate bodies. After parsing the first body, its name is removed from lookup before the second body is parsed. Reusing the name is permitted. The const flag for the second declaration is set from that declaration; it must not inherit stale metadata from the first one. In contrast, a nested body cannot redeclare a name that remains visible from its outer body.</p>
+<p>Only the selected body executes. Both bodies must nevertheless compile: an unknown name or forbidden const update in if (0) is still a compile-time error. A valid expression such as 1 / 0 in a skipped initializer is not evaluated. If the condition later selects that initializer, the checked runtime reports the arithmetic error. Syntax validity, name validity and safe execution are related but separate checks.</p>
+<h2>Keep storage and scope distinct</h2>
+<p>A slot is a runtime location holding one signed 32-bit integer. Closing a source scope removes names from compiler lookup; it does not emit an erase operation. A later disjoint declaration can reuse the slot and initialize it again. The old value may remain in the VM storage until overwritten or the execution state is reinitialized. Do not use this feature as a promise of secret erasure, automatic heap release or a general-purpose garbage collector.</p>
+<p>The limit is 32 simultaneously visible names, including outer names. A program can contain more than 32 declarations across disjoint bodies if no point in parsing needs more than 32 visible entries. It must still fit the source, parsing-depth and 256-instruction limits. Slot reuse is a bounded allocation strategy, not permission to bypass those other limits. The runtime separately checks initialization on structural execution paths before accepting the program.</p>
+<h2>Preserve the independent runtime contract</h2>
+<p>The example lowers to existing local load/store and forward-branch instructions. Its wire format remains version 4. The compiler exposes UMC_FEATURE_BRANCH_LOCALS, bit 1048576, because it now understands a source construct. The runtime does not need that source feature bit. Keeping these responsibilities separate lets embedded consumers execute existing bytecode without importing a parser or pretending to understand source names.</p>
+<pre><code class="language-powershell">.\build\bin\umicom-c.exe compile .\examples\branch_locals.uc .\scope-practice.umcb
+.\build\bin\umicom-c.exe exec .\scope-practice.umcb --max-steps 10
+.\build\bin\umicom-c.exe trace-bytecode .\scope-practice.umcb
+.\build\bin\umicom-c.exe profile</code></pre>
+<p>Choose a new output filename. Compile refuses to replace an existing artifact. Compare the source trace with the decoded trace, including instruction offsets. If you query an older executable, its capability profile may lack branch locals even when the source checkout contains the new header. Record the executable you actually used and do not diagnose a stale binary by editing a correct example.</p>
+<h2>Verify the boundaries</h2>
+<p>Read tests/test_branch_locals.c. Its checks cover escaped names, sibling visibility, nested bodies, exact source spans, 32-slot capacity, reuse across disjoint bodies, native C reference results, runtime errors and instruction fuel. The CLI test additionally compares source and bytecode execution and verifies that refused source does not publish an output artifact. These tests do not establish full C23 conformance, native-machine-code compilation or support for arbitrary nested statement blocks.</p>
+<ol><li>Change the example condition to zero in a copy. Predict result zero and six executed instructions before running it.</li><li>Add a nested conditional that reads answer and assigns result. Predict which names remain visible at each closing brace.</li><li>Place a use of the nested temporary after its inner body and confirm the refusal.</li><li>Write down why clearing a symbol-table count does not erase runtime memory.</li><li>Explain why the compiler gains a capability bit while the runtime bytecode operations remain unchanged.</li></ol>
+<h2>Further reading</h2><ul><li><a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/branch-local-scope.md">Umicom C branch-local scope guide</a></li><li><a href="https://github.com/umicom-foundation/umicom-c/blob/main/examples/branch_locals.uc">Complete branch-local source example</a></li><li><a href="https://github.com/umicom-foundation/umicom-c/blob/main/tests/test_branch_locals.c">Branch-local regression source</a></li></ul><nav aria-label="Previous lesson"><a href="81-share-slices-with-framework-and-os.html">Previous: Share slices with Framework and OS</a></nav><figure><img src="../assets/branch-local-scope.svg" alt="Three compiler scopes contrasted with runtime slot contents" style="max-width:100%;height:auto"><figcaption>Name visibility and runtime storage have different lifetimes.</figcaption></figure><nav aria-label="Continuing practice"><a href="83-parse-standalone-blocks-with-one-scope-owner.html">Next: Parse standalone blocks with one scope owner</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/38-release-response-bodies-on-every-exit.html
+
+PURPOSE:
+Release response bodies on every exit
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Release response bodies on every exit | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Release response bodies on every exit</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="37-transfer-static-file-buffer-ownership.html">Previous lesson</a> · <a rel="next" href="39-measure-memory-without-confusing-ownership.html">Next lesson</a></nav>
+<p>Network output does not happen in one guaranteed step. A connection may accept only part of a buffer, fail after sending headers, or be cancelled. The response owner must keep the body alive while it is needed and destroy it on every completed or failed path. Ownership transfer makes this obligation more explicit; it does not remove it.</p>
+<h2>1. Separate headers from body</h2>
+<p>Headers describe the response: its status, media type and length. The body contains the payload, such as an SVG logo. Sending a correct Content-Length header does not prove that the payload reached the peer. A successful write may consume fewer bytes than requested, so the sender advances by the actual count and retries only the unsent portion.</p>
+<pre><code class="language-text">payload length = 10
+write 1 accepts 4 -&gt; remaining 6
+write 2 accepts 3 -&gt; remaining 3
+write 3 accepts 3 -&gt; remaining 0
+then release the body</code></pre>
+<h2>2. Trace the failure paths</h2>
+<ol><li>Inspect the connection's body-owner variable before writing. It must be the only cleanup owner.</li><li>Follow a normal complete response to its destruction call.</li><li>Follow a failed write after headers. The same owner must still be released.</li><li>Follow cancellation during body delivery. The operation must stop and release its body.</li><li>Follow handler failure after creating a body. A failed status does not mean no resource was allocated.</li></ol>
+<p>The existing test_response_body.c deliberately constructs these cases with read and write callbacks. A callback is a function pointer supplied to another component. Here the callbacks simulate transport behavior so the test does not depend on a real browser or network.</p>
+<h2>3. Understand HEAD and empty content</h2>
+<p>A HEAD request asks for response metadata without a message body. It does not grant permission to leak a file buffer that was read while preparing metadata. Likewise an empty file is a valid zero-byte payload. If a transferred empty buffer has a release callback, destruction still honors that callback once. The callback must tolerate the exact pointer contract documented by the producer.</p>
+<h2>4. Test ownership separately from content</h2>
+<p>Correct bytes and correct lifetime are different properties. A test can compare the SVG payload byte for byte yet miss a leaked allocation. A lifetime test can count one release but miss a truncated response. Keep both kinds of evidence. The transfer regression counts releases, injects allocation failure and checks that unsuccessful admission retains caller ownership.</p>
+<h2>5. Diagnose a crash without guessing</h2>
+<p>A double free means two cleanup paths released the same allocation. A use-after-free means code accessed it after release. A leak means a live allocation lost its cleanup path. A large peak may instead be legitimate simultaneous buffers. Record which property failed before making a repair. Moving code from Python to C does not automatically establish any of these properties.</p>
+<p>Exercise: the sender fails after writing half a response. Should it retain the body forever so the browser can retry? No. A new request is a new operation; the failed connection releases its own resources. If resumable transfers are required, design an explicit storage and retry contract instead of retaining an unreachable response object.</p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

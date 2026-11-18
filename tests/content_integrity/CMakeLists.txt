@@ -225,7 +225,7 @@ if(BUILD_TESTING)
             -P "${CMAKE_CURRENT_LIST_DIR}/check_course_discovery.cmake")
     set_tests_properties(btb.education.course_discovery PROPERTIES TIMEOUT 240
         LABELS "education;navigation;editions")
-    foreach(_case IN ITEMS valid nested quoted-navigation comment-only title-only
+    foreach(_case IN ITEMS placeholder-html placeholder-markdown marker-html marker-markdown ordinary-undefined valid nested quoted-navigation comment-only title-only
             trailing-comment other-section missing-mapping duplicate-mapping
             wrong-mapping missing-html missing-manuscript wrong-depth
             escaping-manuscript duplicate-lesson shared-manuscript malformed-metadata

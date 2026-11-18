@@ -1,0 +1,63 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/42-encode-boolean-values-with-an-explicit-byte-contract.html
+
+PURPOSE:
+Encode Boolean values with an explicit byte contract
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Encode Boolean values with an explicit byte contract | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Encode Boolean values with an explicit byte contract</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Begin with one yes-or-no setting</h2>
+<p>Imagine saving whether a lesson is enabled. Inside your program this is a logical value: True or False. In a file or network message it must become an agreed sequence of bytes. A byte contains eight binary digits and can represent 256 different patterns. Our teaching format uses one byte: 0 means disabled, 1 means enabled, and every other value is invalid. This format is our explicit choice; the language's internal representation does not define it.</p>
+<h2>Learn the FreeBASIC words used here</h2>
+<table><thead><tr><th scope="col">Word or form</th><th scope="col">Meaning in this exercise</th></tr></thead><tbody><tr><td>Boolean</td><td>A logical True/False value</td></tr><tr><td>True and False</td><td>Logical constants; FreeBASIC keywords are case insensitive</td></tr><tr><td>UByte</td><td>An unsigned eight-bit integer from 0 through 255</td></tr><tr><td>UInteger</td><td>The unsigned loop counter type; do not assume it has the same width as a wire field</td></tr><tr><td>ByVal</td><td>Pass the input value into the function</td></tr><tr><td>ByRef</td><td>Allow the function to update the caller's destination</td></tr><tr><td>As Boolean</td><td>The function returns a logical result</td></tr><tr><td>Return</td><td>End this function with a result</td></tr><tr><td>CInt</td><td>Explicit conversion to the language's Integer type</td></tr><tr><td>CUByte</td><td>Explicit conversion to UByte; it is not a substitute for validating a wider input</td></tr><tr><td>AndAlso</td><td>Evaluate the right condition only if the left condition is true</td></tr></tbody></table>
+<h2>Separate truth from its numeric conversion</h2>
+<p>FreeBASIC documents that converting logical True to a numeric type yields -1, while False yields 0. That is a language conversion rule, not a binary file-format definition. Our format requires an enabled byte of 1. Therefore the encoder uses an If statement to return exactly 1 or 0. It does not copy the memory of a Boolean variable or cast -1 into an unsigned byte. Other BASIC dialects can differ, so this course explicitly targets FreeBASIC's fb dialect.</p>
+<h2>Read the complete encoder</h2>
+<pre><code class="language-basic">Function EncodeFlag(ByVal value As Boolean) As UByte
+    If value Then Return 1
+    Return 0
+End Function</code></pre>
+<h2>Follow the two paths</h2>
+<ol><li>If value is True, execute Return 1 and leave the function immediately.</li><li>If value is False, skip the first return and reach Return 0.</li><li>In both cases the return type is UByte, the field type chosen for this teaching format.</li><li>There is no dependency on the byte layout of the Boolean input variable.</li></ol>
+<h2>Validate before changing the destination</h2>
+<pre><code class="language-basic">Function DecodeFlag(ByVal raw As UByte, ByRef value As Boolean) As Boolean
+    If raw &gt; 1 Then Return False
+    value = (raw = 1)
+    Return True
+End Function</code></pre>
+<h2>Distinguish status from the decoded value</h2>
+<p>The returned Boolean says whether decoding succeeded. The ByRef parameter receives the decoded logical value only on success. For raw byte 0, the function returns True for successful decoding while setting value to False. For raw byte 2, it returns False and does not assign value at all. A single yes-or-no return cannot represent both meanings without another channel. This is a common pattern at a native API boundary.</p>
+<h2>Predict the contract</h2>
+<table><thead><tr><th scope="col">Input byte</th><th scope="col">Status returned</th><th scope="col">Destination after call</th></tr></thead><tbody><tr><td>0</td><td>True: accepted</td><td>False</td></tr><tr><td>1</td><td>True: accepted</td><td>True</td></tr><tr><td>2 through 255</td><td>False: refused</td><td>Exactly the previous logical value</td></tr></tbody></table>
+<h2>Prepare and run the example</h2>
+<ol><li>Install a FreeBASIC compiler using the earlier setup lesson and verify that fbc is available in PowerShell.</li><li>Open the native-language-boundary laboratory folder in your Bits2Banking checkout.</li><li>Compile boolean_wire.bas with the fb dialect and runtime-checking option. Stop if compilation fails.</li><li>Run the newly built executable. The source contains ordinary Require checks, so the operations are not hidden inside removable assertions.</li><li>Record your FreeBASIC version and target when qualifying this example. A successful C comparison does not prove FreeBASIC behavior.</li></ol>
+<h2>Use these commands</h2>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -lang fb -exx boolean_wire.bas -o boolean-wire-basic.exe
+.\boolean-wire-basic.exe</code></pre>
+<h2>Read the expected completion lines</h2>
+<pre><code class="language-text">Umicom Boolean wire: all 256 bytes checked.
+Explicit encoding: false=0, true=1.</code></pre>
+<h2>Understand why every byte is tested</h2>
+<p>The loop visits 0 through 255 using a wider counter. A UByte loop counter could wrap from 255 back to 0 if the loop were written carelessly. Each value is converted to UByte only after the loop itself has constrained it to the valid byte range. The two canonical bytes must decode correctly. Every other byte must be refused with an initially True destination and again with an initially False destination. Testing both states catches a decoder that incorrectly overwrites the destination with a default on failure.</p>
+<h2>Do not confuse conversion with validation</h2>
+<p>A conversion answers how to represent a value in another type. Validation answers whether that value belongs to an allowed set. A command-line integer such as 256 must be range-checked before conversion to UByte; otherwise a narrowing conversion can lose information before DecodeFlag sees it. This decoder's input contract already starts with one byte. It cannot reconstruct the wider value that a caller discarded. Similarly, accepting any nonzero integer as truth would silently accept malformed bytes that our format reserves.</p>
+<h2>Use logical operators for logical work</h2>
+<p>Not on a Boolean expresses logical negation here. Integer bit operations have different purposes: they manipulate patterns of bits, and FreeBASIC's Not has numeric behavior that must not be treated as a portable wire encoder. Use comparisons and explicit branches when translating a logical setting to a protocol field. If your actual C API accepts any nonzero integer, document that separate contract; do not automatically impose this lesson's strict one-byte format on every existing interface.</p>
+<h2>Apply the idea to Umicom</h2>
+<p>A FreeBASIC learning client can call a native Umicom C API through an explicit declaration with reviewed integer widths and calling convention. Keep reusable production behavior in Framework and keep language-specific adapters thin. For a serialized flag, define its width, accepted values and version in the format. For a C function, use the types declared by that function. Do not pass the address of a FreeBASIC Boolean where a C bool or a different integer type is expected merely because both names sound alike. This example teaches value translation; it does not establish an ABI bridge.</p>
+<h2>Try deliberate mistakes safely</h2>
+<ol><li>Change DecodeFlag to accept raw &lt;&gt; 0 and observe which of the exhaustive byte cases should now fail. Restore strict validation afterward.</li><li>Move the destination assignment above the refusal condition and explain why rejected input can then erase prior state.</li><li>Change the encoder's true output to 255. Explain why that violates this format even if another system might use that convention.</li><li>Add a separate parser for text words true and false. Decide its case and whitespace rules explicitly; do not reuse byte decoding as a text parser.</li><li>Explain why bytes 0 and 1 have no endianness issue by themselves, while a later multi-byte length field would need a byte-order contract.</li></ol>
+<h2>Recover from common errors</h2>
+<table><thead><tr><th scope="col">Observation</th><th scope="col">What to inspect</th></tr></thead><tbody><tr><td>CInt(True) is not the expected value</td><td>Check the compiler, version and dialect against the FreeBASIC documentation.</td></tr><tr><td>All invalid bytes appear successful</td><td>Check whether the function converted truth instead of validating the exact domain.</td></tr><tr><td>A false setting looks like a decode failure</td><td>Keep status and destination value separate.</td></tr><tr><td>A wider input unexpectedly becomes zero</td><td>Validate before narrowing to UByte.</td></tr><tr><td>An executable prints no final lines</td><td>Stop at the first Require failure and inspect its description; do not claim the exercise passed.</td></tr></tbody></table>
+<h2>Read the language reference</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgBoolean">FreeBASIC Boolean type and numeric conversion rules</a></li></ul>
+<nav aria-label="Previous lesson"><a href="41-follow-abstract-and-virtual-method-dispatch.html">Previous: Follow abstract and virtual method dispatch</a></nav><nav aria-label="Continuing practice"><a href="43-choose-a-rounding-rule-before-conversion.html">Next: Choose a rounding rule before conversion</a></nav></article><figure><img src="../../../assets/diagrams/boolean-wire-contract.svg" alt="Language Boolean values become explicit 0/1 bytes, with decode status separate from output" style="max-width:100%;height:auto"/><figcaption>Logical meaning, numeric conversion and an external byte contract are separate decisions.</figcaption></figure></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

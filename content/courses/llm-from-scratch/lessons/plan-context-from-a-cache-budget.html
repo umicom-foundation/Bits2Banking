@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/llm-from-scratch/lessons/plan-context-from-a-cache-budget.html
+
+PURPOSE:
+Plan context capacity from a cache budget
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plan context capacity from a cache budget | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Plan context capacity from a cache budget</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="dense-kv-cache-geometry.html">Previous lesson</a> · <a rel="next" href="separate-memory-plans-from-launch-admission.html">Next lesson</a></nav>
+<p>After calculating bytes per token, we can ask the reverse question: how many tokens fit within a chosen cache budget? Framework divides the budget by the checked per-token payload and limits the result to the requested capacity. Integer division rounds down. The service does not load a model, reserve memory or silently change its configuration.</p>
+<h2>1. Solve a boundary case</h2>
+<p>The previous lesson's geometry requires 192 bytes per token. A 1,919-byte budget fits nine tokens because ten would require 1,920 bytes. Nine tokens consume 1,728 bytes and leave 191 bytes unused. A budget of 191 bytes fits zero tokens. Zero is a valid planning answer, but it is not a useful context configuration to launch.</p>
+<pre><code class="language-text">affordable = min(requested_tokens, budget_bytes / bytes_per_token)
+cache_bytes = affordable * bytes_per_token
+unused = budget_bytes - cache_bytes</code></pre>
+<h2>2. Run the shared native command</h2>
+<p>After building the updated Framework model console, open PowerShell in the Framework repository. The ten numeric arguments are cache bytes, requested tokens, sequences, layers, key heads, value heads, key dimensions, value dimensions, key element bytes and value element bytes. Their order matters.</p>
+<pre><code class="language-powershell">&amp; ./build/windows-ucrt64-debug/bin/umicom-models.exe cache-plan 1919 10 2 3 2 2 4 4 2 2</code></pre>
+<p>The same operation is exposed by umicom models cache-plan with the same numbers. Use the actual runtime output directory reported by your configured build if it differs. The report should contain affordable_tokens=9, bytes_per_token=192, cache_bytes=1728, unused_budget_bytes=191 and request_fits=no. A fitting cache still excludes every other model cost.</p>
+<h2>3. Use the LLM product consumer</h2>
+<p>The optional umicom-llm-cache-plan console delegates to the same Framework command. Enable UMICOM_LLM_BUILD_CACHE_PLANNER when configuring Applications or the LLM module with a matching SDK. Its arguments omit cache-plan because the executable already selects that operation. It does not introduce a second planner or an inference engine.</p>
+<pre><code class="language-powershell">umicom-llm-cache-plan 1919 10 2 3 2 2 4 4 2 2</code></pre>
+<h2>4. Interpret refusals</h2>
+<p>Arguments must be unsigned decimal text. Signs, spaces inside a value, hexadecimal notation, excessive length and overflow are refused. Geometry dimensions must be positive and element widths must be supported. A malformed request returns an unsuccessful exit code without printing a successful plan. A too-small but valid budget prints a plan with zero affordable tokens.</p>
+<h2>5. Verify a recommendation before using it</h2>
+<ol><li>Check that the geometry matches the actual backend.</li><li>Reserve separate budgets for weights, workspace, runtime and host activity.</li><li>Choose a token capacity no larger than both the model's supported context and the planned capacity.</li><li>Recheck current system conditions before loading.</li><li>Measure the real operation and retain failure diagnostics; planning arithmetic is not a guarantee.</li></ol>
+<p>Exercise: request six tokens with a budget that could hold ten. The answer remains six. The planner treats the request as an upper bound, not an instruction to consume every available byte.</p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,145 @@
+<!--
+Umicom Bits2Banking
+File: content/lessons/03-native-code/learning-d/26-select-code-before-the-program-runs.md
+
+PURPOSE:
+Select code before the program runs
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+![Umicom](../../../assets/branding/umicom-wordmark.svg)
+
+# Select code before the program runs
+
+[Course contents](index.md)
+Reflection can tell a compiler about a type, but a program also needs rules for what to do with that information. D provides compile-time conditions, assertions and template constraints. This lesson uses them to admit two precise integer types and generate an explicit byte encoding. You will distinguish choices made by the compiler from choices made by a running application and see how the same design goal can guide a C Framework API.
+
+
+## 1. Separate compile time from runtime
+
+Compile time is when the compiler reads source, checks it and produces a program. Runtime is when that program executes. A normal if can choose based on information read from a user while the program runs. A static if selects source according to a condition known while compiling. The excluded branch is not a runtime branch that happens to execute quickly; it is a different part of program construction.
+
+This distinction matters for types. A program cannot wait until runtime to discover the size of a fixed array in its function signature. A template supplies compile-time parameters, so the compiler can create a suitable function before execution. The following example defines an encoding width for exactly uint and ulong, D’s unsigned 32-bit and 64-bit integer types.
+
+~~~d
+template wireWidth(T)
+{
+    static if (is(T == uint)) enum wireWidth = 4;
+    else static if (is(T == ulong)) enum wireWidth = 8;
+    else static assert(false, "Unsupported encoding type");
+}
+~~~
+
+T is a template parameter standing for a type. is(T == uint) asks whether it is the specified type. enum here declares a compile-time value rather than a runtime variable. Because the declaration inside the template has the same name, wireWidth!uint refers directly to that value. This is an eponymous template. The exclamation mark applies template arguments; it is not logical negation in this position.
+
+
+## 2. Refuse unsupported inputs at the function boundary
+
+~~~d
+ubyte[wireWidth!T] encodeLittleEndian(T)(T value)
+    if (is(T == uint) || is(T == ulong))
+{
+    ubyte[wireWidth!T] result;
+    static foreach (position; 0 .. wireWidth!T)
+        result[position] = cast(ubyte)(value >> (8 * position));
+    return result;
+}
+~~~
+
+The first parentheses declare template parameters; the second declare function arguments. The trailing if is a template constraint. It says which types the function accepts. The return type is a fixed array containing four or eight unsigned bytes. A static foreach expands the assignments for each compile-time position. The range 0 .. 4 includes zero, one, two and three, but not four.
+
+The right shift moves the chosen eight-bit portion into the low part of the integer. cast(ubyte) keeps that low byte. The result is little-endian: the least significant byte comes first. This choice is a file or protocol contract, not a guess about the current processor. The example deliberately excludes signed integers and floating-point values. Their conversion policy would need a separate documented design.
+
+
+## 3. Compare an explicit format with a memory dump
+
+For hexadecimal 12345678, the four output bytes are 78, 56, 34 and 12. In decimal those are 120, 86, 52 and 18. That is the same explicit format used by the earlier FreeBASIC record exercise. Neither program writes a language object’s raw memory layout. A struct can contain padding, pointers or implementation-dependent fields, so copying its storage is not automatically a portable format.
+
+For Umicom Framework, the useful principle is to define representations deliberately and check supported input types early. D reflection can help produce teaching tools or optional adapters, while shared production services can retain their C23 interface. A D template is not a C ABI export: the calling convention, ownership and representation still need a separate boundary. This example uses the normal D runtime because it imports std.stdio; it is not a BetterC or freestanding Kernel program.
+
+
+## 4. Read compile-time assertions
+
+~~~d
+static assert(uint.sizeof == 4 && ulong.sizeof == 8);
+static assert(wireWidth!uint == 4 && wireWidth!ulong == 8);
+static assert(!__traits(compiles, encodeLittleEndian(1.5)));
+~~~
+
+A static assert stops compilation if its condition is false. The first two lines make size assumptions visible. The last line asks whether the floating-point call can compile, then asserts that it cannot. __traits is D’s built-in family of compile-time queries. compiles checks semantic validity; it does not run the expression, establish that it is secure or prove its result is correct.
+
+The file also contains ordinary unittest blocks with assert expressions. Those tests run when an executable built with unit tests starts. Compile-time rejection and runtime result checking complement one another. A function can accept only the intended type and still write bytes in the wrong order, so the fixed expected arrays are necessary.
+
+
+## 5. Choose platform source and optional diagnostics
+
+~~~d
+version (Windows) writeln("Host family: Windows");
+else version (Posix) writeln("Host family: POSIX");
+else writeln("Host family: another D target");
+
+debug (TraceEncoding)
+    writeln("Compile-time TraceEncoding diagnostic enabled");
+~~~
+
+version uses a compile-time identifier. Windows and Posix are predefined target identifiers; they describe the compilation target, not a runtime operating-system probe. The final branch keeps other targets explicit. debug with a named identifier includes optional diagnostic code when that identifier is enabled for the compiler. It is not a variable that a user can turn on after launching this executable.
+
+Do not use version branches to hide accidental API differences without tests. Keep the public behavior consistent where possible, and isolate platform-specific operations behind clear interfaces. A debug-only message must not be the only place where a required validation or cleanup action happens, because that branch may be absent in another build.
+
+
+## 6. Compile both diagnostic choices
+
+1. Open the native-language-boundary lab directory using the setup from the first D lesson. Read conditional_wire.d as a complete file, including its module declaration, imports, assertions and unittest block.
+2. Compile and run the normal DMD command below. Keep -unittest enabled during this exercise and do not add a release option that changes the checking policy.
+3. Expect a host-family line, then the decimal byte values 120, 86, 52 and 18 on separate lines. The normal build does not print the TraceEncoding message.
+4. Compile a second executable with the named debug identifier. It should add the diagnostic message while producing exactly the same encoded values.
+5. If the compiler is unavailable, finish the setup lesson before claiming a result. These teaching examples require their own compiler qualification; C boundary tests do not compile D source.
+
+~~~powershell
+Set-Location "C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary"
+dmd -unittest -g conditional_wire.d -of=conditional_wire.exe
+.\conditional_wire.exe
+dmd -unittest -g -debug=TraceEncoding conditional_wire.d -of=conditional_wire_trace.exe
+.\conditional_wire_trace.exe
+~~~
+
+The commands use DMD’s option spelling. LDC and GDC also compile D but have different driver options; use the chosen compiler’s documented equivalents rather than assuming every switch is interchangeable. Record the compiler version and target when comparing results. Platform branching is a source feature, not a claim that all compilers or targets were tested.
+
+
+## 7. Try a controlled compile failure
+
+1. In a separate learning copy, add auto invalid = encodeLittleEndian(1.5); to main. Predict why the floating-point type is refused, then compile.
+2. Remove that intentionally invalid call. Do not weaken the template constraint simply to make unrelated data fit this integer format.
+3. Change the known expected byte order in a unittest. Rebuild with -unittest and observe the assertion failure when the executable starts. Restore the expected bytes.
+4. Compare a compile-time assertion failure with a runtime unittest failure. Write down which command fails in each case.
+5. Explain why type admission, byte-format correctness and ABI compatibility are three different questions.
+
+
+## Which mechanism answers which question?
+
+| Mechanism | When it acts | Useful question |
+| --- | --- | --- |
+| if | Runtime unless folded by optimization | Which path matches current input? |
+| static if | Compile time | Which declarations fit this type? |
+| Template constraint | Compile time | Is this instantiation admitted? |
+| static assert | Compile time | Does a required constant relationship hold? |
+| __traits(compiles, ...) | Compile time | Is this expression semantically valid? |
+| version | Compile time | Which target or selected version applies? |
+| debug(identifier) | Compile time | Should this optional diagnostic code exist? |
+| unittest and assert | Program execution with tests enabled | Does this concrete result match the contract? |
+
+## Further reading
+
+- [D specification: conditional compilation](https://dlang.org/spec/version.html)
+- [D specification: templates](https://dlang.org/spec/template.html)
+- [D specification: traits](https://dlang.org/spec/traits.html)
+
+[Previous: Declare field metadata and inspect it at compile time](25-declare-and-inspect-field-metadata.md)
+
+[Next: Separate read-only views from independent copies](27-separate-read-only-views-from-independent-copies.md)

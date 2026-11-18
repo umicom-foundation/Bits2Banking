@@ -1,0 +1,77 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/33-aggregate-evaluation-with-checked-summaries.html
+
+PURPOSE:
+Aggregate evaluation with checked summaries
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aggregate evaluation with checked summaries | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Aggregate evaluation with checked summaries</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Retain a small result instead of every score array</h2>
+<p>The previous lesson calculated a token’s loss from the probability assigned to its true answer. A real evaluation may contain many batches. Keeping every vocabulary-score array merely to calculate one final mean wastes memory. You can instead retain a few statistics after each batch: the number of rows inspected, the number selected for evaluation, and the sum of their negative log-likelihoods. These are sufficient for this particular token-weighted mean; they cannot reconstruct individual predictions, percentiles or every other metric.</p>
+<ol><li>Review the token-loss and denominator lesson first, especially nats, selection masks and unequal batch sizes.</li><li>Open labs/framework/prediction-metrics/aggregate.c. It calls the existing Framework score service and the new checked summary helpers.</li><li>This lab uses four invented score rows. It loads no model, downloads no weights and performs no training.</li></ol>
+<h2>Know what the three fields mean</h2>
+<table><thead><tr><th scope="col">Field</th><th scope="col">Meaning</th><th scope="col">Example</th></tr></thead><tbody><tr><td>rows</td><td>All inspected prediction rows, including unselected rows</td><td>Seven rows inspected</td></tr><tr><td>selectedRows</td><td>Rows included in this reported objective</td><td>Four rows scored</td></tr><tr><td>negativeLogLikelihoodSum</td><td>The additive loss from selected rows, in nats</td><td>A sum of ten nats</td></tr></tbody></table>
+<h2>Work a two-batch example by hand</h2>
+<p>Suppose batch A inspected four rows, selected three, and accumulated six nats. Batch B inspected three rows, selected one, and accumulated four nats. The combined result inspected seven rows, selected four, and accumulated ten nats. Its mean is ten divided by four: 2.5 nats per selected token. Averaging the batch means, two and four, would give three; that answers a different weighting question.</p>
+<table><thead><tr><th scope="col">Batch</th><th scope="col">Inspected</th><th scope="col">Selected</th><th scope="col">Loss sum</th><th scope="col">Batch mean</th></tr></thead><tbody><tr><td>A</td><td>4</td><td>3</td><td>6</td><td>2</td></tr><tr><td>B</td><td>3</td><td>1</td><td>4</td><td>4</td></tr><tr><td>Combined</td><td>7</td><td>4</td><td>10</td><td>2.5</td></tr></tbody></table>
+<h2>Initialize the empty accumulator</h2>
+<p>An accumulator is a small value that gathers results over time. The initializer {0} sets every field to zero. It means no batches have been included yet. It does not mean a model has achieved zero loss. The reporting API distinguishes that empty state from a measurement containing actual tokens.</p>
+<pre><code class="language-c">UmiAiTrainingPredictionLossSummary total = {0};
+UmiAiTrainingPredictionLossSummary batch;</code></pre>
+<h2>Score one borrowed batch, then merge its summary</h2>
+<p>The loss function reads the score and target arrays without retaining them. Merge then checks the existing and incoming summaries before publishing their combined value. The output may be the same object as total: the service reads and validates both inputs before writing. Check each status before continuing. A failed score call leaves batch unchanged, so merging it anyway could count a previous batch twice.</p>
+<pre><code class="language-c">if (UmiAiTrainingPredictionLoss(logits, rows, vocabulary, targets,
+        selected, selectedCount, &amp;batch) != UMI_STATUS_OK) {
+    /* Report the error and stop this evaluation. */
+    return 1;
+}
+if (UmiAiTrainingPredictionLossMerge(&amp;total, &amp;batch, &amp;total) != UMI_STATUS_OK) {
+    /* total still contains the earlier accepted aggregate. */
+    return 2;
+}</code></pre>
+<h2>Understand the ownership sequence</h2>
+<ol><li>The caller owns the current logits, targets and optional selection mask. They must stay valid and unchanged while the loss call reads them.</li><li>The loss service publishes a separate summary after complete input admission. No pointer to the arrays is stored in that summary.</li><li>The merge service combines counts and sums without allocating memory or retaining either input pointer.</li><li>After the loss call returns, the caller can reuse its batch arrays if no other operation still needs them. Merging the summary does not extend the arrays’ lifetime.</li><li>The caller retains total until reporting finishes. Ownership is still explicit; C does not automatically free the caller’s arrays.</li></ol>
+<h2>What checked aggregation refuses</h2>
+<p>A summary can come from a valid service call or from incorrect caller code. The merge helper therefore validates its structure too. It cannot read your mind or establish that two measurements describe the same experiment.</p>
+<table><thead><tr><th scope="col">Input problem</th><th scope="col">Reported status</th><th scope="col">Why it matters</th></tr></thead><tbody><tr><td>selectedRows exceeds rows</td><td>INVALID_ARGUMENT</td><td>The count cannot describe these inspected rows</td></tr><tr><td>Negative, infinite or NaN loss sum</td><td>INVALID_ARGUMENT</td><td>The categorical loss summary is malformed</td></tr><tr><td>Zero selected tokens with a nonzero sum</td><td>INVALID_ARGUMENT</td><td>There is no contributing token for that sum</td></tr><tr><td>Count addition exceeds SIZE_MAX</td><td>CAPACITY_EXCEEDED</td><td>Unsigned wrapping would produce a misleading smaller count</td></tr><tr><td>Finite sums add to a nonfinite result</td><td>CAPACITY_EXCEEDED</td><td>The accumulated result no longer fits its representation</td></tr></tbody></table>
+<h2>Ask separately for mean and perplexity</h2>
+<p>The mean divides the sum by the selected count. Perplexity applies the exponential to that mean for this categorical objective measured in natural-log units. A finite mean can have an exponential too large for a double. Preserve and display the finite mean while reporting that perplexity is unavailable at this range. Do not replace an overflow with zero, infinity shown as a successful score, or an arbitrary maximum.</p>
+<pre><code class="language-c">double mean;
+UmiStatus status = UmiAiTrainingPredictionLossMean(&amp;total, &amp;mean);
+if (status == UMI_STATUS_UNAVAILABLE) {
+    /* No selected tokens: show &quot;not evaluated&quot;. */
+} else if (status == UMI_STATUS_OK) {
+    /* Report mean, then request perplexity separately if needed. */
+}</code></pre>
+<h2>No data is a useful explicit state</h2>
+<p>A summary may have six inspected rows and zero selected rows. Perhaps a mask excluded every position. The mean and perplexity functions return UNAVAILABLE and leave the output variable unchanged. That preserved value is only a memory guarantee: the caller must not accidentally display a previous result as current. Keep the status alongside the number in the user interface.</p>
+<h2>Check compatibility before merging</h2>
+<ol><li>Use the same tokenizer and vocabulary interpretation. A byte-token average and a subword-token average have different units.</li><li>Use the same dataset snapshot, context policy and objective. Evaluation from a different test set should not silently join this result.</li><li>Use the intended selection rule, such as answer-token evaluation. A different mask changes the question being measured.</li><li>Keep batch identity or progress separately so retries cannot add the same batch twice. Merge intentionally accepts equal summaries; equal numbers do not prove duplicate input.</li><li>Remember that floating-point addition depends slightly on ordering. Fix the traversal order for reproducibility and compare numerical results with an appropriate tolerance.</li></ol>
+<h2>Configure, build and test the original C lab</h2>
+<p>Select matching Framework and Bits2Banking source trees. These commands build a small source consumer with the approved Framework logo/icon resources. They do not build or install the entire Framework SDK. Run each command separately and stop on errors.</p>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Bits2Banking
+cmake -S labs/framework/prediction-metrics -B build/learning-prediction-metrics -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/learning-prediction-metrics
+ctest --test-dir build/learning-prediction-metrics --output-on-failure
+&amp; &quot;.\build\learning-prediction-metrics\umicom-prediction-aggregate.exe&quot;</code></pre>
+<h2>Interpret the lab output</h2>
+<p>The first lines should report four selected tokens and a mean near 1.524398 nats. The example then checks a zero-selection report and an invented mean of 1000 nats whose exponential cannot fit. These are deliberate arithmetic exercises, not measured quality from a trained model.</p>
+<pre><code class="language-text">Selected tokens: 4
+Mean: 1.524398 nats
+...
+Zero selected tokens: unavailable; previous result unchanged.
+Mean 1000 nats remains reportable; its exponential exceeds range.
+Invented scores only; no model, training, download or retained tensor.</code></pre>
+<h2>Exercises and recovery</h2>
+<ol><li>Split the four rows into a group of three and a group of one instead of four single-row calls. Keep the same sum and selected denominator; allow tiny floating-point differences.</li><li>Exclude all four rows. Confirm that the summary is valid but reporting returns UNAVAILABLE.</li><li>Create a deliberately malformed summary with two inspected rows and three selected rows. Verify refusal and unchanged output.</li><li>Simulate retrying a completed batch. The arithmetic helper will count it twice; design a separate batch-identity rule to prevent that application mistake.</li><li>If the new function names are missing at link time, check that the matching prediction_metrics.c and prediction_summary.inc are in the chosen Framework tree. A new header alone cannot add symbols to an old library.</li></ol>
+<h2>What this does not implement</h2>
+<p>The service does not deduplicate records, verify provenance, run an LLM, alter model weights, track experiments on disk or qualify an installed SDK. It supplies one reusable, allocation-free reporting boundary. Keep data admission, model evaluation, experiment identity and presentation as separate responsibilities.</p>
+<nav aria-label="Previous lesson"><a href="32-measure-token-loss-with-the-right-denominator.html">Previous: Measure token loss with the right denominator</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

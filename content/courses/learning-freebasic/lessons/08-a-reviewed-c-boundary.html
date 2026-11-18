@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/08-a-reviewed-c-boundary.html
+
+PURPOSE:
+Call a small C service from FreeBASIC
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Call a small C service from FreeBASIC | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Call a small C service from FreeBASIC</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>An application binary interface, or ABI, is the machine-level agreement between compiled modules. It includes how parameters and results are passed, symbol names, sizes and alignment. It is different from syntax. FreeBASIC does not gain the entire Framework API merely by including a C header as text.</p>
+<p>The repository’s labs/languages/native-language-boundary example exposes one C function: bounded_progress. It accepts two signed 32-bit counts and a pointer to a 32-bit result. Success is 0; invalid input is 1. On failure the output is unchanged. The caller owns the output; the service allocates no memory. The complete C source and BASIC/D clients are provided together.</p>
+<pre><code class="language-basic">Extern &quot;C&quot;
+    Declare Function bounded_progress Cdecl Alias &quot;bounded_progress&quot; _
+        (ByVal completed As Long, ByVal total As Long, _
+         ByVal percent As Long Ptr) As Long
+End Extern
+Dim As Long percent = -1
+Dim As Long status = bounded_progress(2, 8, @percent)
+If status &lt;&gt; 0 Then
+    Print &quot;Invalid progress&quot;
+    End 1
+End If
+Print percent</code></pre>
+<ol><li>Read boundary.h and boundary.c in the companion lab. Verify that int32_t is used for every exported number.</li><li>Choose compiler toolchains targeting the same architecture and compatible object format. The lab’s FreeBASIC example describes the GNU object workflow; a Microsoft COFF/CRT mismatch needs a separate build configuration.</li><li>Compile the C source to an object, then pass that object and the BASIC client to fbc. Follow the lab README commands.</li><li>Run the client and expect 25. Run its negative check and confirm that an invalid total leaves the previous result unchanged.</li></ol>
+<p>Extern &quot;C&quot; chooses C linkage; Cdecl states the calling convention. The details on 32-bit x86 differ from the platform ABI on 64-bit systems, so never copy a stack diagram as a universal rule. Alias fixes the exported symbol spelling. Long supplies the intended 32-bit BASIC value. Ptr declares a pointer, and @ obtains the address of the caller’s variable.</p>
+<p>For real Framework use, build a small binding around documented public headers and installed libraries. Keep strings as explicit encoded bytes and lengths, provide matching release functions for owned handles, and never free an allocation with an unrelated language allocator. Start with a narrow console consumer before integrating Studio or Media UI.</p>
+<h2>Boundary limits</h2>
+<p>The lab demonstrates ABI design; it does not certify every FreeBASIC compiler/Framework SDK combination. The C side has a standalone regression target. The BASIC client must be compiled and tested with a recorded FreeBASIC version before release. No model is downloaded, app launched or network request made by this example.</p>
+<h2>Further reading</h2><ul><li><a href="https://www.freebasic.net/wiki/KeyPgCdecl">FreeBASIC CDECL</a></li><li><a href="https://www.freebasic.net/wiki/DocToc">FreeBASIC manual</a></li></ul><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="07-records-modules-and-files.html">Previous: Records, reusable modules and files</a> · <a href="09-pointers-and-allocation-lifetimes.html">Next: Follow pointers and allocation lifetimes</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

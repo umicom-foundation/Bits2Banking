@@ -1,0 +1,83 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/generative-ai-foundations/lessons/23-transform-pixels-without-changing-their-labels-by-accident.html
+
+PURPOSE:
+Transform pixels without changing their labels by accident
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Transform pixels without changing their labels by accident | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Transform pixels without changing their labels by accident</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>What this lesson builds</h2>
+<p>You will use three native Framework functions to crop an already decoded image, mirror its pixels horizontally and turn the result into a float tensor. You will also decide when that transform would be wrong for a training example. The code is small enough to trace by hand: six original colored pixels, four selected pixels and twelve output numbers. Nothing downloads a model, decodes a photo or trains a generator. This is a real data-preparation component that can sit before a separately specified training loop.</p>
+<h2>Start with the vocabulary</h2>
+<table><thead><tr><th scope="col">Term</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>Pixel</td><td>One position in an image. Here each pixel has red, green and blue byte values.</td></tr><tr><td>RGB8</td><td>Three channels per pixel, each stored as an unsigned eight-bit integer from 0 to 255.</td></tr><tr><td>Transform</td><td>A rule that changes data, such as moving whole pixels to mirrored positions.</td></tr><tr><td>Augmentation</td><td>A deliberate training policy that derives altered examples from existing ones.</td></tr><tr><td>Label or caption</td><td>Information describing the example, such as a class, a region mask or a sentence.</td></tr><tr><td>Packed row</td><td>A row whose stored bytes are exactly its visible pixels, with no padding between rows.</td></tr><tr><td>Tensor</td><td>An ordered array of numbers with a declared shape and layout; it is not automatically a model.</td></tr></tbody></table>
+<h2>Read the orientation picture</h2><figure><img src="../../../assets/diagrams/rgb-orientation.svg" alt="Six labeled RGB pixels in original, horizontal, vertical and both-axis arrangements" style="width:100%;height:auto"><figcaption>Each letter is one complete RGB pixel; channel order stays unchanged.</figcaption></figure>
+<p>The picture uses letters so you can follow positions even if colors are hard to distinguish. A is one entire RGB pixel, not its red channel. Horizontal means reverse the pixel order within every row. Vertical means reverse the row order. Combining the flags does both. Each pixel retains its own three-channel order.</p>
+<h2>Why useful training transforms are not automatic</h2>
+<p>A model trained only on one narrow arrangement may fail when a valid real example looks different. Some augmentations can broaden that experience. But a transform is helpful only when its new example still matches the learning task. Mirroring a face might be reasonable for one task, but mirroring a road sign reverses text. Flipping a medical image can change laterality. A native function can move bytes correctly and still produce a scientifically wrong training example.</p>
+<h2>Predict the meaning before running code</h2>
+<table><thead><tr><th scope="col">Example</th><th scope="col">Potential problem</th><th scope="col">A decision to record</th></tr></thead><tbody><tr><td>Caption says “a red cup on the left”</td><td>Horizontal flip moves the cup to the right.</td><td>Rewrite and review the caption or prohibit the flip.</td></tr><tr><td>Image contains readable text</td><td>Mirrored letters are different visual evidence.</td><td>Use a task-specific policy; do not assume text is unchanged.</td></tr><tr><td>Image has a segmentation mask</td><td>Transforming only the image misaligns every marked region.</td><td>Apply the identical spatial operation to both.</td></tr><tr><td>A clip has several frames</td><td>Independent flips can create abrupt impossible motion.</td><td>Choose one policy for the clip or an explicitly reviewed temporal policy.</td></tr><tr><td>Training and evaluation share one source photo</td><td>A flipped copy is still related to the original.</td><td>Keep all derivatives in the same source group when splitting.</td></tr></tbody></table>
+<h2>Prepare a safe learning workspace</h2>
+<ol><li>Read the earlier lessons on RGB packing and borrowed crops. Review row stride and channel order if either is unfamiliar.</li><li>Open PowerShell in your Bits2Banking checkout. Navigate to labs/framework/image-orientation.</li><li>Confirm that main.c, CMakeLists.txt and README.md are present. These are the complete original example files.</li><li>Locate a matching Framework checkout containing image_flip.h, image_flip.c, image_view.c and image_tensor.c. The focused laboratory uses that source directly.</li><li>Use synthetic pixels first. Do not begin by rewriting a large personal image collection.</li><li>Keep generated files in the lab build directory and run commands one at a time. Stop at the first failure.</li></ol>
+<h2>Follow the original bytes</h2>
+<p>The first row contains red, green and blue, followed by three padding bytes. The second row contains cyan, magenta and yellow and needs no final padding. Width is three pixels; height is two rows; stride is twelve bytes from one row start to the next. sizeof pixels is twenty-one bytes. The descriptor borrows this array and does not extend its lifetime.</p>
+<pre><code class="language-c">const uint8_t pixels[] = {
+    255,0,0,  0,255,0,  0,0,255,  19,20,21,
+    0,255,255,  255,0,255,  255,255,0
+};
+const UmiAiTrainingRgb8View source = {
+    pixels, sizeof pixels, 3U, 2U, 12U
+};</code></pre>
+<h2>Select a two-by-two crop</h2>
+<p>The left coordinate 1 skips the red/cyan column. Top 0 keeps the first row. The selected visible colors are green, blue / magenta, yellow. The crop still has stride twelve: it did not repack the original image. Its readable span is eighteen bytes from its first selected byte through its last selected pixel, but only twelve of those bytes are visible RGB channels. Copying all eighteen bytes as a packed image would include gaps.</p>
+<pre><code class="language-c">UmiAiTrainingRgb8View crop = {0};
+if (UmiAiTrainingImageCropRgb8(&amp;source, 1U, 0U, 2U, 2U, &amp;crop) != UMI_STATUS_OK)
+    return 1;</code></pre>
+<h2>Materialize the horizontal transform</h2>
+<p>The result is blue, green / yellow, magenta. It owns an independent copy in the caller’s flipped array. Its packed stride is six bytes, not twelve. The function does not allocate an image, keep a pointer or guess a label policy. Passing flag zero creates a packed identity copy. Vertical uses the vertical flag; bitwise OR combines the two flags. Unknown bits are refused.</p>
+<pre><code class="language-c">uint8_t flipped[12];
+if (UmiAiTrainingImageFlipRgb8(&amp;crop, UMI_AI_TRAINING_FLIP_HORIZONTAL,
+        flipped, sizeof flipped) != UMI_STATUS_OK)
+    return 2;</code></pre>
+<h2>Do not reverse the channels</h2>
+<p>The horizontal loop selects a different source pixel but copies its red, green and blue channels in their original order. Reversing every byte in a row would change RGB into BGR as well as reversing pixels. That is a different operation and would change colors. The tests deliberately use pixels with unequal channel values so that this mistake cannot hide behind grayscale examples.</p>
+<h2>Pack the transformed bytes for a model</h2>
+<p>HWC means height, width, channel: all three channels of the first pixel, then the next pixel. UNIT maps a byte to byte/255. The twelve expected values are 0 0 1, 0 1 0, 1 1 0, 1 0 1. A float is a numeric representation, not a byte. Twelve output float elements occupy sizeof tensor bytes, normally forty-eight in this toolchain. Use the real model’s layout and range instead of choosing them by habit.</p>
+<pre><code class="language-c">float tensor[12];
+if (UmiAiTrainingImagePackRgb8(flipped, sizeof flipped, crop.width, crop.height,
+        crop.width * 3U, UMI_AI_TRAINING_IMAGE_HWC, UMI_AI_TRAINING_IMAGE_UNIT,
+        tensor, 12U) != UMI_STATUS_OK)
+    return 3;</code></pre>
+<h2>Memory ownership without hidden allocations</h2>
+<table><thead><tr><th scope="col">Object</th><th scope="col">Owner</th><th scope="col">What must stay valid</th></tr></thead><tbody><tr><td>pixels</td><td>The calling function in this lab</td><td>Until every borrowed view is finished.</td></tr><tr><td>source and crop descriptors</td><td>The calling function</td><td>Metadata and pixels remain stable during each operation.</td></tr><tr><td>flipped</td><td>The caller</td><td>A disjoint writable twelve-byte array.</td></tr><tr><td>tensor</td><td>The caller</td><td>A disjoint writable twelve-float array.</td></tr><tr><td>Framework operation</td><td>No retained allocation</td><td>Reads and writes only during the synchronous call.</td></tr></tbody></table>
+<h2>Run the complete original program</h2>
+<p>These paths describe the example Windows setup; change the Framework path to your matching checkout. Configuration checks required source files before compiling. The shared branding helper supplies the Windows icon and metadata. This source-built laboratory does not qualify an installed SDK package or a graphical application.</p>
+<pre><code class="language-powershell">$env:Path = &quot;C:/msys64/ucrt64/bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+.\build\umicom-image-orientation.exe</code></pre>
+<h2>Expected result and what it proves</h2>
+<p>The test also checks exact output arrays and exit zero. Applying the same horizontal flip twice restores the visible crop; this property is called an involution. It is a useful check, but not enough alone: two executions of the same wrong operation could cancel. Independent literal fixtures verify the intended first transform too.</p>
+<pre><code class="language-text">Borrowed crop: 2x2, stride 12, readable span 18 bytes
+Packed flipped RGB: 12 bytes, stride 6
+HWC: 0 0 1 0 1 0 1 1 0 1 0 1
+Two horizontal flips restore the visible crop.
+Unknown transform refused without changing output.
+Synthetic pixels only: no decoder, caption rewrite, RNG, model or training.</code></pre>
+<h2>Understand refusal before adding larger data</h2>
+<p>All metadata and capacities are admitted before the first pixel read or output write. Positive dimensions, sufficient row stride, a complete source span and the shared maximum value count are required. Capacity is measured in bytes for Flip and floats for Pack. Every failure preserves the entire destination, including its unused tail. This does not make arbitrary pointers safe: the caller must supply genuine objects of the declared size and must not race another thread or overlap source and destination.</p>
+<h2>Place augmentation in a training pipeline</h2>
+<ol><li>Identify original source groups and reserve evaluation groups before creating derivatives.</li><li>Decode using a separately reviewed image decoder and establish orientation and color conventions.</li><li>Choose an explicit task-compatible crop and flip policy. Record it with the experiment configuration.</li><li>Apply the matching spatial policy to labels, masks or boxes; do not assume this RGB helper transforms those objects.</li><li>For video, choose consistent spatial transforms across related frames unless the task explicitly requires another rule.</li><li>Pack the transformed pixels into the model’s required tensor layout and numeric range.</li><li>Run a separately specified forward pass, loss, gradient calculation and optimizer update on training data.</li><li>Evaluate on the reserved groups under a recorded evaluation policy. A successful pixel transform is not a model-quality result.</li></ol>
+<h2>Exercises and recovery</h2>
+<ol><li>Predict the vertical flip of the two-by-two crop: magenta, yellow / green, blue. Then change the lab deliberately and verify it.</li><li>Explain why both flags equal a 180-degree orientation change, not a 90-degree rotation.</li><li>Change byte capacity from twelve to eleven and confirm the operation refuses without partial output. Restore the complete program afterward.</li><li>If configuration reports missing files, integrate the matching header/source set. Never create empty replacement headers.</li><li>If colors are wrong, inspect channel order, row stride and tensor layout separately; these are different contracts.</li><li>Write a one-sentence caption for the original crop that becomes false after a horizontal flip. Decide whether to rewrite it or disallow the transform.</li><li>Describe why a flipped evaluation image derived from a training photo can still leak information even if the raw bytes differ.</li></ol>
+<h2>How Umicom applications can reuse this</h2>
+<p>The function is available in the shared AI SDK and native training target. A future Media or model-training client can choose policy, own buffers and call this one native implementation. The current work does not add a Media button, an image decoder or a full generator. Keeping these boundaries explicit makes memory use and correctness easier to reason about, while leaving application-specific label and workflow decisions with the application.</p>
+<nav aria-label="Previous lesson"><a href="22-borrow-an-image-crop-with-explicit-lifetime.html">Previous: Borrow an image crop with explicit lifetime</a></nav><nav aria-label="Continuing practice"><a href="24-count-image-values-before-preparing-training-inputs.html">Next: Count image values before preparing training inputs</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

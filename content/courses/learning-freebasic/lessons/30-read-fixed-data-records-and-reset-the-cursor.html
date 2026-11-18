@@ -1,0 +1,59 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/30-read-fixed-data-records-and-reset-the-cursor.html
+
+PURPOSE:
+Read fixed data records and reset the cursor
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read fixed data records and reset the cursor | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read fixed data records and reset the cursor</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Put a small fixture inside a program</h2>
+<p>A fixture is a small, deliberately chosen set of inputs and expected results used for practice or checking behavior. You have already used variables and arrays. BASIC also has Data, Read and Restore for a sequential list embedded in the source. In this lesson, four records describe rectangle dimensions and the expected result of a checked area calculation. You will read them in order and return to the first record without opening a file.</p>
+<h2>Give each keyword a precise job</h2>
+<p>The word record does not create a new BASIC type here. It is a rule we impose on the sequence: width, height, expected acceptance and expected output. The language sees a sequence of items. If the producer and reader disagree about the order or count, the intended records can become misaligned.</p>
+<table><thead><tr><th scope="col">Keyword or term</th><th scope="col">Meaning here</th></tr></thead><tbody><tr><td>Data</td><td>Declares constant items in the module’s embedded data list</td></tr><tr><td>Read</td><td>Copies the next items from that list into named variables</td></tr><tr><td>Restore</td><td>Moves the next-read position to the first Data item after a label</td></tr><tr><td>Label</td><td>A source marker such as AreaCases:</td></tr><tr><td>Cursor</td><td>The position of the next item to be read; not the mouse pointer</td></tr><tr><td>Record</td><td>Our convention of four consecutive items describing one case</td></tr></tbody></table>
+<h2>Read one record on paper</h2>
+<p>The first rectangle is 640 units wide and 360 units high. Multiplying gives 230400 units of area. The next value 1 says the operation should accept these inputs. In the two refusal cases, 0 means rejection and 71 is the old output that must remain. A unit could be one pixel in this numerical exercise, but no image is allocated or decoded. The labels and expected values are our own learning data.</p>
+<pre><code class="language-freebasic">AreaCases:
+Data 640, 360, 1, 230400
+Data 1920, 1080, 1, 2073600
+Data 0, 720, 0, 71
+Data 65536, 65536, 0, 71</code></pre>
+<h2>Understand where the data lives</h2>
+<p>In the fb dialect, Data items are simple constant numeric or string expressions prepared when the source is compiled. They are not user input requested at runtime. Data statements in a module form a sequence even when written on separate lines. They are module-local and belong in module-level code. This exercise uses only numeric items that match the destination types; it does not rely on implicit string-to-number conversions. The earlier file-reading lesson covers a different source of data.</p>
+<h2>Keep the cursor inside the fixture</h2>
+<p>There is no safe end-of-data test in this example. Reading beyond the available Data items has undefined behavior according to the FreeBASIC manual and may crash. RECORD_COUNT is four because the fixture has four complete records. Each iteration reads four items, so the first loop consumes sixteen items. Never change the loop to keep reading until an error occurs, and never increase the count without supplying complete matching records. For external or variable-length data, use an explicitly bounded parser and record lengths instead of treating this trusted source fixture as a general importer.</p>
+<h2>Choose numeric types deliberately</h2>
+<p>FreeBASIC ULong is an unsigned 32-bit integer. It can represent zero through 4294967295. ULongInt supplies a wider unsigned integer for the admission calculation. Integer is used for the small loop counter and the expected acceptance flag; do not infer a fixed wire width from that native-sized type. CULngInt makes the wider conversion explicit. Boolean describes acceptance, while the fixture stores the easy-to-read integers zero and one. The test compares whether each is nonzero rather than assuming the stored representation of True is exactly one.</p>
+<h2>Check before multiplying</h2>
+<p>The policy requires both dimensions to be nonzero. The first line returns before the later division could use a zero height. The backslash operator performs integer division. The second line asks whether width is larger than the maximum representable count divided by height. If it is, the product would not fit and the function refuses before computing it. Only an admitted request assigns result. This is an output-preservation contract: refusal keeps the caller’s earlier value.</p>
+<pre><code class="language-freebasic">If width = 0 OrElse height = 0 Then Return False
+If CULngInt(width) &gt; MAX_COUNT \ CULngInt(height) Then Return False
+result = width * height
+Return True</code></pre>
+<h2>Trace the four cases</h2>
+<p>The final case is not a negative dimension. Both inputs fit individually, but their product does not fit the result type. This is a common source of allocation-size bugs in native programs. A type check on each argument is not enough to prove that a later multiplication is representable.</p>
+<table><thead><tr><th scope="col">Width × height</th><th scope="col">Why accepted or refused</th><th scope="col">Output</th></tr></thead><tbody><tr><td>640 × 360</td><td>Positive and representable</td><td>230400</td></tr><tr><td>1920 × 1080</td><td>Positive and representable</td><td>2073600</td></tr><tr><td>0 × 720</td><td>Zero dimension refused by this domain rule</td><td>71 remains</td></tr><tr><td>65536 × 65536</td><td>4294967296 exceeds the 32-bit maximum</td><td>71 remains</td></tr></tbody></table>
+<h2>Follow Read and Restore</h2>
+<ol><li>Restore AreaCases selects the first item after that label. It does not execute a jump to the label and does not erase variables.</li><li>Each loop iteration declares destination variables, then Read consumes width, height, expectedAccepted and expectedArea in that order.</li><li>Set result to 71 before calling TryArea. Compare both acceptance and the resulting value with the fixture.</li><li>After four iterations, stop reading. Restore AreaCases moves the cursor back, allowing exactly the first record to be read again.</li><li>End 0 exits successfully before the label in normal execution. The Data items were already prepared as source data; no extra input needs to be typed.</li></ol>
+<h2>Compile the original exercise</h2>
+<p>Use the FreeBASIC compiler, not a C compiler. Open PowerShell in the lab directory and run one command at a time. The fb dialect selects the language discussed here. The exx option enables useful runtime checks, but it is not permission to read past the Data list. Stop if compilation fails, because an older executable may still exist.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -lang fb -exx data_records.bas -x data-records-basic.exe
+.\data-records-basic.exe</code></pre>
+<h2>Read the output and troubleshoot</h2>
+<p>The program prints four case numbers, acceptance flags and area values. Expect accepted results 230400 and 2073600, then two refused cases preserving 71. Finally it prints the restored first dimensions, 640 by 360. Print may insert spacing around numbers. A nonzero exit means a checked expectation failed. If fbc is not found, return to the setup lesson and locate the actual installed compiler; installing Python or Conda does not supply FreeBASIC. If one expected value is wrong, calculate it independently before editing the fixture.</p>
+<h2>Use this idea in Umicom learning projects</h2>
+<p>Embedded fixtures are useful for small arithmetic lessons, deterministic format examples and adapter tests. Shared production logic should remain in the C23 Framework owner. A BASIC teaching client can call a reviewed C interface, as the earlier boundary lesson shows. Data does not make FreeBASIC source executable by Umicom C, and it is not a database, a vector store or an LLM training file format. A compiled fixture also requires rebuilding the program when its values change.</p>
+<h2>Practice with a complete record</h2>
+<ol><li>Add one positive record with width 1 and height 4294967295. Calculate the expected acceptance and result, then update the trusted record count together.</li><li>Explain why Restore changes the next read but does not restore result to 71. Variables and cursor state are separate.</li><li>Count the items consumed by the first loop. Four records with four items each consume sixteen items.</li><li>Describe a safer design for reading an unknown number of external records: an explicit length, bounded parsing and checked errors. Do not intentionally read beyond this fixture.</li></ol>
+<h2>Read the language reference</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgData">FreeBASIC Data</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgRead">FreeBASIC Read</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgRestore">FreeBASIC Restore</a></li></ul>
+<nav aria-label="Previous lesson"><a href="29-expose-state-through-a-read-only-property.html">Previous: Expose state through a read-only property</a></nav><nav aria-label="Continuing practice"><a href="31-edit-records-with-an-explicit-candidate.html">Next: Edit record fields with an explicit candidate</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

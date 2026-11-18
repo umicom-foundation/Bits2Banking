@@ -1,0 +1,83 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/37-select-a-union-value-with-an-explicit-tag.html
+
+PURPOSE:
+Select a union value with an explicit tag
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Select a union value with an explicit tag | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Select a union value with an explicit tag</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>One slot, two possible meanings</h2>
+<p>Suppose an educational calculator stores either a whole number such as 42 or a fractional number such as 12.5. You could keep both fields in an ordinary record, but only one is meaningful at a time. A union lets the alternatives share storage. It does not remember which meaning you intended. This lesson adds a separate tag and checks that tag before reading the stored value.</p>
+<ol><li>Review records, enums, function arguments and the preceding layout lesson.</li><li>Open the complete tagged_number.bas example.</li><li>Predict what should happen when a caller asks for a fractional value from a record that contains a whole number.</li></ol>
+<h2>Name the alternatives</h2>
+<p>The example uses an explicit enumeration. Invalid is a deliberately unselected state. Whole and Fractional name the two supported alternatives. Explicit requires qualified names such as NumberKind.Whole, which makes the source easier to read when several enums have similarly named members. An enum organizes names; it does not prove that every integer received from a file or cast belongs to the declared set.</p>
+<pre><code class="language-basic">Enum NumberKind Explicit
+    Invalid = 0
+    Whole = 1
+    Fractional = 2
+End Enum</code></pre>
+<h2>Understand the overlapping payload</h2>
+<p>NumberPayload declares a LongInt view and a Double view of common storage. LongInt is the whole-number alternative; Double is the floating-point alternative. Writing one may replace the bytes visible through the other. This is storage sharing, not a conversion operation. The exercise never reads through the wrong view and does not depend on the bit pattern that such a read might expose.</p>
+<pre><code class="language-basic">Union NumberPayload
+    wholeValue As LongInt
+    fractionalValue As Double
+End Union</code></pre>
+<h2>Keep the tag outside the overlap</h2>
+<p>TaggedNumber is an ordinary Type containing the tag and the union payload. The tag has its own storage, so writing a payload does not overwrite the selection. Its total record size may include alignment padding. Saving the raw record is therefore not a portable file format, even when two compilers happen to report the same size.</p>
+<pre><code class="language-basic">Type TaggedNumber
+    kind As NumberKind
+    payload As NumberPayload
+End Type</code></pre>
+<h2>Construct a complete candidate</h2>
+<p>MakeWhole creates a local candidate, writes its whole-number payload, then sets the matching tag and returns the complete record. MakeFractional does the same for the other alternative. A caller should use these functions rather than changing the tag independently. The ordering is an ownership discipline for this single-threaded example; it is not an atomic publication protocol for concurrent readers.</p>
+<pre><code class="language-basic">Function MakeWhole(ByVal value As LongInt) As TaggedNumber
+    Dim candidate As TaggedNumber
+    candidate.payload.wholeValue = value
+    candidate.kind = NumberKind.Whole
+    Return candidate
+End Function</code></pre>
+<h2>Check before reading</h2>
+<p>TryWhole first inspects the tag. If the value is not Whole, it returns False before reading the payload or writing the caller's result. A successful call copies the admitted member and returns True. TryFractional has the corresponding contract. The input record and output variables in the laboratory are separate; the example does not ask a read-only input reference to alias writable output.</p>
+<pre><code class="language-basic">Function TryWhole(ByRef value As Const TaggedNumber, ByRef result As LongInt) As Boolean
+    If value.kind &lt;&gt; NumberKind.Whole Then Return False
+    result = value.payload.wholeValue
+    Return True
+End Function</code></pre>
+<h2>Read the argument syntax</h2>
+<p>ByVal gives the constructor its own parameter value. ByRef makes an accessor refer to an existing caller object. Const on the input record prevents writes through that parameter. The result parameter is writable because a successful accessor publishes a value into it. Boolean describes the success/failure answer. Returning False is distinct from returning a numerical zero: zero may itself be a valid stored number.</p>
+<h2>Trace preservation on a mismatch</h2>
+<p>The laboratory initializes the fractional output to −8.5, then asks for a fractional value from Whole(42). The call must fail and preserve −8.5. Next it stores Fractional(12.5) and successfully reads that value. A later whole-number request fails and leaves the previous whole result, 42, unchanged. These checks make the refusal contract visible instead of merely checking that the program did not crash.</p>
+<table><thead><tr><th scope="col">Stored selection</th><th scope="col">Requested accessor</th><th scope="col">Result</th><th scope="col">Previous output</th></tr></thead><tbody><tr><td>Whole(42)</td><td>TryWhole</td><td>True; writes 42</td><td>Replaced on success</td></tr><tr><td>Whole(42)</td><td>TryFractional</td><td>False</td><td>−8.5 preserved</td></tr><tr><td>Fractional(12.5)</td><td>TryFractional</td><td>True; writes 12.5</td><td>Replaced on success</td></tr><tr><td>Fractional(12.5)</td><td>TryWhole</td><td>False</td><td>42 preserved</td></tr></tbody></table>
+<h2>Exercise an unknown tag deliberately</h2>
+<p>The test uses Cast(NumberKind, 99) to construct an unsupported tag. This deliberately bypasses the normal constructors. Both accessors must refuse it without reading either payload interpretation or changing the previous outputs. A cast changes the type of an expression; it is not evidence that the value satisfies an application rule. The Invalid state receives the same refusal treatment.</p>
+<h2>Do not use a tag change as conversion</h2>
+<p>Changing only Whole to Fractional does not turn 42 into 42.0. It changes the stated meaning while leaving unrelated bytes in place. A real conversion should first read the admitted source member, check any required range or precision rule, calculate a value of the destination type, and construct a new tagged record. Similarly, the Double example is a numeric demonstration, not a prescription for representing money. Financial code needs an explicit decimal or fixed-point policy.</p>
+<h2>Keep complex ownership out of this first union</h2>
+<p>The payload alternatives here are simple numeric values. They do not own strings, heap allocations, locks or open files. Adding an owning pointer would introduce another problem: which alternative must release which resource when the tag changes? You would need deliberate construction, replacement, copy and destruction rules. A smaller record is not automatically a safer record, and a union is not a substitute for an ownership design.</p>
+<h2>Compile and run</h2>
+<p>Use the FreeBASIC fb dialect and keep warnings and runtime checks enabled. Run one command at a time and stop on an error. Check the exit code after the executable runs. Source review and a lesson-link check do not prove that a particular FreeBASIC compiler accepted or executed this example.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -lang fb -w all -exx tagged_number.bas -x tagged_number_basic.exe
+&amp; .\tagged_number_basic.exe
+$LASTEXITCODE</code></pre>
+<h2>Read the expected result</h2>
+<p>A successful execution prints the two lines below and exits zero. Each numbered End failure corresponds to a particular check in the complete source. If one fails, locate that line and inspect the tag, accessor and prior output; do not remove the check to make the demonstration print success.</p>
+<pre><code class="language-text">Umicom tagged-number checks passed.
+Wrong and unknown tags preserved both output values.</code></pre>
+<h2>Compare the C and D examples carefully</h2>
+<p>The same laboratory includes tagged_number.c and tagged_number.d. They illustrate a similar selection protocol, but their native records are not declared to be ABI-compatible. Enumeration widths, alignment, calling conventions and language rules must be checked separately. For Umicom applications, prefer existing Framework C services and an explicit C boundary instead of passing a BASIC-owned record directly to an unrelated library.</p>
+<h2>Build a portable protocol from values</h2>
+<p>A portable message should state a tag encoding and then encode the selected value according to a documented byte order and representation. A decoder first checks the tag, length and value constraints, then constructs the in-memory record. It must reject unsupported alternatives without reading beyond the input. Neither SizeOf nor copying the union bytes establishes those checks. Revisit the earlier portable-record lesson before attempting file interchange.</p>
+<h2>Exercises and vocabulary checkpoint</h2>
+<p>Add a third supported alternative for a small unsigned count. Write its constructor and checked accessor, then add success, mismatch and unknown-tag tests. Explain why changing the payload without updating the tag is also invalid. Finally list the roles of Enum, Explicit, Union, Type, ByVal, ByRef, Const, Return, Cast and OrElse in the complete program. Distinguish language syntax from the user-defined names MakeWhole and TryWhole.</p>
+<h2>Official references</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgUnion">FreeBASIC UNION</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgEnum">FreeBASIC ENUM</a></li></ul>
+<nav aria-label="Previous lesson"><a href="36-own-worker-threads-and-protect-shared-state.html">Previous: Own worker threads and protect shared state</a></nav><nav aria-label="Continuing practice"><a href="38-observe-which-conditional-expression-runs.html">Next: Observe which conditional expression runs</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

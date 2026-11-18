@@ -1,0 +1,89 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/41-inspect-layout-without-serializing-padding.html
+
+PURPOSE:
+Inspect layout without serializing padding
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect layout without serializing padding | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Inspect layout without serializing padding</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Why a structure has more than field values</h2>
+<p>A structure groups named values into a single value. A native program must also arrange its fields in memory so machine instructions and foreign functions can access them correctly. This lesson separates those two subjects: the values you mean, and the storage arrangement chosen for them. You will inspect a small D structure, compare a deliberately packed form, and explain why copying arbitrary memory bytes is not a portable way to save an account, image description or network message. Work through the earlier variables, arrays, structures and const lessons first if those words are unfamiliar.</p>
+<h2>Open the original laboratory</h2>
+<p>PowerShell is the command interpreter used in these instructions. Set-Location chooses a folder. Get-Command identifies the program that will receive the following command; dmd -version asks that compiler for its version. If you use LDC or another D compiler, consult its own equivalent options and record the actual compiler instead of assuming the command name proves compatibility. The supplied example uses the ordinary D runtime for console output, not BetterC.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+Get-Command dmd
+dmd -version
+Get-Content .\record_layout.d</code></pre>
+<h2>Declare two integer fields</h2>
+<p>struct introduces a structure type. NativeRecord is the chosen name. Braces surround its field declarations and each declaration ends with a semicolon. ubyte holds a nonnegative one-byte integer; uint holds a nonnegative four-byte integer. The program later creates a value with kind seven and count 0x01020304. The hexadecimal prefix 0x means the following digits use base sixteen. Keeping these fields small makes it possible to draw the storage by hand.</p>
+<pre><code class="language-d">struct NativeRecord
+{
+    ubyte kind;
+    uint count;
+}</code></pre>
+<h2>Inspect three distinct properties</h2>
+<table><thead><tr><th scope="col">Expression</th><th scope="col">What it describes</th></tr></thead><tbody><tr><td>NativeRecord.sizeof</td><td>Total storage size in bytes, including padding.</td></tr><tr><td>NativeRecord.alignof</td><td>Address-boundary requirement for the structure.</td></tr><tr><td>NativeRecord.count.offsetof</td><td>Byte position of count relative to the record start.</td></tr><tr><td>uint.sizeof</td><td>Size of this field datatype, four bytes.</td></tr></tbody></table>
+<h2>Read a possible arrangement</h2>
+<p>Suppose the compiler reports count at offset four and a record size of eight. Byte zero holds kind; three following bytes are padding; bytes four through seven hold the count. Padding can also appear at the end of structures so successive array elements meet alignment requirements. The example deliberately prints default-layout observations instead of asserting that every target uses this drawing. You should compare the actual result with the compiler target and ABI, meaning the application binary interface that defines conventions for compiled components.</p>
+<pre><code class="language-text">Illustrative default arrangement, not a universal target promise:
+byte offset   0    1    2    3    4    5    6    7
+meaning      kind  gap  gap  gap  count spans four bytes
+
+The values are kind=7 and count=0x01020304.
+The gaps do not become additional application fields.</code></pre>
+<h2>Control field packing in a separate type</h2>
+<p>Inside PackedRecord, align(1): applies one-byte alignment to the following fields. The colon introduces an attribute scope for those declarations. The example checks that this packed type has alignment one, count offset one and total size five. Packing reduces these gaps; it does not convert integer byte order or make an arbitrary foreign function accept the object. Keep ordinary Framework-facing records at the alignment required by their published declarations.</p>
+<pre><code class="language-d">struct PackedRecord
+{
+    align(1):
+    ubyte kind;
+    uint count;
+}
+static assert(PackedRecord.alignof == 1);
+static assert(PackedRecord.count.offsetof == 1);
+static assert(PackedRecord.sizeof == 5);</code></pre>
+<h2>Distinguish a compile-time check from a runtime check</h2>
+<p>static assert asks the compiler to reject a declaration if its condition is false. Its input here is type metadata that is known without running the program. An ordinary assert inside unittest runs when the executable is built with unit tests and those tests execute. Normal if statements in main also check important value observations, returning a nonzero process result on failure. None of these checks demonstrates the behavior of another compiler configuration that was not used.</p>
+<h2>Copy fields across layouts</h2>
+<p>NativeRecord(7, 0x01020304) constructs a value for the two declared fields. PackedRecord(native.kind, native.count) constructs another value using those field values. The sizes can differ while the values still agree. That is the point of the experiment. Do not replace the typed construction with a raw copy of NativeRecord.sizeof bytes into a smaller PackedRecord: the smaller destination cannot receive that many bytes and the count may begin at a different offset.</p>
+<h2>Static arrays own a fixed number of elements</h2>
+<p>uint[3] samples declares storage for three uint values. This is a static array: the number of elements is part of its type. In this example samples.length is three and samples.sizeof is twelve. Each element occupies four bytes. The spelling typeof(samples) asks for the compile-time type of the expression; typeof(samples).sizeof therefore lets a static assertion check the array size. This rule differs from FreeBASIC SizeOf(arrayName), so always consult the language you are actually compiling.</p>
+<pre><code class="language-d">uint[3] samples = [11, 22, 33];
+static assert(typeof(samples).sizeof == 12);
+assert(samples.length == 3);</code></pre>
+<h2>A slice describes a view</h2>
+<p>samples[] creates a slice over the array. auto asks the compiler to infer the variable type from its initializer. The view has a length and refers to existing storage; creating it does not copy the three integers. view.sizeof describes the slice value itself, not all the referenced elements. The program prints that descriptor size without hard-coding a pointer-width assumption. The twelve-byte payload calculation comes from view.length multiplied by uint.sizeof.</p>
+<pre><code class="language-d">auto view = samples[];
+assert(view.length == 3);
+assert(view[1] == 22);
+assert(view.length * uint.sizeof == 12);</code></pre>
+<h2>Keep the owner alive</h2>
+<p>The backing array samples remains alive while main and its local view are being used. A borrowed view does not license accessing destroyed native memory, and a descriptor copied into a file cannot bring that memory back later. The multiplication in this tiny fixture is safe because the count is exactly three. A general interface that accepts arbitrary lengths must admit the count before multiplication and verify the complete accessible span before reading it. Use a shared checked Framework service for reusable byte-budget policies.</p>
+<h2>Compile with the checks enabled</h2>
+<p>Run the compilation line first and stop on an error. -unittest includes the unittest blocks, -checkaction=context requests useful check-failure context, and -of chooses an output filename. After a successful compile, run the executable. PowerShell does not automatically prevent the next line from launching an old executable after a failed compiler invocation, so running the commands separately matters. The final line displays the process exit code.</p>
+<pre><code class="language-powershell">dmd -unittest -checkaction=context -of=record_layout_d.exe record_layout.d
+&amp; .\record_layout_d.exe
+$LASTEXITCODE</code></pre>
+<h2>Read the results with their limits</h2>
+<table><thead><tr><th scope="col">Output</th><th scope="col">Interpretation</th></tr></thead><tbody><tr><td>native bytes, alignment and count offset</td><td>Observe the selected target; do not assume the illustrative eight-byte arrangement.</td></tr><tr><td>packed bytes=5, alignment=1, count offset=1</td><td>The deliberately packed two-field type.</td></tr><tr><td>array bytes=12, elements=3, element bytes=4</td><td>Storage owned by this static array.</td></tr><tr><td>slice descriptor bytes</td><td>Size of the view value on this target; not its payload.</td></tr><tr><td>payload bytes=12</td><td>Counted integer storage referenced by the slice.</td></tr><tr><td>fields agree; no raw record was saved</td><td>Typed field construction preserved the meanings.</td></tr></tbody></table>
+<h2>Use reflection for checks, not magic compatibility</h2>
+<p>Reflection means inspecting information about program declarations. Here offsetof, sizeof, alignof and typeof expose useful compile-time facts. The earlier field_metadata.d example explores richer declaration metadata. These facilities can support binding checks and generated adapters, but matching a size does not prove two APIs agree. You must also match field order, types, calling convention, ownership, nullability and semantic rules. A change to a record can require an ABI version change even when old code still compiles.</p>
+<h2>Design file bytes explicitly</h2>
+<p>A portable encoding decides exactly what each byte means. For an illustrative kind plus a little-endian 32-bit count, a format might specify one kind byte followed by four count bytes in least-significant-first order. It would also define valid kind numbers, versioning and incomplete-input handling. This is a separate contract from native padding or packing. Existing byte-encoding exercises show the shifts and masks involved. Do not persist raw pointers, D slice descriptors, object references or uninitialized padding as if they were stable document data.</p>
+<h2>When this helps Umicom applications</h2>
+<p>A Media client can inspect the layout of a documented image descriptor before calling a C service. A Trader integration can verify binding declarations while using explicit decimal and message contracts for real records. A Studio tool can present field metadata during development. These are possible uses for language bindings; they do not move the shared engine out of C or prove that a binding has been qualified. Keep the actual reusable validation and ownership logic in Framework and make the D client a thin adapter.</p>
+<h2>Practice and recover</h2>
+<ol><li>Draw the default record using the numbers printed by your compiler, including every gap. Label your compiler target beside the drawing.</li><li>Remove align(1) only in a study copy. Predict which static assertions may fail, then compile and read the diagnostic before restoring the file.</li><li>Explain why view.sizeof is not a byte budget for the referenced elements. Identify the owner and its lifetime.</li><li>Compare the FreeBASIC record_layout.bas array calculation with this D program. State which language each rule belongs to.</li><li>If a check fails, retain the compiler command and first diagnostic. Do not silence it by removing the assertion until you understand the target or declaration mismatch.</li></ol>
+<h2>Qualification boundary</h2>
+<p>The source and lesson are authored with official reference review. No D compiler execution or resulting program run has been performed in the current mirror environment. Course discovery checks and separate C tests do not qualify this D program or its ABI with Framework. Keep exact compiler and runtime evidence when you perform those checks.</p>
+<h2>Read the language specification</h2>
+<ul><li><a href="https://dlang.org/spec/attribute.html#align">D alignment attributes</a></li><li><a href="https://dlang.org/spec/struct.html#struct_properties">D structure and field properties</a></li><li><a href="https://dlang.org/spec/arrays.html">D arrays and slices</a></li></ul>
+<nav aria-label="Previous lesson"><a href="40-preserve-qualifiers-when-returning-a-borrowed-view.html">Previous: Preserve qualifiers when returning a borrowed view</a></nav><nav aria-label="Continuing practice"><a href="42-separate-atomic-access-from-thread-lifetime.html">Next: Separate atomic access from thread lifetime</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/05-loops-arrays-and-bounds.html
+
+PURPOSE:
+Loops, arrays and bounds
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Loops, arrays and bounds | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Loops, arrays and bounds</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A loop repeats instructions. An array stores several values of one element type, indexed by integers. An index identifies a position; it is not the value stored at that position. This example uses an explicit lower and upper bound so no default needs to be guessed.</p>
+<pre><code class="language-basic">Dim As Long counts(0 To 2) = {3, 5, 2}
+Dim As Long total = 0
+For i As Integer = LBound(counts) To UBound(counts)
+    total += counts(i)
+Next i
+Print total
+Dim As Integer remaining = 3
+Do While remaining &gt; 0
+    Print remaining
+    remaining -= 1
+Loop</code></pre>
+<ol><li>Save as loops.bas. Compile with fbc -lang fb -w all -exx loops.bas -x loops.exe. The extra runtime checks are useful while learning.</li><li>Run the program. Expect 10 followed by 3, 2 and 1.</li><li>Explain why the array loop visits three elements even though its last index is 2.</li><li>Add a fourth element by changing both the upper bound and initializer. Predict the new sum. Keep LBound and UBound rather than duplicating the bounds in the loop.</li></ol>
+<p>For declares a counted iteration, To includes the final value, and Next advances it. LBound and UBound query the declared array bounds. += adds to the current value. Do While checks a condition before each iteration. If remaining were never reduced, the condition would stay true and the loop would never finish.</p>
+<p>Exit For and Exit Do leave their respective loops. Continue For and Continue Do skip to the next iteration. Use them sparingly and explain the condition; too many hidden exits make a loop difficult to reason about. A While/Wend loop is another precondition form. Do/Loop Until can place a condition at the bottom, so its body executes at least once.</p>
+<p>A bounds error is a memory correctness problem, not a harmless extra item. Compiler checks help catch mistakes; they do not replace input validation. Do not derive an allocation size directly from an untrusted count without a maximum and overflow checks. Framework services should return clear capacity errors rather than writing beyond a caller’s buffer.</p>
+<h2>Practice</h2>
+<p>Calculate the largest count using the same loop, initializing the maximum from a known existing element. Explain what your algorithm should do for an empty collection before adapting it to a dynamic array. An empty array has no first element to read.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="04-expressions-decisions-and-operators.html">Previous: Expressions, comparisons and decisions</a> · <a href="06-procedures-and-value-ownership.html">Next: Procedures, ByVal and ByRef</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

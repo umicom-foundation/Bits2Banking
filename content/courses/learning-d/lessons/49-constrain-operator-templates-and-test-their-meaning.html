@@ -1,0 +1,67 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/49-constrain-operator-templates-and-test-their-meaning.html
+
+PURPOSE:
+Constrain operator templates and test their meaning
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Constrain operator templates and test their meaning | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Constrain operator templates and test their meaning</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Start from an ordinary value type</h2>
+<p>An operator such as | is a compact request for an operation. A type can define that operation, but the syntax alone does not guarantee a useful meaning. This original exercise uses a FlagSet struct with one uint field. A uint is a 32-bit unsigned integer in D. The bits represent three independent labels, valued 1, 2 and 4. Union combines present labels and intersection keeps only labels present on both sides.</p>
+<ol><li>Review the earlier D template, reflection and bit-mask lessons.</li><li>Open labs/languages/native-language-boundary/flag_operators.d. This is an independent D teaching program, not a new implementation language for Framework.</li><li>Write down the expected answers: 1 | 4 is 5, 5 &amp; 1 is 1, and 1 | 1 is still 1. These expectations describe the domain before you inspect the code.</li></ol>
+<h2>Read the operator template in small parts</h2>
+<p>The member name opBinary participates in D’s operator rewriting. The string template parameter op identifies the requested operator at compile time. The separate runtime parameter rhs is the right-hand value. The constraint after if admits only | and &amp;. static if selects the corresponding implementation before the program runs. The example does not build source code strings or evaluate user input as code.</p>
+<pre><code class="language-d">struct FlagSet
+{
+    uint bits;
+    FlagSet opBinary(string op)(FlagSet rhs) const @safe pure nothrow @nogc
+        if (op == &quot;|&quot; || op == &quot;&amp;&quot;)
+    {
+        static if (op == &quot;|&quot;) return FlagSet(bits | rhs.bits);
+        else return FlagSet(bits &amp; rhs.bits);
+    }
+}</code></pre>
+<h2>Follow the compile-time and runtime work</h2>
+<table><thead><tr><th scope="col">Stage</th><th scope="col">Input</th><th scope="col">Result</th></tr></thead><tbody><tr><td>Compile time</td><td>Operator spelling | or &amp;</td><td>Select a permitted specialization and its body</td></tr><tr><td>Runtime</td><td>Two FlagSet values</td><td>Calculate a union or intersection</td></tr><tr><td>Runtime</td><td>Raw external integer</td><td>Admit known bits before publishing a trusted value</td></tr><tr><td>Application policy</td><td>Caller identity and requested action</td><td>Decide whether a real operation is allowed</td></tr></tbody></table>
+<h2>Understand the attributes without overclaiming</h2>
+<p>const prevents this method from changing its receiver through this. @safe requests D’s checked memory-safety subset for the method. pure restricts the effects permitted by D’s purity rules; nothrow disallows throwing an Exception; @nogc disallows garbage-collector allocation in this method. These declarations describe this small operation. The complete demonstration uses writeln and an exception-throwing test helper, so the whole program is not claimed to be @nogc, nothrow or BetterC. Attributes do not prove business correctness or a speed advantage.</p>
+<h2>Reflection can check availability, not meaning</h2>
+<p>The three static assertions in the example ask different questions. hasMember finds a declaration named opBinary. compiles checks whether a specific expression can be compiled. Neither evaluates all future values or establishes that a union has the right mathematical behavior. Runtime examples still check the actual results and preservation rules.</p>
+<pre><code class="language-d">static assert(__traits(hasMember, FlagSet, &quot;opBinary&quot;));
+static assert(__traits(compiles, FlagSet(1) | FlagSet(2)));
+static assert(!__traits(compiles, FlagSet(1) + FlagSet(2)));</code></pre>
+<ol><li>The first check documents that the type exposes the operator hook.</li><li>The second checks that union syntax is available for these operands.</li><li>The third checks that the unsupported addition expression is rejected at compile time.</li><li>Run the ordinary checks as well: an implementation that returned zero for every union could still satisfy the first two reflection queries.</li></ol>
+<h2>Keep admission separate from convenient syntax</h2>
+<p>The public bits field allows arbitrary values, so the type name alone is not proof of validation. tryAdmitFlags accepts only bits inside mask 7. It returns false before changing its ref destination when raw contains another bit. ref is used deliberately: an out parameter would have different entry-initialization behavior and would not express the same preservation contract. A value of 8 is refused while the previous destination remains 2.</p>
+<pre><code class="language-d">bool tryAdmitFlags(uint raw, ref FlagSet destination) @safe pure nothrow @nogc
+{
+    if ((raw &amp; ~7u) != 0) return false;
+    destination = FlagSet(raw);
+    return true;
+}</code></pre>
+<h2>Why tests include a repeated member</h2>
+<p>Both addition and bitwise union give 5 for 1 and 4. That one example cannot distinguish them. With 1 and 1, addition gives 2 while union gives 1. Repeating a member should not introduce another label. The program also checks that its operands remain unchanged and that unknown raw input does not overwrite the caller’s prior result. These observations test a useful contract, rather than relying on a reflection result as a substitute for execution.</p>
+<h2>Compile and run when a D compiler is available</h2>
+<p>These commands use DMD from the earlier setup lesson. The source has not been compiled in the current mirror environment. Run each line separately in PowerShell and stop on an error. The -unittest option includes the unittest block; main also calls the exercise so its checks remain part of the ordinary run.</p>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary
+dmd -unittest -checkaction=context flag_operators.d -of=flag_operators.exe
+.\flag_operators.exe</code></pre>
+<h2>Expected output and diagnostics</h2>
+<pre><code class="language-text">Umicom D flags: union 5, intersection 1, repeated flag 1.
+Unknown input refused; reflection does not grant permission.</code></pre>
+<ol><li>If the rejected-addition static assertion fails, inspect which overload or implicit conversion unexpectedly made + available.</li><li>If the operator constraint rejects |, check that the template string is the operator spelling and the runtime parameter is a FlagSet.</li><li>If a runtime check fails, inspect the bit calculation and destination assignment order. A successful compile is not evidence that the operation is correct.</li><li>Keep side-effecting calls outside assert expressions. The example saves the result of tryAdmitFlags and then checks it with a helper that remains active.</li></ol>
+<h2>Use the idea around a native Framework service</h2>
+<p>A D application layer could use typed operators for local flags or units while calling a reviewed C interface with explicit fixed-width values. Framework remains the reusable C/Assembly implementation owner. A shared C validator should determine which options are legal and which combinations are supported. Compile-time reflection can help generate field catalogues or bindings, but generated declarations still need ABI and ownership tests. This exercise does not establish installed-SDK interoperability or give a caller permission to access a file, device or network.</p>
+<h2>Extend deliberately</h2>
+<ol><li>Add an exclusive-or operation only after writing down its meaning and tests. Repeating a flag with exclusive-or should remove it, unlike union.</li><li>Before adding comparison operators, decide whether your domain has a meaningful ordering. Two unrelated sets need not have a useful less-than relationship.</li><li>Keep expensive operations explicit. An innocent-looking operator should not unexpectedly download a model, allocate a large tensor or write a file.</li><li>Use reflection to find declarations and reject unsupported syntax, then test values and effects separately.</li></ol>
+<h2>Language reference</h2>
+<ul><li><a href="https://dlang.org/spec/operatoroverloading.html">D specification: operator overloading and binary operator templates</a></li><li><a href="https://dlang.org/spec/traits.html">D specification: compile-time traits</a></li></ul>
+<nav aria-label="Previous lesson"><a href="48-separate-rounding-from-checked-integer-conversion.html">Previous: Separate rounding from checked integer conversion</a></nav><nav aria-label="Continuing practice"><a href="50-follow-comment-and-string-boundaries.html">Next: Follow comment and string boundaries</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

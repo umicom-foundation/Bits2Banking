@@ -1,0 +1,137 @@
+<!--
+Umicom Bits2Banking
+File: content/lessons/05-ai/preparing-llm-training-data/18-train-selected-decoder-targets.md
+
+PURPOSE:
+Train selected decoder targets without hiding the prompt
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+![Umicom](../../../assets/branding/umicom-wordmark.svg)
+
+# Train selected decoder targets without hiding the prompt
+
+[Course contents](index.md)
+
+## What this lesson adds
+
+The earlier loss-mask exercise differentiated a small matrix of scores. Here the scores come from an actual, small Framework decoder. A decoder is a program with adjustable numerical parameters that predicts which token comes next. A token is an integer label for a piece of input; it is not necessarily one word. Our example uses made-up integer labels so that you can inspect every position without installing a tokenizer or downloading model weights. You will run forty updates, observe the objective and check that temporary graph storage returns to its starting size after each step.
+
+This is a learning model initialized from a seed, not a pretrained assistant. The exercise demonstrates selected-target training in native C. It does not fine-tune a downloaded LLM, create an adapter or prove that a trained model answers new questions correctly. Read the earlier tokenization, target alignment and mask lessons first. You need matching Framework source, CMake, Ninja, a C23 compiler and a terminal for the practical part; reading and tracing the data needs only paper.
+
+
+## 1. Read the two sequences
+
+A sequence is an ordered list of positions. The decoder configuration in decoder.c says contextLength is three, so six input IDs represent two independent sequences of three positions. Position numbers start at zero. A matrix stores rows and columns of values; our returned logits matrix has one row per input position and eight columns because the miniature vocabulary has eight possible IDs, zero through seven.
+
+~~~text
+Sequence A: input IDs    1  2  3
+            target IDs   2  3  4
+            selection    0  0  1
+
+Sequence B: input IDs    4  5  6
+            target IDs   5  6  7
+            selection    0  1  1
+~~~
+
+A target is the answer we want the prediction at that position to prefer. These targets are already shifted: when the input position contains 1, its target is 2. Conceptually the original first sequence was 1, 2, 3, 4; the final 4 supplies a target without being an input in that window. Do not shift these arrays again. In a real chat dataset, construct the token sequence using the selected model’s tokenizer and chat template, then derive input, target and mask arrays together. A mask attached to input roles without considering the shifted target can score the wrong token.
+
+
+## 2. Separate context from the objective
+
+A selection byte of one says that this prediction contributes a cross-entropy term to the objective. Zero excludes that term. Cross-entropy measures how much probability the model assigns to the expected target: confidently predicting the wrong target costs more. Our first sequence contributes one term, and the second contributes two. Add those three terms and divide by three. Do not average the two sequence averages equally, because that would give the single target in the first sequence twice the weight of each target in the second.
+
+An attention rule determines which input positions may influence a prediction. The decoder uses causal attention: a position can use itself and earlier input positions within its own sequence, but cannot use future positions. The selection mask does not replace that rule. In sequence A, the prediction of target 4 can use input IDs 1, 2 and 3 even though the earlier two objective terms are excluded. Therefore parameters used to represent prompt tokens can still change through their influence on the selected answer. Excluding a loss term is not freezing a parameter.
+
+
+## 3. Find the public contract before calling it
+
+Open Framework’s include/umicom/ai/training/decoder.h. EvaluateMasked calculates the mean without changing parameters or completed steps. TrainMaskedStep calculates the mean, propagates its gradient and attempts one SGD update. SGD means stochastic gradient descent: subtract a learning rate times a gradient from each adjustable value. A gradient measures how the objective changes when a parameter changes slightly. The learning rate controls the size of the update; it must be positive and finite.
+
+~~~c
+UmiStatus status = UmiAiTrainingDecoderTrainMaskedStep(
+    model, inputs, targets, 6U, selected, 6U, 0.05F, &loss);
+~~~
+
+The first 6U counts token positions, not bytes. The second 6U counts selection bytes. Each selection value must be exactly zero or one, and at least one position must be selected in the complete call. All input and target IDs must fit the vocabulary, including excluded targets. A null selection, mismatched length or all-zero selection is refused. The arrays remain owned by your program and must remain valid and unchanged until this synchronous function returns. The model owns its own tensors and graph; do not share it concurrently between callers.
+
+
+## 4. Open the complete teaching source
+
+1. Open Umicom-Bits2Banking/labs/framework/masked-language-loss/decoder.c in your editor. Keep main.c as the earlier score-matrix exercise.
+2. Find config. Its fields choose vocabulary size, context length, channel count, hidden width, attention heads and seed. Follow the named structure in decoder.h instead of guessing their order.
+3. Find the three arrays and copy their values into a paper table. Circle the three selected target positions.
+4. Find the loop bounded by forty. Read one iteration before reading the complete run: build predictions, score selected rows, update parameters, release temporary nodes, inspect memory.
+5. Find finish. Every route destroys the model, including an error before the first update. Destroy accepts the initially null model pointer, so cleanup has one visible owner.
+
+
+## 5. Configure a separate build directory
+
+A build directory stores compiler output without replacing the source files. Use your own checkout paths if they differ. The following Windows example assumes GCC and Ninja are already installed in the UCRT64 toolchain. Stop when a command reports an error; PowerShell does not automatically stop a sequence after a failed native command. This source-composed teaching lab reads the existing Framework checkout. It neither clones Framework nor installs an SDK.
+
+~~~powershell
+$env:Path = "C:\msys64\ucrt64\bin;C:\Program Files\CMake\bin;$env:Path"
+Set-Location "C:\umicom\Umicom-Bits2Banking\labs\framework\masked-language-loss"
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+& ".\build\umicom-masked-decoder.exe"
+~~~
+
+CMake should finish configuring and generating. The build produces both the original scalar-loss exercise and the decoder exercise. CTest should report two passing lesson checks for this configuration. The decoder prints three selected targets, forty completed SGD steps, before/after losses and graph byte counts. Treat these as expected behavior to verify on your machine, not proof that an unbuilt copy is already working. Different compiler and floating-point choices can change the last digits; the fixed fixture requires a finite final loss below its initial value.
+
+
+## 6. Interpret the two loss measurements
+
+TrainMaskedStep returns the loss from before that call’s update. After the fortieth update, the program calls EvaluateMasked again. That separate evaluation observes the new weights. Comparing the first evaluation to the final evaluation avoids accidentally describing the previous iteration’s loss as the final model’s loss. The model sees the same tiny records repeatedly, so improvement here mostly demonstrates fitting or memorization. It says nothing about a held-out conversation, factual reliability or privacy.
+
+Try predicting the effect of replacing selected with six ones. That objective includes every target. The library’s regression compares this full selection with the original TrainStep and Evaluate functions on identically initialized models. On the same build, their losses and serialized model bytes match. For a second experiment, change an excluded target to another valid ID while keeping inputs fixed. It should not alter the selected objective or update. Changing an input is different: even an input with an excluded own target can influence a later selected prediction.
+
+
+## 7. Observe ownership rather than guessing from RAM usage
+
+The model keeps its parameter tensors between calls. Intermediate embeddings, attention results, scores and loss nodes are temporary. After each training step, the tape rewinds to the parameter prefix. The example compares currentBytes and tensorCount with their baseline values. A high-water mark records the largest graph allocation observed and does not fall when temporary nodes are freed. A stable current graph size and a larger peak are compatible; they measure different things.
+
+These counters cover the training tape’s tracked allocations. They do not include all process memory, compiler memory, allocator bookkeeping, operating-system buffers or another application’s model. A successful counter check is useful evidence about this ownership boundary, not a universal leak detector. The memory budget is also a graph budget rather than a reservation of physical RAM. A host must still plan total memory and refuse workloads beyond its own limits.
+
+
+## 8. Read a failure without damaging the model
+
+An invalid mask is rejected before graph construction. A graph budget may instead refuse a later allocation after some temporary nodes exist; those nodes must still be released. In either case the model’s weights, completed-step count and caller’s loss variable remain unchanged. The focused test snapshots the complete portable checkpoint before the call and compares its bytes afterward. This checks state preservation directly instead of assuming an error code means nothing changed.
+
+1. If you see a missing header or undefined function, confirm that the Framework source and Bits2Banking lab contain matching versions of the decoder API. Rebuild after integrating both.
+2. If the selection is refused, check both lengths, all byte values and whether at least one byte is one. Check excluded target IDs too.
+3. If a budget refusal occurs, record the requested graph budget and observed baseline. Choose a smaller valid configuration or a reviewed higher budget; do not bypass host resource limits.
+4. If the loss is not finite or does not decrease for the unchanged fixture, keep the command, compiler identity and output. Do not relabel it a pass or change the check merely to conceal the result.
+
+
+## 9. Plan reproducible continuation
+
+A checkpoint encodes model configuration, learned parameter values and completed steps. It does not encode which targets were selected, which records were used, their order, tokenizer, chat template or learning-rate schedule. Save those decisions in a separate reviewed experiment record. To resume this tiny exercise exactly on the same arithmetic environment, restore the checkpoint and keep the same future input/target arrays, selection and learning rate. The regression compares original and restored models over further updates.
+
+Do not assume the existing accumulated-batch or AdamW functions accept this selection mask. This extension covers one ordinary SGD step and evaluation in the bounded decoder. A future masked accumulation implementation must weight each microbatch by its selected target count, including a clear policy for a microbatch with no selected rows. Merely averaging microbatch losses would generally change the objective.
+
+
+## Check your understanding
+
+1. Why is target 4 scored after input 3 in sequence A? Because the labels are shifted next-token targets, not copies of the current input.
+2. Does a zero selection hide input 1 from the selected prediction at the end? No. Causal context and loss selection are separate.
+3. Why divide the batch sum by three rather than two? Three prediction rows contribute; there are two sequences but their selected counts differ.
+4. Can you infer total RAM usage from currentBytes? No. It measures this tracked graph ownership boundary.
+5. Does forty-step loss reduction establish a useful assistant? No. It establishes the expected behavior of one tiny repeated fixture; independent evaluation is still needed.
+
+
+## Further reading
+
+- [Complete decoder teaching source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/masked-language-loss/decoder.c)
+- [Framework decoder public API](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/ai/training/decoder.h)
+
+[Previous: Follow data ownership during import](17-follow-data-ownership-during-import.md)
+
+[Next: Keep memory observations honest before training](19-keep-memory-observations-honest.md)

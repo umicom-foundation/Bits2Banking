@@ -1,0 +1,27 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/generative-ai-foundations/lessons/03-resizing-cropping-and-buckets.html
+
+PURPOSE:
+Resize and batch images without silently changing the task
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resize and batch images without silently changing the task | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Resize and batch images without silently changing the task</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A model often expects dimensions compatible with its architecture. Resizing changes resolution; cropping removes part of an image; padding adds a border. These operations produce different training examples. Aspect ratio is width divided by height, so forcing every picture into a square can distort shapes.</p>
+<ol><li>Record original dimensions and orientation.</li><li>Choose the model’s supported size and alignment rules. Do not assume every model accepts every multiple of eight.</li><li>Choose a documented policy: crop, pad or resize while preserving ratio. Preview the result next to the caption.</li><li>Group similar aspect ratios or sizes into buckets if the trainer supports them. A bucket is a collection with compatible shapes, not a replacement for source-group splitting.</li><li>Apply augmentation only to training data under a recorded policy. Keep evaluation preprocessing stable.</li></ol>
+<p>An augmentation intentionally changes an example, such as a crop or color adjustment. It is useful only when the task’s meaning remains valid. Flipping an image of written text or directional machinery can invalidate the caption. Cropping a person out of an image described as “a person beside a bicycle” breaks the pair.</p>
+<pre><code class="language-text">Original: width 1200, height 800, ratio 1.5
+Square crop: retains 800 × 800 before resizing; removes side content
+Padded square: adds space to reach a square canvas
+Stretched square: changes the shapes
+These are different datasets even when saved at 512 × 512.</code></pre>
+<h2>Check</h2>
+<p>Review a sample from every transformation path, including portrait, landscape and unusually small inputs. A decoder succeeding does not prove a crop preserved the target. Record rejected examples and do not present a transformed dataset’s row count as a count of independent original sources.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="02-caption-and-image-pairs.html">Previous: Prepare image-caption pairs with provenance</a> · <a href="04-noise-denoising-and-loss.html">Next: Understand a denoising objective before training</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

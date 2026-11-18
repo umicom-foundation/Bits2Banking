@@ -1,0 +1,146 @@
+<!--
+Umicom Bits2Banking
+File: content/lessons/05-ai/preparing-llm-training-data/19-keep-memory-observations-honest.md
+
+PURPOSE:
+Keep memory observations honest before training
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+![Umicom](../../../assets/branding/umicom-wordmark.svg)
+
+# Keep memory observations honest before training
+
+[Course contents](index.md)
+
+## What you will learn
+
+A training program can run out of memory even when its dataset file looks small. It may hold token arrays, model weights, gradients, optimizer state, temporary tensors and copies made during loading. Before deciding whether a job can run, separate four questions: what was measured, what is estimated, what policy admits the job, and what mechanism actually limits it. This lesson explains those distinctions and uses a small C example to reject invalid measurements without destroying the last accepted record.
+
+Read the earlier batch/memory and import-ownership lessons first. You need the existing Bits2Banking lab, matching Framework source, CMake, Ninja and a C23 compiler. The exercise uses invented measurements and starts no training job. Its purpose is to make the state and failure rules visible before connecting an expensive workload.
+
+
+## 1. Separate measurement from an estimate
+
+A measurement is an observation made by a particular instrument at a particular time. For example, a process monitor might report a process’s resident memory. An estimate predicts a future cost, such as the expected key/value cache for a chosen context length. Both can be useful, but they answer different questions. A model’s file size is not a measurement of its future resident or peak memory use.
+
+A memory budget is a chosen limit for a particular responsibility. An admission policy decides whether to accept new work using estimates, current observations and explicit uncertainty rules. Enforcement is the mechanism that actually restricts a process or allocation. A green comparison in a dashboard is not enforcement. Another program can allocate memory after a snapshot is taken, and a backend can exceed an inaccurate estimate.
+
+
+## 2. Name the unit and the measured scope
+
+A byte is a unit of storage. One MiB, pronounced mebibyte, is 1,048,576 bytes; one MB is 1,000,000 bytes. A report should name the unit instead of displaying an unexplained number. It should also name its scope: one process, a process tree, the whole host, one GPU or a logical training allocation. Adding values that already include each other can double-count memory.
+
+Resident memory, committed memory, virtual address space and device memory are different quantities. Resident memory describes pages currently in physical RAM under the platform’s accounting rules. Committed memory describes backing commitments under its rules. Virtual address space is a range of addresses, not necessarily resident bytes. GPU memory has its own allocator and accounting. Learn the meaning of the actual platform counter before comparing it with a limit.
+
+A shared-memory GPU may consume system RAM. Do not add that same shared capacity to host RAM and pretend the machine has more physical memory. Similarly, a memory-mapped model can have a large address range while only some pages are resident, and page residency can change during inference. A useful experiment records both the selected model/backend configuration and the measurement method.
+
+
+## 3. Represent an unknown observation explicitly
+
+A failed measurement is not zero usage. It is also not infinite capacity. Keep a status or known flag alongside a numeric field. NaN means “not a number” in floating-point arithmetic; infinity is another special floating-point value. They can arise from arithmetic or be supplied by a caller. A generic numeric field should not silently turn either into permission to start a large job.
+
+~~~text
+used = 512 MiB, limit = 1024 MiB   -> finite comparison can pass
+used = unknown                    -> obtain a valid observation or apply an explicit policy
+limit = infinity                  -> not a measured finite capacity
+used = NaN                        -> reject the numeric observation
+~~~
+
+The Framework budget comparison now requires finite, nonnegative used and limit values. It returns false for NaN, either infinity or a negative value. Zero is a real finite value and remains valid. A finite comparison still does not prove that the value is fresh, correctly measured or sufficient for peak usage. Those facts belong to other parts of the contract.
+
+
+## 4. Preserve the last accepted record on failure
+
+~~~c
+UmiStatus status = umi_performance_memory_budget_observe(
+    &report, 512.0, 128.0, 1U, 100U);
+if (status != UMI_STATUS_OK) {
+    /* Report the failure; do not claim this sample was accepted. */
+}
+~~~
+
+The memory-budget record stores inline identifiers, two scalar values, a count, a timestamp and a sequence. Inline means that the characters and fields live inside the record itself. In this example value means synthetic used MiB and auxiliary means a separate synthetic measurement. The service does not infer those units. The caller must define and document their meaning.
+
+Observe validates the record and both new scalar values before writing. If it refuses the update, every byte of the prior record remains unchanged. This lets a dashboard keep its last accepted sample while separately showing that the new capture failed. Keeping the previous number visible must not hide its age or imply that the failed capture succeeded.
+
+The scalar observation fields may contain signed finite measurements because some telemetry uses deltas. The separate within-budget comparison requires nonnegative usage and limits. Do not confuse a record’s ability to store a signed measurement with a policy that considers negative memory consumption meaningful.
+
+
+## 5. Understand why the sequence must not wrap
+
+The sequence is a 64-bit unsigned counter that advances after each accepted update. Readers can use it as one indication that the record changed. The largest value is UINT64_MAX. Adding one to that unsigned value wraps to zero in C, which would violate a promise of monotonic advancement. Monotonic means that the value does not move backward.
+
+The final transition from UINT64_MAX minus one to UINT64_MAX is valid. The next update returns a capacity-exceeded status before changing any field. The owner must then choose an explicit lifecycle action, such as creating a new record with a new identity. Silently resetting the sequence can make a new sample look like old state. The lab sets up this distant boundary directly so it can be tested without performing billions of updates.
+
+The timestamp remains caller-supplied evidence. These budget records do not impose a new timestamp-ordering rule or verify a clock. Use a consistent clock and define whether delayed samples are permitted in your application. A sequence is not a replacement for a timestamp, and a timestamp is not proof of freshness.
+
+
+## 6. Read and run the complete native example
+
+Open labs/framework/budget-observations/main.c. Locate the synthetic observation, the comparison with a finite limit, the deliberately invalid NaN update and the sequence boundary. The program copies the accepted record into a before value so that a byte comparison can verify unchanged state after refusal. This is a small test technique for this inline value type, not a general recipe for copying objects that own pointers or operating-system handles.
+
+~~~powershell
+Set-Location "C:\umicom\Umicom-Bits2Banking"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+cmake -S labs/framework/budget-observations -B build/budget-observations -G Ninja -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/budget-observations --parallel 2
+ctest --test-dir build/budget-observations --output-on-failure --no-tests=error
+~~~
+
+Run each line separately and stop on an error. The test should accept the 512 MiB observation against the 1024 MiB example limit, refuse infinity as a limit, retain the record after NaN input, and refuse an update after the final sequence. Add -V to the CTest command to see the messages. These are synthetic contract checks, not a measurement of your computer’s available RAM.
+
+The project links a small selection of actual Framework source. It does not validate an installed SDK package or compile the full applications. If the declaration and implementation disagree, check that both come from the matching checkout. If configuration points to the wrong source directory, use a new build directory rather than mixing cached settings from different source trees.
+
+
+## 7. Use integer bytes for exact planning
+
+A double-precision floating-point value cannot represent every sufficiently large integer exactly. A byte counter stored in a double can therefore lose unit precision. Keep exact requirements and checked additions in integer byte types when accounting matters, and convert deliberately for a human-readable display. Framework’s model memory requirements use uint64_t byte counts and checked arithmetic for this reason.
+
+UmiModelMemoryAssess combines declared weight, cache, workspace and runtime costs with a separate desktop-memory snapshot. It distinguishes incomplete requirements, unavailable observations, fixtures, stale observations, insufficient capacity and a declaration that fits the supplied budget. Its successful return means an assessment was produced; it is not permission to launch. The caller must inspect the verdict and respect the documented uncertainty.
+
+That assessment does not reserve memory, cap a child process or automatically change UmiModelSessionStart. Backend-specific resident weights and loading peaks must be measured or justified. Unknown costs stay unknown. A model with a smaller disk file can still require significant temporary memory, and a longer context or more simultaneous sequences can increase cache costs.
+
+
+## 8. Plan a useful real measurement
+
+1. Choose one model, one backend, one context limit and one operation. Record those choices before changing anything.
+2. Record the process identifier and whether the operation creates child processes. Measure the correct process scope.
+3. Record an idle baseline, loading peak, first request peak, repeated-request behavior and state after an explicit unload.
+4. Keep the measurement timestamp, unit, counter meaning and capture status with each sample. Preserve failed captures separately.
+5. Change one configuration value, such as context size, and repeat under comparable conditions. Avoid attributing a difference to the programming language without controlling the workload.
+6. If memory continues growing, retain logs and a minimal reproduction. Growth alone does not distinguish a cache, delayed release, fragmentation and a true leak.
+
+
+## 9. Apply the lesson to training data
+
+Preparing a dataset can allocate a raw file buffer, decoded text, parsed records, token IDs and a selected-output buffer at the same time. Count the maximum overlap of their lifetimes, not just their individual sizes. Reuse buffers only when ownership permits it, and release them through their documented owner. The earlier import lesson shows a real native example where transferring a validated file buffer avoids an unnecessary second payload copy.
+
+For training itself, include weights, gradients, optimizer state, activations and temporary work. For image and video models, decoded frames and batches can dominate memory before the network begins. A bounded implementation should reject an unaffordable request before constructing large temporary state where possible, then continue monitoring because estimates are imperfect. None of these practices follows automatically from choosing C or Assembly.
+
+
+## Practice and recovery
+
+1. Change the example finite limit from 1024 to 256 and predict the comparison result. Keep the observation unchanged.
+2. Use a separate capture-status variable in a practice application. Show the last valid sample and its age when capture fails.
+3. Explain why a zero count, an unknown count and a failed count conversion are three different states.
+4. Inspect the Framework regression tests for the memory, resource and performance budget owners. Find the cases for invalid identity strings and unchanged output.
+5. If the boundary example fails, keep the first failed assertion and source identity. Do not remove the refusal check merely to make the test green.
+
+
+## Further reading
+
+- [Complete observation exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/budget-observations/main.c)
+- [Build and recovery notes](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/framework/budget-observations/README.md)
+- [Framework memory-budget contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/observability/performance/memory_budget.h)
+- [Exact model-memory assessment contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/local_models/memory_plan.h)
+
+[Previous: Train selected decoder targets without hiding the prompt](18-train-selected-decoder-targets.md)
+
+[Next: Plan context capacity after fixed memory costs](20-plan-context-capacity-after-fixed-memory-costs.md)

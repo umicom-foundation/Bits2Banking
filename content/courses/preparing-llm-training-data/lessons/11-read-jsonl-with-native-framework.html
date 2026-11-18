@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/11-read-jsonl-with-native-framework.html
+
+PURPOSE:
+Validate training records with native Framework code
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Validate training records with native Framework code | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Validate training records with native Framework code</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A data reader is a gate between an editable file format and a program. In this lesson the gate accepts a small, documented JSON Lines schema. It checks structure and bounds; it cannot decide whether an answer is true, whether a source is licensed or whether examples will improve a model. Those remain separate review steps.</p>
+<h2>1. Read one complete example</h2>
+<pre><code class="language-json">{&quot;source_id&quot;:&quot;compiler-note&quot;,&quot;prompt&quot;:&quot;What does a compiler do?&quot;,&quot;completion&quot;:&quot;It translates source code into another executable form.&quot;}</code></pre>
+<p>The outer braces describe one object. The quoted names are keys. Each colon connects a key to its value. Commas separate fields. source_id records which original source produced this example; prompt is the model input; completion is the desired continuation. This teaching reader requires exactly these three string fields. It permits an empty prompt, but source_id and completion must contain at least one byte. A whitespace-only answer still requires human quality review.</p>
+<h2>2. Follow the memory ownership</h2>
+<pre><code class="language-c">UmiAiTrainingPair pair;
+UmiStatus status = UmiAiTrainingPairRead(
+    json, json_length, NULL, &amp;pair);
+if (status != UMI_STATUS_OK) {
+    /* Do not use pair: a failed read leaves it unchanged. */
+    return 1;
+}
+/* pair now owns copies of the three decoded strings. */</code></pre>
+<p>json_length is a byte count, excluding a C string terminator. &amp;pair passes the address of caller-owned storage. NULL means no cancellation token in this example. UmiStatus is an explicit result code. Test it before using output. The parser does not retain your input and does not return pointers into temporary JSON storage. If you use the multi-row visitor instead, each callback receives a borrowed pair that lasts only until that callback returns.</p>
+<h2>3. Build the provided consumer</h2>
+<ol><li>Obtain a matching installed Framework SDK containing jsonl_pairs.h and the corresponding AI library. Follow the earlier SDK setup course if you do not yet have a compiler, CMake or Ninja.</li><li>Open the Framework examples/training_data directory. Read main.c before running commands. Its two original records are embedded in the program; it does not inspect your folders.</li><li>Set UMICOM_SDK_ROOT to the actual installed prefix. Run the commands below separately, stopping on an error.</li><li>Expect two accepted records, then a separate demonstration that rejects line 2 after one accepted row. No model is trained.</li><li>Read the example README for toolchain compatibility and a missing-header or undefined-symbol recovery path. Installed package qualification is distinct from focused source tests.</li></ol>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DUMICOM_SDK_ROOT=C:/SDK/Umicom
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure</code></pre>
+<h2>4. Try a controlled failure</h2>
+<p>In a separate learning copy, change a completion value from a quoted string to the number 42. Predict which line will fail before compiling. After the rejection, check acceptedRows, consumedBytes, failedLine and stage. The callback for an earlier valid line has already run. A visitor cannot reverse arbitrary actions performed by your callback; collect a candidate dataset and approve it only after the complete scan succeeds if your workflow requires all-or-nothing publication.</p>
+<h2>5. Explain the limits</h2>
+<p>Blank lines, a byte-order mark, duplicate decoded keys, unknown fields, malformed Unicode and multiline objects are rejected. Escaped \n inside a string decodes to a newline within the value. A decoded newline does not create another record. None of these checks finds near-duplicate documents or replaces a tokenizer, chat template, train/evaluation split or training objective.</p>
+<h2>Check your understanding</h2>
+<ol><li>Explain why a valid JSON object can still fail this schema.</li><li>Explain why a byte count does not tell you how many model tokens are present.</li><li>Explain why related rows need the same source group before partitioning.</li><li>Name the owner of the input bytes, a single-read output pair and a visitor callback pair.</li><li>Describe how your application would avoid publishing the first row if the second row is invalid.</li></ol>
+<h2>Reader limits and their meaning</h2><table><thead><tr><th scope="col">Limit</th><th scope="col">Purpose</th></tr></thead><tbody><tr><td>4,096 decoded bytes per prompt or completion</td><td>Bounds output records; it is not a model context limit</td></tr><tr><td>128 source-ID bytes</td><td>Keeps provenance identifiers bounded</td></tr><tr><td>32,768 bytes per physical line</td><td>Bounds parsing work and owned JSON input</td></tr><tr><td>4,096 rows and 16 MiB per scan</td><td>Bounds one review operation; partition larger work deliberately</td></tr><tr><td>LF or CRLF records, optional final LF</td><td>Makes physical line numbers predictable</td></tr></tbody></table><p><a href="10-evaluate-and-publish-a-dataset.html">Previous: Evaluate changes and publish a reproducible dataset package</a></p><h2>6. Prepare a record in C</h2><p>The provided example also constructs a UmiAiTrainingPair and calls UmiAiTrainingPairWrite. This keeps JSON escaping in Framework. A newline inside an answer becomes an escape inside the string; a separate LF ends the physical record. The returned count includes that LF and excludes the terminating NUL. Buffer capacity includes NUL. If a later field is invalid or the output is too small, both the caller’s buffer and byte count remain unchanged.</p><p>Read the emitted record back with UmiAiTrainingPairRead and compare its decoded answer with the original. This round trip checks a representation contract, not model accuracy. Very long control-heavy text can exceed the serialized line limit because escaping increases its size. Split or revise the input deliberately; do not truncate an example silently.</p><nav aria-label="Continuing practice"><a href="12-count-bytes-rows-and-source-groups.html">Next: Count bytes, rows and source groups before tokenization</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

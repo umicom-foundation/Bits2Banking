@@ -1,0 +1,72 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/45-separate-local-static-storage-from-caller-ownership.html
+
+PURPOSE:
+Separate local static storage from caller ownership
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate local static storage from caller ownership | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate local static storage from caller ownership</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>A local name does not describe the whole lifetime</h2>
+<p>A function's local name can refer to fresh automatic storage or retained static storage. D adds another distinction: ordinary mutable static variables are thread-local by default. Thread-local means each thread has its own copy. This lesson uses one thread to trace the difference between a new counter on each call, a retained counter and explicitly supplied owner state. No filesystem persistence or background work is involved.</p>
+<h2>Read the small record and update</h2>
+<pre><code class="language-d">struct Counter { uint value; }
+
+bool nextOwned(ref Counter state, ref uint outputValue) @safe nothrow @nogc
+{
+    if (state.value &gt;= 3) return false;
+    uint candidate = state.value + 1;
+    state.value = candidate;
+    outputValue = candidate;
+    return true;
+}</code></pre>
+<h2>Understand the declaration</h2>
+<table><thead><tr><th scope="col">Spelling</th><th scope="col">Meaning here</th></tr></thead><tbody><tr><td>struct Counter</td><td>A value record with one uint field.</td></tr><tr><td>uint</td><td>A 32-bit unsigned integer in D.</td></tr><tr><td>ref</td><td>Refer to an existing caller variable instead of receiving an independent value copy.</td></tr><tr><td>bool</td><td>Return true for an admitted update or false for a refusal.</td></tr><tr><td>@safe</td><td>Ask D's compiler to enforce its safe-language restrictions within this function.</td></tr><tr><td>nothrow</td><td>The function cannot propagate an ordinary D Exception; this is not a guarantee against every possible failure.</td></tr><tr><td>@nogc</td><td>The function cannot perform D garbage-collector allocation. This alone is not a claim of zero memory use or an application-wide no-allocation policy.</td></tr></tbody></table>
+<h2>Why the output parameter uses ref</h2>
+<p>An out parameter is initialized on entry. That would not match this exercise's requirement to preserve a caller's sentinel when admission fails. ref lets the caller retain the prior value unless the function performs an assignment. The source checks the small cap before adding or writing either output. D's function attributes do not replace this business rule. A memory-safe function can still implement the wrong policy.</p>
+<h2>Fresh automatic state</h2>
+<pre><code class="language-d">bool nextAutomatic(ref uint outputValue) @safe nothrow @nogc
+{
+    Counter state;
+    return nextOwned(state, outputValue);
+}</code></pre>
+<h2>Trace two calls</h2>
+<p>Counter's uint field receives its default zero initialization. Each invocation creates a fresh automatic state. nextOwned increments that call's value to one. After the function returns, that automatic counter is no longer available. A second call starts another zero-valued counter. The caller therefore sees 1, 1. You must not return a reference to this automatic local and expect it to remain alive.</p>
+<h2>Retained state in the current thread</h2>
+<pre><code class="language-d">bool nextHidden(ref uint outputValue) @safe nothrow @nogc
+{
+    static Counter state;
+    return nextOwned(state, outputValue);
+}</code></pre>
+<h2>Trace the retained value</h2>
+<p>The local name state remains hidden outside the function, but its storage persists between calls on this thread. The first call sees zero and returns one; the second sees one and returns two. Two different callers on the same thread still reach that same retained state. A new thread normally has its own mutable static instance. Do not assume D's default is identical to a C static local, and do not bypass ownership by adding __gshared merely to make code compile. Shared mutation needs its own synchronization design.</p>
+<h2>Explicit ownership makes independent state visible</h2>
+<table><thead><tr><th scope="col">Call</th><th scope="col">Left owner</th><th scope="col">Right owner</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>Create both</td><td>0</td><td>0</td><td>Two independent Counter values.</td></tr><tr><td>nextOwned(left, a)</td><td>1</td><td>0</td><td>Only left advances.</td></tr><tr><td>nextOwned(right, b)</td><td>1</td><td>1</td><td>Right begins its own sequence.</td></tr><tr><td>nextOwned(left, a)</td><td>2</td><td>1</td><td>Left resumes from its retained caller-owned value.</td></tr><tr><td>Advance left to cap</td><td>3</td><td>1</td><td>The small teaching limit is now reached.</td></tr><tr><td>Try left with output 99</td><td>3</td><td>1</td><td>False; output remains 99.</td></tr></tbody></table>
+<h2>Build and run the complete program</h2>
+<ol><li>Open labs/languages/native-language-boundary and inspect local_storage.d. It contains the record, all three functions, owner checks, a unittest block and main.</li><li>Confirm the selected compiler with Get-Command dmd and dmd --version. Follow the setup lesson if it is not installed.</li><li>Use the commands below. The active example uses an ordinary require function that throws on a false condition; its operations and checks remain active even if assertions are disabled. The initial assertion-based variant is retained in a disabled version block for review.</li><li>The unittest checks explicit owner state. main demonstrates the automatic and retained counters once, then checks explicit owners again.</li><li>Run the executable a second time. Each execution starts a new process and reproduces the same output. A static variable is not a saved database value.</li></ol>
+<h2>Commands and expected output</h2>
+<pre><code class="language-powershell">dmd -unittest -g -of=local_storage-d.exe local_storage.d
+.\local_storage-d.exe</code></pre>
+<pre><code class="language-text">Automatic calls: 1, 1
+Static calls: 1, 2
+Owned counters: left 3, right 1; refusal preserved 99</code></pre>
+<h2>Do not hide application identity in a function</h2>
+<p>Imagine two open Studio documents asking a helper for their next progress number. A hidden static counter on the UI thread can mix their sequences even if the variable name is local and its access is memory-safe. Passing a document-owned record makes the identity explicit. The same reasoning applies to Media job progress, Trader connection state and reusable SDK clients. Framework already provides shared native ownership services; a language lesson does not authorize duplicating those services in each application.</p>
+<h2>Reflection can describe declarations, not prove lifecycle intent</h2>
+<p>Earlier lessons inspected fields and attributes at compile time. Such information can help generate checks or describe an API, but it does not decide which window, request or document should own a mutable value. A reflected type name is not a lifetime plan. Review the actual storage declaration, caller identity and synchronization contract. This example deliberately uses plain C-compatible numeric state instead of suggesting that reflection automatically fixes state sharing.</p>
+<h2>Separate this lesson from concurrency</h2>
+<p>This program starts no threads. The C and FreeBASIC companion programs also run in one thread. Their matching single-thread outputs do not prove identical thread behavior. C's ordinary static local is shared across threads, while D's mutable static is thread-local by default. Thread-local state can still couple callers within one thread; it also cannot replace synchronization for an explicitly shared object. Keep thread lifetime and shared access as separate exercises.</p>
+<h2>Exercises</h2>
+<ol><li>Add a third retained call in main and predict output three. Set an output to 99 and try a fourth: expect false and unchanged 99.</li><li>Interleave updates to three explicit Counter objects. Draw one row per call and track each owner's value.</li><li>Explain why changing ref outputValue to out would violate the refusal-preserves-output requirement.</li><li>Explain why @safe and @nogc do not prove that two documents have independent counters.</li><li>Point to the difference between scope, storage lifetime and process persistence in each of the three functions.</li></ol>
+<h2>Qualification</h2>
+<p>The complete D source is an authored teaching example until run with the selected D compiler. Its C comparison is a separately built native program and cannot establish a D compiler or runtime result. The laboratory README explains the optional C CMake target and the other language commands. An installed Framework package, multithreaded integration and product UI behavior require their own checks.</p>
+<h2>Further reading</h2>
+<ul><li><a href="https://dlang.org/spec/attribute.html">D attributes and static storage</a></li><li><a href="https://dlang.org/spec/declaration.html">D declaration storage classes</a></li><li><a href="https://tour.dlang.org/tour/en/multithreading/thread-local-storage">D thread-local storage tour</a></li><li><a href="https://dlang.org/spec/function.html">D function attributes and parameter rules</a></li></ul>
+<nav aria-label="Previous lesson"><a href="44-distinguish-conditional-selection-from-argument-evaluation.html">Previous: Distinguish conditional selection from argument evaluation</a></nav><nav aria-label="Continuing practice"><a href="46-separate-runtime-dispatch-from-type-reflection.html">Next: Separate runtime dispatch from type reflection</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

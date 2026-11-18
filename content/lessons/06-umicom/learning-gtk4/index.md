@@ -51,3 +51,12 @@ Follow a small window from control identity to logical discovery, explicit navig
 1. [Keep callback state alive for the right lifetime](18-keep-callback-state-alive.md)
 1. [Test control discovery at its boundaries](19-test-control-lookup-boundaries.md)
 1. [Diagnose a button journey from click to result](20-diagnose-a-button-journey.md)
+
+## Interactive native development
+
+1. [Choose an interactive development tool](21-choose-an-interactive-development-tool.md)
+1. [Build a small Framework preview lab](22-build-a-small-framework-preview-lab.md)
+1. [Separate layout refresh from C rebuilds](23-separate-layout-refresh-from-c-rebuilds.md)
+1. [Preserve edits during a preview build](24-preserve-edits-during-a-preview-build.md)
+1. [Diagnose an unexpected full rebuild](25-diagnose-an-unexpected-full-rebuild.md)
+1. [Qualify a current interactive preview](26-qualify-a-current-interactive-preview.md)

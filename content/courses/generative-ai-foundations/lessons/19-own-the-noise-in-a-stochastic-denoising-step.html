@@ -1,0 +1,65 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/generative-ai-foundations/lessons/19-own-the-noise-in-a-stochastic-denoising-step.html
+
+PURPOSE:
+Own the noise in a stochastic denoising step
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own the noise in a stochastic denoising step | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Own the noise in a stochastic denoising step</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Training and sampling answer different questions</h2>
+<p>Training changes model parameters using examples and an objective. Sampling uses a model to construct a new result. Earlier lessons introduced noisy inputs, predicted noise and a deterministic reverse step. This lesson adds optional fresh noise to one reverse step. It does not update parameters or train a network. You will run a four-value arithmetic exercise, inspect every input, and learn which parts of a larger image or video pipeline still belong to the caller.</p>
+<h2>Give each kind of noise a name</h2>
+<p>The word noise can refer to different arrays. The current noisy sample is the state being processed. Predicted noise is the epsilon estimate produced by a compatible model for that state and timestep. Step noise is an additional newly drawn random array used by the stochastic transition. Confusing predicted noise with fresh step noise changes the algorithm. Reusing an earlier step-noise array at every transition also changes the intended statistical process.</p>
+<table><thead><tr><th scope="col">Value</th><th scope="col">Who supplies it?</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>noisy</td><td>Caller’s current sampler state</td><td>Current image-like or latent scalar array</td></tr><tr><td>predictedNoise</td><td>Compatible model, or known teaching fixture</td><td>Epsilon prediction for this state and timestep</td></tr><tr><td>stepNoise</td><td>Caller’s random generator</td><td>Fresh independent unit-normal values for this transition</td></tr><tr><td>currentAlphaBar and previousAlphaBar</td><td>Reviewed model schedule</td><td>Cumulative signal coefficients, not timestep indices</td></tr><tr><td>eta</td><td>Caller’s sampling policy</td><td>Stochasticity coefficient restricted here to zero through one</td></tr></tbody></table>
+<h2>Recall the clean estimate</h2>
+<p>Let a be the current cumulative alpha and p the previous cumulative alpha. Moving backwards in the noising schedule means moving to at least as much clean signal, so 0 &lt; a &lt;= p &lt;= 1. If x is the current noisy value and e is the predicted epsilon, the clean estimate is (x - sqrt(1-a)*e)/sqrt(a). The square-root symbol means the nonnegative number whose square is the value inside it. The estimate can be wrong because the prediction can be wrong. Successful arithmetic does not prove a high-quality generated image.</p>
+<h2>Add a controlled random contribution</h2>
+<p>The DDIM family gives each step a noise scale sigma. This implementation uses sigma = eta * sqrt((1-p)/(1-a) * (1-a/p)). The new value is sqrt(p)*cleanEstimate + sqrt(1-p-sigma*sigma)*e + sigma*z, where z is the fresh unit-normal step noise. Unit-normal means mean zero and variance one. The noise generator’s earlier lesson explains these statistical terms. The formula is a model-specific sampling relation; it is not a universal rule for every system that describes its output as a velocity, flow or noise prediction.</p>
+<pre><code class="language-text">clean estimate      = (x - sqrt(1-a) * e) / sqrt(a)
+new signal          = sqrt(p) * clean estimate
+remaining direction = sqrt(1-p-sigma*sigma) * e
+fresh contribution  = sigma * z
+previous value      = new signal + remaining direction + fresh contribution</code></pre>
+<h2>Work out a simple coefficient example</h2>
+<p>Take a = 0.25 and p = 0.5. Then sigma squared is eta squared divided by three. The remaining direction coefficient is sqrt(0.5 - eta squared/3). Increasing eta allocates more of that transition’s residual variance to fresh noise. It does not mean adding noise without also changing the other coefficient. These are coefficients, not image quality scores.</p>
+<table><thead><tr><th scope="col">eta</th><th scope="col">sigma, approximately</th><th scope="col">Direction coefficient, approximately</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0.707107</td></tr><tr><td>0.5</td><td>0.288675</td><td>0.645497</td></tr><tr><td>1</td><td>0.577350</td><td>0.408248</td></tr></tbody></table>
+<h2>Inspect the native service contract</h2>
+<p>Open include/umicom/ai/training/denoising.h in the Framework checkout and find UmiAiDenoisingStochasticStep. It takes three input arrays, an element count, the two coefficients, eta, an output array and its capacity. Counts are numbers of floats, not bytes. The arrays must be valid for the declared lengths. Output must not overlap any input. The inputs must stay unchanged while the function is running. The service performs no allocation, random sampling, model execution, file access or image decoding.</p>
+<pre><code class="language-c">UmiStatus status = UmiAiDenoisingStochasticStep(
+    noisy, prediction, noise, 4,
+    0.25F, 0.5F, 0.75F, sampled, 4);
+if (status != UMI_STATUS_OK) {
+    return 1;
+}</code></pre>
+<h2>Recognize the special endpoints</h2>
+<p>At eta zero, the stochastic service delegates to the existing deterministic service. If the two alpha values are equal, it is an identity step and preserves the current values, including signed zero. At previous alpha one, no residual noise remains and the step becomes clean-estimate recovery. All supplied step-noise elements must still be finite at these endpoints. A NaN is a floating-point value representing an invalid numerical result; infinity is also refused. A disabled contribution is not permission to pass an invalid input buffer.</p>
+<h2>Build the small exercise</h2>
+<p>Use the existing denoising-objective lab in Bits2Banking. It compiles selected canonical Framework source into a small learning program. This avoids building every application, but it does not qualify the installed SDK package. You need a C23 compiler, CMake, Ninja and the primary Framework checkout. Follow the repository setup lesson if these terms are new. Run the commands one at a time and stop on any reported error.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S labs/framework/denoising-objective -B build/denoising-objective -G Ninja -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/denoising-objective --target umicom-stochastic-step --parallel 2
+ctest --test-dir build/denoising-objective -R &quot;lesson.denoising.stochastic-step&quot; --output-on-failure --no-tests=error</code></pre>
+<h2>Read the program in order</h2>
+<ol><li>Open stochastic_step.c. Locate four clean values and a known four-value prediction. These are a constructed example, not a learned network.</li><li>UmiAiDenoisingMix creates the current noisy values at alpha 0.25. This gives the exercise a known starting point.</li><li>Seed the existing Framework random state with 42, then draw four normal values. The next draw advances the same state and supplies another group.</li><li>Reset the seed to 42 and draw again. The first group is reproduced on this build. The example verifies replay before using the arrays.</li><li>Run the stochastic step at eta 0.75 twice with the replayed inputs and compare the result bytes. Then run eta zero and compare it with the existing deterministic function.</li><li>Finally replace the last noise value with NaN. Check that the operation is refused and the earlier output remains unchanged.</li></ol>
+<h2>Understand what replay does and does not promise</h2>
+<p>A seed initializes pseudorandom state. Repeating the same sequence of operations with the same initial state on the same supported build reproduces this exercise. Starting the generator once and continuing to draw is different from resetting it before every transition. A production sampler needs a deliberate stream policy and enough state to resume at the correct point. Normal generation uses floating-point mathematics, so do not promise identical bit patterns across arbitrary processors, libraries and compiler settings. Save the model identity, coefficients, prediction convention, random-state policy and relevant environment alongside a reproducible run.</p>
+<h2>Explain the expected result</h2>
+<p>The program prints four arrays: current noisy values, fresh step noise, output at eta 0.75 and output at eta zero. It then reports that repeated supplied noise reproduced the output on this build. The last message confirms that nonfinite noise was refused without changing the previous output. The numerical arrays are observations, not evidence of a trained image model. Four values are too few to assess a random distribution, image realism or video motion. Use the separate larger normal-noise statistics lab for its limited distribution checks.</p>
+<h2>Keep memory use bounded</h2>
+<p>The Framework function checks every candidate result before publishing any output. It computes scalar intermediates in double precision, then repeats the bounded arithmetic to write floats. This costs a second pass but avoids allocating a full extra clean-estimate tensor. It refuses an element count above 16,384, insufficient capacity, invalid coefficients, nonfinite input or an output outside finite float range. This bound describes this service, not the memory requirement of a complete model. Model weights, attention buffers, image decoders, latents and video frames still need their own budgets.</p>
+<h2>Know what a complete sampler still needs</h2>
+<p>A real model must be evaluated again for each current state and timestep. It must use the expected epsilon convention, compatible latent scaling and reviewed schedule. The caller owns conditioning, guidance, fresh random draws and any checkpoint/resume policy. An image decoder converts model output to pixels only under its own trained contract. Video also requires compatible temporal behavior; independently applying this scalar transition to unrelated frames does not create motion coherence. Never keep the fixture’s prediction constant in a real sampler merely because this example does.</p>
+<h2>Practice and review</h2>
+<ol><li>For eta zero, explain why changing a finite step-noise array cannot change the output. Its coefficient is zero and the deterministic implementation is reused.</li><li>For a = p, explain why the current sample is preserved. There is no movement along the schedule.</li><li>For p = 1, identify the terms that disappear. Residual noise has zero coefficient, leaving the clean estimate.</li><li>Describe the difference between training loss, model prediction and a sampling transition. They are separate stages with different evidence.</li><li>Before adapting this to a model, write down its prediction parameterization and schedule. A matching array size alone is insufficient.</li></ol>
+<h2>Read the original mathematical source</h2>
+<ul><li><a href="https://arxiv.org/abs/2010.02502">Denoising Diffusion Implicit Models — Jiaming Song, Chenlin Meng and Stefano Ermon</a></li></ul>
+<nav aria-label="Previous lesson"><a href="18-weight-a-training-objective-deliberately.html">Previous: Weight a training objective deliberately</a></nav><nav aria-label="Continuing practice"><a href="20-read-pixels-as-an-explicit-tensor.html">Next: Read pixels as an explicit tensor</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

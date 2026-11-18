@@ -1,0 +1,84 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/36-own-worker-threads-and-protect-shared-state.html
+
+PURPOSE:
+Own worker threads and protect shared state
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own worker threads and protect shared state | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Own worker threads and protect shared state</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Why a second worker changes the problem</h2>
+<p>Until now most examples have followed one sequence of instructions. A thread is another sequence running inside the same process. Threads can share the process's memory, which makes communication convenient and also creates new responsibilities. This lesson uses two finite workers that increment one counter. The purpose is to learn ownership and synchronization, not to make counting faster. A one-thread loop is likely simpler and cheaper for this tiny workload.</p>
+<ol><li>Read the earlier pointer-lifetime and procedure lessons before passing an address to a worker.</li><li>Use a supported FreeBASIC Windows or Linux installation in its normal fb dialect; this exercise is not a DOS or QuickBASIC example.</li><li>Open the complete thread_counter.bas file. Keep the original and experiment in a separate practice copy.</li></ol>
+<h2>Concurrency and parallelism are different</h2>
+<p>Concurrency means that multiple activities can be in progress during the same period. Parallelism means that work actually executes simultaneously on different processing resources. A single-core system can interleave two threads without executing them at exactly the same instant. Do not infer ordering from the order in which workers are started. A scheduler decides when each runnable worker receives execution time.</p>
+<h2>An increment contains several conceptual steps</h2>
+<p>Think of completed += 1 as reading the old value, calculating the next value and writing it back. Without a synchronization rule, two workers can interfere with one another's accesses. The following sketch is a teaching model of a lost update, not a guarantee of what an actual data race will produce. Unsynchronized access is a defect even if one run happens to print the expected number.</p>
+<pre><code class="language-text">Worker A reads 10
+Worker B reads 10
+Worker A calculates 11 and writes it
+Worker B calculates 11 and writes it
+Two intended increments produced only one visible increase.</code></pre>
+<h2>Use a mutex to define the critical section</h2>
+<p>A mutex is a mutual-exclusion lock. All participants use the same lock around accesses that must not overlap. In this example the critical section contains the counter update. Work outside it can proceed independently. Merely creating a mutex does not protect anything: every competing access must follow the protocol.</p>
+<pre><code class="language-basic">MutexLock(state-&gt;gate)
+state-&gt;completed += 1
+MutexUnlock(state-&gt;gate)</code></pre>
+<h2>Separate the record from its runtime handles</h2>
+<p>CounterState contains a mutex handle and a ULong counter. A handle is a value used to refer to a runtime resource; it is not the resource's portable serialized form. The main code owns the record and controls cleanup. Worker procedures borrow its address. They do not allocate or destroy the record or mutex.</p>
+<pre><code class="language-basic">Type CounterState
+    gate As Any Ptr
+    completed As ULong
+End Type</code></pre>
+<h2>Understand the worker parameter</h2>
+<p>CountWorker receives ByVal raw As Any Ptr. ByVal copies the pointer value, not the pointed-to record. CPtr expresses the expected CounterState pointer type. That conversion is justified here because the caller passes @state, the address of a live CounterState. The cast would not make an arbitrary or expired address safe. The record must remain alive until both workers finish.</p>
+<pre><code class="language-basic">Sub CountWorker(ByVal raw As Any Ptr)
+    Dim state As CounterState Ptr = CPtr(CounterState Ptr, raw)
+    For stepIndex As ULong = 1 To Iterations
+        MutexLock(state-&gt;gate)
+        state-&gt;completed += 1
+        MutexUnlock(state-&gt;gate)
+    Next
+End Sub</code></pre>
+<h2>Create resources in a deliberate order</h2>
+<p>Initialize the count and create the mutex before starting any worker. Check the returned mutex handle before using it. Then request each worker with ThreadCreate and retain every successful handle. A worker can begin promptly, so all of the context it needs must already be ready.</p>
+<table><thead><tr><th scope="col">Order</th><th scope="col">Owned item</th><th scope="col">Required state</th></tr></thead><tbody><tr><td>1</td><td>Counter record</td><td>completed is initialized</td></tr><tr><td>2</td><td>Mutex</td><td>A nonzero handle is available</td></tr><tr><td>3</td><td>First worker</td><td>Context and lock remain live</td></tr><tr><td>4</td><td>Second worker</td><td>The same lifetime and locking rules apply</td></tr><tr><td>5</td><td>Completion</td><td>Every successful worker is joined</td></tr><tr><td>6</td><td>Cleanup</td><td>Destroy the mutex after all workers finish</td></tr></tbody></table>
+<h2>Inspect partial-start failure</h2>
+<p>The first worker may start successfully while the second creation fails. Failure does not erase ownership of the first handle or stop that worker. The example joins all earlier successful workers before destroying the mutex and returning an error. Because each worker has a fixed finite loop, the owner knows what must complete. General long-running jobs need their own cancellation and completion protocol; a pointer becoming inaccessible is not a cancellation signal.</p>
+<h2>Join before destroying borrowed context</h2>
+<p>ThreadWait waits for the specified worker to finish and releases its handle. It is not a request to forcibly stop the worker. Call it for each successfully created worker. In the successful path, both waits happen before the final snapshot and mutex destruction. The example never waits while holding the mutex, because a worker might need that same mutex to finish.</p>
+<h2>Picture a lifetime rather than a race</h2>
+<p>The main owner's lifetime encloses both worker lifetimes. The order of the two workers' individual increments can vary without changing the final contract. A valid design permits scheduling variation while preserving ownership and the protected result.</p>
+<pre><code class="language-text">main:   initialize ---- start A ---- start B ---- wait A ---- wait B ---- destroy lock
+worker A:                 [ finite protected updates ]
+worker B:                              [ finite protected updates ]
+record and mutex: [---------------- live for every worker access ----------------]</code></pre>
+<h2>Read the complete resource vocabulary</h2>
+<p>Some names are language keywords and others are runtime procedures. Learning that distinction helps you find the correct reference and understand which operations depend on platform support.</p>
+<table><thead><tr><th scope="col">Name</th><th scope="col">Role in this exercise</th></tr></thead><tbody><tr><td>Type / End Type</td><td>Declare the record's field layout</td></tr><tr><td>Any Ptr / CPtr / @</td><td>Represent, type and obtain a borrowed address</td></tr><tr><td>Sub / ByVal</td><td>Declare the worker's pointer-parameter procedure</td></tr><tr><td>For / Next</td><td>Bound each worker to 10,000 updates</td></tr><tr><td>MutexCreate / MutexDestroy</td><td>Acquire and release the synchronization resource</td></tr><tr><td>MutexLock / MutexUnlock</td><td>Enter and leave the shared-data protocol</td></tr><tr><td>ThreadCreate / ThreadWait</td><td>Start a worker and wait for its completion</td></tr><tr><td>If / Then / End If</td><td>Handle failed admission and incorrect final results</td></tr><tr><td>End 0 / End 1</td><td>Report successful or failed program completion</td></tr></tbody></table>
+<h2>Compile the example with runtime checks</h2>
+<p>Use the prepared compiler and run commands separately. The multithreaded runtime option is explicit, and -exx retains learning-time checks. Stop if compilation fails; a previously built executable is not evidence that the current source compiled.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -lang fb -mt -w all -exx thread_counter.bas -x thread_counter_basic.exe
+&amp; .\thread_counter_basic.exe
+$LASTEXITCODE</code></pre>
+<h2>Interpret the result honestly</h2>
+<p>A successful run reports 20,000 completed increments, confirms that both workers were joined, and exits with zero. BASIC numeric Print formatting can include spaces. The explicit comparison checks the number rather than the visual spacing. In the current mirror work this source is authored and reviewed but has not been compiled or executed with FreeBASIC; website link and packaging checks do not establish its runtime behavior.</p>
+<h2>Avoid using delay as synchronization</h2>
+<p>A sleep or a long calculation does not prove that another worker finished. Faster hardware, different scheduling or an earlier failure can invalidate a guessed delay. Joining states the required event directly. Likewise, a volatile-style declaration does not replace a mutex or an atomic update protocol. Correctness must not depend on the machine being slow enough to hide a race.</p>
+<h2>Watch the size of a critical section</h2>
+<p>Keep the protected operation small and avoid unrelated I/O while holding the lock. A slow operation inside the lock prevents other participants from making progress. For this exercise, acquiring the lock for each increment is deliberately easy to reason about; it is not a high-performance counter design. A real batch processor might accumulate private worker results and combine them after joining, reducing shared-state contention.</p>
+<h2>Transfer the lesson to Umicom applications</h2>
+<p>Model downloads, image preparation and build jobs can run in background workers, but their progress objects and callbacks still need clear owners. A window closing must not leave a worker dereferencing its destroyed controls. Reusable job and synchronization behavior belongs in Framework; a BASIC experiment should call a reviewed native boundary when integrating with a product. This example does not add a second application thread scheduler or permit GUI calls from arbitrary workers.</p>
+<h2>Practice without introducing uncontrolled races</h2>
+<ol><li>Change Iterations to 3 and predict six final increments. The order of individual updates remains unspecified.</li><li>Trace the second-worker failure path on paper: identify the first handle, its join, the mutex destruction and the final error.</li><li>Explain why moving MutexDestroy before ThreadWait violates the worker's borrowed-resource lifetime.</li><li>Design a private-counter alternative: give each worker its own record, join both, then add the results in the owner. Explain why this removes the shared increment.</li><li>Do not demonstrate a race by removing protection in production code. Keep invalid variants as written reasoning exercises unless using a dedicated reviewed diagnostic environment.</li></ol>
+<h2>Official API references</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgThreadCreate">FreeBASIC ThreadCreate</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgThreadWait">FreeBASIC ThreadWait</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgMutexCreate">FreeBASIC MutexCreate</a></li></ul>
+<nav aria-label="Previous lesson"><a href="35-measure-records-before-sharing-their-bytes.html">Previous: Measure records before sharing their bytes</a></nav><nav aria-label="Continuing practice"><a href="37-select-a-union-value-with-an-explicit-tag.html">Next: Select a union value with an explicit tag</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

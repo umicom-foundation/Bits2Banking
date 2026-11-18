@@ -1,0 +1,79 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/88-parse-an-empty-statement-without-emitting-code.html
+
+PURPOSE:
+Parse an empty statement without emitting code
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parse an empty statement without emitting code | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Parse an empty statement without emitting code</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Start with a semicolon</h2>
+<p>A statement is one instruction in the source language’s grammar. That does not mean it always becomes a machine or virtual-machine instruction. In C, a semicolon on its own is an empty statement: it asks the program to do nothing. This lesson follows that small language feature through the lexer, parser, bytecode and runtime. You will see why accepting more source syntax does not always require enlarging the virtual machine. Umicom C remains a deliberately bounded C-shaped language; it is not a complete implementation of C23.</p>
+<h2>Separate characters, tokens and instructions</h2>
+<p>Source text is a sequence of characters. A lexer groups those characters into tokens, such as an integer, a brace or a semicolon. A parser checks whether tokens appear in an allowed order. The compiler then emits instructions for operations that must happen when the program runs. Bytecode is the saved representation of those instructions. The virtual machine reads bytecode instructions, not the original semicolons. Keeping these stages separate helps us choose the correct place for a feature.</p>
+<table><thead><tr><th scope="col">Stage</th><th scope="col">Input</th><th scope="col">What happens to a standalone semicolon?</th></tr></thead><tbody><tr><td>Lexer</td><td>Source characters</td><td>Produces a SEMICOLON token</td></tr><tr><td>Parser</td><td>Tokens</td><td>Consumes an allowed empty statement</td></tr><tr><td>Emitter</td><td>Accepted operations</td><td>Emits no instruction for the empty statement</td></tr><tr><td>Runtime</td><td>Validated instructions</td><td>Has no empty-statement operation to execute</td></tr></tbody></table>
+<h2>Read the smallest useful example</h2>
+<p>main names the program’s entry function in this subset. int declares its integer result. void says that this form takes no parameters. The braces enclose the body. return supplies the final value. The star means multiplication. Each standalone semicolon is an empty statement. The semicolon immediately following 7 is instead the delimiter required by return.</p>
+<pre><code class="language-c">int main(void) {
+    ;
+    { ;; }
+    return 6 * 7;
+    ;;
+}</code></pre>
+<h2>Predict the result before using a tool</h2>
+<p>Six multiplied by seven is forty-two. The compiler needs to push 6, push 7, multiply the two values and return the result. It therefore emits four instructions. The empty braces establish a lexical scope but contain no values or operations. The extra semicolons require no local slots and no runtime instruction. A lexical scope controls which source names are visible; it is not automatically a separately allocated object.</p>
+<table><thead><tr><th scope="col">Instruction</th><th scope="col">Operand stack after success</th></tr></thead><tbody><tr><td>PUSH 6</td><td>6</td></tr><tr><td>PUSH 7</td><td>6, 7</td></tr><tr><td>MULTIPLY</td><td>42</td></tr><tr><td>RETURN</td><td>Result is published as 42</td></tr></tbody></table>
+<h2>Prepare a hosted compiler build</h2>
+<p>Use a terminal in your Umicom C checkout. The Windows preset selects the installed UCRT64 GCC compiler and Ninja generator. CMake configuration checks the project and writes build rules; building follows those rules to create executable files. Run each command separately and stop on unexpected errors. If your checkout is elsewhere, change the first path. These commands are for the learner to execute and are not a claim that an independently installed copy has already passed.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\umicom-c&quot;
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake --preset windows-ucrt64-debug
+cmake --build --preset windows-ucrt64-debug --parallel 2
+.\build\windows-ucrt64-debug\bin\umicom-c.exe check examples/empty_statements.uc</code></pre>
+<h2>Interpret a source check correctly</h2>
+<p>check parses and compiles the file into a bounded instruction buffer. It should report accepted: 4 instructions for this example. It does not execute the program, prove every possible input safe, or imply support for every C construct. A diagnostic reports a source location and a reason when admission fails. The example file contains an attribution header; comments contribute source bytes but do not add instructions.</p>
+<h2>Give execution an exact budget</h2>
+<p>Fuel is the maximum number of virtual-machine instructions permitted during one run. It is not milliseconds, CPU cycles or a memory allowance. Give the four-instruction program fuel four. It should print Result: 42 and Instructions: 4. Then deliberately use fuel three: execution must refuse to publish a result because RETURN is still pending. An expected failed exercise is different from an unexpected failed build.</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe run examples/empty_statements.uc --max-steps 4
+.\build\windows-ucrt64-debug\bin\umicom-c.exe run examples/empty_statements.uc --max-steps 3</code></pre>
+<h2>Save instructions without saving a new opcode</h2>
+<p>The compile command writes a new bytecode file. exec reads and validates that file before execution. Choose an unused output name: the command refuses to overwrite an existing artifact. This example uses wire format 1 because it contains ordinary arithmetic instructions. A wire format defines bytes exchanged between programs. Adding a source spelling does not justify changing that format when the emitted operations are unchanged.</p>
+<pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe compile examples/empty_statements.uc build/empty-lesson.umcb
+.\build\windows-ucrt64-debug\bin\umicom-c.exe exec build/empty-lesson.umcb --max-steps 4
+.\build\windows-ucrt64-debug\bin\umicom-c.exe trace-bytecode build/empty-lesson.umcb</code></pre>
+<h2>Follow the parser’s ownership</h2>
+<p>Open src/compiler.c and locate compile_source and if_body. The top-level statement list and the braced-body statement list each recognize TOKEN_SEMICOLON. They call advance to consume it and continue parsing. They do not call emit. After the required final return, the parser also consumes trailing semicolons before checking the closing brace. The existing lexer owns token boundaries, the parser owns grammatical admission, and the emitter owns instruction storage. Reusing these responsibilities avoids inventing a second token scanner or a meaningless runtime NOP.</p>
+<h2>Do not confuse nothing with anything</h2>
+<p>Supporting an empty statement does not mean accepting every expression as a statement. Nor does it introduce loops, early returns or unbraced conditional bodies. The compiler still requires a final return with an expression. Inside this subset an if body must use braces, even though full C permits a broader statement grammar.</p>
+<pre><code class="language-c">int main(void) { ;;; }
+int main(void) { return ; }
+int main(void) { 1 + 2; return 42; }
+int main(void) { if (1); return 42; }</code></pre>
+<h2>Notice the else boundary</h2>
+<p>An else belongs immediately after the preceding if body in this grammar. In if (1) {}; else {}, the semicolon after the first closing brace is a separate statement. It breaks that connection. The parser must reject the separated else instead of silently ignoring the semicolon to guess the author’s intent. By contrast, if (1) {;} else {;;} has two properly attached braced bodies containing empty statements. Both bodies are still parsed, even when the condition is a constant.</p>
+<h2>Keep four resource limits separate</h2>
+<p>A program with thousands of semicolons may still emit only two instructions for return 42. The source limit nevertheless counts all input bytes, and the lexer must visit the tokens. Nested braces consume structural parser depth even when their bodies emit nothing. Instruction capacity bounds the generated records. Fuel bounds executed records. None of these quantities substitutes for the others.</p>
+<table><thead><tr><th scope="col">Limit</th><th scope="col">What it bounds</th><th scope="col">Effect of extra semicolons</th></tr></thead><tbody><tr><td>Source bytes</td><td>Borrowed text admitted by the compiler</td><td>Increases</td></tr><tr><td>Parser depth</td><td>Nested expression and statement structure</td><td>Unchanged unless braces or expressions are nested</td></tr><tr><td>Instruction capacity</td><td>Stored bytecode records</td><td>Unchanged for empty statements</td></tr><tr><td>Runtime fuel</td><td>Executed virtual-machine operations</td><td>Unchanged for empty statements</td></tr></tbody></table>
+<h2>Ask the linked component for its capability</h2>
+<p>profile.h declares UMC_FEATURE_EMPTY_STATEMENTS with value 16777216. Test that bit in umc_compiler_profile(UMC_PROFILE_FEATURES). The runtime must not advertise it because runtime-only programs never parse source text. Installing a newer header cannot give an older linked library a new parser. This distinction matters when Studio uses an installed Umicom C library or Kernel consumes precompiled bytecode.</p>
+<pre><code class="language-c">#include &quot;umicom_c/profile.h&quot;
+
+uint32_t features = umc_compiler_profile(UMC_PROFILE_FEATURES);
+if ((features &amp; UMC_FEATURE_EMPTY_STATEMENTS) == 0U) {
+    /* Select a matching compiler before offering this source form. */
+}</code></pre>
+<h2>Exercise the regressions</h2>
+<p>The regression suite compares ordinary and semicolon-rich programs instruction by instruction. It checks successful values, unchanged fuel cost, bytecode round trips, exact borrowed spans without a trailing NUL, malformed boundaries and never-read-local warnings. It also checks that thousands of semicolons do not require thousands of instruction slots. A failed compile reports count zero; its partially written instruction buffer must not be executed.</p>
+<pre><code class="language-powershell">ctest --test-dir build/windows-ucrt64-debug -R &quot;umicom.c.(empty-statements|cli-empty-statements|profile|cli-profile)&quot; --output-on-failure --no-tests=error</code></pre>
+<h2>Make and explain your own variation</h2>
+<ol><li>Copy the source example to a new lesson file so the original remains available for comparison.</li><li>Change 6 * 7 to 40 + 2. Predict both the value and instruction count before running check.</li><li>Add ten semicolons before return and ten after its required delimiter. Check that the operation count remains four.</li><li>Introduce if (1) {}; else {} before return. Read the refusal, then move the extra semicolon inside the first body and check again.</li><li>Write down which stage changed in each experiment: lexing, parsing, instruction generation or execution. Do not describe every refusal as a runtime error.</li></ol>
+<h2>Recover from common mistakes</h2>
+<p>If the executable is missing, read the first build error and confirm the actual output directory. If the compiler rejects a standalone semicolon, inspect the linked compiler profile and source revision instead of removing the test. If compile reports an existing destination, select a fresh artifact filename. If a fuel-three run prints a result, keep the source, command, binary identity and full output for investigation: that contradicts this example’s four-operation contract. Never interpret a new grammar bit as a complete C23 compatibility promise.</p>
+<nav aria-label="Previous lesson"><a href="87-inspect-managed-memory-without-collecting.html">Previous: Inspect managed memory without collecting</a></nav><nav aria-label="Continuing practice"><a href="89-decode-ascii-character-constants-at-the-lexer.html">Next: Decode ASCII character constants at the lexer</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

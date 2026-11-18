@@ -1,0 +1,70 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/24-inspect-a-bounded-binary-header.html
+
+PURPOSE:
+Inspect a bounded binary header
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspect a bounded binary header | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Inspect a bounded binary header</h1><figure><img src="../../../assets/diagrams/umicom-bytecode-envelope.svg" alt="Eight header bytes describe two nine-byte records; complete runtime validation remains separate." style="max-width:100%;height:auto"><figcaption>Both language examples inspect the same existing Umicom C envelope.</figcaption></figure><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Read a real format without pretending to execute it</h2>
+<p>A binary file is a sequence of bytes. Each byte can hold a number from zero through 255. A format assigns meaning to positions in that sequence. In this lesson you will use FreeBASIC to inspect the outside structure of a real Umicom C bytecode artifact. You will check its identifying bytes, version, record count and exact length. You will also see a damaged program pass those checks, which explains why a correct header is only one layer of validation.</p>
+<p>This exercise follows the earlier lessons on arrays, records, Boolean decisions and explicit byte order. It does not need file access: the source contains a small literal array whose contents you can inspect directly. That keeps file permissions and disk errors separate from the parsing lesson. The FreeBASIC example is authored for compiler qualification; it has not been compiled in the current authoring environment. The separate native C reference check cannot validate FreeBASIC syntax or runtime behavior.</p>
+<p>Each following instruction occupies nine bytes: one opcode byte, four operand bytes and four source-offset bytes. The current runtime limit is 256 instructions. A file containing two instructions therefore needs 8 + 2 × 9 = 26 bytes. The largest permitted envelope under this limit is 8 + 256 × 9 = 2,312 bytes. These numbers come from the actual Umicom C format; they are not rules for every bytecode language.</p>
+<h2>Learn the terms used by a binary reader</h2>
+<table><thead><tr><th scope="col">Term</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>Byte offset</td><td>A position counted from zero at the beginning of the input</td></tr><tr><td>Header</td><td>A small prefix describing the following data</td></tr><tr><td>Payload</td><td>The records following the header</td></tr><tr><td>Magic bytes</td><td>An identifying byte sequence; not a security signature</td></tr><tr><td>Version/profile</td><td>A number identifying an agreed format contract</td></tr><tr><td>Reserved byte</td><td>A position that must currently have a specified value</td></tr><tr><td>Little-endian</td><td>The least significant byte appears first</td></tr><tr><td>Envelope</td><td>The header and total-size rules around a payload</td></tr><tr><td>Admission</td><td>The checks required before allowing a later operation</td></tr><tr><td>Transactional output</td><td>Publish a complete result only after every required check passes</td></tr></tbody></table>
+<h2>Read the eight-byte header</h2>
+<table><thead><tr><th scope="col">Offset</th><th scope="col">Bytes</th><th scope="col">Meaning in the current Umicom C format</th></tr></thead><tbody><tr><td>0</td><td>4</td><td>ASCII UMCB: hexadecimal 55 4D 43 42</td></tr><tr><td>4</td><td>1</td><td>Minimum wire profile, currently 1 through 6</td></tr><tr><td>5</td><td>1</td><td>Reserved and required to be zero</td></tr><tr><td>6</td><td>2</td><td>Instruction count, low byte first</td></tr></tbody></table>
+<h2>Describe a result with Type</h2>
+<pre><code class="language-freebasic">Type EnvelopeInfo
+    profile As ULong
+    instructionCount As ULong
+    encodedBytes As ULong
+End Type</code></pre>
+<p>Type introduces a user-defined record. Each named member has a type. ULong is the FreeBASIC unsigned 32-bit type used here for small nonnegative facts. The record is an in-memory result, not the file format. The reader never loads the incoming bytes directly into this record. That distinction avoids assuming that field padding, alignment or native byte order matches a portable artifact.</p>
+<h2>Understand the function boundary</h2>
+<pre><code class="language-freebasic">Function InspectEnvelope(bytes() As UByte, ByRef result As EnvelopeInfo) As Boolean</code></pre>
+<p>Function declares a named operation that returns a value. bytes() receives an array descriptor, and each element is a UByte. ByRef gives the function access to the caller's result record. As Boolean says the returned answer is success or refusal. A false answer leaves the previous result fields unchanged. This is different from returning a partially filled record and asking the caller to guess which members are valid.</p>
+<h2>Check bounds before reading bytes</h2>
+<p>UBound(bytes, 0) asks for the number of dimensions. This reader accepts one dimension. LBound(bytes) asks for the first valid index and UBound(bytes) for the last valid index. The reader requires a zero-based array with at least eight and at most 2,312 elements. An unallocated dynamic array is refused before its elements are accessed. A one-based array is also refused, even if it happens to contain 26 values; this particular contract uses file offsets directly as indices.</p>
+<pre><code class="language-freebasic">If UBound(bytes, 0) &lt;&gt; 1 Then Return False
+If LBound(bytes) &lt;&gt; 0 OrElse UBound(bytes) &lt; 7 OrElse UBound(bytes) &gt; 2311 Then Return False</code></pre>
+<p>The last valid index of an eight-element zero-based array is seven. That is why the lower size check uses seven instead of eight. OrElse is short-circuit logical OR: once a term is true, later terms are unnecessary. It differs from the bitwise Or used later. Keep the shape checks before every element read. Reordering the code so that bytes(0) is read first would make an empty input unsafe.</p>
+<h2>Decode the count explicitly</h2>
+<pre><code class="language-freebasic">Dim As ULong count = CULng(bytes(6)) Or (CULng(bytes(7)) Shl 8)
+If count = 0 OrElse count &gt; 256 Then Return False
+Dim As ULong needed = 8 + count * 9
+If CULng(UBound(bytes) + 1) &lt;&gt; needed Then Return False</code></pre>
+<p>CULng converts each byte to the unsigned 32-bit calculation type. Shl shifts the high byte left by eight positions, multiplying its place value by 256. Bitwise Or combines the disjoint low and high bit positions. Bytes 2 and 0 encode two; bytes 0 and 1 encode 256. Bytes 1 and 1 encode 257, which exceeds the current program limit.</p>
+<p>The count limit is checked before multiplication. Once count lies between one and 256, needed is at most 2,312 and safely fits this type. The input must have exactly that length. A short payload is refused, and an extra trailing byte is refused too. Permitting arbitrary trailing bytes would describe a different container format and must not be added accidentally.</p>
+<h2>Commit only a complete candidate</h2>
+<p>After all checks pass, the function fills a local candidate record and assigns it to result once. Earlier Return False statements never touch result. In the refusal tests the previous fields are 99, 77 and 66. Every rejected input must leave all three values unchanged. This pattern is useful for configuration import and preview dialogs: a rejected candidate should not silently replace a valid current value.</p>
+<h2>Build and run the FreeBASIC exercise</h2>
+<ol><li>Open the native-language-boundary folder in the Bits2Banking repository. Read inspect_umc_header.bas from the header down to its literal fixture.</li><li>Make sure the FreeBASIC compiler is installed and the fbc command identifies that compiler. A similarly named shell command is not enough.</li><li>Use the fb dialect and enable runtime checks during learning. Execute each command separately and stop if it fails.</li><li>Keep the compiler version, command and actual exit status in your exercise notes. Do not report a pass merely because these commands are written in a guide.</li></ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -version
+fbc -lang fb -exx -w all inspect_umc_header.bas -x inspect_umc_header.exe
+&amp; &quot;.\inspect_umc_header.exe&quot;</code></pre>
+<p>The expected first line describes profile 1, two instructions and 26 bytes. A later line reports malformed-envelope checks, followed by a warning that opcode 255 still passes this header-only reader. The program uses End 1 for a failed expectation. That is suitable for this standalone teaching executable; a reusable library should return a status instead of terminating its host.</p>
+<h2>Read the tests as a specification</h2>
+<p>The source tests the complete literal, an empty dynamic array, every shorter nonempty prefix, a one-based array, a trailing byte and seven changed header cases. ReDim creates the prefix arrays for the truncation exercise. For and Next copy exactly the prefix being tested. Select Case chooses one corruption at a time. The source keeps valid data as a fixed reference rather than deriving every expected answer from the same parser.</p>
+<p>At the end, the code changes the first opcode to 255 while retaining the header and length. InspectEnvelope deliberately still succeeds. It did exactly what its name and contract promise: it inspected the envelope. It did not check opcode identities, stack depth, local initialization, branch targets, source offsets or the minimum required profile.</p>
+<h2>Compare with the real Umicom C runtime</h2>
+<p>The companion check_umc_fixture.c contains the same literal bytes and calls Umicom C's production decoder, inspection service and bounded interpreter. It expects the intact program to return 42. It then expects opcode 255 and a needlessly raised profile to be refused. This gives an independent reference for the lesson format without copying the interpreter into BASIC.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
+cmake -S labs/languages/native-language-boundary -B build/native-wire-lesson -G Ninja -DUMICOM_C_SOURCE=C:/umicom/umicom-c -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/native-wire-lesson
+ctest --test-dir build/native-wire-lesson --output-on-failure --no-tests=error</code></pre>
+<p>These commands require a C23 compiler, CMake, Ninja, the matching Umicom C source and Framework branding resources. They compile only the chosen native exercise and its runtime owner, not a full application. The C check and the FreeBASIC check are separate qualifications. Neither proves that arbitrary native machine code or an unrelated bytecode artifact is safe.</p>
+<h2>Use the idea at the right boundary</h2>
+<p>A BASIC tool might show a quick file summary, help compare artifacts or teach a byte layout. A production consumer should still delegate complete Umicom C admission and execution to the native runtime through a reviewed ABI. The language-boundary lessons explain that calling convention and lifetime work. Recognizing four magic bytes is not permission to run code, proof of its origin or a cryptographic signature.</p>
+<h2>Practice without guessing</h2>
+<ol><li>Write the eight header bytes for 256 records, then calculate the required complete length. Explain why merely changing the count in the 26-byte fixture must fail.</li><li>Explain the difference between Or and OrElse using the count expression and the refusal condition.</li><li>Change the reserved byte to one. Identify which check refuses it and verify that the previous result remains intact.</li><li>Change only the first opcode to 255. Explain why the teaching reader accepts it but the real decoder refuses it.</li><li>Describe why reading a file directly into EnvelopeInfo would not implement this format.</li><li>Compare this reader with the D lesson. Identify the same checks despite different syntax and array conventions.</li></ol>
+<h2>Further reading</h2><ul><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/native-language-boundary/inspect_umc_header.bas">Complete FreeBASIC example</a></li><li><a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/bytecode.md">Current Umicom C bytecode specification</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgUbound">FreeBASIC UBound reference</a></li></ul><nav aria-label="Previous lesson"><a href="23-distinguish-text-from-its-stored-bytes.html">Previous: Distinguish text from its stored bytes</a></nav><nav aria-label="Continuing practice"><a href="25-read-file-records-and-preserve-errors.html">Next: Read file records and preserve errors</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

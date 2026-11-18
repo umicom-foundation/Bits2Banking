@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/02-names-values-and-number-types.html
+
+PURPOSE:
+Names, values and number types
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Names, values and number types | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Names, values and number types</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>Memory holds values while a program runs. A variable gives a value a name and a type. The type tells the compiler how much storage to reserve and which operations make sense. Declaring a variable is not the same as printing it. In the fb dialect, declare your variables rather than relying on undeclared names.</p>
+<pre><code class="language-basic">Dim As Long items = 3
+Dim As Long centsEach = 125
+Dim As Long totalCents = items * centsEach
+Const As Long maximumItems = 100
+Print totalCents
+Print maximumItems</code></pre>
+<ol><li>Save the example as values.bas and compile with fbc -lang fb -w all values.bas -x values.exe.</li><li>Run .\values.exe. Expect the numeric values 375 and 100; console spacing is not significant here.</li><li>Change items to 4. Predict 500 before recompiling.</li><li>Change maximumItems in an assignment after its declaration. Observe that a constant cannot be assigned a new value. Restore the original program.</li></ol>
+<p>Dim declares storage. As connects the name to its type. The equals sign initializes or assigns a value in these statements. Const declares a value you intend to keep fixed. Multiplication uses *. FreeBASIC names are case insensitive, so items and ITEMS refer to the same identifier. Use one spelling consistently for people reading your code.</p>
+<p>Long is a signed 32-bit integer in FreeBASIC. Integer follows the compiler target’s native integer size; do not assume it always matches C int. LongInt is signed 64-bit. Unsigned types cannot represent negative values. Single and Double approximate real numbers using floating point. Currency examples here use integer cents and small values so rounding is visible and overflow is avoidable; they are not a complete financial arithmetic library.</p>
+<p>Overflow occurs when a result does not fit its type. A bigger input does not automatically make the calculation safer. Validate permitted ranges before multiplying. If you use a wider result, widen an operand before the multiplication rather than after an already overflowing expression. For production finance, reuse Framework’s reviewed money and rounding contracts.</p>
+<h2>Exercise and answer</h2>
+<p>With 7 items at 250 cents, the expected total is 1750 cents. Explain why the number 17.50 is not stored in totalCents: the unit is cents, not whole currency units. Add a comment recording that unit. Units are part of a data contract even when the compiler sees only an integer.</p>
+<h2>Choose a representation deliberately</h2><table><thead><tr><th scope="col">Type</th><th scope="col">Meaning</th><th scope="col">Use here</th></tr></thead><tbody><tr><td>Long / ULong</td><td>32-bit signed / unsigned</td><td>Explicit C ABI width after verification</td></tr><tr><td>LongInt / ULongInt</td><td>64-bit signed / unsigned</td><td>Larger bounded counts</td></tr><tr><td>Integer / UInteger</td><td>Target-native integer width</td><td>Local loop counters; verify exported ABI</td></tr><tr><td>Single / Double</td><td>Floating-point approximation</td><td>Measurements, not automatic exact money</td></tr></tbody></table><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="01-from-text-to-a-running-program.html">Previous: From typed text to a running FreeBASIC program</a> · <a href="03-text-input-and-validation.html">Next: Text input, strings and validation</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

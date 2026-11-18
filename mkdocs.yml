@@ -1218,6 +1218,9 @@ nav:
       - "Own static response bytes until they are consumed": lessons/05-engineering/building-a-web-server-in-c/34-own-static-response-bytes-until-consumed.md
       - "Finish headers and partial body writes": lessons/05-engineering/building-a-web-server-in-c/35-finish-headers-and-partial-body-writes.md
       - "Qualify approved assets through each delivery layer": lessons/05-engineering/building-a-web-server-in-c/36-qualify-approved-assets-through-each-layer.md
+      - "Transfer static-file buffer ownership": "lessons/05-engineering/building-a-web-server-in-c/37-transfer-static-file-buffer-ownership.md"
+      - "Release response bodies on every exit": "lessons/05-engineering/building-a-web-server-in-c/38-release-response-bodies-on-every-exit.md"
+      - "Measure memory without confusing ownership": "lessons/05-engineering/building-a-web-server-in-c/39-measure-memory-without-confusing-ownership.md"
   - "umicom-development — Deployment state and evidence":
       - "Separate a deployment model from real operations": lessons/umicom-development/deployment-models-and-real-providers.md
       - "Admit bounded deployment values before reading them": lessons/umicom-development/deployment-bounded-public-values.md
@@ -1792,6 +1795,12 @@ nav:
           - "Keep callback state alive for the right lifetime": "lessons/06-umicom/learning-gtk4/18-keep-callback-state-alive.md"
           - "Test control discovery at its boundaries": "lessons/06-umicom/learning-gtk4/19-test-control-lookup-boundaries.md"
           - "Diagnose a button journey from click to result": "lessons/06-umicom/learning-gtk4/20-diagnose-a-button-journey.md"
+          - "Choose an interactive development tool": "lessons/06-umicom/learning-gtk4/21-choose-an-interactive-development-tool.md"
+          - "Build a small Framework preview lab": "lessons/06-umicom/learning-gtk4/22-build-a-small-framework-preview-lab.md"
+          - "Separate layout refresh from C rebuilds": "lessons/06-umicom/learning-gtk4/23-separate-layout-refresh-from-c-rebuilds.md"
+          - "Preserve edits during a preview build": "lessons/06-umicom/learning-gtk4/24-preserve-edits-during-a-preview-build.md"
+          - "Diagnose an unexpected full rebuild": "lessons/06-umicom/learning-gtk4/25-diagnose-an-unexpected-full-rebuild.md"
+          - "Qualify a current interactive preview": "lessons/06-umicom/learning-gtk4/26-qualify-a-current-interactive-preview.md"
       - "Learning x86 Assembly":
           - "Registers and instructions": "lessons/03-native-code/learning-x86-assembly/01-registers-and-instructions.md"
           - "A function called from C": "lessons/03-native-code/learning-x86-assembly/02-a-function-called-from-c.md"
@@ -1951,6 +1960,9 @@ nav:
           - "Combine lexical and vector evidence with finite weights": "lessons/10-native-ai/llm-from-scratch/retrieval-hybrid-weights.md"
           - "Keep callback failures from publishing partial scores": "lessons/10-native-ai/llm-from-scratch/retrieval-callback-ownership.md"
           - "Qualify the installed retrieval client and state its limits": "lessons/10-native-ai/llm-from-scratch/retrieval-installed-qualification.md"
+          - "Calculate dense key and value cache geometry": "lessons/10-native-ai/llm-from-scratch/dense-kv-cache-geometry.md"
+          - "Plan context capacity from a cache budget": "lessons/10-native-ai/llm-from-scratch/plan-context-from-a-cache-budget.md"
+          - "Separate memory plans from launch admission": "lessons/10-native-ai/llm-from-scratch/separate-memory-plans-from-launch-admission.md"
 
   # Register both source editions as discoverable learning routes.
   - "Conda and Miniforge for Umicom Developers":
@@ -2117,6 +2129,9 @@ nav:
       - "Execute forward VM paths in user mode": "lessons/06-umicom/umicom-kernel-from-scratch/115-execute-forward-vm-paths-in-user-mode.md"
           - "Admit ICMP echo without trusting the sender": lessons/06-umicom/umicom-kernel-from-scratch/116-admit-icmp-echo-without-trusting-the-sender.md
           - "Inspect TCP without claiming a connection": lessons/06-umicom/umicom-kernel-from-scratch/117-inspect-tcp-without-claiming-a-connection.md
+          - "Account for outbound TCP sequence positions": "lessons/06-umicom/umicom-kernel-from-scratch/118-account-for-outbound-tcp-sequences.md"
+          - "Test wraparound and refused acknowledgments": "lessons/06-umicom/umicom-kernel-from-scratch/119-test-wraparound-and-refused-acknowledgments.md"
+          - "Qualify shared VM slices in a guest": "lessons/06-umicom/umicom-kernel-from-scratch/120-qualify-shared-vm-slices-in-a-guest.md"
 
   - "Conditional values and parser recursion":
       - "Select values with conditional expressions": "lessons/05-engineering/building-a-compiler-in-c/71-select-values-with-conditional-expressions.md"
@@ -2127,6 +2142,9 @@ nav:
       - "Add checked signed remainder without breaking bytecode": "lessons/05-engineering/building-a-compiler-in-c/76-add-checked-signed-remainder.md"
       - "Lower signed bitwise complement through checked arithmetic": "lessons/05-engineering/building-a-compiler-in-c/77-lower-signed-bitwise-complement.md"
       - "Add binary bitwise operators and preserve bytecode compatibility": "lessons/05-engineering/building-a-compiler-in-c/78-add-binary-bitwise-operators.md"
+      - "Run bytecode in bounded slices": "lessons/05-engineering/building-a-compiler-in-c/79-run-bytecode-in-bounded-slices.md"
+      - "Preserve progress when a slice fails": "lessons/05-engineering/building-a-compiler-in-c/80-preserve-progress-when-a-slice-fails.md"
+      - "Share slices with Framework and OS": "lessons/05-engineering/building-a-compiler-in-c/81-share-slices-with-framework-and-os.md"
 
   - "Qualify published page structure":
       - "Test published table structure with native C": "lessons/04-web/learning-html/16-test-published-table-structure.md"
@@ -2158,3 +2176,319 @@ nav:
           - "Course contents": "lessons/03-native-code/learning-nim/index.md"
           - "Run your first Nim program": "lessons/03-native-code/learning-nim/01-run-your-first-program.md"
           - "Connect Nim values to the C contract": "lessons/03-native-code/learning-nim/02-connect-values-to-c.md"
+
+  - "Learning FreeBASIC — guided sequence":
+      - "Course contents": "lessons/03-native-code/learning-freebasic/index.md"
+      - "From typed text to a running FreeBASIC program": "lessons/03-native-code/learning-freebasic/01-from-text-to-a-running-program.md"
+      - "Names, values and number types": "lessons/03-native-code/learning-freebasic/02-names-values-and-number-types.md"
+      - "Text input, strings and validation": "lessons/03-native-code/learning-freebasic/03-text-input-and-validation.md"
+      - "Expressions, comparisons and decisions": "lessons/03-native-code/learning-freebasic/04-expressions-decisions-and-operators.md"
+      - "Loops, arrays and bounds": "lessons/03-native-code/learning-freebasic/05-loops-arrays-and-bounds.md"
+      - "Procedures, ByVal and ByRef": "lessons/03-native-code/learning-freebasic/06-procedures-and-value-ownership.md"
+      - "Records, reusable modules and files": "lessons/03-native-code/learning-freebasic/07-records-modules-and-files.md"
+      - "Call a small C service from FreeBASIC": "lessons/03-native-code/learning-freebasic/08-a-reviewed-c-boundary.md"
+
+  - "Learning D Language — guided sequence":
+      - "Read D values, types and expressions": "lessons/03-native-code/learning-d/13-values-types-and-expressions.md"
+      - "Choose paths and traverse D collections": "lessons/03-native-code/learning-d/14-control-flow-and-collections.md"
+      - "Choose a struct, class or interface": "lessons/03-native-code/learning-d/15-structs-classes-and-interfaces.md"
+      - "Understand D memory management and safety attributes": "lessons/03-native-code/learning-d/16-garbage-collection-and-memory-contracts.md"
+      - "Use templates and compile-time evaluation": "lessons/03-native-code/learning-d/17-templates-and-compile-time-work.md"
+      - "Inspect fields with compile-time reflection": "lessons/03-native-code/learning-d/18-reflection-and-field-catalogues.md"
+      - "Separate C linkage from the BetterC subset": "lessons/03-native-code/learning-d/19-c-abi-and-betterc.md"
+      - "Navigate D keywords and language concepts": "lessons/03-native-code/learning-d/20-keyword-and-concept-map.md"
+
+  - "Preparing Data for LLM Training — guided sequence":
+      - "Course contents": "lessons/05-ai/preparing-llm-training-data/index.md"
+      - "Choose retrieval, fine-tuning or training from scratch": "lessons/05-ai/preparing-llm-training-data/01-choose-retrieval-or-training.md"
+      - "Turn documents into reviewed text without losing provenance": "lessons/05-ai/preparing-llm-training-data/02-turn-documents-into-reviewed-text.md"
+      - "Read JSON, JSONL and conversational records": "lessons/05-ai/preparing-llm-training-data/03-json-jsonl-and-chat-records.md"
+      - "Review quality, duplicates and allowed use": "lessons/05-ai/preparing-llm-training-data/04-quality-deduplication-and-rights.md"
+      - "Keep related sources out of different partitions": "lessons/05-ai/preparing-llm-training-data/05-split-sources-before-chunking.md"
+      - "Run a native Framework dataset-partition lab": "lessons/05-ai/preparing-llm-training-data/06-run-the-framework-group-lab.md"
+      - "Understand tokens, chat templates and loss masks": "lessons/05-ai/preparing-llm-training-data/07-tokenization-templates-and-masks.md"
+      - "Plan batches, epochs and memory before training": "lessons/05-ai/preparing-llm-training-data/08-batches-epochs-and-memory.md"
+      - "Choose a fine-tuning method and save recoverable state": "lessons/05-ai/preparing-llm-training-data/09-fine-tuning-adapters-and-checkpoints.md"
+      - "Evaluate changes and publish a reproducible dataset package": "lessons/05-ai/preparing-llm-training-data/10-evaluate-and-publish-a-dataset.md"
+
+  - "Generative AI: Image and Video Training Foundations — guided sequence":
+      - "Course contents": "lessons/05-ai/generative-ai-foundations/index.md"
+      - "Start with pixels, frames and generative models": "lessons/05-ai/generative-ai-foundations/01-pixels-frames-and-models.md"
+      - "Prepare image-caption pairs with provenance": "lessons/05-ai/generative-ai-foundations/02-caption-and-image-pairs.md"
+      - "Resize and batch images without silently changing the task": "lessons/05-ai/generative-ai-foundations/03-resizing-cropping-and-buckets.md"
+      - "Understand a denoising objective before training": "lessons/05-ai/generative-ai-foundations/04-noise-denoising-and-loss.md"
+      - "Understand latents, conditioning and image adapters": "lessons/05-ai/generative-ai-foundations/05-latents-conditioning-and-adapters.md"
+      - "Plan and evaluate a small image-training experiment": "lessons/05-ai/generative-ai-foundations/06-plan-an-image-training-experiment.md"
+      - "Prepare video clips with timing and group identity": "lessons/05-ai/generative-ai-foundations/07-video-timing-and-clip-groups.md"
+      - "Evaluate motion and temporal coherence": "lessons/05-ai/generative-ai-foundations/08-temporal-coherence-and-video-evaluation.md"
+      - "Bound memory and recover image/video training work": "lessons/05-ai/generative-ai-foundations/09-memory-checkpoints-and-recovery.md"
+      - "Build a native generative-AI project in verifiable stages": "lessons/05-ai/generative-ai-foundations/10-native-framework-project-plan.md"
+
+  - "FreeBASIC — storage and reference":
+      - "Follow pointers and allocation lifetimes": "lessons/03-native-code/learning-freebasic/09-pointers-and-allocation-lifetimes.md"
+      - "Separate declarations, implementations and namespaces": "lessons/03-native-code/learning-freebasic/10-declarations-includes-and-namespaces.md"
+      - "Test errors and define record contracts": "lessons/03-native-code/learning-freebasic/11-tests-errors-and-record-contracts.md"
+      - "Navigate FreeBASIC keywords, library functions and dialects": "lessons/03-native-code/learning-freebasic/12-keyword-library-and-dialect-map.md"
+
+  - "Validate training records with native Framework code": lessons/05-ai/preparing-llm-training-data/11-read-jsonl-with-native-framework.md
+
+  - "Data and native-language practice":
+      - "Count bytes, rows and source groups before tokenization": "lessons/05-ai/preparing-llm-training-data/12-count-bytes-rows-and-source-groups.md"
+      - "Use Enum and Select Case to model job states": "lessons/03-native-code/learning-freebasic/13-enums-and-state-transitions.md"
+      - "Grow an array while preserving its contents": "lessons/03-native-code/learning-freebasic/14-dynamic-arrays-and-preservation.md"
+      - "Distinguish function pointers, delegates and C callbacks": "lessons/03-native-code/learning-d/21-functions-delegates-and-callback-lifetimes.md"
+      - "Use scope guards to make cleanup paths visible": "lessons/03-native-code/learning-d/22-scope-guards-and-native-cleanup.md"
+
+  - "Run a native denoising experiment": lessons/05-ai/generative-ai-foundations/11-run-a-native-denoising-experiment.md
+
+  - "Inspect a local dataset file": lessons/05-ai/preparing-llm-training-data/13-inspect-a-local-jsonl-file.md
+
+  - "Inspect types and check conversions without guessing": lessons/03-native-code/learning-d/23-type-inspection-and-checked-casts.md
+
+  - "Turn reviewed source IDs into a reproducible partition": lessons/05-ai/preparing-llm-training-data/14-partition-jsonl-by-source.md
+
+  - "Validate every input character before accepting a number": lessons/03-native-code/learning-freebasic/15-parse-a-complete-bounded-number.md
+
+  - "Measure normal noise before using it in a training loop": lessons/05-ai/generative-ai-foundations/12-measure-noise-before-training.md
+
+  - "Pass a BASIC callback to C with an explicit lifetime": lessons/03-native-code/learning-freebasic/16-call-back-through-a-c-boundary.md
+
+  - "Use a C callback without capturing a D delegate": lessons/03-native-code/learning-d/24-use-an-explicit-c-callback-context.md
+
+  - "Declare field metadata and inspect it at compile time": lessons/03-native-code/learning-d/25-declare-and-inspect-field-metadata.md
+
+  - "Encode a portable four-byte record": lessons/03-native-code/learning-freebasic/17-encode-a-portable-binary-record.md
+
+  - "Distinguish step noise from cumulative signal": lessons/05-ai/generative-ai-foundations/13-distinguish-step-noise-from-cumulative-signal.md
+
+  - "Distinguish comments, strings and language boundaries": lessons/03-native-code/learning-freebasic/18-comments-and-language-boundaries.md
+
+  - "Turn reviewed partitions into complete JSONL buffers": lessons/05-ai/preparing-llm-training-data/15-serialize-reviewed-partitions.md
+
+  - "Encode a UDP frame without sending it": lessons/06-umicom/umicom-kernel-from-scratch/121-encode-a-udp-frame-without-sending-it.md
+
+  - "Combine options with checked bit masks": lessons/03-native-code/learning-freebasic/19-combine-options-with-checked-bit-masks.md
+
+  - "Select code before the program runs": lessons/03-native-code/learning-d/26-select-code-before-the-program-runs.md
+
+  - "Choose which predictions contribute to loss": lessons/05-ai/preparing-llm-training-data/16-choose-which-predictions-contribute-to-loss.md
+
+  - "Name fixed rules with Const": lessons/03-native-code/learning-freebasic/20-name-fixed-rules-with-const.md
+
+  - "Separate read-only views from independent copies": lessons/03-native-code/learning-d/27-separate-read-only-views-from-independent-copies.md
+
+  - "Follow data ownership during import": lessons/05-ai/preparing-llm-training-data/17-follow-data-ownership-during-import.md
+
+  - "Train selected decoder targets without hiding the prompt": lessons/05-ai/preparing-llm-training-data/18-train-selected-decoder-targets.md
+
+  - "Combine compatible noise predictions and measure guidance": lessons/05-ai/generative-ai-foundations/14-combine-compatible-noise-predictions.md
+
+  - "Resize a bounded dynamic array and follow its lifetime": lessons/03-native-code/learning-freebasic/21-resize-a-bounded-dynamic-array.md
+
+  - "Look up records without confusing storage with learning": lessons/03-native-code/learning-d/28-look-up-records-with-associative-arrays.md
+
+  - "Encode and check an ICMP echo message in RAM": lessons/06-umicom/umicom-kernel-from-scratch/122-encode-and-check-an-icmp-echo-message.md
+
+  - "Follow a deterministic denoising trajectory": lessons/05-ai/generative-ai-foundations/15-follow-a-deterministic-denoising-trajectory.md
+
+  - "Keep memory observations honest before training": lessons/05-ai/preparing-llm-training-data/19-keep-memory-observations-honest.md
+
+  - "Give branch locals a lexical scope without changing the VM": lessons/05-engineering/building-a-compiler-in-c/82-give-branch-locals-a-lexical-scope.md
+
+  - "Keep temporary values inside a scope": lessons/03-native-code/learning-freebasic/22-keep-temporary-values-inside-a-scope.md
+
+  - "Plan context capacity after fixed memory costs": lessons/05-ai/preparing-llm-training-data/20-plan-context-capacity-after-fixed-memory-costs.md
+
+  - "Convert diffusion velocity predictions before using them": lessons/05-ai/generative-ai-foundations/16-convert-diffusion-velocity-predictions.md
+
+  - "Turn field metadata into explicit checks": lessons/03-native-code/learning-d/29-turn-field-metadata-into-explicit-checks.md
+
+  - "Distinguish text from its stored bytes": lessons/03-native-code/learning-freebasic/23-distinguish-text-from-its-stored-bytes.md
+
+  - "Parse standalone blocks with one scope owner": lessons/05-engineering/building-a-compiler-in-c/83-parse-standalone-blocks-with-one-scope-owner.md
+
+  - "Copy metadata with explicit pointer ownership": lessons/03-native-code/safer-c-programming/42-copy-metadata-with-explicit-pointer-ownership.md
+
+  - "Detect incomplete source before a long compilation": lessons/05-engineering/learning-build-systems/25-detect-incomplete-source-before-compilation.md
+
+  - "Build systems: preparation and lesson map": lessons/05-engineering/learning-build-systems/index.md
+
+  - "Exclude padding from a training objective": lessons/05-ai/generative-ai-foundations/17-exclude-padding-from-a-training-objective.md
+
+  - "Inspect a bounded binary header": lessons/03-native-code/learning-freebasic/24-inspect-a-bounded-binary-header.md
+
+  - "State the effects of a binary reader": lessons/03-native-code/learning-d/30-state-the-effects-of-a-binary-reader.md
+
+  - "Report source warnings without running a program": lessons/05-engineering/building-a-compiler-in-c/84-report-source-warnings-without-running-a-program.md
+
+  - "Separate attention masks from loss masks": lessons/05-ai/preparing-llm-training-data/21-separate-attention-and-loss-masks.md
+
+  - "Train a decoder with padded examples": lessons/05-ai/preparing-llm-training-data/22-train-a-decoder-with-padded-examples.md
+
+  - "Read file records and preserve errors": lessons/03-native-code/learning-freebasic/25-read-file-records-and-preserve-errors.md
+
+  - "Follow the lifetime of input-range data": lessons/03-native-code/learning-d/31-follow-the-lifetime-of-input-range-data.md
+
+  - "Check document snapshots before building": lessons/05-engineering/building-a-compiler-in-c/85-check-document-snapshots-before-building.md
+
+  - "Keep optimizer memory when training selected tokens": lessons/05-ai/preparing-llm-training-data/23-keep-optimizer-memory-for-selected-tokens.md
+
+  - "Follow construction and destruction through a scope": lessons/03-native-code/learning-freebasic/26-follow-construction-and-destruction.md
+
+  - "Publish results deliberately with ref and out": lessons/03-native-code/learning-d/32-publish-results-with-ref-and-out.md
+
+  - "Check bit shifts before publishing a result": lessons/05-engineering/building-a-compiler-in-c/86-check-bit-shifts-before-publishing-a-result.md
+
+  - "Accumulate uneven selected microbatches without changing their weight": lessons/05-ai/preparing-llm-training-data/24-accumulate-uneven-selected-microbatches.md
+
+  - "Select an overload by its arguments and preserve refused output": lessons/03-native-code/learning-freebasic/27-select-an-overload-by-its-arguments.md
+
+  - "Admit enumerated states before exhaustive dispatch": lessons/03-native-code/learning-d/33-admit-enumerated-states-before-dispatch.md
+
+  - "Weight a training objective deliberately": lessons/05-ai/generative-ai-foundations/18-weight-a-training-objective-deliberately.md
+
+  - "Shuffle an epoch without changing the split": lessons/05-ai/preparing-llm-training-data/25-shuffle-an-epoch-without-changing-the-split.md
+
+  - "Guard a read with short-circuit operators": lessons/03-native-code/learning-freebasic/28-guard-a-read-with-short-circuit-operators.md
+
+  - "Distinguish lazy evaluation from caching": lessons/03-native-code/learning-d/34-distinguish-lazy-evaluation-from-caching.md
+
+  - "Recognize stale tests after a failed build": lessons/05-engineering/learning-build-systems/26-recognize-stale-tests-after-a-failed-build.md
+
+  - "Inspect managed memory without collecting": lessons/05-engineering/building-a-compiler-in-c/87-inspect-managed-memory-without-collecting.md
+
+  - "Own the noise in a stochastic denoising step": lessons/05-ai/generative-ai-foundations/19-own-the-noise-in-a-stochastic-denoising-step.md
+
+  - "Expose state through a read-only property": lessons/03-native-code/learning-freebasic/29-expose-state-through-a-read-only-property.md
+
+  - "Separate invariants from input validation": lessons/03-native-code/learning-d/35-separate-invariants-from-input-validation.md
+
+  - "Admit resource labels without trusting their contents": lessons/03-native-code/safer-c-programming/43-admit-resource-labels-without-trusting-content.md
+
+  - "Read fixed data records and reset the cursor": lessons/03-native-code/learning-freebasic/30-read-fixed-data-records-and-reset-the-cursor.md
+
+  - "Separate modules, visible names and linked code": lessons/03-native-code/learning-d/36-separate-modules-names-and-linked-code.md
+
+  - "Count selected predictions before calculating percentages": lessons/05-ai/preparing-llm-training-data/26-count-selected-predictions-before-percentages.md
+
+  - "Edit record fields with an explicit candidate": lessons/03-native-code/learning-freebasic/31-edit-records-with-an-explicit-candidate.md
+
+  - "Reuse typed declarations with template mixins": lessons/03-native-code/learning-d/37-reuse-typed-declarations-with-template-mixins.md
+
+  - "Read pixels as an explicit tensor": lessons/05-ai/generative-ai-foundations/20-read-pixels-as-an-explicit-tensor.md
+
+  - "Follow row, column and channel bounds": lessons/03-native-code/learning-freebasic/32-follow-row-column-and-channel-bounds.md
+
+  - "Follow nested static-array copies": lessons/03-native-code/learning-d/38-follow-nested-static-array-copies.md
+
+  - "Parse an empty statement without emitting code": lessons/05-engineering/building-a-compiler-in-c/88-parse-an-empty-statement-without-emitting-code.md
+
+  - "Prepare a video sample with explicit frame order": lessons/05-ai/generative-ai-foundations/21-prepare-a-video-sample-with-explicit-frame-order.md
+
+  - "Decode ASCII character constants at the lexer": lessons/05-engineering/building-a-compiler-in-c/89-decode-ascii-character-constants-at-the-lexer.md
+
+  - "Format fixed ASCII fields without losing data": lessons/03-native-code/learning-freebasic/33-format-fixed-ascii-fields-without-losing-data.md
+
+  - "Separate text bytes, code points and display": lessons/03-native-code/learning-d/39-separate-text-bytes-code-points-and-display.md
+
+  - "Borrow an image crop with explicit lifetime": lessons/05-ai/generative-ai-foundations/22-borrow-an-image-crop-with-explicit-lifetime.md
+
+  - "Own received bytes before advancing the stream": lessons/06-umicom/umicom-kernel-from-scratch/123-own-received-bytes-before-advancing.md
+
+  - "Prepare a byte pair without shifting twice": lessons/05-ai/preparing-llm-training-data/27-prepare-a-byte-pair-without-shifting-twice.md
+
+  - "Parse initialized declaration lists without changing the virtual machine": lessons/05-engineering/building-a-compiler-in-c/90-parse-initialized-declaration-lists.md
+
+  - "Find repeated pairs across training and evaluation": lessons/05-ai/preparing-llm-training-data/28-find-repeated-pairs-across-training-and-evaluation.md
+
+  - "Swap values without confusing their owners": lessons/03-native-code/learning-freebasic/34-swap-values-without-confusing-their-owners.md
+
+  - "Preserve qualifiers when returning a borrowed view": lessons/03-native-code/learning-d/40-preserve-qualifiers-when-returning-a-borrowed-view.md
+
+  - "Keep sent bytes until they are acknowledged": lessons/06-umicom/umicom-kernel-from-scratch/124-keep-sent-bytes-until-they-are-acknowledged.md
+
+  - "Transform pixels without changing their labels by accident": lessons/05-ai/generative-ai-foundations/23-transform-pixels-without-changing-their-labels-by-accident.md
+
+  - "Measure records before sharing their bytes": lessons/03-native-code/learning-freebasic/35-measure-records-before-sharing-their-bytes.md
+
+  - "Inspect layout without serializing padding": lessons/03-native-code/learning-d/41-inspect-layout-without-serializing-padding.md
+
+  - "Count image values before preparing training inputs": lessons/05-ai/generative-ai-foundations/24-count-image-values-before-preparing-training-inputs.md
+
+  - "Count structural paths before running bytecode": lessons/05-engineering/building-a-compiler-in-c/91-count-structural-paths-before-running-bytecode.md
+
+  - "Resize pixels with an explicit sampling rule": lessons/05-ai/generative-ai-foundations/25-resize-pixels-with-an-explicit-sampling-rule.md
+
+  - "Own worker threads and protect shared state": lessons/03-native-code/learning-freebasic/36-own-worker-threads-and-protect-shared-state.md
+
+  - "Separate atomic access from thread lifetime": lessons/03-native-code/learning-d/42-separate-atomic-access-from-thread-lifetime.md
+
+  - "Place an image on a canvas without confusing padding and masks": lessons/05-ai/generative-ai-foundations/26-place-an-image-on-a-canvas-without-confusing-padding-and-masks.md
+
+  - "Select a union value with an explicit tag": lessons/03-native-code/learning-freebasic/37-select-a-union-value-with-an-explicit-tag.md
+
+  - "Separate union reflection from active-value state": lessons/03-native-code/learning-d/43-separate-union-reflection-from-active-value-state.md
+
+  - "Show source errors without printing control bytes": lessons/05-engineering/building-a-compiler-in-c/92-show-source-errors-without-printing-control-bytes.md
+
+  - "Check context fit before training a byte model": lessons/05-ai/preparing-llm-training-data/29-check-context-fit-before-training-a-byte-model.md
+
+  - "Observe which conditional expression runs": lessons/03-native-code/learning-freebasic/38-observe-which-conditional-expression-runs.md
+
+  - "Distinguish conditional selection from argument evaluation": lessons/03-native-code/learning-d/44-distinguish-conditional-selection-from-argument-evaluation.md
+
+  - "Select video frames by time with an explicit policy": lessons/05-ai/generative-ai-foundations/27-select-video-frames-by-time-with-an-explicit-policy.md
+
+  - "Stream records without retaining the whole file": lessons/05-ai/preparing-llm-training-data/30-stream-records-without-retaining-the-whole-file.md
+
+  - "Separate local names from retained storage": lessons/03-native-code/learning-freebasic/39-separate-local-names-from-retained-storage.md
+
+  - "Separate local static storage from caller ownership": lessons/03-native-code/learning-d/45-separate-local-static-storage-from-caller-ownership.md
+
+  - "Read nested comments and logical lines": lessons/03-native-code/learning-freebasic/40-read-nested-comments-and-logical-lines.md
+
+  - "Review one snapshot before using a split": lessons/05-ai/preparing-llm-training-data/31-review-one-snapshot-before-using-a-split.md
+
+  - "Measure channel means without choosing normalization": lessons/05-ai/generative-ai-foundations/28-measure-channel-means-without-choosing-normalization.md
+
+  - "Construct a TCP capture before transmission": lessons/06-umicom/umicom-kernel-from-scratch/125-construct-a-tcp-capture-before-transmission.md
+
+  - "Follow abstract and virtual method dispatch": lessons/03-native-code/learning-freebasic/41-follow-abstract-and-virtual-method-dispatch.md
+
+  - "Separate runtime dispatch from type reflection": lessons/03-native-code/learning-d/46-separate-runtime-dispatch-from-type-reflection.md
+
+  - "Apply explicit channel normalization": lessons/05-ai/generative-ai-foundations/29-apply-explicit-channel-normalization.md
+
+  - "Lower Boolean words without changing the VM": lessons/05-engineering/building-a-compiler-in-c/93-lower-boolean-words-without-changing-the-vm.md
+
+  - "Encode Boolean values with an explicit byte contract": lessons/03-native-code/learning-freebasic/42-encode-boolean-values-with-an-explicit-byte-contract.md
+
+  - "Validate bytes before converting to bool": lessons/03-native-code/learning-d/47-validate-bytes-before-converting-to-bool.md
+
+  - "Turn model values into explicit pixels": lessons/05-ai/generative-ai-foundations/30-turn-model-values-into-explicit-pixels.md
+
+  - "Choose a rounding rule before conversion": lessons/03-native-code/learning-freebasic/43-choose-a-rounding-rule-before-conversion.md
+
+  - "Separate rounding from checked integer conversion": lessons/03-native-code/learning-d/48-separate-rounding-from-checked-integer-conversion.md
+
+  - "Walk TCP options without trusting lengths": lessons/06-umicom/umicom-kernel-from-scratch/126-walk-tcp-options-without-trusting-lengths.md
+
+  - "Validate every frame before publishing a clip": lessons/05-ai/generative-ai-foundations/31-validate-every-frame-before-publishing-a-clip.md
+
+  - "Give operators a clear domain meaning": lessons/03-native-code/learning-freebasic/44-give-operators-a-clear-domain-meaning.md
+
+  - "Constrain operator templates and test their meaning": lessons/03-native-code/learning-d/49-constrain-operator-templates-and-test-their-meaning.md
+
+  - "Measure token loss with the right denominator": lessons/05-ai/preparing-llm-training-data/32-measure-token-loss-with-the-right-denominator.md
+
+  - "Decode option values before changing connection state": lessons/06-umicom/umicom-kernel-from-scratch/127-decode-option-values-before-changing-connection-state.md
+
+  - "Follow comment and string boundaries": lessons/03-native-code/learning-d/50-follow-comment-and-string-boundaries.md
+
+  - "Choose an image interpolation policy": lessons/05-ai/generative-ai-foundations/32-choose-an-image-interpolation-policy.md
+
+  - "Select ranges and test every boundary": lessons/03-native-code/learning-freebasic/45-select-ranges-and-test-every-boundary.md
+
+  - "Admit values before exhaustive state dispatch": lessons/03-native-code/learning-d/51-admit-values-before-exhaustive-state-dispatch.md
+
+  - "Aggregate evaluation with checked summaries": lessons/05-ai/preparing-llm-training-data/33-aggregate-evaluation-with-checked-summaries.md

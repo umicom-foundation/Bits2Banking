@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/119-test-wraparound-and-refused-acknowledgments.html
+
+PURPOSE:
+Test wraparound and refused acknowledgments
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test wraparound and refused acknowledgments | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Test wraparound and refused acknowledgments</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="118-account-for-outbound-tcp-sequences.html">Previous lesson</a> · <a rel="next" href="120-qualify-shared-vm-slices-in-a-guest.html">Next lesson</a></nav>
+<p>TCP sequence numbers use 32-bit unsigned arithmetic. After 4,294,967,295, the next value is zero. Ordinary numeric comparison therefore cannot establish stream order near wraparound. The existing sequence helpers use modular distance with a span restricted to less than half the sequence space.</p>
+<h2>1. Draw a wrapped interval</h2>
+<pre><code class="language-text">oldest = 4,294,967,294
+reserve 4 positions:
+4,294,967,294 -&gt; 4,294,967,295 -&gt; 0 -&gt; 1
+next = 2</code></pre>
+<p>An acknowledgment of zero releases two positions in this example. Zero is numerically smaller than oldest, yet it is later in this short stream interval. The tracker delegates this relationship to the same sequence arithmetic used by its other operations.</p>
+<h2>2. Refuse ambiguous or invalid state</h2>
+<p>Limiting the outstanding span avoids the ambiguous half-space case. Initialization rejects zero capacity and capacities above the supported maximum. Operations inspect state bounds before using them. This is defensive checking of the host contract; it does not turn a mutable C structure into tamper-proof storage.</p>
+<h2>3. Preserve outputs on refusal</h2>
+<p>A duplicate acknowledgment releases no new positions and is rejected by the new-acknowledgment operation. An old acknowledgment or one beyond next is also refused. The released output remains unchanged on these paths. The caller must check the decision before using that output; a previous value is not a new release count.</p>
+<pre><code class="language-text">ack == oldest       -&gt; duplicate, no new release
+ack behind oldest   -&gt; old, no release
+ack beyond next     -&gt; future, no release
+oldest &lt; ack &lt;= next in modular interval -&gt; new release</code></pre>
+<h2>4. Use an independent model</h2>
+<p>The hosted regression tracks a small literal outstanding count alongside the production sequence counters. It reserves and acknowledges combinations within small capacities and compares the observed state. This is stronger than computing the expected result with the same helper under test, which could repeat the same mistake on both sides.</p>
+<p>The refusal cases also snapshot the tracker and output sentinel values. A sentinel is a recognizable initial value used to detect an unexpected write. Comparing those values after rejected input checks the preservation contract. The wraparound cases use known boundary numbers rather than random values alone.</p>
+<h2>5. Know what remains to build</h2>
+<p>A complete TCP sender still needs connection states, retransmission storage, timers, congestion control, peer-window handling, packet assembly and device integration. Passing sequence tests establishes a reusable arithmetic component. It does not establish any of those higher-level behaviors.</p>
+<p>Exercise: why should the available count not increase after a duplicate acknowledgment? Because no additional sequence position was newly confirmed. Increasing it would let the sender reserve more outstanding data than its capacity permits.</p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

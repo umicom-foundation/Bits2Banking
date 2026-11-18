@@ -134,3 +134,9 @@ Preserve the public C layout, own immutable bytes, finish partial writes and qua
 - [Own static response bytes until they are consumed](34-own-static-response-bytes-until-consumed.md)
 - [Finish headers and partial body writes](35-finish-headers-and-partial-body-writes.md)
 - [Qualify approved assets through each delivery layer](36-qualify-approved-assets-through-each-layer.md)
+
+## Transfer ownership and measure memory
+
+- [Transfer static-file buffer ownership](37-transfer-static-file-buffer-ownership.md)
+- [Release response bodies on every exit](38-release-response-bodies-on-every-exit.md)
+- [Measure memory without confusing ownership](39-measure-memory-without-confusing-ownership.md)

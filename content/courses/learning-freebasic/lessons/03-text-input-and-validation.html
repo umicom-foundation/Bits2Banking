@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/03-text-input-and-validation.html
+
+PURPOSE:
+Text input, strings and validation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Text input, strings and validation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Text input, strings and validation</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>Input is data supplied while the program runs. It can be empty, misspelled or unexpectedly large. A String stores text and manages its own storage. It is not the same representation as a C char pointer. Keep user input as text until you have checked what it means.</p>
+<pre><code class="language-basic">Dim As String answer
+Line Input &quot;Choose chat or media: &quot;, answer
+answer = LCase(Trim(answer))
+If answer = &quot;chat&quot; Then
+    Print &quot;Selected the chat lesson&quot;
+ElseIf answer = &quot;media&quot; Then
+    Print &quot;Selected the media lesson&quot;
+Else
+    Print &quot;Please type chat or media&quot;
+End If</code></pre>
+<ol><li>Save as input.bas, compile and run it from the terminal.</li><li>Type chat and press Enter. Expect the chat message.</li><li>Run again and type spaces around MEDIA. Trim removes surrounding spaces and LCase produces lowercase text for this simple command comparison.</li><li>Run again with an empty line or an unknown word. Expect the help message; it must not start any application or remote request.</li></ol>
+<p>Line Input reads a line into answer. A prompt is the text explaining what to enter. If, Then, ElseIf, Else and End If form a decision. Only one matching branch runs. LCase and Trim are library functions, not new syntax invented by the application. Parentheses enclose their arguments. Nesting LCase(Trim(answer)) applies Trim first.</p>
+<p>Strings can contain non-ASCII text, but character count and byte count are different concepts. Do not assume Len reports human-perceived characters for UTF-8 data. C APIs commonly consume explicit UTF-8 bytes and lengths. If you convert text to a number, check the whole accepted syntax and range; a conversion that accepts an initial numeric prefix does not prove the entire input was valid.</p>
+<p>Never paste a user’s answer into a shell command to execute it. This small menu chooses between fixed branches. An Umicom application should use a registered Framework command and validate its arguments, rather than interpreting arbitrary text as executable code.</p>
+<h2>Practice</h2>
+<p>Add a third fixed choice named lessons. Test all three valid choices, the empty string and a misspelling. The desired result is one clear response per run. If every answer selects chat, inspect the comparison and branch structure; do not change the data until the program appears to work.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="02-names-values-and-number-types.html">Previous: Names, values and number types</a> · <a href="04-expressions-decisions-and-operators.html">Next: Expressions, comparisons and decisions</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

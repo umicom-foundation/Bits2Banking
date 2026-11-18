@@ -1,0 +1,62 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/32-publish-results-with-ref-and-out.html
+
+PURPOSE:
+Publish results deliberately with ref and out
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Publish results deliberately with ref and out | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Publish results deliberately with ref and out</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>The result can change before your first statement</h2>
+<p>Many Framework C functions promise to leave an output variable unchanged when they reject a request. A D binding must preserve that behavior deliberately. Merely naming a parameter result is not enough. This lesson compares an ordinary by-value scalar, a ref parameter and an out parameter using a small checked addition. You will predict the caller's value after success and after refusal, then inspect unit tests that make the differences visible.</p>
+<p>A parameter is the local name used by a function for an incoming argument. An argument is the expression supplied at the call site. An ordinary uint parameter receives a value. A ref uint parameter refers to the caller's variable. An out uint parameter also refers to that variable but initializes it when the function is entered. For uint, the default initial value is zero. That initialization happens before the function body decides whether the request is valid.</p>
+<h2>1. Start with the caller's contract</h2>
+<p>Suppose a user interface already displays a validated result of 71. A new operation might fail because its arithmetic would exceed the representable range. The desired policy is: report failure and retain 71. This is a publication rule. Publication means replacing the caller-visible result with a new accepted value. It is useful for progress figures, parsed settings and snapshots, but not every API chooses this policy. Some deliberately clear output on every request. Read the actual contract rather than assuming either convention.</p>
+<h2>2. Guard the arithmetic before computing it</h2>
+<pre><code class="language-d">bool trySum(uint left, uint right, ref uint result)
+    @safe pure nothrow @nogc
+{
+    if (right &gt; uint.max - left)
+        return false;
+    const uint candidate = left + right;
+    result = candidate;
+    return true;
+}</code></pre>
+<p>uint is an unsigned 32-bit integer type. Its maximum is 4,294,967,295. The expression uint.max - left is safe because left is already within that unsigned range. It tells us how much room remains. If right exceeds that room, the function returns false before evaluating the addition. Otherwise the candidate fits. Only after admission does assignment publish candidate into result. The boolean return reports success independently from the numeric output.</p>
+<p>This order matters. Calculating left + right first and checking whether the answer looks large is too late: the arithmetic may already have wrapped. The same admission-before-publication pattern appears in buffer sizing and native file parsing, although their exact size types and limits differ. This teaching function demonstrates language behavior; it does not replace a shared Framework arithmetic service.</p>
+<h2>3. Watch what out changes</h2>
+<pre><code class="language-d">bool sumWithOut(uint left, uint right, out uint result)
+    @safe pure nothrow @nogc
+{
+    return trySum(left, right, result);
+}</code></pre>
+<p>The wrapper has only one statement, but it does not preserve the caller's old result on refusal. Entering sumWithOut has already initialized result. Calling trySum afterward cannot recover the previous 71 because that value is gone. For a deliberate clear-on-request contract this may be appropriate. For an unchanged-on-failure contract it is a mismatch. Neither spelling is universally better; choose it according to the externally visible behavior.</p>
+<h2>4. Compare with an ordinary local copy</h2>
+<p>changedLocal takes a uint by value, assigns nine to its local parameter and returns it. A caller's original variable remains five unless the caller assigns the return value somewhere. This is the simplest contrast: changing a local scalar is different from writing through a ref alias. A ref argument must identify suitable caller storage; a numeric literal such as 71 is not such a variable. The exercise uses named variables so their before and after states are easy to follow.</p>
+<h2>5. Read the effect annotations separately</h2>
+<p>The small arithmetic functions declare @safe, pure, nothrow and @nogc. These annotations constrain different aspects of their implementation. Here the functions use no pointer arithmetic, global mutable state, thrown exceptions or garbage-collected allocation. They still may change the caller's ref or out variable. Do not interpret pure as a promise that every argument is untouched, or nothrow as a promise that invalid arithmetic cannot occur. The explicit bounds check supplies the arithmetic policy.</p>
+<p>A language attribute is not a substitute for application validation. A function can be memory-safe yet publish the wrong value, use the wrong unit or violate an unchanged-output contract. Likewise, reflecting on a function's types and annotations can help produce interface documentation, but it cannot infer every business rule. Umicom's C API documentation, explicit status checks and regression tests remain necessary even when a D client is involved.</p>
+<h2>6. Compile with the unit tests enabled</h2>
+<ol><li>Open PowerShell and check the D compiler installed during the setup lesson. The commands below use DMD. Keep the exact version in your notes.</li><li>Change to the native-language-boundary laboratory and read output_publication.d. Its unittest block checks successes, rejected sums and the ordinary local-copy case.</li><li>Compile with -unittest so those checks become part of the executable. Keep assertions enabled; do not use -release for this exercise.</li><li>Run the program. Its expected demonstration is ref refusal preserves: 71 and out refusal starts from: 0. An assertion failure is evidence to investigate before relying on the example.</li></ol>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary
+dmd --version
+dmd -unittest -g -of=output_publication.exe output_publication.d
+&amp; .\output_publication.exe
+$LASTEXITCODE</code></pre>
+<h2>7. Follow the boundary cases</h2>
+<p>Adding twenty and twenty-two should publish forty-two. Adding uint.max and zero should succeed at the boundary. Adding uint.max and one must be refused. Start the output at 71 before each refusal: the ref version retains it; the out wrapper leaves the default zero. The unit tests also pass the same named value as both input expressions and the ref output. Because the two inputs are received by value, their values are established for this function's calculation before it publishes the result. This does not authorize arbitrary aliasing in unrelated pointer-based C APIs.</p>
+<h2>8. Apply the lesson to a native binding</h2>
+<p>At a C boundary, an output pointer such as int32_t *percent describes storage, but the API contract says when that storage changes. The existing bounded_progress exercise returns a status and preserves percent on rejected input. A D wrapper that promises the same behavior should not erase the caller's value on entry. One robust pattern is to call the native function with a local candidate, check its status, then publish the candidate to a ref result only on success.</p>
+<p>Keep the exact C linkage, integer widths and calling convention specified by the native header. A D ref parameter is a D language contract; do not assume that changing the declaration to ref automatically establishes the correct C ABI. Also preserve the native owner and lifetime rules. This lesson adds no automatic wrapper generator and makes no claim that every existing language binding has been audited.</p>
+<h2>9. Practice before extending the policy</h2>
+<ol><li>Write a table predicting the return status and output for zero plus zero, uint.max plus zero, and uint.max plus one. Run the existing unit tests and compare.</li><li>In a separate practice copy, move result assignment above the refusal check. Explain how that breaks the preservation contract even if the program still compiles.</li><li>Replace ref with out in a practice copy of trySum and observe the failure of the preservation assertion. Restore the original afterward.</li><li>Design a parser output policy on paper. Should a rejected string retain the previous value or clear it? State that choice before selecting a parameter form.</li></ol>
+<h2>Troubleshooting and present limits</h2>
+<p>If dmd is not found, complete compiler setup first; the CMake C tests do not compile D. If unit tests appear absent, check that -unittest is present and that you ran the newly built executable. If you accidentally used -release, rebuild with the commands above before drawing conclusions about assertions. These D examples remain uncompiled in environments without a D compiler. The exercise covers scalar publication and checked addition, not exception-safe object replacement, concurrent access, arrays with borrowed storage or a complete Framework binding.</p>
+<h2>Caller-visible behavior</h2><table><thead><tr><th scope="col">Call with caller value 71</th><th scope="col">Return on overflow</th><th scope="col">Caller value afterward</th></tr></thead><tbody><tr><td>trySum(..., ref result)</td><td>false</td><td>71; no publication occurred</td></tr><tr><td>sumWithOut(..., out result)</td><td>false</td><td>0; initialized on entry</td></tr><tr><td>changedLocal(original)</td><td>Returns local value 9</td><td>Original scalar stays unchanged unless caller assigns the return</td></tr></tbody></table><h2>Further reading</h2><ul><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/native-language-boundary/output_publication.d">Original D publication example</a></li><li><a href="https://dlang.org/spec/function.html#ref-params">D function parameters</a></li><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/native-language-boundary/boundary.h">Existing C output contract</a></li></ul><nav aria-label="Previous lesson"><a href="31-follow-the-lifetime-of-input-range-data.html">Previous: Follow the lifetime of input-range data</a></nav><nav aria-label="Continuing practice"><a href="33-admit-enumerated-states-before-dispatch.html">Next: Admit enumerated states before exhaustive dispatch</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

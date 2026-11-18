@@ -89,3 +89,5 @@ Continue into [LLM from Scratch](../../llm-from-scratch/index.html) to see how c
 [Course contents](../../../courses/safer-c-programming/index.html) · [Previous: Follow corpus and output lifetimes](40-own-the-corpus-and-borrow-the-window.md)
 
 [Written course contents](index.md)
+
+[Next: Copy metadata with explicit pointer ownership](42-copy-metadata-with-explicit-pointer-ownership.md)

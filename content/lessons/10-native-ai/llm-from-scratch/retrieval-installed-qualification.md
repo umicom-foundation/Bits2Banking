@@ -54,8 +54,10 @@ A useful report says which seven local contracts were exercised, on which revisi
 
 ## Read and run the client
 
-[Setup, expected output and troubleshooting](../../../../labs/native/framework-retrieval-ownership/README.md) · [C23 example source](../../../../labs/native/framework-retrieval-ownership/main.c).
+[Setup, expected output and troubleshooting](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-retrieval-ownership/README.md) · [C23 example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-retrieval-ownership/main.c).
 
 ## Continue learning
 
 [Course contents](../../../courses/llm-from-scratch/index.html) · [Previous: Keep callback failures from publishing partial scores](retrieval-callback-ownership.md)
+
+[Next lesson](dense-kv-cache-geometry.md)

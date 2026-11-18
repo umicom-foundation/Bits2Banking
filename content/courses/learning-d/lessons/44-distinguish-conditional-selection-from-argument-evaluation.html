@@ -1,0 +1,62 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/44-distinguish-conditional-selection-from-argument-evaluation.html
+
+PURPOSE:
+Distinguish conditional selection from argument evaluation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish conditional selection from argument evaluation | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Distinguish conditional selection from argument evaluation</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Start with values and effects</h2>
+<p>An expression can return a value and cause an effect. A function that returns eleven while incrementing a counter does both. Choosing between values after they have been computed is different from choosing which computation to perform. This lesson uses D’s conditional expression and an ordinary helper function to expose that difference. The reasoning is useful when a client decides whether to request a Framework operation, construct an object or use a default value.</p>
+<h2>Read the conditional expression</h2>
+<p>The question mark and colon form one conditional operator with three operands. D evaluates the condition and then the selected alternative. The result can be assigned or passed onward. Parentheses can clarify a larger expression. Use an ordinary if/else statement when a branch contains several actions.</p>
+<pre><code class="language-d">int selected = condition ? valueWhenTrue : valueWhenFalse;</code></pre>
+<h2>Build a harmless observation tool</h2>
+<p>private controls visibility through the module rules. int is the returned value type; uint is an unsigned counter. ref allows the function to update the caller’s counter. @safe requests memory-safety checking for this function, not mathematical correctness. nothrow and @nogc constrain exception and collector behavior. The bounded probe does not establish that standard output or the whole linked program has those same effects.</p>
+<pre><code class="language-d">private int probe(int value, ref uint calls) @safe nothrow @nogc
+{
+    ++calls;
+    return value;
+}</code></pre>
+<h2>Keep observations separate</h2>
+<p>The complete example uses leftCalls, rightCalls and conditionCalls. Each probe changes a different counter. The first phase begins with zero counters, evaluates the condition once and invokes one value probe. The second phase resets all three before calling an ordinary function. Without that reset, the observations would mix separate operations. This is a reasoning exercise, not a performance benchmark.</p>
+<h2>Trace the selective phase</h2>
+<p>For true, expect eleven and one left call. For false, expect twenty-two and one right call. In each case the other value counter remains zero and the condition counter becomes one. The unselected operand still needs valid syntax and types; runtime selection is not conditional compilation. The alternatives here deliberately use the same integer type.</p>
+<pre><code class="language-d">int selected = probeCondition(choice, conditionCalls)
+    ? probe(11, leftCalls) : probe(22, rightCalls);</code></pre>
+<h2>Trace the ordinary-call phase</h2>
+<p>chooseValues has ordinary by-value parameters. Both value probes run before its body chooses a result. Default D linkage specifies left-to-right argument evaluation; other linkage conventions have separate rules. The example checks only independent final counters, so its comparison does not depend on transferring D’s argument order to C.</p>
+<pre><code class="language-d">selected = chooseValues(probeCondition(choice, conditionCalls),
+    probe(11, leftCalls), probe(22, rightCalls));</code></pre>
+<h2>Compare the observations</h2>
+<p>The returned integer alone cannot distinguish the operations. Their effects do. A function with a name such as Choose is not automatically selective. Read its parameter contract before placing expensive work inside its arguments.</p>
+<table><thead><tr><th scope="col">Operation</th><th scope="col">True result</th><th scope="col">False result</th><th scope="col">Work observed</th></tr></thead><tbody><tr><td>Conditional expression</td><td>11</td><td>22</td><td>One condition and one value probe</td></tr><tr><td>Ordinary helper call</td><td>11</td><td>22</td><td>One condition and both value probes</td></tr></tbody></table>
+<h2>Ordinary, lazy and delegate are different contracts</h2>
+<p>An ordinary integer parameter receives a computed value. A lazy parameter can defer an expression, and its function body may evaluate it repeatedly. A delegate carries callable behavior and may carry a context. Those mechanisms need their own lifetime analysis. This example uses neither. Revisit the earlier lazy-evaluation and callback lessons before using deferred work around borrowed native buffers.</p>
+<h2>Compile the complete example</h2>
+<ol><li>Open the native-language-boundary laboratory directory.</li><li>Read conditional_selection.d and locate the module declaration, probes, assertions, unittest block and main function.</li><li>Check the compiler version with dmd --version.</li><li>Compile with unit tests and debugging information enabled. Do not add release options that remove the checks you intend to observe.</li><li>Run only after compilation succeeds, then inspect the exit status.</li></ol>
+<pre><code class="language-powershell">dmd --version
+dmd -unittest -g -of=conditional_selection-d.exe conditional_selection.d
+.\conditional_selection-d.exe
+$LASTEXITCODE</code></pre>
+<h2>Expected result and current evidence</h2>
+<p>A successful run prints “Umicom D selective expression and eager argument checks passed.” The unittest block checks true and false choices; main exercises them during an ordinary run too. The D example is authored but uncompiled and unexecuted in the current authoring environment. A separately executed C comparison is evidence about C only. Preserve the subject-language compiler version and output when you qualify this example.</p>
+<h2>What assertions establish</h2>
+<p>These assertions check the two choices and their counter values. They do not prove thread safety, interoperability, every conversion rule or the absence of all defects. Assertions are development checks rather than a replacement for input validation. A production C boundary still needs status returns, explicit sizes and ownership rules even when its D caller uses contracts and unit tests.</p>
+<h2>Apply the lesson to Framework clients</h2>
+<p>A D client may select a scalar configuration value before calling a C23 Framework service. If two argument expressions each start a download or allocate a large buffer, an ordinary choosing helper receives their results only after both operations have happened. Prefer an explicit branch that admits and starts the intended operation. Keep reusable admission, cancellation and ownership in Framework. This is a control-flow improvement, not proof that any model workload will fit in memory.</p>
+<h2>Keep reflection and execution separate</h2>
+<p>Reflection inspects declarations and types. Compile-time traits can report whether members exist, but do not by themselves report which runtime branch executed. These counters observe execution. Use type metadata for tasks such as building a field catalogue and use explicit runtime state or tests to record actions. Metadata is not a substitute for execution evidence.</p>
+<h2>Extend the experiment</h2>
+<ol><li>Change the returned constants and predict results and counters before running.</li><li>Rewrite the selective phase using if/else and compare its effects.</li><li>Explain how a lazy parameter differs from both an ordinary parameter and a cached result.</li><li>Explain why the C comparison intentionally avoids depending on argument order.</li><li>Keep the probes harmless; do not substitute invalid pointers or deliberate arithmetic faults.</li></ol>
+<h2>Further reading</h2>
+<ul><li><a href="https://dlang.org/spec/expression.html">D expression evaluation and conditional expressions</a></li><li><a href="https://dlang.org/spec/function.html">D function parameters and linkage</a></li></ul>
+<nav aria-label="Previous lesson"><a href="43-separate-union-reflection-from-active-value-state.html">Previous: Separate union reflection from active-value state</a></nav><nav aria-label="Continuing practice"><a href="45-separate-local-static-storage-from-caller-ownership.html">Next: Separate local static storage from caller ownership</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

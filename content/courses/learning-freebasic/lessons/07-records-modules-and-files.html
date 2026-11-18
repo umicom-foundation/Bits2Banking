@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/07-records-modules-and-files.html
+
+PURPOSE:
+Records, reusable modules and files
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Records, reusable modules and files | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Records, reusable modules and files</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A record groups related fields. FreeBASIC Type defines a user-defined record. A file stores bytes after a process exits; it is not a memory dump that another language can safely interpret by guessing. Begin with a simple text format and explicit validation.</p>
+<pre><code class="language-basic">Type LessonProgress
+    completed As Long
+    total As Long
+End Type
+Dim As LessonProgress progress = (2, 8)
+Print progress.completed; &quot; of &quot;; progress.total
+Dim As Integer handle = FreeFile
+If Open(&quot;progress.txt&quot; For Output As #handle) &lt;&gt; 0 Then
+    Print &quot;Cannot open progress.txt&quot;
+    End 1
+End If
+Print #handle, progress.completed
+Print #handle, progress.total
+Close #handle</code></pre>
+<ol><li>Use an empty practice folder: opening For Output replaces the contents of an existing file. Save as records.bas, compile and run.</li><li>Open progress.txt in a text editor. It contains two numbers on separate lines, with formatting chosen by BASIC.</li><li>Change the current folder and observe that a relative filename names a different location. Application persistence should choose an explicit data location.</li><li>Make a copy of the program before extending it to read. Validate that total is positive and completed lies between zero and total before using the loaded data.</li></ol>
+<p>The dot selects a record field. FreeFile obtains an available BASIC file number; # marks that number in file operations. Open can fail, so the program checks its status before writing. Close releases the handle. A production writer must also handle write/close errors and interrupted updates. This introductory example is not a crash-safe settings store.</p>
+<p>Put shared declarations in a .bi include file and use #include once to avoid repeating them in one translation unit. Put implementations in .bas files and compile/link those files together. Inclusion copies declarations into compilation; linking connects compiled definitions. Include guards do not excuse defining the same exported function twice.</p>
+<p>Do not write a Type record’s raw memory as a portable format: padding, byte order and field representation may change. For Umicom applications, use Framework serialization and file replacement contracts through a reviewed C binding. Keep this exercise as a way to learn records and handles.</p>
+<h2>Check</h2>
+<p>If Open fails, no Print # operation should run. If a loaded file says completed is 100 and total is 8, reject or explain the invalid record. A parser accepting two integers does not prove the values make sense.</p>
+<nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="06-procedures-and-value-ownership.html">Previous: Procedures, ByVal and ByRef</a> · <a href="08-a-reviewed-c-boundary.html">Next: Call a small C service from FreeBASIC</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

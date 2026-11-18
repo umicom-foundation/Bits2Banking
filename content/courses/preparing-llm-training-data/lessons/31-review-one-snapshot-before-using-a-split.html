@@ -1,0 +1,66 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/31-review-one-snapshot-before-using-a-split.html
+
+PURPOSE:
+Review one snapshot before using a split
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review one snapshot before using a split | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Review one snapshot before using a split</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>What a review can tell you</h2>
+<p>A dataset is a collection of examples. A partition divides those examples into named parts, such as training and evaluation. Training examples may change a model's parameters. Evaluation examples help you assess the result without using them for that update. A review checks properties of the examples and the proposed division. It does not train a model, grant permission to use source material, or prove that an answer is correct.</p>
+<h2>Begin with two different questions</h2>
+<table><thead><tr><th scope="col">Check</th><th scope="col">Question it answers</th><th scope="col">Question it cannot answer</th></tr></thead><tbody><tr><td>Source grouping</td><td>Do records with the same source_id stay on the same side?</td><td>Are differently named sources copies or paraphrases?</td></tr><tr><td>Exact-pair overlap</td><td>Does the same decoded prompt and completion occur on both sides?</td><td>Are different words expressing nearly the same content?</td></tr><tr><td>Human review</td><td>Are source rights, labels and intended use acceptable?</td><td>Did the program execute all of its memory checks?</td></tr><tr><td>Model evaluation</td><td>How does a particular model behave on selected tasks?</td><td>Is every possible future answer correct?</td></tr></tbody></table>
+<h2>Create two original teaching records</h2>
+<p>Use this small invented example rather than private documents. The source names differ, but the prompt and completion are identical. Each line is a JSON object: braces contain fields, quoted names identify those fields, and quoted values contain text. JSONL stores one such object per physical line. This is a simple teaching schema, not a universal format for every trainer.</p>
+<h2>Save UTF-8 without a byte-order mark</h2>
+<pre><code class="language-powershell">$datasetPath = Join-Path $PWD 'lesson-pairs.jsonl'
+if (Test-Path -LiteralPath $datasetPath) { throw 'Choose a new file name before continuing.' }
+$datasetText = @'
+{&quot;source_id&quot;:&quot;original-note&quot;,&quot;prompt&quot;:&quot;What stores working values?&quot;,&quot;completion&quot;:&quot;RAM.&quot;}
+{&quot;source_id&quot;:&quot;copied-note&quot;,&quot;prompt&quot;:&quot;What stores working values?&quot;,&quot;completion&quot;:&quot;RAM.&quot;}
+'@
+[System.IO.File]::WriteAllText($datasetPath, $datasetText, [System.Text.UTF8Encoding]::new($false))</code></pre>
+<h2>Read the save operation</h2>
+<ol><li>$PWD means your current PowerShell directory. Join-Path combines it with a filename and produces an absolute local path.</li><li>Test-Path refuses to overwrite an existing file in this exercise. Stop if the guard throws; choose another teaching filename.</li><li>The here-string between @' and '@ holds the two JSON lines without PowerShell variable expansion.</li><li>UTF8Encoding($false) chooses UTF-8 without an initial byte-order mark. The native teaching parser does not accept a BOM.</li><li>WriteAllText writes the small original fixture. This explicit preparation step creates the file; the review command itself does not write it.</li></ol>
+<h2>Choose the review inputs</h2>
+<table><thead><tr><th scope="col">Argument</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>Absolute JSONL file</td><td>$datasetPath</td><td>One deliberately selected ordinary local file.</td></tr><tr><td>Evaluation groups</td><td>1</td><td>Keep one complete source group for evaluation and at least one for training.</td></tr><tr><td>Seed</td><td>42</td><td>An unsigned integer controlling reproducible group selection.</td></tr><tr><td>Staging bytes</td><td>65536</td><td>Maximum owned text and descriptor storage for the overlap audit only.</td></tr></tbody></table>
+<h2>Run a native review</h2>
+<pre><code class="language-powershell">umicom training-data review $datasetPath 1 42 65536</code></pre>
+<h2>If the command cannot be found</h2>
+<p>Use the actual built or installed native umicom executable from your verified Framework toolchain. Do not assume an old Applications build path still contains it. Check Get-Command umicom or Test-Path on the explicit executable path. A missing command is a tool-location problem; it is not evidence that the dataset was reviewed. The Framework build and qualification guide explains how the owner prepares that executable.</p>
+<h2>Predict the result before reading it</h2>
+<ol><li>There are two rows and two exact source identities.</li><li>One source group is assigned to each side, so there is one training row and one evaluation row.</li><li>There is only one distinct prompt/completion pair, repeated once.</li><li>That pair occurs on both sides. Expect Shared pairs: 1.</li><li>The witness lines are the original one-based row numbers. Their training/evaluation order depends on the seeded assignment; do not assume line one always means training.</li></ol>
+<h2>Expected aggregate observations</h2>
+<pre><code class="language-text">Rows: 2 | Source groups: 2 | Training rows: 1 | Evaluation rows: 1
+Distinct pairs: 1 | Duplicate rows: 1 | Shared pairs: 1</code></pre>
+<h2>Completion is not approval</h2>
+<p>Exit code zero means the operation finished its review. It can still report a shared pair. Exit code one means input or execution was refused; two means the command arguments were invalid. You must choose a policy for what findings are acceptable. For this fixture, investigate why two sources contain the same example before treating evaluation as independent. Do not silently remove a row or change its source name just to make a count look better.</p>
+<h2>What one snapshot means</h2>
+<p>A snapshot here means the unchanged bytes held by one operation while its checks run. The file adapter acquires the bounded file once, then both the source splitter and pair auditor use that same buffer. It does not claim a filesystem transaction or return a permanent copy. Native file identity and size checks can catch some concurrent changes, but they do not prove that nobody can edit the file later.</p>
+<h2>Why a later reopened file is different</h2>
+<p>A membership array contains one byte for each original row: zero for training, one for evaluation. If somebody reorders the file afterward, the old byte at position three describes the old third row. The selected-file review does not return a source digest or retained corpus. Do not apply its membership blindly to a later file. An export application should own an unchanged input snapshot and compose the memory review and selection services on those same bytes, then publish through an explicit file policy.</p>
+<figure><img src="../../../assets/diagrams/dataset-review-publication.svg" alt="Source grouping and exact-pair comparison share one unchanged buffer; only success publishes membership and summary together." style="max-width:100%;height:auto"><figcaption>Keep candidate results private until the complete operation succeeds.</figcaption></figure><h2>Follow the failure boundary</h2>
+<table><thead><tr><th scope="col">Step</th><th scope="col">Private work</th><th scope="col">Visible result</th></tr></thead><tbody><tr><td>Parse and group</td><td>Check records and compute candidate membership</td><td>No caller result is replaced.</td></tr><tr><td>Compare content</td><td>Audit exact pairs within the chosen staging budget</td><td>Candidate membership still stays private.</td></tr><tr><td>Check completion</td><td>Confirm both operations and cooperative cancellation checks succeeded</td><td>Publish membership and summary together.</td></tr><tr><td>Refusal at any earlier step</td><td>Clear and release owned temporary storage</td><td>Keep the caller's previous output unchanged; return diagnostic progress.</td></tr></tbody></table>
+<h2>Try a deliberately insufficient budget</h2>
+<pre><code class="language-powershell">umicom training-data review $datasetPath 1 42 1</code></pre>
+<h2>Interpret this refusal</h2>
+<p>One byte cannot hold the auditor's text and row descriptors for these examples. Expect a refusal and no successful row/overlap summary. Parsing may already have completed, so a progress stage named COMPLETE does not mean the whole review succeeded. The returned status is the operation result. For a successful review, reported staging bytes can differ across 32-bit and 64-bit builds because descriptors contain native-width fields.</p>
+<h2>Do not mistake staging memory for total memory</h2>
+<p>The input file can occupy up to 16 MiB plus a terminating byte. The review also has a fixed 4096-byte membership candidate, splitter storage, parser allocations, stack and allocator overhead. The 65,536-byte option limits only the overlap auditor's owned text and descriptors. It is not a process-RAM cap. Use the separate streaming visitor when you only need record-by-record inspection; this composed review retains a bounded input snapshot because its services make multiple passes.</p>
+<h2>What exact comparison leaves open</h2>
+<p>JSON escape spellings are decoded before comparison. Case, whitespace and Unicode normalization forms are not automatically normalized. A paraphrase may carry the same knowledge without matching bytes. A copied answer paired with a different prompt will not be the same pair. Time-sensitive financial data also needs a chronology policy. These checks do not prove rights, correct labels, a suitable tokenizer or good model quality.</p>
+<h2>Training formats still have different jobs</h2>
+<p>A JSON object is a way to name fields. A dictionary is a program data structure. Token IDs are numbers consumed by a chosen model. Embedding vectors support similarity operations such as retrieval. A vector database indexes those vectors. None of those automatically substitutes for a reviewed training dataset. After review, the selected trainer still needs its exact tokenization, templates, masks, batching and objective. Follow the earlier lessons before converting documents or starting a fine-tune.</p>
+<h2>Exercises</h2>
+<ol><li>Create a separate copy in which the second completion says RAM stores temporary working values. Predict two distinct pairs and zero exact shared pairs; explain why this still does not prove independence.</li><li>Set both source_id values to the same name. With only one source group, a one-group evaluation split cannot leave a training group and must be refused.</li><li>Keep two source groups, add a second row to one group, and predict why one evaluation group may now contain two rows.</li><li>Explain why running the same seed after adding a new source need not preserve every old membership assignment.</li><li>Write a checklist separating source rights, exact duplicate review, temporal separation and model evaluation. Give each a separate evidence item.</li></ol>
+<h2>Use in Umicom applications</h2>
+<p>Studio, Media or another client can call the same Framework services from a worker and present the result after completion. They must keep borrowed input, options, outputs and cancellation state alive until the call returns. A cancellation request does not interrupt every native read or sorting instruction. This lesson documents a native service and command; it does not claim a new GUI, a completed training pipeline or a qualified installed SDK.</p>
+<nav aria-label="Previous lesson"><a href="30-stream-records-without-retaining-the-whole-file.html">Previous: Stream records without retaining the whole file</a></nav><nav aria-label="Continuing practice"><a href="32-measure-token-loss-with-the-right-denominator.html">Next: Measure token loss with the right denominator</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

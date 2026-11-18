@@ -1,0 +1,30 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/05-split-sources-before-chunking.html
+
+PURPOSE:
+Keep related sources out of different partitions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keep related sources out of different partitions | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Keep related sources out of different partitions</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>Training data changes model weights. Validation data helps choose settings during development. A final test set is held back for an independent assessment after those choices. If nearly identical material appears on both sides, the measured result can be misleading. This is called data leakage.</p>
+<p>Imagine a long document split into ten chunks. Randomly placing individual chunks into training and validation lets the model see closely related text from the same document. Video frames from the same clip and conversations from the same session have the same problem. Assign a source group before splitting, and keep the entire group together.</p>
+<pre><code class="language-text">row     source group     content
+0       100              handbook paragraph A
+1       100              handbook paragraph B
+2       200              separate tutorial
+3       300              separate question set
+4       300              another question in that set
+5       400              independent note</code></pre>
+<ol><li>Give every related source a stable group identifier. Different rows may share one identifier.</li><li>Choose training and evaluation groups before tokenizing or augmenting. For a final test set, reserve independent groups through a separate documented process.</li><li>Verify that no group identifier occurs in both outputs. Count both groups and rows.</li><li>Record the seed, source set and splitting policy so the decision can be reproduced.</li><li>If deployment predicts future events, consider a chronological split. A random grouped split is not automatically appropriate for finance time series.</li></ol>
+<p>The Framework function UmiAiTrainingSplitGroups implements a bounded, deterministic two-way group partition for up to 4096 rows. It selects a requested number of unique evaluation groups, maps membership back to rows, and leaves output unchanged on invalid requests. It does not discover duplicates, stratify labels or create a final test set. Two groups out of ten does not guarantee twenty percent of the rows.</p>
+<h2>Exercise</h2>
+<p>If group 100 has ninety rows and the other nine groups have one row each, selecting one evaluation group may produce ninety evaluation rows or only one. Explain why both results satisfy a group-count request. If balanced label counts matter, design and validate an additional policy rather than describing this API as stratified.</p>
+<figure><img src="../assets/source-group-partition.svg" alt="Two chunks from document A stay together in training. Document B is held out. Validation measures a different source." width="860" style="max-width:100%;height:auto"><figcaption>One group stays in one partition. This does not discover near-duplicates.</figcaption></figure><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="04-quality-deduplication-and-rights.html">Previous: Review quality, duplicates and allowed use</a> · <a href="06-run-the-framework-group-lab.html">Next: Run a native Framework dataset-partition lab</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

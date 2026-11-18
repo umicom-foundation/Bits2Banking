@@ -1,0 +1,26 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/19-c-abi-and-betterc.html
+
+PURPOSE:
+Separate C linkage from the BetterC subset
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate C linkage from the BetterC subset | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate C linkage from the BetterC subset</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>extern(C) selects C linkage for a declaration. It does not automatically remove the D runtime from all surrounding code. BetterC is a restricted compilation mode for code that can operate with the C runtime alone. Choose it for a concrete integration requirement, not as a blanket claim that ordinary D is inefficient.</p>
+<p>The companion native-language-boundary lab has a full D console client calling the same C function as FreeBASIC. It uses std.stdio and therefore is an ordinary D program. The C function receives scalar counts and a caller-owned output pointer. No exception or language-specific string descriptor crosses the boundary.</p>
+<pre><code class="language-d">extern(C) int bounded_progress(int completed, int total, int* percent) nothrow @nogc;
+static assert(int.sizeof == 4);</code></pre>
+<ol><li>Open labs/languages/native-language-boundary/README.md and read the ABI contract.</li><li>Build and run the C regression before trying a second-language client.</li><li>Select the D toolchain instructions matching your C object format. Follow the lab commands and expect 25 plus the D checks message.</li><li>Try total zero in the client and check both status and unchanged output. A nonzero status must not be ignored because an older output still looks plausible.</li></ol>
+<p>BetterC retains many compile-time facilities and can support allocation-free adapters. Runtime facilities such as garbage collection, ordinary D classes, exceptions and TypeInfo are not generally available there. A source file importing a module may still use declarations that compile without runtime support, but each used symbol must be checked. ImportC, which compiles C source, is a separate feature.</p>
+<p>Before a production binding, specify who initializes any required runtime, which thread may call each API, how callbacks are retained, and what releases an owned result. Matching a symbol name is insufficient. Never cast a D array descriptor to a C array, or assume a D string has a trailing zero. Supply a pointer and explicit byte length when the C API permits it.</p>
+<h2>Check</h2>
+<p>Why is the lab’s client not a BetterC example? It uses the ordinary D standard-library console path. Why is the C service still useful? Its fixed-width, allocation-free interface is consumable from multiple compatible native toolchains.</p>
+<h2>Further reading</h2><ul><li><a href="https://dlang.org/spec/betterc.html">D BetterC reference</a></li><li><a href="https://dlang.org/spec/interfaceToC.html">D interfacing to C</a></li></ul><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="18-reflection-and-field-catalogues.html">Previous: Inspect fields with compile-time reflection</a> · <a href="20-keyword-and-concept-map.html">Next: Navigate D keywords and language concepts</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,40 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/10-declarations-includes-and-namespaces.html
+
+PURPOSE:
+Separate declarations, implementations and namespaces
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate declarations, implementations and namespaces | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate declarations, implementations and namespaces</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A declaration tells a compiler what a symbol looks like. A definition supplies storage or implementation. A header-style .bi file can share declarations across source files. An include directive inserts source during preprocessing; it does not dynamically load a library when the program runs.</p>
+<pre><code class="language-basic">' progress.bi
+#ifndef LESSON_PROGRESS_BI
+#define LESSON_PROGRESS_BI
+Namespace Lesson
+    Declare Function IsComplete(ByVal done As Long, ByVal total As Long) As Long
+End Namespace
+#endif</code></pre>
+<pre><code class="language-basic">' progress.bas
+#include once &quot;progress.bi&quot;
+Namespace Lesson
+    Function IsComplete(ByVal done As Long, ByVal total As Long) As Long
+        Return IIf(total &gt; 0 AndAlso done = total, 1, 0)
+    End Function
+End Namespace</code></pre>
+<pre><code class="language-basic">' main.bas
+#include once &quot;progress.bi&quot;
+Print Lesson.IsComplete(8, 8)</code></pre>
+<ol><li>Save the three named files in one empty practice folder.</li><li>Compile together with fbc -lang fb -w all main.bas progress.bas -x modules.exe.</li><li>Run .\modules.exe and expect 1.</li><li>Temporarily omit progress.bas from compilation. Observe that a declaration alone does not provide the function definition needed at link time. Restore the command.</li></ol>
+<p>Namespace groups names so Lesson.IsComplete can coexist with similarly named functions elsewhere. Using can make names visible without qualification, but too many imported names create ambiguity. The #ifndef/#define/#endif guard prevents repeated declarations in one compilation; #include once is also useful. Neither prevents linking two separate definitions of the same exported symbol.</p>
+<p>Preprocessor #if chooses source based on compile-time conditions. It differs from a runtime If. #macro and #define can substitute source text, which may obscure types and evaluation. Prefer a typed Function when that expresses the operation clearly. Read the expanded intent before using macros at a C boundary.</p>
+<h2>Check</h2>
+<p>Change the return type in only one declaration and explain why every translation unit must agree. Link success alone is not a complete type check across independently compiled foreign-language modules.</p>
+<nav aria-label="Next lesson"><a href="09-pointers-and-allocation-lifetimes.html">Previous: Follow pointers and allocation lifetimes</a> · <a href="../index.html">Course contents</a> · <a href="11-tests-errors-and-record-contracts.html">Next: Test errors and define record contracts</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

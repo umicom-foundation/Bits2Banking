@@ -1,0 +1,83 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/29-check-context-fit-before-training-a-byte-model.html
+
+PURPOSE:
+Check context fit before training a byte model
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check context fit before training a byte model | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Check context fit before training a byte model</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>What this lesson answers</h2>
+<p>A dataset can be well-formed and still contain examples that are too long for a model. Before training, you need to know how examples become token positions, which positions contribute to the learning objective, and what happens when they do not fit. This lesson uses the small native Umicom byte decoder to make those quantities concrete. It does not ask you to download a large model or start a paid service. You will inspect three synthetic records, calculate the expected totals, run a C SDK example, and decide how to investigate overlong records.</p>
+<h2>A short vocabulary</h2>
+<table><thead><tr><th scope="col">Term</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>Context length</td><td>The number of token positions reserved for one processed example.</td></tr><tr><td>Token</td><td>An integer identifier presented to the model; its meaning depends on the tokenizer.</td></tr><tr><td>BOS and EOS</td><td>Reserved beginning-of-sequence and end-of-sequence markers.</td></tr><tr><td>Prediction row</td><td>One input position paired with the next token that it should predict.</td></tr><tr><td>Selected row</td><td>A prediction included in the learning objective.</td></tr><tr><td>Padding</td><td>Unused positions filled consistently so examples have the requested shape.</td></tr><tr><td>Truncation</td><td>Removing part of an example to make it shorter. It changes the data and requires an explicit policy.</td></tr></tbody></table>
+<h2>Do not choose a storage format by guessing</h2>
+<p>JSONL is a convenient storage format: each physical line contains one JSON object. A vector database is an index for retrieving similar items; it is not a mandatory format for fine-tuning. A dictionary or key/value object describes fields but does not define the model objective. For this exercise, each object has exactly source_id, prompt and completion strings. The reader validates that teaching schema. A later conversion maps the strings into the selected model format. Other trainers may require role-based message arrays, images plus captions, or different fields.</p>
+<h2>Write three original records</h2>
+<p>These tiny strings are deliberate arithmetic fixtures, not useful instruction-tuning data. An empty prompt is permitted. Every completion is nonempty. The IDs identify three independent source examples for this exercise. In real work, preserve meaningful source identities so related chunks can stay in one partition; a source ID supplied by an author is not proof of permission to train on it.</p>
+<pre><code class="language-json">{&quot;source_id&quot;:&quot;one&quot;,&quot;prompt&quot;:&quot;p&quot;,&quot;completion&quot;:&quot;c&quot;}
+{&quot;source_id&quot;:&quot;two&quot;,&quot;prompt&quot;:&quot;&quot;,&quot;completion&quot;:&quot;xyz&quot;}
+{&quot;source_id&quot;:&quot;three&quot;,&quot;prompt&quot;:&quot;long&quot;,&quot;completion&quot;:&quot;reply&quot;}</code></pre>
+<h2>Understand this tokenizer before counting</h2>
+<p>Umicom’s teaching byte tokenizer assigns an ID to each byte and reserves additional IDs for special markers. A UTF-8 letter can occupy more than one byte, so it may occupy several tokens in this format. The current native decoder has a maximum context of 32 rows. Those two facts belong to this implementation. They are not claims about the tokenization or context capacity of a pretrained model such as one loaded from a GGUF file. Always use that model’s actual tokenizer and prompt template when preparing its training data.</p>
+<h2>Derive the extra row</h2>
+<p>The prepared stream is BOS, prompt bytes, completion bytes, EOS. Inputs and targets are adjacent elements: each input predicts the following token. If there are P prompt bytes and C completion bytes, the stream contains P + C + 2 tokens. There is one fewer adjacent pair than tokens, so it creates P + C + 1 prediction rows. The last prediction is EOS. Completion-only supervision selects C + 1 rows, including that final prediction. Prompt targets are excluded from the objective, but prompt inputs can still influence later predictions.</p>
+<pre><code class="language-text">Stream:  BOS   p   c   EOS
+Inputs:  BOS   p   c
+Targets:   p   c   EOS
+Selected:  0   1     1</code></pre>
+<h2>Calculate the fixture by hand</h2>
+<p>Choose context length four. Records one and two fit; record three does not. The first fitting record needs one padding row and the second needs none. The longest requirement is ten, the shortest is three, and all records together require seventeen rows before any fit decision. This last sum is not the number of rows the fitting subset contributes.</p>
+<table><thead><tr><th scope="col">Record</th><th scope="col">Prompt bytes</th><th scope="col">Completion bytes</th><th scope="col">Required prediction rows</th><th scope="col">Selected rows if it fits</th></tr></thead><tbody><tr><td>one</td><td>1</td><td>1</td><td>3</td><td>2</td></tr><tr><td>two</td><td>0</td><td>3</td><td>4</td><td>4</td></tr><tr><td>three</td><td>4</td><td>5</td><td>10</td><td>6</td></tr></tbody></table>
+<h2>Keep the denominators visible</h2>
+<p>Here fittingValidRows plus fittingPaddingRows equals fittingRecords times contextLength: 7 + 1 = 2 times 4. Selected rows are a subset of valid rows, not an additional allocation. Never present a percentage without explaining which records or positions form its denominator.</p>
+<table><thead><tr><th scope="col">Summary field</th><th scope="col">Expected value</th><th scope="col">What it includes</th></tr></thead><tbody><tr><td>records</td><td>3</td><td>Every valid record in the completed scan</td></tr><tr><td>fittingRecords</td><td>2</td><td>Examples requiring at most four rows</td></tr><tr><td>overlongRecords</td><td>1</td><td>Examples requiring more than four rows</td></tr><tr><td>firstOverlongLine</td><td>3</td><td>One-based location of the first overlong record</td></tr><tr><td>requiredRows</td><td>17</td><td>All examples, including the overlong one</td></tr><tr><td>fittingValidRows</td><td>7</td><td>Only real prediction rows in fitting examples</td></tr><tr><td>fittingSelectedRows</td><td>6</td><td>Only objective-selected rows in fitting examples</td></tr><tr><td>fittingPaddingRows</td><td>1</td><td>Only unused positions in fitting examples</td></tr></tbody></table>
+<h2>Build the SDK consumer</h2>
+<ol><li>Obtain an installed Framework SDK containing jsonl_context.h and its matching Umicom::ai implementation. A header copied into an older SDK cannot provide a missing library function.</li><li>Open PowerShell in the SDK training_data example directory. Keep the existing main.c example and the new context.c example together with their CMakeLists.txt.</li><li>Use a compiler and runtime compatible with the installed SDK. For a UCRT64 package, select the matching UCRT64 tools.</li><li>Replace C:/SDK/Umicom below with the absolute path of your actual installed package. Run each command separately and stop on an error.</li></ol>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja -DUMICOM_SDK_ROOT=C:/SDK/Umicom
+cmake --build build --target umicom-sdk-training-context --parallel 2
+ctest --test-dir build -R sdk.training-data.context --output-on-failure
+&amp; .\build\bin\umicom-sdk-training-context.exe</code></pre>
+<h2>Read the output without overclaiming</h2>
+<p>The example prints context four, three records, two fitting records, one overlong record at line three, seventeen total required rows, seven fitting valid rows, six fitting selected rows and one fitting padding row. Its final line says that inspection only was performed. No text is truncated and no model is trained. A successful test of current source objects is separate from successful resolution of an installed SDK package. If the linker reports an undefined function, confirm that the selected package contains the implementation instead of weakening the example.</p>
+<h2>Inspect your saved file with the native CLI</h2>
+<ol><li>Create a learning folder and save the three records shown earlier as corpus.jsonl using UTF-8 without a byte-order mark. Keep one object on each physical line. A newline inside a JSON string must be escaped, not inserted as a new physical record.</li><li>Use an absolute path beginning with a drive letter on Windows. A relative path depends on the current directory and is refused by this service.</li><li>Use a current Framework CLI that lists the context subcommand in training-data help. A source edit does not automatically rebuild your installed executable.</li><li>Run the command below, then inspect its exit status immediately. The number four is a context length, not a batch size or a memory budget.</li></ol>
+<pre><code class="language-powershell">umicom training-data --help
+umicom training-data context &quot;C:\umicom-learning\training\corpus.jsonl&quot; 4
+$LASTEXITCODE</code></pre>
+<h2>Interpret success and refusal correctly</h2>
+<p>Exit zero means that the full inspection completed. The fixture still has one overlong record; zero does not approve it for training. Exit one means that file admission or parsing failed. Exit two means the command usage or context argument was invalid. The command prints only aggregate counters and numeric progress, not the path, source IDs or text. The file is not rewritten. The context accepts decimal integers from one through thirty-two; do not use a sign, decimal point, hexadecimal prefix or surrounding spaces. If a later record is malformed, no partial complete summary is printed.</p>
+<h2>File buffers have a lifetime too</h2>
+<p>The C file service UmiAiTrainingJsonlInspectContextFile reuses the same in-memory inspection after a bounded regular-file read. Its owned input buffer is cleared and freed after inspection. That does not erase the original file, operating-system caches or every parser temporary. The synchronous read is not interruptible by its cancellation token; cancellation is checked before reading and during parsing. An interactive application should call it on a worker, keep the borrowed path and output objects alive, and report completion on the appropriate interface thread.</p>
+<h2>Follow the native C ownership boundary</h2>
+<p>This fragment uses the records string from the complete context.c example. sizeof minus one excludes the final C string terminator, not a JSONL data byte. NULL means no cancellation token was supplied. The input is borrowed for the synchronous call and remains unchanged. The summary and progress report are separate caller-owned objects. The shared parser temporarily owns decoded record storage; the audit keeps only fixed-size counters, not a second corpus or token matrix.</p>
+<pre><code class="language-c">#include &quot;umicom/ai/training/jsonl_context.h&quot;
+
+UmiAiTrainingJsonlContextSummary summary;
+UmiAiTrainingJsonlReport report;
+UmiStatus status = UmiAiTrainingJsonlInspectContext(
+    records, sizeof records - 1, 4, NULL, &amp;summary, &amp;report);
+if (status == UMI_STATUS_OK) {
+    /* Review summary.overlongRecords before selecting a training policy. */
+}</code></pre>
+<h2>Count decoded bytes, not escape spelling</h2>
+<p>The JSON spelling backslash-u-0-0-e-9 occupies six source characters, but after decoding it represents the character é, which occupies two UTF-8 bytes. A rocket emoji occupies four UTF-8 bytes. With that letter as prompt and that emoji as completion, this native byte format needs 2 + 4 + 1 = 7 rows. It fits context seven exactly and is overlong at six. Raw JSON length would give the wrong answer. A subword tokenizer might produce a different count again.</p>
+<h2>Overlong is not the same as malformed</h2>
+<p>A valid record needing ten rows can be inspected even when the chosen context is four. The audit counts it and continues. A malformed JSON object is different: the scan returns an error and does not publish any new summary. The progress report may say that earlier records were accepted before the failure, but that does not make the prefix a complete approved dataset. Correct or explicitly exclude the bad input in a reviewed preparation step, then rescan the intended full dataset.</p>
+<h2>Choose a policy deliberately</h2>
+<ol><li>Locate the first overlong example and inspect whether its prompt and answer are coherent.</li><li>Check whether the chosen model and tokenizer are appropriate; do not enlarge context past documented limits.</li><li>If a document can be divided into independent examples, preserve source provenance and keep related pieces in the same partition.</li><li>If truncation is necessary, define which content may be removed and how incomplete answers are prevented. Do not silently truncate inside a reader.</li><li>Recheck the distribution after conversion. A dataset with many discarded long answers may teach a different task than intended.</li><li>Evaluate the resulting model on separately held-out sources; fit alone does not measure learning quality.</li></ol>
+<h2>Why fit does not prove memory safety</h2>
+<p>A context-fit check establishes a shape condition, not an allocation budget for every operation. Attention matrices, parameters, gradients, optimizer state, batches and temporary buffers all consume memory. The native teaching decoder also has tensor and vocabulary limits. Increasing context may increase some costs quadratically. Use the existing capacity planning and bounded allocation services, then measure an actual workload. Rewriting a program in C does not automatically prevent leaks, invalid pointer access or excessive model memory use.</p>
+<h2>Boundary exercises</h2>
+<ol><li>Change the selected context to three. Predict the fitting record count, valid-row total and padding total before running.</li><li>Use context one. Explain why every nonempty completion is overlong even though the inspector can successfully finish the scan.</li><li>Put malformed JSON after a valid record. Explain why the caller must not read a newly computed complete summary.</li><li>Explain why converting documents into vectors does not remove the need for tokenizer-specific training preparation.</li><li>Describe which held-out source groups you would use to assess whether a fine-tuned model improved, rather than memorized its training examples.</li></ol>
+<h2>What remains outside this exercise</h2>
+<p>This lesson does not train or fine-tune a production model, implement a pretrained tokenizer, upload data, certify training rights or establish a memory benchmark. It supplies an inspectable C preparation step and a complete small SDK consumer. For an actual fine-tuning run, combine reviewed provenance, model-specific formatting, leakage checks, explicit masks, resource admission and evaluation evidence.</p>
+<nav aria-label="Continuing practice"><a href="30-stream-records-without-retaining-the-whole-file.html">Next: Stream records without retaining the whole file</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

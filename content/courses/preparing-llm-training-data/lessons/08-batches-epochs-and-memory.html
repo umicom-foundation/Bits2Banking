@@ -1,0 +1,23 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/08-batches-epochs-and-memory.html
+
+PURPOSE:
+Plan batches, epochs and memory before training
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plan batches, epochs and memory before training | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Plan batches, epochs and memory before training</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A batch is a group of examples processed together. A training step computes predictions, measures error, computes gradients and updates parameters. A gradient describes how a small parameter change affects the objective. An optimizer applies an update rule. An epoch is one pass through the defined training dataset, though sampling and streaming can change how that is counted.</p>
+<p>Training needs more memory than storing weights alone. Activations are intermediate values saved for gradient computation. Gradients and optimizer state also take space. The dataset loader, token buffers, decoded images and temporary workspaces add to the total. Inference estimates are not training estimates.</p>
+<ol><li>Write down available RAM and accelerator memory, model parameter representation, sequence length or image dimensions, and expected batch size.</li><li>Reserve headroom for the operating system, application and temporary buffers. Do not allocate to the advertised hardware maximum.</li><li>Start with one tiny batch and a short controlled run. Measure peak memory, step time and loss values.</li><li>If memory is insufficient, reduce batch size or sequence dimensions, use supported precision/checkpointing methods, or choose a smaller model.</li><li>Record every change. Comparing two runs with different token lengths or hardware without noting it can give a false speedup claim.</li></ol>
+<p>Gradient accumulation combines contributions from several microbatches before an update. It can reduce peak activation memory but does not make parameter and optimizer storage disappear. Mixed precision changes numeric representation and needs numerically appropriate handling. Activation checkpointing recomputes selected intermediates to trade time for memory.</p>
+<h2>Check</h2>
+<p>Four accumulated microbatches are not necessarily identical to a single large batch when stochastic layers, normalization or data order differ. Keep the learning objective and optimizer settings explicit. A C implementation still needs bounded allocations and measurements; changing the implementation language does not shrink the model’s mathematical state automatically.</p>
+<h2>A training-run worksheet</h2><table><thead><tr><th scope="col">Quantity</th><th scope="col">Example question</th></tr></thead><tbody><tr><td>Microbatch size</td><td>How many examples are simultaneously active?</td></tr><tr><td>Sequence length</td><td>How many token positions are processed?</td></tr><tr><td>Accumulation steps</td><td>How many microbatches contribute to one update?</td></tr><tr><td>Optimizer state</td><td>Which extra arrays does this optimizer maintain?</td></tr><tr><td>Peak memory</td><td>What was measured, not merely estimated?</td></tr></tbody></table><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="07-tokenization-templates-and-masks.html">Previous: Understand tokens, chat templates and loss masks</a> · <a href="09-fine-tuning-adapters-and-checkpoints.html">Next: Choose a fine-tuning method and save recoverable state</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

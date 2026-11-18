@@ -1,0 +1,94 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/45-select-ranges-and-test-every-boundary.html
+
+PURPOSE:
+Select ranges and test every boundary
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Select ranges and test every boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Select ranges and test every boundary</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Start with one small decision</h2>
+<p>A display needs to turn an invented score from 0 through 100 into one of three bands. A band is simply a named group of values. This example uses low, middle and high; it is not a trading rule or a medical assessment. Before writing code, decide what each boundary means. A program cannot choose a useful rule for you merely because it compiles.</p>
+<ol><li>Review the earlier lessons on Integer, Boolean, functions, ByVal and ByRef. You will use those same ideas here.</li><li>Open labs/languages/native-language-boundary/select_ranges.bas in your editor. Keep the complete file available while reading.</li><li>Write down the expected answer for 24, 25, 74 and 75 before looking at the program. These adjacent values reveal gaps and overlaps.</li></ol>
+<h2>Define the accepted domain on paper</h2>
+<p>The domain is the set of inputs the function promises to handle. Each interval below includes both endpoints. The output is a small identifier, not the score itself. A separate function converts that identifier to display text.</p>
+<table><thead><tr><th scope="col">Input score</th><th scope="col">Accepted?</th><th scope="col">Output band</th></tr></thead><tbody><tr><td>Less than 0</td><td>No</td><td>Previous output retained</td></tr><tr><td>0 through 24</td><td>Yes</td><td>0: low</td></tr><tr><td>25 through 74</td><td>Yes</td><td>1: middle</td></tr><tr><td>75 through 100</td><td>Yes</td><td>2: high</td></tr><tr><td>Greater than 100</td><td>No</td><td>Previous output retained</td></tr></tbody></table>
+<h2>Read the selection syntax</h2>
+<p>Select Case computes its selector once. It tries Case alternatives in order, runs the first match, and then continues after End Select. To includes a range; Is introduces a comparison; a comma provides another alternative. Case Else catches an unmatched value. BASIC does not continue into the next matching case as C can without break.</p>
+<pre><code class="language-basic">Function TryBand(ByVal score As Integer, ByRef band As Integer) As Boolean
+    Select Case score
+    Case Is &lt; 0, Is &gt; 100
+        Return False
+    Case 0 To 24
+        band = 0
+    Case 25 To 74
+        band = 1
+    Case 75 To 100
+        band = 2
+    Case Else
+        Return False
+    End Select
+    Return True
+End Function
+</code></pre>
+<h2>Trace an accepted boundary</h2>
+<ol><li>The caller gives TryBand the score 25 and a reference to its output variable. ByVal makes score a local value; ByRef makes band refer to the caller’s storage.</li><li>The first case rejects scores outside 0 through 100. Neither comparison matches 25.</li><li>The next interval ends at 24, so it cannot match 25.</li><li>The interval 25 through 74 matches. The assignment writes 1 into the caller’s band variable.</li><li>Execution leaves the selection and reaches Return True. The caller now has both a success result and a meaningful output.</li></ol>
+<h2>Trace a refusal without damaging old data</h2>
+<p>Suppose a screen already shows an accepted band, and a new score of 101 arrives. The function returns False before any band assignment. The screen can report the invalid input while retaining the old value. This is a useful publication rule: decide whether a result is valid before changing caller-owned state. It does not make the old value current; a real screen should also show that the new request failed.</p>
+<pre><code class="language-basic">Dim kept As Integer = 77
+Require(Not TryBand(101, kept), &quot;above upper boundary&quot;)
+Require(kept = 77, &quot;refusal keeps prior output&quot;)</code></pre>
+<h2>Use constant dispatch for a small identifier</h2>
+<p>BandName translates identifiers 0, 1 and 2 into words. Select Case As Const accepts integer constants and enumerators, including constant To ranges, but not Is comparisons. The compiler can use a jump table. Keep this form for a suitable compact set of values; it is not a promise that any larger program becomes faster.</p>
+<pre><code class="language-basic">Function BandName(ByVal band As Integer) As String
+    Select Case As Const band
+    Case 0
+        Return &quot;low&quot;
+    Case 1
+        Return &quot;middle&quot;
+    Case 2
+        Return &quot;high&quot;
+    Case Else
+        Return &quot;unknown&quot;
+    End Select
+End Function
+</code></pre>
+<h2>Observe the selector exactly once</h2>
+<p>ReadSample increments a counter and returns 25. The counter makes evaluation visible without accessing a file, sensor or network. The first interval deliberately overlaps the later Case 25. This is an experiment about ordering, not a recommended way to define the three production bands.</p>
+<pre><code class="language-basic">Dim samples As Integer = 0
+Dim chosen As Integer = 0
+Select Case ReadSample(samples)
+Case 0 To 50
+    chosen = 1
+Case 25
+    chosen = 2
+Case Else
+    chosen = 3
+End Select
+Require(samples = 1, &quot;selector evaluated once&quot;)
+Require(chosen = 1, &quot;first matching case wins without fall-through&quot;)</code></pre>
+<h2>Distinguish leaving a selection from returning a value</h2>
+<p>Exit Select leaves only the enclosing selection. Return leaves the function and supplies its result. In the final experiment, afterSelect becomes 4 and Exit Select bypasses the later assignment to 99. The assertion after End Select still runs. An editor may warn that the skipped line is unreachable; it is included deliberately to make the exercise visible.</p>
+<h2>Build and run the complete experiment</h2>
+<p>These commands use an installed FreeBASIC compiler in its fb dialect. The source is authored but has not been compiled in the current mirror environment. Stop after a compiler error; otherwise an older executable might run and mislead you. The -exx option requests additional runtime checks, and -w all enables warnings.</p>
+<pre><code class="language-powershell">Set-Location C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary
+fbc -lang fb -exx -w all select_ranges.bas -x select_ranges.exe
+.\select_ranges.exe</code></pre>
+<h2>Read the expected outcome</h2>
+<p>Require is the test helper: a false condition prints FAILED and exits with code 1. The complete example checks six accepted endpoints, two rejected inputs, unchanged output on refusal, four labels, one evaluation, first-match ordering and Exit Select. The text below is expected output, not a claim of an executed compiler check.</p>
+<pre><code class="language-text">Umicom BASIC selection: six endpoints and two refusals checked.
+One sample, one matching branch, prior output preserved on refusal.</code></pre>
+<h2>Use the idea around an Umicom C service</h2>
+<p>A BASIC client can classify local display data before calling a native Framework API. Keep the shared service authoritative: it must validate its own input and report its own status. Do not copy this score policy into several applications or assume BASIC Integer is the correct C ABI width. For a boundary between languages, use the explicit types and reviewed declarations from the earlier interoperability lessons. This laboratory does not call Framework or launch an application.</p>
+<h2>Practice, diagnose and extend</h2>
+<ol><li>Change the middle interval to start at 26. The test for 25 should fail because no interval admits it. Restore 25 afterward.</li><li>Change the first interval to end at 25. The test for 25 should fail because the earlier case now assigns band 0. Restore 24.</li><li>Swap the overlapping experiment’s two branches and predict the new chosen value. Update only that experiment’s expected result after explaining the change.</li><li>Add score 50 to the accepted table. It should be middle, but an interior example is not a substitute for testing the endpoints.</li><li>If fbc is not found, return to the setup lesson and check the compiler path. If As Const rejects an Is expression, keep the general selection for comparisons and the constant form for the label lookup.</li></ol>
+<h2>Language reference</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgSelectcase">FreeBASIC manual: SELECT CASE</a></li></ul>
+<nav aria-label="Previous lesson"><a href="44-give-operators-a-clear-domain-meaning.html">Previous: Give operators a clear domain meaning</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

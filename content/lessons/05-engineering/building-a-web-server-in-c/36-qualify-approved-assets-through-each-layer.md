@@ -47,3 +47,5 @@ If size agrees but the checksum differs, preserve both files and the response he
 [Installed-SDK lab setup](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-static-preview/README.md) · [Body ownership contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/response_body.h) · [Authored regression scenarios](https://github.com/umicom-foundation/umicom-framework/blob/main/tests/web/test_response_body.c) · [HTTP HEAD semantics](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2)
 
 [Course contents](index.md) · [Previous lesson](35-finish-headers-and-partial-body-writes.md)
+
+[Next lesson](37-transfer-static-file-buffer-ownership.md)

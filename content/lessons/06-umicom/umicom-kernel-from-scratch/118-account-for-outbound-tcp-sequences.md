@@ -1,0 +1,67 @@
+<!--
+Umicom Bits2Banking
+File: content/lessons/06-umicom/umicom-kernel-from-scratch/118-account-for-outbound-tcp-sequences.md
+
+PURPOSE:
+Account for outbound TCP sequence positions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+![Umicom](../../../assets/branding/umicom-wordmark.svg)
+
+# Account for outbound TCP sequence positions
+
+[Course contents](index.md)
+TCP numbers positions in a byte stream so peers can identify what has been received. Before implementing a complete connection, we can build and test the arithmetic that tracks reserved outbound positions. Umicom Kernel's transmit tracker does this bookkeeping only. It does not send packets, open sockets or establish a connection.
+
+
+## 1. Name the counters
+
+oldest is the first outstanding sequence position. next is the first position not yet reserved. The distance from oldest to next is the outstanding amount. capacity is the maximum outstanding span allowed by this tracker. Available capacity is capacity minus outstanding. These quantities describe sequence positions, not RAM bytes allocated by the Kernel.
+
+~~~text
+first = 100, capacity = 8
+reserve 3 payload bytes -> start 100, next 103, outstanding 3
+acknowledge 102         -> oldest 102, outstanding 1, available 7
+reserve 2 payload bytes -> start 103, next 105, outstanding 3
+~~~
+
+
+## 2. Include control positions
+
+SYN and FIN each consume one sequence position in TCP even though they are not payload bytes. Reserving three bytes with SYN consumes four positions. The shared sequence-length helper already implements that rule, so the transmit tracker reuses it. Do not duplicate the arithmetic in a packet sender.
+
+
+## 3. Use the state API
+
+Initialize UmicomTcpTransmit with a starting sequence and a capacity from one through UMICOM_TCP_SEQUENCE_MAX_SPAN. Reserve returns the starting sequence through a separate output pointer. Acknowledge reports newly released positions. Inspect returns a snapshot without changing state. Keep output storage separate from the tracker, and allow only one owner to mutate it.
+
+
+## 4. Keep packet admission outside arithmetic
+
+An acknowledgment number inside the outstanding interval is arithmetically plausible. That does not prove that a packet belongs to the connection or came from the peer. A future connection layer must verify packet structure, checksum, addresses, ports, flags and state before calling the tracker. Treating this helper as packet authentication would be a serious design error.
+
+
+## 5. Run the hosted accounting checks
+
+~~~powershell
+Set-Location C:/umicom/umicom-kernel
+cmake -S tests/tcp_transmit -B build/tcp-transmit-host -G Ninja -DCMAKE_C_COMPILER=gcc
+cmake --build build/tcp-transmit-host --parallel 2
+ctest --test-dir build/tcp-transmit-host --output-on-failure --no-tests=error
+~~~
+
+Run commands separately and stop on errors. Hosted means the tests run as ordinary programs on the development computer. This isolates arithmetic from boot and device dependencies. It does not prove a network connection works in a guest Kernel.
+
+Exercise: with capacity four, reserve two payload bytes and FIN. Three positions become outstanding. A new acknowledgment covering all three releases three positions, although only two were payload bytes. A byte-buffer owner must account for that distinction when mapping sequence acknowledgments back to stored payload.
+
+
+[Previous lesson](117-inspect-tcp-without-claiming-a-connection.md)
+
+[Next lesson](119-test-wraparound-and-refused-acknowledgments.md)

@@ -61,3 +61,7 @@ Run `ninja -C build/dependency-graph -n -d explain` from the repository root to 
 ## Continue learning
 
 [Learning Build Systems](../../../content/courses/learning-build-systems/index.html) follows these files through twelve practical lessons.
+
+## Detect an old executable after a failed rebuild
+
+The `bits.build-graph.stale-preview` check configures a separate Ninja child build, records a successful preview executable, deliberately refuses its next compilation and checks that the retained program can still pass its old output test. The expected compiler error is confined to that exercise. Normal builds leave `LESSON_REFUSE_PREVIEW_BUILD` off. Inspect the child logs under `stale-preview-proof/attempt-...`; do not treat the old pass as qualification of the refused source. See [Recognize stale tests after a failed build](../../../content/courses/learning-build-systems/lessons/26-recognize-stale-tests-after-a-failed-build.html) for the complete explanation and recovery workflow.

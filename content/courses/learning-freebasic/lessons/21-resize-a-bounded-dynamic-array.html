@@ -1,0 +1,64 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/21-resize-a-bounded-dynamic-array.html
+
+PURPOSE:
+Resize a bounded dynamic array and follow its lifetime
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resize a bounded dynamic array and follow its lifetime | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Resize a bounded dynamic array and follow its lifetime</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>A collection with a changing number of entries</h2>
+<p>Imagine a small application collecting daily review counts. At first there are no entries. Later there are three, then six. A separate variable for every possible entry would make loops and shared code awkward. An array groups values of one type so that an index selects an element. A dynamic array can change its bounds while the program runs. In this lesson you will grow and shrink a one-dimensional numeric array, refuse an oversized request and observe what happens to removed values.</p>
+<p>The practical file is dynamic_entries.bas in the native-language-boundary lab. It uses ordinary FreeBASIC, not Umicom C’s bounded BASIC source-region scanner. Read the earlier lessons about types, loops, procedures and pointers first. You need a supported FreeBASIC compiler for execution. The example is supplied for compiler qualification and has not been compiled in the current authoring environment; follow the checks below on your own toolchain.</p>
+<h2>1. Distinguish an index from an entry count</h2>
+<p>An index identifies a position. A count says how many positions exist. Our convention keeps the lower bound at zero. Three entries therefore occupy indices zero, one and two. Six occupy zero through five. Replacing the upper bound with the count would create an extra entry. Write the list of indices on paper before changing the code.</p>
+<pre><code class="language-freebasic">Dim amounts() As Long
+ReDim amounts(0 To 2)
+amounts(0) = 10
+amounts(1) = 20
+amounts(2) = 30</code></pre>
+<p>Dim declares the named array. Empty parentheses declare a dynamic array without allocating this example’s elements yet. As Long selects the element type; each stored value is a Long. ReDim supplies bounds for the dynamic storage. The parentheses after amounts in an assignment select one element; they are not a procedure call in this context. These are ordinary small integer counters, not money amounts or a complete financial representation.</p>
+<h2>2. Introduce the resizing policy</h2>
+<p>A language mechanism can allocate a large amount of memory, but an application should first decide how much work it accepts. Our example uses MaximumEntries = 8. ResizeEntries checks that a requested count is between one and eight before resizing. It returns False for a count outside that policy. This is a deliberate application bound for a teaching exercise, not a platform-wide maximum.</p>
+<pre><code class="language-freebasic">Function ResizeEntries(values() As Long, ByVal requested As Integer) As Boolean
+    If requested &lt; 1 OrElse requested &gt; MaximumEntries Then Return False
+    ReDim Preserve values(0 To requested - 1)
+    Return True
+End Function</code></pre>
+<p>Function names a procedure that returns a result. Boolean describes True or False. The array parameter refers to the caller’s array, so resizing affects that array. ByVal requested passes the count as a value. OrElse joins two refusal conditions with short-circuit evaluation. Return False exits before any resizing occurs. This policy refusal leaves existing entries alone; it is not a promise that every runtime allocation failure is recoverable in the same way.</p>
+<h2>3. Keep the lower bound fixed</h2>
+<p>ReDim Preserve requests resized storage while retaining the existing prefix in this one-dimensional, fixed-lower-bound exercise. Newly added numeric elements start at zero. Changing lower bounds or reshaping multidimensional arrays introduces additional rules; do not infer those behaviors from this example. The linked language manual documents those restrictions. We deliberately keep the lower bound at zero and change only the upper bound.</p>
+<p>After growing from three to six entries, the paper trace should contain 10, 20, 30, 0, 0, 0. The new zeros are values, not evidence that those entries have been reviewed by a user. If your application needs an unknown or unreviewed state, represent that state separately. Treating zero as both a valid count and a missing value creates ambiguity, just as a missing dictionary key differs from a present zero.</p>
+<h2>4. Observe shrink followed by growth</h2>
+<p>The program next shrinks six entries to two. The remaining values are 10 and 20; the old third value 30 is outside the new bounds. Growing back to three entries adds a new numeric element initialized to zero. The old 30 does not return. Preserve is not an undo history or a backup. If you need recoverable edits, keep a separate reviewed history before changing the collection.</p>
+<h2>5. Inspect bounds before reading</h2>
+<p>LBound and UBound report an array dimension’s lower and upper bounds. For this empty dynamic array, the lower bound is zero and the upper bound is minus one. The comparison LBound(amounts) &gt; UBound(amounts) therefore detects the empty case before any element is read. For a nonempty one-dimensional array, count the entries as upper minus lower plus one. Keep empty handling explicit and avoid unsigned conversions that turn minus one into a huge positive number.</p>
+<pre><code class="language-freebasic">If LBound(amounts) &gt; UBound(amounts) Then
+    Print &quot;No entries yet&quot;
+Else
+    For index As Integer = LBound(amounts) To UBound(amounts)
+        Print index; &quot;: &quot;; amounts(index)
+    Next
+End If</code></pre>
+<h2>6. Do not keep stale element pointers</h2>
+<p>A pointer can remember the address of an element. Resizing may move the backing storage. Even if a particular run appears to keep the same address, a future resize, allocator or platform can behave differently. Finish any synchronous C call borrowing the elements before resizing. After a resize, obtain a fresh pointer only after checking the new bounds. Never use a pointer into the removed tail or after Erase.</p>
+<p>This is a lifetime rule, not a stylistic preference. A borrowed pointer does not keep the array alive or stop another part of the program from changing its storage. A shared Framework boundary should receive an explicit pointer and element count for the duration it needs them, together with a clear rule about copying or retaining data. FreeBASIC’s array descriptor is not automatically a portable C structure. Do not pass that descriptor as if it were an array of Long values.</p>
+<h2>7. Run the complete exercise</h2>
+<ol><li>Open the native-language-boundary lab folder in your editor and terminal. Read dynamic_entries.bas from top to bottom.</li><li>Check fbc -version and record the reported compiler and target. The executable must match your operating system.</li><li>Compile with runtime checks enabled using the commands below. Stop if compilation reports an error.</li><li>Run the executable. Expect retained values 10, 20 and 0, followed by the completion message. Formatting spaces around numbers can differ.</li><li>Read Require. It stops with a nonzero exit code when an expectation fails, so the final message should appear only after the stated checks.</li></ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -version
+fbc -exx dynamic_entries.bas -x dynamic_entries.exe
+&amp; .\dynamic_entries.exe</code></pre>
+<p>A compile failure may indicate a compiler dialect or version difference, a changed source file or a genuine mistake. Preserve the first diagnostic and compiler identity. Do not remove bounds checks merely to make a failing example run. For a controlled experiment, copy the file into your own exercise folder and change the maximum accepted count to six. Predict which requests still succeed before running that copy.</p>
+<h2>8. Release dynamic storage deliberately</h2>
+<p>Erase amounts releases the elements of this dynamic array. The program then verifies that it is empty. That operation does not erase files on disk and is not a secure-data wiping guarantee. The word erase has different meanings in different contexts, so tie every explanation to the object being changed. Do not generalize this dynamic-array behavior to every fixed-size or user-defined array without reading its documented rules.</p>
+<h2>How this helps Umicom projects</h2>
+<p>A BASIC client can collect a small list of reviewed user inputs, check its bounds and call a native Framework service with a stable borrowed buffer. The shared service should continue to own reusable validation and processing; an example in another language is not a reason to duplicate the Framework engine. Dynamic storage is useful when the count changes, but fixed arrays or bounded pools can be a better fit for some embedded workloads. Choose from the workload and lifetime requirements rather than from a language slogan.</p>
+<h2>Trace the collection across operations</h2><table><thead><tr><th scope="col">Stage</th><th scope="col">Valid indices</th><th scope="col">Values to expect</th></tr></thead><tbody><tr><td>Empty declaration</td><td>None</td><td>No element may be read</td></tr><tr><td>Three entries</td><td>0..2</td><td>10, 20, 30</td></tr><tr><td>Grow to six</td><td>0..5</td><td>10, 20, 30, 0, 0, 0</td></tr><tr><td>Refuse nine</td><td>0..5</td><td>Same six entries</td></tr><tr><td>Shrink to two</td><td>0..1</td><td>10, 20</td></tr><tr><td>Grow to three</td><td>0..2</td><td>10, 20, 0</td></tr><tr><td>Erase dynamic storage</td><td>None</td><td>Do not dereference a former element</td></tr></tbody></table><h2>Further reading</h2><ul><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/native-language-boundary/dynamic_entries.bas">Complete dynamic-entry exercise</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgRedim">FreeBASIC ReDim reference and restrictions</a></li><li><a href="https://www.freebasic.net/wiki/KeyPgUbound">FreeBASIC UBound reference</a></li><li><a href="https://www.freebasic.net/wiki/CatPgArray">FreeBASIC array reference index</a></li></ul><nav aria-label="Previous lesson"><a href="20-name-fixed-rules-with-const.html">Previous: Name fixed rules with Const</a></nav><nav aria-label="Continuing practice"><a href="22-keep-temporary-values-inside-a-scope.html">Next: Keep temporary values inside a scope</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

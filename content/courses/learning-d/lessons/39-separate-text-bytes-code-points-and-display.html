@@ -1,0 +1,83 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/39-separate-text-bytes-code-points-and-display.html
+
+PURPOSE:
+Separate text bytes, code points and display
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Separate text bytes, code points and display | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Separate text bytes, code points and display</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Begin with one word: unit</h2>
+<p>A count is useful only when you know what it counts. A byte is eight bits. A code unit is one storage element in an encoding. A Unicode code point is a numbered text value. A grapheme cluster groups code points for user-perceived text. A model token is chosen by a particular tokenizer. These are different units. This lesson uses a tiny D program to measure the same text in several representations and to reject malformed input before decoding it.</p>
+<h2>Choose three known code points</h2>
+<p>Our original sample contains uppercase A, Greek capital omega and a slightly smiling face. We write the latter two with numeric source escapes so that the source file remains easy to inspect without depending on an editor’s glyph support. U+0041 is decimal 65. U+03A9 is decimal 937. U+1F642 is decimal 128578. U+ is a notation for a Unicode code point, not text that must appear in the stored string.</p>
+<table><thead><tr><th scope="col">Text item</th><th scope="col">Code point</th><th scope="col">UTF-8 bytes in hexadecimal</th></tr></thead><tbody><tr><td>A</td><td>U+0041</td><td>41</td></tr><tr><td>Capital omega</td><td>U+03A9</td><td>CE A9</td></tr><tr><td>Slightly smiling face</td><td>U+1F642</td><td>F0 9F 99 82</td></tr></tbody></table>
+<h2>Declare three string representations</h2>
+<p>D uses char units for UTF-8, wchar units for UTF-16 and dchar units for UTF-32. Their ordinary immutable string aliases are string, wstring and dstring. A literal suffix w or d chooses the latter representations. The backslash-u source escape has four hexadecimal digits, while backslash-U has eight. These source spellings describe code points; the chosen string representation determines their stored units.</p>
+<pre><code class="language-d">string utf8 = &quot;A\u03A9\U0001F642&quot;;
+wstring utf16 = &quot;A\u03A9\U0001F642&quot;w;
+dstring utf32 = &quot;A\u03A9\U0001F642&quot;d;</code></pre>
+<h2>Compute lengths before running the program</h2>
+<p>A occupies one unit in each representation. Omega takes two UTF-8 bytes but one UTF-16 and one UTF-32 unit. The smiling face takes four UTF-8 bytes, two UTF-16 units and one UTF-32 unit. A pair of UTF-16 units represents that supplementary code point. Adding the contributions gives lengths seven, four and three. Those lengths describe array elements, not equal byte counts.</p>
+<table><thead><tr><th scope="col">Representation</th><th scope="col">Unit size</th><th scope="col">Array length</th><th scope="col">Text payload bytes</th></tr></thead><tbody><tr><td>UTF-8 string</td><td>1 byte</td><td>7</td><td>7</td></tr><tr><td>UTF-16 wstring</td><td>2 bytes</td><td>4</td><td>8</td></tr><tr><td>UTF-32 dstring</td><td>4 bytes</td><td>3</td><td>12</td></tr></tbody></table>
+<h2>Do not mistake payload size for total memory use</h2>
+<p>The table counts only stored text units. A string variable also has a representation describing a view of storage, and a complete process has code, stack, runtime and other allocations. A source literal may occupy static storage. Multiplying length by unit size is useful for an explicitly defined text span, but it is not a measurement of total process memory. This distinction is important when comparing model applications: changing language does not remove the memory required for model weights, activations or decoded media.</p>
+<h2>Decode deliberately with dchar iteration</h2>
+<p>A foreach loop over UTF-8 text with an explicit dchar value decodes successive code points. In the two-variable form used here, the index identifies the starting code-unit offset in the input. Because our input is UTF-8, those offsets are byte offsets. The expected offsets are zero, one and three. They are not the ordinal numbers zero, one and two of the displayed items. The loop never treats a continuation byte as the beginning of an independent ASCII character.</p>
+<pre><code class="language-d">foreach (size_t offset, dchar point; utf8)
+{
+    writeln(&quot;Byte offset &quot;, offset, &quot;: code point &quot;, cast(uint) point);
+}</code></pre>
+<h2>Follow the byte boundaries on paper</h2>
+<p>Write seven boxes and fill them with 41 CE A9 F0 9F 99 82. Draw one bracket around box zero, one around boxes one and two, and one around boxes three through six. These groups are the encoded code points. Cutting the string after box one would leave CE without its continuation byte. A byte limit that blindly cuts at any position can therefore create invalid UTF-8. A valid boundary is a property of the encoding, not merely an in-range array index.</p>
+<h2>Validate a borrowed span first</h2>
+<p>The helper codePointCount accepts string text without taking ownership of an external allocation. It calls std.utf.validate and then counts decoded dchar values. For this small example validation is intentionally explicit even though decoding also has its own behavior. Validation establishes whether the supplied sequence is structurally well formed. It does not establish that text is truthful, permitted in a field, normalized, harmless markup or a suitable training sample.</p>
+<h2>Create a malformed example without a broken source file</h2>
+<p>rejectsMalformedUtf8 constructs two char units from numeric values C3 and 28. C3 begins a multibyte UTF-8 sequence, but 28 is the ASCII opening parenthesis and is not a valid continuation. The source file itself remains valid because these bytes are constructed as data. The function calls validate inside try. catch handles UTFException and returns true to confirm the intended refusal. If no exception occurs, it returns false and the caller reports failure.</p>
+<pre><code class="language-d">char[2] malformed = [cast(char) 0xC3, cast(char) 0x28];
+try
+{
+    validate(malformed[]);
+}
+catch (UTFException error)
+{
+    return true;
+}</code></pre>
+<h2>Understand exceptions without hiding failures</h2>
+<p>An exception transfers control from an operation that cannot complete normally to a matching handler. This exercise catches the specific encoding exception around one intentionally bad input. It does not catch every exception and label the whole application successful. A malformed-data refusal is expected in this test. An allocation failure, unrelated logic error or failed compiler invocation is a different event that needs its own evidence. The example uses the ordinary D runtime; it does not claim BetterC compatibility or allocation-free exception handling.</p>
+<h2>Separate code points from visible text</h2>
+<p>The second sample is e followed by U+0301, a combining acute accent. Its UTF-8 representation has three bytes and two code points. A renderer may combine them visually into an accented letter, but this program does not implement grapheme segmentation or rendering. It also does not normalize the sequence to a precomposed character. Two texts can look alike while having different byte sequences. That matters for search, signatures, deduplication and training-data comparisons.</p>
+<h2>Read the checks in the complete source</h2>
+<p>Open utf_text_units.d. main checks all three lengths, the numeric value and starting offset of each decoded item, the combining sample, and the malformed-input refusal. It returns a nonzero code if any expectation is broken. The unittest block also checks empty input and distinguishes a literal backslash sequence from an actual source escape. Two backslashes in a source string represent an ordinary backslash; they do not start the same Unicode escape as one backslash. Those small cases make the intended interpretation reviewable.</p>
+<h2>Compile and run with checks enabled</h2>
+<p>Use the D compiler installation from the setup lesson. -unittest includes unittest blocks. -checkaction=context requests contextual failure reporting for supported checks. Run the commands separately, stopping if compilation fails so that a previous executable is not confused with the new source. The current example is authored and reference-reviewed; its D compiler and runtime qualification remains to be performed.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+dmd -unittest -checkaction=context -of=utf_text_units.exe utf_text_units.d
+&amp; .\utf_text_units.exe
+$LASTEXITCODE</code></pre>
+<h2>Compare numeric output instead of relying on glyphs</h2>
+<p>Expect the lines below and exit code zero. The program prints numeric values, so a terminal lacking an emoji font does not change the comparison. If the third byte offset is two rather than three, inspect whether the loop is reporting an item counter instead of the original UTF-8 offset. If malformed input passes, keep the exact toolchain version and output for investigation.</p>
+<pre><code class="language-text">UTF-8 units: 7
+UTF-16 units: 4
+UTF-32 units: 3
+Byte offset 0: code point 65
+Byte offset 1: code point 937
+Byte offset 3: code point 128578
+Combining example: 3 bytes, 2 code points
+Malformed UTF-8 refused</code></pre>
+<h2>Apply explicit units at the C boundary</h2>
+<p>A C API needs a documented representation. If it accepts UTF-8 bytes, provide the UTF-8 span and byte length, keep its storage alive for the promised duration, and establish whether the callee may retain or modify it. A wchar pointer is not automatically an interchangeable native wide-string pointer on every platform. A terminator is a separate contract: D slice length should not be discarded in favor of assuming zero termination. Compile-time reflection can check wrapper types, but it cannot prove that a pointer remains valid after a background task outlives its caller.</p>
+<h2>Connect the lesson to LLM preparation</h2>
+<p>Valid UTF-8 is only an early admission step. A training pipeline still needs rights and provenance, content review, splits, tokenizer identity and the model’s expected sample structure. Tokenization maps text to model-specific integer IDs. Seven UTF-8 bytes do not imply seven tokens or three tokens. A vector embedding is a numerical representation used for tasks such as retrieval; it is not the same thing as these UTF code units. Keep the original text and transformation record so an unexpected token sequence can be traced to its source.</p>
+<h2>Practice with small controlled changes</h2>
+<ol><li>Replace omega with an ASCII digit and predict all three lengths before compiling.</li><li>Keep the smiling face but remove A. Predict UTF-8 starting offsets zero and two for the remaining code points.</li><li>Change only the malformed continuation byte from 28 to A9. Explain why C3 A9 is now a valid sequence and why the refusal test must no longer expect true.</li><li>Compare the source spelling with one backslash-u and two backslashes followed by u. Count what is stored in each case.</li><li>Explain why a code-point count alone cannot enforce a maximum number of screen columns or model tokens.</li></ol>
+<h2>Primary language references</h2>
+<ul><li><a href="https://dlang.org/spec/lex.html#string_literals">D string literal encodings</a></li><li><a href="https://dlang.org/spec/statement.html#foreach_over_arrays_of_characters">D foreach over character arrays</a></li><li><a href="https://dlang.org/phobos/std_utf.html#validate">D std.utf validation</a></li><li><a href="https://dlang.org/spec/type.html">D character types</a></li></ul>
+<nav aria-label="Previous lesson"><a href="38-follow-nested-static-array-copies.html">Previous: Follow nested static-array copies</a></nav><nav aria-label="Continuing practice"><a href="40-preserve-qualifiers-when-returning-a-borrowed-view.html">Next: Preserve qualifiers when returning a borrowed view</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

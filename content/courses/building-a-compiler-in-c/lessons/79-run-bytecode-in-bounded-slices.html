@@ -1,0 +1,50 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/79-run-bytecode-in-bounded-slices.html
+
+PURPOSE:
+Run bytecode in bounded slices
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Run bytecode in bounded slices | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Run bytecode in bounded slices</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="78-add-binary-bitwise-operators.html">Previous lesson</a> · <a rel="next" href="80-preserve-progress-when-a-slice-fails.html">Next lesson</a></nav>
+<p>A program can take several instructions to finish. If a host executes all of them in one long call, it cannot handle another event until that call returns. A slice is a small allowance of instructions. The virtual machine executes up to that allowance, saves its state, and gives control back to its caller. This lesson uses Umicom C's existing integer bytecode machine; it does not introduce a new machine-code compiler.</p>
+<h2>1. Read the four-instruction example</h2>
+<pre><code class="language-text">PUSH 7
+PUSH 6
+MULTIPLY
+RETURN</code></pre>
+<p>PUSH places a number on the machine's stack, a list where the most recently added item is used first. MULTIPLY consumes the two top numbers and leaves their product. RETURN marks a finished computation. The program counter, called pc in the source, identifies the next instruction. A slice allowance of two stops after the two PUSH operations. A second call multiplies and returns 42. No native thread is created.</p>
+<h2>2. Separate two limits</h2>
+<p>Lifetime fuel is the maximum number of instructions this admitted program may execute altogether. The slice budget limits a single call. Fuel prevents endless execution; slices let the owner regain control regularly. Returning to the host does not restore fuel. RETURN itself consumes one instruction. Four instructions therefore need fuel of at least four, even when each slice has a budget of two.</p>
+<pre><code class="language-text">lifetime fuel = 4
+slice budget  = 2
+
+call 1: executed 2, finished 0, total executed 2
+call 2: executed 2, finished 1, total executed 4
+result: 42</code></pre>
+<h2>3. Inspect the public API</h2>
+<p>Open include/umicom_c/machine.h. UmcMachine contains the admitted program and its execution frame. UmcSliceResult reports instructions executed by the current call and whether RETURN completed. The owner supplies these structures, so the slice function needs no heap allocation. Keep the machine, report, diagnostic and optional trace storage separate. Do not edit machine fields or share one machine between concurrent callers.</p>
+<pre><code class="language-c">UmcSliceResult report;
+UmcStatus status = umc_machine_run_slice(
+    &amp;machine, 2, &amp;report, NULL, &amp;diagnostic);
+if (status != UMC_OK) {
+    /* Stop here and display diagnostic; no result is available. */
+}
+/* UMC_OK plus report.finished == 0 means paused, not complete. */</code></pre>
+<p>This fragment assumes machine was successfully initialized. It is an API reading exercise, not a complete program. The executable regression example is tests/test_machine_slices.c. Read its sizes function to see initialization, repeated calls and result publication together.</p>
+<h2>4. Build and check the runtime</h2>
+<ol><li>Open PowerShell in the umicom-c repository. Confirm that gcc, cmake and ninja are available on PATH.</li><li>Run each command below separately. If a command reports an error, stop and read the first diagnostic.</li><li>The selected tests should pass. Read the test names and counts printed by your own build; this page does not establish that your checkout has passed.</li></ol>
+<pre><code class="language-powershell">cmake -S . -B build/slices-debug -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --build build/slices-debug --parallel 2
+ctest --test-dir build/slices-debug -R machine.slices --output-on-failure --no-tests=error</code></pre>
+<h2>5. Explain the boundary</h2>
+<p>An instruction allowance is not a time guarantee: host scheduling and instruction cost still vary. This VM's operations are bounded, but an instruction budget should never be advertised as a measured latency in milliseconds. A real editor must schedule another slice after returning to its event loop. A tight while loop that drains all slices still blocks its caller until completion.</p>
+<p>Exercise: predict the number of calls for budgets one, two, three and four. The answers are four, two, two and one. The total executed instruction count stays four. If your observation differs, first check whether the compiled program contains extra loads, stores or branches.</p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

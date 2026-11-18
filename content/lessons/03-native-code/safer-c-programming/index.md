@@ -226,3 +226,7 @@ Six connected lessons use one native laboratory to explain token pairs, element 
 1. [Keep caller output unchanged when a request fails](39-keep-failed-output-unchanged.md)
 1. [Follow corpus and output lifetimes](40-own-the-corpus-and-borrow-the-window.md)
 1. [Turn a range contract into focused regression checks](41-qualify-the-corpus-range-contract.md)
+
+1. [Copy metadata with explicit pointer ownership](42-copy-metadata-with-explicit-pointer-ownership.md)
+
+1. [Admit resource labels without trusting their contents](43-admit-resource-labels-without-trusting-content.md)

@@ -79,3 +79,81 @@ Arrays, strings, modules, ownership, error handling and reviewed C interoperabil
 - [Keep checks enabled during learning](12-keep-checks-enabled-during-learning.md)
 
 </details>
+
+## Types, reflection and native boundaries
+
+Continue from the introductory lessons into typed values, memory contracts, compile-time reflection and C interoperability.
+
+Install a supported D compiler and record its version. The C boundary needs a compatible C object toolchain. Ordinary D and BetterC have different runtime contracts.
+
+1. [Read D values, types and expressions](13-values-types-and-expressions.md)
+1. [Choose paths and traverse D collections](14-control-flow-and-collections.md)
+1. [Choose a struct, class or interface](15-structs-classes-and-interfaces.md)
+1. [Understand D memory management and safety attributes](16-garbage-collection-and-memory-contracts.md)
+1. [Use templates and compile-time evaluation](17-templates-and-compile-time-work.md)
+1. [Inspect fields with compile-time reflection](18-reflection-and-field-catalogues.md)
+1. [Separate C linkage from the BetterC subset](19-c-abi-and-betterc.md)
+1. [Navigate D keywords and language concepts](20-keyword-and-concept-map.md)
+
+## Further practical exercises
+
+1. [Distinguish function pointers, delegates and C callbacks](21-functions-delegates-and-callback-lifetimes.md)
+1. [Use scope guards to make cleanup paths visible](22-scope-guards-and-native-cleanup.md)
+
+1. [Inspect types and check conversions without guessing](23-type-inspection-and-checked-casts.md)
+
+1. [Use a C callback without capturing a D delegate](24-use-an-explicit-c-callback-context.md)
+
+1. [Declare field metadata and inspect it at compile time](25-declare-and-inspect-field-metadata.md)
+
+1. [Select code before the program runs](26-select-code-before-the-program-runs.md)
+
+1. [Separate read-only views from independent copies](27-separate-read-only-views-from-independent-copies.md)
+
+1. [Look up records without confusing storage with learning](28-look-up-records-with-associative-arrays.md)
+
+1. [Turn field metadata into explicit checks](29-turn-field-metadata-into-explicit-checks.md)
+
+1. [State the effects of a binary reader](30-state-the-effects-of-a-binary-reader.md)
+
+1. [Follow the lifetime of input-range data](31-follow-the-lifetime-of-input-range-data.md)
+
+1. [Publish results deliberately with ref and out](32-publish-results-with-ref-and-out.md)
+
+1. [Admit enumerated states before exhaustive dispatch](33-admit-enumerated-states-before-dispatch.md)
+
+1. [Distinguish lazy evaluation from caching](34-distinguish-lazy-evaluation-from-caching.md)
+
+1. [Separate invariants from input validation](35-separate-invariants-from-input-validation.md)
+
+1. [Separate modules, visible names and linked code](36-separate-modules-names-and-linked-code.md)
+
+1. [Reuse typed declarations with template mixins](37-reuse-typed-declarations-with-template-mixins.md)
+
+1. [Follow nested static-array copies](38-follow-nested-static-array-copies.md)
+
+1. [Separate text bytes, code points and display](39-separate-text-bytes-code-points-and-display.md)
+
+1. [Preserve qualifiers when returning a borrowed view](40-preserve-qualifiers-when-returning-a-borrowed-view.md)
+
+1. [Inspect layout without serializing padding](41-inspect-layout-without-serializing-padding.md)
+
+1. [Separate atomic access from thread lifetime](42-separate-atomic-access-from-thread-lifetime.md)
+
+1. [Separate union reflection from active-value state](43-separate-union-reflection-from-active-value-state.md)
+
+1. [Distinguish conditional selection from argument evaluation](44-distinguish-conditional-selection-from-argument-evaluation.md)
+
+1. [Separate local static storage from caller ownership](45-separate-local-static-storage-from-caller-ownership.md)
+
+1. [Separate runtime dispatch from type reflection](46-separate-runtime-dispatch-from-type-reflection.md)
+
+1. [Validate bytes before converting to bool](47-validate-bytes-before-converting-to-bool.md)
+
+1. [Separate rounding from checked integer conversion](48-separate-rounding-from-checked-integer-conversion.md)
+
+1. [Constrain operator templates and test their meaning](49-constrain-operator-templates-and-test-their-meaning.md)
+
+1. [Follow comment and string boundaries](50-follow-comment-and-string-boundaries.md)
+
+1. [Admit values before exhaustive state dispatch](51-admit-values-before-exhaustive-state-dispatch.md)

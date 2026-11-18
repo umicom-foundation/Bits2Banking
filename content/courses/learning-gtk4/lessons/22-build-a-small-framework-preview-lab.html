@@ -1,0 +1,36 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-gtk4/lessons/22-build-a-small-framework-preview-lab.html
+
+PURPOSE:
+Build a small Framework preview lab
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build a small Framework preview lab | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Build a small Framework preview lab</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A target is a named output managed by a build system. A small target lets you study one service without compiling every application. The supplied framework-preview-revisions lab is a console program. It uses Framework's real reload bookkeeping, has no graphical window, and performs no download or model operation. Its output will make a later GTK preview design easier to reason about.</p>
+<h2>Prepare the workspace</h2>
+<p>Keep learning work in a separate directory. These example paths assume Bits2Banking is at C:\learning\Umicom-Bits2Banking and the primary Framework source is at C:\learning\Umicom-Applications\framework. Substitute your actual paths consistently. PowerShell accepts the commands below. C source belongs in main.c, not at the PowerShell prompt. Do not type the prompt itself.</p>
+<ol><li>Open the Bits2Banking folder in your editor and locate labs/native/framework-preview-revisions/main.c and CMakeLists.txt.</li><li>Confirm GCC, CMake and Ninja are installed. On Windows, use the same UCRT64 toolchain for this example and its dependencies.</li><li>Read main.c once before building. It allocates two bounded objects, calls Framework functions, prints the result and frees both objects.</li><li>Configure the source-study mode below. It compiles only the production reload service needed by this exercise.</li></ol>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;C:\Program Files\CMake\bin;$env:Path&quot;
+gcc --version
+cmake --version
+ninja --version
+Set-Location &quot;C:\learning\Umicom-Bits2Banking&quot;
+cmake -S labs/native/framework-preview-revisions -B build/preview-study -G Ninja -DCMAKE_C_COMPILER=C:/msys64/ucrt64/bin/gcc.exe -DUMICOM_FRAMEWORK_SOURCE=C:/learning/Umicom-Applications/framework
+cmake --build build/preview-study --parallel 2
+ctest --test-dir build/preview-study --output-on-failure</code></pre>
+<p>Run each command separately and stop if it fails. Check $LASTEXITCODE immediately after a native command: zero normally means success. CMake configures build rules, Ninja executes the rules, and CTest runs the declared check. A configuration result does not establish compilation or test success. The test expects generation 3 with two acknowledgements and no pending work.</p>
+<h2>Use an installed SDK</h2>
+<p>An SDK provides headers, libraries and package metadata. With a compatible SDK installed at C:\SDKs\Umicom, configure a different build folder using the command below. Leave UMICOM_FRAMEWORK_SOURCE unset. This exercises package discovery rather than compiling the service directly from the checkout.</p>
+<pre><code class="language-powershell">cmake -S labs/native/framework-preview-revisions -B build/preview-sdk -G Ninja -DCMAKE_PREFIX_PATH=C:/SDKs/Umicom</code></pre>
+<p>The package must export Umicom::frontend and contain the capture/acknowledge APIs. Missing declarations or unresolved functions can indicate an older SDK or mismatched headers and libraries. Do not hide that by copying a header alone. Source-study success does not qualify an installed SDK. The SDK owner must build, install and validate the matching package.</p>
+<h2>Exercise</h2>
+<p>Find the two free calls. Why are they both reached after an allocation failure? The cleanup label handles null pointers safely and releases any allocation that did succeed. Framework borrows these pointers; the lab retains ownership.</p>
+<nav aria-label="Reading order"><a rel="prev" href="21-choose-an-interactive-development-tool.html">Previous lesson</a> · <a rel="next" href="23-separate-layout-refresh-from-c-rebuilds.html">Next lesson</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

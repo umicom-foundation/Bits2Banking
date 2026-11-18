@@ -1,0 +1,60 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/40-read-nested-comments-and-logical-lines.html
+
+PURPOSE:
+Read nested comments and logical lines
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Read nested comments and logical lines | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Read nested comments and logical lines</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>What the compiler ignores</h2>
+<p>Source code is the text you write. A compiler reads that text to build a program. A comment explains the program to people; ordinary comment text is not executed as an instruction. A delimiter is a character or short sequence that marks a boundary. FreeBASIC uses an apostrophe for a single-line comment and slash-apostrophe paired with apostrophe-slash for a block comment. This lesson uses the modern fb dialect. Older compatibility dialects can interpret special comment forms differently.</p>
+<h2>Three forms to recognise</h2>
+<table><thead><tr><th scope="col">Form</th><th scope="col">Where it ends</th><th scope="col">Use</th></tr></thead><tbody><tr><td>' explanation</td><td>At the physical line ending</td><td>Explain an individual declaration or calculation.</td></tr><tr><td>REM explanation</td><td>At the line ending</td><td>A named comment statement; REM is a keyword.</td></tr><tr><td>/' explanation '/</td><td>At the matching closing pair, allowing nested pairs</td><td>Explain or temporarily exclude a block of text.</td></tr></tbody></table>
+<h2>Read an original short program</h2>
+<pre><code class="language-freebasic">Dim answer As /' The type continues after this comment. '/ Integer = 40
+answer = answer + /' Continue the same expression
+                     on another physical line. '/ 2
+If answer &lt;&gt; 42 Then End 1
+Print &quot;Answer: 42&quot;</code></pre>
+<h2>Follow every symbol</h2>
+<ol><li>Dim declares a variable named answer. As says which type follows; Integer is the integer type selected by the compiler's platform rules.</li><li>The block comment ends before Integer, so the declaration still has a type. The comment did not create a variable or a string.</li><li>The assignment sets answer to its old value plus two. The block crosses a physical line but the expression continues after its closing pair.</li><li>The operator &lt;&gt; means not equal. If the answer is not 42, End 1 terminates this small program with an error exit code.</li><li>Print writes text to the console. The displayed text is deliberately separate from the numeric check: a message alone is not proof that the calculation succeeded.</li></ol>
+<h2>Physical lines and logical statements</h2>
+<p>A physical line ends where a line-ending character is stored in the file. A logical statement is a complete instruction according to the language grammar. A block comment can contain physical line endings without ending the surrounding statement. This does not mean you may break any BASIC expression anywhere: the separate underscore continuation feature has its own rules. Here, the line break is inside the comment.</p>
+<h2>Follow nested pairs</h2>
+<pre><code class="language-freebasic">/' Outer explanation begins.
+   /' An inner explanation begins and ends here. '/
+   This text still belongs to the outer explanation.
+'/
+Print &quot;After the comment&quot;</code></pre>
+<figure><img src="../../../assets/diagrams/basic-comment-depth.svg" alt="Four boundaries change comment nesting from one to two to one to zero; the outer comment remains open until the final closer." style="max-width:100%;height:auto"><figcaption>Read the current state before interpreting a delimiter.</figcaption></figure><h2>Count the boundaries</h2>
+<table><thead><tr><th scope="col">What you encounter</th><th scope="col">Open blocks remaining</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>First slash-apostrophe</td><td>1</td><td>Enter the outer comment.</td></tr><tr><td>Second slash-apostrophe</td><td>2</td><td>Enter a nested comment.</td></tr><tr><td>First apostrophe-slash</td><td>1</td><td>Only the inner block has ended.</td></tr><tr><td>Second apostrophe-slash</td><td>0</td><td>Resume normal source scanning.</td></tr></tbody></table>
+<h2>Quotation marks do not protect markers inside a block</h2>
+<p>Within an active block comment, quotation marks are ordinary comment characters. A nested opening marker still counts even if you placed it between quotation marks in the comment. Within a real string outside a comment, the situation is reversed: the string owns those characters, so a slash-apostrophe in that string does not open a comment. Read which state you are already in before interpreting a new pair of characters. In the modern fb dialect, a block opener inside a single-line comment is ignored until that line ends.</p>
+<h2>Compile and run the complete lab</h2>
+<ol><li>Open PowerShell in labs/languages/native-language-boundary inside your Bits2Banking checkout.</li><li>Run Get-Command fbc and fbc -version. If no compiler is found, complete the earlier FreeBASIC setup lesson before proceeding.</li><li>Open block_comments.bas. Read its named header and locate the declaration, nested explanatory block and arithmetic check.</li><li>Run the compile command below. Stop if it reports an error; do not run an older executable from an earlier attempt.</li><li>Run the newly compiled program. Expect two lines: Answer: 42 and Nested comments preserved the statement.</li><li>Make a separate working copy before the exercises so the supplied lab remains a reference.</li></ol>
+<h2>Commands</h2>
+<pre><code class="language-powershell">fbc -lang fb -exx block_comments.bas -o block_comments.exe
+.\block_comments.exe</code></pre>
+<h2>Exercises that expose mistakes</h2>
+<ol><li>Remove one closing pair from your copy. Compile again. Expect a diagnostic about an unterminated comment; wording can vary with compiler version.</li><li>Restore the pair, then move the physical line break outside the comment without adding a valid continuation. Explain why that changes the source grammar.</li><li>Inside a block, place a nested opener between double quotation marks and leave it unclosed. Predict the remaining depth before compiling.</li><li>Write a string that contains slash-apostrophe outside all comments. Confirm that it is text, then explain the difference from the previous exercise.</li></ol>
+<h2>How Umicom C uses the idea</h2>
+<p>Umicom C has an experimental regions command for identifying tagged language spans. Its BASIC region scanner now protects nested block comments up to 32 levels, keeps original source offsets and uses an iterative counter rather than recursive calls. An attempted 33rd level is refused. That limit belongs to the Umicom envelope; FreeBASIC's reference describes no equivalent fixed nesting limit. The Umicom scanner retains a narrower REM rule: it recognises REM only at a statement start. It does not execute BASIC, implement a complete BASIC lexer or translate these examples into machine code.</p>
+<h2>Try boundary discovery separately</h2>
+<pre><code class="language-powershell">.\build\bin\umicom-c.exe regions .\examples\basic_block_comments.umc</code></pre>
+<h2>Interpret the result</h2>
+<p>Run that command from an Umicom C checkout using the location of its built executable. Expect a BASIC span and a classification-only notice. The source header and outer whitespace can add ordinary Umicom spans. Text such as ?&gt; inside the nested comment must remain in that span. A malformed comment must produce an error instead of a usable partial list. This exercise inspects boundaries; it does not replace the FreeBASIC compilation above.</p>
+<h2>Why this matters for an IDE</h2>
+<p>An editor can highlight, navigate or select language regions only when its scanner understands where comments and strings begin and end. Misreading a delimiter inside a comment can send the wrong source slice to another tool. A small explicit state machine is easier to test than replacing text patterns without context. Reusable production behaviour remains native code; the BASIC program here teaches source rules.</p>
+<h2>Qualification and recovery</h2>
+<p>The Umicom C scanner has native boundary tests. Those tests do not compile this .bas program. FreeBASIC execution must be qualified with the chosen compiler and dialect. If a program prints nothing, first check whether a missing closing pair swallowed the Print statement. If it prints stale output after a compilation error, confirm which executable you ran. Keep compiler errors and application output as separate evidence.</p>
+<h2>Reference</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/ProPgComments">FreeBASIC comments and nesting</a></li></ul>
+<nav aria-label="Previous lesson"><a href="39-separate-local-names-from-retained-storage.html">Previous: Separate local names from retained storage</a></nav><nav aria-label="Continuing practice"><a href="41-follow-abstract-and-virtual-method-dispatch.html">Next: Follow abstract and virtual method dispatch</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

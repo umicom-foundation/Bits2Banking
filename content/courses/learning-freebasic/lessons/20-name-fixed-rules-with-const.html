@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/20-name-fixed-rules-with-const.html
+
+PURPOSE:
+Name fixed rules with Const
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Name fixed rules with Const | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Name fixed rules with Const</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A program often contains numbers that represent a rule: six items in one box, a maximum of one hundred boxes, or a particular protocol version. Repeating those numbers in many expressions makes the rule difficult to review. A named constant gives a fixed value a meaningful name. In this lesson you will use FreeBASIC Const declarations, derive one constant from another, and keep runtime inputs separate from compile-time rules.</p>
+<h2>1. Distinguish a name, a type and a value</h2>
+<pre><code class="language-freebasic">Const As Long UnitsPerBox = 6
+Const As Long MaximumBoxes = 100
+Const As Long MaximumUnits = UnitsPerBox * MaximumBoxes</code></pre>
+<p>Const introduces a named constant. As Long declares its numeric type. In the FreeBASIC dialect used here, Long is a signed 32-bit integer. UnitsPerBox is the identifier, the equals sign introduces its value, and 6 is an integer literal. MaximumUnits is another constant expression: the compiler can determine it from two already declared constants. Its value is six hundred.</p>
+<p>The names are chosen to explain the units. A number of boxes and a number of individual items are both integers, but they mean different things. A meaningful name helps a reader notice when the wrong quantity is used. It does not make the compiler perform dimensional analysis; that would require a stronger type contract.</p>
+<h2>2. Keep changing input in a variable</h2>
+<pre><code class="language-freebasic">Dim As Long boxes = 7
+Dim As Long units = -1</code></pre>
+<p>Dim introduces variables. boxes can change while the program runs; UnitsPerBox is a constant. units starts with minus one so that an unchanged output is visible during debugging. These are ordinary in-memory values. A Const declaration does not read a settings file, follow a spreadsheet cell or change when another variable changes.</p>
+<p>A FreeBASIC constant must use an admitted constant expression for its type and dialect. An ordinary user input or a runtime function call is not automatically such an expression. Do not use Const merely because you expect a value to stay unchanged after reading it. Runtime state and compile-time definitions need different designs.</p>
+<h2>3. Put the calculation behind a checked function</h2>
+<pre><code class="language-freebasic">Function TryUnits(ByVal boxes As Long, ByRef units As Long) As Boolean
+    If boxes &lt; 0 OrElse boxes &gt; MaximumBoxes Then Return False
+    Dim As Long candidate = boxes * UnitsPerBox
+    units = candidate
+    Return True
+End Function</code></pre>
+<p>The function receives boxes by value, so it gets an input copy. It receives units by reference, so it can publish a result into the caller’s variable. Boolean is the result type: True means the conversion was accepted and False means it was refused. The function checks both bounds before multiplication and before writing the caller’s output.</p>
+<p>OrElse is the short-circuit logical OR operator. If boxes is already negative, the second comparison is unnecessary. This example would have no side effect in either comparison, but using explicit logical operators makes the intended boolean decision clear. The accepted range is zero through one hundred inclusive. Multiplying by six therefore stays within zero through six hundred, comfortably inside Long’s range.</p>
+<p>candidate is a local temporary. Only after all checks succeed does the function assign candidate to units. A refused input leaves units unchanged. This is a useful boundary pattern for Umicom applications too: validate inputs, calculate in suitable types, and publish a result only when the whole operation is ready. Production services should use the shared Framework contract rather than copying this toy function into every application.</p>
+<h2>4. Run the complete example</h2>
+<ol><li>Complete the compiler setup in the first FreeBASIC lesson. This exercise uses the fb dialect, not a promise of compatibility with every older BASIC dialect.</li><li>Open labs/languages/native-language-boundary/named_constants.bas. Read the declarations, function and top-level checks before compiling.</li><li>Run the commands below separately. If fbc is not recognized, return to the setup lesson and locate the compiler instead of changing the program to hide the missing tool.</li><li>Expect 42 accepted units and a declared upper bound of 600. The final message confirms that an out-of-range count did not replace the sentinel output.</li><li>Record the compiler version and command output. The example remains a source exercise until it has been compiled and executed with your chosen FreeBASIC installation.</li></ol>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -lang fb -exx -w all named_constants.bas -x named_constants.exe
+.\named_constants.exe</code></pre>
+<p>The -lang fb option selects the dialect. -exx enables the compiler’s extra runtime checking options, and -w all requests warnings. They help expose mistakes but do not prove every possible input or interaction is safe. The -x option names the executable. Keep the compiled output separate from the source file.</p>
+<h2>5. Observe a deliberate compile failure</h2>
+<ol><li>Make a separate practice copy of named_constants.bas. Add UnitsPerBox = 8 after the declarations and try to compile it.</li><li>Expect rejection because the name denotes a constant. Remove the intentionally invalid assignment.</li><li>Change the constant declaration itself to eight, rebuild, and predict which expected-result check now fails. Seven boxes now contain fifty-six units, so the old expectation of forty-two must be reviewed.</li><li>Restore the original value. Try inputs zero, one hundred, minus one and one hundred and one, and predict acceptance and output preservation.</li><li>Explain why renaming the constant alone does not change its value, and why changing a declaration requires rebuilding the executable.</li></ol>
+<h2>6. Avoid accidental global coupling</h2>
+<p>A named constant can still be used badly. If an unrelated screen uses MaximumBoxes as a maximum retry count just because both happen to be one hundred, changing the packaging rule unexpectedly changes the retry policy. Give unrelated concepts separate names and place them near the code or module that owns the rule. Share a constant only when the consumers genuinely share the same contract.</p>
+<p>For a C ABI, a source-level constant name is not automatically an exported symbol. Another language may not be able to look it up in a library. Publish a documented enum, macro, query function or versioned structure as appropriate for the boundary. The existing C interoperability lessons explain why calling convention and integer width still need to match.</p>
+<h2>7. Compare with Umicom C and D carefully</h2>
+<p>Umicom C now supports initialized local const int and int const declarations. Their initializer may execute at runtime and read earlier locals, while later source updates are refused. That differs from the constant-expression role demonstrated by FreeBASIC Const here. Both can help express intent, but translating one word into the other is not a complete semantic translation.</p>
+<p>D distinguishes const views from immutable data. A const view may observe changes made through another valid mutable alias, whereas an independent immutable copy cannot be legally modified after construction. Those aliasing rules do not apply to this simple FreeBASIC named integer constant in the same way. Learn the contract of each language before mixing interfaces.</p>
+<h2>Review the vocabulary</h2><table><thead><tr><th scope="col">Term</th><th scope="col">Meaning here</th><th scope="col">Example</th></tr></thead><tbody><tr><td>Literal</td><td>A value written directly in source</td><td>6</td></tr><tr><td>Identifier</td><td>A name used by the language</td><td>UnitsPerBox</td></tr><tr><td>Type</td><td>Rules for representation and operations</td><td>Long</td></tr><tr><td>Constant expression</td><td>An expression admitted for a constant declaration</td><td>UnitsPerBox * MaximumBoxes</td></tr><tr><td>Runtime variable</td><td>Storage whose value can change during execution</td><td>boxes</td></tr><tr><td>Sentinel</td><td>A deliberately chosen value used to detect an unchanged result</td><td>units = 73 before a refusal test</td></tr><tr><td>Output publication</td><td>Writing the completed result into caller-owned storage</td><td>units = candidate</td></tr></tbody></table><h2>Further reading</h2><ul><li><a href="https://www.freebasic.net/wiki/KeyPgConst">FreeBASIC Const reference</a></li><li><a href="https://www.freebasic.net/wiki/DocToc">FreeBASIC language reference</a></li></ul><nav aria-label="Previous lesson"><a href="19-combine-options-with-checked-bit-masks.html">Previous: Combine options with checked bit masks</a></nav><nav aria-label="Continuing practice"><a href="21-resize-a-bounded-dynamic-array.html">Next: Resize a bounded dynamic array and follow its lifetime</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

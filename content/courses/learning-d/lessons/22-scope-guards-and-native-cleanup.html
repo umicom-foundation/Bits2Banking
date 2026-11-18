@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/22-scope-guards-and-native-cleanup.html
+
+PURPOSE:
+Use scope guards to make cleanup paths visible
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use scope guards to make cleanup paths visible | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Use scope guards to make cleanup paths visible</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A function can leave a block by reaching its end, returning early or throwing an exception. When native storage belongs to that block, forgetting one exit path can leak it. D scope guards register actions for leaving a scope. They make cleanup visible next to resource acquisition, but still require the correct release function and a valid ownership contract.</p>
+<pre><code class="language-d">import core.stdc.stdlib : malloc, free;
+import std.stdio : writeln;
+
+bool inspectBuffer(bool refuse) {
+    void* storage = malloc(16);
+    if (storage is null) return false;
+    scope(exit) free(storage);
+    if (refuse) return false;
+    ubyte* bytes = cast(ubyte*) storage;
+    bytes[0] = 42;
+    return bytes[0] == 42;
+}
+
+void main() {
+    assert(inspectBuffer(false));
+    assert(!inspectBuffer(true));
+    writeln(&quot;Both exit paths exercised&quot;);
+}</code></pre>
+<ol><li>Save cleanup.d, compile it with your D compiler's debug checks, and run only after compilation succeeds.</li><li>Follow the allocation failure path: there is no owned allocation, so the function returns before registering a guard.</li><li>Follow refuse=true: the early return triggers scope(exit), which frees the allocation.</li><li>Follow refuse=false: the function reads its initialized byte and the same guard releases storage before the function leaves.</li><li>Draw an ownership table with one acquisition and one release for each successful allocation. There is no pointer returned to the caller.</li></ol>
+<p>malloc and free come from the C runtime through D declarations; they are not D keywords. is null checks pointer identity against absence. cast changes the pointer type but does not prove the allocation is large enough. This exercise uses a fixed 16-byte allocation and touches only its first byte. The pointer operations are deliberately low-level; do not mark the whole function @trusted just to silence a safety diagnostic without auditing its boundary.</p>
+<h2>Understand the three guard conditions</h2>
+<p>Returning false is an ordinary return, not an exception. It triggers scope(exit) and does not automatically trigger scope(failure). A nonzero C status is also just a value. Therefore use explicit status handling for Framework failures; do not expect scope(failure) to notice them. Abrupt process termination cannot be treated as a normal cleanup path.</p>
+<p>A void release such as free cannot fail. Some native Framework checked releases can return BUSY or an I/O error and retain ownership. A scope guard that discards that status could destroy the context too early or lose the only pointer needed for recovery. For such an API, design an explicit owner whose lifetime survives a refused release; a neat-looking scope guard is not a substitute.</p>
+<h2>Connect to native development</h2>
+<p>The corresponding C practice is one clearly defined cleanup path with ownership flags or staged acquisition. Umicom production services remain C23/Assembly first. D can teach useful lifetime structure without requiring the Framework to adopt D's runtime or hiding native failures behind a language wrapper. These examples are authored and require D compilation on the intended platform.</p>
+<h2>Scope-guard conditions</h2><table><thead><tr><th scope="col">Guard</th><th scope="col">When it runs</th><th scope="col">Typical use</th></tr></thead><tbody><tr><td>scope(exit)</td><td>Whenever control leaves this scope through ordinary scope unwinding</td><td>Release a locally owned resource</td></tr><tr><td>scope(success)</td><td>When leaving without exception unwinding</td><td>A success-path bookkeeping action</td></tr><tr><td>scope(failure)</td><td>When leaving because of exception unwinding</td><td>Rollback work tied to an exception</td></tr></tbody></table><h2>Further reading</h2><ul><li><a href="https://dlang.org/spec/statement.html#scope-guard-statement">D scope guard statements</a></li><li><a href="https://dlang.org/spec/memory-safe-d.html">D memory safety</a></li></ul><nav aria-label="Continuing practice"><a href="21-functions-delegates-and-callback-lifetimes.html">Previous: Distinguish function pointers, delegates and C callbacks</a></nav><nav aria-label="Continuing practice"><a href="23-type-inspection-and-checked-casts.html">Next: Inspect types and check conversions without guessing</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

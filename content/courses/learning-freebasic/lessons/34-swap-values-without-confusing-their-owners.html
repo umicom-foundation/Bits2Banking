@@ -1,0 +1,77 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-freebasic/lessons/34-swap-values-without-confusing-their-owners.html
+
+PURPOSE:
+Swap values without confusing their owners
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Swap values without confusing their owners | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Swap values without confusing their owners</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>What you will observe</h2>
+<p>This exercise follows three different exchanges: two numbers, two pointers and two variable-length strings. All use the FreeBASIC Swap statement, but the meaning depends on what each variable stores. You will predict values before running, draw which storage a pointer names, and explain why exchanging two references does not copy their underlying objects. This is a small language lesson for understanding native application state. It does not implement a bank transaction, a thread-safe publication primitive or a Framework service.</p>
+<h2>Start with two named boxes</h2>
+<p>A variable has a name, a type and stored state. Long is the integer type used in this exercise. Dim declares the variables, As selects their type, and the equals sign in each declaration supplies its starting value. Imagine first and second as two separate boxes. Initially the first contains six and the second contains forty-two.</p>
+<pre><code class="language-freebasic">Dim first As Long = 6
+Dim second As Long = 42
+Swap first, second</code></pre>
+<h2>Trace the scalar exchange</h2>
+<table><thead><tr><th scope="col">Moment</th><th scope="col">first</th><th scope="col">second</th></tr></thead><tbody><tr><td>Before Swap</td><td>6</td><td>42</td></tr><tr><td>After Swap</td><td>42</td><td>6</td></tr></tbody></table>
+<h2>Why two assignments are not an exchange</h2>
+<p>If you write first = second followed by second = first, the original first value is lost before the second assignment. Both boxes then contain forty-two. A manual exchange needs a temporary variable that remembers the old value. Swap expresses the exchange directly. Both variables in this lesson have the same type, so you can focus on where the values go without introducing conversion rules.</p>
+<p>This three-line version is a separate explanation of an exchange. Do not append it to the supplied program unless you intend to exchange the values a second time. A source listing is an ordered sequence: adding a correct operation in the wrong place changes the result.</p>
+<pre><code class="language-freebasic">Dim savedFirst As Long = first
+first = second
+second = savedFirst</code></pre>
+<h2>Read the real checks</h2>
+<p>The program follows each operation with ordinary If checks. The comparison operator &lt;&gt; means “not equal”. OrElse evaluates its right condition only when its left condition is false. End with a nonzero number reports a failed exercise check to the invoking shell. These normal checks remain part of the program rather than relying only on assertions that a build option might remove.</p>
+<pre><code class="language-freebasic">If first &lt;&gt; 42 OrElse second &lt;&gt; 6 Then End 1
+Print &quot;values=&quot;; first; &quot;,&quot;; second</code></pre>
+<h2>A pointer stores an address</h2>
+<p>A pointer identifies a storage location. Long Ptr is a pointer to a Long value. The @ operator obtains the address of an existing variable. In the next code, leftView initially names first and rightView initially names second. Both local integers stay alive for the entire exercise, so the pointers have valid backing storage. No heap allocation or deletion is involved.</p>
+<pre><code class="language-freebasic">Dim leftView As Long Ptr = @first
+Dim rightView As Long Ptr = @second
+Swap leftView, rightView</code></pre>
+<h2>Draw the pointer exchange separately</h2>
+<table><thead><tr><th scope="col">Moment</th><th scope="col">leftView names</th><th scope="col">rightView names</th><th scope="col">first value</th><th scope="col">second value</th></tr></thead><tbody><tr><td>Before pointer Swap</td><td>first</td><td>second</td><td>42</td><td>6</td></tr><tr><td>After pointer Swap</td><td>second</td><td>first</td><td>42</td><td>6</td></tr><tr><td>After *leftView = 9</td><td>second</td><td>first</td><td>42</td><td>9</td></tr></tbody></table>
+<h2>Follow the star to the selected storage</h2>
+<p>The leading star in *leftView accesses the Long stored at the address held by leftView. After the pointer exchange, that address belongs to second. Therefore *leftView = 9 changes second to nine while first stays forty-two. The pointer exchange itself changed neither integer. A reference and its referent are different things: the reference chooses an object, while the referent is the object being chosen.</p>
+<pre><code class="language-freebasic">*leftView = 9
+If first &lt;&gt; 42 OrElse second &lt;&gt; 9 OrElse *rightView &lt;&gt; 42 Then End 4</code></pre>
+<h2>Keep a lifetime table</h2>
+<table><thead><tr><th scope="col">Object</th><th scope="col">Owner in this exercise</th><th scope="col">When it is used</th></tr></thead><tbody><tr><td>first and second</td><td>The main program scope</td><td>Throughout all pointer operations</td></tr><tr><td>leftView and rightView</td><td>The main program scope</td><td>They borrow addresses of those integers</td></tr><tr><td>The integer values</td><td>Stored in the two original variables</td><td>Changed by scalar assignment or dereference</td></tr><tr><td>A copied address</td><td>Still a reference, not new integer storage</td><td>It does not extend the original variable’s lifetime</td></tr></tbody></table>
+<h2>Try a variable-length string exchange</h2>
+<p>String declares an ordinary variable-length FreeBASIC string. The supplied example exchanges two application-style labels, preview and export. The official Swap reference describes variable-length strings as exchanging their descriptors rather than reallocating and copying all characters merely for the exchange. Keep this runtime representation inside the language boundary; a FreeBASIC string descriptor is not a portable C string ABI.</p>
+<pre><code class="language-freebasic">Dim activeName As String = &quot;preview&quot;
+Dim nextName As String = &quot;export&quot;
+Swap activeName, nextName
+Print &quot;names=[&quot;; activeName; &quot;] [&quot;; nextName; &quot;]&quot;</code></pre>
+<h2>A descriptor is not the whole object</h2>
+<p>A descriptor is a small piece of information that tells the runtime where some data is and how it is represented. Exchanging descriptors can change which variable refers to which data. That does not mean every kind of object can be safely exchanged by copying bytes. A record may contain a pointer to itself, an external registration, a callback context or another invariant tied to its address. The supplied exercise deliberately uses simple scalars, valid local pointers and normal strings instead of pretending to solve those more complicated ownership problems.</p>
+<h2>Do not turn Swap into a transaction claim</h2>
+<p>A transaction groups changes under a defined all-or-nothing contract. Swap is a language operation on its arguments. It does not coordinate concurrent threads, publish a file, update a database or roll back arbitrary earlier work. A real application that switches active models or media buffers still needs its Framework owner to validate readiness, coordinate readers and release the old resource at the correct time. The language exercise helps explain the references involved; it is not that resource manager.</p>
+<h2>Run the supplied FreeBASIC program</h2>
+<pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking\labs\languages\native-language-boundary&quot;
+fbc -lang fb -w all -exx swap_values.bas -x swap_values.exe
+&amp; .\swap_values.exe</code></pre>
+<ol><li>Open PowerShell and enter the native-language-boundary lab folder in your Bits2Banking checkout.</li><li>Check that fbc resolves to the FreeBASIC compiler you intend to use. A similarly named shell alias is not a compiler identity.</li><li>Compile swap_values.bas with the fb dialect, warnings and runtime checks enabled.</li><li>Stop if compilation fails. Do not launch an old executable left by an earlier build.</li><li>Run the new executable and compare the four observations with the table below.</li></ol>
+<h2>Read the expected observations</h2>
+<table><thead><tr><th scope="col">Printed label</th><th scope="col">Expected values</th></tr></thead><tbody><tr><td>values=</td><td>42, 6</td></tr><tr><td>after pointer write=</td><td>42, 9</td></tr><tr><td>names=</td><td>[export] [preview]</td></tr><tr><td>same variable=</td><td>42</td></tr></tbody></table>
+<h2>Understand the same-variable check</h2>
+<p>The final statement exchanges first with itself. Its value should remain forty-two. This is a small aliasing case: both argument positions identify the same variable. It is not permission to use side-effecting expressions or partially overlapping complex records without understanding their contract. Integer spacing in Print output may differ by runtime formatting; compare the values and the explicit string delimiters rather than assuming every space is significant.</p>
+<h2>Troubleshoot by locating the wrong kind of value</h2>
+<ol><li>If scalar values are wrong, check whether you accidentally performed a second exchange or replaced Swap with two destructive assignments.</li><li>If first changes when you expected second to change, redraw the pointer arrows after each pointer assignment and Swap.</li><li>If the compiler rejects a dereference, verify that the declaration uses Long Ptr rather than Long.</li><li>If a string seems truncated, check that you used String rather than a fixed-length field from the previous lesson. This exercise does not test fixed-field padding rules.</li><li>If fbc is unavailable, retain the source and record that subject-language compilation remains pending. A passing C test elsewhere cannot compile this BASIC program.</li></ol>
+<h2>Apply the idea to Umicom designs</h2>
+<p>An editor can keep a current document and a prepared candidate. A media job can keep an active frame and a ready next frame. In both cases, selecting a different handle is separate from copying pixels or text, and separate again from freeing storage. Before implementing such behavior, use the existing Framework ownership service and document who may retain each pointer. Do not replace a shared C service with a BASIC-specific version merely because a teaching statement looks convenient.</p>
+<h2>Exercises and references</h2>
+<p>These examples are authored teaching code. FreeBASIC compilation and execution remain unverified in the current mirror environment. Keep a record of your compiler version and actual output when you qualify them.</p>
+<ol><li>Predict the scalar results when the starting values are negative six and forty-two.</li><li>Remove only the pointer Swap and predict which integer the write through leftView changes.</li><li>Exchange the string variables twice and explain why their labels return to the starting assignment.</li><li>Draw an example where two pointers both name first. Explain why changing through either pointer reaches the same storage.</li><li>Write one sentence distinguishing a value exchange, a pointer exchange and a transaction.</li></ol>
+<h2>Official language reference</h2>
+<ul><li><a href="https://www.freebasic.net/wiki/KeyPgSwap">FreeBASIC SWAP reference</a></li><li><a href="https://github.com/freebasic/fbc/blob/master/doc/manual/cache/KeyPgSwap.wakka">FreeBASIC maintained manual source for SWAP</a></li></ul>
+<nav aria-label="Previous lesson"><a href="33-format-fixed-ascii-fields-without-losing-data.html">Previous: Format fixed ASCII fields without losing data</a></nav><nav aria-label="Continuing practice"><a href="35-measure-records-before-sharing-their-bytes.html">Next: Measure records before sharing their bytes</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

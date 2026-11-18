@@ -206,3 +206,33 @@ Inspect resource requirements without executing a program, trace stack behavior,
 
 - [Lower signed bitwise complement through checked arithmetic](77-lower-signed-bitwise-complement.md)
 - [Add binary bitwise operators and preserve bytecode compatibility](78-add-binary-bitwise-operators.md)
+
+## Bounded execution and shared consumers
+
+- [Run bytecode in bounded slices](79-run-bytecode-in-bounded-slices.md)
+- [Preserve progress when a slice fails](80-preserve-progress-when-a-slice-fails.md)
+- [Share slices with Framework and OS](81-share-slices-with-framework-and-os.md)
+
+1. [Give branch locals a lexical scope without changing the VM](82-give-branch-locals-a-lexical-scope.md)
+
+1. [Parse standalone blocks with one scope owner](83-parse-standalone-blocks-with-one-scope-owner.md)
+
+1. [Report source warnings without running a program](84-report-source-warnings-without-running-a-program.md)
+
+1. [Check document snapshots before building](85-check-document-snapshots-before-building.md)
+
+1. [Check bit shifts before publishing a result](86-check-bit-shifts-before-publishing-a-result.md)
+
+1. [Inspect managed memory without collecting](87-inspect-managed-memory-without-collecting.md)
+
+1. [Parse an empty statement without emitting code](88-parse-an-empty-statement-without-emitting-code.md)
+
+1. [Decode ASCII character constants at the lexer](89-decode-ascii-character-constants-at-the-lexer.md)
+
+1. [Parse initialized declaration lists without changing the virtual machine](90-parse-initialized-declaration-lists.md)
+
+1. [Count structural paths before running bytecode](91-count-structural-paths-before-running-bytecode.md)
+
+1. [Show source errors without printing control bytes](92-show-source-errors-without-printing-control-bytes.md)
+
+1. [Lower Boolean words without changing the VM](93-lower-boolean-words-without-changing-the-vm.md)

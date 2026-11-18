@@ -48,8 +48,17 @@ if(_entry_count LESS 1)
 endif()
 math(EXPR _last_entry "${_entry_count} - 1")
 foreach(_entry RANGE 0 ${_last_entry})
+    # Extract one record before its fields. Each JSON call reparses its input;
+    # parsing the full edition registry twice per row made this bounded audit
+    # exceed its time limit as the course catalogue grew. The original reads
+    # remain below for review; validation and duplicate detection are unchanged.
+    if(FALSE)
     string(JSON _html GET "${_registry}" lessons ${_entry} html)
     string(JSON _markdown GET "${_registry}" lessons ${_entry} markdown)
+    endif()
+    string(JSON _record GET "${_registry}" lessons ${_entry})
+    string(JSON _html GET "${_record}" html)
+    string(JSON _markdown GET "${_record}" markdown)
     string(SHA256 _key "${_html}")
     # A second edition mapping for one HTML route is ambiguous even if it
     # currently points to the same manuscript.

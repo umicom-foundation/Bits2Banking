@@ -1,0 +1,22 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/generative-ai-foundations/lessons/05-latents-conditioning-and-adapters.html
+
+PURPOSE:
+Understand latents, conditioning and image adapters
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Understand latents, conditioning and image adapters | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Understand latents, conditioning and image adapters</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<p>A latent is an internal representation, often smaller than raw pixels. A learned encoder may map an image into latents, and a decoder maps latents back to pixels. Text conditioning supplies information derived from a caption or prompt. These components must be compatible; combining arbitrary downloaded files is not a valid training configuration.</p>
+<ol><li>Identify the base architecture and exact component revisions: text encoder, tokenizer, image encoder/decoder if present, denoiser and scheduler configuration.</li><li>Read which components the training method updates and which remain frozen. Frozen means their parameters are not being optimized in that run.</li><li>Choose full fine-tuning or a compatible adapter method based on the task and available resources.</li><li>Check input scaling, color space, latent scaling and text formatting with a small inspected batch.</li><li>Save enough configuration to reconstruct the same pipeline when loading the result.</li></ol>
+<p>LoRA can train a low-rank update to selected layers. An adapter does not contain all base-model parameters. Its target layer names, rank and architecture matter. A small adapter file can still require a large base model and substantial activation memory. An image adapter is not automatically compatible with a video model merely because both are called diffusion models.</p>
+<h2>Check</h2>
+<p>If a loader accepts an adapter file but the output is poor, investigate base revision, target modules, scaling and preprocessing as well as dataset quality. File loading success is only one check. Record the exact component set before comparing two runs.</p>
+<h2>A model is often a compatible component set</h2><table><thead><tr><th scope="col">Artifact</th><th scope="col">What it contributes</th></tr></thead><tbody><tr><td>Tokenizer and text encoder</td><td>Prompt representation</td></tr><tr><td>Image encoder/decoder</td><td>Pixel/latent conversion when used</td></tr><tr><td>Denoiser</td><td>Learned prediction at a specified noise level</td></tr><tr><td>Scheduler configuration</td><td>Noise and sampling rules</td></tr><tr><td>Adapter</td><td>Architecture-specific learned updates</td></tr></tbody></table><nav aria-label="Next lesson"><a href="../index.html">Course contents</a> · <a href="04-noise-denoising-and-loss.html">Previous: Understand a denoising objective before training</a> · <a href="06-plan-an-image-training-experiment.html">Next: Plan and evaluate a small image-training experiment</a></nav></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -49,3 +49,23 @@ foreach(target IN LISTS lesson_targets)
         target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
     endif()
 endforeach()
+
+# Controlled failure is confined to this teaching target and is off by default.
+# The regression uses a new private child build; it never edits source files.
+option(LESSON_REFUSE_PREVIEW_BUILD "Deliberately refuse preview compilation for the learning exercise" OFF)
+if(LESSON_REFUSE_PREVIEW_BUILD)
+    target_compile_definitions(lesson-note-preview PRIVATE LESSON_REFUSE_PREVIEW_BUILD=1)
+endif()
+if(BUILD_TESTING)
+    add_test(NAME bits.build-graph.stale-preview COMMAND "${CMAKE_COMMAND}"
+        "-DSOURCE=${CMAKE_CURRENT_SOURCE_DIR}"
+        "-DWORK=${CMAKE_CURRENT_BINARY_DIR}/stale-preview-proof"
+        "-DCOMPILER=${CMAKE_C_COMPILER}"
+        "-DMAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
+        "-DGENERATOR=${CMAKE_GENERATOR}"
+        "-DCTEST_PROGRAM=${CMAKE_CTEST_COMMAND}"
+        "-DEXECUTABLE_SUFFIX=${CMAKE_EXECUTABLE_SUFFIX}"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/check_stale_preview.cmake")
+    set_tests_properties(bits.build-graph.stale-preview PROPERTIES
+        TIMEOUT 180 LABELS "build-graph;notes;stale-artifact;expected-build-failure")
+endif()
