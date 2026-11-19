@@ -59,6 +59,24 @@ Debug information may include paths. Tool versions, timestamps embedded by tools
 
 `check_preview.cmake` starts one executable, checks that it exits successfully and compares its text against the configured expectation. It normalises the Windows newline sequence for the comparison. It does not strip arbitrary whitespace or ignore unexpected lines, because those changes could hide a real output regression.
 
+### Check which command actually ran
+
+An *argument vector* is the ordered list of text values a process receives. An IDE can show the display text `"two words" ""` while the test program should receive two values, one containing a space and one empty. Record the executable, argument values and working directory as part of the experiment.
+
+In a Framework source checkout with CMake, Ninja and a C23 compiler on `PATH`, run each command separately. Stop if a command fails.
+
+```powershell
+cmake -S tests/uat -B build/uat-command-study -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build/uat-command-study --parallel 2
+ctest --test-dir build/uat-command-study --output-on-failure --no-tests=error -R "framework[.]uat[.]process_arguments[.]"
+```
+
+Expect six checks. Read `tests/uat/test_process_arguments.c` in Framework. An admitted process confirms what it received. An open quote, an unterminated command field or too many values makes the runner record a failure before launch. The workflow check also proves that cleanup runs after a refused action. If CTest finds no matches, confirm that you configured the `tests/uat` project from a Framework revision that includes this fixture.
+
+### Check that the report arrived
+
+A C program can buffer output in memory before handing it to the operating system. `fflush` requests that handoff and can report a write error. Umicom C's `tests/test_cli_report_failure.c` gives its report stream a read-only descriptor, which is the operating system's reference to an open file. The control run can finish the report and the denied run must return a failure. The test reads the input files again to verify their bytes. After configuring and building the Windows UCRT64 debug preset in an Umicom C checkout, run `ctest --preset windows-ucrt64-debug --output-on-failure --no-tests=error -R '^umicom[.]c[.]report[.]'` and inspect both kinds of test. An output failure after `compile` can leave the successfully written bytecode file in place. Check the artifact and the report separately before retrying.
+
 ## Exercise
 
 Write three separate conclusions: the output is correct, the executable hash matches, and this build is faster. State the evidence needed for each. Do not use one measurement as proof of all three.
