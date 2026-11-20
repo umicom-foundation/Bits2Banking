@@ -1,0 +1,61 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/multikernel-systems/lessons/06-qualify-a-kernel-experiment.html
+
+PURPOSE:
+Qualify a kernel experiment.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify a kernel experiment | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="05-recover-a-domain-without-losing-evidence.html">Previous lesson</a> · <a href="../../../lessons/06-umicom/multikernel-systems/06-qualify-a-kernel-experiment.md">Markdown manuscript</a></nav>
+<h1>Qualify a kernel experiment</h1>
+<p>An <strong>ISA</strong> is the instruction set a processor can execute. QEMU can translate instructions and emulate a guest built for a different ISA. A compatible hardware-accelerated VM also needs a guest boot path, trap handlers and virtual devices. A <strong>hart</strong> is a hardware thread in RISC-V. The inspected Umicom Kernel bootstrap parks secondary harts, so a one-hart boot only provides evidence about that execution path.</p>
+<h2>Choose evidence for each step</h2>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Evidence to retain</th>
+<th>Claim you can make</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C23 host lab</td>
+<td>Expected bytes, accepted and refused requests, compiler and test result</td>
+<td>The sample request parser followed its contract on that host.</td>
+</tr>
+<tr>
+<td>One emulated guest</td>
+<td>Image identity, boot observation, current probe, bounded request and restart trace</td>
+<td>The selected guest completed a functional service exercise.</td>
+</tr>
+<tr>
+<td>Two-hart emulator</td>
+<td>Separate stacks, trap and allocator ownership, boot handshakes and message traces</td>
+<td>The two initialisations and specified handoff ran in that emulator.</td>
+</tr>
+<tr>
+<td>Matched hardware workload</td>
+<td>Host and guest identities, placement, latency, completed work, output quality and recovery</td>
+<td>Performance and failure scope on the measured configuration.</td>
+</tr>
+</tbody>
+</table>
+<p>Read the RISC-V bootstrap and find the branch that parks a nonzero hart. Sketch the state that must be owned before a second hart can enter. Include its stack, trap state, timer, memory region and communication initialization. Identify which owner writes to the console. <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/arch/riscv64/boot.S">Umicom Kernel bootstrap</a> · <a href="https://www.qemu.org/docs/master/system/introduction.html">QEMU system emulation</a></p>
+<h2>Write a fair comparison plan</h2>
+<ol>
+<li>Define one job and an outcome. Use a fixed integer transform first. A later inference trial can fix model identity, input size, numeric precision and quality criteria.</li>
+<li>Record ordinary Linux execution and a Framework-managed worker as baselines. Compare a separate-kernel profile only after specifying the unmet requirement and how the profile enforces it.</li>
+<li>Keep hardware and major software settings consistent where practical. Record unavoidable differences. Measure time after warm-up, successful work, refusals, recovery time and resources retained after a fault.</li>
+<li>Compare one hypothetical report with another. A report with lower average latency but fewer completed requests needs its rejection and timeout counts beside the latency. Keep emulator timings with functional observations and use hardware measurements for performance decisions.</li>
+</ol>
+<p>As a final check, write one sentence each for Framework, OS and Kernel. Name who admits the work, who composes the supported profile and recovery route, and who enforces native resource access. Give each claim an observable test.</p>
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer></body></html>

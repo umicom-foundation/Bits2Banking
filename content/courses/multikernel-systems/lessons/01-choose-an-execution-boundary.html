@@ -1,0 +1,56 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/multikernel-systems/lessons/01-choose-an-execution-boundary.html
+
+PURPOSE:
+Choose an execution boundary.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose an execution boundary | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="next" href="02-tell-startup-from-readiness.html">Next lesson</a> · <a href="../../../lessons/06-umicom/multikernel-systems/01-choose-an-execution-boundary.md">Markdown manuscript</a></nav>
+<h1>Choose an execution boundary</h1>
+<p>An execution domain is an environment with a stated responsibility for running work and using resources. Start by asking what can fail, who can stop it, and which other workloads must keep running. These questions help choose a process, a virtual machine or a native research instance.</p>
+<h2>Recognise the boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>Who owns protection</th>
+<th>What you can observe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Supervised Linux process</td>
+<td>The host kernel owns process memory, scheduling and device access.</td>
+<td>The supervisor can observe the child’s exit. A host kernel or shared device failure can affect other children.</td>
+</tr>
+<tr>
+<td>Virtual machine</td>
+<td>A hypervisor runs a guest that has its own kernel and claims a defined set of virtual resources.</td>
+<td>A guest failure can have a smaller scope than a host failure. Shared devices, the host and the supervisor still matter.</td>
+</tr>
+<tr>
+<td>Native research kernel instance</td>
+<td>Boot, memory and device ownership depend on the platform and any enforcing monitor.</td>
+<td>A second CPU starts independently only if the bootstrap, memory and interrupt ownership have been established.</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>multikernel</strong> coordinates operating-system work across kernel instances. Barrelfish is an example that makes cross-core communication explicit. Running an emulated guest alongside Linux introduces a second kernel and gives a controlled place to practise service requests. An AI compute kernel is a routine such as matrix multiplication. Keep that use of the word separate when discussing architecture.</p>
+<h2>Practise with a workload</h2>
+<ol>
+<li>Write down three jobs. Use an editor, an image-generation worker and a short integer transform.</li>
+<li>For each job, state one failure and one requirement. An editor should keep responding when an image job fails. A native research endpoint should preserve the identity of each completed request after restart.</li>
+<li>Choose the simplest environment that can meet each requirement. Give the editor and image generator independently supervised processes first. Use one emulated guest to study the native endpoint.</li>
+<li>Record what would change your choice. A requirement to verify a guest memory boundary calls for hypervisor evidence. A shared driver reset can still stop otherwise independent workers.</li>
+</ol>
+<p>The Umicom OS decision register records the GNU Linux-libre production direction. The diskless foundation documents a Linux build recipe that can be checked independently. Record the actual recipe, firmware and provider before claiming a free-system profile. <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/DECISION_REGISTER.md">Umicom Kernel decision register</a> · <a href="https://github.com/umicom-foundation/umicom-os/blob/main/docs/foundation/architecture.md">Umicom OS architecture</a> · <a href="https://people.inf.ethz.ch/troscoe/pubs/sosp09-barrelfish.pdf">The Multikernel paper</a></p>
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer></body></html>

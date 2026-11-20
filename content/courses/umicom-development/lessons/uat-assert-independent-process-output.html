@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/uat-assert-independent-process-output.html
+
+PURPOSE:
+Assert data output and diagnostics separately
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Assert data output and diagnostics separately | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Assert data output and diagnostics separately</h1>
+<p>A process can write data to standard output, send diagnostics to standard error and return an exit code when it finishes. For an import or conversion test, keep these observations separate. A clean data stream does not establish that an expected warning appeared.</p>
+<h2>Run four native process checks</h2>
+<p>Use the Framework source checkout and the same CMake toolchain as the previous lesson. This exercise builds the process fixture without requiring SQLite. CTest supplies the path to the built fixture, which starts its own controlled child. You do not need an external account, device or command from a report.</p>
+<pre><code class="language-powershell">$framework = &quot;C:/umicom/Umicom-Applications/framework&quot;
+$build = Join-Path $framework &quot;build/uat-process-workshop&quot;
+$env:PATH = &quot;C:/msys64/ucrt64/bin;$env:PATH&quot;
+cmake -S &quot;$framework/tests/uat&quot; -B $build -G Ninja
+cmake --build $build --target umicom-uat-process-fixture-tests
+ctest --test-dir $build -R '^framework[.]uat[.]process_fixture[.]dual-(exact|mismatch|code|raw-stress)$' --output-on-failure --no-tests=error
+</code></pre>
+<p>Expect four passes. The test named <code>dual-mismatch</code> verifies that the inner assertion rejects the wrong diagnostic bytes. The test named <code>dual-code</code> checks a disagreement with the expected exit. The raw stress case reads both channels from one child and checks the large captured streams.</p>
+<h2>Express three expectations for one probe</h2>
+<p>Use <code>UmiUatProcessProbe</code> for the trusted program, working directory, counted arguments and expected standard-output bytes. Pair it with <code>UmiUatProcessExpectedOutcome</code> for each probe, in the same table order. The outcome supplies the expected exit code and the complete standard-error span.</p>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>What the expectation covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard output</td>
+<td>The exact data bytes, including deliberate separators and line endings</td>
+</tr>
+<tr>
+<td>Standard error</td>
+<td>The exact diagnostic bytes, or an empty span when none are expected</td>
+</tr>
+<tr>
+<td>Process exit</td>
+<td>The ordinary exit code expected for this input, from 0 through 125</td>
+</tr>
+</tbody>
+</table>
+<p>An exit code other than zero can be the expected outcome of a command that refuses invalid input. A failure to launch, a timeout, cancellation or incomplete process cleanup still fails the assertion. Give the fixture an explicit target, session and allowed operation, and leave the workflow plan's inline command fields empty. The trusted fixture owns the program and argument vector.</p>
+<h2>Keep useful evidence without printing captured data</h2>
+<p>The report can name the channel that differed. This allows you to investigate a test in an appropriate private location without moving the captured bytes into a shared report. An empty expectation means the channel should produce zero bytes.</p>
+<p>If a mismatch disappears when you merge the two streams, rerun the original test and inspect the separately expected lengths. Check the source of those expectations before changing the fixture. Keep the failed operation and cleanup results separate. <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/testing/uat_process_fixture.h">Read the process fixture contract</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/uat/test_process_fixture.c">Open the native regression source</a></p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html#uat-workflow-evidence">Module contents</a> · <a href="uat-compare-typed-query-results.html">Previous lesson</a> · <a rel="next" href="deployment-models-and-real-providers.html">Next lesson</a></p></nav>
+<p><a href="../../../lessons/umicom-development/uat-assert-independent-process-output.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

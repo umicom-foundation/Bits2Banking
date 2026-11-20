@@ -1,0 +1,66 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/multikernel-systems/lessons/05-recover-a-domain-without-losing-evidence.html
+
+PURPOSE:
+Recover a domain without losing evidence.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recover a domain without losing evidence | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="04-track-buffer-ownership.html">Previous lesson</a> · <a rel="next" href="06-qualify-a-kernel-experiment.html">Next lesson</a> · <a href="../../../lessons/06-umicom/multikernel-systems/05-recover-a-domain-without-losing-evidence.md">Markdown manuscript</a></nav>
+<h1>Recover a domain without losing evidence</h1>
+<p>A supervisor needs to explain what happened to accepted work after the worker stops responding. A timeout means the supervisor did not receive the required response in time. The worker might have completed a storage write before the reply was lost. Record an <strong>unknown outcome</strong> until there is evidence of completion or refusal.</p>
+<h2>Walk through a checkpoint write</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Action</th>
+<th>Evidence to keep</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The worker accepts write 42</td>
+<td>Stop admitting new jobs before a planned shutdown.</td>
+<td>Request 42 and the current generation.</td>
+</tr>
+<tr>
+<td>No result arrives before the deadline</td>
+<td>Check the checkpoint owner’s receipt. Keep the old valid checkpoint.</td>
+<td>Accepted work and missing response.</td>
+</tr>
+<tr>
+<td>The worker reaches a safe stop</td>
+<td>End its access and release the resources that are confirmed idle.</td>
+<td>Stop and completion observations.</td>
+</tr>
+<tr>
+<td>Resources may still be in use</td>
+<td>Keep them reserved while the provider investigates.</td>
+<td>Resource owner, pending access and recovery condition.</td>
+</tr>
+<tr>
+<td>A replacement starts</td>
+<td>Give it a new generation and run a probe before admission.</td>
+<td>New peer identity and the result of reconciling request 42.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Draining</strong> stops admission while accepted work progresses. <strong>Quiescence</strong> means the affected work and access have reached a documented safe boundary. <strong>Quarantine</strong> keeps uncertain resources unavailable for assignment while the supervisor checks them. For a checkpoint, keep enough information to resume from a known model state, input position and software configuration.</p>
+<h2>Check the recovery boundary</h2>
+<ol>
+<li>Write two endings for request 42. In the first it completed before the timeout. In the second the owner can prove it never committed.</li>
+<li>In the first ending, return the original outcome when the caller asks. In the second, decide whether a retry is safe under the workload contract.</li>
+<li>Leave the outcome unknown for a third ending with incomplete evidence. A request identifier lets you correlate records. It does not prove that a side effect occurred only once.</li>
+<li>Draw an independent recovery path for the host’s basic storage or console. Keep it usable when the normal Framework provider is unavailable.</li>
+</ol>
+<p>Barrelfish/DC offers a research example of an orderly transition that retains state. Recovery after an unexpected failure needs separate evidence. <a href="https://www.usenix.org/conference/osdi14/technical-sessions/presentation/zellweger">Barrelfish/DC</a> · <a href="https://github.com/umicom-foundation/umicom-os/blob/main/docs/foundation/architecture.md">Umicom OS foundation</a></p>
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer></body></html>

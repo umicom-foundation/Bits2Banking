@@ -1,0 +1,61 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/multikernel-systems/lessons/04-track-buffer-ownership.html
+
+PURPOSE:
+Track buffer ownership.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track buffer ownership | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="03-design-a-small-control-message.html">Previous lesson</a> · <a rel="next" href="05-recover-a-domain-without-losing-evidence.html">Next lesson</a> · <a href="../../../lessons/06-umicom/multikernel-systems/04-track-buffer-ownership.md">Markdown manuscript</a></nav>
+<h1>Track buffer ownership</h1>
+<p>The lab copied a three-byte input, so the reader could keep it after the writer changed its own array. Large model tensors and video frames make extra copies expensive. Management messages can carry a bounded description of a buffer while the worker receives the data through a separate channel.</p>
+<h2>Decide who can reuse a buffer</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>May the sender reuse its bytes?</th>
+<th>Evidence to wait for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copy</td>
+<td>Yes, once the copy completes.</td>
+<td>The receiver owns a separate copy.</td>
+</tr>
+<tr>
+<td>Borrow for reading</td>
+<td>Reuse must wait.</td>
+<td>Every borrower has released its view, and any device reads have ended.</td>
+</tr>
+<tr>
+<td>Move write ownership</td>
+<td>Only after ownership is returned.</td>
+<td>The receiver finishes or returns the current grant through the owner.</td>
+</tr>
+<tr>
+<td>Cancel while device work may continue</td>
+<td>Keep the buffer reserved.</td>
+<td>The provider confirms that device access has ended.</td>
+</tr>
+</tbody>
+</table>
+<p>A descriptor should identify a registered object, offset, length, allowed operations and ownership generation. The receiver verifies the range against the registered size. For example, start at byte 12 in a 64-byte object and lend 16 bytes. Check <code>offset &lt;= size</code> before testing <code>length &lt;= size - offset</code>. This formulation avoids calculating a sum that might overflow.</p>
+<h2>Walk through a cancellation</h2>
+<ol>
+<li>Put one buffer name on paper. Assign it to worker generation 7 and give the worker a read grant.</li>
+<li>Mark the request as timed out while a device may still be reading. Circle generation 7 as the remaining owner of that access.</li>
+<li>Offer the buffer to replacement generation 8. Refuse reuse until the provider supplies a completion event or confirms safe device recovery.</li>
+<li>Try the same exercise with a copied buffer in an ordinary CPU worker. Identify which owner may release each copy after confirmed exit.</li>
+</ol>
+<p>A <strong>fence</strong> is a synchronisation operation that can help establish completion in a particular system. A CPU memory-ordering operation serves a different purpose from a device completion event. Keep those facts explicit when teaching zero-copy transfers. <a href="https://barrelfish.org/documentation.html">Barrelfish documentation and device queue papers</a></p>
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer></body></html>

@@ -1,0 +1,73 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-development/lessons/uat-compare-typed-query-results.html
+
+PURPOSE:
+Compare typed database results
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare typed database results | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" height="44" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Compare typed database results</h1>
+<p>A database assertion checks what was stored or returned after an action. The text shown by a grid can hide storage details. An empty string, a database NULL and a binary value with zero bytes are three different results. In this exercise, one local SQLite fixture makes those distinctions observable.</p>
+<h2>Build the disposable example</h2>
+<p>Use CMake, Ninja, a C23 compiler and matching SQLite development files. The commands below use the UCRT64 toolchain and assume the Framework checkout is at the shown Windows path. Change that path to your checkout. The fixture opens its own in-memory table, so it does not need a database filename or login.</p>
+<pre><code class="language-powershell">$framework = &quot;C:/umicom/Umicom-Applications/framework&quot;
+$build = Join-Path $framework &quot;build/uat-workshop&quot;
+$env:PATH = &quot;C:/msys64/ucrt64/bin;$env:PATH&quot;
+cmake -S &quot;$framework/tests/uat&quot; -B $build -G Ninja -DUMICOM_UAT_SQLITE_EXAMPLE=ON -DSQLite3_INCLUDE_DIR=C:/msys64/ucrt64/include -DSQLite3_LIBRARY=C:/msys64/ucrt64/lib/libsqlite3.dll.a
+cmake --build $build --target umicom-uat-database-example umicom-uat-database-rows-tests
+ctest --test-dir $build -R '^framework[.]uat[.](database|database_rows)[.]' --output-on-failure --no-tests=error
+</code></pre>
+<p>Expect 24 CTest cases. Eighteen exercise the shared comparator and six run the SQLite example. If CMake cannot find SQLite, point it at the headers and library from the toolchain you installed. Stop on a configure or build error before running an executable left over from an earlier build.</p>
+<h2>Read both outcomes</h2>
+<p>Run one command that should pass and one that should report a mismatch. Save the second program's exit code before running another native command.</p>
+<pre><code class="language-powershell">&amp; &quot;$build/umicom-uat-database-example.exe&quot; --verify-types
+$report = &amp; &quot;$build/umicom-uat-database-example.exe&quot; --reject-typed-change | ConvertFrom-Json
+$fixtureExit = $LASTEXITCODE
+$report.findings | Select-Object id, state, output
+$fixtureExit
+</code></pre>
+<p>The passing run reads a full row containing an integer, text, binary data, empty text, NULL and a real number. The second query returns the saved text followed by an embedded zero byte and an extra character. A C string comparison stops at zero. A byte-counted database comparison can see the additional character.</p>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Expected outcome in the mismatch run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create</code></td>
+<td>The private table was created</td>
+</tr>
+<tr>
+<td><code>edit</code></td>
+<td>The fixture applied its changes</td>
+</tr>
+<tr>
+<td><code>verify</code></td>
+<td>The read failed at row 1, column 2</td>
+</tr>
+<tr>
+<td><code>drop</code></td>
+<td>Cleanup passed</td>
+</tr>
+<tr>
+<td>Program exit</td>
+<td><code>1</code></td>
+</tr>
+</tbody>
+</table>
+<p>The report gives the position and keeps the field values out of the evidence. A CTest case for this deliberate mismatch passes when it observes both the expected failure and successful cleanup.</p>
+<h2>Reuse the Framework comparator</h2>
+<p>Give <code>UmiUatCompareDatabaseRows</code> an independent expected grid and the actual result, each arranged in row order. Know the column count even when the query returns zero rows. Use an explicit column list and <code>ORDER BY</code> when positions matter. Read each database value's storage kind before asking the driver to convert it for display. Keep text and binary lengths, and compare borrowed values while their driver still owns them.</p>
+<p>An <code>OK</code> status means the two complete snapshots were admitted. Read the result's <code>match</code> field to decide whether they agree. Cell coordinates in the C result start at zero, while the sample displays them starting at one. If a result is incomplete or exceeds the documented bounds, fix the adapter or narrow the fixture before interpreting it.</p>
+<p>Try the <code>null-empty</code> and <code>embedded-nul</code> cases separately. Predict which fails because of the storage kind and which fails because of the bytes. <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/testing/uat_database_rows.h">Open the comparator contract</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/examples/uat/database_workflow.c">Read the SQLite example</a></p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html#uat-workflow-evidence">Module contents</a> · <a href="workflow-qualify-the-integration-layers.html">Previous lesson</a> · <a rel="next" href="uat-assert-independent-process-output.html">Next lesson</a></p></nav>
+<p><a href="../../../lessons/umicom-development/uat-compare-typed-query-results.md">Markdown manuscript</a></p></article></main><footer>Sammy Hegab · Umicom Foundation · MIT</footer></body></html>

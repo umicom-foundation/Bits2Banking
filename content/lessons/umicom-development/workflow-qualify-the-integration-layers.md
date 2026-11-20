@@ -15,6 +15,10 @@ MIT
 
 # Qualify a workflow through distinct layers
 
+![Umicom](../../assets/branding/umicom-wordmark.svg)
+
+[![Umicom icon](../../assets/branding/umicom-icon.svg)](../../assets/branding/umicom.ico)
+
 ## Prepare the exercise
 
 Install a C23 compiler, CMake 3.25 or later, Ninja and a matching Framework SDK with the developer lifecycle service. A terminal runs commands; CMake prepares build instructions and Ninja compiles the program. Use your actual SDK prefix and stop on a configure or build error before running an existing executable.
@@ -53,3 +57,5 @@ A missing header or symbol requires checking the installed SDK identity. Preserv
 [Read the C exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/lifecycle-execution/main.c) · [Shared contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/developer/lifecycle_execution.h)
 
 [Course contents](index.md) · [Previous lesson](workflow-adapters-and-option-scope.md) · [Next lesson](deployment-models-and-real-providers.md)
+
+For a practical follow-up with disposable fixtures, read [Compare typed database results](uat-compare-typed-query-results.md).

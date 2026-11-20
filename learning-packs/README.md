@@ -1,5 +1,9 @@
 # Use Bits2Banking courses in Umicom Studio IDE
 
+![Umicom](../content/assets/branding/umicom-wordmark.svg)
+
+[![Umicom icon](../content/assets/branding/umicom-icon.svg)](../content/assets/branding/umicom.ico)
+
 A course is an ordered set of lessons. Each lesson has a web page and a Markdown manuscript. Markdown is plain text with simple marks for headings, lists and code. Both versions contain the same lesson so they can support a browser, an editor and later publishing tools.
 
 An offline manifest is a small JSON document that names the course files and records a SHA-256 checksum for each one. A checksum is a fingerprint of the bytes. The Framework checks it before presenting a resource. A manifest does not grant permission to run examples, install software or send documents to a model.
@@ -147,11 +151,12 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | LLM from Scratch | `learning-packs/llm-from-scratch.json` | 144 |
 | LLM from Scratch — Markdown manuscripts | `learning-packs/llm-from-scratch-manuscripts.json` | 144 |
 | Safer C Programming | `learning-packs/safer-c-programming.json` | 43 |
-| Learning Umicom Framework | `learning-packs/umicom-development.json` | 206 |
-| Learning Umicom Framework — Markdown manuscripts | `learning-packs/umicom-development-manuscripts.json` | 206 |
+| Learning Umicom Framework | `learning-packs/umicom-development.json` | 208 |
+| Learning Umicom Framework — Markdown manuscripts | `learning-packs/umicom-development-manuscripts.json` | 208 |
 | Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 129 |
 | Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 64 |
 | Learning Build Systems | `learning-packs/learning-build-systems.json` | 26 |
+| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 6 |
 | MINIX OS Foundations | `learning-packs/minix-os-foundations.json` | 12 |
 | Learning Maven | `learning-packs/learning-maven.json` | 4 |
 | Learning Gradle | `learning-packs/learning-gradle.json` | 4 |
