@@ -1,0 +1,78 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/128-observe-the-boot-reservation-plan.html
+
+PURPOSE:
+Explain the Kernel's RISC-V boot handoff using the native reservation plan.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Observe the boot reservation plan | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+  <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom">
+  <span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+  <h1>Observe the boot reservation plan</h1>
+  <nav aria-label="Course navigation"><a href="../index.html">Course contents</a></nav>
+
+  <h2>Read the exact image and its reserved pages</h2>
+  <p>A page is a fixed-size block of memory. Before the Kernel can allocate free pages, boot code
+  reserves pages that hold the Kernel, its firmware device tree, or memory owned by firmware.</p>
+  <p>The RISC-V handoff is a checked description of what boot reserved. The synthetic Kernel image
+  begins at <code>0x80200000</code> and spans <code>0x9000</code> bytes. The boot plan also reserves
+  the RAM before that image. Keeping the exact image and the page plan in the same report helps a
+  reviewer explain each address.</p>
+
+  <h2>Run the host exercise</h2>
+  <ol>
+    <li>From the Bits2Banking checkout, use C23, CMake and Ninja to build the handoff lab. Set the
+    Kernel path to a checkout with <code>kernel/riscv_boot_handoff.c</code>. Set the Framework path
+    if the default adjacent checkout is unavailable.</li>
+    <li>Run <code>boot-handoff-reservations review</code>. Expect one RAM range and three reserved
+    spans. The firmware span reported by the lab begins at <code>0x80300000</code> and has
+    <code>8192</code> bytes.</li>
+    <li>Run <code>boot-handoff-reservations unreserved</code>. The program removes the device-tree
+    page from the synthetic plan. Expect <code>Refused uncovered FDT, previous observation retained.</code>
+    The earlier report must stay unchanged.</li>
+  </ol>
+  <pre><code>cmake -S labs/native/boot-handoff -B build/boot-handoff -G Ninja -DUMICOM_KERNEL_SOURCE=C:/umicom/umicom-kernel
+cmake --build build/boot-handoff
+&amp; ./build/boot-handoff/boot-handoff-reservations.exe review
+&amp; ./build/boot-handoff/boot-handoff-reservations.exe unreserved
+ctest --test-dir build/boot-handoff --output-on-failure --no-tests=error</code></pre>
+  <p>If the executable is missing, check that the configured Kernel source includes the RISC-V
+  adapter and reconfigure. If a case returns a nonzero exit code, read its output from CTest before
+  changing the example.</p>
+
+  <h2>Predict the page count</h2>
+  <p>Firmware asks to protect <code>4096</code> bytes starting at <code>0x80300123</code>.
+  The start lies inside one 4096-byte page and the end lies inside the next. When the Kernel rounds
+  the boundaries outward, the plan contains two pages. A request beginning at <code>0x80300000</code>
+  for <code>4096</code> bytes would occupy one page.</p>
+  <p>The hosted run uses invented addresses and never reads from them. To observe a running guest,
+  build the Kernel's RISC-V startup checks and run <code>kernel.riscv64.boot_handoff_normal</code>.
+  Compare the normal, required-service failure and forced-recovery transcripts.</p>
+  <ul>
+    <li><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/boot_reservations.c">Kernel reservation plan</a></li>
+    <li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/boot-handoff/README.md">Hosted lab instructions</a></li>
+    <li><a href="99-qualify-normal-boot-at-separate-boundaries.html">Qualify normal boot at separate boundaries</a></li>
+  </ul>
+</article></main>
+<footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer>
+</body></html>

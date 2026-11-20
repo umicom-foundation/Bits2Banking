@@ -17,6 +17,31 @@ def test_lesson_links_and_navigation():
     assert load_validator().collect_errors() == []
 
 
+def test_link_checker_reads_prose_across_both_fence_styles():
+    prose = load_validator().prose_lines
+    example = ('[Before](first.md)\n~~~powershell\n'
+               'ctest -R "case[.](fixture|example)"\n~~~\n'
+               '[After](next.md)\n```c\n[not a link](in-code)\n```\n'
+               '~~~\n[Open fence](missing.md)\n')
+    assert prose(example).splitlines() == [
+        '[Before](first.md)', '[After](next.md)', '~~~', '[Open fence](missing.md)']
+
+
+def test_only_reviewed_repository_files_extend_the_content_boundary(tmp_path):
+    admit = load_validator().public_repository_file
+    targets = ('labs/native/example.c', 'learning-packs/course.json',
+               'docs/guides/native-project-forms.md', 'knowledge/registries/lesson-media.json')
+    for relative in targets:
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('fixture', encoding='utf-8')
+        assert admit(target, tmp_path).as_posix() == relative
+    private = tmp_path / 'docs/guides/working-notes.md'
+    private.write_text('fixture', encoding='utf-8')
+    assert admit(private, tmp_path) is None
+    assert admit(tmp_path / 'labs/missing.c', tmp_path) is None
+
+
 # Retain the old assertion for review: it mixed unrelated course numbers.
 if False:
     def test_all_lesson_numbers_exist():

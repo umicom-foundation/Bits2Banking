@@ -73,7 +73,7 @@ Inspect and run return 2147483647 + 1;. Predict the two outcomes before issuing 
 
 ## Read the source
 
-[Open the example source](../../../../../umicom-c/tests/test_inspection.c).
+[Open the example source](https://github.com/umicom-foundation/umicom-c/blob/main/tests/test_inspection.c).
 
 ## Continue learning
 

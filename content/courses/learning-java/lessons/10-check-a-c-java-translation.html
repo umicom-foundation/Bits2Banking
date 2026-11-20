@@ -1,0 +1,73 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/10-check-a-c-java-translation.html
+
+PURPOSE:
+  Translate initialized integer locals between C and Java and check the result with both compilers.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check a C and Java translation | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Check a C and Java translation</h1>
+<p>A local variable belongs to one function or method. In this lab, a translator preserves where two integer locals are initialized, when one is reassigned and how the final value is returned. The sample uses fixed practice values.</p>
+<h2>Setup recap</h2>
+<p>Open a new writable directory. Put a build of <code>umicom-c</code> with the checked function translator, a C23 compiler with a 32-bit <code>int</code>, and a JDK on your command path. Confirm that <code>umicom-c --version</code>, <code>gcc --version</code> and <code>javac -version</code> run before creating the fixture.</p>
+<h2>1. Translate the function in both directions</h2>
+<p>Save this file as <code>answer.c</code>. Predict the value of <code>net</code> immediately before the return.</p>
+<pre><code>int answer(void) {
+    int net = 6;
+    int fee = 3;
+    net = (net + fee) * 5;
+    return net - fee;
+}</code></pre>
+<pre><code>umicom-c translate c-to-java answer.c UmicomAnswer.java
+umicom-c translate java-to-c UmicomAnswer.java answer-roundtrip.c</code></pre>
+<p>Open both generated files. Check the initializers, reassignment and return order. The reassignment makes <code>net</code> equal to 45, so the returned value should be 42. If an output already exists, choose a fresh filename or work directory.</p>
+<h2>2. Build and run both results</h2>
+<p>Save this Java entry point as <code>Fixture.java</code>.</p>
+<pre><code>final class Fixture {
+    public static void main(String[] args) {
+        System.out.println(UmicomAnswer.answer());
+    }
+}</code></pre>
+<pre><code>javac UmicomAnswer.java Fixture.java
+java -cp . Fixture</code></pre>
+<p>Save this C entry point as <code>fixture.c</code>.</p>
+<pre><code>#include &lt;stdio.h&gt;
+int answer(void);
+int main(void) {
+    printf("%d\n", answer());
+    return 0;
+}</code></pre>
+<pre><code>gcc -std=c23 -Wall -Wextra -Werror fixture.c answer-roundtrip.c -o c-check.exe
+.\c-check.exe</code></pre>
+<p>On Linux, use <code>./c-check.exe</code> to run the same output filename. Each program should write <code>42</code> on one line. Compare the two results with the value you predicted.</p>
+<h2>3. Check the boundary</h2>
+<p>In a new source copy, initialize <code>net</code> to <code>2147483647</code> and reassign it with <code>net = net + 1;</code>. Run the translation with an unused destination. Expect a diagnostic and no destination file. This arithmetic lies outside the shared signed 32-bit range. Keep this as a translation refusal exercise.</p>
+<p>The profile supports decimal integer expressions, initialized locals, simple assignments and a final return. Java objects, parameters, loops and general project conversion need additional implementation. Try another pair of small values and repeat both compilation checks.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-test-the-runnable-jar.html">Previous lesson</a></nav>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-java/10-check-a-c-java-translation.md">Markdown edition</a></p>
+</article></main>
+<footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer>
+</body>
+</html>

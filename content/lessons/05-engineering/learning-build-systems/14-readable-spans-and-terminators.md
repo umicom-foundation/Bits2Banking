@@ -87,7 +87,7 @@ The older NUL-terminated parser remains available for callers with a valid C str
 
 ## Read the source
 
-[Open the example source](../../../../../Umicom-Applications/framework/include/umicom/developer/command_line.h).
+[Open the example source](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/developer/command_line.h).
 
 ## Continue learning
 

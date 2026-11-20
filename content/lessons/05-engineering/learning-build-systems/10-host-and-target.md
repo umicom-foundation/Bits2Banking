@@ -66,7 +66,7 @@ Draw two boxes labelled host and target. Place CMake, compiler, generator, execu
 
 ## Read the source
 
-[Open the example source](../../../../../umicom-kernel/CMakePresets.json).
+[Open the example source](https://github.com/umicom-foundation/umicom-kernel/blob/main/CMakePresets.json).
 
 ## Continue learning
 

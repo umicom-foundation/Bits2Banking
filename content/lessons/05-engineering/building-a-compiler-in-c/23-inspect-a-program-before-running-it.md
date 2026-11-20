@@ -77,7 +77,7 @@ If the parser rejects a change, read the reported line and column and check the 
 
 ## Read the source
 
-[Open the example source](../../../../../umicom-c/examples/inspection.uc).
+[Open the example source](https://github.com/umicom-foundation/umicom-c/blob/main/examples/inspection.uc).
 
 ## Continue learning
 

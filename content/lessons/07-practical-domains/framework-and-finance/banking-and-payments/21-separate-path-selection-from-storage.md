@@ -45,8 +45,8 @@ Try a relative path in the field. Then use a full absolute path. Observe the dif
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/bank-workspace/README.md).
+[Open the example source](../../../../../labs/framework/bank-workspace/README.md).
 
 ## Continue learning
 
-[Course contents](../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Parent a shared Framework widget in a desktop application](20-parent-a-shared-framework-widget.md) · [Next: Keep an open workspace attached to its original database](22-keep-a-selected-workspace-stable.md)
+[Course contents](../../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Parent a shared Framework widget in a desktop application](20-parent-a-shared-framework-widget.md) · [Next: Keep an open workspace attached to its original database](22-keep-a-selected-workspace-stable.md)

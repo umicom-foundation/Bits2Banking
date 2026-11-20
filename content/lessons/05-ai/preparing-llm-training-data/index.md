@@ -69,3 +69,5 @@ A text editor is enough for the early exercises. The native group-partition lab 
 1. [Measure token loss with the right denominator](32-measure-token-loss-with-the-right-denominator.md)
 
 1. [Aggregate evaluation with checked summaries](33-aggregate-evaluation-with-checked-summaries.md)
+
+1. [Identify the bytes a dataset loaded](34-identify-the-bytes-a-dataset-loaded.md)

@@ -88,7 +88,7 @@ Why does a quoted vertical bar not create a pipeline here? It remains data passe
 
 ## Read the source
 
-[Open the example source](../../../../../Umicom-Applications/framework/src/developer/command_line.c).
+[Open the example source](https://github.com/umicom-foundation/umicom-framework/blob/main/src/developer/command_line.c).
 
 ## Continue learning
 

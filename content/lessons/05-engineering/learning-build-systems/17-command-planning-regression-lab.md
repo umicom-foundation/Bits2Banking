@@ -89,7 +89,7 @@ Explain the defect in one sentence: token presence was confused with token lengt
 
 ## Read the source
 
-[Open the example source](../../../../../Umicom-Applications/framework/tests/test_developer_command_spans.c).
+[Open the example source](https://github.com/umicom-foundation/umicom-framework/blob/main/tests/test_developer_command_spans.c).
 
 <!-- Earlier end-of-course navigation is retained for comparison; the active route now continues into shared toolchain selection.
 ## Continue learning

@@ -74,3 +74,28 @@ These four producer cases supplement the original reader exercise. They are auth
 Both hosted executables use Framework's `umicom_apply_application_branding` helper. It stages the canonical SVG artwork and embeds the supplied ICO and SVG resource in Windows executables. The default Framework path matches the adjacent `Umicom-Applications/framework` checkout. For another layout, add `-DUMICOM_FRAMEWORK_SOURCE=/absolute/path/to/framework` when configuring. A missing helper or artwork stops configuration with the required path.
 
 This is a build-time identity dependency; the freestanding Kernel does not link Framework or GTK. Console text uses the terminal's selected font. The web lessons use the shared Umicom learning stylesheet and its configured installed font families. Do not substitute a drawn approximation for the supplied logo or icon.
+
+## Observe the native reservation plan
+
+Use a Kernel checkout that provides `kernel/riscv_boot_handoff.c`. The configure
+step above adds `boot-handoff-reservations` beside the original two exercises.
+Reconfigure after updating the Kernel source path if that program is missing.
+
+```powershell
+& .\build\boot-handoff\boot-handoff-reservations.exe review
+& .\build\boot-handoff\boot-handoff-reservations.exe unreserved
+ctest --test-dir build/boot-handoff --output-on-failure --no-tests=error
+```
+
+On Linux, run `./build/boot-handoff/boot-handoff-reservations` with each
+argument. The review prints one RAM range, three reserved spans, and the exact
+linked image position. The rounded firmware reservation begins at `0x80300000`
+and spans `8192` bytes. The refusal drops the FDT's reserved page and verifies
+that the earlier observation stays unchanged.
+
+Read `reservations.c` alongside `kernel/boot_reservations.c` and
+`kernel/riscv_boot_handoff.c`. Try predicting the page count before running the
+lab. A page is a fixed block of memory. This program represents addresses as
+integers and asks the existing Kernel code to compute and describe the plan.
+Run the separate RISC-V QEMU guest check in the Kernel guide to see the actual
+boot path use it.

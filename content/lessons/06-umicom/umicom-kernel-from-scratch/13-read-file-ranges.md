@@ -51,9 +51,9 @@ A stored escape byte displays as `\x1b`. This prevents file content from control
 
 ## 5. Follow the implementation
 
-1. [console_shell.c](../../../../../umicom-kernel/kernel/console_shell.c) parses exactly four tokens and checks decimal limits before admitting a range.
-2. [console_file_range.inc](../../../../../umicom-kernel/kernel/console_file_range.inc) opens a read/query descriptor, checks the file kind, seeks to the offset and reads bounded chunks.
-3. [vfs.c](../../../../../umicom-kernel/kernel/vfs.c) owns descriptor rights and position. The command uses those services rather than accessing file pages directly.
+1. [console_shell.c](https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/console_shell.c) parses exactly four tokens and checks decimal limits before admitting a range.
+2. [console_file_range.inc](https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/console_file_range.inc) opens a read/query descriptor, checks the file kind, seeks to the offset and reads bounded chunks.
+3. [vfs.c](https://github.com/umicom-foundation/umicom-kernel/blob/main/kernel/vfs.c) owns descriptor rights and position. The command uses those services rather than accessing file pages directly.
 4. The existing close path retains a descriptor if closing fails. A displayed prefix is counted even if a later read fails; errors remain visible.
 
 ## 6. Exercise and recovery
@@ -62,7 +62,7 @@ Predict `read /notes/range.txt 0 6`. Then compare the output with `cat /notes/ra
 
 If the command is unknown, check `help` and the source/image version you built. If the path is missing, use `ls /notes` and recreate only the exercise file. A directory is not a file: `read /notes 0 1` is refused. A range error is corrected by changing the request, not by increasing an internal buffer.
 
-Continue with [Learning C: counts, offsets and progress](../../learning-c/16-counts-offsets-and-progress.md). The [regression cases](../../../../../umicom-kernel/tests/console_shell/range_cases.inc) also cover file boundaries, independent descriptors, partial failures and repeated cleanup. Hardware timing and terminal behaviour require separate runtime evidence.
+Continue with [Learning C: counts, offsets and progress](../../learning-c/16-counts-offsets-and-progress.md). The [regression cases](https://github.com/umicom-foundation/umicom-kernel/blob/main/tests/console_shell/range_cases.inc) also cover file boundaries, independent descriptors, partial failures and repeated cleanup. Hardware timing and terminal behaviour require separate runtime evidence.
 
 ---
 

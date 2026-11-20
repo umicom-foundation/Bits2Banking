@@ -22,6 +22,22 @@ import json
 from pathlib import Path, PurePosixPath
 
 
+def public_repository_file(target, root):
+    """Name the explicit public source files outside the published content."""
+    try:
+        relative = target.resolve().relative_to(root.resolve())
+    except ValueError:
+        return None
+    if not relative.parts or any(part.startswith('.') for part in relative.parts):
+        return None
+    if (relative.parts[0] not in ('labs', 'learning-packs')
+            and relative.as_posix() not in (
+                'docs/guides/native-project-forms.md',
+                'knowledge/registries/lesson-media.json')):
+        return None
+    return relative if target.is_file() else None
+
+
 def native_pack_resources(site):
     """Return immutable payload identities, refusing ambiguous local paths first."""
     site = Path(site).resolve()

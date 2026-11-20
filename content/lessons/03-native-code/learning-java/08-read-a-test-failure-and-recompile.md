@@ -49,5 +49,5 @@ This workflow also applies when reading Umicom build logs: identify the failing 
 
 [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/java-ledger/LedgerChecks.java). Keep the source revision with your exercise notes so later changes can be compared.
 
-[Course contents](index.md) · [Previous lesson](07-test-a-journal-without-overclaiming.md)
+[Course contents](index.md) · [Previous lesson](07-test-a-journal-without-overclaiming.md) · [Next lesson](09-test-the-runnable-jar.md)
 

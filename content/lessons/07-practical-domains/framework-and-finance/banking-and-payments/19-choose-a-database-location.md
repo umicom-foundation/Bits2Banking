@@ -46,8 +46,8 @@ If no window opens, read the launcher's message. Check that the parent folder ex
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/bank-workspace/main.c).
+[Open the example source](../../../../../labs/framework/bank-workspace/main.c).
 
 ## Continue learning
 
-[Course contents](../../../courses/framework-and-finance/banking-and-payments/index.html) · [Next: Parent a shared Framework widget in a desktop application](20-parent-a-shared-framework-widget.md)
+[Course contents](../../../../courses/framework-and-finance/banking-and-payments/index.html) · [Next: Parent a shared Framework widget in a desktop application](20-parent-a-shared-framework-widget.md)

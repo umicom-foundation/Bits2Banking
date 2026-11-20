@@ -1,0 +1,70 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/banking-and-payments/lessons/25-observe-an-account-at-a-retained-revision.html
+
+PURPOSE:
+Explain how to read exact booked and reserved account balances at a known revision.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Observe a bank account at a retained revision | Bits2Banking</title>
+<link rel="stylesheet" href="../../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"> Bits2Banking
+</a></div></header>
+<main id="main" class="simple-page">
+<article>
+<h1>Observe a bank account at a retained revision</h1>
+<p>A ledger revision counts accepted operations in one practice database. An account can have the same booked balance at two revisions and a different amount available to spend. You need the revision, the currency and the scale to understand what a balance means.</p>
+<h2>Calculate the three amounts</h2>
+<p><strong>Booked</strong> is the amount recorded by completed postings. <strong>Reserved</strong> is the part set aside for an outstanding operation. <strong>Available</strong> is booked minus reserved in this practice ledger. GBP at scale 2 uses pence, so 15,000 minor units is GBP 150.00.</p>
+<table>
+<thead><tr><th>Revision</th><th>Operation</th><th>Booked pence</th><th>Reserved pence</th><th>Available pence</th></tr></thead>
+<tbody>
+<tr><td>6</td><td>Funding already posted</td><td>100,000</td><td>0</td><td>100,000</td></tr>
+<tr><td>7</td><td>Transfer submitted</td><td>100,000</td><td>15,000</td><td>85,000</td></tr>
+<tr><td>8</td><td>Transfer approved</td><td>100,000</td><td>15,000</td><td>85,000</td></tr>
+<tr><td>9</td><td>Transfer posted</td><td>85,000</td><td>0</td><td>85,000</td></tr>
+<tr><td>10</td><td>Transfer reversed</td><td>100,000</td><td>0</td><td>100,000</td></tr>
+</tbody>
+</table>
+<h2>Run the practice checks</h2>
+<ol>
+<li>Use the Umicom Framework source directory with CMake, Ninja, a C23 compiler and SQLite development files available.</li>
+<li>Configure and build the standalone review. It creates synthetic accounts and uses disposable SQLite files for its tests.</li>
+<li>Run the selected tests. Expect five passes. One test reopens the saved practice ledger before comparing the reserved balance with the balance after posting.</li>
+</ol>
+<pre><code>cmake -S examples/bank_review -B build/bank-history -G Ninja -DUMICOM_BANK_REVIEW_SQLITE=ON
+cmake --build build/bank-history
+ctest --test-dir build/bank-history --no-tests=error --output-on-failure -R 'account-observation'</code></pre>
+<h2>Read your own practice database</h2>
+<p>When your Umicom Bank installation includes the historical account command, supply an existing practice database, an account ID and a retained decimal revision. Replace the example path and account with your own practice values.</p>
+<pre><code>.\umicom-bank-console.exe --observe-account 'C:/practice/bank.sqlite' a1 7</code></pre>
+<p><strong>Observed revision</strong> is the point in history you requested. <strong>Loaded revision</strong> is how far the local ledger had advanced when you opened it. If the account was opened later than the requested point, the command reports that it cannot find the account at that revision. If the revision is beyond the loaded ledger, enter an earlier decimal revision. Use only local practice data for this exercise.</p>
+<h2>Read the Framework contract</h2>
+<p><code>UmiBankOperationsObserveAccountAtRevision</code> reconstructs earlier state by applying the retained operations in order to a separate copy. The returned balance includes its revision. A refused query leaves the caller's earlier result intact.</p>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/bank_operations/operations.h">Open the banking operations header</a>.</p>
+<h2>Practice</h2>
+<p>Explain why revisions 7 and 9 give the same available amount but different booked and reserved amounts. Then describe what you expect if you request revision 2 for an account opened at revision 3. Write the revision beside every amount you quote.</p>
+<nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="24-test-events-without-touching-user-data.html">Previous: Test native events while isolating persistent storage</a> · <a href="../../../../lessons/07-practical-domains/framework-and-finance/banking-and-payments/25-observe-an-account-at-a-retained-revision.md">Markdown manuscript</a></p></nav>
+</article>
+</main>
+<footer>Sammy Hegab · Umicom Foundation · MIT</footer>
+</body>
+</html>

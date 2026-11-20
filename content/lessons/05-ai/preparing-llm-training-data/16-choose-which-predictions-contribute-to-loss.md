@@ -147,6 +147,35 @@ A complete pipeline still needs permissioned source material, a reviewed train/v
 Use the earlier data-validation and partition lessons to prepare records, then inspect tokenized examples with their target alignment and masks. Keep a small human-readable fixture containing token IDs, decoded tokens, targets and selection values. That fixture helps diagnose errors before an expensive training job. A falling training loss is only one signal; check answer quality, memorization, privacy and performance on unseen material separately.
 
 
+## Check that evaluation and training agree
+
+In an evaluation pass, `UmiAiTrainingPredictionLoss` computes a sum and
+selected-row count from fixed scores. The training tape's masked
+cross-entropy operation computes the mean used by backward
+differentiation. Compare them with identical scores, targets and
+selection. In `tests/training_metrics/test_prediction_loss.c`, three
+score rows use selection `{1, 0, 1}`. The test divides evaluation's sum
+by two and compares the result with the tape value within a numerical
+tolerance.
+
+From a matching Framework source folder, use an empty build directory
+to run the comparison. Run each command separately and resolve errors
+before continuing.
+
+~~~powershell
+cmake -S tests/training_metrics -B build/prediction-parity -G Ninja
+cmake --build build/prediction-parity --parallel 2
+ctest --test-dir build/prediction-parity --output-on-failure --no-tests=error -R '^framework[.]ai[.]training[.]prediction_loss[.]tape-parity$'
+~~~
+
+Expect one passing comparison. If the linker reports an undefined
+reference to a tape function, inspect the libraries assigned to the test.
+Compiling the call confirms that its declaration was visible. The
+executable also needs the library containing its definition. Framework
+can use the existing trainer target or link the small tape fixture for
+this test. The exercise compares arithmetic on fixed rows, without
+updating a model or using a downloaded dataset.
+
 ## Different controls in a training pipeline
 
 | Control | What it chooses | What it does not establish |

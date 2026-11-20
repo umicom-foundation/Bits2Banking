@@ -236,3 +236,5 @@ Inspect resource requirements without executing a program, trace stack behavior,
 1. [Show source errors without printing control bytes](92-show-source-errors-without-printing-control-bytes.md)
 
 1. [Lower Boolean words without changing the VM](93-lower-boolean-words-without-changing-the-vm.md)
+
+1. [Supply a signed input in a browser worker](94-supply-a-signed-browser-input.md)

@@ -73,7 +73,7 @@ The library cannot prove that an arbitrary C pointer names a large enough readab
 
 ## Read the source
 
-[Open the example source](../../../../../umicom-c/tests/test_inspection.c).
+[Open the example source](https://github.com/umicom-foundation/umicom-c/blob/main/tests/test_inspection.c).
 
 ## Continue learning
 

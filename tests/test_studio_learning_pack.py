@@ -181,11 +181,49 @@ def test_course_links_resolve_to_declared_resources():
     for current, page in pages.items():
         for href in page.links:
             link = urlsplit(href)
+            # Source references and acquisition guides open in the web edition.
+            # The local contents, lesson routes and their fragments still have
+            # to resolve entirely inside the selected native pack.
+            if link.scheme == "https" and link.netloc == "github.com" and not link.query:
+                repository, separator, source = link.path.partition("/blob/main/")
+                if separator and repository == "/umicom-foundation/Bits2Banking":
+                    assert not link.fragment and source.startswith(("learning-packs/", "labs/framework/"))
+                    assert pack.plain_path(ROOT, source).is_file()
+                    continue
+                if separator and repository == "/umicom-foundation/umicom-framework":
+                    assert not link.fragment and source.startswith(("include/umicom/", "src/", "tests/"))
+                    assert ".." not in source.split("/") and source.endswith((".c", ".h"))
+                    continue
             assert not link.scheme and not link.netloc and not link.query
             target = posixpath.normpath(posixpath.join(posixpath.dirname(current), link.path)) if link.path else current
+            if target.startswith("../"):
+                from_course = root.relative_to(ROOT).as_posix()
+                reference = posixpath.normpath(posixpath.join(from_course, target))
+                local_guides = {"content/courses/learning-paths.html", "content/courses/index.html",
+                                "content/courses/learning-c/index.html", "labs/framework/account-balances/main.c",
+                                "labs/framework/account-balances/README.md",
+                                "labs/framework/order-lifecycle/main.c"}
+                local_manuscript = ("content/lessons/07-practical-domains/framework-and-finance/"
+                                    + current.replace("/lessons/", "/").removesuffix(".html") + ".md")
+                assert reference in local_guides or reference == local_manuscript, (current, href, reference)
+                source_file = pack.plain_path(ROOT, reference)
+                if link.fragment:
+                    external_page = Links()
+                    external_page.feed(source_file.read_text(encoding="utf-8"))
+                    assert link.fragment in external_page.anchors, (current, href)
+                continue
             assert target in pages, (current, href, target)
             if link.fragment:
                 assert link.fragment in pages[target].anchors, (current, href)
+
+    # A physically present lesson must also be admitted when its subject
+    # catalogue declares it. The combined pack cannot silently omit a module's
+    # later lessons while the website still advertises them.
+    for course in sorted(root.glob("*/course.json")):
+        lessons = json.loads(course.read_bytes())["lessons"]
+        for lesson in lessons:
+            path = f"{course.parent.name}/{lesson['path']}"
+            assert path in pages, path
 
 
 # Checked-in catalogues bypass the collection publisher, so they need their
@@ -199,13 +237,14 @@ def test_checked_in_pack_obeys_native_capacity(manifest):
     assert value["schema"] == "umicom.learning.pack"
     assert len(data) <= pack.MAX_MANIFEST_BYTES
     assert 1 <= len(value["resources"]) <= 256
+    assert all(row["kind"] in {"guide", "lesson", "example", "image"} for row in value["resources"])
     ids = [row["id"] for row in value["resources"]]
     paths = [row["path"].casefold() for row in value["resources"]]
     assert len(ids) == len(set(ids))
     assert len(paths) == len(set(paths))
 
 
-@pytest.mark.parametrize("slug", ["umicom-development", "llm-from-scratch"])
+@pytest.mark.parametrize("slug", ["umicom-development", "llm-from-scratch", "umicom-kernel-from-scratch"])
 def test_split_course_preserves_html_and_manuscript_coverage(slug):
     course_path = ROOT / "content" / "courses" / slug
     course = json.loads((course_path / "course.json").read_text(encoding="utf-8"))

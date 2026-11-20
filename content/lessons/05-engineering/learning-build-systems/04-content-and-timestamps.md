@@ -66,7 +66,7 @@ The Umicom learning-pack verifier provides a simpler comparison: a lesson resour
 
 ## Read the source
 
-[Open the example source](../../../../../Umicom-Applications/framework/cmake/UmicomPublicContractFingerprint.cmake).
+[Open the example source](https://github.com/umicom-foundation/umicom-framework/blob/main/cmake/UmicomPublicContractFingerprint.cmake).
 
 ## Continue learning
 

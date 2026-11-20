@@ -1,0 +1,58 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/preparing-llm-training-data/lessons/34-identify-the-bytes-a-dataset-loaded.html
+
+PURPOSE:
+Identify the bytes a dataset loaded
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Identify the bytes a dataset loaded | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Identify the bytes a dataset loaded</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Read a document identity and a dataset identity</h2>
+<p>A SHA-256 digest is a fingerprint represented here by 64 hexadecimal characters. If you change a byte in a file, its digest should change. The digest belongs to the bytes read, so differences in line endings count even when a text editor displays the same words.</p>
+<p>The Umicom inspector can report two related identities. A document digest covers one file's original bytes. The dataset digest also covers the document order, relative names and train or evaluation partition. A copy with the same bytes under a new name keeps its document digest and changes the dataset digest when you update the manifest.</p>
+<p>The importer creates an immutable snapshot. An object that is still open keeps its own bytes when someone edits the file. Loading the manifest again creates another snapshot. A SHA-256 value can help you identify and compare those snapshots. It does not show who supplied the material, whether it is licensed for training, or whether the model learned anything useful.</p>
+<h2>Build the native inspector on Windows</h2>
+<ol>
+<li>Open PowerShell in the Framework checkout. Use a terminal with your C23 compiler, CMake and Ninja on <code>PATH</code>. The course uses the three short, included training and evaluation examples.</li>
+<li>Configure and build the focused learning target. Stop at the first error and keep that message.</li>
+</ol>
+<pre><code class="language-powershell">cmake -S learning/native-llm -B build/lesson-dataset-identity -G Ninja -DBUILD_TESTING=ON
+cmake --build build/lesson-dataset-identity --target umicom-native-llm-dataset umicom-ai-training-dataset-source-sha256-test --parallel 2
+ctest --test-dir build/lesson-dataset-identity -R '^framework[.]ai[.]training[.](dataset_inspector|dataset_source_sha256)$' --output-on-failure
+</code></pre>
+<ol start="3">
+<li>Run the inspector with the explicit <code>--document-sha256</code> option. Keep the relative names in the report so each digest can be matched to its source entry.</li>
+</ol>
+<pre><code class="language-powershell">$lab = 'build/lesson-dataset-identity'
+$source = 'learning/native-llm/datasets/first-documents'
+&amp; &quot;$lab/umicom-native-llm-dataset.exe&quot; --document-sha256 &quot;$source/dataset.txt&quot;
+(Get-FileHash -Algorithm SHA256 &quot;$source/training/project.txt&quot;).Hash.ToLowerInvariant()
+</code></pre>
+<p>The report should show three documents, with two for training and one for evaluation. It should add three <code>Document SHA-256</code> lines. The digest beside <code>training/project.txt</code> should match the final PowerShell value exactly. The independent hash reads the current file, so complete this comparison before editing it.</p>
+<p>Use the same configure, build and test commands on Linux with CMake and Ninja available. Run <code>build/lesson-dataset-identity/umicom-native-llm-dataset</code> without the <code>.exe</code> suffix and use <code>sha256sum</code> for the independent file comparison.</p>
+<h2>Change a working copy and predict what will move</h2>
+<ol>
+<li>Save the first report. Pick a new path inside the build folder and copy the fixture into it. Keep the checked-out examples as the baseline.</li>
+</ol>
+<pre><code class="language-powershell">$copy = &quot;$lab/review-copy&quot;
+Copy-Item -LiteralPath $source -Destination $copy -Recurse
+&amp; &quot;$lab/umicom-native-llm-dataset.exe&quot; --document-sha256 &quot;$copy/dataset.txt&quot;
+</code></pre>
+<ol start="2">
+<li>Confirm the copied manifest gives the same dataset digest. It names the same files in the same order, and those files contain the same bytes.</li>
+<li>Edit <code>training/project.txt</code> in the copy and save. Run the command again. The changed document and dataset digests should differ from the first report. The evaluation document and the other training document should retain their digests.</li>
+<li>Try moving an entry in the copy's manifest while keeping it in the same partition. Its document digest should stay the same, and the ordered dataset digest should change. A reproducible sampler can use source order, so record the full dataset digest when describing an experiment.</li>
+<li>If the inspector cannot find the document, open <code>dataset.txt</code> and compare each relative path with the copy on disk. If the SHA-256 values differ after a copy, compare the original and copied bytes before looking at token IDs. Editors may change line endings or add a final line break.</li>
+</ol>
+<h2>Read the native interface</h2>
+<p>The public header is <code>umicom/ai/training/dataset_manifest.h</code>. <code>UmiAiTrainingDatasetDocument</code> gives you the name and partition for a zero-based index. <code>UmiAiTrainingDatasetDocumentSha256</code> gives you the digest for the same index. Use the output only after <code>UMI_STATUS_OK</code> and keep the dataset alive while reading it. An invalid index leaves the output unchanged, so an old buffer must never be reported as a fresh result after a failed call.</p>
+<p>This exercise reads explicitly selected local files. It does not publish data, train a model or grant permission to use someone else's source. For a real experiment, keep rights review and independent evaluation evidence alongside the dataset identity.</p>
+<p><a href="33-aggregate-evaluation-with-checked-summaries.html">Previous: Aggregate evaluation with checked summaries</a></p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

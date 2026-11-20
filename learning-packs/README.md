@@ -25,17 +25,17 @@ The native reader presents verified text and declared resources. It is not a ful
 
 ## Larger courses and manuscript companions
 
-The larger Framework and LLM courses use two manifests each. The original manifest keeps the HTML course and its stable pack identity. A companion manifest holds the Markdown manuscripts with a distinct pack identity. All lesson files and existing resource identifiers are retained.
+The larger Framework, LLM and Kernel courses use two manifests each. The original manifest keeps the HTML course and its stable pack identity. A companion manifest holds the Markdown manuscripts with a distinct pack identity. All lesson files and existing resource identifiers are retained.
 
 One native pack admits at most 256 resources. HTML and Markdown editions of the same lesson count as two resources. The course list counts lessons, so a course with 152 lessons can exceed the resource limit when both editions are placed in one manifest.
 
-Load learning-packs/umicom-development-manuscripts.json for the Framework manuscripts, or learning-packs/llm-from-scratch-manuscripts.json for the LLM manuscripts. Each companion begins with an index linking its declared Markdown resources. Keep the complete checkout as the library root.
+Load learning-packs/umicom-development-manuscripts.json for the Framework manuscripts, learning-packs/llm-from-scratch-manuscripts.json for the LLM manuscripts, or learning-packs/umicom-kernel-from-scratch-manuscripts.json for the Kernel manuscripts. Each companion begins with an index linking its declared Markdown resources. Keep the complete checkout as the library root.
 
 A link to the other edition may lie outside the selected pack and be refused by the native reader. Select the other manifest explicitly or use the browser presentation. Loading a companion uses another shelf slot; the shelf supports at most 32 packs.
 
 Existing checkpoints remain recorded against their original pack, revision and resource identities. A moved manuscript keeps its resource ID, but this does not migrate its previous checkpoint to the companion pack. Review earlier records separately; no completion is inferred from the move.
 
-After integration, verify each of the four manifests with the existing learning-pack verify command, substituting its path. Then qualify catalogue load, lesson navigation, Back/Forward and checkpoint history. Manifest restructuring and source checks alone do not establish these runtime results.
+After integration, verify the selected course and its companion manifest with the existing learning-pack verify command, substituting its path. Then qualify catalogue load, lesson navigation, Back/Forward and checkpoint history. Manifest restructuring and source checks alone do not establish these runtime results.
 
 ## Verify files from a terminal
 
@@ -73,15 +73,9 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 
 | Course | Manifest path | Lessons |
 | --- | --- | --- |
-<!-- Previous catalogue row retained after course continuation: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 46 | -->
-<!-- Earlier displayed compiler course count was64; the current course sequence has82 entries. -->
-<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 82 | -->
-<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 83 | -->
-<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 84 | -->
-<!-- Prior catalogue row retained: compiler course had 85 lessons before checked shifts. -->
-| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 87 |
-| Building a Text Editor in C | `learning-packs/building-a-text-editor.json` | 8 |
-| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 36 |
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 94 |
+| Building a Text Editor in C | `learning-packs/building-a-text-editor.json` | 14 |
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 42 |
 | Building Bitcoin from Scratch Using Assembly and C | `learning-packs/building-bitcoin-in-c.json` | 3 |
 | Building Blockchain from Scratch | `learning-packs/building-blockchain-from-scratch.json` | 13 |
 | Building Linux from Scratch Using C Code | `learning-packs/building-linux-from-scratch.json` | 3 |
@@ -90,7 +84,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Introduction to Distributed Learning, Blockchain and Verifiable AI | `learning-packs/distributed-learning.json` | 95 |
 | Financial Instruments Pricing Using C, C++ and Java | `learning-packs/financial-instruments-pricing.json` | 4 |
 | Learning Accounting and Financial Controls | `learning-packs/framework-and-finance-accounting-and-control.json` | 2 |
-| Introduction to Banking and Payments | `learning-packs/framework-and-finance-banking-and-payments.json` | 24 |
+| Introduction to Banking and Payments | `learning-packs/framework-and-finance-banking-and-payments.json` | 25 |
 | Learning Build and Runtime Diagnostics | `learning-packs/framework-and-finance-builds-and-diagnostics.json` | 2 |
 | Introduction to Commodity and Digital-Asset Systems | `learning-packs/framework-and-finance-commodities-and-digital-assets.json` | 2 |
 | Learning Data and Messaging Services | `learning-packs/framework-and-finance-data-and-messaging.json` | 2 |
@@ -98,7 +92,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Introduction to Umicom Framework Architecture | `learning-packs/framework-and-finance-framework-boundaries.json` | 2 |
 | Introduction to Native AI and Retrieval | `learning-packs/framework-and-finance-native-ai-and-learning.json` | 2 |
 | Introduction to Secure Connected Services | `learning-packs/framework-and-finance-secure-connected-services.json` | 2 |
-| Learning Studio Documents and Visual Design | `learning-packs/framework-and-finance-studio-workflows.json` | 2 |
+| Learning Studio Documents and Visual Design | `learning-packs/framework-and-finance-studio-workflows.json` | 3 |
 | Introduction to Trading and Post-Trade Systems | `learning-packs/framework-and-finance-trading-and-posttrade.json` | 33 |
 | Introduction to Treasury Management Systems | `learning-packs/framework-and-finance-treasury-operations.json` | 2 |
 | Introduction to Bitcoin | `learning-packs/introduction-to-bitcoin.json` | 3 |
@@ -121,18 +115,14 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning C++ | `learning-packs/learning-cpp.json` | 6 |
 | Learning CSS | `learning-packs/learning-css.json` | 8 |
 | Learning Cyber Security | `learning-packs/learning-cyber-security.json` | 21 |
-<!-- Previous count retained: 12 D lessons before the reflection sequence. -->
-<!-- Previous D table count was24 before field metadata. -->
-<!-- Previous D table count was25 before compile-time type admission. -->
-| Learning D Language | `learning-packs/learning-d.json` | 30 |
+| Learning D Language | `learning-packs/learning-d.json` | 51 |
 | Learning Data Structures | `learning-packs/learning-data-structures.json` | 25 |
 | Learning Flutter | `learning-packs/learning-flutter.json` | 20 |
-| Learning GTK4 | `learning-packs/learning-gtk4.json` | 20 |
+| Learning GTK4 | `learning-packs/learning-gtk4.json` | 26 |
 | Learning HDL and VHDL | `learning-packs/learning-hdl-vhdl.json` | 50 |
-<!-- Previous catalogue row retained after course continuation: | Learning HTML | `learning-packs/learning-html.json` | 10 | -->
-| Learning HTML | `learning-packs/learning-html.json` | 15 |
+| Learning HTML | `learning-packs/learning-html.json` | 16 |
 | Learning iPhone Development | `learning-packs/learning-iphone-development.json` | 18 |
-| Learning Java | `learning-packs/learning-java.json` | 8 |
+| Learning Java | `learning-packs/learning-java.json` | 10 |
 | Learning JavaScript | `learning-packs/learning-javascript.json` | 10 |
 | Learning Kotlin | `learning-packs/learning-kotlin.json` | 12 |
 | Learning Laravel | `learning-packs/learning-laravel.json` | 2 |
@@ -142,9 +132,6 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning PHP | `learning-packs/learning-php.json` | 3 |
 | Learning Pine Script | `learning-packs/learning-pinescript.json` | 2 |
 | Learning Python | `learning-packs/learning-python.json` | 11 |
-<!-- Previous course count retained for review; eight model lessons extend this course.
-| Learning Qt | `learning-packs/learning-qt.json` | 16 |
--->
 | Learning Qt | `learning-packs/learning-qt.json` | 24 |
 | Learning RabbitMQ and Message Queues | `learning-packs/learning-rabbitmq.json` | 13 |
 | Learning React | `learning-packs/learning-react.json` | 2 |
@@ -157,27 +144,43 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning x86 Assembly | `learning-packs/learning-x86-assembly.json` | 4 |
 | Learning Zend Framework | `learning-packs/learning-zend-framework.json` | 2 |
 | Learning Zig | `learning-packs/learning-zig.json` | 6 |
-| LLM from Scratch | `learning-packs/llm-from-scratch.json` | 133 |
-| LLM from Scratch — Markdown manuscripts | `learning-packs/llm-from-scratch-manuscripts.json` | 133 |
-<!-- Prior catalogue row retained: | Safer C Programming | `learning-packs/safer-c-programming.json` | 41 | -->
-| Safer C Programming | `learning-packs/safer-c-programming.json` | 42 |
-| Learning Umicom Framework | `learning-packs/umicom-development.json` | 160 |
-| Learning Umicom Framework — Markdown manuscripts | `learning-packs/umicom-development-manuscripts.json` | 160 |
-<!-- Previous catalogue row retained after course continuation: | Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 94 | -->
-<!-- Previous catalogue row retained: 109 lessons before UDP admission. -->
-<!-- Previous displayed Kernel count was112; current manifest includes the continued VM and networking sequence. -->
-| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 123 |
-| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 50 |
-<!-- Prior count retained: | Learning Build Systems | `learning-packs/learning-build-systems.json` | 24 | -->
+| LLM from Scratch | `learning-packs/llm-from-scratch.json` | 144 |
+| LLM from Scratch — Markdown manuscripts | `learning-packs/llm-from-scratch-manuscripts.json` | 144 |
+| Safer C Programming | `learning-packs/safer-c-programming.json` | 43 |
+| Learning Umicom Framework | `learning-packs/umicom-development.json` | 206 |
+| Learning Umicom Framework — Markdown manuscripts | `learning-packs/umicom-development-manuscripts.json` | 206 |
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 129 |
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 64 |
 | Learning Build Systems | `learning-packs/learning-build-systems.json` | 26 |
 | MINIX OS Foundations | `learning-packs/minix-os-foundations.json` | 12 |
 | Learning Maven | `learning-packs/learning-maven.json` | 4 |
-
 | Learning Gradle | `learning-packs/learning-gradle.json` | 4 |
-
 | Learning XML | `learning-packs/learning-xml.json` | 4 |
-
 | Build a weight-management companion with Umicom Framework | `learning-packs/weight-management-framework.json` | 9 |
+| Generative AI: Image and Video Training Foundations | `learning-packs/generative-ai-foundations.json` | 32 |
+| Learning FreeBASIC | `learning-packs/learning-freebasic.json` | 45 |
+| Native languages through C and assembly | `learning-packs/native-language-interoperability.json` | 12 |
+| Preparing Data for LLM Training | `learning-packs/preparing-llm-training-data.json` | 34 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 129 |
+
+<!-- Previous catalogue row retained after course continuation: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 46 | -->
+<!-- Earlier displayed compiler course count was64; the current course sequence has82 entries. -->
+<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 82 | -->
+<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 83 | -->
+<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 84 | -->
+<!-- Prior catalogue row retained: compiler course had 85 lessons before checked shifts. -->
+<!-- Previous count retained: 12 D lessons before the reflection sequence. -->
+<!-- Previous D table count was24 before field metadata. -->
+<!-- Previous D table count was25 before compile-time type admission. -->
+<!-- Previous catalogue row retained after course continuation: | Learning HTML | `learning-packs/learning-html.json` | 10 | -->
+<!-- Previous course count retained for review; eight model lessons extend this course.
+| Learning Qt | `learning-packs/learning-qt.json` | 16 |
+-->
+<!-- Prior catalogue row retained: | Safer C Programming | `learning-packs/safer-c-programming.json` | 41 | -->
+<!-- Previous catalogue row retained after course continuation: | Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 94 | -->
+<!-- Previous catalogue row retained: 109 lessons before UDP admission. -->
+<!-- Previous displayed Kernel count was112; current manifest includes the continued VM and networking sequence. -->
+<!-- Prior count retained: | Learning Build Systems | `learning-packs/learning-build-systems.json` | 24 | -->
 
 ## Keep native packs stable during website publication
 
@@ -219,17 +222,17 @@ Select learning-packs/native-language-interoperability.json with the complete Bi
 <!-- Earlier course index retained: - Learning FreeBASIC: [learning-freebasic.json](learning-freebasic.json), 24 lessons. -->
 <!-- Earlier count retained for review: - Learning FreeBASIC: [learning-freebasic.json](learning-freebasic.json), 25 lessons. -->
 <!-- Prior FreeBASIC count retained: 26 before overload practice. -->
-- Learning FreeBASIC: [learning-freebasic.json](learning-freebasic.json), 28 lessons.
+- Learning FreeBASIC: [learning-freebasic.json](learning-freebasic.json), 45 lessons.
 <!-- Previous data-preparation count was14 before selected JSONL export. -->
 <!-- Earlier published index count retained for review: - Preparing Data for LLM Training: [preparing-llm-training-data.json](preparing-llm-training-data.json), 20 lessons. -->
 <!-- Earlier count retained for review: - Preparing Data for LLM Training: [preparing-llm-training-data.json](preparing-llm-training-data.json), 22 lessons. -->
 <!-- Earlier sequence length retained for review: 23 lessons before selected microbatch reduction. -->
-- Preparing Data for LLM Training: [preparing-llm-training-data.json](preparing-llm-training-data.json), 25 lessons.
+- Preparing Data for LLM Training: [preparing-llm-training-data.json](preparing-llm-training-data.json), 34 lessons.
 <!-- Previous generative sequence contained 12 lessons before cumulative coefficients. -->
 <!-- Prior generative count: 17 before continuous objective weighting. -->
-- Generative AI: Image and Video Training Foundations: [generative-ai-foundations.json](generative-ai-foundations.json), 18 lessons and native C objective/noise/schedule/guidance/trajectory/prediction-conversion/padded-frame/weighted-objective labs.
+- Generative AI: Image and Video Training Foundations: [generative-ai-foundations.json](generative-ai-foundations.json), 32 lessons and native C objective/noise/schedule/guidance/trajectory/prediction-conversion/padded-frame/weighted-objective labs.
 
 <!-- Earlier course index retained: - Learning D: [learning-d.json](learning-d.json), 30 lessons including runtime type inspection, callbacks, field metadata, compile-time admission and explicit range validation. -->
 <!-- Earlier count retained for review: - Learning D: [learning-d.json](learning-d.json), 31 lessons including runtime type inspection, callbacks, field metadata, compile-time admission, explicit range validation and input-range ownership. -->
 <!-- Prior D count retained: 32 before explicit enum admission. -->
-- Learning D: [learning-d.json](learning-d.json), 34 lessons including runtime type inspection, callbacks, field metadata, compile-time admission, explicit range validation and input-range ownership.
+- Learning D: [learning-d.json](learning-d.json), 51 lessons including runtime type inspection, callbacks, field metadata, compile-time admission, explicit range validation and input-range ownership.

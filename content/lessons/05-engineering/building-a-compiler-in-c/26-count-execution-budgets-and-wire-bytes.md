@@ -78,7 +78,7 @@ For a two-instruction program that pushes one value and returns it, calculate th
 
 ## Read the source
 
-[Open the example source](../../../../../umicom-c/include/umicom_c/umicom_c.h).
+[Open the example source](https://github.com/umicom-foundation/umicom-c/blob/main/include/umicom_c/umicom_c.h).
 
 ## Continue learning
 

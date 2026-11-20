@@ -400,3 +400,5 @@ Inspect a fixed TCP header and mandatory pseudo-header checksum while keeping pa
 1. [Walk TCP options without trusting lengths](126-walk-tcp-options-without-trusting-lengths.md)
 
 1. [Decode option values before changing connection state](127-decode-option-values-before-changing-connection-state.md)
+
+1. [Observe the boot reservation plan](128-observe-the-boot-reservation-plan.md)

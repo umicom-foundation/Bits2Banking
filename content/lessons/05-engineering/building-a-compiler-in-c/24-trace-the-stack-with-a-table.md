@@ -84,7 +84,7 @@ A smaller peak does not by itself prove a program is faster. The inspector repor
 
 ## Read the source
 
-[Open the example source](../../../../../umicom-c/src/vm.c).
+[Open the example source](https://github.com/umicom-foundation/umicom-c/blob/main/src/vm.c).
 
 ## Continue learning
 

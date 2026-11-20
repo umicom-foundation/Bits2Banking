@@ -35,6 +35,10 @@ From the repository root, the focused adapter checks can be run with `python -m 
 
 Inspect at least a deeply nested lesson, an older standalone course, an adaptive page and a native pack page. The generated lesson should load its local SVG, ICO and stylesheet without failed requests; its headings, lesson text and navigation should remain available. Repeat publication to confirm that extra logo or favicon elements do not accumulate. Raw source pages opened directly do not pass through the publication adapter.
 
+### Wordmarks on pages that already have an icon
+
+The site header keeps its compact Umicom icon. When a published page has no full wordmark, the adapter adds it inside the Material article or the existing standalone header or main content. Material articles reuse the home page's light and dark wordmark classes so the website theme switch selects the appropriate version. Existing wordmarks and icon links remain in place.
+
 The introductory Framework and finance pages now carry the approved SVG wordmarks, SVG icon, ICO favicon and installed-font stylesheet in their source HTML. Their manifests are updated deliberately with the reviewed source bytes. The pipeline regression in `test_umicom_branding.py` exercises both adapters in their configured order; run the source-link suite too when qualifying a publication.
 
 ### Responsive artwork

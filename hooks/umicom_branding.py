@@ -44,6 +44,7 @@ _BRAND_IMAGES = frozenset({
 })
 _ASSETS = ('umicom-wordmark.svg', 'umicom-wordmark-on-dark.svg',
            'umicom-icon.svg', 'umicom-icon-on-dark.svg', 'umicom.ico')
+_WORDMARKS = frozenset({'umicom-wordmark.svg', 'umicom-wordmark-on-dark.svg'})
 
 
 def relative_url(target, page):
@@ -109,6 +110,8 @@ class BrandPage(HTMLParser):
         self.picture_depth = 0
         self.markup = ActiveMarkup()
         self.head_end = self.body_start = self.main_end = self.header_end = self.title_end = None
+        # Keep the wordmark in the Material article, outside theme navigation.
+        self.material_article_end = None
         self.header_dark = self.branded = self.icon = self.style = False
         # SVG and ICO are separate publication requirements; one cannot stand in for the other.
         self.svg_icon = False
@@ -265,17 +268,29 @@ class BrandPage(HTMLParser):
         if tag == 'header' and self.header_end is None:
             self.header_end = position + len(raw)
             self.header_dark = 'site' in (attrs.get('class') or '').split()
+        if tag == 'article' and self.material_article_end is None:
+            classes = (attrs.get('class') or '').split()
+            if 'md-content__inner' in classes and 'md-typeset' in classes:
+                self.material_article_end = position + len(raw)
         if tag == 'img':
             name = brand_asset_name(attrs.get('src'))
             if name is not None:
-                self.branded = True
+                # Preserve the former icon-or-logo decision for review.
+                # A square header icon now complements the separate wordmark.
+                if False:
+                    self.branded = True
+                self.branded = self.branded or name in _WORDMARKS
                 self.replace_attribute(raw, 'src', self.asset(name))
         if tag == 'img' or (tag == 'source' and self.picture_depth):
             candidates = brand_srcset(attrs.get('srcset'), self.asset)
             if candidates is not None:
                 self.replace_attribute(raw, 'srcset', candidates)
                 if tag == 'img':
-                    self.branded = True
+                    # Normalized candidate URLs have no unescaped spaces.
+                    # A full-wordmark list can satisfy the artwork requirement.
+                    self.branded = self.branded or all(
+                        brand_asset_name(candidate.split()[0]) in _WORDMARKS
+                        for candidate in candidates.split(', '))
                 if tag == 'source' and attrs.get('type'):
                     self.replace_attribute(raw, 'type', 'image/svg+xml')
         if tag == 'link':
@@ -365,7 +380,9 @@ class BrandPage(HTMLParser):
         head = self.head_end if self.head_end is not None else self.body_start
         if head is None:
             head = self.title_end
-        content = self.header_end if self.header_end is not None else self.main_end
+        content = self.material_article_end
+        if content is None:
+            content = self.header_end if self.header_end is not None else self.main_end
         # HTML fragments are not standalone pages and must not gain an invented
         # document shell. The owning page supplies their branding.
         if head is None or content is None:
@@ -382,10 +399,22 @@ class BrandPage(HTMLParser):
         if not self.branded:
             dark = self.asset('umicom-wordmark-on-dark.svg')
             light = self.asset('umicom-wordmark.svg')
-            sources = ''
-            if self.adaptive and not self.header_dark:
-                sources = '<source media="(prefers-color-scheme: dark)" srcset="' + escape(dark, quote=True) + '">'
-            mark = '<picture class="umicom-brand-mark">' + sources + '<img src="' + escape(dark if self.header_dark else light, quote=True) + '" width="180" alt="Umicom"></picture>\n'
+            if self.material_article_end is not None:
+                # Reuse the homepage's light/dark classes so the Material
+                # toggle can switch artwork independently of the OS setting.
+                mark = (
+                    '<img class="umicom-wordmark umicom-wordmark-light" src="'
+                    + escape(light, quote=True) + '" width="420" height="103" alt="Umicom">\n'
+                    '<img class="umicom-wordmark umicom-wordmark-dark" src="'
+                    + escape(dark, quote=True) + '" width="420" height="103" alt="Umicom">\n'
+                )
+            else:
+                # Standalone pages retain the existing adaptive picture and
+                # their original header or main content anchor.
+                sources = ''
+                if self.adaptive and not self.header_dark:
+                    sources = '<source media="(prefers-color-scheme: dark)" srcset="' + escape(dark, quote=True) + '">'
+                mark = '<picture class="umicom-brand-mark">' + sources + '<img src="' + escape(dark if self.header_dark else light, quote=True) + '" width="180" alt="Umicom"></picture>\n'
             self.edits.append((content, content, mark))
         result = self.text
         for start, end, value in sorted(self.edits, reverse=True):

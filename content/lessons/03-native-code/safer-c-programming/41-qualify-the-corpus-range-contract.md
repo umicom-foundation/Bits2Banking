@@ -78,7 +78,7 @@ The regression uses explicit checks that remain active even when NDEBUG disables
 
 If the API later accepts another token type, review the byte-size arithmetic and supported address model. If it becomes asynchronous, add lifetime and cancellation coverage. If it accepts external files, qualify file import separately. None of those behaviours is established by passing this in-memory range test.
 
-Continue into [LLM from Scratch](../../llm-from-scratch/index.html) to see how corpus windows feed dataset sampling and decoder training. This range repair strengthens that input boundary; it does not establish model quality or secure distributed learning.
+Continue into [LLM from Scratch](../../../courses/llm-from-scratch/index.html) to see how corpus windows feed dataset sampling and decoder training. This range repair strengthens that input boundary; it does not establish model quality or secure distributed learning.
 
 ## Read the source
 

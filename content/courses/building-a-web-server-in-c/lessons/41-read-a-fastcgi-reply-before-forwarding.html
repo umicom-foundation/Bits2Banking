@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/41-read-a-fastcgi-reply-before-forwarding.html
+
+PURPOSE:
+Read one bounded worker reply and distinguish stream endings from completion.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Read a FastCGI reply before forwarding | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Read a FastCGI reply before forwarding</h1>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="40-encode-a-fastcgi-request-with-bounded-bytes.html">Previous lesson</a> · <a rel="next" href="42-turn-a-worker-document-into-http.html">Next lesson</a></nav>
+<p>Network and local-process reads may return part of a header or several records at once. Keep a bounded receive buffer and pass the available byte count to <code>UmiWebFastCgiReadReply</code>. On an incomplete record the service returns <code>UMI_STATUS_UNAVAILABLE</code>, keeping the previous reply state and result. After a complete record, consume exactly its <code>consumed</code> count. Its body still points into your receive buffer, so copy any needed bytes before moving or reusing the buffer.</p>
+<h2>Keep each result in its own place</h2>
+<ol>
+<li>Initialize the reply with its exact request ID and an output budget. The combined budget covers both worker streams.</li>
+<li>Preserve <code>STDOUT</code> for the later CGI response parser. Keep <code>STDERR</code> in a controlled diagnostic path. After an empty record closes one stream, later data for that stream is refused.</li>
+<li>Require an <code>END_REQUEST</code> record before declaring the worker response complete. Check the protocol status and application exit status individually. The end record closes any remaining streams.</li>
+<li>Pass admitted output to a separately checked CGI-to-HTTP response adapter. Apply its own header and body limits before writing a response. Leave an incomplete worker result out of the HTTP response.</li>
+</ol>
+<h2>Try the reply checks</h2>
+<p>Use the configured build directory from the previous lesson. Run these cases before trying a real worker.</p>
+<pre><code class="language-powershell">$wireBuild = Join-Path $PWD 'build/fastcgi-wire'
+ctest --test-dir $wireBuild --no-tests=error -R '^framework[.]web[.]fastcgi[.](response|truncated-frame|wrong-request|shared-budget|end-status)$'
+</code></pre>
+<p>Expect five passing tests. The response fixture carries three output bytes and one diagnostic byte. Under a three-byte budget, the first record fits and the diagnostic is refused. A transport that ends after the output record has left the response incomplete. If a worker appears to return output before completion, record its request ID, stream lengths and the end status separately. The local examples use synthetic records, so verify worker launch, CGI header translation and HTTP delivery in their own integration checks.</p>
+</article></main>
+<footer>Sammy Hegab · Umicom Foundation · MIT</footer>
+</body></html>

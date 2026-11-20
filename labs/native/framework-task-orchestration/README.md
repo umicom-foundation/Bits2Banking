@@ -15,13 +15,15 @@ MIT
 
 # Rehearse a complete task operation
 
+<img src="../../../content/assets/branding/umicom-wordmark.svg" alt="Umicom" width="180">
+
 This C23 client uses the installed Framework orchestrator to select task dependencies, admit parallel work and record fictional outcomes. Framework owns planning and state; the client does not copy graph algorithms or launch a compiler.
 
 ## Prepare and run
 
 1. Install the matching Framework development SDK using the compiler and architecture selected below.
 2. Run each PowerShell command separately and stop on an unexpected error.
-3. Repeat the final command with `parallel`, `stop`, `retry` and `reject`.
+3. Repeat the final command with `parallel`, `stop`, `retry`, `reject`, `stop-retry` and `blocked-retry`.
 
 ```powershell
 Set-Location "C:\umicom\Umicom-Bits2Banking"
@@ -33,6 +35,16 @@ ctest --test-dir .\build\framework-task-orchestration --output-on-failure --no-t
 ```
 
 Selected plans only configure and left, then records two successes. Parallel admits left and right together after configure, refuses a third ready request while both slots are occupied, and finishes with four successes. Stop records one running success and three canceled waiting tasks. Retry records one failed configure attempt, then one retry and four successes. Reject proves that an invalid replacement leaves the prior operation usable. Each scenario returns zero only when its modeled contract is satisfied.
+
+Run the two retry cases against a Framework SDK that supports the checked retry contract.
+
+```powershell
+& .\build\framework-task-orchestration\btb-framework-task-orchestration.exe stop-retry
+& .\build\framework-task-orchestration\btb-framework-task-orchestration.exe blocked-retry
+```
+
+- `stop-retry` attempts to retry `left` while `configure` still drains. It reports that the stop and graph are unchanged, then finishes Cancelled with zero retries and three cancelled tasks.
+- `blocked-retry` first retries `left` with `configure` failed. The operation still reports Failed at that point. The program then retries `configure`, finishes all four tasks, and reports two accepted retry requests.
 
 ## Follow ownership and lifetime
 

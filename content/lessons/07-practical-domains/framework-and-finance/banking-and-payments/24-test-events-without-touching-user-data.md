@@ -49,8 +49,11 @@ Describe a faulty implementation that these tests would catch: for example, open
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/bank-workspace/README.md).
+[Open the example source](../../../../../labs/framework/bank-workspace/README.md).
 
 ## Continue learning
 
-[Course contents](../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Recover from a failed open without replacing user data](23-recover-from-a-failed-open.md)
+[Course contents](../../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Recover from a failed open without replacing user data](23-recover-from-a-failed-open.md)
+
+
+[Next: Observe a bank account at a retained revision](25-observe-an-account-at-a-retained-revision.md)

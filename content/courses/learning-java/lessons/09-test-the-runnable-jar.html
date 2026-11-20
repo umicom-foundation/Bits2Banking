@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/09-test-the-runnable-jar.html
+
+PURPOSE:
+  Build, inspect and test the Java archive that an application will ship.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test the runnable JAR | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Test the runnable JAR</h1>
+<p>A Java archive can carry compiled class files and a manifest. The manifest tells the Java runtime which class to start when you run the archive. In this lab, compile a practice application and check the same archive you would hand to another user.</p>
+<h2>Setup recap</h2>
+<p>Use a writable exercise directory, an Umicom Command build with the Java Console Application recipe, CMake, Ninja and a supported JDK. Set <code>JAVA_HOME</code> to that JDK. Run <code>java -version</code> and <code>javac -version</code> and confirm both are from your selected installation. Create a project named <strong>Journal Check</strong> with target <code>journal_check</code> in a new folder. The starter prints its name and uses synthetic data only.</p>
+<h2>1. Compile and run the archive</h2>
+<p>Open the generated folder and confirm that <code>src/Main.java</code> contains the top-level main method. Run each command separately and stop if a step fails.</p>
+<pre><code>umicom make --source . --preset windows-ucrt64-debug
+umicom build --source . --preset windows-ucrt64-debug --target run-program
+jar tf build/windows-ucrt64-debug/bin/journal_check.jar
+java -jar build/windows-ucrt64-debug/bin/journal_check.jar</code></pre>
+<p>On Linux substitute <code>linux-debug</code> for the preset and folder name. The listing contains <code>Main.class</code> and <code>META-INF/MANIFEST.MF</code>. The final command prints <code>Journal Check</code> on one line. The CTest output check runs this JAR and considers the text, exit status and standard error.</p>
+<h2>2. Change one thing and recompile</h2>
+<ol>
+<li>In the practice source change the printed text to <code>Journal Draft</code>. Leave the expected output in the generated CMake file alone.</li>
+<li>Run <code>umicom make --source . --preset windows-ucrt64-debug</code> again. Expect compilation to succeed and the console test to show a difference between the expected and actual text.</li>
+<li>Restore the original text and repeat the command. Confirm the test passes before previewing the Runtime stage.</li>
+</ol>
+<pre><code>umicom install --build build/windows-ucrt64-debug --prefix stage --component Runtime --dry-run</code></pre>
+<p>The preview prints the staging action. It creates no stage directory. A later install copies the tested JAR into the chosen directory. The recipient needs a compatible Java runtime.</p>
+<h2>Exercise and explanation</h2>
+<p>Run the old JAR after editing the source but before rebuilding. Write down why it still prints the original text. Then run the rebuilt JAR and compare its output with the test. If a run fails before printing, inspect the JDK selection and manifest. If the program prints different text and exits successfully, inspect the test's expected output.</p>
+<h2>Source for this lesson</h2>
+<p>Read how the recipe points the run, test and Runtime actions to one archive. <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/developer_project/templates/java_console.c">Java console recipe in Umicom Framework</a></p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="08-read-a-test-failure-and-recompile.html">Previous lesson</a> · <a rel="next" href="10-check-a-c-java-translation.html">Next lesson</a></nav>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-java/09-test-the-runnable-jar.md">Markdown edition</a></p>
+</article></main>
+<footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer>
+</body>
+</html>

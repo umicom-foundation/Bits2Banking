@@ -1,11 +1,46 @@
-"""Check learning chapter links, diagram references and course navigation."""
+#-----------------------------------------------------------------------------
+# Umicom Bits2Banking
+# File: tools/validate_learning.py
+#
+# PURPOSE:
+#   Check learning chapter links, diagram references and course navigation.
+#
+# AUTHOR AND ORGANISATION:
+# Sammy Hegab
+# Umicom Foundation
+#
+# LICENCE:
+# MIT
+#-----------------------------------------------------------------------------
+"""Validate authored Markdown and its reviewed publication targets."""
 from pathlib import Path
 import re
+import runpy
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / 'content'
 LINK_RE = re.compile(r'(?<!!)\[[^\]]+\]\(([^)]+)\)|!\[[^\]]*\]\(([^)]+)\)')
+FENCE = re.compile(r'^\s*(`{3,}|~{3,})(.*)$')
+public_repository_file = runpy.run_path(
+    str(ROOT / 'hooks/publication_artifacts.py'))['public_repository_file']
+
+
+def prose_lines(source):
+    """Skip complete code fences of either delimiter and preserve open text."""
+    visible, fenced = [], []
+    opening = None
+    for line in source.splitlines():
+        match = FENCE.match(line)
+        if opening is None and match:
+            opening = match[1]
+        elif (opening is not None and match and match[1][0] == opening[0]
+              and len(match[1]) >= len(opening) and not match[2].strip()):
+            opening = None
+            fenced.clear()
+            continue
+        (visible if opening is None else fenced).append(line)
+    return '\n'.join(visible + fenced)
 
 
 def numbered_lessons(content=CONTENT):
@@ -64,8 +99,11 @@ def collect_errors():
         source = page.read_text(encoding='utf-8')
         if not re.search(r'^#\s+\S+', source, flags=re.MULTILINE):
             errors.append(f'{page.relative_to(ROOT)} lacks a top-level title')
-        # Strip code fences, as code examples can contain strings resembling links.
-        text = re.sub(r'(?ms)^```.*?^```[ \t]*$', '', source)
+        # The earlier backtick-only check mistook CTest expressions in tilde
+        # fences for links. Retain it for the original scanner's review.
+        if False:
+            text = re.sub(r'(?ms)^```.*?^```[ \t]*$', '', source)
+        text = prose_lines(source)
         for match in LINK_RE.finditer(text):
             link = (match.group(1) or match.group(2)).split('#', 1)[0].strip()
             if not link or link.startswith(('https://', 'http://', 'mailto:', '#', 'data:')):
@@ -74,7 +112,8 @@ def collect_errors():
             try:
                 local.relative_to(CONTENT.resolve())
             except ValueError:
-                errors.append(f'{page.relative_to(ROOT)}: link leaves content root: {link}')
+                if public_repository_file(local, ROOT) is None:
+                    errors.append(f'{page.relative_to(ROOT)}: link leaves content root: {link}')
                 continue
             if not local.exists():
                 errors.append(f'{page.relative_to(ROOT)}: missing link target: {link}')

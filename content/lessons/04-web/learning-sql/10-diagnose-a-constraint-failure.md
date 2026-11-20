@@ -45,6 +45,22 @@ Do not “fix” a rejected value by disabling all constraints. Correct the inpu
 
 The intentional failure file is separate from checks.sql. A passing verification run should not silently accept unexpected errors just because this course also teaches error handling.
 
+## Roll back after a duplicate
+
+1. Open a fresh `:memory:` session. Enter `.bail off`, `.read schema.sql`
+   and `.read seed.sql`, then enter `.read constraint-rollback.sql`.
+2. Find the error for the second copy of learner 1's progress in course 1.
+   SQLite refused that insert. The existing update remains visible inside
+   the same transaction, so `after-refusal` displays 4 completed lessons.
+3. Check `after-rollback`. The explicit rollback restores 3 completed
+   lessons. The table still has four rows without a second copy of the key.
+
+The refused insert and the rollback are separate events. An application test
+should check the reason for the refusal, the original value after rollback,
+and whether fixture cleanup completed.
+
+[Open the rollback exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/database/course-progress/constraint-rollback.sql).
+
 ## Source for this lesson
 
 [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/database/course-progress/constraints.sql). Keep the source revision with your exercise notes so later changes can be compared.

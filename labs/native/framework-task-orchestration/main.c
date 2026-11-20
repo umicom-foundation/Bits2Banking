@@ -4,7 +4,7 @@
  *
  * PURPOSE:
  *   Demonstrate selected dependency closure, parallel admission and cooperative
- * stop through the installed Framework orchestrator.
+ *   stop through the installed Framework orchestrator.
  *
  * AUTHOR AND ORGANISATION:
  * Sammy Hegab
@@ -14,6 +14,7 @@
  * MIT
  *---------------------------------------------------------------------------*/
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <umicom/build/task_orchestrator.h>
@@ -32,13 +33,17 @@ static UmiStatus Complete(UmiBuildTaskOrchestrator *owner, const char *id) {
 int main(int argc, char **argv) {
   if (argc != 2) {
     fputs("Usage: btb-framework-task-orchestration "
-          "selected|parallel|stop|retry|reject\n",
+          "selected|parallel|stop|retry|reject|stop-retry|blocked-retry\n",
           stderr);
     return 2;
   }
   const char *mode = argv[1];
+  /* Extend the existing stop and retry journeys with two observable boundaries. */
+  const bool stop_retry = strcmp(mode, "stop-retry") == 0;
+  const bool blocked_retry = strcmp(mode, "blocked-retry") == 0;
+  const bool stop_case = strcmp(mode, "stop") == 0 || stop_retry;
   if (strcmp(mode, "selected") && strcmp(mode, "parallel") &&
-      strcmp(mode, "stop") && strcmp(mode, "retry") && strcmp(mode, "reject"))
+      !stop_case && strcmp(mode, "retry") && strcmp(mode, "reject") && !blocked_retry)
     return 2;
   UmiBuildTaskRegistry *registry = NULL;
   UmiBuildTaskOrchestrator *owner = NULL;
@@ -76,9 +81,21 @@ int main(int argc, char **argv) {
     puts("Rejected plan; previous operation retained.");
   }
   DO(umi_build_task_orchestrator_begin(owner));
-  if (strcmp(mode, "stop") == 0) {
+  if (stop_case) {
     DO(umi_build_task_orchestrator_start(owner, "configure"));
     DO(umi_build_task_orchestrator_request_stop(owner));
+    if (stop_retry) {
+      /* A queued retry cannot erase the accepted stop while configure is active. */
+      UmiBuildTaskOperationSnapshot stopping, after;
+      DO(umi_build_task_orchestrator_snapshot(owner, &stopping));
+      if (umi_build_task_orchestrator_retry(owner, "left") != UMI_STATUS_BUSY)
+        goto cleanup;
+      DO(umi_build_task_orchestrator_snapshot(owner, &after));
+      if (after.revision != stopping.revision || after.graph.revision != stopping.graph.revision ||
+          after.active_count != 1U || !after.stop_requested || after.retry_count != 0U)
+        goto cleanup;
+      puts("Retry is busy while configure drains. The stop and graph are unchanged.");
+    }
     DO(umi_build_task_orchestrator_complete(owner, "configure", 0));
   } else if (strcmp(mode, "parallel") == 0) {
     DO(Complete(owner, "configure"));
@@ -91,10 +108,21 @@ int main(int argc, char **argv) {
     DO(umi_build_task_orchestrator_complete(owner, "right", 0));
     DO(Complete(owner, "link"));
   } else {
-    if (strcmp(mode, "retry") == 0) {
+    if (strcmp(mode, "retry") == 0 || blocked_retry) {
       DO(umi_build_task_orchestrator_start(owner, "configure"));
       DO(umi_build_task_orchestrator_fail(owner, "configure",
                                           UMI_STATUS_INTERNAL_ERROR, 7));
+      if (blocked_retry) {
+        /* The request can succeed even if the same failure blocks the task
+         * again. Read the graph before assuming there is a ready task. */
+        UmiBuildTaskOperationSnapshot waiting;
+        DO(umi_build_task_orchestrator_retry(owner, "left"));
+        DO(umi_build_task_orchestrator_snapshot(owner, &waiting));
+        if (waiting.state != UMI_BUILD_TASK_OPERATION_FAILED || waiting.graph.ready_count != 0U ||
+            waiting.retry_count != 1U)
+          goto cleanup;
+        puts("Left is still blocked. Retry its failed configure prerequisite first.");
+      }
       DO(umi_build_task_orchestrator_retry(owner, "configure"));
     }
     /* This example supplies immediate fictional outcomes. A real runner
@@ -116,7 +144,7 @@ int main(int argc, char **argv) {
          umi_build_task_operation_state_text(snapshot.state),
          snapshot.planned_count, snapshot.graph.succeeded_count,
          snapshot.graph.cancelled_count, snapshot.retry_count);
-  if (strcmp(mode, "stop") == 0)
+  if (stop_case)
     result = snapshot.state == UMI_BUILD_TASK_OPERATION_CANCELLED &&
                      snapshot.graph.cancelled_count == 3U
                  ? 0

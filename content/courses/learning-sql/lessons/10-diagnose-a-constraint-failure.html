@@ -32,6 +32,14 @@ MIT
 <p>Do not “fix” a rejected value by disabling all constraints. Correct the input or explicitly redesign the rule.</p>
 <h2>Expected error versus regression</h2>
 <p>The intentional failure file is separate from checks.sql. A passing verification run should not silently accept unexpected errors just because this course also teaches error handling.</p>
+<h2>Roll back after a duplicate</h2>
+<ol>
+<li>Open a fresh <code>:memory:</code> session. Enter <code>.bail off</code>, <code>.read schema.sql</code> and <code>.read seed.sql</code>, then enter <code>.read constraint-rollback.sql</code>.</li>
+<li>Find the error for the second copy of learner 1's progress in course 1. SQLite refused that insert. The existing update remains visible inside the same transaction, so <code>after-refusal</code> displays 4 completed lessons.</li>
+<li>Check <code>after-rollback</code>. The explicit rollback restores 3 completed lessons. The table still has four rows without a second copy of the key.</li>
+</ol>
+<p>The refused insert and the rollback are separate events. An application test should check the reason for the refusal, the original value after rollback, and whether fixture cleanup completed.</p>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/database/course-progress/constraint-rollback.sql">Open the rollback exercise</a>.</p>
 <h2>Source for this lesson</h2>
 <p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/database/course-progress/constraints.sql">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
 <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-use-savepoints-for-a-local-experiment.html">Previous lesson</a> · <a rel="next" href="11-check-application-rules-and-structural-health.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/04-web/learning-sql/10-diagnose-a-constraint-failure.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,8 +1,16 @@
 /*-----------------------------------------------------------------------------
- * Bits2Banking | Umicom Foundation
+ * Umicom Bits2Banking
  * File: labs/native/http-loopback-server/test_routes.c
- * PURPOSE: Reject invalid routes and verify owned, bounded GET/HEAD replies.
- * AUTHOR: Sammy Hegab | LICENCE: MIT
+ *
+ * PURPOSE:
+ *   Reject invalid routes and verify owned, bounded GET/HEAD replies.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include "learning_routes.h"
 #include "route_service.h"
@@ -82,6 +90,14 @@ static int Routes(void)
     CHECK(BtbRouteEncode(&request, &response, buffer, 10U,
                           &written, &headers) == BTB_ROUTE_CAPACITY);
     CHECK(written == headers);
+    /* The lesson's example probes this route before considering external workers. */
+    memcpy(request.path, "/api/status", sizeof "/api/status");
+    CHECK(BtbRouteServiceDispatch(&owner, &request, &response) == BTB_ROUTE_OK);
+    CHECK(response.statusCode == 200U && response.media == BTB_ROUTE_JSON);
+    const char *status_body = (const char *)response.body;
+    CHECK(Contains(status_body, response.bodyLength, "\"service\":\"bits2banking-routes\""));
+    CHECK(Contains(status_body, response.bodyLength, "\"state\":\"ready\""));
+    CHECK(Contains(status_body, response.bodyLength, "\"scope\":\"loopback\""));
     /* A site file with an extension must be a normal fallback, not 503. */
     memcpy(request.path, "/assets/site.css", sizeof "/assets/site.css");
     CHECK(BtbRouteServiceDispatch(&owner, &request, &response) == BTB_ROUTE_NOT_FOUND);

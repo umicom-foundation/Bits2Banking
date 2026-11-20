@@ -51,8 +51,8 @@ Draw an ownership map: application → host window → launcher; launcher → op
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/bank-workspace/main.c).
+[Open the example source](../../../../../labs/framework/bank-workspace/main.c).
 
 ## Continue learning
 
-[Course contents](../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Choose a database location before opening a workspace](19-choose-a-database-location.md) · [Next: Separate path selection from database operations](21-separate-path-selection-from-storage.md)
+[Course contents](../../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Choose a database location before opening a workspace](19-choose-a-database-location.md) · [Next: Separate path selection from database operations](21-separate-path-selection-from-storage.md)

@@ -1,0 +1,128 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/94-supply-a-signed-browser-input.html
+
+PURPOSE:
+Run one compiled Umicom C artifact with signed input on the CLI and in a browser.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Supply a signed input in a browser worker | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar"><a class="logo" href="../index.html">
+    <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom">
+    <span class="brand-course">Bits2Banking</span>
+  </a></div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+<h1>Supply a signed input in a browser worker</h1>
+<p><a href="../index.html">Course contents</a></p>
+<h2>Compile the rule once</h2>
+<p>A parameter is a local variable that receives a value from the caller when a function starts. In <code>examples/checked-input.uc</code> from the Umicom C checkout, <code>input</code> is a signed 32-bit integer. The function doubles it and adds two on the positive path. Use the same artifact each time you change the input.</p>
+<pre><code class="language-c">int umicom_run(int input)
+{
+    int total = input * 2;
+    if (input &gt; 0) {
+        total += 2;
+    }
+    return total;
+}
+</code></pre>
+<ol>
+<li>Build Umicom C by following <code>docs/execution-guide.md</code> in its checkout. Use a build with <code>compile-input</code> and <code>exec-input</code> in its help. Stop if a command returns an error you did not expect.</li>
+<li>Choose a new temporary directory for the exercise. Adjust the executable path below if your build uses a different directory.</li>
+<li>Compile the supplied function once. Then run it with both a positive and a negative input.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location 'C:/umicom/umicom-c'
+$tool = (Resolve-Path './build/bin/umicom-c.exe').Path
+$practice = New-Item -ItemType Directory -Path (Join-Path $env:TEMP ('umicom-input-' + [guid]::NewGuid()))
+$artifact = Join-Path $practice.FullName 'checked-input.umcb'
+&amp; $tool compile-input './examples/checked-input.uc' $artifact
+&amp; $tool exec-input $artifact 20 --max-steps 64
+&amp; $tool exec-input $artifact -5 --max-steps 64
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Result</th>
+<th>Instructions executed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>20</code></td>
+<td><code>42</code></td>
+<td><code>16</code></td>
+</tr>
+<tr>
+<td><code>-5</code></td>
+<td><code>-10</code></td>
+<td><code>12</code></td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>12</code></td>
+</tr>
+<tr>
+<td><code>1073741822</code></td>
+<td><code>2147483646</code></td>
+<td><code>16</code></td>
+</tr>
+<tr>
+<td><code>-1073741824</code></td>
+<td><code>-2147483648</code></td>
+<td><code>12</code></td>
+</tr>
+</tbody>
+</table>
+<p>The positive path includes the addition and so uses extra instructions. Fuel is a limit on the number of VM instructions. Try a limit of one to see an unfinished run refused. Changing the limit does not change the artifact.</p>
+<h2>Compare with the same source as native C</h2>
+<p>The Bits2Banking lab <code>labs/languages/umicom-c-project/compare-int-input.c</code> calls <code>umicom_run</code> through a normal native function call. Build it with the same <code>.uc</code> source. The GCC option <code>-x c</code> treats the source with the <code>.uc</code> extension as C. This comparison requires a compiler whose <code>int</code> is signed and 32 bits wide.</p>
+<pre><code class="language-powershell">$native = Join-Path $practice.FullName 'compare-int-input.exe'
+$driver = 'C:/umicom/Umicom-Bits2Banking/labs/languages/umicom-c-project/compare-int-input.c'
+&amp; 'C:/msys64/ucrt64/bin/gcc.exe' -std=c23 -x c './examples/checked-input.uc' $driver -o $native
+&amp; $native 20
+&amp; $native -1073741824
+</code></pre>
+<p>The host admits only inputs for which the native calculation fits. Native C signed overflow has undefined behavior, so deliberately running the overflowing function is an invalid comparison. Try <code>1073741823</code> in the VM to see its checked arithmetic refusal. Try <code>2147483648</code> to see the separate input range refusal.</p>
+<h2>Send the same bytes to the browser worker</h2>
+<p>Follow <code>docs/browser-arithmetic.md</code> in the Umicom C checkout to serve a practice page over local HTTP. Keep the <code>browser</code> directory next to the page module and copy <code>checked-input.umcb</code> beside it. A worker is a separate browser thread. This one reads Umicom bytecode through its JavaScript interpreter, using the <code>int-input</code> profile to supply the parameter.</p>
+<pre><code class="language-javascript">const worker = new Worker(new URL(&quot;./browser/worker.mjs&quot;, import.meta.url), {
+    type: &quot;module&quot;,
+});
+worker.addEventListener(&quot;message&quot;, ({data}) =&gt; {
+    console.log(data);
+    worker.terminate();
+}, {once: true});
+const response = await fetch(&quot;./checked-input.umcb&quot;);
+if (!response.ok) throw new Error(&quot;Could not read the practice artifact&quot;);
+const artifact = await response.arrayBuffer();
+worker.postMessage({id: 1, profile: &quot;int-input&quot;, input: 20, artifact, fuel: 64}, [artifact]);
+</code></pre>
+<p>Expect <code>ok: true</code>, <code>value: 42</code> and <code>instructions: 16</code>. The transfer gives the worker ownership of the buffer. Fetch it again before sending <code>-5</code>, or transfer a fresh copy. Keep the page, worker and artifact on the same origin, which means the same scheme, host and port. Serve <code>.mjs</code> as JavaScript if the browser refuses to load the module.</p>
+<p>An optional Framework loopback preview accepts the same artifact at <code>/api/cvm/preview-int?input=20</code> when the local toolchain demonstration is enabled. Use the instructions in the Framework local web service lesson to start it. That endpoint runs the native VM on the server. The worker exercise runs the interpreter inside the browser.</p>
+<h2>Follow the parameter into the VM</h2>
+<p>Read byte 5 with <code>([IO.File]::ReadAllBytes($artifact))[5]</code>. The example stores an input flag there. The first instructions are <code>PUSH 0</code> and <code>STORE_LOCAL 0</code>. After the host validates the artifact and those instructions, it substitutes the signed value in its copy of the first operand. The file remains reusable. The existing VM sees local slot zero initialized before the function body reads it.</p>
+<p>Try the ordinary <code>exec</code> command with this artifact and check the refusal. A host that does not know how to supply the parameter cannot interpret the placeholder as the user's value. Repeat a successful <code>exec-input</code> run and take a second SHA-256 digest of the artifact. The two digests should match. This lesson covers one signed parameter and a bounded computation in Umicom's bytecode format.</p>
+<p><a href="93-lower-boolean-words-without-changing-the-vm.html">Previous lesson on Boolean words</a></p>
+  </article></main>
+  <footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer>
+</body>
+</html>

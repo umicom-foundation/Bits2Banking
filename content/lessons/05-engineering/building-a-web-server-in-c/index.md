@@ -140,3 +140,12 @@ Preserve the public C layout, own immutable bytes, finish partial writes and qua
 - [Transfer static-file buffer ownership](37-transfer-static-file-buffer-ownership.md)
 - [Release response bodies on every exit](38-release-response-bodies-on-every-exit.md)
 - [Measure memory without confusing ownership](39-measure-memory-without-confusing-ownership.md)
+
+## Project: exchange FastCGI records with a worker
+
+Encode bounded requests, retain one worker reply and examine completion before choosing an HTTP response.
+
+- [Encode a FastCGI request with bounded bytes](40-encode-a-fastcgi-request-with-bounded-bytes.md)
+- [Read a FastCGI reply before forwarding](41-read-a-fastcgi-reply-before-forwarding.md)
+
+- [Turn a worker document into HTTP](42-turn-a-worker-document-into-http.md)

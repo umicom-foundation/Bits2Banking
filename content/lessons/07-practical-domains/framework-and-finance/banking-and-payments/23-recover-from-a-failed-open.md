@@ -46,8 +46,8 @@ Write down the selected path, expected outcome and actual message for each attem
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/bank-workspace/README.md).
+[Open the example source](../../../../../labs/framework/bank-workspace/README.md).
 
 ## Continue learning
 
-[Course contents](../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Keep an open workspace attached to its original database](22-keep-a-selected-workspace-stable.md) · [Next: Test native events while isolating persistent storage](24-test-events-without-touching-user-data.md)
+[Course contents](../../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Keep an open workspace attached to its original database](22-keep-a-selected-workspace-stable.md) · [Next: Test native events while isolating persistent storage](24-test-events-without-touching-user-data.md)

@@ -28,8 +28,9 @@ from urllib.parse import quote, unquote, urlsplit, urlunsplit
 # Load by the adjacent file identity: MkDocs and standalone checks need not run
 # with the repository root on sys.path. Both adapters use the same ownership rule.
 import runpy
-native_pack_resources = runpy.run_path(
-    str(Path(__file__).with_name('publication_artifacts.py')))['native_pack_resources']
+_publication = runpy.run_path(str(Path(__file__).with_name('publication_artifacts.py')))
+native_pack_resources = _publication['native_pack_resources']
+public_repository_file = _publication['public_repository_file']
 
 _files = ()
 # Read complete attribute values so text such as href= inside a title cannot
@@ -43,17 +44,21 @@ def repository_source_link(url, target, repository):
     if repository is None:
         return None
     root, source_base = repository
-    try:
-        relative = target.relative_to(root)
-    except ValueError:
-        return None
-    # Personal notes, hidden configuration and arbitrary neighbouring files are
-    # never exposed by this adapter. A symlink was resolved before this check.
-    if not relative.parts or relative.parts[0] not in ('labs', 'learning-packs'):
-        return None
-    if any(part.startswith('.') for part in relative.parts):
-        return None
-    if not target.is_file():
+    # Share the reviewed public source rule with validation. Keep the earlier
+    # standalone path rules here as a record of the original publication scope.
+    if False:
+        try:
+            relative = target.relative_to(root)
+        except ValueError:
+            return None
+        if not relative.parts or relative.parts[0] not in ('labs', 'learning-packs'):
+            return None
+        if any(part.startswith('.') for part in relative.parts):
+            return None
+        if not target.is_file():
+            return None
+    relative = public_repository_file(target, root)
+    if relative is None:
         return None
     route = source_base + quote(relative.as_posix(), safe='/')
     return escape(urlunsplit(('https', 'github.com', route, url.query, url.fragment)), quote=True)
@@ -157,7 +162,9 @@ def on_post_build(config):
             if target.is_relative_to(site) and target.is_file():
                 documents[Path(entry.abs_src_path).resolve()] = target
     for entry in _files:
-        if not entry.src_uri.startswith('courses/') or not entry.src_uri.endswith('.html'):
+        manuscript = entry.is_documentation_page()
+        course_html = entry.src_uri.startswith('courses/') and entry.src_uri.endswith('.html')
+        if not manuscript and not course_html:
             continue
         if not entry.abs_src_path:
             continue
@@ -169,8 +176,9 @@ def on_post_build(config):
             continue
         if destination.is_file():
             old = destination.read_text(encoding='utf-8')
-            # Manuscript routing remains unchanged; the optional repository
-            # context also resolves source files omitted from docs_dir.
-            new = CourseLinks(old, source, destination, documents, repository).result()
+            # Rendered Markdown already has MkDocs' internal document URLs.
+            # Apply public source redirects there without rerouting those links.
+            destinations = {} if manuscript else documents
+            new = CourseLinks(old, source, destination, destinations, repository).result()
             if new != old:
                 destination.write_text(new, encoding='utf-8', newline='\n')

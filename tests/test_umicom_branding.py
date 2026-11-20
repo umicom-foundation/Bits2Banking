@@ -78,9 +78,34 @@ class LearningBranding(unittest.TestCase):
         self.assertIn('alt="Umicom" width="160"', output)
         self.assertNotIn('class="umicom-brand-mark"', output)
 
-    def test_existing_icon_is_enough_for_a_native_style_header(self):
+    # Keep the earlier icon-only assertion for review. Publication now keeps
+    # the existing icon and separately verifies the visible SVG wordmark.
+    if False:
+        def test_existing_icon_is_enough_for_a_native_style_header(self):
+            text = self.text.replace('<strong>Learning C</strong>', '<img src="../../../assets/branding/umicom-icon.svg" alt="Umicom"> Learning C')
+            self.assertNotIn('class="umicom-brand-mark"', self.render(text))
+
+    def test_existing_icon_remains_when_wordmark_is_added(self):
         text = self.text.replace('<strong>Learning C</strong>', '<img src="../../../assets/branding/umicom-icon.svg" alt="Umicom"> Learning C')
-        self.assertNotIn('class="umicom-brand-mark"', self.render(text))
+        output = self.render(text)
+        self.assertIn('<img src="../../../assets/branding/umicom-icon.svg" alt="Umicom"> Learning C', output)
+        self.assertEqual(1, output.count('class="umicom-brand-mark"'))
+        self.assertEqual(output, self.render(output))
+
+    def test_material_header_and_article_keep_separate_identity(self):
+        # Match Material's real navigation and article anchors. The homepage
+        # classes follow Material's scheme rather than the operating system.
+        header = '<header class="md-header"><img src="umicom-icon-on-dark.svg" alt="Umicom"></header>'
+        article = '<article class="md-content__inner md-typeset"><h1>One</h1></article>'
+        source = self.text.replace('<header><strong>Learning C</strong></header>', header)
+        output = self.render(source.replace('<h1>One</h1>', article), True)
+        self.assertIn(header.replace('src="', 'src="../../../assets/branding/'), output)
+        self.assertIn('<article class="md-content__inner md-typeset">'
+                      '<img class="umicom-wordmark umicom-wordmark-light" ', output)
+        self.assertIn('class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/'
+                      'branding/umicom-wordmark-on-dark.svg"', output)
+        self.assertIn('<h1>One</h1></article>', output)
+        self.assertEqual(output, self.render(output, True))
 
     def test_dark_header_uses_dark_variant_even_with_adaptive_page(self):
         output = self.render(self.text.replace('<header>', '<header class="site">'), True)
@@ -201,6 +226,7 @@ class LearningBranding(unittest.TestCase):
         output = self.render(self.text.replace('<strong>Learning C</strong>', logo))
         self.assertIn('src="../../../assets/branding/umicom-icon.svg"', output)
         self.assertIn('umicom-icon.svg 128w, ../../../assets/branding/umicom-icon.svg 256w', output)
+        self.assertEqual(1, output.count('class="umicom-brand-mark"'))
 
     def test_nonbrand_or_external_candidate_lists_remain_unchanged(self):
         lists = ('diagram.svg 1x, chart.svg 2x',
@@ -293,7 +319,11 @@ class LearningBranding(unittest.TestCase):
         output = self.render(self.text.replace('<strong>Learning C</strong>', example + logo))
         self.assertIn(example, output)
         self.assertIn('src="../../../assets/branding/umicom-icon.svg"', output)
-        self.assertNotIn('class="umicom-brand-mark"', output)
+        # The real square icon remains. A wordmark inside textarea content
+        # does not satisfy the new requirement for a displayed wordmark.
+        if False:
+            self.assertNotIn('class="umicom-brand-mark"', output)
+        self.assertEqual(1, output.count('class="umicom-brand-mark"'))
 
     def test_template_title_does_not_anchor_an_unrelated_fragment(self):
         fragment = '<template><title>Archive</title><main>Old page</main></template><p>Fragment</p>'

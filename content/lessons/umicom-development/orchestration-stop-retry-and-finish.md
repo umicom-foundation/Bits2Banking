@@ -38,6 +38,19 @@ Run stop. Waiting tasks become canceled while configure remains active until the
 
 Run retry to record one failed configure attempt and then a successful second attempt. Task attempts and the operation's retry count describe different aspects of the same recovery. Both observation identities and counters must remain representable. A refusal preserves prior state, allowing the host to explain which limit prevented recovery.
 
+## Observe a retry during stop and after a prerequisite failure
+
+Use a Framework SDK with the checked retry contract, then run these commands from the same repository root.
+
+```powershell
+& .\build\framework-task-orchestration\btb-framework-task-orchestration.exe stop-retry
+& .\build\framework-task-orchestration\btb-framework-task-orchestration.exe blocked-retry
+```
+
+1. In `stop-retry`, configure is still active after the owner accepts stop. The program tries to retry `left` and receives `UMI_STATUS_BUSY`. Its two snapshots show unchanged operation and graph revisions. After configure finishes, the operation reports Cancelled with three cancelled tasks and zero retries.
+2. In `blocked-retry`, the accepted retry of `left` leaves it blocked because configure has failed. The snapshot still reports Failed and exposes zero ready tasks. Retrying configure makes progress possible. The final operation succeeds with four completed tasks and two accepted retries.
+3. If either scenario exits early, run its named CTest case with `--output-on-failure`, then check that the selected SDK has the matching retry behavior. These observations come from a task model that receives outcomes from the exercise.
+
 ## Require a real lifecycle before finish
 
 Finish cannot turn an idle or merely planned object into success. Begin establishes the operation lifecycle, and active tasks must reach terminal outcomes before finish can accept it. An intentionally empty plan can succeed after begin because it contains no work; that is different from accidentally finishing an unplanned owner. Write these two cases as separate assertions in your own integration report.

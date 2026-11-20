@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/40-encode-a-fastcgi-request-with-bounded-bytes.html
+
+PURPOSE:
+Build a small FastCGI responder request using the Framework wire encoder.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Encode a FastCGI request with bounded bytes | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Encode a FastCGI request with bounded bytes</h1>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="39-measure-memory-without-confusing-ownership.html">Previous lesson</a> · <a rel="next" href="41-read-a-fastcgi-reply-before-forwarding.html">Next lesson</a></nav>
+<p>A web server can give approved application work to another process. FastCGI defines the byte records that travel between the server and that process. A record is a short header followed by a stated number of content bytes and optional padding. Worker startup, endpoint selection and transport deadlines belong to the server configuration. <a href="https://httpd.apache.org/docs/2.4/mod/mod_proxy_fcgi.html">Apache mod_proxy_fcgi</a></p>
+<h2>Follow one request</h2>
+<ol>
+<li>Reserve a nonzero request ID and emit <code>BEGIN_REQUEST</code> with the responder role. The Framework example uses ID <code>0x1234</code>. Its header begins <code>01 01 12 34 00 08 00 00</code>. The bytes store the version, record type, request ID, content length, padding length and a reserved byte. Read multi-byte numbers high byte first.</li>
+<li>Use <code>UmiWebFastCgiParameter</code> to encode each approved CGI name and value. A count below 128 takes one byte. A longer count takes four bytes with the high bit set. Use <code>UmiWebFastCgiInput</code> to wrap completed pairs in a <code>PARAMS</code> record. The fixture encodes a single pair at a time to make its lengths easy to check.</li>
+<li>Emit an empty <code>PARAMS</code> record. Then send request-body bytes in <code>STDIN</code> records and end that stream with an empty <code>STDIN</code> record. A binary body can contain a zero byte. Always use its byte count.</li>
+<li>Keep route-to-worker configuration under the server owner's control. Only forward variables the route explicitly accepts. Keep an executable or script path from the reviewed route configuration.</li>
+</ol>
+<h2>Try the wire checks</h2>
+<p>Open a terminal at the Framework source root. Use the same build directory for configure, build and test.</p>
+<pre><code class="language-powershell">$wireBuild = Join-Path $PWD 'build/fastcgi-wire'
+cmake -S tests/web/fastcgi -B $wireBuild -G Ninja
+cmake --build $wireBuild
+ctest --test-dir $wireBuild --no-tests=error -R '^framework[.]web[.]fastcgi[.](begin|padded-input|long-parameter|short-output)$'
+</code></pre>
+<p>Expect four passing tests. If CMake cannot identify a C23 compiler, open the configured toolchain shell and repeat the commands. If a short-buffer test fails, check the header, content and padding lengths before changing the requested capacity.</p>
+<p>In the padded input fixture the header consumes eight bytes, its content consumes three and the record ends with five zero padding bytes. Add these numbers before looking at the test. The expected record is 16 bytes. This lab exercises the production codec with local fixtures. A separately configured integration test should qualify a real FastCGI process for the chosen application runtime.</p>
+</article></main>
+<footer>Sammy Hegab · Umicom Foundation · MIT</footer>
+</body></html>

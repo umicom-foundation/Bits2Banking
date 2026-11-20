@@ -77,7 +77,7 @@ Then read the Framework recipe source linked below. Locate where source checks, 
 
 ## Read the source
 
-[Open the example source](../../../../../Umicom-Applications/framework/src/developer_project/templates/umicom_c_preview.c).
+[Open the example source](https://github.com/umicom-foundation/umicom-framework/blob/main/src/developer_project/templates/umicom_c_preview.c).
 
 ## Continue learning
 

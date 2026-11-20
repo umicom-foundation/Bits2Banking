@@ -27,3 +27,5 @@ An invariant is a rule expected to remain true while a program works. The Java l
 - [Make rounding an explicit decision](06-make-rounding-an-explicit-decision.md)
 - [Test a journal without overclaiming its validity](07-test-a-journal-without-overclaiming.md)
 - [Read a test failure and recompile the changed source](08-read-a-test-failure-and-recompile.md)
+- [Test the runnable JAR](09-test-the-runnable-jar.md)
+- [Check a C and Java translation](10-check-a-c-java-translation.md)

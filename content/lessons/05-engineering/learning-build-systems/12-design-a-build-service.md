@@ -66,7 +66,7 @@ Add project-specific recipes through the shared contracts. A VHDL simulation, Um
 
 ## Read the source
 
-[Open the example source](../../../../../Umicom-Applications/framework/include/umicom/toolchain/build.h).
+[Open the example source](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/toolchain/build.h).
 
 ## Continue learning
 

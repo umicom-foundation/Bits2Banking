@@ -46,6 +46,23 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(boot-handoff-write PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror)
 endif()
 
+# Keep the first two exercises usable with earlier Kernel source. The native
+# reservation exercise opts in when the same startup projection is present.
+set(_boot_handoff_tools boot-handoff boot-handoff-write)
+if(EXISTS "${UMICOM_KERNEL_SOURCE}/kernel/riscv_boot_handoff.c")
+    add_executable(boot-handoff-reservations reservations.c
+        "${UMICOM_KERNEL_SOURCE}/kernel/riscv_boot_handoff.c"
+        "${UMICOM_KERNEL_SOURCE}/kernel/boot_reservations.c"
+        "${UMICOM_KERNEL_SOURCE}/kernel/boot_handoff_write.c"
+        "${UMICOM_KERNEL_SOURCE}/kernel/boot_handoff.c"
+        "${UMICOM_KERNEL_SOURCE}/kernel/address.c")
+    target_include_directories(boot-handoff-reservations PRIVATE "${UMICOM_KERNEL_SOURCE}/include")
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(boot-handoff-reservations PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror)
+    endif()
+    list(APPEND _boot_handoff_tools boot-handoff-reservations)
+endif()
+
 # Hosted tools use Framework's single branding helper. The freestanding Kernel
 # receives no Framework library, GTK dependency or Windows resource.
 get_filename_component(_framework_default
@@ -58,7 +75,7 @@ include("${UMICOM_FRAMEWORK_SOURCE}/cmake/UmicomApplicationBranding.cmake")
 if(WIN32)
     enable_language(RC)
 endif()
-foreach(_tool IN ITEMS boot-handoff boot-handoff-write)
+foreach(_tool IN LISTS _boot_handoff_tools)
     umicom_apply_application_branding(TARGET "${_tool}"
         PRODUCT_NAME "Umicom Kernel Boot Handoff Learning Lab"
         INTERNAL_NAME "${_tool}" NO_RUNTIME_DEPLOYMENT)
@@ -70,4 +87,12 @@ if(BUILD_TESTING)
         set_tests_properties(learning.kernel.boot-handoff-write.${_case}
             PROPERTIES TIMEOUT 10 LABELS "education;kernel;host;no-devices")
     endforeach()
+    if(TARGET boot-handoff-reservations)
+        foreach(_case IN ITEMS review unreserved)
+            add_test(NAME learning.kernel.boot-handoff-reservations.${_case}
+                COMMAND boot-handoff-reservations "${_case}")
+            set_tests_properties(learning.kernel.boot-handoff-reservations.${_case}
+                PROPERTIES TIMEOUT 10 LABELS "education;kernel;host;no-devices")
+        endforeach()
+    endif()
 endif()

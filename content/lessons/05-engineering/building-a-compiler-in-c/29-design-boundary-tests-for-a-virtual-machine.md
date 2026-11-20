@@ -73,7 +73,7 @@ When running tests, record the source revision, command and result. A test that 
 
 ## Read the source
 
-[Open the example source](../../../../../umicom-c/tests/test_inspection.c).
+[Open the example source](https://github.com/umicom-foundation/umicom-c/blob/main/tests/test_inspection.c).
 
 ## Continue learning
 

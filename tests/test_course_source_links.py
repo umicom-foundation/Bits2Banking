@@ -205,6 +205,26 @@ class CoursePublicationLinks(unittest.TestCase):
         with self.assertRaises(ValueError):
             LINKS.on_post_build({'site_dir': str(self.docs), 'docs_dir': str(self.docs)})
 
+    def test_rendered_markdown_resolves_only_public_file_links(self):
+        lab = self.root / 'labs/native/journal/README.md'
+        lab.parent.mkdir(parents=True)
+        lab.write_text('journal fixture', encoding='utf-8')
+        note = self.root / 'docs/notes.md'
+        note.parent.mkdir(exist_ok=True)
+        note.write_text('working note', encoding='utf-8')
+        expected = 'https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/journal/README.md'
+        original = ('<a href="../../../labs/native/journal/README.md">Lab</a> '
+                    '<a href="../../../docs/notes.md">Other</a> '
+                    '<a href="../introduction/">Introduction</a>')
+        self.page.write_text(original, encoding='utf-8')
+        LINKS.on_files([SimpleNamespace(src_uri='lessons/learning-c/index.md',
+            abs_src_path=str(self.manuscript), abs_dest_path=str(self.page),
+            is_documentation_page=lambda: True)], {})
+        LINKS.on_post_build({'site_dir': str(self.site), 'docs_dir': str(self.docs),
+            'repo_url': 'https://github.com/umicom-foundation/Bits2Banking'})
+        self.assertEqual(self.page.read_text(encoding='utf-8'),
+                         original.replace('../../../labs/native/journal/README.md', expected))
+
 
     def test_native_payload_is_not_rewritten_by_source_link_publication(self):
         original = '<a href="../../lessons/learning-c/index.md">Manuscript</a>'

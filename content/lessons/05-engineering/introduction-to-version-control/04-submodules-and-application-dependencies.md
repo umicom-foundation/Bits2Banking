@@ -96,10 +96,12 @@ Neither is ready. The fix exists outside the designated authoring directory. Pre
 
 ## Observe recursive revisions through the native CLI
 
-Prepare an existing local checkout with its registered children. This command observes them without fetching, initializing or changing their revisions:
+Prepare an existing local checkout with its registered children. Substitute your checkout's absolute path for the example. If the Applications checkout is at C:\umicom\Umicom-Applications, use that path. Both commands observe the registered children while leaving their revisions alone.
 
 ```text
-umicom repo submodules "C:\umicom\Umicom-Applications"
+umicom repo submodules "C:\work\application"
+# Direct Git alternative, from that same repository:
+git submodule status --recursive
 ```
 
 1. Read the commit identifiers and leading markers. A space means initialized at the indexed revision, minus means uninitialized, plus means a checked-out revision differs, and U means an unresolved submodule merge conflict.

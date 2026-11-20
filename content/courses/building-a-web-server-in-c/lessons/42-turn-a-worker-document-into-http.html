@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/42-turn-a-worker-document-into-http.html
+
+PURPOSE:
+Teach conversion of a complete FastCGI document into an owned HTTP response.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Turn a worker document into HTTP | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Turn a worker document into HTTP</h1>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="41-read-a-fastcgi-reply-before-forwarding.html">Previous lesson</a></nav>
+<p>A FastCGI worker sends its document as bytes in the standard output stream. A successful exchange tells you those bytes arrived in full. The document still needs to be read as headers followed by a blank line and content. Framework’s <code>UmiWebFastCgiResponseDecode</code> handles that step before the HTTP server writes anything.</p>
+<h2>Trace a complete response</h2>
+<ol>
+  <li>Read the document head using one line-ending convention, either CRLF or LF. A blank line ends the head and the next byte belongs to the body. An ordinary document needs a <code>Content-Type</code> field so the browser knows how to interpret its bytes.</li>
+  <li>Convert a worker field such as <code>Status: 201 Created</code> to the numeric HTTP status. The Framework formatter writes the HTTP status line and its own reason phrase. An optional worker <code>Content-Length</code> must match the available body. The formatter writes its own length after checking that match. Connection and transfer framing belong to the server.</li>
+  <li>Pass the verified body length to <code>UmiWebResponseFormatClosedHeaders</code>. The body uses an independent allocation, so it remains valid after the exchange result is destroyed. Send its exact length and release it with <code>UmiWebResponseBodyDestroy</code> after delivery. On denial, return a server-generated failure through your route’s policy.</li>
+</ol>
+<h2>Observe the boundary in the compiler tests</h2>
+<p>Use the configured directory from the FastCGI encoding lesson. Rebuild after opening the current Framework source so the new cases are registered.</p>
+<pre><code class="language-powershell">$wireBuild = Join-Path $PWD 'build/fastcgi-wire'
+cmake --build $wireBuild
+ctest --test-dir $wireBuild --no-tests=error -R '^framework[.]web[.]fastcgi_response[.](actual-exchange|binary|status-and-length|wrong-length)$'
+</code></pre>
+<p>Expect four passing tests. The exchange fixture splits a header between two worker records and delivers the records one byte at a time. The binary fixture includes a zero byte in the body. The length fixtures accept the exact byte count and refuse a mismatch before either output changes. If the exchange fixture fails, first check whether <code>END_REQUEST</code> was accepted, then inspect the blank line and count the bytes after it. These fixtures exercise the shared C adapter. A deployed worker and browser delivery need their own checks.</p>
+</article></main>
+<footer>Sammy Hegab · Umicom Foundation · MIT</footer>
+</body></html>

@@ -130,9 +130,9 @@ For a future network stack, additional work includes device discovery, DMA owner
 
 ## Further reading
 
-- [ICMP public contract](../../../../../umicom-kernel/include/umicom/kernel/network_icmp.h)
-- [Independent fixtures and refusal tests](../../../../../umicom-kernel/tests/network_packet/icmp_write_tests.c)
-- [Kernel packet admission guide](../../../../../umicom-kernel/docs/NETWORK_PACKET_ADMISSION.md)
+- [ICMP public contract](https://github.com/umicom-foundation/umicom-kernel/blob/main/include/umicom/kernel/network_icmp.h)
+- [Independent fixtures and refusal tests](https://github.com/umicom-foundation/umicom-kernel/blob/main/tests/network_packet/icmp_write_tests.c)
+- [Kernel packet admission guide](https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/NETWORK_PACKET_ADMISSION.md)
 - [Internet Control Message Protocol specification](https://www.rfc-editor.org/rfc/rfc792)
 
 [Previous: Encode a UDP frame without sending it](121-encode-a-udp-frame-without-sending-it.md)

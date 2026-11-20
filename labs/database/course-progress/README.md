@@ -58,6 +58,13 @@ In a fresh interactive session, read schema and seed again, leave `.bail off`, a
 
 ## Connect the ideas to Framework
 
+Use another fresh session with `.bail off` to read
+`constraint-rollback.sql` after the schema and seed files. Expect the
+duplicate-key error, followed by a staged completion count of 4. After the
+explicit rollback, Learner A's count returns to 3 and the table still has four
+rows. This exercise shows why the caller must handle the transaction after an
+individual SQL statement fails.
+
 Read [Framework transaction handles](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/data/transaction.h) and [SQLite health operations](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/data/sqlite.h). They expose ownership and health checks through shared C services. This teaching schema is not the production learning catalogue schema, and these APIs do not claim to execute arbitrary SQL shown in this lab.
 
 The [Learning SQL course](../../../content/courses/learning-sql/index.html) explains the statements in sequence. The [SQLite shell guide](https://www.sqlite.org/cli.html) documents the dot commands used to read files and format output.

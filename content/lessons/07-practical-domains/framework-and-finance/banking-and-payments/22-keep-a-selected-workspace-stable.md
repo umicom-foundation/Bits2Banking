@@ -45,8 +45,8 @@ In the adapter, locate the path copy, assignment to ui->path and g_free in UiFre
 
 ## Read the source
 
-[Open the example source](../../../../labs/framework/bank-workspace/main.c).
+[Open the example source](../../../../../labs/framework/bank-workspace/main.c).
 
 ## Continue learning
 
-[Course contents](../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Separate path selection from database operations](21-separate-path-selection-from-storage.md) · [Next: Recover from a failed open without replacing user data](23-recover-from-a-failed-open.md)
+[Course contents](../../../../courses/framework-and-finance/banking-and-payments/index.html) · [Previous: Separate path selection from database operations](21-separate-path-selection-from-storage.md) · [Next: Recover from a failed open without replacing user data](23-recover-from-a-failed-open.md)
