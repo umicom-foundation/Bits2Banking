@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `boolean_wire.d` in `labs/languages/native-language-boundary` in the course checkout. Mark the input bytes 0, 1 and 2. Predict the result of truth conversion and strict decoding for each byte, including the output on refusal.
+
 ## Start with values, types and a file contract
 
 A setting such as enabled has a logical value. D's bool type represents true or false. A file stores bytes, and a file format must say which bytes mean which values. This lesson chooses a strict one-byte flag: 0 means false, 1 means true, and 2 through 255 are invalid. The goal is to decode that contract without treating arbitrary memory as a bool object.

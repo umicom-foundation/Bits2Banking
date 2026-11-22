@@ -57,5 +57,25 @@ MIT for original learning material.
 <li>Keep hardware and major software settings consistent where practical. Record unavoidable differences. Measure time after warm-up, successful work, refusals, recovery time and resources retained after a fault.</li>
 <li>Compare one hypothetical report with another. A report with lower average latency but fewer completed requests needs its rejection and timeout counts beside the latency. Keep emulator timings with functional observations and use hardware measurements for performance decisions.</li>
 </ol>
+<h2>Practise separating three kinds of evidence</h2>
+<ol>
+<li>Write <code>0x12345678</code> in little-endian byte order as <code>78 56 34 12</code>. XOR the value with <code>0xabcd1234</code>. Expect the result bytes <code>4c 44 f9 b9</code>. Repeat the exercise with a three-byte span and a declared count of one word. A bounded payload operation should refuse it before changing any byte.</li>
+<li>Read a device tree from the emulator release installed on your machine. A device tree is the hardware description supplied to the guest. Record how many serial devices it describes before choosing a service channel. Keep diagnostics on an independently identified channel and check that the guest has a driver for the proposed service transport.</li>
+<li>Design a separate test that obtains a reply from the current guest instance after boot. Retain the emulator version, guest image, exact reply and reason for any refusal. Label your three records <strong>payload result</strong>, <strong>device inventory</strong> and <strong>guest reply</strong> so another learner can reproduce each observation.</li>
+</ol>
+<h2>Capture binary output from a separate guest console</h2>
+<p>Use a Kernel checkout that includes the service console fixture. From its root in PowerShell, use the RISC-V Clang toolchain, Ninja and QEMU. The two boots use the same image and differ in whether a VirtIO console device is attached.</p>
+<pre><code>$build = 'build/multikernel-service-console'
+cmake --preset riscv64-clang-debug -B $build -DUMICOM_KERNEL_SERVICE_CONSOLE_FIXTURE=ON
+ctest --test-dir $build -N -V -R '^kernel[.]riscv64[.]service_console[.]'
+ctest --test-dir $build -V --output-on-failure --no-tests=error -R '^kernel[.]riscv64[.]service_console[.]'
+Format-Hex -Path (Join-Path $build 'service-console-transmit.bin')
+Get-FileHash -Algorithm SHA256 -Path (Join-Path $build 'bin/umicom-service-console-guest.elf')</code></pre>
+<ol>
+<li>The listing command prints the registered build and two guest test commands without running them. Find the same image path in the two guest commands. Open <code>tests/service_console_transport/check_guest.cmake</code> and follow its <code>MODE</code> setting. Both modes send the diagnostic UART to standard output through <code>-serial stdio</code>. Only the transmit mode adds a VirtIO device and a file backend.</li>
+<li>Run the tests and record their statuses. The transmit boot prints <code>service-console: transmit and reset acknowledged</code> on the UART. The guest fixture writes that marker after the driver checks the completion and observes device status return to zero. Separately compare the entire backend file with <code>4c 44 f9 b9 00 ff 0a 0d</code>. Hexadecimal makes the zero and newline bytes visible.</li>
+<li>Find <code>service-console: no console; diagnostic UART still active</code> in the absent-device boot. The UART remains available without the service device. The transmit file belongs to the transmit test, so an existing copy supplies no evidence about the absent-device boot.</li>
+</ol>
+<p>Keep the image hash, QEMU version, two UART observations and binary output together. Use the QEMU executable printed in the test listing to check its version. If the guest tests do not appear, check that CMake found QEMU. If the build fixture fails, record the build failure before interpreting earlier files. This experiment establishes guest-to-host transmission of one synthetic payload. The receive queue stays empty. A host request and a correlated reply still need their own test.</p>
 <p>As a final check, write one sentence each for Framework, OS and Kernel. Name who admits the work, who composes the supported profile and recovery route, and who enforces native resource access. Give each claim an observable test.</p>
 </article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer></body></html>

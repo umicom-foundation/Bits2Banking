@@ -18,6 +18,10 @@ MIT
 # Separate C linkage from the BetterC subset
 
 [Course contents](index.md)
+
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `client.d` in `labs/languages/native-language-boundary` in the course checkout. Find the declaration for the function supplied by C. Copy its return type and parameter order, then check the corresponding C declaration before building.
 extern(C) selects C linkage for a declaration. It does not automatically remove the D runtime from all surrounding code. BetterC is a restricted compilation mode for code that can operate with the C runtime alone. Choose it for a concrete integration requirement, not as a blanket claim that ordinary D is inefficient.
 
 The companion native-language-boundary lab has a full D console client calling the same C function as FreeBASIC. It uses std.stdio and therefore is an ordinary D program. The C function receives scalar counts and a caller-owned output pointer. No exception or language-specific string descriptor crosses the boundary.

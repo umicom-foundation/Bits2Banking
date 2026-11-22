@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `conditional_selection.d` in `labs/languages/native-language-boundary` in the course checkout. Mark the lines that increment a counter. Trace which expressions the conditional selects and which expressions the ordinary call evaluates.
+
 ## Start with values and effects
 
 An expression can return a value and cause an effect. A function that returns eleven while incrementing a counter does both. Choosing between values after they have been computed is different from choosing which computation to perform. This lesson uses D’s conditional expression and an ordinary helper function to expose that difference. The reasoning is useful when a client decides whether to request a Framework operation, construct an object or use a default value.

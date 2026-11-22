@@ -18,6 +18,10 @@ MIT
 # Choose paths and traverse D collections
 
 [Course contents](index.md)
+
+## Before you begin
+
+Write down three transaction amounts, including one below zero. Trace one pass through the list and mark where a condition should reject an amount.
 Control flow is the order in which statements execute. if chooses a branch, while repeats while a condition is true, and foreach visits a sequence. An array has elements; a slice describes a range of them. D uses a half-open range: the starting index is included and the ending index is excluded.
 
 ~~~d

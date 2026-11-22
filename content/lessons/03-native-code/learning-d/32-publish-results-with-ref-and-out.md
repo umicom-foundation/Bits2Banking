@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `output_publication.d` in `labs/languages/native-language-boundary` in the course checkout. Draw two caller-owned output slots and assign both a starting value. Predict the contents after a rejected call using ref and after one using out.
+
 ## The result can change before your first statement
 
 Many Framework C functions promise to leave an output variable unchanged when they reject a request. A D binding must preserve that behavior deliberately. Merely naming a parameter result is not enough. This lesson compares an ordinary by-value scalar, a ref parameter and an out parameter using a small checked addition. You will predict the caller's value after success and after refusal, then inspect unit tests that make the differences visible.

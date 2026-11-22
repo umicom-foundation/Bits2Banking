@@ -18,6 +18,10 @@ MIT
 # Select code before the program runs
 
 [Course contents](index.md)
+
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `conditional_wire.d` in `labs/languages/native-language-boundary` in the course checkout. Prepare two terminal commands from the lesson, one for the ordinary build and one for trace mode. Predict what each can print while still producing the same output bytes.
 Reflection can tell a compiler about a type, but a program also needs rules for what to do with that information. D provides compile-time conditions, assertions and template constraints. This lesson uses them to admit two precise integer types and generate an explicit byte encoding. You will distinguish choices made by the compiler from choices made by a running application and see how the same design goal can guide a C Framework API.
 
 

@@ -145,6 +145,8 @@ Framework's optional compiler integration can consume the linked compiler API an
 
 [Previous: Show source errors without printing control bytes](92-show-source-errors-without-printing-control-bytes.md)
 
+[Next: Supply a signed input in a browser worker](94-supply-a-signed-browser-input.md)
+
 
 ![Logical values and strict byte flags](../../../assets/diagrams/boolean-wire-contract.svg)
 

@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `module_client.d` in `labs/languages/native-language-boundary` in the course checkout. Keep the two files under umicom_lessons beside the client. Build from the lab directory so the import root and the three source paths agree.
+
 ## Give each source file one clear job
 
 A small program can fit in one file, but a growing project needs a way to divide work without copying the same rules everywhere. D calls each source file a module. A module has a name and can make declarations available to another module through imports. In this lesson, three original files calculate the byte count of a simple image-like array. One owns checked multiplication, one applies a pixel rule, and one prints observations. No image is allocated, decoded or displayed.

@@ -18,6 +18,10 @@ MIT
 # Navigate D keywords and language concepts
 
 [Course contents](index.md)
+
+## Before you begin
+
+Choose three terms from earlier lessons and find one place each appears in a code example. Start the concept map with those examples and pick a family of terms to revisit.
 A keyword is a reserved token recognized by the language grammar. A library function is a named operation supplied by a module. An attribute can constrain a declaration. These categories overlap in everyday discussion but should not be confused when reading diagnostics. writeln is a library function; @safe and @nogc are attributes; string is a commonly used type alias.
 
 Use this map as a reading aid after the practical lessons, not as a program to paste into the compiler. For each family, find a small example in the preceding lessons, explain the purpose in your own words, then change one input and predict the result. The compiler edition and official reference determine current acceptance; some historical reserved words are deprecated or unavailable.

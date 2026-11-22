@@ -18,6 +18,10 @@ MIT
 # Separate read-only views from independent copies
 
 [Course contents](index.md)
+
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `readonly_views.d` in `labs/languages/native-language-boundary` in the course checkout. Label the original array and its independent copy. Predict which values will change when the original is mutated through its alias.
 Read-only can describe how one part of a program accesses data without saying that the data can never change. D makes this distinction explicit with const and immutable. This lesson revisits slices with a concrete experiment: one mutable array, one read-only view, one mutable copy and one immutable copy. You will predict which values change, explain why, and connect the result to ownership at a native Framework boundary.
 
 

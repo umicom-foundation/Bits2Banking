@@ -18,6 +18,10 @@ MIT
 # Choose a struct, class or interface
 
 [Course contents](index.md)
+
+## Before you begin
+
+Draw two copies of a record and two names that point to the same record. Predict what each name will see after one field changes.
 A struct groups fields and operations into a value type. A class is a reference type that supports inheritance and normally depends on the D runtime. An interface describes operations that implementing classes must supply. These choices affect copying, lifetime and interoperability; they are not interchangeable spelling styles.
 
 ~~~d

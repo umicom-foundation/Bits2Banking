@@ -18,6 +18,10 @@ MIT
 # Read D values, types and expressions
 
 [Course contents](index.md)
+
+## Before you begin
+
+Write down an integer count, a unit price and an account name. Predict what would happen if you used each value in an addition. Check those guesses against the examples.
 D is a compiled language with C-like punctuation, its own type system and an optional runtime. A type describes a value’s representation and permitted operations. A statement performs a step. An expression produces a value. The introductory lessons showed how to install DMD; use that same terminal and practice folder here.
 
 ~~~d

@@ -28,8 +28,19 @@ if ((features &amp; UMC_FEATURE_LOGICAL_NOT) != 0U) {
 <p>The compiler returns grammar features. The runtime reports arithmetic, comparisons, execution tracing and inspection. Logical negation lowers into existing operations, so it is not a runtime opcode.</p>
 <h2>Read the CLI response</h2>
 <pre><code class="language-powershell">.\build\bin\umicom-c.exe profile</code></pre>
+<!-- The first course edition used the early two-format build. Its example is retained for readers comparing that build with the current linked profile.
 <p>Replace build with your configured build directory. Expect key=value lines, including compiler.features=103 and runtime.features=27. The compiler now adds hexadecimal (32) and binary (64) spelling to its earlier mask of 7. These numbers are bitmasks, not counts. The wire-format mask 6 contains bits 1 and 2; it does not advertise wire format 6.</p>
+-->
+<p>Replace <code>build</code> with your configured directory. Look for <code>compiler.features</code>, <code>runtime.features</code> and <code>runtime.wire-versions</code>. A bitmask stores a different answer at each bit position. For example, mask <code>6</code> sets bits 1 and 2, so it represents versions 1 and 2. Use the names in <code>profile.h</code> to decode the feature bits from the build you actually ran.</p>
 <p>1. Find the feature-bit definitions in profile.h. 2. Decode compiler.features by hand. 3. Find the runtime switch in status.c. 4. Explain why its source-byte and parse-depth queries return zero. 5. Query a made-up property value in a scratch consumer and expect zero.</p>
+<h2>Check the bytecode format before opening a file</h2>
+<ol>
+<li>Ask the current runtime whether it understands format 7. The wire format defines the layout of the saved bytecode.
+<pre><code class="language-powershell">.\build\bin\umicom-c.exe profile --require-wire 7
+$LASTEXITCODE</code></pre></li>
+<li>Expect <code>profile.wire-version=7</code>, <code>profile.wire-supported=true</code> and status <code>0</code> on the current build. Repeat with <code>8</code>. The current runtime reports <code>false</code> and status <code>1</code> because its version mask lacks bit 8. A value outside the accepted range, such as <code>32</code>, produces a diagnostic and status <code>2</code>.</li>
+<li>When a valid version returns status <code>1</code>, choose the matching runtime or build the bytecode for a version your runtime supports. After the requirement succeeds, use <code>inspect-bytecode</code> to check the actual file before execution.</li>
+</ol>
 <h2>Recovery</h2>
 <p>An older library may not contain the new symbols even when your editor finds the new header. An unresolved-symbol error is then evidence of a mismatched SDK selection. Inspect include and library paths; rebuild or choose the matching SDK. Removing the query hides the mismatch rather than repairing it.</p>
 <p>Continue checking every compile and execution status. A capability declaration does not promise that a particular program has valid syntax or enough execution fuel.</p>

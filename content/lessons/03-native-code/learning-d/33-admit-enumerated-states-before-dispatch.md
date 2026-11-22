@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `explicit_job_states.d` in `labs/languages/native-language-boundary` in the course checkout. Find a byte that represents a job state and one with no matching state. Predict which case updates the output and which preserves the starting value.
+
 ## Replace unexplained numbers with named states
 
 A job can be queued, running, complete or failed. A name makes that meaning easier to review than an unexplained number in every condition. The example defines JobState with the D enum keyword and an unsigned-byte base type. Its assigned values are 0, 2, 5 and 9. The gaps are deliberate. They let us demonstrate that a byte between the smallest and largest value is not necessarily a valid state. These values are an original teaching protocol, not an existing Umicom job-file format.

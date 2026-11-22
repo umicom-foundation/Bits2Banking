@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `utf_text_units.d` in `labs/languages/native-language-boundary` in the course checkout. Use a UTF-8-capable editor. Draw columns for bytes, code points and displayed characters, then predict each count for the sample strings.
+
 ## Begin with one word: unit
 
 A count is useful only when you know what it counts. A byte is eight bits. A code unit is one storage element in an encoding. A Unicode code point is a numbered text value. A grapheme cluster groups code points for user-perceived text. A model token is chosen by a particular tokenizer. These are different units. This lesson uses a tiny D program to measure the same text in several representations and to reject malformed input before decoding it.

@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `thread_counter.d` in `labs/languages/native-language-boundary` in the course checkout. Circle the thread start, update and join calls. Record the count you expect after the join, when all workers have completed.
+
 ## Two contracts, two different questions
 
 A background worker raises at least two questions. How do simultaneous accesses to shared data remain correct? And when may the owner release the resources that the worker uses? Atomic operations can help with the first question; waiting for completion addresses the second. This lesson uses two native D threads and one small shared counter to keep the distinction visible. It does not implement a thread pool, model server or application job system.

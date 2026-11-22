@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `record_layout.d` in `labs/languages/native-language-boundary` in the course checkout. Identify the widths of the integer fields. Record the compiler target architecture so you can compare member offsets, alignment and total record size.
+
 ## Why a structure has more than field values
 
 A structure groups named values into a single value. A native program must also arrange its fields in memory so machine instructions and foreign functions can access them correctly. This lesson separates those two subjects: the values you mean, and the storage arrangement chosen for them. You will inspect a small D structure, compare a deliberately packed form, and explain why copying arbitrary memory bytes is not a portable way to save an account, image description or network message. Work through the earlier variables, arrays, structures and const lessons first if those words are unfamiliar.

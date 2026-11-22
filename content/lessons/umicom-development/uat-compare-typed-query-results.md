@@ -34,7 +34,7 @@ cmake --build $build --target umicom-uat-database-example umicom-uat-database-ro
 ctest --test-dir $build -R '^framework[.]uat[.](database|database_rows)[.]' --output-on-failure --no-tests=error
 ```
 
-Expect 24 CTest cases. Eighteen exercise the shared comparator and six run the SQLite example. If CMake cannot find SQLite, point it at the headers and library from the toolchain you installed. Stop on a configure or build error before running an executable left over from an earlier build.
+Expect 35 CTest cases. The original 24 check typed rows and SQLite workflows. Eleven more check query labels, including two SQLite runs with zero rows. If CMake cannot find SQLite, point it at the headers and library from the toolchain you installed. Stop on a configure or build error before running an executable left over from an earlier build.
 
 ## Read both outcomes
 
@@ -59,6 +59,22 @@ The passing run reads a full row containing an integer, text, binary data, empty
 | Program exit | `1` |
 
 The report gives the position and keeps the field values out of the evidence. A CTest case for this deliberate mismatch passes when it observes both the expected failure and successful cleanup.
+
+## Check output names when the result is empty
+
+A query can return no rows and still promise specific column names. A form or importer that reads fields by name needs those labels even when there are no values to display.
+
+```powershell
+& "$build/umicom-uat-database-example.exe" --verify-empty-columns
+$report = & "$build/umicom-uat-database-example.exe" --reject-empty-column-change | ConvertFrom-Json
+$fixtureExit = $LASTEXITCODE
+$report.findings | Select-Object id, state, output
+$fixtureExit
+```
+
+Both queries select zero rows. The first exits `0`. The second renames the second output column with `AS`. It exits `1` and shows `Unexpected database column name at column 2.` Find the independent passing `drop` result. The report omits both label texts.
+
+Use `UmiUatCompareDatabaseQueries` when the adapter must compare ordered labels as well as typed data. Supply one counted UTF-8 name for each column. Malformed or missing metadata refuses the whole observation before publishing a finding.
 
 ## Reuse the Framework comparator
 

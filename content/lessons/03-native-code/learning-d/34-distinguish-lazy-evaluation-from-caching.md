@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `lazy_evaluation.d` in `labs/languages/native-language-boundary` in the course checkout. Prepare three rows for the eager, deferred and cached examples. Record how many times you expect each to call the counted function.
+
 ## Start with an observable operation
 
 A normal function call generally obtains the values of its ordinary arguments before the function body uses its parameters. D can also declare a lazy parameter. That parameter represents deferred work: the caller’s expression can be evaluated when the function reads the parameter. The important question is how many reads occur. Lazy does not automatically mean “run once and remember the answer.” It also does not mean “run on a background thread.” We will count evaluations using a tiny function that increments an integer and returns its new value.

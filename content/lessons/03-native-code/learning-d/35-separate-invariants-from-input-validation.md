@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `budget_invariant.d` in `labs/languages/native-language-boundary` in the course checkout. Locate the credit limit and choose requests inside and outside it. Mark when the input is validated and when the stored state is checked.
+
 ## What must always be true?
 
 An invariant is a rule describing a valid object at its documented observation boundaries. Consider a request budget whose remaining count must be between zero and 1,024. D lets a struct declare an invariant for development-time contract checking. The program still needs explicit branches to refuse invalid external requests. This lesson compares those responsibilities instead of treating an assertion as user-input validation.

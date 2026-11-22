@@ -18,6 +18,10 @@ MIT
 # Distinguish function pointers, delegates and C callbacks
 
 [Course contents](index.md)
+
+## Before you begin
+
+Draw one box for a function address and another for a captured local variable. Predict what must survive if the callback runs after the caller returns.
 A callback is a function supplied for another operation to call later. Two callable values can look similar at the call site but carry different data. A function pointer identifies callable code. A D delegate also carries a context, which may refer to an object or captured local values. That distinction matters when connecting to C.
 
 ~~~d

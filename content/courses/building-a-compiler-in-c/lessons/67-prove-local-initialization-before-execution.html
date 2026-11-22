@@ -37,5 +37,16 @@ RETURN</code></pre>
 <p>The encoder must inspect beyond an early comparison. Otherwise it could return format 2 before noticing a later STORE. The mixed-operation fixture checks this ordering directly.</p>
 <h2>Exercise</h2>
 <p>Draw stack depth and initialized bits after each operation in the four-record example. Then replace its load operand with 30. Predict the rejection point and which output sentinels must remain intact. Explain why a successful previous execution, spare fuel or a large output buffer cannot make that read valid. Finally compare header capability macros with linked profile queries: a new header alone does not update an installed runtime.</p>
+<h2>Try the same idea in a line session</h2>
+<p>Open the optional <code>umicom-studio-script</code> terminal command. Submit each of the following lines separately.</p>
+<pre><code class="language-c">int total = 2;
+total *= 21;
+return total;
+{ total = 0; total = 1 / 0; }
+return total;</code></pre>
+<p>Expect two <code>ok</code> messages, the value <code>42</code>, a diagnostic on line four, and <code>42</code> again. Each line starts a new VM execution with explicit instructions that restore previously saved integers. The temporary VM can set <code>total</code> to zero before the division fails. The host publishes the new values only when the entire line returns successfully.</p>
+<p>Change the fourth line to <code>{ int temporary = 7; total += temporary; }</code>. Predict the next displayed total and then try <code>return temporary;</code>. The value survives the block through <code>total</code>. The name <code>temporary</code> has gone out of scope.</p>
+<h3>Compare a multiline submission</h3>
+<p>Save the first three lines as <code>total.ucs</code>. Run <code>umicom-studio-script --block total.ucs</code>. Expect one value, <code>42</code>. The command submits the whole file to one trial VM and reports the final expression. Replace the last line with <code>return total / 0;</code>. Expect a line-three diagnostic and no output. Run the same edited file without <code>--block</code> and compare the two earlier <code>ok</code> messages. Those messages belong to separate line submissions that succeeded before the final line failed.</p>
 <nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="66-bind-local-names-to-slots.html">Previous lesson</a> · <a rel="next" href="68-lower-short-circuit-logical-expressions.html">Next lesson</a></nav>
 </article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

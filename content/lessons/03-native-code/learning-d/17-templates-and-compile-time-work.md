@@ -18,6 +18,10 @@ MIT
 # Use templates and compile-time evaluation
 
 [Course contents](index.md)
+
+## Before you begin
+
+Choose two different types, such as an integer count and a floating-point measurement. List the operations they share. Mark where the template chooses a type before those operations run.
 A template describes code parameterized by types or values. Instantiating a template asks the compiler to produce a concrete version. Compile-time function evaluation, often called CTFE, computes a permitted expression during compilation. Neither concept means that arbitrary program input can be evaluated before the program starts.
 
 ~~~d

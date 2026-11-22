@@ -94,6 +94,12 @@ Expect `ok: true`, `value: 42` and `instructions: 16`. The transfer gives the wo
 
 An optional Framework loopback preview accepts the same artifact at `/api/cvm/preview-int?input=20` when the local toolchain demonstration is enabled. Use the instructions in the Framework local web service lesson to start it. That endpoint runs the native VM on the server. The worker exercise runs the interpreter inside the browser.
 
+## Deploy the artifact through the C server
+
+Try the Framework lesson “Serve a compiled Umicom C application to the browser”. Build the local service with `UMICOM_LOCAL_WEB_CVM_APPLICATION` pointing to the `checked-input.umcb` you just compiled. In the same-origin exercise above, use `/cvm/browser/worker.mjs` for the worker and `/cvm/browser/application.umcb` for the download.
+
+Compare the SHA-256 of the downloaded bytes with the original file. In the browser Network panel, find the GET request for the artifact. Run the computation with input `20`, then fetch another buffer for `-5`. Expect `42` and `-10`. Try a fuel allowance of `1` and identify the separate worker error. Record the artifact identity, native result, browser result and instruction budget as four pieces of test evidence.
+
 ## Follow the parameter into the VM
 
 Read byte 5 with `([IO.File]::ReadAllBytes($artifact))[5]`. The example stores an input flag there. The first instructions are `PUSH 0` and `STORE_LOCAL 0`. After the host validates the artifact and those instructions, it substitutes the signed value in its copy of the first operand. The file remains reusable. The existing VM sees local slot zero initialized before the function body reads it.

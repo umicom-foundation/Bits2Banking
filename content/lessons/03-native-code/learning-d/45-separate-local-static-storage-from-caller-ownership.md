@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `local_storage.d` in `labs/languages/native-language-boundary` in the course checkout. Draw three storage lifetimes for automatic, local static and caller-owned state. Trace two calls and mark which values should carry over.
+
 ## A local name does not describe the whole lifetime
 
 A function's local name can refer to fresh automatic storage or retained static storage. D adds another distinction: ordinary mutable static variables are thread-local by default. Thread-local means each thread has its own copy. This lesson uses one thread to trace the difference between a new counter on each call, a retained counter and explicitly supplied owner state. No filesystem persistence or background work is involved.

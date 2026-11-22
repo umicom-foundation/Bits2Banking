@@ -18,6 +18,10 @@ MIT
 # Understand D memory management and safety attributes
 
 [Course contents](index.md)
+
+## Before you begin
+
+List the resources in a program that opens a file and reads it into a new buffer. Mark the file handle and the memory separately. Follow the lesson to find when each can be returned.
 Garbage collection reclaims some allocations after they are no longer reachable. It does not make unlimited allocation cheap or guarantee a pause duration. A leaked operating-system handle, a retained reference to a huge array and a C allocation never freed are different problems. Changing a language does not eliminate all three.
 
 ~~~d

@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `tagged_number.d` in `labs/languages/native-language-boundary` in the course checkout. Make two columns for a declared union member and the current tag. Pick a rejected access and predict which value the caller retains.
+
 ## Reflection answers a structural question
 
 D can inspect declarations while compiling. That is useful for catalogues, checks and generated adapters, but the compiler cannot infer every rule your application assigns to runtime data. This lesson uses a numeric union to make the distinction concrete. Reflection can confirm that fields exist and overlap. A separate tag and accessor protocol decide which field a particular value is allowed to expose.

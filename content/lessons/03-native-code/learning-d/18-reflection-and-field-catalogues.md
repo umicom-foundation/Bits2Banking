@@ -18,6 +18,10 @@ MIT
 # Inspect fields with compile-time reflection
 
 [Course contents](index.md)
+
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `reflection.d` in `labs/languages/native-language-boundary` in the course checkout. Find the record declaration before reading the reflection code. Write down each field name and type so you can compare the list with what the program discovers.
 Reflection means inspecting information about a program’s types or members. D can perform substantial inspection at compile time. This can generate repetitive adapters while preserving explicit types. Runtime reflection is a different question: what metadata remains available after the executable starts?
 
 ~~~d

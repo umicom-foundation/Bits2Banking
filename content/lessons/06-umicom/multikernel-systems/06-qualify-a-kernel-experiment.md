@@ -37,4 +37,29 @@ Read the RISC-V bootstrap and find the branch that parks a nonzero hart. Sketch 
 3. Keep hardware and major software settings consistent where practical. Record unavoidable differences. Measure time after warm-up, successful work, refusals, recovery time and resources retained after a fault.
 4. Compare one hypothetical report with another. A report with lower average latency but fewer completed requests needs its rejection and timeout counts beside the latency. Keep emulator timings with functional observations and use hardware measurements for performance decisions.
 
+## Practise separating three kinds of evidence
+
+1. Write `0x12345678` in little-endian byte order as `78 56 34 12`. XOR the value with `0xabcd1234`. Expect the result bytes `4c 44 f9 b9`. Repeat the exercise with a three-byte span and a declared count of one word. A bounded payload operation should refuse it before changing any byte.
+2. Read a device tree from the emulator release installed on your machine. A device tree is the hardware description supplied to the guest. Record how many serial devices it describes before choosing a service channel. Keep diagnostics on an independently identified channel and check that the guest has a driver for the proposed service transport.
+3. Design a separate test that obtains a reply from the current guest instance after boot. Retain the emulator version, guest image, exact reply and reason for any refusal. Label your three records **payload result**, **device inventory** and **guest reply** so another learner can reproduce each observation.
+
+## Capture binary output from a separate guest console
+
+Use a Kernel checkout that includes the service console fixture. From its root in PowerShell, use the RISC-V Clang toolchain, Ninja and QEMU. The two boots use the same image and differ in whether a VirtIO console device is attached.
+
+```powershell
+$build = 'build/multikernel-service-console'
+cmake --preset riscv64-clang-debug -B $build -DUMICOM_KERNEL_SERVICE_CONSOLE_FIXTURE=ON
+ctest --test-dir $build -N -V -R '^kernel[.]riscv64[.]service_console[.]'
+ctest --test-dir $build -V --output-on-failure --no-tests=error -R '^kernel[.]riscv64[.]service_console[.]'
+Format-Hex -Path (Join-Path $build 'service-console-transmit.bin')
+Get-FileHash -Algorithm SHA256 -Path (Join-Path $build 'bin/umicom-service-console-guest.elf')
+```
+
+1. The listing command prints the registered build and two guest test commands without running them. Find the same image path in the two guest commands. Open `tests/service_console_transport/check_guest.cmake` and follow its `MODE` setting. Both modes send the diagnostic UART to standard output through `-serial stdio`. Only the transmit mode adds a VirtIO device and a file backend.
+2. Run the tests and record their statuses. The transmit boot prints `service-console: transmit and reset acknowledged` on the UART. The guest fixture writes that marker after the driver checks the completion and observes device status return to zero. Separately compare the entire backend file with `4c 44 f9 b9 00 ff 0a 0d`. Hexadecimal makes the zero and newline bytes visible.
+3. Find `service-console: no console; diagnostic UART still active` in the absent-device boot. The UART remains available without the service device. The transmit file belongs to the transmit test, so an existing copy supplies no evidence about the absent-device boot.
+
+Keep the image hash, QEMU version, two UART observations and binary output together. Use the QEMU executable printed in the test listing to check its version. If the guest tests do not appear, check that CMake found QEMU. If the build fixture fails, record the build failure before interpreting earlier files. This experiment establishes guest-to-host transmission of one synthetic payload. The receive queue stays empty. A host request and a correlated reply still need their own test.
+
 As a final check, write one sentence each for Framework, OS and Kernel. Name who admits the work, who composes the supported profile and recovery route, and who enforces native resource access. Give each claim an observable test.

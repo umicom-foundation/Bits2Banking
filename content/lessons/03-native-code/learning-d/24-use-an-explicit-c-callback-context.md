@@ -18,6 +18,10 @@ MIT
 # Use a C callback without capturing a D delegate
 
 [Course contents](index.md)
+
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `callback_client.d` in `labs/languages/native-language-boundary` in the course checkout. Open the C boundary alongside the D client. Identify who supplies the context address and put both compilers in the same 64-bit toolchain environment before linking.
 The earlier function-pointer lesson distinguished a function address from a delegate that also carries an environment. This exercise makes that distinction concrete. A small C routine calls a D function with an explicit context pointer. You will inspect the ABI declaration, follow two callback attempts, and explain why one accepted callback does not imply that only one callback ran.
 
 

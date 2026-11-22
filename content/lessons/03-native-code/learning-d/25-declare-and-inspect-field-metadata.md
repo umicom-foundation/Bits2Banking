@@ -18,6 +18,10 @@ MIT
 # Declare field metadata and inspect it at compile time
 
 [Course contents](index.md)
+
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `field_metadata.d` in `labs/languages/native-language-boundary` in the course checkout. Choose a field and write down its type and the rule you expect its annotation to express. Compare that expectation with what the program prints.
 A program stores values such as an account number. A form also needs information about those values: a label, a help message, or a rule about which fields can be edited. Information that describes other information is called metadata. In this lesson you will attach two labels to a small D record, ask the compiler to inspect them, and generate a readable description. You will also distinguish this technique from changing the record’s values, serializing memory, or providing unrestricted runtime reflection.
 
 

@@ -24,7 +24,7 @@ cmake -S &quot;$framework/tests/uat&quot; -B $build -G Ninja -DUMICOM_UAT_SQLITE
 cmake --build $build --target umicom-uat-database-example umicom-uat-database-rows-tests
 ctest --test-dir $build -R '^framework[.]uat[.](database|database_rows)[.]' --output-on-failure --no-tests=error
 </code></pre>
-<p>Expect 24 CTest cases. Eighteen exercise the shared comparator and six run the SQLite example. If CMake cannot find SQLite, point it at the headers and library from the toolchain you installed. Stop on a configure or build error before running an executable left over from an earlier build.</p>
+<p>Expect 35 CTest cases. The original 24 check typed rows and SQLite workflows. Eleven more check query labels, including two SQLite runs with zero rows. If CMake cannot find SQLite, point it at the headers and library from the toolchain you installed. Stop on a configure or build error before running an executable left over from an earlier build.</p>
 <h2>Read both outcomes</h2>
 <p>Run one command that should pass and one that should report a mismatch. Save the second program's exit code before running another native command.</p>
 <pre><code class="language-powershell">&amp; &quot;$build/umicom-uat-database-example.exe&quot; --verify-types
@@ -65,6 +65,15 @@ $fixtureExit
 </tbody>
 </table>
 <p>The report gives the position and keeps the field values out of the evidence. A CTest case for this deliberate mismatch passes when it observes both the expected failure and successful cleanup.</p>
+<h2>Check output names when the result is empty</h2>
+<p>A query can return no rows and still promise specific column names. A form or importer that reads fields by name needs those labels even when there are no values to display.</p>
+<pre><code class="language-powershell">&amp; "$build/umicom-uat-database-example.exe" --verify-empty-columns
+$report = &amp; "$build/umicom-uat-database-example.exe" --reject-empty-column-change | ConvertFrom-Json
+$fixtureExit = $LASTEXITCODE
+$report.findings | Select-Object id, state, output
+$fixtureExit</code></pre>
+<p>Both queries select zero rows. The first exits <code>0</code>. The second renames the second output column with <code>AS</code>. It exits <code>1</code> and shows <code>Unexpected database column name at column 2.</code> Find the independent passing <code>drop</code> result. The report omits both label texts.</p>
+<p>Use <code>UmiUatCompareDatabaseQueries</code> when the adapter must compare ordered labels as well as typed data. Supply one counted UTF-8 name for each column. Malformed or missing metadata refuses the whole observation before publishing a finding.</p>
 <h2>Reuse the Framework comparator</h2>
 <p>Give <code>UmiUatCompareDatabaseRows</code> an independent expected grid and the actual result, each arranged in row order. Know the column count even when the query returns zero rows. Use an explicit column list and <code>ORDER BY</code> when positions matter. Read each database value's storage kind before asking the driver to convert it for display. Keep text and binary lengths, and compare borrowed values while their driver still owns them.</p>
 <p>An <code>OK</code> status means the two complete snapshots were admitted. Read the result's <code>match</code> field to decide whether they agree. Cell coordinates in the C result start at zero, while the sample displays them starting at one. If a result is incomplete or exceeds the documented bounds, fix the adapter or narrow the fixture before interpreting it.</p>

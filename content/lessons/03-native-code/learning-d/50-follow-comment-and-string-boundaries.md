@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `comment_boundaries.d` in `labs/languages/native-language-boundary` in the course checkout. Use a plain-text editor. Find a comment marker inside a quoted string and one in source text. Predict which one the scanner will consume as a comment.
+
 ## The same characters can be code or data
 
 A compiler does not interpret every character in a file as an instruction. It first identifies words, punctuation, strings and comments. A string stores text as a value. A comment explains source without becoming an executable expression. A lexical scanner tracks these boundaries. This lesson uses a small D program and Umicom C’s separate source-region inspector to show why a delimiter inside text must not be mistaken for a command.

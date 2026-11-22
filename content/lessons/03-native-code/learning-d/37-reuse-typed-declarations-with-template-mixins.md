@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `typed_counter_mixins.d` in `labs/languages/native-language-boundary` in the course checkout. Find the two declarations made by the mixin. Record their types before tracing where the same bounds check is reused.
+
 ## Start with a small duplication problem
 
 Imagine two tools that count accepted requests. A preview tool permits three requests, while an export tool permits six. Each needs a current count, a remaining count and a function that refuses an addition exceeding its limit. Copying the same declarations into two structures makes it easy to correct one and forget the other. A D template mixin can describe that declaration pattern once and insert a typed instance into each receiving structure. This exercise owns only integers. It does not run jobs, allocate images or enforce a real service quota.

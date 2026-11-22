@@ -14,6 +14,9 @@ MIT
 -->
 <!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Use scope guards to make cleanup paths visible | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><h1>Use scope guards to make cleanup paths visible</h1><nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a></nav>
+<h2>Before you begin</h2>
+<p>Draw a successful file-open path and a path that returns early after a later step fails. Mark which resources each path acquired so you can trace the cleanup.</p>
+
 <p>A function can leave a block by reaching its end, returning early or throwing an exception. When native storage belongs to that block, forgetting one exit path can leak it. D scope guards register actions for leaving a scope. They make cleanup visible next to resource acquisition, but still require the correct release function and a valid ownership contract.</p>
 <pre><code class="language-d">import core.stdc.stdlib : malloc, free;
 import std.stdio : writeln;

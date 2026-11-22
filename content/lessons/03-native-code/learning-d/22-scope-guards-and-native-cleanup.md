@@ -18,6 +18,10 @@ MIT
 # Use scope guards to make cleanup paths visible
 
 [Course contents](index.md)
+
+## Before you begin
+
+Draw a successful file-open path and a path that returns early after a later step fails. Mark which resources each path acquired so you can trace the cleanup.
 A function can leave a block by reaching its end, returning early or throwing an exception. When native storage belongs to that block, forgetting one exit path can leak it. D scope guards register actions for leaving a scope. They make cleanup visible next to resource acquisition, but still require the correct release function and a valid ownership contract.
 
 ~~~d

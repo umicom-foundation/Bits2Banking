@@ -17,6 +17,26 @@ MIT
 
 # Prove local initialization before execution
 
+## Try the same idea in a line session
+
+Open the optional `umicom-studio-script` terminal command. Submit each line separately.
+
+```c
+int total = 2;
+total *= 21;
+return total;
+{ total = 0; total = 1 / 0; }
+return total;
+```
+
+Expect two `ok` messages, the value `42`, a diagnostic on line four, and `42` again. Each line starts a fresh VM execution with instructions that restore earlier saved integers. The temporary VM can reach the assignment of zero. The session saves new values only when the entire line returns successfully.
+
+Change the fourth line to `{ int temporary = 7; total += temporary; }`. Predict the next displayed total and try `return temporary;`. The value survives through `total`. The name `temporary` has gone out of scope.
+
+### Compare a multiline submission
+
+Save the first three lines as `total.ucs`. Run `umicom-studio-script --block total.ucs`. Expect one value, `42`. The whole file runs as one trial VM submission. Replace the last line with `return total / 0;`. Expect a line-three diagnostic and no output. Run the edited file without `--block` and compare the two earlier `ok` messages. Those messages belong to separate line submissions that succeeded before the final line failed.
+
 ## Goal
 
 Understand why the runtime must validate local operations even when the compiler already checks names. A bytecode consumer can receive data from another producer. It must enforce its own storage contract.

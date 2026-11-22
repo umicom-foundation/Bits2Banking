@@ -151,3 +151,9 @@ BtbHasSetupSection("${_document}" _actual)
 if(NOT "${_actual}" STREQUAL "${_expected}")
     message(FATAL_ERROR "Setup case ${CASE}: expected ${_expected}, got ${_actual}")
 endif()
+
+# A descriptive Set up heading still identifies real preparation prose.
+BtbHasSetupSection("## Set up the experiment\nOpen the sample.\n## Exercise\nTry it." _descriptive_setup)
+if(NOT _descriptive_setup)
+    message(FATAL_ERROR "A descriptive Set up section should be accepted")
+endif()

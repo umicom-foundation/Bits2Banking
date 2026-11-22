@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `qualifier_preserving_views.d` in `labs/languages/native-language-boundary` in the course checkout. Mark the three input qualifiers and predict the qualifier on each returned view. Use the compiler checks and the mutable example to confirm your predictions.
+
 ## A small function with an important promise
 
 This lesson returns the first few bytes of an existing array without allocating another byte buffer. The caller may supply writable data, a read-only view, or immutable data. The returned view should preserve that permission. You will use D’s inout type constructor, then follow the backing storage through concrete mutations and compile-time checks. This builds on the earlier lesson about read-only views and copies. It is a language design exercise, not a new Framework binary interface or an implementation of a model loader.

@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `virtual_rules.d` in `labs/languages/native-language-boundary` in the course checkout. Find the rule interface and its implementations. Predict which rule the interface call selects, then compare the separate type-reflection output.
+
 ## What you will observe
 
 Reflection asks about types or declarations. Runtime dispatch chooses an implementation for a particular object. They are related tools with different jobs. This lesson's two original batch rules answer the same admit(items) operation using different limits. A variable declared as BatchRule can refer to either concrete class. typeof still sees the variable's declared interface type; a checked runtime class cast can inspect the object it references. Read the introductory class and reflection lessons before starting.

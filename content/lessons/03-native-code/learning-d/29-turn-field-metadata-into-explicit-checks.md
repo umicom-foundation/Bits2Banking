@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `reflected_ranges.d` in `labs/languages/native-language-boundary` in the course checkout. Pick one value exactly at the annotated range boundary and another just outside it. Predict the validator’s answer in each case.
+
 ## What you will build
 
 You will write a small D program that describes three preview settings and checks their values. Reflection discovers the fields at compile time. Ordinary comparisons validate one object's values while the program runs. You will learn why those are different jobs, how to reject incomplete rules before compilation finishes, and how the same design idea relates to Umicom Framework's existing C reflection registry. This lesson continues the field-label example in lesson 25. The complete new source is labs/languages/native-language-boundary/reflected_ranges.d. It is an original teaching example, not a production D dependency.

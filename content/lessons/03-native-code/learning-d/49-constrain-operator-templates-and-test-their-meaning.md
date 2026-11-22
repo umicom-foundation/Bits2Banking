@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `flag_operators.d` in `labs/languages/native-language-boundary` in the course checkout. Write a small truth table for two flags. Include an unsupported operator and find the template condition that rejects it.
+
 ## Start from an ordinary value type
 
 An operator such as | is a compact request for an operation. A type can define that operation, but the syntax alone does not guarantee a useful meaning. This original exercise uses a FlagSet struct with one uint field. A uint is a 32-bit unsigned integer in D. The bits represent three independent labels, valued 1, 2 and 4. Union combines present labels and intersection keeps only labels present on both sides.

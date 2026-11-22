@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `static_pixel_arrays.d` in `labs/languages/native-language-boundary` in the course checkout. Draw the rows of the sample image as separate boxes. Pick one cell and track it in the original, the copy and the function parameter.
+
 ## Use one tiny image to see ownership
 
 When an edit appears to do nothing, the program may have changed a copy rather than the original storage. When an edit changes too much, several variables may share storage unexpectedly. This exercise makes that distinction visible with a two-by-two RGB image. RGB means red, green and blue channel values. A byte in this example holds one unsigned channel from zero to 255. We use red and green on the top row and blue and white on the bottom row. The twelve channel values total 1530. There is no image file or model involved.

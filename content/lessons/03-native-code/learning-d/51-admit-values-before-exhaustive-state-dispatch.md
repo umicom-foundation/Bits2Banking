@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `exhaustive_states.d` in `labs/languages/native-language-boundary` in the course checkout. Choose a valid state number and a byte with no named state. Trace what validates the byte before the exhaustive switch sees it.
+
 ## A named state describes one fact
 
 Imagine a launcher with four observations: a request is queued, a process has been created, an application has acknowledged readiness, or startup has failed. These observations are different. A process can exist before its first window appears. A useful program keeps those facts separate instead of showing success too early. This laboratory models the distinctions with values only; it does not start a process or implement an application readiness protocol.

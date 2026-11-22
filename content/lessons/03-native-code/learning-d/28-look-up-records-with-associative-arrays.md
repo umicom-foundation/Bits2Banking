@@ -19,6 +19,10 @@ MIT
 
 [Course contents](index.md)
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `record_lookup.d` in `labs/languages/native-language-boundary` in the course checkout. Make a table with a known key, an absent key and the expected outcome of each lookup. Use it while following the reporting step.
+
 ## What you will build
 
 You will build a small dictionary that associates a document label with a reviewed-record count. You will distinguish a missing entry from an entry whose count is zero, observe what assignment shares, make an independent copy and print a stable report. This extends the earlier collection and ownership lessons with one complete program. It also answers a common question in model training: a dictionary is a useful storage structure, but creating one does not train a model.

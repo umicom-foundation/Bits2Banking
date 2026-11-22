@@ -17,6 +17,10 @@ MIT
 
 # State the effects of a binary reader
 
+## Before you begin
+
+Use [Install D and compile a first program](01-install-and-run.md) to check your compiler. Open `inspect_umc_header.d` in `labs/languages/native-language-boundary` in the course checkout. Copy the sample header layout onto paper and mark the byte offsets. Use the drawing to trace where the reader rejects a short or malformed buffer.
+
 ![Umicom C header and record layout](../../../assets/diagrams/umicom-bytecode-envelope.svg)
 
 [Course contents](index.md)
