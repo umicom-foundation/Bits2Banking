@@ -1,0 +1,83 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/cpp20-keyword-reference/lessons/04-objects-and-names.html
+
+PURPOSE:
+Read class, member-access, dispatch and naming keywords, and distinguish two contextual class identifiers.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Read class, member-access, dispatch and naming keywords, and distinguish two contextual class identifiers.">
+  <title>Organise data and actions into objects | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a>
+      <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Organise data and actions into objects</h1>
+      <nav aria-label="Navigate this lesson"><a href="../index.html">Course contents</a>
+      <a href="03-declarations-and-storage.html">Previous lesson — Declare names, storage and size</a>
+      <a href="05-memory-errors-and-conversions.html">Next lesson — Read ownership, errors and conversions</a></nav>
+      <h2>What you will learn</h2>
+      <p>Read class, member-access, dispatch and naming keywords, and distinguish two contextual class identifiers.</p>
+      <h2>Read the words in context</h2>
+      <p>A <strong>class</strong> defines a type with members such as data fields and functions. An <strong>object</strong> is an instance of a type. A <strong>derived class</strong> builds on a base class. A <strong>namespace</strong> groups names and helps distinguish unrelated parts of a program.</p>
+      <h2>Reserved keywords in this lesson</h2>
+      <table><thead><tr><th scope="col">Spelling</th><th scope="col">Meaning</th><th scope="col">Read this example</th></tr></thead><tbody>
+<tr><td><code>class</code></td><td>Declares a class. Members are private by default.</td><td><code>class Account { int cents = 0; };</code></td></tr>
+<tr><td><code>struct</code></td><td>Declares a class whose members are public by default.</td><td><code>struct Receipt { int cents = 0; };</code></td></tr>
+<tr><td><code>union</code></td><td>Declares members that share storage. Read an active member for this example.</td><td><code>union Sample { int cents; float rate; }; Sample reading{12};</code></td></tr>
+<tr><td><code>public</code></td><td>Allows access to a class member from ordinary calling code.</td><td><code>class Receipt { public: int cents = 8; };</code></td></tr>
+<tr><td><code>protected</code></td><td>Allows access in the class and in permitted derived-class contexts.</td><td><code>class Report { protected: int rows = 0; };</code></td></tr>
+<tr><td><code>private</code></td><td>Restricts access to the declaring class and its friends.</td><td><code>struct Receipt { private: int cents = 8; };</code></td></tr>
+<tr><td><code>this</code></td><td>In a suitable member function, points to the object on which the function runs.</td><td><code>struct Receipt { int cents; int value() { return this-&gt;cents; } };</code></td></tr>
+<tr><td><code>friend</code></td><td>Grants a declared function or class access to otherwise restricted members.</td><td><code>class Box { int cents = 7; friend int read(Box box) { return box.cents; } };</code></td></tr>
+<tr><td><code>virtual</code></td><td>Enables selection of the applicable overridden member function through base references or pointers.</td><td><code>struct Base { virtual int count() const { return 0; } };</code></td></tr>
+<tr><td><code>explicit</code></td><td>Prevents a constructor like this one from being used for implicit conversion.</td><td><code>struct Cents { explicit Cents(int n) : value(n) {} int value; };</code></td></tr>
+<tr><td><code>operator</code></td><td>Names an overloaded operation. This example supplies a callable object using operator().</td><td><code>struct Six { int operator()() const { return 6; } };</code></td></tr>
+<tr><td><code>namespace</code></td><td>Creates a named scope. Access the amount below as trial::cents.</td><td><code>namespace trial { int cents = 12; }</code></td></tr>
+</tbody></table>
+      <h2>Contextual spellings</h2>
+      <table><thead><tr><th scope="col">Spelling</th><th scope="col">Meaning</th><th scope="col">Read this example</th></tr></thead><tbody>
+<tr><td><code>override</code></td><td>After a member-function declaration, asks the compiler to verify that the function overrides a base virtual member.</td><td><code>struct Preview : Base { int count() const override { return 2; } };</code></td></tr>
+<tr><td><code>final</code></td><td>After a class name in this position, prevents using that class as a base. It can also prevent further overrides of a virtual function.</td><td><code>struct FrozenReport final { int rows; };</code></td></tr>
+</tbody></table>
+      <h2>Try it and check</h2>
+      <p>Which declaration exposes cents by default, the first class or the first struct? What could the class offer to let callers read a checked value?</p>
+      <p><strong>Check:</strong> The struct exposes it by default. A class can provide a public member function that returns the value while keeping its underlying field private.</p>
+      <h2>Apply it to an Umicom project</h2>
+      <p>Draw a practice Umicom Bank statement model with a public reading operation and a private record value. Separate the type itself from an object holding a single example receipt.</p>
+      <p><a href="../../../umicom/repositories/" data-lesson-source="content/umicom/repositories.md">Find the Umicom application repositories</a>.</p>
+      <p><a href="../../../lessons/03-native-code/cpp20-keyword-reference/04-objects-and-names/" data-lesson-source="content/lessons/03-native-code/cpp20-keyword-reference/04-objects-and-names.md">Open the written lesson</a></p>
+      <nav aria-label="Continue learning"><a href="../index.html">Course contents</a>
+      <a href="03-declarations-and-storage.html">Previous lesson — Declare names, storage and size</a>
+      <a href="05-memory-errors-and-conversions.html">Next lesson — Read ownership, errors and conversions</a></nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

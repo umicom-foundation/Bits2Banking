@@ -1,0 +1,104 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/practical-web-and-data-foundations/lessons/04-read-the-file-with-node.html
+
+PURPOSE:
+Read a local statement with Node.js in the Bits2Banking web and data course.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Use Node.js to read a practice text file and check values before adding cents.">
+  <title>Read a local statement with Node.js | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" href="../../../assets/branding/umicom-icon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="../../../assets/branding/umicom.ico" type="image/x-icon">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a href="../../index.html" class="logo">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation" width="176">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Read a local statement with Node.js</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="03-check-a-record-with-typescript.html">Previous lesson · Check a record with TypeScript</a>
+        <a href="05-add-posted-cents-in-a-spreadsheet.html">Next lesson · Add posted cents in a spreadsheet</a>
+      </nav>
+      <p>Use Node.js to read a practice text file and check values before adding cents.</p>
+      <h2 id="understand-what-will-happen">Understand what will happen</h2>
+      <p>JavaScript can run inside a browser. Node.js also runs JavaScript on your computer, where built-in tools can read files. This example uses a file next to the program. It displays a total in the terminal, which is a window for reading and writing commands. No web service or real account data is needed.</p>
+      <p>The name <code>statement.json</code> must match the practice file from lesson one. Save the next example as <code>statement.mjs</code> in the same practice folder. The <code>.mjs</code> ending tells Node.js to treat the file as a module, so it can use <code>import</code> and wait for a reading operation.</p>
+      <h2 id="read-check-and-total-the-entries">Read, check and total the entries</h2>
+      <pre><code class="language-javascript">import { readFile } from &quot;node:fs/promises&quot;;
+
+try {
+  // Look beside this program even if the terminal starts elsewhere.
+  const file = new URL(&quot;./statement.json&quot;, import.meta.url);
+  const text = await readFile(file, &quot;utf8&quot;);
+  const report = JSON.parse(text);
+  const entries = report?.entries;
+  if (!Array.isArray(entries)) {
+    throw new Error(&quot;Expected a list named entries&quot;);
+  }
+
+  let total = 0;
+  for (const entry of entries) {
+    // Protect the count before arithmetic. Only these states are in the lesson.
+    if (!entry ||
+        (entry.status !== &quot;posted&quot; &amp;&amp; entry.status !== &quot;pending&quot;) ||
+        !Number.isSafeInteger(entry.cents)) {
+      throw new Error(&quot;Expected a known status and whole cents&quot;);
+    }
+    if (entry.status === &quot;posted&quot;) {
+      const next = total + entry.cents;
+      if (!Number.isSafeInteger(next)) {
+        throw new Error(&quot;Posted total is too large&quot;);
+      }
+      total = next;
+    }
+  }
+  console.log(`Posted: ${total} cents`);
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
+}</code></pre>
+      <p><code>await</code> waits for file reading to finish. <code>JSON.parse</code> turns the text into data. <code>Number.isSafeInteger</code> checks that JavaScript can represent the amount exactly as a whole number. This calculator uses status and cents, so those are the entry fields it checks. The practice ID is for human reading.</p>
+      <pre><code class="language-text">node statement.mjs</code></pre>
+      <p>The terminal should show <code>Posted: 1750 cents</code>. Trace the changes in total on paper. Start at <code>0</code>, then write <code>2600</code>, then <code>1750</code>. The pending entry leaves the total at <code>1750</code>.</p>
+      <h2 id="practise-reading-a-refusal">Practise reading a refusal</h2>
+      <p>In a practice copy, put quotes around <code>500</code> in the JSON file and run the program again. The output should say <code>Expected a known status and whole cents</code> because the new value is text. Remove the quotes after the check. If the terminal reports that it cannot find the JSON file, make sure <code>statement.json</code> is beside the program. A parser error means you should check quotes, commas and the matching braces.</p>
+      <h2 id="connect-to-umicom">Connect to Umicom</h2>
+      <p>Compare this small program with the native statement calculation. Both add posted amounts and leave pending amounts alone unless a practice rule explicitly includes them. In a Framework exercise, keep the calculation in a small function whose result you can check without opening a window.</p>
+      <ul>
+        <li><a href="../../native-statement-calculations/index.html">Native statement calculations</a></li>
+        <li><a href="https://nodejs.org/api/fs.html#fspromisesreadfilepath-options">Node.js file reading</a></li>
+      </ul>
+      <p><a href="../../../lessons/04-web/practical-web-and-data-foundations/04-read-the-file-with-node.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

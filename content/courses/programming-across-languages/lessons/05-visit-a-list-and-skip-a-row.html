@@ -1,0 +1,82 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/programming-across-languages/lessons/05-visit-a-list-and-skip-a-row.html
+
+PURPOSE:
+Trace a result through a collection of receipts using continue, and compare how each language visits a collection.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Trace a result through a collection of receipts using continue, and compare how each language visits a collection.">
+  <title>Visit a list and skip a row | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Visit a list and skip a row</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="04-repeat-the-same-for-loop.html">Previous · Compare one for loop in six languages</a> · <a href="06-give-a-task-a-name-and-a-result.html">Next · Give a task a name and a result</a> · <a href="../../../lessons/03-native-code/programming-across-languages/05-visit-a-list-and-skip-a-row.md">Markdown edition</a></nav>
+<p>Trace a result through a collection of receipts using continue, and compare how each language visits a collection.</p>
+
+<h2>Visit each stored amount</h2>
+
+<p>A collection holds several values together. A three-value collection holds 200, −50 and 75 cents in that order. For this practice report, include positive deposits and skip all other rows.</p>
+
+<pre><code class="language-text">SET total TO 0
+FOR EACH amount IN [200, -50, 75]
+    IF amount is less than or equal to zero
+        CONTINUE with the next amount
+    ADD amount TO total
+SHOW total</code></pre>
+
+<h2>Compare the collection syntax</h2>
+
+<ul>
+<li>C uses an index to visit an array. With the array declared in the same scope, a header can be <code>for (size_t i = 0; i &lt; sizeof amounts / sizeof amounts[0]; ++i)</code>. A pointer passed into a function needs its length supplied separately.</li>
+<li>C++ has a range-based loop: <code>for (int amount : amounts)</code>. Java has an enhanced loop with the same text when <code>amounts</code> is an int array or a suitable iterable.</li>
+<li>D can use <code>foreach (amount; amounts)</code>. Here the keyword is <code>foreach</code> although a counting loop uses <code>for</code>.</li>
+<li>Go can use <code>for _, amount := range amounts</code> with an array or slice. The blank identifier <code>_</code> discards the index.</li>
+<li>Python can use <code>for amount in amounts:</code>. It receives the next element through the list iterator.</li>
+</ul>
+
+<p>In all six versions, <code>continue</code> finishes the current pass early and lets iteration proceed. <code>break</code> ends the loop soon after that point instead of visiting the remaining elements.</p>
+
+<h2>Check the trace</h2>
+
+<p>After 200, the total is 200. The −50 is skipped. Adding 75 gives 275 cents. Try replacing “continue” with “break” at that same step. The result then stays at 200 cents.</p>
+
+<p>A report in Trader or TMS can use two training files that differ in one row to show whether it skipped a row or stopped the whole import. Keep test data separate from production records.</p>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../computing-from-the-beginning/index.html">Computing from the Beginning</a></li>
+<li><a href="../../c23-keyword-reference/index.html">C23 keyword reference</a></li>
+<li><a href="../../python-keyword-reference/index.html">Python keyword reference</a></li>
+<li><a href="../../go-keyword-reference/index.html">Go keyword reference</a></li>
+<li><a href="../../go-statement-tools/index.html">Go statement tools</a></li>
+<li><a href="../../native-statement-calculations/index.html">Umicom C and C23 statement calculations</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="04-repeat-the-same-for-loop.html">Previous · Compare one for loop in six languages</a> · <a href="06-give-a-task-a-name-and-a-result.html">Next · Give a task a name and a result</a> · <a href="../../../lessons/03-native-code/programming-across-languages/05-visit-a-list-and-skip-a-row.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

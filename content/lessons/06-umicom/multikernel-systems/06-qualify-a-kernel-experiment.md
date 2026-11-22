@@ -63,3 +63,5 @@ Get-FileHash -Algorithm SHA256 -Path (Join-Path $build 'bin/umicom-service-conso
 Keep the image hash, QEMU version, two UART observations and binary output together. Use the QEMU executable printed in the test listing to check its version. If the guest tests do not appear, check that CMake found QEMU. If the build fixture fails, record the build failure before interpreting earlier files. This experiment establishes guest-to-host transmission of one synthetic payload. The receive queue stays empty. A host request and a correlated reply still need their own test.
 
 As a final check, write one sentence each for Framework, OS and Kernel. Name who admits the work, who composes the supported profile and recovery route, and who enforces native resource access. Give each claim an observable test.
+
+[Next lesson on memory ownership](07-check-a-core-owned-memory-range.md).

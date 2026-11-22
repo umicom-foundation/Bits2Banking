@@ -1,0 +1,71 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/mysql-c23-ledger/lessons/03-qualify-fetches-before-publishing.html
+
+PURPOSE:
+Distinguish a row, end of results, conversion failure and an overflowing total.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Distinguish a row, end of results, conversion failure and an overflowing total.">
+  <title>Qualify every fetch before publishing a ledger total | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Qualify every fetch before publishing a ledger total</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-bind-a-parameter-from-c.html">Previous · Bind a MySQL query parameter from C</a> · <a href="../../../lessons/04-web/mysql-c23-ledger/03-qualify-fetches-before-publishing.md">Markdown edition</a></nav>
+<p>Distinguish a row, end of results, conversion failure and an overflowing total.</p>
+
+<h2>Draw the acquisition order</h2>
+
+<ul>
+<li>Prepare the statement, bind the account number and execute.</li>
+<li>Bind the result buffer and associated NULL/error indicators with mysql_stmt_bind_result.</li>
+<li>Read with mysql_stmt_fetch. Handle each successful row, normal end of data, truncated data and other errors according to the C API result values.</li>
+<li>Keep any partial sum private until all expected fetches complete; release the statement on every path.</li>
+</ul>
+
+<p>The lab first produces 1750, then refuses the batch INT64_MAX plus 1 without replacing that complete amount. It also checks an empty batch. Model the same rule for a failed second fetch after you have already read 2600. The last successful total remains visible and the operation reports a failure.</p>
+
+<h2>Apply this to Umicom Bank</h2>
+
+<p>Keep database row admission and exact cent validation in a reusable Framework service. Give Umicom Bank separate delivery results for a usable total and failures. An application adapter can show an unavailable result alongside the last successful total.</p>
+
+<ul>
+<li><a href="../../../labs/native/service-practice/mysql-ledger/main.c">Read the complete native lab source</a></li>
+<li><a href="https://dev.mysql.com/doc/c-api/8.4/en/mysql-stmt-fetch.html">MySQL prepared statement fetch</a></li>
+<li><a href="../../oracle-database-c23-ledger/index.html">Oracle Database C23 Ledger</a></li>
+</ul>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+<li><a href="../../sql-statement-reconciliation/index.html">SQL Statement Reconciliation</a></li>
+<li><a href="../../oracle-database-c23-ledger/index.html">Oracle Database C23 Ledger</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-bind-a-parameter-from-c.html">Previous · Bind a MySQL query parameter from C</a> · <a href="../../../lessons/04-web/mysql-c23-ledger/03-qualify-fetches-before-publishing.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

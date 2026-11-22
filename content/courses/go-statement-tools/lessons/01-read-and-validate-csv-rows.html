@@ -1,0 +1,145 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/go-statement-tools/lessons/01-read-and-validate-csv-rows.html
+
+PURPOSE:
+Teach Read and validate CSV rows through original worked exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Parse a fixed CSV statement, convert amounts to whole cents and report the first invalid record.">
+  <title>Read and validate CSV rows | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../course-series.html">Choose a subject</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Read and validate CSV rows</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="02-print-deterministic-posted-totals.html">Next: Print deterministic posted totals</a>
+      </nav>
+      <h2>What you will learn</h2>
+      <p>Parse a fixed CSV statement, convert amounts to whole cents and report the first invalid record.</p>
+      <h2>Use a reader for the training input</h2>
+      <p>CSV is a delimited text format. A CSV reader handles fields and returns one record at a time. This activity uses an in-memory example and the standard library. A Go struct keeps the parsed fields together. A nil error means the function succeeded.</p>
+      <h2>Parse the full fixture</h2>
+      <p>Save the program as statement.go. Check your Go command with go version, then run go run statement.go in the practice directory.</p>
+      <pre><code class="language-go">package main
+
+import (
+	&quot;encoding/csv&quot;
+	&quot;fmt&quot;
+	&quot;io&quot;
+	&quot;os&quot;
+	&quot;strconv&quot;
+	&quot;strings&quot;
+)
+
+type movement struct {
+	account string
+	cents   int64
+	state   string
+}
+
+const statement = `reference,account,cents,state
+101,reserve,2600,posted
+102,reserve,-850,posted
+103,reserve,500,pending
+104,operating,1200,posted
+105,operating,-300,posted
+106,operating,-150,pending
+`
+
+func parseStatement(input io.Reader) ([]movement, error) {
+	rows := csv.NewReader(input)
+	rows.FieldsPerRecord = 4
+	header, err := rows.Read()
+	if err != nil || strings.Join(header, &quot;,&quot;) != &quot;reference,account,cents,state&quot; {
+		return nil, fmt.Errorf(&quot;unexpected statement header&quot;)
+	}
+
+	var result []movement
+	previousReference := int64(0)
+	for record := 2; ; record++ {
+		fields, err := rows.Read()
+		if err == io.EOF {
+			return result, nil
+		}
+		if err != nil {
+			return nil, fmt.Errorf(&quot;record %d: %w&quot;, record, err)
+		}
+		reference, refErr := strconv.ParseInt(fields[0], 10, 64)
+		cents, centsErr := strconv.ParseInt(fields[2], 10, 64)
+		account, state := fields[1], fields[3]
+		if refErr != nil || reference &lt;= previousReference || centsErr != nil ||
+			(account != &quot;reserve&quot; &amp;&amp; account != &quot;operating&quot; &amp;&amp; account != &quot;clearing&quot;) ||
+			(state != &quot;posted&quot; &amp;&amp; state != &quot;pending&quot;) {
+			return nil, fmt.Errorf(&quot;invalid training values at record %d&quot;, record)
+		}
+		previousReference = reference
+		result = append(result, movement{account, cents, state})
+	}
+}
+
+func main() {
+	movements, err := parseStatement(strings.NewReader(statement))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Printf(&quot;accepted %d movements\n&quot;, len(movements))
+}</code></pre>
+      <p>Expect accepted 6 movements. The parser starts data at record 2 because the header is record 1. A successful read and a valid amount alone are not enough. The example also checks the reference order and a small list of known account and state values.</p>
+      <h2>Practice and check your answer</h2>
+      <p>Replace -850 with unknown. Predict the error record, then run the program. Restore the original value afterwards.</p>
+      <details><summary>Worked answer</summary><p>The parser reports invalid training values at record 3. No accepted count prints, because the function returns nil and an error instead of exposing the partially accepted slice.</p></details>
+      <h2>If Go is unavailable</h2>
+      <p>Run the paper trace from the header through the second data row. Mark each reference, account, amount and state check true or false. Keep the original fixture in a practice folder for a later run with the Go toolchain.</p>
+      <p><a href="../../../lessons/04-web/go-statement-tools/01-read-and-validate-csv-rows/" data-lesson-source="content/lessons/04-web/go-statement-tools/01-read-and-validate-csv-rows.md">Open the written lesson</a></p>
+      <h2>Continue learning</h2>
+      <ul>
+        <li><a href="../../sql-statement-reconciliation/index.html">SQL Statement Reconciliation</a></li>
+        <li><a href="../../introduction-to-programming/index.html">Introduction to Programming</a></li>
+      </ul>
+      <h2>Further reading</h2>
+      <ul>
+        <li><a href="https://techsustainify.com/">Tech Sustainify course catalogue</a></li>
+        <li><a href="https://www.w3schools.com/go/index.php">W3Schools Go tutorial</a></li>
+        <li><a href="https://pkg.go.dev/encoding/csv">Go encoding/csv package</a></li>
+      </ul>
+      <nav aria-label="Continue this course">
+        <a href="../index.html">Course contents</a>
+        <a href="02-print-deterministic-posted-totals.html">Next: Print deterministic posted totals</a>
+      </nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

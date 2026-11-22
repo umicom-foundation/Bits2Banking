@@ -1,0 +1,107 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/d-keyword-reference/lessons/04-group-and-protect-data.html
+
+PURPOSE:
+Distinguish a structure, a union, a class and an interface using familiar parts of a statement.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Group and protect related data | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Group and protect related data</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="03-pass-values-and-promises.html">Previous lesson: Pass values and describe function promises</a> <a href="05-organise-source-and-boundaries.html">Next lesson: Organise source and name a boundary</a></nav>
+      <p>Distinguish a structure, a union, a class and an interface using familiar parts of a statement.</p>
+      <h2>Keep facts that belong together in one value</h2>
+      <p>A practice entry carries an amount and a posted flag. A <code>struct</code> gives names to both fields. A union can represent alternatives in shared storage. Read the member appropriate to the value it currently represents.</p>
+      <h2>Compare class words across languages</h2>
+      <p>D and Java use a <code>class</code> keyword and class references. Their inheritance, memory and interface rules remain language-specific. D also has a separate value-type <code>struct</code> form. Choose the simplest data grouping that represents the example.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-struct"><th scope="row"><code>struct</code></th><td><code>struct Entry { int cents; bool posted; }</code></td><td>Group fields into a value type.</td></tr>
+          <tr id="kw-union"><th scope="row"><code>union</code></th><td><code>union Reading { int integer; float ratio; }</code></td><td>Give fields views of overlapping storage. Keep track of the view currently in use.</td></tr>
+          <tr id="kw-enum"><th scope="row"><code>enum</code></th><td><code>enum Phase { draft, posted }</code></td><td>Define named alternatives as an enumeration. D also uses enum for manifest constants.</td></tr>
+          <tr id="kw-class"><th scope="row"><code>class</code></th><td><code>class Label { string name; }</code></td><td>Declare a reference type with fields or methods.</td></tr>
+          <tr id="kw-interface"><th scope="row"><code>interface</code></th><td><code>interface Named { string name(); }</code></td><td>Describe operations an implementing type must provide.</td></tr>
+          <tr id="kw-abstract"><th scope="row"><code>abstract</code></th><td><code>abstract class Task { abstract int count(); }</code></td><td>Define a class intended for derived types to complete.</td></tr>
+          <tr id="kw-final"><th scope="row"><code>final</code></th><td><code>final class SealedLabel { }</code></td><td>Prevent extension of this class. The same word also has method and final switch uses.</td></tr>
+          <tr id="kw-super"><th scope="row"><code>super</code></th><td><code>override int count() { return super.count() + 1; }</code></td><td>Use the base-class implementation from inside a derived class.</td></tr>
+          <tr id="kw-this"><th scope="row"><code>this</code></th><td><code>this(int cents) { this.cents = cents; }</code></td><td>Spell a constructor and refer to the current object’s field.</td></tr>
+          <tr id="kw-override"><th scope="row"><code>override</code></th><td><code>override int count() { return 3; }</code></td><td>Ask the compiler to check that a method overrides an inherited method.</td></tr>
+          <tr id="kw-new"><th scope="row"><code>new</code></th><td><code>auto label = new Label;</code></td><td>Create a new class instance.</td></tr>
+          <tr id="kw-const"><th scope="row"><code>const</code></th><td><code>const(int)* view = &amp;amount;</code></td><td>Expose a view through which the int cannot be changed.</td></tr>
+          <tr id="kw-immutable"><th scope="row"><code>immutable</code></th><td><code>immutable int seed = 425;</code></td><td>Declare a value that remains unchanged through all permitted references.</td></tr>
+          <tr id="kw-invariant"><th scope="row"><code>invariant</code></th><td><code>invariant { assert(cents &gt;= 0); }</code></td><td>State a class invariant that enabled contract checks test at prescribed boundaries.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">GROUP an amount and a flag as one entry
+IF the flag is yes, return the amount
+OTHERWISE return zero</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.d</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-d">import std.stdio : writeln;
+
+struct Entry
+{
+    int cents;
+    bool posted;
+}
+
+int posted_cents(Entry entry)
+{
+    return entry.posted ? entry.cents : 0;
+}
+
+void main()
+{
+    auto payment = Entry(425, true);
+    writeln(posted_cents(payment));
+}</code></pre>
+      <pre><code class="language-text">dmd -run practice.d</code></pre>
+      <p>Expected output</p>
+      <pre><code class="language-text">425</code></pre>
+      <p>If the terminal cannot find dmd, check the D compiler installation for your operating system. If your course uses another documented D compiler, use its build and run instructions. You can still trace the example without installing a compiler.</p>
+      <h2>Try a change</h2>
+      <p>Change true to false. Which field changes, and what does the function return?</p>
+      <details><summary>Check your answer</summary>      <p>The posted flag changes. The amount is still stored as 425, and the function returns zero.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../learning-d/index.html">Continue Learning D</a></li>
+        <li><a href="https://dlang.org/spec/lex.html">D language specification, Lexical grammar and Keywords</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

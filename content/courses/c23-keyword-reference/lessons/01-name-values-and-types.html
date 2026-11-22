@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/c23-keyword-reference/lessons/01-name-values-and-types.html
+
+PURPOSE:
+Read a first C declaration, then choose between whole numbers, truth values, characters and measurements.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Name values and choose their types | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Name values and choose their types</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="02-choose-and-repeat.html">Next lesson: Choose an action and repeat it</a></nav>
+      <p>Read a first C declaration, then choose between whole numbers, truth values, characters and measurements.</p>
+      <h2>Read a declaration aloud</h2>
+      <p>A declaration introduces a name and tells the computer what kind of value belongs there. In <code>int cents = 425;</code>, read <code>int</code> as whole number, <code>cents</code> as the name, <code>=</code> as start with this value, <code>425</code> as the value, and <code>;</code> as the end. A character constant uses single quotes. Double quotes delimit a string, which stores text.</p>
+      <h2>Try this before opening a tool</h2>
+      <p>Write <code>cents = 425</code> and <code>approved = false</code> on paper. Imagine that the computer makes a labelled space for each value. Change the amount to <code>-25</code>. A signed type can express this movement. An unsigned type models a count that never has a negative meaning.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-int"><th scope="row"><code>int</code></th><td><code>int cents = 425;</code></td><td>A whole number. An int can represent 425 on every conforming implementation.</td></tr>
+          <tr id="kw-char"><th scope="row"><code>char</code></th><td><code>char grade = 'A';</code></td><td>A character-sized integer. Single quotes enclose a character constant.</td></tr>
+          <tr id="kw-short"><th scope="row"><code>short</code></th><td><code>short bins = 12;</code></td><td>A signed integer type with a relatively small minimum range. It need not occupy fewer bytes than int.</td></tr>
+          <tr id="kw-long"><th scope="row"><code>long</code></th><td><code>long minutes = 100000L;</code></td><td>A signed integer type with a larger guaranteed minimum range than int. L selects a long literal here.</td></tr>
+          <tr id="kw-signed"><th scope="row"><code>signed</code></th><td><code>signed int change = -25;</code></td><td>Makes the signed integer choice visible when both negative and positive values are useful.</td></tr>
+          <tr id="kw-unsigned"><th scope="row"><code>unsigned</code></th><td><code>unsigned int count = 3u;</code></td><td>An integer that cannot represent negative values. The u suffix makes this literal unsigned. Keep negative movements in a signed type.</td></tr>
+          <tr id="kw-bool"><th scope="row"><code>bool</code></th><td><code>bool accepted = false;</code></td><td>The C23 truth-value type with the values false and true.</td></tr>
+          <tr id="kw-false"><th scope="row"><code>false</code></th><td><code>bool approved = false;</code></td><td>Starts a flag in the no state.</td></tr>
+          <tr id="kw-true"><th scope="row"><code>true</code></th><td><code>bool checked = true;</code></td><td>Starts a flag in the yes state.</td></tr>
+          <tr id="kw-float"><th scope="row"><code>float</code></th><td><code>float height = 1.25f;</code></td><td>A floating-point type for measurements. The f suffix gives the literal this type.</td></tr>
+          <tr id="kw-double"><th scope="row"><code>double</code></th><td><code>double width = 1.25;</code></td><td>The type of an ordinary unsuffixed floating literal. Use whole cents for the statement exercises.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">START cents at 425
+ADD movement of -25 to cents
+SHOW the new cents and the approval flag</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.c</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <p>Use PowerShell with a C23 GCC installation on your search path. If you already have MSYS2 UCRT64 GCC at its usual Windows location, enter <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code> in that session.</p>
+      <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    int cents = 425;
+    signed int movement = -25;
+    bool approved = false;
+    printf(&quot;%d %s\n&quot;, cents + movement, approved ? &quot;yes&quot; : &quot;no&quot;);
+    return 0;
+}</code></pre>
+      <pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Wpedantic -Werror practice.c -o practice.exe
+if ($LASTEXITCODE -eq 0) { .\practice.exe }</code></pre>
+      <p>Expected line</p>
+      <pre><code class="language-text">400 no</code></pre>
+      <p>Use a compiler that accepts C23. A dialect diagnostic means the compiler has not accepted the selected language mode. A missing header diagnostic can mean the platform toolchain or SDK is absent. If the optional forms in the table are unavailable, try the self-contained main program instead.</p>
+      <h2>Try a change</h2>
+      <p>Change approval to true and predict the output before running. Explain why the count of receipts could use unsigned while a movement may need a sign.</p>
+      <details><summary>Check your answer</summary>      <p>The new line is <code>400 yes</code>. A receipt count is nonnegative. A refund or reversal can create a negative movement.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../native-statement-calculations/index.html">Native Statement Calculations</a></li>
+        <li><a href="https://www9.open-std.org/JTC1/SC22/WG14/www/docs/n3220.pdf">WG14 public draft N3220, section 6.4.1 and Annex A</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

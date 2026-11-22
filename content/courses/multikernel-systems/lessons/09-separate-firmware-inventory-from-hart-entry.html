@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/multikernel-systems/lessons/09-separate-firmware-inventory-from-hart-entry.html
+
+PURPOSE:
+Compare per-hart firmware descriptions with a separately observed Kernel entry.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Separate firmware inventory from hart entry | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav></div></header>
+<main id="main" class="simple-page">
+  <article>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="08-qualify-a-bootable-release-in-stages.html">Previous lesson</a> · <a href="../../../lessons/06-umicom/multikernel-systems/09-separate-firmware-inventory-from-hart-entry.md">Markdown manuscript</a></nav>
+    <h1>Separate firmware inventory from hart entry</h1>
+    <p>A RISC-V <strong>hart</strong> is one hardware thread. Firmware can describe several harts in a data structure called a device tree. The Kernel records a separate event when a hart reaches its C startup code. These facts answer different questions about the same identifier.</p>
+    <h2>Read two independent facts</h2>
+    <table>
+      <thead><tr><th scope="col">Question</th><th scope="col">Example observation for hart 1</th><th scope="col">What to record</th></tr></thead>
+      <tbody>
+        <tr><td>Did a checked firmware description mark it enabled?</td><td>One-hart QEMU profile</td><td>The checked tree did not describe ID 1.</td></tr>
+        <tr><td>Did a checked firmware description mark it enabled?</td><td>Two-hart QEMU profile</td><td>The checked tree described ID 1 as enabled.</td></tr>
+        <tr><td>Did it reach the Kernel’s C entry?</td><td>Both profiles</td><td>There is no C entry record for ID 1. Hart 0 has an observed entry.</td></tr>
+      </tbody>
+    </table>
+    <h2>Trace the native reading</h2>
+    <ol>
+      <li>In Umicom Kernel, open <code>include/umicom/kernel/hardware_catalogue.h</code> and locate <code>UmicomKernelHardwareHartRead</code>. Name the two fields that let the caller keep firmware state and entry evidence separate.</li>
+      <li>Open <code>kernel/hardware_validation.c</code>. Find the query for hart 1 and the <code>hardware.hart-evidence</code> record emitted by the fixture. Predict the value of <code>other-firmware-enabled</code> for one and two harts. Then predict <code>other-c-entry</code> for each run.</li>
+      <li>Keep these values in separate columns. When a checked tree is unavailable, report that state. When the tree is available and lacks the ID, report that it was not described. Those cases do not establish that a hart entered the Kernel.</li>
+      <li>Try a paper example with ID 4096 and only two entries. Find the record by its full firmware ID. The identifier is a label, so its value cannot be used as a position in a table of two entries.</li>
+    </ol>
+    <h2>Define the next observable event</h2>
+    <p>Write an acceptance check for independently starting a secondary hart. Ask it to report its own identifier and its current startup attempt. A later test can verify that it owns an independent stack and can receive a bounded message. Keep those checks separate from the firmware inventory and from per-hart memory locality.</p>
+    <p>Use the Kernel’s hardware discovery guide to identify the test images and QEMU commands. When comparing two runs, retain the same image digest, tool version and boot settings apart from the requested hart count. <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/HARDWARE_DISCOVERY.md">Umicom Kernel hardware discovery</a></p>
+  </article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer>
+</body>
+</html>

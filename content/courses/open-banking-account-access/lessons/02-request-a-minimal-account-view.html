@@ -1,0 +1,77 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/open-banking-account-access/lessons/02-request-a-minimal-account-view.html
+
+PURPOSE:
+Map one read permission to a small account response and preserve the access decision in a review trace.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Map one read permission to a small account response and preserve the access decision in a review trace.">
+  <title>Request a Minimal Account View | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/applied-native-courses.md">Applied native courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Request a Minimal Account View</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="01-follow-account-access-consent.html">Previous lesson · Follow Account Access Consent</a>
+        <a href="03-check-consent-in-c.html">Next lesson · Check the Trusted Consent in C23</a>
+      </nav>
+      <p>Map one read permission to a small account response and preserve the access decision in a review trace.</p>
+      <h2>Choose the minimum data</h2>
+      <p>The v4.0.1 profile lists ReadAccountsBasic and ReadAccountsDetail as separate permissions. The access token's accounts scope and the permissions recorded on the consent play distinct roles. For the exercise, take a verified read context, choose the account permitted by the consent, and return only the two fields in the classroom projection.</p>
+      <pre><code class="language-json">{
+  &quot;trainingConsent&quot;: &quot;TRAIN-C101&quot;,
+  &quot;permission&quot;: &quot;ReadAccountsBasic&quot;,
+  &quot;selectedAccount&quot;: &quot;TRAIN-A2&quot;,
+  &quot;preview&quot;: {&quot;account&quot;: &quot;TRAIN-A2&quot;, &quot;label&quot;: &quot;Practice savings&quot;}
+}</code></pre>
+      <p>The property names above are from a teaching projection. Consult the official Accounts resource for actual response fields. A request for transactions or a payment initiation is a different operation with its own permission and profile.</p>
+      <h2>Keep a small worksheet</h2>
+      <ul>
+        <li>Approved, within time and TRAIN-A2 selected. Record permit with the simulated operation and projection size.</li>
+        <li>TRAIN-A3 requested under the same consent. Record deny and return no account data.</li>
+        <li>Granted access removed in the account provider's practice register. Record deny for TRAIN-A2 and require a fresh permitted request before providing data.</li>
+        <li>Request at the consent expiry boundary. In our classroom rule a grant is valid up to but excluding that time. Record deny.</li>
+      </ul>
+      <p>A review entry can retain the operation, outcome and a safe trace key. Live tokens, secrets and full customer payloads belong outside the troubleshooting log. The native practice project should keep the decision separate from the caller that assembles a response.</p>
+      <ul>
+        <li><a href="https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/account-and-transaction-api-profile.html">Open Banking Limited v4.0.1 Account and Transaction API Profile</a></li>
+        <li><a href="https://openbankinguk.github.io/read-write-api-site3/v4.0.1/resources-and-data-models/aisp/">Open Banking Limited v4.0.1 Account Information resource catalogue</a></li>
+        <li><a href="../../practical-web-and-data-foundations/index.html">Practical Web and Data Foundations</a></li>
+      </ul>
+      <p><a href="../../../lessons/07-practical-domains/open-banking-account-access/02-request-a-minimal-account-view.md">Written edition</a></p>
+    </article>
+  </main>
+</body>
+</html>

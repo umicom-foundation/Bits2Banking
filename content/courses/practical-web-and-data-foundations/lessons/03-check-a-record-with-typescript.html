@@ -1,0 +1,85 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/practical-web-and-data-foundations/lessons/03-check-a-record-with-typescript.html
+
+PURPOSE:
+Check a record with TypeScript in the Bits2Banking web and data course.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Describe the values a statement may contain and predict a type error before running the program.">
+  <title>Check a record with TypeScript | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" href="../../../assets/branding/umicom-icon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="../../../assets/branding/umicom.ico" type="image/x-icon">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a href="../../index.html" class="logo">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation" width="176">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Check a record with TypeScript</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="02-put-rows-on-a-web-page.html">Previous lesson · Put the entries on a web page</a>
+        <a href="04-read-the-file-with-node.html">Next lesson · Read a local statement with Node.js</a>
+      </nav>
+      <p>Describe the values a statement may contain and predict a type error before running the program.</p>
+      <h2 id="compare-actual-and-expected-values">Compare actual and expected values</h2>
+      <p>What if someone writes <code>&quot;waiting&quot;</code> when they mean <code>&quot;pending&quot;</code>? A human reader can ask what they meant. A program needs an exact rule. TypeScript lets you describe a rule for the kinds of values, called types, that your source code is allowed to put into a field.</p>
+      <p>A type checker reads source text and reports certain mistakes before the program runs. The following type <code>Status</code> permits one of two exact strings, which means values made of text. TypeScript writes that choice using <code>|</code>.</p>
+      <h2 id="define-an-entry-and-read-it-back">Define an entry and read it back</h2>
+      <p>The colon separates a field name from its type. Here each field is required. <code>id</code> and <code>cents</code> take <code>number</code>. <code>status</code> takes one <code>Status</code> value.</p>
+      <pre><code class="language-typescript">type Status = &quot;posted&quot; | &quot;pending&quot;;
+
+type Entry = {
+  id: number;
+  status: Status;
+  cents: number;
+};
+
+const entry: Entry = {id: 3, status: &quot;pending&quot;, cents: 500};
+
+// Print a predictable message for this known practice entry.
+console.log(entry.status + &quot; &quot; + entry.cents);</code></pre>
+      <p>Read <code>const entry: Entry</code> aloud as “give the name entry a value of type Entry”. <code>number</code> covers more than whole cents. A later check still has to enforce that real input is a safe whole number.</p>
+      <h2 id="try-the-checker">Try the checker</h2>
+      <p>Predict the output for the valid example. If you already have the TypeScript compiler and Node.js on your computer, save the code as <code>entry.ts</code> and run these commands from the directory that contains it. You can still do the prediction and check on paper.</p>
+      <pre><code class="language-text">tsc --strict --noEmitOnError entry.ts
+node entry.js</code></pre>
+      <p>The valid output is <code>pending 500</code>. Now change the word <code>pending</code> in the value assigned to <code>entry</code> to <code>waiting</code>. Leave the type definition as it is. The checker should say that <code>waiting</code> is not one of the allowed values. With <code>--noEmitOnError</code>, a failing compilation writes no new JavaScript file. If <code>entry.js</code> exists from an earlier successful run, it still contains that earlier result.</p>
+      <h2 id="connect-to-umicom">Connect to Umicom</h2>
+      <p>In a Studio project, try writing a test expectation beside a declaration. The type checker can catch the wrong source text, while an input check can catch an unexpected value in a saved file at run time. Both checks protect an import exercise.</p>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare how languages declare and check ideas</a></li>
+        <li><a href="https://www.typescriptlang.org/tsconfig/#strict">TypeScript strict checking</a></li>
+      </ul>
+      <p><a href="../../../lessons/04-web/practical-web-and-data-foundations/03-check-a-record-with-typescript.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

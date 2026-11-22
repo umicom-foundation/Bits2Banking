@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/cpp20-keyword-reference/lessons/05-memory-errors-and-conversions.html
+
+PURPOSE:
+Recognise allocation, exception handling and named conversions, and predict the result of a checked conversion.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Recognise allocation, exception handling and named conversions, and predict the result of a checked conversion.">
+  <title>Read ownership, errors and conversions | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a>
+      <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Read ownership, errors and conversions</h1>
+      <nav aria-label="Navigate this lesson"><a href="../index.html">Course contents</a>
+      <a href="04-objects-and-names.html">Previous lesson — Organise data and actions into objects</a>
+      <a href="06-compile-time-and-templates.html">Next lesson — Ask the compiler to compute and check</a></nav>
+      <h2>What you will learn</h2>
+      <p>Recognise allocation, exception handling and named conversions, and predict the result of a checked conversion.</p>
+      <h2>Read the words in context</h2>
+      <p>A <strong>pointer</strong> may refer to an object by its address. <strong>Dynamic storage</strong> holds objects created during execution until their lifetime ends. An <strong>exception</strong> transfers control to a matching handler by carrying a thrown value. A <strong>cast</strong> requests a conversion between types. Match the cast to the language rule shown.</p>
+      <h2>Reserved keywords in this lesson</h2>
+      <table><thead><tr><th scope="col">Spelling</th><th scope="col">Meaning</th><th scope="col">Read this example</th></tr></thead><tbody>
+<tr><td><code>new</code></td><td>Creates an object with dynamic storage. This example transfers responsibility for releasing it to the code holding owned.</td><td><code>int* owned = new int{5};</code></td></tr>
+<tr><td><code>delete</code></td><td>Destroys and releases a matching object allocated by scalar new. Do not use a pointer to read the released object.</td><td><code>delete owned; owned = nullptr;</code></td></tr>
+<tr><td><code>try</code></td><td>Introduces a block whose exceptions can be handled by the following catch clauses.</td><td><code>try { throw 7; } catch (int code) { observed = code; }</code></td></tr>
+<tr><td><code>catch</code></td><td>Introduces an exception handler. Here it matches a thrown int.</td><td><code>catch (int code) { observed = code; }</code></td></tr>
+<tr><td><code>throw</code></td><td>Raises an exception. This example throws one int value from a try block.</td><td><code>throw 7;</code></td></tr>
+<tr><td><code>noexcept</code></td><td>After a function declarator, can declare that exceptions do not escape the function. An escaping exception would terminate the program.</td><td><code>int zero_cents() noexcept { return 0; }</code></td></tr>
+<tr><td><code>const_cast</code></td><td>Changes access qualifiers in specific conversions. Here the underlying object was already writable.</td><td><code>int value = 3; const int&amp; view = value; const_cast&lt;int&amp;&gt;(view) = 4;</code></td></tr>
+<tr><td><code>dynamic_cast</code></td><td>Checks certain conversions within a polymorphic class hierarchy at runtime. An unsuccessful pointer form yields null.</td><td><code>Base* base = &amp;report; auto* view = dynamic_cast&lt;Report*&gt;(base);</code></td></tr>
+<tr><td><code>reinterpret_cast</code></td><td>Requests a low-level type reinterpretation. Use with the target type's access rules. This example creates a byte view of number.</td><td><code>int number = 12; const auto* bytes = reinterpret_cast&lt;const unsigned char*&gt;(&amp;number);</code></td></tr>
+<tr><td><code>static_cast</code></td><td>Requests an explicit conversion using the relevant language rules. A representable fractional value converted to int is truncated toward zero.</td><td><code>int whole = static_cast&lt;int&gt;(2.75);</code></td></tr>
+<tr><td><code>typeid</code></td><td>Reports type information. Include the typeinfo header to compare the results in this example.</td><td><code>bool equivalent = typeid(12) == typeid(int);</code></td></tr>
+</tbody></table>
+      <h2>Check who owns an object</h2>
+      <p>Find the new and delete snippets. In a full program, these two statements belong to the same ownership plan. The C++ library supplies ownership types that can release an object automatically at the end of its lifetime. C programs commonly pair allocation and release calls such as malloc and free. The two families have different contracts.</p>
+      <p>For the dynamic_cast row, assume Base declares a virtual function and Report publicly derives from it. report is a live object of type Report. The unchecked cast to an unsigned character pointer serves a different purpose, and the byte order depends on the platform.</p>
+      <h2>Try it and check</h2>
+      <p>What value does whole receive? Why is a null result useful when a base pointer does not refer to the requested derived report type?</p>
+      <p><strong>Check:</strong> whole receives 2. A null result lets you handle a mismatched object without treating it as a Report. Check the result before accessing derived members.</p>
+      <h2>Apply it to an Umicom project</h2>
+      <p>Sketch how a practice Umicom Studio report preview could describe a missing or incompatible report in plain language. Use a controlled fixture to compare an expected error with an unexpected outcome.</p>
+      <p><a href="../../../umicom/repositories/" data-lesson-source="content/umicom/repositories.md">Find the Umicom application repositories</a>.</p>
+      <p><a href="../../../lessons/03-native-code/cpp20-keyword-reference/05-memory-errors-and-conversions/" data-lesson-source="content/lessons/03-native-code/cpp20-keyword-reference/05-memory-errors-and-conversions.md">Open the written lesson</a></p>
+      <nav aria-label="Continue learning"><a href="../index.html">Course contents</a>
+      <a href="04-objects-and-names.html">Previous lesson — Organise data and actions into objects</a>
+      <a href="06-compile-time-and-templates.html">Next lesson — Ask the compiler to compute and check</a></nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

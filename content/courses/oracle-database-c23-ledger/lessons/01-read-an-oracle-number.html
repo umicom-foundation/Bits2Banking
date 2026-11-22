@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/oracle-database-c23-ledger/lessons/01-read-an-oracle-number.html
+
+PURPOSE:
+A signed integer amount and an optional adjustment use different database rules.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A signed integer amount and an optional adjustment use different database rules.">
+  <title>Read an exact numeric projection in Oracle | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Read an exact numeric projection in Oracle</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-follow-a-named-bind-and-indicator.html">Next · Follow a named OCI bind and a result indicator</a> · <a href="../../../lessons/04-web/oracle-database-c23-ledger/01-read-an-oracle-number.md">Markdown edition</a></nav>
+<p>A signed integer amount and an optional adjustment use different database rules.</p>
+
+<h2>Trace an optional adjustment</h2>
+
+<pre><code class="language-sql">CREATE TABLE training_adjustment (
+    entry_id NUMBER(19,0) PRIMARY KEY,
+    cents NUMBER(19,0),
+    CONSTRAINT training_cents_range CHECK (
+        cents &gt;= -9223372036854775808 AND cents &lt;= 9223372036854775807
+    )
+);
+INSERT INTO training_adjustment (entry_id, cents) VALUES (42, 0);
+INSERT INTO training_adjustment (entry_id, cents) VALUES (43, NULL);
+SELECT entry_id, cents FROM training_adjustment ORDER BY entry_id;</code></pre>
+
+<p>A NUMBER(19,0) stores a whole decimal number up to the declared precision. Its allowed declared numeric range can be wider than a signed 64-bit C value, so the exercise uses a separate range check. This check allows the optional amount to remain NULL. Row 42 says zero. Row 43 has no amount. A lookup for row 44 yields no row.</p>
+
+<h2>Walk the native representation</h2>
+
+<pre><code class="language-c">struct OptionalAmount {
+    bool present;
+    int64_t cents;
+};</code></pre>
+
+<p>For row 42, present is true and cents is zero. For row 43, present is false and the cents storage is unused. Add a fetched row with −850 to see how a deliberate signed adjustment differs from absence.</p>
+
+<ul>
+<li><a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/lnoci/binding-and-defining-in-oci.html">Oracle Call Interface bindings and definitions</a></li>
+</ul>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+<li><a href="../../mysql-c23-ledger/index.html">MySQL Ledger Practice in C23</a></li>
+<li><a href="../../bookkeeping-from-first-entry/index.html">Bookkeeping from Your First Entry</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-follow-a-named-bind-and-indicator.html">Next · Follow a named OCI bind and a result indicator</a> · <a href="../../../lessons/04-web/oracle-database-c23-ledger/01-read-an-oracle-number.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

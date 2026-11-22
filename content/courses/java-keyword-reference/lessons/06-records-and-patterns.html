@@ -1,0 +1,137 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/java-keyword-reference/lessons/06-records-and-patterns.html
+
+PURPOSE:
+A contextual keyword has a special purpose only where a grammar rule admits it. Java may treat the same spelling differently in another location.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A contextual keyword has a special purpose only where a grammar rule admits it. Java may treat the same spelling differently in another location.">
+  <title>Contextual words in records and patterns | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Contextual words in records and patterns</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="05-errors-and-reserved-spellings.html">Previous · Errors, package names, and reserved spellings</a> · <a href="07-module-contracts.html">Next · Contextual words in module contracts</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/06-records-and-patterns.md">Markdown edition</a></nav>
+<p>A contextual keyword has a special purpose only where a grammar rule admits it. Java may treat the same spelling differently in another location.</p>
+
+<h2>Use the fragments</h2>
+
+<p>A contextual keyword has a special purpose only where a grammar rule admits it. Java may treat the same spelling differently in another location.</p>
+
+<p>For a local statement, place it inside <code>public static void main(String[] args)</code> in a class named <code>ReceiptPractice</code>. Save it in <code>ReceiptPractice.java</code>. Use <code>javac ReceiptPractice.java</code> from a JDK 25, then <code>java ReceiptPractice</code>. Take class declarations, package declarations and module descriptors as separate examples.</p>
+
+<h2>Examples by spelling</h2>
+
+<h3>var</h3>
+
+<p>Infer the type of a local variable with an initializer.</p>
+
+<pre><code class="language-java">var receiptCents = 250;</code></pre>
+
+<p>The local variable has type int; its type remains fixed.</p>
+
+<h3>record</h3>
+
+<p>Declare a type for a small group of values.</p>
+
+<pre><code class="language-java">record Receipt(int cents) { }</code></pre>
+
+<p>new Receipt(250).cents() returns 250.</p>
+
+<h3>sealed</h3>
+
+<p>Restrict which types may extend or implement this type directly.</p>
+
+<pre><code class="language-java">sealed interface Entry permits Receipt { }
+record Receipt(int cents) implements Entry { }</code></pre>
+
+<p>Only the permitted direct implementation is admitted here.</p>
+
+<h3>permits</h3>
+
+<p>List the allowed direct subtypes of a sealed type.</p>
+
+<pre><code class="language-java">sealed class Entry permits Receipt { }
+final class Receipt extends Entry { }</code></pre>
+
+<p>Receipt is the permitted subclass.</p>
+
+<h3>non-sealed</h3>
+
+<p>Let descendants of this direct subtype extend it more freely.</p>
+
+<pre><code class="language-java">sealed interface Entry permits TrainingEntry { }
+non-sealed class TrainingEntry implements Entry { }</code></pre>
+
+<p>TrainingEntry can have additional subclasses.</p>
+
+<h3>when</h3>
+
+<p>Qualify a pattern with a further condition in a switch label.</p>
+
+<pre><code class="language-java">Object entry = &quot;paid&quot;;
+int size = switch (entry) {
+    case String text when !text.isEmpty() -&gt; text.length();
+    default -&gt; 0;
+};</code></pre>
+
+<p>The guard passes and the result is 4.</p>
+
+<h3>yield</h3>
+
+<p>Supply the result of a switch expression from a block.</p>
+
+<pre><code class="language-java">int points = switch (1) {
+    case 1 -&gt; { int base = 10; yield base + 2; }
+    default -&gt; 0;
+};</code></pre>
+
+<p>The switch result is 12.</p>
+
+<h2>Compare another language</h2>
+
+<p>Python also has context-dependent words. Java var infers a static type. Python assignments bind a name, which may later refer to a different type of object.</p>
+
+<h2>Try it</h2>
+
+<p>In the switch example with when, use an empty string. The guard fails and the fallback supplies zero.</p>
+
+<h2>Apply it to Umicom</h2>
+
+<p>Choose and document the permitted states of a synthetic TMS report. Include a specific outcome for a state the lesson never expected.</p>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../programming-across-languages/index.html">Programming across languages</a></li>
+<li><a href="../../learning-java/index.html">Learning Java</a></li>
+<li><a href="../../c23-keyword-reference/index.html">C23 keyword reference</a></li>
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-3.html#jls-3.9">Java SE 25 lexical structure, section 3.9</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="05-errors-and-reserved-spellings.html">Previous · Errors, package names, and reserved spellings</a> · <a href="07-module-contracts.html">Next · Contextual words in module contracts</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/06-records-and-patterns.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

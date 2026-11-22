@@ -1,0 +1,153 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/java-keyword-reference/lessons/04-access-and-storage.html
+
+PURPOSE:
+A member is a field or method declared in a class. Access modifiers describe who can use it. A field can belong to the class or to an individual object.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A member is a field or method declared in a class. Access modifiers describe who can use it. A field can belong to the class or to an individual object.">
+  <title>Access, storage, and shared state | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Access, storage, and shared state</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="03-classes-and-interfaces.html">Previous · Classes, objects, and contracts</a> · <a href="05-errors-and-reserved-spellings.html">Next · Errors, package names, and reserved spellings</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/04-access-and-storage.md">Markdown edition</a></nav>
+<p>A member is a field or method declared in a class. Access modifiers describe who can use it. A field can belong to the class or to an individual object.</p>
+
+<h2>Use the fragments</h2>
+
+<p>A member is a field or method declared in a class. Access modifiers describe who can use it. A field can belong to the class or to an individual object.</p>
+
+<p>For a local statement, place it inside <code>public static void main(String[] args)</code> in a class named <code>ReceiptPractice</code>. Save it in <code>ReceiptPractice.java</code>. Use <code>javac ReceiptPractice.java</code> from a JDK 25, then <code>java ReceiptPractice</code>. Take class declarations, package declarations and module descriptors as separate examples.</p>
+
+<h2>Examples by spelling</h2>
+
+<h3>public</h3>
+
+<p>Allow access from other code when the declaring type and module are accessible.</p>
+
+<pre><code class="language-java">class Receipt { public int cents() { return 250; } }</code></pre>
+
+<p>Accessible callers can call cents.</p>
+
+<h3>private</h3>
+
+<p>Limit normal source access to the declaring top-level type and its nested types.</p>
+
+<pre><code class="language-java">class Receipt { private int cents = 250; }</code></pre>
+
+<p>An unrelated class cannot access the field directly.</p>
+
+<h3>protected</h3>
+
+<p>Allow package access and qualified subclass access under Java rules.</p>
+
+<pre><code class="language-java">class Base { protected int cents = 250; }
+class Receipt extends Base { int amount() { return cents; } }</code></pre>
+
+<p>The subclass can use the inherited field.</p>
+
+<h3>static</h3>
+
+<p>Declare a member on the class itself.</p>
+
+<pre><code class="language-java">class Receipt { static int count = 3; }</code></pre>
+
+<p>Use Receipt.count without creating a Receipt.</p>
+
+<h3>final</h3>
+
+<p>Assign a local variable at most once. Other uses restrict overriding or subclassing.</p>
+
+<pre><code class="language-java">final int unit = 100;</code></pre>
+
+<p>A later assignment to this local variable is a compile error.</p>
+
+<h3>synchronized</h3>
+
+<p>Run a section while holding an object monitor.</p>
+
+<pre><code class="language-java">Object gate = new Object();
+synchronized (gate) { System.out.println(&quot;one section&quot;); }</code></pre>
+
+<p>This block acquires the monitor for gate and releases it on exit.</p>
+
+<h3>volatile</h3>
+
+<p>Give a field volatile visibility and ordering rules across threads.</p>
+
+<pre><code class="language-java">class Job { volatile boolean finished; }</code></pre>
+
+<p>A volatile read and write of finished follow the visibility rules. A compound update still needs its own protection.</p>
+
+<h3>transient</h3>
+
+<p>Exclude a field from Java default object serialisation.</p>
+
+<pre><code class="language-java">class Draft implements java.io.Serializable { transient int previewIndex; }</code></pre>
+
+<p>Default serialisation leaves previewIndex out.</p>
+
+<h3>native</h3>
+
+<p>Declare a method implemented outside Java. This declaration has no method body.</p>
+
+<pre><code class="language-java">class ReceiptBridge { static native int amountCents(); }</code></pre>
+
+<p>Calling it requires the linked native implementation. Do not run this fragment alone.</p>
+
+<h3>strictfp</h3>
+
+<p>Recognise an obsolete modifier in older source.</p>
+
+<pre><code class="language-java">strictfp class OldReceipt { double half() { return 0.5; } }</code></pre>
+
+<p>Java SE 25 treats floating-point expressions with the current strict rules without this modifier.</p>
+
+<h2>Compare another language</h2>
+
+<p>Java volatile and C volatile serve different language contracts. Keep a thread-coordination design explicit and test it on its intended runtime.</p>
+
+<h2>Try it</h2>
+
+<p>If a value belongs to each individual receipt, give the object its own field. A single static receipt amount would be shared by every instance.</p>
+
+<h2>Apply it to Umicom</h2>
+
+<p>Describe who owns a temporary report preview and when it can be discarded. Keep receipt arithmetic separate from shared window state.</p>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../programming-across-languages/index.html">Programming across languages</a></li>
+<li><a href="../../learning-java/index.html">Learning Java</a></li>
+<li><a href="../../c23-keyword-reference/index.html">C23 keyword reference</a></li>
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-3.html#jls-3.9">Java SE 25 lexical structure, section 3.9</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="03-classes-and-interfaces.html">Previous · Classes, objects, and contracts</a> · <a href="05-errors-and-reserved-spellings.html">Next · Errors, package names, and reserved spellings</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/04-access-and-storage.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/go-statement-tools/lessons/02-print-deterministic-posted-totals.html
+
+PURPOSE:
+Teach Print deterministic posted totals through original worked exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Group posted movements by account, retain zero entries and print account names in a stable order.">
+  <title>Print deterministic posted totals | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../course-series.html">Choose a subject</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Print deterministic posted totals</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="01-read-and-validate-csv-rows.html">Previous: Read and validate CSV rows</a>
+      </nav>
+      <h2>What you will learn</h2>
+      <p>Group posted movements by account, retain zero entries and print account names in a stable order.</p>
+      <h2>Use keys for the account groups</h2>
+      <p>Continue with statement.go from the previous lesson. A map stores one value per key. Start with all three training accounts present, including clearing. Skip pending rows before changing the map. The resulting order comes from sorting keys explicitly.</p>
+      <h2>Extend the existing program</h2>
+      <p>Add math and sort to the existing import block. Insert postedTotals before main, then replace main with the version shown below.</p>
+      <pre><code class="language-go">func postedTotals(movements []movement) (map[string]int64, error) {
+	totals := map[string]int64{&quot;clearing&quot;: 0, &quot;operating&quot;: 0, &quot;reserve&quot;: 0}
+	for _, item := range movements {
+		if item.state != &quot;posted&quot; {
+			continue
+		}
+		prior := totals[item.account]
+		// Check both signed boundaries before adding the next movement.
+		if (item.cents &gt; 0 &amp;&amp; prior &gt; math.MaxInt64-item.cents) ||
+			(item.cents &lt; 0 &amp;&amp; prior &lt; math.MinInt64-item.cents) {
+			return nil, fmt.Errorf(&quot;posted total outside range for %s&quot;, item.account)
+		}
+		totals[item.account] = prior + item.cents
+	}
+	return totals, nil
+}
+
+func main() {
+	movements, err := parseStatement(strings.NewReader(statement))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	totals, err := postedTotals(movements)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	accounts := make([]string, 0, len(totals))
+	for account := range totals {
+		accounts = append(accounts, account)
+	}
+	sort.Strings(accounts)
+	for _, account := range accounts {
+		fmt.Printf(&quot;%s %d\n&quot;, account, totals[account])
+	}
+}</code></pre>
+      <pre><code class="language-text">go run statement.go</code></pre>
+      <pre><code class="language-text">clearing 0
+operating 900
+reserve 1750</code></pre>
+      <h2>Practice and check your answer</h2>
+      <p>Change entry 103 to posted. Which group changes, and what should its new value be? Compare it with the change in the Umicom C lesson.</p>
+      <details><summary>Worked answer</summary><p>Reserve becomes 2250 because it now includes the 500-cent entry. Clearing and operating stay at 0 and 900. The equivalent Umicom C exercise reaches the same result from the same inclusion rule.</p></details>
+      <h2>If your output differs</h2>
+      <p>Check the state on all six rows and make sure sort.Strings runs before printing. If the compiler says math or sort is undefined, check both new imports. A size error means the example refused to report any partial totals.</p>
+      <p><a href="../../native-statement-calculations/index.html">Native Statement Calculations</a></p>
+      <p><a href="../../../lessons/04-web/go-statement-tools/02-print-deterministic-posted-totals/" data-lesson-source="content/lessons/04-web/go-statement-tools/02-print-deterministic-posted-totals.md">Open the written lesson</a></p>
+      <h2>Continue learning</h2>
+      <ul>
+        <li><a href="../../sql-statement-reconciliation/index.html">SQL Statement Reconciliation</a></li>
+        <li><a href="../../introduction-to-programming/index.html">Introduction to Programming</a></li>
+      </ul>
+      <h2>Further reading</h2>
+      <ul>
+        <li><a href="https://techsustainify.com/">Tech Sustainify course catalogue</a></li>
+        <li><a href="https://www.w3schools.com/go/index.php">W3Schools Go tutorial</a></li>
+        <li><a href="https://pkg.go.dev/encoding/csv">Go encoding/csv package</a></li>
+      </ul>
+      <nav aria-label="Continue this course">
+        <a href="../index.html">Course contents</a>
+        <a href="01-read-and-validate-csv-rows.html">Previous: Read and validate CSV rows</a>
+      </nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

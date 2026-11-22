@@ -1,0 +1,100 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/c23-keyword-reference/lessons/04-control-lifetime-and-access.html
+
+PURPOSE:
+Tell apart where a name can be seen, how long data survives and which code can use it.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control lifetime and access | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Control lifetime and access</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="03-group-data-and-results.html">Previous lesson: Group data and return results</a> <a href="05-check-types-and-representations.html">Next lesson: Check types and representations</a></nav>
+      <p>Tell apart where a name can be seen, how long data survives and which code can use it.</p>
+      <h2>Observe a value across two calls</h2>
+      <p>Normally a local variable belongs to one call. The static example below stores the count beyond a single call. Call the function twice and ask how the second call differs from the first. Use separate calls so statement order is clear.</p>
+      <h2>Separate access from synchronization</h2>
+      <p>Use one worker at first. The meanings of <code>volatile</code>, <code>restrict</code> and <code>thread_local</code> solve different problems. A volatile read can be useful at an approved device boundary. A restrict-qualified pointer carries obligations about accesses during execution. A thread-local variable gives each worker a separate count. None of these choices alone coordinates shared access.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-auto"><th scope="row"><code>auto</code></th><td><code>auto cents = 425;</code></td><td>In this C23 declaration, an initializer supplies the inferred type. Older C used auto as a storage-class marker.</td></tr>
+          <tr id="kw-static"><th scope="row"><code>static</code></th><td><code>static int visits;</code></td><td>Inside a function the value survives later calls. At file scope static limits the name's linkage to that source unit.</td></tr>
+          <tr id="kw-extern"><th scope="row"><code>extern</code></th><td><code>extern int shared_count;</code></td><td>Declare an object whose definition is found elsewhere, such as in another source unit.</td></tr>
+          <tr id="kw-register"><th scope="row"><code>register</code></th><td><code>register int slot = 0;</code></td><td>Historical storage class for a local object. C does not guarantee a hardware register, and taking this object's address is prohibited.</td></tr>
+          <tr id="kw-thread_local"><th scope="row"><code>thread_local</code></th><td><code>thread_local int view_count;</code></td><td>Each thread gets its own object. Use this form at file scope, or use the required storage-class combination at block scope.</td></tr>
+          <tr id="kw-inline"><th scope="row"><code>inline</code></th><td><code>static inline int square(int n) { return n * n; }</code></td><td>Prefer inline expansion where beneficial, without requiring an optimizer to substitute the body.</td></tr>
+          <tr id="kw-constexpr"><th scope="row"><code>constexpr</code></th><td><code>constexpr int max_rows = 3;</code></td><td>Define a named C23 constant object suitable for constant expressions. C++ also uses constexpr on certain functions.</td></tr>
+          <tr id="kw-volatile"><th scope="row"><code>volatile</code></th><td><code>int read_status(const volatile int *status) { return *status; }</code></td><td>Access the pointed-to value with volatile semantics. It is not a way to synchronize threads.</td></tr>
+          <tr id="kw-restrict"><th scope="row"><code>restrict</code></th><td><code>void copy(int *restrict out, const int *restrict in) { *out = *in; }</code></td><td>Promise the required access relationship for the pointed-to data. For this example, keep the input and output as separate objects.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">KEEP one count between calls
+EACH time a view is requested, increase the count and give it back</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.c</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <p>Use PowerShell with a C23 GCC installation on your search path. If you already have MSYS2 UCRT64 GCC at its usual Windows location, enter <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code> in that session.</p>
+      <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+static int next_view(void)
+{
+    static int views = 0;
+    return ++views;
+}
+
+int main(void)
+{
+    int first = next_view();
+    int second = next_view();
+    printf(&quot;%d %d\n&quot;, first, second);
+    return 0;
+}</code></pre>
+      <pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Wpedantic -Werror practice.c -o practice.exe
+if ($LASTEXITCODE -eq 0) { .\practice.exe }</code></pre>
+      <p>Expected line</p>
+      <pre><code class="language-text">1 2</code></pre>
+      <p>Use a compiler that accepts C23. A dialect diagnostic means the compiler has not accepted the selected language mode. A missing header diagnostic can mean the platform toolchain or SDK is absent. If the optional forms in the table are unavailable, try the self-contained main program instead.</p>
+      <h2>Try a change</h2>
+      <p>Change static int views to int views. Predict both numbers. Ask which value format would suit a counter that deliberately restarts on each call.</p>
+      <details><summary>Check your answer</summary>      <p>A fresh local variable starts at zero each time, so the new line is <code>1 1</code>.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../native-statement-calculations/index.html">Native Statement Calculations</a></li>
+        <li><a href="https://www9.open-std.org/JTC1/SC22/WG14/www/docs/n3220.pdf">WG14 public draft N3220, section 6.4.1 and Annex A</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

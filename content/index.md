@@ -18,15 +18,15 @@ Learn how computers work, how software is built, and how technology can serve pe
 
 Start with computer hardware and binary numbers. Progress to programming, operating systems, building real applications and contributing to open-source projects. Continue into accounting, banking, treasury management and trading systems when you are ready.
 
-You can follow the chapters in order, return to any topic for revision, or use the [learning paths](start/index.md) to find a particular subject.
+Follow the [beginner sequence](start/learning-sequence.md), or choose a subject from the [course library](courses/index.html). Reference chapters and specialist subjects are separate from the beginner route.
 
 ## Begin learning
 
-1. [Inside a computer](lessons/01-computers/01-inside-a-computer.md)
-2. [How information becomes bits and bytes](lessons/01-computers/02-bits-and-logic.md)
-3. [How the CPU and memory work together](lessons/01-computers/03-cpu-and-memory.md)
-4. [Turn an idea into a program](lessons/02-programming/04-problems-and-algorithms.md)
-5. [Try your first PowerShell commands](lessons/02-programming/05-powershell.md)
+1. [Introduction to Computers](courses/learning-computer-architecture/index.html): files, instructions and commands.
+2. [Learning C](courses/learning-c/index.html): small programs and their results.
+3. [Developing with Umicom Framework](courses/umicom-development/index.html): build, test and extend one example.
+
+Use [the full sequence](start/learning-sequence.md) for the prerequisites and readiness checks between these stages.
 
 ## Explore Islam, purpose and service
 
@@ -35,6 +35,26 @@ You can follow the chapters in order, return to any topic for revision, or use t
 ## Build something useful
 
 The [practical source-code exercises](labs/index.md) include a notes application, a web task board, an example accounting journal, and other projects. Each exercise shows the instructions and files needed to try it yourself.
+
+## Learn from your first steps to an Umicom project
+
+Start with paper exercises, compare one program in several languages and follow it into a small Umicom project. Choose a path from arithmetic to bookkeeping and pricing, or find a practical lesson by technology.
+
+- [Connected learning pathways](start/connected-learning.md)
+- [Applied native courses](start/applied-native-courses.md)
+- [Technology topic map](start/technology-topic-map.md)
+
+## Work through a synthetic bank statement
+
+Start with the same fictional transactions in four short courses. Each lesson gives you a result to check and a change to try. Choose the tool you want to practise first.
+
+- [Umicom C and C23](courses/native-statement-calculations/index.html) — calculate posted totals in whole cents and keep the last valid total when a check fails.
+- [SQL](courses/sql-statement-reconciliation/index.html) — summarise posted movements and explain why a difference or a missing total needs review.
+- [HTML, CSS and JavaScript](courses/accessible-statement-review/index.html) — build a readable statement and make filtering usable with a keyboard.
+- [Go](courses/go-statement-tools/index.html) — read statement rows and print totals in a predictable order.
+
+Use the [Umicom WebServer lab](umicom/native-statement-web-lab.md) to compare the compiled Umicom C exercise with the result described in the lesson.
+To study offline, [open the same lessons in the desktop reader](umicom/bits2banking-desktop-reader.md).
 
 ## Explore Umicom
 

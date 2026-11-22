@@ -1,0 +1,108 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/d-keyword-reference/lessons/06-ask-the-compiler-about-types.html
+
+PURPOSE:
+Use a short template, a compile-time assertion and keywords that report what the compiler sees.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ask the compiler about a type | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Ask the compiler about a type</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="05-organise-source-and-boundaries.html">Previous lesson: Organise source and name a boundary</a> <a href="07-handle-failures-and-shared-work.html">Next lesson: Handle a failure and plan shared work</a></nav>
+      <p>Use a short template, a compile-time assertion and keywords that report what the compiler sees.</p>
+      <h2>Ask a question before the program runs</h2>
+      <p>A template lets the compiler fill a pattern with a specific type. <code>CountType!int</code> supplies int to this pattern. The compile-time assertion checks that the resulting alias is really int. The learner can trace that substitution with pencil and paper.</p>
+      <h2>Separate compiler facts from runtime values</h2>
+      <p>A compiler can report types, source locations and declarations while translating a file. A runtime value comes from executing the program. C has tools such as <code>typeof</code>, <code>static_assert</code> and predefined source-location macros. D’s reflection and template syntax have their own rules.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-alias"><th scope="row"><code>alias</code></th><td><code>alias WholeCents = int;</code></td><td>Give the existing type a second name.</td></tr>
+          <tr id="kw-static"><th scope="row"><code>static</code></th><td><code>static assert(is(WholeCents == int));</code></td><td>Require an assertion during compilation. static also has storage and conditional-declaration uses.</td></tr>
+          <tr id="kw-template"><th scope="row"><code>template</code></th><td><code>template CountType(T) { alias CountType = T; }</code></td><td>Define a declaration pattern using a parameter supplied when it is used.</td></tr>
+          <tr id="kw-mixin"><th scope="row"><code>mixin</code></th><td><code>mixin(&quot;int total = 425;&quot;);</code></td><td>Ask the compiler to read this fixed string as source text. Use trusted, reviewed literals in this example.</td></tr>
+          <tr id="kw-is"><th scope="row"><code>is</code></th><td><code>static assert(is(typeof(425) == int));</code></td><td>Ask a compile-time question about types. D also uses is to compare identity in expressions.</td></tr>
+          <tr id="kw-typeof"><th scope="row"><code>typeof</code></th><td><code>typeof(425) cents = 25;</code></td><td>Use the type of this expression in a declaration.</td></tr>
+          <tr id="kw-typeid"><th scope="row"><code>typeid</code></th><td><code>writeln(typeid(int));</code></td><td>Request type information for use by the running program.</td></tr>
+          <tr id="kw-unittest"><th scope="row"><code>unittest</code></th><td><code>unittest { assert(expected_rows() == 3); }</code></td><td>Define a test block that runs when the selected build enables D unit tests.</td></tr>
+          <tr id="kw-__parameters"><th scope="row"><code>__parameters</code></th><td><code>static assert(is(typeof(sample) == __parameters));</code></td><td>Use the type-test form for a declared function, delegate or function pointer. Here sample names a function.</td></tr>
+          <tr id="kw-__traits"><th scope="row"><code>__traits</code></th><td><code>static assert(__traits(isIntegral, int));</code></td><td>Ask a supported compiler query about a declaration or type.</td></tr>
+          <tr id="kw-__rvalue"><th scope="row"><code>__rvalue</code></th><td><code>auto next = __rvalue(value);</code></td><td>Request rvalue treatment of a value with a location. Move-aware types and recent compiler support determine the effect.</td></tr>
+          <tr id="kw-__vector"><th scope="row"><code>__vector</code></th><td><code>alias Lane = __vector(int[4]);</code></td><td>Describe a built-in vector type when the compiler and CPU target support this shape.</td></tr>
+          <tr id="kw-__FILE__"><th scope="row"><code>__FILE__</code></th><td><code>writeln(__FILE__);</code></td><td>Ask for the source file name. Exact path presentation can vary.</td></tr>
+          <tr id="kw-__FILE_FULL_PATH__"><th scope="row"><code>__FILE_FULL_PATH__</code></th><td><code>writeln(__FILE_FULL_PATH__);</code></td><td>Ask for the absolute source path at this use. Inspect it in a local working copy.</td></tr>
+          <tr id="kw-__FUNCTION__"><th scope="row"><code>__FUNCTION__</code></th><td><code>writeln(__FUNCTION__);</code></td><td>Ask for the qualified function name here.</td></tr>
+          <tr id="kw-__LINE__"><th scope="row"><code>__LINE__</code></th><td><code>writeln(__LINE__);</code></td><td>Ask for the current logical line number. A line mapping may change it.</td></tr>
+          <tr id="kw-__MODULE__"><th scope="row"><code>__MODULE__</code></th><td><code>writeln(__MODULE__);</code></td><td>Ask for the module name here.</td></tr>
+          <tr id="kw-__PRETTY_FUNCTION__"><th scope="row"><code>__PRETTY_FUNCTION__</code></th><td><code>writeln(__PRETTY_FUNCTION__);</code></td><td>Ask for a function description with details such as types and attributes.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">FILL the type pattern with int
+CHECK that the resulting type is int
+DURING the run, give that type a value of 425 and show it</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.d</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-d">import std.stdio : writeln;
+
+template CountType(T)
+{
+    alias CountType = T;
+}
+
+alias WholeCents = CountType!int;
+static assert(is(WholeCents == int));
+
+void main()
+{
+    WholeCents amount = 425;
+    writeln(amount);
+}</code></pre>
+      <pre><code class="language-text">dmd -run practice.d</code></pre>
+      <p>Expected output</p>
+      <pre><code class="language-text">425</code></pre>
+      <p>If the terminal cannot find dmd, check the D compiler installation for your operating system. If your course uses another documented D compiler, use its build and run instructions. You can still trace the example without installing a compiler.</p>
+      <h2>Try a change</h2>
+      <p>Change CountType!int to CountType!long and leave the assertion as it is. Predict what the build reports.</p>
+      <details><summary>Check your answer</summary>      <p>The assertion expects an int alias, but the template now supplies long. Translation should stop with a failed assertion.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../learning-d/index.html">Continue Learning D</a></li>
+        <li><a href="https://dlang.org/spec/lex.html">D language specification, Lexical grammar and Keywords</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

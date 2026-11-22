@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/multikernel-systems/lessons/07-check-a-core-owned-memory-range.html
+
+PURPOSE:
+Check a core-owned memory range.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check a core-owned memory range | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article>
+
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="06-qualify-a-kernel-experiment.html">Previous lesson</a> · <a href="08-qualify-a-bootable-release-in-stages.html">Next lesson</a> · <a href="../../../lessons/06-umicom/multikernel-systems/07-check-a-core-owned-memory-range.md">Markdown manuscript</a></nav>
+<h1>Check a core-owned memory range</h1>
+<p>A firmware memory map tells the kernel where memory exists. A reserved region may already belong to firmware or a device. An ownership record says which part an allocator or execution domain may use. Another core learns these facts from a report or message. A count of available bytes gives it no permission to use an arbitrary address.</p>
+<p>A <strong>half-open range</strong> includes its first address and excludes its end. The range <code>[4096, 8192)</code> contains 4096 bytes. Byte 8191 fits. Byte 8192 is outside this range. In the exercise, owner 2 is just an example identifier.</p>
+<h2>Build and test the C23 lab</h2>
+<ol>
+<li>Open a terminal in the Bits2Banking repository. Check that CMake, Ninja and a C23 compiler are available. Run the three commands below. Use a fresh build folder if this name already belongs to a different configuration.</li>
+<li>Expect nine passing tests. <code>last-byte</code> should admit a one-byte request at 8191. <code>starts-at-end</code>, <code>crosses-end</code> and <code>wrong-owner</code> should refuse their requests. A passing refusal test means the source followed its contract.</li>
+<li>Open <code>main.c</code> and find <code>contains_request</code>. Work out the number of bytes left from the requested start before comparing lengths. For a start of 8191 the range has one byte left. Explain why the exercise first checks that adding a start and length cannot wrap.</li>
+<li>If CMake cannot find the compiler, select your installed C23 toolchain and configure a new build directory. If a test fails, use <code>ctest --test-dir build/memory-owner --rerun-failed -V</code> and separate the program output from the test result.</li>
+</ol>
+<pre><code>cmake -S content/labs/native/multikernel-memory-owner -B build/memory-owner -G Ninja
+cmake --build build/memory-owner
+ctest --test-dir build/memory-owner --output-on-failure</code></pre>
+<h2>Practice</h2>
+<p>Draw a free range next to a reserved one. Label the exclusive end and predict the outcome for a request spanning their boundary. A hart is a RISC-V hardware thread. Describe how a readiness message emitted by a second hart could confirm its identity and current startup attempt. This lab runs as an ordinary hosted C program and uses fictional addresses.</p>
+<h2>Apply it to Umicom</h2>
+<p>Umicom Kernel can use allocator admission observations when it describes startup memory. Umicom Framework can carry workload identity and requested resources to the owner. Umicom OS selects the supported execution and recovery path. This example models one already-recorded authority, without memory mapping or cross-core enforcement.</p>
+<p><a href="../../../labs/native/multikernel-memory-owner/main.c">C23 lab source</a> · <a href="https://barrelfish-test.systems.ethz.ch/publications/TN-000-Overview.pdf">Barrelfish architecture overview</a></p>
+<p><a href="08-qualify-a-bootable-release-in-stages.html">Continue to the next lesson</a></p>
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer></body></html>

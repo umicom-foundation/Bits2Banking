@@ -25,6 +25,10 @@ Learn how a system can run work in a process, a virtual machine or a native kern
 4. [Track buffer ownership](04-track-buffer-ownership.md).
 5. [Recover a domain without losing evidence](05-recover-a-domain-without-losing-evidence.md).
 6. [Qualify a kernel experiment](06-qualify-a-kernel-experiment.md).
+7. [Check a core-owned memory range](07-check-a-core-owned-memory-range.md).
+8. [Qualify a bootable release in stages](08-qualify-a-bootable-release-in-stages.md).
+9. [Separate firmware inventory from hart entry](09-separate-firmware-inventory-from-hart-entry.md).
+
 
 You should be able to read a small C program and explain what an operating system kernel does. Review [Learning C](../../../courses/learning-c/index.html) and [Introduction to Operating Systems](../../../courses/introduction-to-operating-systems/index.html) as needed. For the native implementation side, continue with [Umicom Kernel from Scratch](../../../courses/umicom-kernel-from-scratch/index.html).
 

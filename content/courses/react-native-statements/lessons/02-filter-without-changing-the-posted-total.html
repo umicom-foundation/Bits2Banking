@@ -1,0 +1,113 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/react-native-statements/lessons/02-filter-without-changing-the-posted-total.html
+
+PURPOSE:
+Use a checkbox, list keys and a signed-cents column without recalculating money in React.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Use a checkbox, list keys and a signed-cents column without recalculating money in React.">
+  <title>Filter rows without changing the posted total | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Filter rows without changing the posted total</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="01-pass-the-native-result-as-props.html">Previous · Pass the native result as props</a> · <a href="03-show-loading-empty-and-error-states.html">Next · Show loading, empty and error states</a> · <a href="../../../lessons/04-web/react-native-statements/02-filter-without-changing-the-posted-total.md">Markdown edition</a></nav>
+<p>Use a checkbox, list keys and a signed-cents column without recalculating money in React.</p>
+
+<h2>Separate the screen choice from the statement</h2>
+
+<p>State is a value that the component remembers while it renders. The user’s Show posted only choice is state. The native snapshot is an input. The checkbox changes which rows are visible while the supplied posted total stays 1750.</p>
+
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+
+export default function StatementRows({ snapshot }) {
+  const [postedOnly, setPostedOnly] = useState(false);
+  const visibleRows = postedOnly
+    ? snapshot.rows.filter((row) =&gt; row.status === &quot;posted&quot;)
+    : snapshot.rows;
+
+  // The checkbox owns only visibility. C owns the posted amounts.
+  return &lt;section aria-labelledby=&quot;rows-heading&quot;&gt;
+    &lt;h2 id=&quot;rows-heading&quot;&gt;Entries&lt;/h2&gt;
+    &lt;label&gt;&lt;input type=&quot;checkbox&quot; checked={postedOnly}
+      onChange={(event) =&gt; setPostedOnly(event.target.checked)} /&gt;
+      Show posted only
+    &lt;/label&gt;
+    &lt;p role=&quot;status&quot;&gt;{visibleRows.length} entries visible.&lt;/p&gt;
+    &lt;table&gt;
+      &lt;caption&gt;Synthetic statement entries&lt;/caption&gt;
+      &lt;thead&gt;&lt;tr&gt;&lt;th scope=&quot;col&quot;&gt;Entry&lt;/th&gt;
+        &lt;th scope=&quot;col&quot;&gt;Amount in cents&lt;/th&gt;
+        &lt;th scope=&quot;col&quot;&gt;State&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+      &lt;tbody&gt;{visibleRows.map((row) =&gt;
+        &lt;tr key={row.id}&gt;&lt;th scope=&quot;row&quot;&gt;{row.id}&lt;/th&gt;
+          &lt;td&gt;{row.cents}&lt;/td&gt;&lt;td&gt;{row.status}&lt;/td&gt;&lt;/tr&gt;
+      )}&lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/section&gt;;
+}</code></pre>
+
+<ol>
+<li>Save the example as <code>StatementRows.jsx</code> beside <code>StatementPage.jsx</code>.</li>
+<li>Import <code>StatementRows</code> into the page from the previous lesson. Wrap the summary and <code>&lt;StatementRows snapshot={report} /&gt;</code> together in one React fragment, written <code>&lt;&gt; ... &lt;/&gt;</code>.</li>
+<li>Predict the three visible IDs before checking the box. When checked, IDs 101 and 102 remain, the status says <code>2 entries visible.</code>, and the posted total still reads 1750.</li>
+<li>Use Tab to focus the checkbox and Space to change it. Keep each row’s ID as its React key, even as the row’s position changes. If React reports duplicate keys, check the snapshot IDs.</li>
+</ol>
+
+<h2>Compare the branch in D</h2>
+
+<p>A branch chooses a path. Inside the native reporter, deciding whether a pending amount contributes to a sum is a business rule. In the UI, the similar-looking branch only selects which rows to draw. Read the same original checked cents addition in D.</p>
+
+<pre><code class="language-d">bool tryAddCents(int left, int right, ref int output) {
+    // Widen before addition and retain the previous result on failure.
+    const long candidate = cast(long) left + right;
+    if (candidate &lt; int.min || candidate &gt; int.max)
+        return false;
+    output = cast(int) candidate;
+    return true;
+}</code></pre>
+
+<p>Trace <code>tryAddCents(2600, -850, total)</code> to 1750. Then set <code>total</code> to 42 and trace an attempt to add 1 to <code>int.max</code>. It should return false and leave 42. A React filter should never reach this arithmetic.</p>
+
+<ul>
+<li><a href="https://react.dev/learn/rendering-lists">Rendering lists</a></li>
+<li><a href="https://react.dev/reference/react/useState">Using state</a></li>
+<li><a href="https://dlang.org/spec/type.html">D integer types</a></li>
+</ul>
+
+<h2>Follow another path</h2>
+
+<ul>
+<li><a href="../../learning-react/index.html">Learning React</a></li>
+<li><a href="../../nodejs-native-reporting/index.html">Node.js and Native Statement Reports</a></li>
+<li><a href="../../angularjs-legacy-statements/index.html">AngularJS and Legacy Statement Screens</a></li>
+<li><a href="../../practical-web-and-data-foundations/index.html">Practical Web and Data Foundations</a></li>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="01-pass-the-native-result-as-props.html">Previous · Pass the native result as props</a> · <a href="03-show-loading-empty-and-error-states.html">Next · Show loading, empty and error states</a> · <a href="../../../lessons/04-web/react-native-statements/02-filter-without-changing-the-posted-total.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

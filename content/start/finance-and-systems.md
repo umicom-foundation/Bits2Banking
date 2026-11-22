@@ -12,6 +12,8 @@ If computers, files and programs are new, begin with [Introduction to Computers]
 
 ## Bitcoin: concepts, source, implementation
 
+If you are new to money and blockchain, start with [Bitcoin, money and blockchain from first principles](../lessons/14-blockchain-ledgers/bitcoin-study-route/index.md). Its numbered route connects the theory to an offline [classroom chain in C](../lessons/14-blockchain-ledgers/classroom-chain/index.md).
+
 1. [Introduction to Bitcoin](../courses/introduction-to-bitcoin/index.html)
 2. [Introduction to Bitcoin Source Code](../courses/introduction-to-bitcoin-source-code/index.html)
 3. [Building Bitcoin from Scratch Using Assembly and C](../courses/building-bitcoin-in-c/index.html)

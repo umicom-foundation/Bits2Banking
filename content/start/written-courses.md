@@ -1483,3 +1483,41 @@ Follow the [ordered course routes](../courses/finance-and-systems.html) for pric
 ## Native local AI chat and media
 
 [Study the twelve written lessons](../lessons/ai/native-local-ai-and-media/index.md), with [the browser course](../courses/native-local-ai-and-media/index.html) and an original installed-Framework C23 lab. Learn model selection, request ownership, local inference, RAG, media jobs and qualification. Local image/video inference remains separate development work.
+
+## Statement data in practice
+
+### Native Statement Calculations
+
+Use Umicom C and C23 to verify a statement total and preserve the last accepted value when arithmetic fails.
+
+[Written course](../lessons/03-native-code/native-statement-calculations/index.md) · [Browser course](../courses/native-statement-calculations/index.html)
+
+1. [Calculate posted cents in Umicom C](../lessons/03-native-code/native-statement-calculations/01-calculate-posted-cents-in-umicom-c.md)
+2. [Keep the last valid total in C23](../lessons/03-native-code/native-statement-calculations/02-keep-the-last-valid-total-in-c23.md)
+
+### SQL Statement Reconciliation
+
+Group posted movements with SQLite, then compare calculated totals with a statement supplied for review.
+
+[Written course](../lessons/04-web/sql-statement-reconciliation/index.md) · [Browser course](../courses/sql-statement-reconciliation/index.html)
+
+1. [Summarise posted movements](../lessons/04-web/sql-statement-reconciliation/01-summarise-posted-movements.md)
+2. [Distinguish mismatches and missing totals](../lessons/04-web/sql-statement-reconciliation/02-distinguish-mismatches-and-missing-totals.md)
+
+### Accessible Statement Review
+
+Create a small HTML and CSS statement page and add a progressively enhanced, keyboard-operable filter.
+
+[Written course](../lessons/04-web/accessible-statement-review/index.md) · [Browser course](../courses/accessible-statement-review/index.html)
+
+1. [Build a readable statement table](../lessons/04-web/accessible-statement-review/01-build-a-readable-statement-table.md)
+2. [Filter posted rows with a status message](../lessons/04-web/accessible-statement-review/02-filter-posted-rows-with-a-status-message.md)
+
+### Go Statement Tools
+
+Read a local training statement with Go’s standard library, reject malformed data, then print deterministic account totals.
+
+[Written course](../lessons/04-web/go-statement-tools/index.md) · [Browser course](../courses/go-statement-tools/index.html)
+
+1. [Read and validate CSV rows](../lessons/04-web/go-statement-tools/01-read-and-validate-csv-rows.md)
+2. [Print deterministic posted totals](../lessons/04-web/go-statement-tools/02-print-deterministic-posted-totals.md)

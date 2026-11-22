@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/build-a-bank-application-in-c/lessons/04-design-a-durable-statement.html
+
+PURPOSE:
+Put database changes behind one transaction and build a read-only statement from accepted rows.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Put database changes behind one transaction and build a read-only statement from accepted rows.">
+  <title>Design a durable journal and statement view | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Design a durable journal and statement view</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="03-compare-a-retry-and-a-conflict.html">Previous · Compare a retry with a changed request</a> · <a href="05-verify-the-bank-capstone.html">Next · Verify the banking capstone and plan its next feature</a> · <a href="../../../lessons/07-practical-domains/build-a-bank-application-in-c/04-design-a-durable-statement.md">Markdown edition</a></nav>
+<p>Put database changes behind one transaction and build a read-only statement from accepted rows.</p>
+
+<h2>Decide what must survive</h2>
+
+<p>The current program keeps its synthetic journal in memory. A transaction is a group of database changes treated as one unit. For a durable practice adapter, place both balance changes and the journal insertion in one write transaction, using a unique reference and bound parameters. A bound parameter supplies a value without joining it into the SQL command text.</p>
+
+<pre><code class="language-text">BEGIN IMMEDIATE on the SQLite practice file
+LOOK UP reference and compare the normalized request
+WRITE debit, credit and accepted row if all checks pass
+COMMIT once; handle failure and regain known state
+READ ordered accepted rows into the statement view</code></pre>
+
+<p>Define how busy and failed commits are handled and check the transaction’s actual state before retrying. The SQLite transaction reference explains these return cases. Use an empty learning database and locally invented rows.</p>
+
+<h2>Trace a partial failure</h2>
+
+<p>Suppose the journal-insert step fails after the first database update. Roll back the transaction and read the old account rows. If a later restart finds reference 71 already committed, load its stored result and avoid another movement.</p>
+
+<ul>
+<li><a href="https://www.sqlite.org/lang_transaction.html">SQLite transaction control</a></li>
+<li><a href="https://www.sqlite.org/atomiccommit.html">SQLite atomic commit</a></li>
+<li><a href="../../native-statement-calculations/index.html">Native statement calculations</a></li>
+</ul>
+
+<p>For product integration, inspect the existing Framework statement, reconciliation and Bank workspace exercises. Keep validation and persistence in reusable services and leave the window as a client. These learning files use no real accounts.</p>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../banking-technology-foundations/index.html">Banking Technology Foundations</a></li>
+<li><a href="../../bookkeeping-from-first-entry/index.html">Bookkeeping from Your First Entry</a></li>
+<li><a href="../../open-banking-account-access/index.html">Open Banking account access</a></li>
+<li><a href="../../swift-payment-messages/index.html">Swift payment messages</a></li>
+<li><a href="../../../umicom/development-path.md">Umicom development workflow</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="03-compare-a-retry-and-a-conflict.html">Previous · Compare a retry with a changed request</a> · <a href="05-verify-the-bank-capstone.html">Next · Verify the banking capstone and plan its next feature</a> · <a href="../../../lessons/07-practical-domains/build-a-bank-application-in-c/04-design-a-durable-statement.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/mysql-c23-ledger/lessons/01-store-ledger-values-as-integers.html
+
+PURPOSE:
+Use one row per fictional entry and calculate which values a posted total includes.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Use one row per fictional entry and calculate which values a posted total includes.">
+  <title>Store signed cents in a training ledger | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Store signed cents in a training ledger</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-bind-a-parameter-from-c.html">Next · Bind a MySQL query parameter from C</a> · <a href="../../../lessons/04-web/mysql-c23-ledger/01-store-ledger-values-as-integers.md">Markdown edition</a></nav>
+<p>Use one row per fictional entry and calculate which values a posted total includes.</p>
+
+<h2>Read a small table</h2>
+
+<p>An account identifier links several rows to the same account. An entry identifier names one row. The amount is a signed count of cents. A table is a named collection of rows, and its schema specifies columns and the constraints that each row follows.</p>
+
+<pre><code class="language-sql">CREATE TABLE training_entry (
+    entry_id BIGINT PRIMARY KEY,
+    account_id BIGINT NOT NULL,
+    cents BIGINT NOT NULL,
+    status VARCHAR(7) NOT NULL,
+    CHECK (status IN ('posted', 'pending'))
+);
+INSERT INTO training_entry VALUES
+    (101, 42, 2600, 'posted'),
+    (102, 42, -850, 'posted'),
+    (103, 42, 500, 'pending');
+SELECT cents FROM training_entry WHERE account_id = 42 AND status = 'posted' ORDER BY entry_id;</code></pre>
+
+<p>Trace the expected rows, 2600 and −850. Add them to get 1750 cents. If you remove the status predicate, you also receive the pending 500 and the calculation changes. If no rows qualify, keep that fact visible alongside the zero result of a total.</p>
+
+<h2>Check the paper result in FreeBASIC</h2>
+
+<pre><code class="language-basic">Dim total As LongInt = 2600 - 850
+Print total</code></pre>
+
+<p>The known constants fit in a signed 64-bit LongInt. Expect 1750. Use a checked addition when replacing these two constants with input values. The C exercise supplies an example.</p>
+
+<h2>Optional native practice</h2>
+
+<p>From the Bits2Banking checkout, open a Windows UCRT64 toolchain session. In PowerShell with the C23 compiler already on your path, compile the supplied files. Expect exit code 0 and the line shown below when you run the resulting training program. If the compiler is missing, use the paper trace first.</p>
+
+<pre><code class="language-powershell">Set-Location labs/native/service-practice/mysql-ledger
+gcc -std=c23 -Wall -Wextra -Werror main.c -o mysql-ledger-rules.exe
+.\mysql-ledger-rules.exe</code></pre>
+
+<pre><code class="language-text">posted cents and overflow checks ready</code></pre>
+
+<ul>
+<li><a href="../../../labs/native/service-practice/mysql-ledger/main.c">Read the complete native lab source</a></li>
+</ul>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+<li><a href="../../sql-statement-reconciliation/index.html">SQL Statement Reconciliation</a></li>
+<li><a href="../../oracle-database-c23-ledger/index.html">Oracle Database C23 Ledger</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-bind-a-parameter-from-c.html">Next · Bind a MySQL query parameter from C</a> · <a href="../../../lessons/04-web/mysql-c23-ledger/01-store-ledger-values-as-integers.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

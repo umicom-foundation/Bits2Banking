@@ -1,0 +1,97 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/sql-statement-reconciliation/lessons/02-distinguish-mismatches-and-missing-totals.html
+
+PURPOSE:
+Teach Distinguish mismatches and missing totals through original worked exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Classify matching, mismatching and missing statement totals with their original values visible.">
+  <title>Distinguish mismatches and missing totals | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../course-series.html">Choose a subject</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Distinguish mismatches and missing totals</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="01-summarise-posted-movements.html">Previous: Summarise posted movements</a>
+      </nav>
+      <h2>What you will learn</h2>
+      <p>Classify matching, mismatching and missing statement totals with their original values visible.</p>
+      <h2>Use a separate comparison input</h2>
+      <p>Reconciliation is a comparison between independently supplied and calculated records. Use the open database from the previous lesson. These invented statement totals include a one-cent difference and omit the clearing account. A missing observation is not interpreted as zero.</p>
+      <pre><code class="language-sql">CREATE TABLE statement (
+    account TEXT PRIMARY KEY NOT NULL REFERENCES account(name),
+    reported_cents INTEGER NOT NULL
+);
+INSERT INTO statement VALUES ('operating', 900), ('reserve', 1751);
+
+SELECT p.account, p.posted_cents, s.reported_cents,
+       s.reported_cents - p.posted_cents AS delta_cents,
+       CASE
+           WHEN s.account IS NULL THEN 'missing'
+           WHEN s.reported_cents = p.posted_cents THEN 'match'
+           ELSE 'mismatch'
+       END AS review
+FROM posted_movement AS p
+LEFT JOIN statement AS s ON s.account = p.account
+ORDER BY p.account;</code></pre>
+      <pre><code class="language-text">clearing|0|||missing
+operating|900|900|0|match
+reserve|1750|1751|1|mismatch</code></pre>
+      <p>The difference is reported minus calculated. Increase the reported number by one and the difference increases by one; write down the convention before using the output.</p>
+      <h2>Practice and check your answer</h2>
+      <p>Add a statement row for clearing with a reported amount of zero. Rerun the SELECT without changing any ledger entry.</p>
+      <pre><code class="language-sql">INSERT INTO statement VALUES ('clearing', 0);</code></pre>
+      <details><summary>Worked answer</summary><p>Clearing now reports match, with zero calculated, zero reported and zero difference. An actual zero statement is a stronger observation than a blank statement.</p></details>
+      <h2>If a row is missing</h2>
+      <p>If no table or view named posted_movement exists, open one SQLite session and repeat the previous lesson in that session. If a statement row already exists, inspect it. Make further changes only in the in-memory training database.</p>
+      <p><a href="../../../lessons/04-web/sql-statement-reconciliation/02-distinguish-mismatches-and-missing-totals/" data-lesson-source="content/lessons/04-web/sql-statement-reconciliation/02-distinguish-mismatches-and-missing-totals.md">Open the written lesson</a></p>
+      <h2>Continue learning</h2>
+      <ul>
+        <li><a href="../../learning-sql/index.html">Learning SQL</a></li>
+        <li><a href="../../framework-and-finance/index.html">Learning Umicom Framework and Financial Systems</a></li>
+      </ul>
+      <h2>Further reading</h2>
+      <ul>
+        <li><a href="https://techsustainify.com/">Tech Sustainify course catalogue</a></li>
+        <li><a href="https://www.w3schools.com/sql/default.asp">W3Schools SQL tutorial</a></li>
+      </ul>
+      <nav aria-label="Continue this course">
+        <a href="../index.html">Course contents</a>
+        <a href="01-summarise-posted-movements.html">Previous: Summarise posted movements</a>
+      </nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

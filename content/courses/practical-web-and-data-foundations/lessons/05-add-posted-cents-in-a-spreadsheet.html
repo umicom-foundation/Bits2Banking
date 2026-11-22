@@ -1,0 +1,77 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/practical-web-and-data-foundations/lessons/05-add-posted-cents-in-a-spreadsheet.html
+
+PURPOSE:
+Add posted cents in a spreadsheet in the Bits2Banking web and data course.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Read a range of spreadsheet cells and use one formula to add only the posted amounts.">
+  <title>Add posted cents in a spreadsheet | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" href="../../../assets/branding/umicom-icon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="../../../assets/branding/umicom.ico" type="image/x-icon">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a href="../../index.html" class="logo">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation" width="176">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Add posted cents in a spreadsheet</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="04-read-the-file-with-node.html">Previous lesson · Read a local statement with Node.js</a>
+        <a href="06-compare-sql-database-dialects.html">Next lesson · Compare SQL database dialects</a>
+      </nav>
+      <p>Read a range of spreadsheet cells and use one formula to add only the posted amounts.</p>
+      <h2 id="draw-a-small-grid">Draw a small grid</h2>
+      <p>A spreadsheet is a grid of boxes called cells. Columns use letters, and rows use numbers. <code>C2</code> means the box at column C, row 2. <code>C2:C4</code> means the boxes from C2 down to C4. You can draw the grid on paper first. If you already have a spreadsheet app, copy these entries into cells A1 through C4.</p>
+      <pre><code class="language-text">       A            B           C
+1      ID           Status      Cents
+2      1            posted       2600
+3      2            posted       -850
+4      3            pending       500</code></pre>
+      <p>Enter the amount in C3 as a negative number using a minus sign before 850. The heading <code>Cents</code> explains the unit. Keep the amount cells as numbers so formulas can add them.</p>
+      <h2 id="ask-for-a-conditional-total">Ask for a conditional total</h2>
+      <p>A formula tells the spreadsheet to calculate something. <code>SUMIF</code> checks a condition on each row and adds the matching numbers. In cell C6, enter the following formula. It checks column B for <code>posted</code>, and takes the amount from the same row in column C.</p>
+      <pre><code class="language-text">=SUMIF(B2:B4,&quot;posted&quot;,C2:C4)</code></pre>
+      <p>Check these pairs with your finger before looking at the answer. B2 says <code>posted</code>, so add C2. B3 says <code>posted</code>, so add the negative value in C3. B4 says <code>pending</code>, so leave C4 alone. The result is <code>1750</code>. The same formula structure is used in Excel and Google Sheets. Regional settings can require different punctuation between the three arguments.</p>
+      <h2 id="try-an-easy-change">Try an easy change</h2>
+      <p>Change B4 to <code>posted</code> in the practice workbook. Predict the total before pressing Enter. Check for <code>2250</code>, then change it back to <code>pending</code>. If you get an unexpected total, inspect the status text and confirm the two ranges start and end on matching rows. If the formula appears as text, check that it starts with <code>=</code> and that the formula cell is not set to store text.</p>
+      <h2 id="connect-to-umicom">Connect to Umicom</h2>
+      <p>A treasury developer can use a small spreadsheet as an independent check of an Umicom TMS practice calculation. Copy a few fictional records into a grid, compute the expected amount, and compare it with the application. A recorded result is more useful when it also includes the three conditions and the units.</p>
+      <ul>
+        <li><a href="../../introduction-to-treasury-management-systems/index.html">Introduction to Treasury Management Systems</a></li>
+        <li><a href="https://support.microsoft.com/en-us/excel/functions/sumif-function">Excel SUMIF help</a></li>
+        <li><a href="https://support.google.com/docs/answer/3093583">Google Sheets SUMIF help</a></li>
+      </ul>
+      <p><a href="../../../lessons/04-web/practical-web-and-data-foundations/05-add-posted-cents-in-a-spreadsheet.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

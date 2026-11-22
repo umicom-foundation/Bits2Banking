@@ -76,3 +76,63 @@ Read the shared model first, then choose desktop, browser or mobile. Begin the i
 Before building, explain a file path, a C function, an array, a return value and the difference between a compiler and a test. The Kernel labs also need bounds and pointer-lifetime concepts. If any are unfamiliar, return to the first-programming route.
 
 [Course library](../courses/index.html) · [Guide for a learning companion](../teaching/support-first-time-learners.md)
+
+## Learn programming with examples in several languages
+
+Begin with paper instructions, then read one loop or decision in several languages. Pick a reference for the version you use.
+
+- [Programming across languages](../courses/programming-across-languages/index.html)
+- [Umicom C checked integer keywords and syntax](../courses/umicom-c-keyword-reference/index.html)
+- [C23 Keywords for Beginners](../courses/c23-keyword-reference/index.html)
+- [C++20 Keyword and Token Reference](../courses/cpp20-keyword-reference/index.html)
+- [Go Keywords for Beginners](../courses/go-keyword-reference/index.html)
+- [Python 3.14 keyword reference](../courses/python-keyword-reference/index.html)
+- [Java SE 25 keyword reference](../courses/java-keyword-reference/index.html)
+- [D Keywords for Beginners](../courses/d-keyword-reference/index.html)
+- [D Special Tokens for Beginners](../courses/d-special-token-reference/index.html)
+- [First C# Statements](../courses/first-csharp-statements/index.html)
+
+## Learn mathematics, bookkeeping and pricing in order
+
+Choose a paper exercise first. Continue from arithmetic and change to a fictional journal and a price built from cash flows.
+
+- [Mathematics for Application Builders](../courses/mathematics-for-application-builders/index.html)
+- [Bookkeeping from Your First Entry](../courses/bookkeeping-from-first-entry/index.html)
+- [Pricing Financial Instruments from Cash Flows](../courses/pricing-from-cashflows/index.html)
+
+## Read the same record with web and data tools
+
+Follow the same fictional sample from a data file to a browser, terminal or spreadsheet.
+
+- [Practical Web and Data Foundations](../courses/practical-web-and-data-foundations/index.html)
+
+## Native web and browser adapters
+
+Check the native result, then display or transmit it through one small adapter.
+
+- [React and Native Statement Data](../courses/react-native-statements/index.html)
+- [Node.js and Native Statement Reports](../courses/nodejs-native-reporting/index.html)
+- [AngularJS and Legacy Statement Screens](../courses/angularjs-legacy-statements/index.html)
+- [Bootstrap and Native Statement Reports](../courses/bootstrap-native-statements/index.html)
+
+## Native services and data stores
+
+Keep the calculation checked in C and learn the service or storage contract at its boundary.
+
+- [Spring Framework with a Native C23 Receipt Rule](../courses/spring-framework-with-c23/index.html)
+- [Spring Boot with a Native C23 Service](../courses/spring-boot-native-service/index.html)
+- [MySQL Ledger Practice in C23](../courses/mysql-c23-ledger/index.html)
+- [Oracle Database Ledger Practice in C23](../courses/oracle-database-c23-ledger/index.html)
+- [MongoDB Receipt Documents in C23](../courses/mongodb-c23-documents/index.html)
+- [RabbitMQ Outbox Practice in C23](../courses/rabbitmq-c23-outbox/index.html)
+
+## Banking, trade and payment applications
+
+Use synthetic records to connect native applications to their financial workflows.
+
+- [Banking Technology Foundations](../courses/banking-technology-foundations/index.html)
+- [Build a Banking Application in C](../courses/build-a-bank-application-in-c/index.html)
+- [UK Open Banking Account Access](../courses/open-banking-account-access/index.html)
+- [Swift Payment Messages and ISO 20022](../courses/swift-payment-messages/index.html)
+- [FpML for Treasury and Trade Confirmation](../courses/fpml-for-treasury/index.html)
+- [Build a Trading Application in C](../courses/build-a-trading-application-in-c/index.html)

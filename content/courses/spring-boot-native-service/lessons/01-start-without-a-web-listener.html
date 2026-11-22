@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/spring-boot-native-service/lessons/01-start-without-a-web-listener.html
+
+PURPOSE:
+Boot helps assemble a Spring application. The exercise picks command-line mode explicitly and calls the existing native rule.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Boot helps assemble a Spring application. The exercise picks command-line mode explicitly and calls the existing native rule.">
+  <title>Start a Boot application with no web listener | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Start a Boot application with no web listener</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-keep-config-outside-the-rule.html">Next · Configure the lab library outside the native rule</a> · <a href="../../../lessons/04-web/spring-boot-native-service/01-start-without-a-web-listener.md">Markdown edition</a></nav>
+<p>Boot helps assemble a Spring application. The exercise picks command-line mode explicitly and calls the existing native rule.</p>
+
+<h2>Sketch the startup sequence</h2>
+
+<p>Boot examines your dependencies for auto-configuration. Spring manages the beans. The ApplicationRunner is the small Java adapter that calls the C23 method after the context starts. No web module is needed.</p>
+
+<pre><code class="language-text">Configure the context for non-web mode.
+Create the native rule bean using an absolute lab path.
+Call the rule for a fixed synthetic receipt.
+Print its status and close the context.</code></pre>
+
+<p>Complete the preceding course through the JNI DLL. Use a Boot Maven project from Spring Initializr with package org.umicom.training and the core Spring Boot starter. Add NativeReceiptRule.java to src/main/java/org/umicom/training. Use BootReceiptApplication.java as the application class.</p>
+
+<pre><code class="language-java">package org.umicom.training;
+import java.nio.file.Path;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+
+@SpringBootApplication
+public class BootReceiptApplication {
+    public static void main(String[] args) {
+        var app = new SpringApplication(BootReceiptApplication.class);
+        app.setWebApplicationType(WebApplicationType.NONE);
+        try (var context = app.run(args)) {
+            // The runner completed while Boot opened the context.
+        }
+    }
+    @Bean
+    NativeReceiptRule receiptRule(Environment environment) {
+        return new NativeReceiptRule(Path.of(
+            environment.getRequiredProperty(&quot;umicom.receipt.library&quot;)));
+    }
+    @Bean
+    ApplicationRunner receiptSample(NativeReceiptRule rule) {
+        return args -&gt; System.out.println(&quot;receipt-status=&quot; + rule.check(20001, 20000));
+    }
+}</code></pre>
+
+<p>Boot may show its normal startup messages. Look for receipt-status=2. If the starter accidentally loads a web implementation, check its dependency tree and the explicit NONE setting before changing the business rule.</p>
+
+<ul>
+<li><a href="https://docs.spring.io/spring-boot/reference/using/auto-configuration.html">Spring Boot auto-configuration</a></li>
+<li><a href="https://docs.spring.io/spring-boot/reference/features/spring-application.html">SpringApplication startup</a></li>
+<li><a href="../../../labs/native/service-practice/spring-receipt/receipt_rule.c">Read the complete native lab source</a></li>
+</ul>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+<li><a href="../../spring-framework-with-c23/index.html">Spring Framework with a Native C23 Receipt Rule</a></li>
+<li><a href="../../mysql-c23-ledger/index.html">Continue to MySQL bindings</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-keep-config-outside-the-rule.html">Next · Configure the lab library outside the native rule</a> · <a href="../../../lessons/04-web/spring-boot-native-service/01-start-without-a-web-listener.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

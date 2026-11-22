@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/spring-boot-native-service/lessons/02-keep-config-outside-the-rule.html
+
+PURPOSE:
+Move the absolute DLL name out of the app source and diagnose missing or invalid configuration.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Move the absolute DLL name out of the app source and diagnose missing or invalid configuration.">
+  <title>Configure the lab library outside the native rule | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Configure the lab library outside the native rule</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="01-start-without-a-web-listener.html">Previous · Start a Boot application with no web listener</a> · <a href="03-replay-the-native-decision.html">Next · Replay the same native case from a Boot test</a> · <a href="../../../lessons/04-web/spring-boot-native-service/02-keep-config-outside-the-rule.md">Markdown edition</a></nav>
+<p>Move the absolute DLL name out of the app source and diagnose missing or invalid configuration.</p>
+
+<h2>Try three configurations on paper</h2>
+
+<ul>
+<li>With a real absolute lab DLL, bean construction loads the library and the native test can produce a receipt status.</li>
+<li>Omit umicom.receipt.library. The required-property lookup reports missing configuration before processing a receipt.</li>
+<li>Supply a relative filename. NativeReceiptRule rejects it so the chosen library does not depend on the current working directory.</li>
+</ul>
+
+<p>Add one development value to src/main/resources/application.properties, or override it for one local launch. If you use the Boot wrapper on Windows, the commands below package the app and show how you would supply a per-run value. Replace the jar name with the built artifact under target.</p>
+
+<pre><code class="language-properties">umicom.receipt.library=C:/absolute/lab/receipt_rule.dll</code></pre>
+
+<pre><code class="language-powershell">.\mvnw.cmd package
+java -jar target/receipt-training.jar &quot;--umicom.receipt.library=C:/absolute/lab/receipt_rule.dll&quot;</code></pre>
+
+<p>Use the JVM native-access option documented for your chosen JDK if its diagnostic requires an opt-in. A fresh build still needs the generated JNI header and native library. If the app fails early, find the first missing property or link error and keep its message separate from the rule outcome.</p>
+
+<ul>
+<li><a href="https://docs.spring.io/spring-boot/reference/features/external-config.html">Spring Boot externalised configuration</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/25/docs/specs/jni/design.html">Java JNI design</a></li>
+</ul>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+<li><a href="../../spring-framework-with-c23/index.html">Spring Framework with a Native C23 Receipt Rule</a></li>
+<li><a href="../../mysql-c23-ledger/index.html">Continue to MySQL bindings</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="01-start-without-a-web-listener.html">Previous · Start a Boot application with no web listener</a> · <a href="03-replay-the-native-decision.html">Next · Replay the same native case from a Boot test</a> · <a href="../../../lessons/04-web/spring-boot-native-service/02-keep-config-outside-the-rule.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

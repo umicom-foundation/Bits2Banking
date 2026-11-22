@@ -1,0 +1,77 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/mongodb-c23-documents/lessons/01-read-required-document-fields.html
+
+PURPOSE:
+One document groups labelled values such as a receipt identifier and the exact amount.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="One document groups labelled values such as a receipt identifier and the exact amount.">
+  <title>Read a receipt document and its required fields | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Read a receipt document and its required fields</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-build-and-inspect-bson-from-c.html">Next · Inspect a BSON field from the C driver boundary</a> · <a href="../../../lessons/04-web/mongodb-c23-documents/01-read-required-document-fields.md">Markdown edition</a></nav>
+<p>One document groups labelled values such as a receipt identifier and the exact amount.</p>
+
+<h2>Compare three data shapes</h2>
+
+<pre><code class="language-json">[
+  {&quot;_id&quot;:&quot;R-42&quot;,&quot;cents&quot;:{&quot;$numberLong&quot;:&quot;0&quot;}},
+  {&quot;_id&quot;:&quot;R-43&quot;},
+  {&quot;_id&quot;:&quot;R-44&quot;,&quot;cents&quot;:&quot;2600&quot;}
+]</code></pre>
+
+<p>The array lays out three separate examples. In Canonical Extended JSON, the $numberLong wrapper preserves a BSON signed 64-bit integer. BSON is the database representation that distinguishes an integer field from a string. The actual zero and the text 2600 are different types. The middle example has no cents field at all.</p>
+
+<p>The native rule accepts only a nonempty receipt ID and a BSON 64-bit amount. The first example is accepted. The second and third are returned to the adapter as refused. Try adding an explicit BSON int32 with $numberInt. It remains outside this exercise’s int64 contract even when it contains the same mathematical value.</p>
+
+<h2>Check the branch in FreeBASIC</h2>
+
+<pre><code class="language-basic">Dim hasInt64Field As Integer = 1
+Dim cents As LongInt = 0
+If hasInt64Field &lt;&gt; 0 Then
+    Print &quot;Amount present&quot;; cents
+End If</code></pre>
+
+<p>Switch the flag to zero and trace why no amount is printed. In this simplified independent check, the flag represents the already verified type.</p>
+
+<ul>
+<li><a href="https://www.mongodb.com/docs/languages/c/c-driver/current/">MongoDB C driver</a></li>
+<li><a href="../../../labs/native/service-practice/mongodb-receipts/main.c">Read the complete native lab source</a></li>
+</ul>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+<li><a href="../../practical-web-and-data-foundations/index.html">Practical Web and Data Foundations</a></li>
+<li><a href="../../oracle-database-c23-ledger/index.html">Oracle Database Ledger Practice in C23</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-build-and-inspect-bson-from-c.html">Next · Inspect a BSON field from the C driver boundary</a> · <a href="../../../lessons/04-web/mongodb-c23-documents/01-read-required-document-fields.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

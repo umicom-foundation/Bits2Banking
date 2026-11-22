@@ -1,0 +1,154 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/java-keyword-reference/lessons/07-module-contracts.html
+
+PURPOSE:
+A module groups packages. A module descriptor is a file named module-info.java. These fragments introduce descriptor syntax, with fictional modules and packages that would need to exist for a real build.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A module groups packages. A module descriptor is a file named module-info.java. These fragments introduce descriptor syntax, with fictional modules and packages that would need to exist for a real build.">
+  <title>Contextual words in module contracts | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Contextual words in module contracts</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="06-records-and-patterns.html">Previous · Contextual words in records and patterns</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/07-module-contracts.md">Markdown edition</a></nav>
+<p>A module groups packages. A module descriptor is a file named module-info.java. These fragments introduce descriptor syntax, with fictional modules and packages that would need to exist for a real build.</p>
+
+<h2>Use the fragments</h2>
+
+<p>A module groups packages. A module descriptor is a file named module-info.java. These fragments introduce descriptor syntax, with fictional modules and packages that would need to exist for a real build.</p>
+
+<p>For a local statement, place it inside <code>public static void main(String[] args)</code> in a class named <code>ReceiptPractice</code>. Save it in <code>ReceiptPractice.java</code>. Use <code>javac ReceiptPractice.java</code> from a JDK 25, then <code>java ReceiptPractice</code>. Take class declarations, package declarations and module descriptors as separate examples.</p>
+
+<h2>Examples by spelling</h2>
+
+<h3>module</h3>
+
+<p>Name a module and open its descriptor block.</p>
+
+<pre><code class="language-java">module training.receipts { }</code></pre>
+
+<p>The descriptor names the training.receipts module.</p>
+
+<h3>open</h3>
+
+<p>Allow deep runtime reflection into the packages of the whole module, subject to platform policy.</p>
+
+<pre><code class="language-java">open module training.receipts { }</code></pre>
+
+<p>The descriptor declares an open module.</p>
+
+<h3>requires</h3>
+
+<p>Declare a dependency on another named module.</p>
+
+<pre><code class="language-java">module training.receipts { requires java.logging; }</code></pre>
+
+<p>The descriptor lists java.logging as required.</p>
+
+<h3>transitive</h3>
+
+<p>Make a readability dependency available to modules that read this module.</p>
+
+<pre><code class="language-java">module training.receipts { requires transitive java.sql; }</code></pre>
+
+<p>A module that reads this module also reads java.sql.</p>
+
+<h3>exports</h3>
+
+<p>Expose the accessible types of a package to other modules.</p>
+
+<pre><code class="language-java">module training.receipts { exports training.receipts.api; }</code></pre>
+
+<p>The API package must exist in the module.</p>
+
+<h3>to</h3>
+
+<p>Limit an exports or opens directive to named target modules.</p>
+
+<pre><code class="language-java">module training.receipts { exports training.receipts.api to training.reports; }</code></pre>
+
+<p>The API package is exported specifically to training.reports.</p>
+
+<h3>opens</h3>
+
+<p>Allow runtime deep reflection into a named package of a normal module.</p>
+
+<pre><code class="language-java">module training.receipts { opens training.receipts.records; }</code></pre>
+
+<p>The named package is open for reflective access.</p>
+
+<h3>uses</h3>
+
+<p>Declare a service the module may acquire through Java services.</p>
+
+<pre><code class="language-java">module training.reports { requires training.receipts;
+    uses training.receipts.api.Report; }</code></pre>
+
+<p>The accessible Report service must be defined by the required module.</p>
+
+<h3>provides</h3>
+
+<p>Register a provider for a service in a descriptor.</p>
+
+<pre><code class="language-java">module training.receipts { provides training.receipts.api.Report
+    with training.receipts.csv.CsvReport; }</code></pre>
+
+<p>The descriptor registers CsvReport for Report.</p>
+
+<h3>with</h3>
+
+<p>Introduce one or more provider implementations in a provides directive.</p>
+
+<pre><code class="language-java">module training.receipts { provides training.receipts.api.Report
+    with training.receipts.text.TextReport; }</code></pre>
+
+<p>The declared provider is TextReport.</p>
+
+<h2>Compare another language</h2>
+
+<p>Framework services can also have explicit build-time and runtime boundaries. Java module declarations describe their own readability, reflection, and service rules.</p>
+
+<h2>Try it</h2>
+
+<p>On paper, draw a line from training.reports to training.receipts when the first requires the second. Ask separately which package the second exposes.</p>
+
+<h2>Apply it to Umicom</h2>
+
+<p>Start a Studio dependency review by listing the build dependency, exposed API and implementation for one fictional reporting component.</p>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../programming-across-languages/index.html">Programming across languages</a></li>
+<li><a href="../../learning-java/index.html">Learning Java</a></li>
+<li><a href="../../c23-keyword-reference/index.html">C23 keyword reference</a></li>
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-3.html#jls-3.9">Java SE 25 lexical structure, section 3.9</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="06-records-and-patterns.html">Previous · Contextual words in records and patterns</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/07-module-contracts.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

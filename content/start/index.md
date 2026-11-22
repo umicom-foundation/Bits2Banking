@@ -3,6 +3,8 @@
 Begin with [Your learning sequence](learning-sequence.md). It starts with computer basics and leads to a small C program, a Framework application and a GTK4 window. Each stage explains what you need to know before continuing.
 
 - [Start learning](learning-sequence.md)
+- [Learn from first steps to an Umicom project](connected-learning.md)
+- [Explore technology by topic](technology-topic-map.md)
 - [Choose a course](../courses/index.html)
 - [Find a written lesson](../lessons/index.md)
 - [Read a book](../books/index.md)

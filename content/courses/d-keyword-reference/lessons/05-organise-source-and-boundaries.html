@@ -1,0 +1,106 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/d-keyword-reference/lessons/05-organise-source-and-boundaries.html
+
+PURPOSE:
+Separate helpers from interfaces and recognise words that depend on a build or target.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Organise source and name a boundary | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Organise source and name a boundary</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="04-group-and-protect-data.html">Previous lesson: Group and protect related data</a> <a href="06-ask-the-compiler-about-types.html">Next lesson: Ask the compiler about a type</a></nav>
+      <p>Separate helpers from interfaces and recognise words that depend on a build or target.</p>
+      <h2>Find the file boundary</h2>
+      <p>A module is a named unit of source code. Use an import for a library operation. Keep a helper private when callers only need its public result. C uses headers and linkage for many related purposes, with different language and build rules.</p>
+      <h2>Recheck the target before using a tool-specific form</h2>
+      <p>An ABI is a published agreement about how compiled code calls functions and lays out values. <code>extern(C)</code>, <code>export</code>, <code>align</code> and <code>asm</code> need the relevant agreement and compiler support. For an Umicom module, start with a tiny checked interface and a documented test rather than assuming that matching function names are enough.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-module"><th scope="row"><code>module</code></th><td><code>module practice;</code></td><td>Give this source module a name, normally at the start of the file.</td></tr>
+          <tr id="kw-import"><th scope="row"><code>import</code></th><td><code>import std.stdio : writeln;</code></td><td>Make the named library operation available in this module.</td></tr>
+          <tr id="kw-private"><th scope="row"><code>private</code></th><td><code>private int fixture_count() { return 3; }</code></td><td>Limit this declaration’s visibility to the module.</td></tr>
+          <tr id="kw-public"><th scope="row"><code>public</code></th><td><code>public int rows() { return 3; }</code></td><td>Expose the declaration through the module’s public interface.</td></tr>
+          <tr id="kw-protected"><th scope="row"><code>protected</code></th><td><code>protected int limit;</code></td><td>Inside a class, use access intended for its inheritance boundary.</td></tr>
+          <tr id="kw-package"><th scope="row"><code>package</code></th><td><code>package int lookup() { return 3; }</code></td><td>Limit access to the enclosing package according to D’s visibility rules.</td></tr>
+          <tr id="kw-extern"><th scope="row"><code>extern</code></th><td><code>extern(C) int add_cents(int left, int right);</code></td><td>Declare the C calling and naming convention for the function. A matching definition must be linked.</td></tr>
+          <tr id="kw-export"><th scope="row"><code>export</code></th><td><code>export extern(C) int lesson_count() { return 3; }</code></td><td>Mark an external symbol for export on targets and build configurations that support it.</td></tr>
+          <tr id="kw-pragma"><th scope="row"><code>pragma</code></th><td><code>pragma(msg, &quot;checking lesson&quot;);</code></td><td>Ask the compiler to apply this supported pragma. msg can display a message during compilation.</td></tr>
+          <tr id="kw-debug"><th scope="row"><code>debug</code></th><td><code>debug { writeln(&quot;checking fixture&quot;); }</code></td><td>Include a block in a build that enables this D debug condition.</td></tr>
+          <tr id="kw-version"><th scope="row"><code>version</code></th><td><code>version(Workbook) { enum has_workbook = true; }</code></td><td>Include a declaration if the selected version condition matches.</td></tr>
+          <tr id="kw-align"><th scope="row"><code>align</code></th><td><code>align(8) struct Cell { int value; }</code></td><td>Request an alignment for the aggregate. Verify layout for the chosen ABI.</td></tr>
+          <tr id="kw-asm"><th scope="row"><code>asm</code></th><td><code>asm { nop; }</code></td><td>Embed one idle instruction in the compiler’s inline assembler when supported by the target.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">ASK the public row-count function
+LET the private helper count the three fixture rows
+SHOW the public result</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.d</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-d">module practice;
+
+import std.stdio : writeln;
+
+private int fixture_count()
+{
+    return 3;
+}
+
+public int expected_rows()
+{
+    return fixture_count();
+}
+
+void main()
+{
+    writeln(&quot;rows &quot;, expected_rows());
+}</code></pre>
+      <pre><code class="language-text">dmd -run practice.d</code></pre>
+      <p>Expected output</p>
+      <pre><code class="language-text">rows 3</code></pre>
+      <p>If the terminal cannot find dmd, check the D compiler installation for your operating system. If your course uses another documented D compiler, use its build and run instructions. You can still trace the example without installing a compiler.</p>
+      <h2>Try a change</h2>
+      <p>Which function would another module use to read the row count? Which function name can change without changing that public call?</p>
+      <details><summary>Check your answer</summary>      <p>Another module imports and calls <code>expected_rows</code>. The private <code>fixture_count</code> helper may be renamed along with its call inside this module.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../learning-d/index.html">Continue Learning D</a></li>
+        <li><a href="https://dlang.org/spec/lex.html">D language specification, Lexical grammar and Keywords</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

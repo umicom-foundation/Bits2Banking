@@ -1,0 +1,132 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/first-csharp-statements/lessons/04-check-the-total.html
+
+PURPOSE:
+Run small checks for normal input, a pending receipt, an unknown status and an amount outside the supported total.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Run small checks for normal input, a pending receipt, an unknown status and an amount outside the supported total.">
+  <title>Check the posted total | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Check the posted total</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="03-keep-the-posted-receipts.html">Previous lesson · Keep only the posted receipts</a>
+        <a href="../../native-statement-calculations/index.html">Next course · Native Statement Calculations</a>
+      </nav>
+      <p>Run small checks for normal input, a pending receipt, an unknown status and an amount outside the supported total.</p>
+      <h2>Write an expected result</h2>
+      <p>A check compares what a program did with what you expected. Use both an ordinary example and an example that should be refused. With these fictional rows, the normal result is <code>2600 - 850 = 1750</code> cents. A list containing only a pending row should succeed with zero posted cents. A status of <code>waiting</code> should be refused.</p>
+      <p>The example saves the total only after all the rows pass. The method returns true or false as its main answer. An <code>out</code> parameter also lets it return the calculated number. The program sets that number to zero before any refusal.</p>
+      <h2>Run a program that checks itself</h2>
+      <pre><code class="language-csharp">using System;
+
+static class Program
+{
+    static bool TryPostedTotal(string[] states, int[] amounts, out int total)
+    {
+        total = 0;
+        if (states.Length != amounts.Length)
+        {
+            return false;
+        }
+
+        int subtotal = 0;
+        try
+        {
+            for (int index = 0; index &lt; states.Length; index++)
+            {
+                if (states[index] == &quot;posted&quot;)
+                {
+                    // Refuse a result that cannot fit in the chosen whole-number type.
+                    subtotal = checked(subtotal + amounts[index]);
+                }
+                else if (states[index] != &quot;pending&quot;)
+                {
+                    return false;
+                }
+            }
+        }
+        catch (OverflowException)
+        {
+            return false;
+        }
+        total = subtotal;
+        return true;
+    }
+
+    static void Check(string name, bool expectedSuccess, int expectedTotal,
+                      string[] states, int[] amounts)
+    {
+        int total;
+        bool success = TryPostedTotal(states, amounts, out total);
+        if (success != expectedSuccess || total != expectedTotal)
+        {
+            throw new InvalidOperationException(&quot;Check failed: &quot; + name);
+        }
+        Console.WriteLine(&quot;Pass: &quot; + name);
+    }
+
+    static void Main()
+    {
+        // Check ordinary input, absence of posted rows and two refusal paths.
+        Check(&quot;ordinary total&quot;, true, 1750,
+              new[] { &quot;posted&quot;, &quot;posted&quot;, &quot;pending&quot; }, new[] { 2600, -850, 500 });
+        Check(&quot;pending only&quot;, true, 0, new[] { &quot;pending&quot; }, new[] { 500 });
+        Check(&quot;unknown status&quot;, false, 0, new[] { &quot;waiting&quot; }, new[] { 500 });
+        Check(&quot;too large&quot;, false, 0,
+              new[] { &quot;posted&quot;, &quot;posted&quot; }, new[] { int.MaxValue, 1 });
+    }
+}</code></pre>
+      <p>The word <code>checked</code> tells C# to signal overflow if adding an amount would go beyond the range of <code>int</code>. The <code>catch</code> block turns that signal into refusal. <code>true</code> and <code>false</code> are the two values of a Boolean. <code>||</code> means either comparison can show that the check failed.</p>
+      <pre><code class="language-text">Pass: ordinary total
+Pass: pending only
+Pass: unknown status
+Pass: too large</code></pre>
+      <p>If a check reports a failure, read its name and compare its input and expected value. To see one failure safely, temporarily change the <code>pending only</code> expected total to <code>500</code>. Restore it to zero when you finish.</p>
+      <h2>Connect to Umicom</h2>
+      <p>Use the same habit when you edit a practice project in Studio. Save a copy, write down the expected result, run the check, and compare the output. The linked native workshop uses the same synthetic posted amounts with Umicom C.</p>
+      <ul>
+        <li><a href="../../native-statement-calculations/index.html">Native Statement Calculations</a></li>
+        <li><a href="../../../labs/statement-cvm-web/index.html">Umicom WebServer practice form</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/out-parameter-modifier">C# out parameters</a></li>
+      </ul>
+      <p><a href="../../../lessons/02-programming/first-csharp-statements/04-check-the-total.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

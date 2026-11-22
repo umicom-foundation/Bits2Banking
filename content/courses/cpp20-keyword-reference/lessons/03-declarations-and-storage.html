@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/cpp20-keyword-reference/lessons/03-declarations-and-storage.html
+
+PURPOSE:
+Distinguish declarations that infer a type, qualify access, control storage, or inspect an object's size.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Distinguish declarations that infer a type, qualify access, control storage, or inspect an object's size.">
+  <title>Declare names, storage and size | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a>
+      <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Declare names, storage and size</h1>
+      <nav aria-label="Navigate this lesson"><a href="../index.html">Course contents</a>
+      <a href="02-decisions-and-loops.html">Previous lesson — Choose what happens next</a>
+      <a href="04-objects-and-names.html">Next lesson — Organise data and actions into objects</a></nav>
+      <h2>What you will learn</h2>
+      <p>Distinguish declarations that infer a type, qualify access, control storage, or inspect an object's size.</p>
+      <h2>Read the words in context</h2>
+      <p>A <strong>declaration</strong> introduces a name and gives the compiler information about it. <strong>Storage duration</strong> is how long storage exists. <strong>Linkage</strong> determines whether declarations can refer to the same entity across scopes or source files. <strong>Alignment</strong> places an object at an address that meets a boundary requirement.</p>
+      <h2>Reserved keywords in this lesson</h2>
+      <table><thead><tr><th scope="col">Spelling</th><th scope="col">Meaning</th><th scope="col">Read this example</th></tr></thead><tbody>
+<tr><td><code>auto</code></td><td>Lets the compiler infer a type from an initializer in this example.</td><td><code>auto movement = 25;</code></td></tr>
+<tr><td><code>decltype</code></td><td>Names the type determined from an expression or entity. The form can preserve references.</td><td><code>int planned = 25; decltype(planned) actual = 24;</code></td></tr>
+<tr><td><code>const</code></td><td>Prevents modification through that const view.</td><td><code>const int posted_cents = 1750;</code></td></tr>
+<tr><td><code>volatile</code></td><td>Marks accesses that must follow volatile rules. It provides neither atomic operations nor inter-thread synchronisation by itself.</td><td><code>volatile int simulation_input = 0;</code></td></tr>
+<tr><td><code>static</code></td><td>Inside a function, gives a local variable static storage duration. Other uses include class members and file-level names.</td><td><code>int next_id() { static int id = 0; return ++id; }</code></td></tr>
+<tr><td><code>extern</code></td><td>Can declare a variable defined elsewhere, allowing another file to use it.</td><td><code>extern int saved_receipt_count;</code></td></tr>
+<tr><td><code>inline</code></td><td>Allows suitable identical definitions in multiple source-file translation units when the rules are met. The compiler chooses whether to inline calls.</td><td><code>inline int one_cent() { return 1; }</code></td></tr>
+<tr><td><code>thread_local</code></td><td>Provides separate storage for each thread, an independently scheduled path of execution.</td><td><code>thread_local int thread_receipt_count = 0;</code></td></tr>
+<tr><td><code>mutable</code></td><td>Allows an eligible member to change even through a const instance of its class.</td><td><code>struct CacheCount { mutable int reads = 0; };</code></td></tr>
+<tr><td><code>typedef</code></td><td>Introduces another name for an existing type without creating a new type.</td><td><code>typedef int CentCount;</code></td></tr>
+<tr><td><code>using</code></td><td>Can introduce a type alias, or bring a name into a scope in other forms.</td><td><code>using CentCount = int;</code></td></tr>
+<tr><td><code>alignas</code></td><td>Requests an alignment for an object or type. The requested alignment must meet language and implementation constraints.</td><td><code>alignas(int) unsigned char sample = 0;</code></td></tr>
+<tr><td><code>alignof</code></td><td>Reports a type's alignment requirement in bytes.</td><td><code>auto boundary = alignof(int);</code></td></tr>
+<tr><td><code>sizeof</code></td><td>Reports a type or object's size in bytes. Different platforms can report different results.</td><td><code>auto cents_bytes = sizeof(int);</code></td></tr>
+</tbody></table>
+      <h2>Try it and check</h2>
+      <p>After calling next_id twice from the same thread in this simple program, what are the two results? What changes if the local variable stops using static?</p>
+      <p><strong>Check:</strong> The results are 1 then 2. With a fresh automatic local variable initialised to zero on each call, both results are 1.</p>
+      <h2>Apply it to an Umicom project</h2>
+      <p>Sketch an Umicom Studio example for a call counter and a constant configuration value. Use names that say which can change and print the values after two calls.</p>
+      <p><a href="../../../umicom/repositories/" data-lesson-source="content/umicom/repositories.md">Find the Umicom application repositories</a>.</p>
+      <p><a href="../../../lessons/03-native-code/cpp20-keyword-reference/03-declarations-and-storage/" data-lesson-source="content/lessons/03-native-code/cpp20-keyword-reference/03-declarations-and-storage.md">Open the written lesson</a></p>
+      <nav aria-label="Continue learning"><a href="../index.html">Course contents</a>
+      <a href="02-decisions-and-loops.html">Previous lesson — Choose what happens next</a>
+      <a href="04-objects-and-names.html">Next lesson — Organise data and actions into objects</a></nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

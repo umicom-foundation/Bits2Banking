@@ -1,0 +1,110 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/first-csharp-statements/lessons/02-count-posted-receipts.html
+
+PURPOSE:
+Trace a counting loop and read the matching structure in C and Java.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Trace a counting loop and read the matching structure in C and Java.">
+  <title>Count posted receipts | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Count posted receipts</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="01-name-values-in-a-receipt.html">Previous lesson · Name values in a receipt</a>
+        <a href="03-keep-the-posted-receipts.html">Next lesson · Keep only the posted receipts</a>
+      </nav>
+      <p>Trace a counting loop and read the matching structure in C and Java.</p>
+      <h2>Check each item in order</h2>
+      <p>The practice account has three receipts with the states <code>posted</code>, <code>posted</code> and <code>pending</code>. An array keeps items in order. An index is the position used to select one item. C#, C and Java number the first position zero. Here a loop repeats a test for each of the three positions.</p>
+      <pre><code class="language-text">count starts at zero
+for each position from zero up to the end of the list
+    if the state at that position is posted
+        add one to count
+show count</code></pre>
+      <p>The lines above are pseudocode. They describe the work without choosing one programming language. Trace the count as 0, then 1, then 2. The last receipt leaves the count at 2.</p>
+      <h2>Run the C# counting loop</h2>
+      <p>Use the practice project from the previous lesson. Replace <code>Program.cs</code> in your practice copy, then run <code>dotnet run --project ReceiptLab</code> from its parent folder. The C# <code>for</code> line has a starting value, a condition and a step.</p>
+      <pre><code class="language-csharp">using System;
+
+static class Program
+{
+    static void Main()
+    {
+        string[] states = { &quot;posted&quot;, &quot;posted&quot;, &quot;pending&quot; };
+        int count = 0;
+        // Use the list length as the exclusive end of the loop.
+        for (int index = 0; index &lt; states.Length; index++)
+        {
+            if (states[index] == &quot;posted&quot;)
+            {
+                count++;
+            }
+        }
+        Console.WriteLine(count);
+    }
+}</code></pre>
+      <p>C# uses <code>states.Length</code> to get three. The last valid position is two. <code>index++</code> adds one to the index after each loop body. The <code>==</code> test compares the text values in this C# example. The assignment sign <code>=</code> gives a variable a value.</p>
+      <h2>Read C and Java equivalents</h2>
+      <p>C and Java share the three-part <code>for</code> shape. Java reads the array length with lowercase <code>length</code>. For ordinary strings, Java uses <code>equals</code> to compare content. With C strings, <code>strcmp</code> declared in <code>&lt;string.h&gt;</code> returns zero when two strings match. Here are the loop bodies with the conditions already selected for each language.</p>
+      <pre><code class="language-c">/* states holds three C strings. The array size supplies state_count. */
+for (size_t index = 0; index &lt; state_count; index++) {
+    if (strcmp(states[index], &quot;posted&quot;) == 0) {
+        count++;
+    }
+}</code></pre>
+      <pre><code class="language-java">// states is a Java array of strings.
+for (int index = 0; index &lt; states.length; index++) {
+    if (&quot;posted&quot;.equals(states[index])) {
+        count++;
+    }
+}</code></pre>
+      <p>Change the last item in your C# array to <code>posted</code>. The count should rise to 3. When an index error occurs, check the end of the loop. Starting at zero and checking <code>&lt;</code> keeps the index below the length.</p>
+      <h2>Connect to Umicom</h2>
+      <p>The number of posted rows gives you a quick cross-check when designing a practice statement report. Write the expected count before you run the program. Then read all five language forms in the comparison lesson.</p>
+      <ul>
+        <li><a href="../../programming-across-languages/lessons/04-repeat-the-same-for-loop.html">Repeat the same loop in several languages</a></li>
+        <li><a href="../../learning-c/index.html">Learning C</a></li>
+        <li><a href="../../learning-java/index.html">Learning Java</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/iteration-statements">C# iteration statements</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/equality-operators">C# equality</a></li>
+      </ul>
+      <p><a href="../../../lessons/02-programming/first-csharp-statements/02-count-posted-receipts.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

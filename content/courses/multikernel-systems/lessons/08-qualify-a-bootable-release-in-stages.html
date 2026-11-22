@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/multikernel-systems/lessons/08-qualify-a-bootable-release-in-stages.html
+
+PURPOSE:
+Qualify a bootable release in stages.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qualify a bootable release in stages | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a> · <a href="../../course-series.html">Choose a subject</a></nav></div></header><main id="main" class="simple-page"><article>
+
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="07-check-a-core-owned-memory-range.html">Previous lesson</a> · <a href="../../../lessons/06-umicom/multikernel-systems/08-qualify-a-bootable-release-in-stages.md">Markdown manuscript</a></nav>
+<h1>Qualify a bootable release in stages</h1>
+<p>A boot begins when firmware transfers control to a loader or the first system program. An operating system reaches a useful state when its selected kernel, services and console work. An installer writes that system to a chosen storage device. A separate restart after removing the starting media verifies that the installed system can boot on its own.</p>
+<p>An <strong>ISO</strong> is an optical disc image. A <strong>raw USB image</strong> contains bytes for a disk. A publisher may qualify one file for both uses. <strong>UEFI</strong> firmware can look for a default loader name for its processor architecture on removable media. Image format, architecture, drivers, and startup behavior each need evidence.</p>
+<h2>Build a release evidence worksheet</h2>
+<ol>
+<li>Choose one target and write down the exact processor architecture, firmware mode, image format and expected first useful screen or command. Example A is an Umicom Kernel RISC-V emulator guest. Example B is an x86-64 Umicom OS Foundation diskless Linux boot. Choose separate rows for normal and recovery.</li>
+<li>Identify every boot component with its release version and digest. In PowerShell, substitute the path to the reviewed file in the command below. Compare the resulting SHA-256 value with the trusted release record. A matching digest establishes file identity.</li>
+<li>Describe what you expect the guest to show after startup. Record the emulator version, guest image digest, exact readiness marker and shutdown outcome when you perform the boot. Avoid handing a guest a physical disk when a diskless run or a disposable virtual disk suffices.</li>
+<li>For a future installer, add an independent storage trial with a disposable blank virtual disk. Confirm the target by identity and capacity, record the proposed changes, and boot again after removing the starting image. A real computer adds firmware, drivers, recovery and hardware qualification. Record unsupported or missing stages as pending.</li>
+</ol>
+<pre><code>Get-FileHash -Algorithm SHA256 -LiteralPath 'C:/Images/reviewed-release.iso'</code></pre>
+<h2>Practice</h2>
+<p>Explain what each observation establishes. An ELF executable loaded by the QEMU RISC-V virt model shows one virtual-board path. A disc-image structure check shows that an expected structure exists. A restart from a freshly installed virtual disk provides separate evidence that the disk can start independently. No install or media write is required to complete the worksheet.</p>
+<h2>Apply it to Umicom</h2>
+<p>Use this worksheet for Umicom Kernel and Umicom OS release tests. Keep the Linux Foundation and native Kernel rows separate so an observation from one does not become a release claim about the other. Use the same reporting distinctions when Umicom Automated Testing records a build, boot, service check, or recovery step.</p>
+<p><a href="https://uefi.org/specs/UEFI/2.11/03_Boot_Manager.html">UEFI removable media boot behavior</a> · <a href="https://www.qemu.org/docs/master/system/riscv/virt.html">QEMU RISC-V virt model</a> · <a href="../../building-a-compiler-in-c/lessons/08-architectures-and-boot-media.html">Compiler lesson on architectures and boot media</a></p>
+<p><a href="../index.html">Return to the course</a></p>
+<p><a href="09-separate-firmware-inventory-from-hart-entry.html">Next lesson on firmware inventory and hart entry</a></p>
+</article></main><footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer></body></html>

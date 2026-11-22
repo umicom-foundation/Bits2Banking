@@ -1,0 +1,102 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/d-keyword-reference/lessons/03-pass-values-and-promises.html
+
+PURPOSE:
+Trace a call, then see what parameter words tell the person reading it.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pass values and describe function promises | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Pass values and describe function promises</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="02-choose-repeat-and-stop.html">Previous lesson: Choose, repeat and stop in D</a> <a href="04-group-and-protect-data.html">Next lesson: Group and protect related data</a></nav>
+      <p>Trace a call, then see what parameter words tell the person reading it.</p>
+      <h2>Follow the caller’s value</h2>
+      <p>A function is a group of steps with a name. Parameters label the values supplied for a call. A plain integer parameter receives its own value. The program uses <code>ref</code> to pass access to the caller’s variable. This resembles a reference parameter in C++. C can express the same update using a pointer, which has different spelling and rules.</p>
+      <h2>Read a promise separately from a test</h2>
+      <p>Words such as <code>pure</code> and <code>nothrow</code> describe restrictions the compiler checks. <code>assert</code> is useful for a condition that should hold when the program is correct. Some compiler modes remove assertion checks. A regular validation branch remains necessary when accepting data from people or files.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-void"><th scope="row"><code>void</code></th><td><code>void log_view() { }</code></td><td>Define a function with no result value.</td></tr>
+          <tr id="kw-return"><th scope="row"><code>return</code></th><td><code>int opening() { return 425; }</code></td><td>Finish a function and give its result to the caller.</td></tr>
+          <tr id="kw-ref"><th scope="row"><code>ref</code></th><td><code>void add_five(ref int cents) { cents += 5; }</code></td><td>Let this function work on the caller’s object through the parameter.</td></tr>
+          <tr id="kw-in"><th scope="row"><code>in</code></th><td><code>int read_cents(in int cents) { return cents; }</code></td><td>Declare an input parameter. Check the selected compiler mode for the extra scope and passing rules.</td></tr>
+          <tr id="kw-out"><th scope="row"><code>out</code></th><td><code>void reset(out int cents) { cents = 0; }</code></td><td>Use a result parameter that is initialized to its type’s default as the call begins.</td></tr>
+          <tr id="kw-inout"><th scope="row"><code>inout</code></th><td><code>inout(int)* same(inout(int)* p) { return p; }</code></td><td>Relate qualifiers of the return type to those passed in through the parameter.</td></tr>
+          <tr id="kw-lazy"><th scope="row"><code>lazy</code></th><td><code>int calculate(lazy int amount) { return amount; }</code></td><td>Pass a deferred expression. Using amount requests evaluation; repeated uses can evaluate it again.</td></tr>
+          <tr id="kw-pure"><th scope="row"><code>pure</code></th><td><code>pure int double_cents(int cents) { return cents * 2; }</code></td><td>Declare the language’s restriction on access to external mutable state.</td></tr>
+          <tr id="kw-nothrow"><th scope="row"><code>nothrow</code></th><td><code>int count_rows() nothrow { return 3; }</code></td><td>Declare that the function does not propagate exceptions of type Exception.</td></tr>
+          <tr id="kw-function"><th scope="row"><code>function</code></th><td><code>alias Calculator = int function(int);</code></td><td>Name the type of a pointer to a function taking and returning an int.</td></tr>
+          <tr id="kw-delegate"><th scope="row"><code>delegate</code></th><td><code>alias Calculator = int delegate(int);</code></td><td>Name a callable type that can carry a context as well as code.</td></tr>
+          <tr id="kw-deprecated"><th scope="row"><code>deprecated</code></th><td><code>deprecated(&quot;use count_rows&quot;) int old_count() { return 3; }</code></td><td>Mark a declaration for migration. A compiler can report use of the older API.</td></tr>
+          <tr id="kw-assert"><th scope="row"><code>assert</code></th><td><code>assert(total == 425);</code></td><td>Check a program assumption in a build that executes assertions. Validate normal input in ordinary code too.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">START reserve at 425
+CALL add with access to the same reserve
+UPDATE reserve by -25
+SHOW reserve</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.d</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-d">import std.stdio : writeln;
+
+void add(ref int target, int amount)
+{
+    target += amount;
+}
+
+void main()
+{
+    int reserve = 425;
+    add(reserve, -25);
+    writeln(reserve);
+}</code></pre>
+      <pre><code class="language-text">dmd -run practice.d</code></pre>
+      <p>Expected output</p>
+      <pre><code class="language-text">400</code></pre>
+      <p>If the terminal cannot find dmd, check the D compiler installation for your operating system. If your course uses another documented D compiler, use its build and run instructions. You can still trace the example without installing a compiler.</p>
+      <h2>Try a change</h2>
+      <p>Remove ref from the definition and trace where the addition happens. What does the call print?</p>
+      <details><summary>Check your answer</summary>      <p>The function updates its own integer parameter. The caller’s reserve remains 425.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../learning-d/index.html">Continue Learning D</a></li>
+        <li><a href="https://dlang.org/spec/lex.html">D language specification, Lexical grammar and Keywords</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

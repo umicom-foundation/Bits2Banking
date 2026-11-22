@@ -1,0 +1,104 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/go-keyword-reference/lessons/03-describe-data-and-behaviour.html
+
+PURPOSE:
+Group named fields, find values by a key and describe what an object can do.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Describe data and behaviour | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Describe data and behaviour</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="02-choose-and-repeat.html">Previous lesson: Choose and repeat with Go</a> <a href="04-pass-a-result-between-workers.html">Next lesson: Pass a result between workers</a></nav>
+      <p>Group named fields, find values by a key and describe what an object can do.</p>
+      <h2>Group fields and give them names</h2>
+      <p>The letters in <code>Entry</code> and <code>Cents</code> are names chosen for this example. <code>struct</code> is the reserved word. Fields may be read using a dot. A map uses a key such as <code>posted</code> to look up a value. Request both lookup results when you need to distinguish a missing item from an item whose value is zero.</p>
+      <h2>Ask for behaviour</h2>
+      <p>An interface describes what a value can do. <code>Namer</code> describes a value that can return a string when asked for its name. <code>Reconciliation</code> provides the method. The next program passes a value of that type to a function that expects a <code>Namer</code>.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-struct"><th scope="row"><code>struct</code></th><td><code>type Entry struct { Cents int }</code></td><td>Group fields that belong together.</td></tr>
+          <tr id="kw-map"><th scope="row"><code>map</code></th><td><code>counts := map[string]int{&quot;posted&quot;: 2}</code></td><td>Build a collection that uses a string key to find an integer value.</td></tr>
+          <tr id="kw-interface"><th scope="row"><code>interface</code></th><td><code>type Namer interface { Name() string }</code></td><td>Describe required methods. A type can satisfy it by providing the method set.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">ASK the item for its name
+LOOK UP the name in the count table
+SHOW the name, the result and whether it was found</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.go</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+type Namer interface {
+    Name() string
+}
+
+type Reconciliation struct {
+    label string
+}
+
+func (item Reconciliation) Name() string {
+    return item.label
+}
+
+func printCount(item Namer, counts map[string]int) {
+    label := item.Name()
+    count, found := counts[label]
+    fmt.Println(label, count, found)
+}
+
+func main() {
+    counts := map[string]int{&quot;posted&quot;: 2}
+    printCount(Reconciliation{label: &quot;posted&quot;}, counts)
+}</code></pre>
+      <pre><code class="language-text">go run practice.go</code></pre>
+      <p>Expected line</p>
+      <pre><code class="language-text">posted 2 true</code></pre>
+      <p>If the terminal cannot find go, complete the setup for your operating system before running the command. If Go reports a missing package or main function, check that the whole program was copied and saved as practice.go. The paper trace still works without a toolchain.</p>
+      <h2>Try a change</h2>
+      <p>Change the label supplied to printCount to &quot;pending&quot;. Why is the final flag useful even when the count is 0?</p>
+      <details><summary>Check your answer</summary>      <p>Expect <code>pending 0 false</code>. The false flag distinguishes absence from an explicitly stored count of zero.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../go-statement-tools/index.html">Go Statement Tools</a></li>
+        <li><a href="https://go.dev/ref/spec#Keywords">The Go language specification, Keywords</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

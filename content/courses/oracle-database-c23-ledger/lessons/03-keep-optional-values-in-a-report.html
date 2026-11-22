@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/oracle-database-c23-ledger/lessons/03-keep-optional-values-in-a-report.html
+
+PURPOSE:
+Make zero, absence and refusal observable across a native and a D caller.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Make zero, absence and refusal observable across a native and a D caller.">
+  <title>Keep optional values distinct in a financial report | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Keep optional values distinct in a financial report</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-follow-a-named-bind-and-indicator.html">Previous · Follow a named OCI bind and a result indicator</a> · <a href="../../../lessons/04-web/oracle-database-c23-ledger/03-keep-optional-values-in-a-report.md">Markdown edition</a></nav>
+<p>Make zero, absence and refusal observable across a native and a D caller.</p>
+
+<h2>Rehearse a narrow typed boundary</h2>
+
+<pre><code class="language-d">struct OptionalAmount {
+    bool present;
+    long cents;
+}
+auto zero = OptionalAmount(true, 0);
+auto absent = OptionalAmount(false, 0);</code></pre>
+
+<p>D long is a signed 64-bit type. The second field is meaningful only when present is true. The two constructors model the native states. For a real D-to-C call, use a separately qualified C ABI mapping for layout and boolean values.</p>
+
+<p>The previous lab sets an amount to −850 then encounters a rejected indicator. It preserves the valid amount and reports a refused decode. A UI can attach an error status to the last complete figure instead of presenting a replacement.</p>
+
+<h2>Apply this to Umicom TMS</h2>
+
+<p>One screen can show zero as 0.00, missing as an em dash with an accessible label, and a rejected fetch as an error with the prior evidence. Qualify each case through Umicom Automated Testing without needing real ledger data.</p>
+
+<ul>
+<li><a href="../../../labs/native/service-practice/oracle-ledger/main.c">Read the complete native lab source</a></li>
+<li><a href="../../mongodb-c23-documents/index.html">Compare typed documents</a></li>
+</ul>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+<li><a href="../../mysql-c23-ledger/index.html">MySQL Ledger Practice in C23</a></li>
+<li><a href="../../bookkeeping-from-first-entry/index.html">Bookkeeping from Your First Entry</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-follow-a-named-bind-and-indicator.html">Previous · Follow a named OCI bind and a result indicator</a> · <a href="../../../lessons/04-web/oracle-database-c23-ledger/03-keep-optional-values-in-a-report.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

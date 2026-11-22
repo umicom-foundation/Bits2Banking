@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/fpml-for-treasury/lessons/01-read-the-two-legs.html
+
+PURPOSE:
+Follow payer, receiver, currency and rate terms before opening a schema.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Follow payer, receiver, currency and rate terms before opening a schema.">
+  <title>Read the Two Sides of a Swap | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/applied-native-courses.md">Applied native courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Read the Two Sides of a Swap</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="02-read-the-import-boundary.html">Next lesson · Read and Validate the Import Boundary</a>
+      </nav>
+      <p>Follow payer, receiver, currency and rate terms before opening a schema.</p>
+      <h2>Draw the agreement</h2>
+      <p>A swap is an agreement to exchange calculated payment flows. Each side of that calculation is called a leg. For this exercise, Cedar pays a fixed rate and Birch pays a rate that follows a floating index. A notional amount supplies the base for the calculation. The example makes no exchange of notional principal.</p>
+      <pre><code class="language-text">Cedar  -- fixed 4.25% on USD 100,000 --&gt;  Birch
+Cedar  &lt;-- floating training index ----  Birch</code></pre>
+      <p>FpML means Financial products Markup Language. It is a standard maintained by ISDA for representing financial product terms and related processes. A confirmation documents the terms agreed between parties. The standard has different views for different processes, so identify the view and version before selecting a schema.</p>
+      <h2>Read a small teaching record</h2>
+      <p>XML gives each piece of data a named element. Read the text between each pair of tags. The urn:bits2banking namespace marks this shortened record as a local teaching format. Use the pinned FpML 5.13 Recommendation 2 source to look up official confirmation structures.</p>
+      <pre><code class="language-xml">&lt;trainingSwap xmlns=&quot;urn:bits2banking:training-swap&quot; tradeId=&quot;TRN-401&quot;&gt;
+  &lt;notional currency=&quot;USD&quot;&gt;100000.00&lt;/notional&gt;
+  &lt;fixed payer=&quot;Cedar&quot; receiver=&quot;Birch&quot;&gt;4.25&lt;/fixed&gt;
+  &lt;floating payer=&quot;Birch&quot; receiver=&quot;Cedar&quot;&gt;TRAINING-INDEX&lt;/floating&gt;
+&lt;/trainingSwap&gt;</code></pre>
+      <h2>Work it out</h2>
+      <ol>
+        <li>Copy the four party roles in order. Check that the direction reverses between the fixed and floating legs.</li>
+        <li>Circle the currency and record it beside the notional. Then convert 4.25 percent to 425 basis points. One basis point is one hundredth of one percentage point.</li>
+        <li>Make a second copy with Cedar as both payers. Mark the two legs as a contradiction in this exercise and leave the accepted example alone.</li>
+      </ol>
+      <p>A complete interest calculation would also need dates, schedules, day-count conventions and actual index observations. This short record gives enough information to practise import and role checking.</p>
+      <h2>Sources</h2>
+      <ul>
+        <li><a href="https://www.fpml.org/latest_news/isda-has-republished-the-recommendation-for-fpml-version-5-13-build-8/">ISDA FpML 5.13 Recommendation 2, build 8 notice</a></li>
+        <li><a href="https://www.fpml.org/the_standard/">ISDA FpML specifications and views</a></li>
+      </ul>
+      <p><a href="../../../lessons/07-practical-domains/fpml-for-treasury/01-read-the-two-legs.md">Written edition</a></p>
+    </article>
+  </main>
+</body>
+</html>

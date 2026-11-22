@@ -1,0 +1,97 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/nodejs-native-reporting/lessons/02-connect-a-known-native-producer.html
+
+PURPOSE:
+Let a local Node.js adapter call the reviewed C reporter with no shell and reject incomplete results.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Let a local Node.js adapter call the reviewed C reporter with no shell and reject incomplete results.">
+  <title>Connect a known native producer | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Connect a known native producer</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="01-check-a-local-report.html">Previous · Check a local report</a> · <a href="03-diagnose-a-refused-or-empty-result.html">Next · Diagnose a refused or empty result</a> · <a href="../../../lessons/04-web/nodejs-native-reporting/02-connect-a-known-native-producer.md">Markdown edition</a></nav>
+<p>Let a local Node.js adapter call the reviewed C reporter with no shell and reject incomplete results.</p>
+
+<h2>Trace what crosses the boundary</h2>
+
+<p>The operator chooses a known local executable built from the course source. The process receives a fixed list of arguments. Its standard output is used only if the command succeeds and the JSON parser and shape checks accept it. An exit code is a number that tells the caller whether work succeeded.</p>
+
+<pre><code class="language-javascript">import { execFile } from &quot;node:child_process&quot;;
+import { isAbsolute } from &quot;node:path&quot;;
+import { promisify } from &quot;node:util&quot;;
+import { decodeReport } from &quot;./report-shape.mjs&quot;;
+
+const runFile = promisify(execFile);
+
+try {
+  const producer = process.argv[2];
+  if (!producer || !isAbsolute(producer))
+    throw new Error(&quot;Set the approved native executable path&quot;);
+
+  // The exercise uses a fixed argument list and a bounded result.
+  const { stdout } = await runFile(producer, [], {
+    shell: false, encoding: &quot;utf8&quot;, maxBuffer: 16384,
+    timeout: 3000, windowsHide: true,
+  });
+  const report = decodeReport(stdout);
+  console.log(report.postedCount + &quot; posted, &quot; + report.postedCents + &quot; cents&quot;);
+} catch {
+  console.error(&quot;Training statement unavailable.&quot;);
+  process.exitCode = 1;
+}</code></pre>
+
+<h2>Prepare an optional local run</h2>
+
+<ol>
+<li>Place the C source and <code>report-shape.mjs</code> together in a practice folder. Save the adapter as <code>call-report.mjs</code>.</li>
+<li>Open a configured PowerShell 7 window where <code>gcc</code> denotes your trusted C toolchain. Compile with <code>gcc -std=c23 -Wall -Wextra -Werror statement-report.c -o statement-report.exe</code>. Stop if the compiler fails.</li>
+<li>With your own reviewed result, try <code>node call-report.mjs (Resolve-Path ./statement-report.exe).Path</code>. Expect <code>2 posted, 1750 cents</code>.</li>
+<li>Read <code>$LASTEXITCODE</code> before another native command. A missing approved file or an incomplete result should produce the documented unavailable message and exit code 1. If security software blocks the file, stop the exercise and complete the paper trace.</li>
+</ol>
+
+<p>The absolute path checks how the operator specified the command. It does not establish trust by itself. Keep the executable choice under workspace control and outside any future browser request input. The timeout and buffer limit are classroom bounds for the adapter.</p>
+
+<p>For an Umicom Command practice exercise, specify the executable, argument list, expected output and exit policy for a read-only test runner. Node.js is the adapter in this course because its runtime owns the process API.</p>
+
+<ul>
+<li><a href="https://nodejs.org/api/child_process.html#child_processexecfilefile-args-options-callback">Node.js execFile API</a></li>
+<li><a href="../../../labs/native/web-statement-contract/statement-report.c">C23 statement reporter</a></li>
+</ul>
+
+<h2>Follow another path</h2>
+
+<ul>
+<li><a href="../../practical-web-and-data-foundations/index.html">Practical Web and Data Foundations</a></li>
+<li><a href="../../react-native-statements/index.html">React and Native Statement Data</a></li>
+<li><a href="../../../umicom/native-statement-web-lab.md">Native statement lab on Umicom WebServer</a></li>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="01-check-a-local-report.html">Previous · Check a local report</a> · <a href="03-diagnose-a-refused-or-empty-result.html">Next · Diagnose a refused or empty result</a> · <a href="../../../lessons/04-web/nodejs-native-reporting/02-connect-a-known-native-producer.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

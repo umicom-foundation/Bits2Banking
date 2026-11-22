@@ -1,0 +1,166 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/java-keyword-reference/lessons/05-errors-and-reserved-spellings.html
+
+PURPOSE:
+A package groups types under a name. An exception describes a failure that travels to a caller or a handler.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A package groups types under a name. An exception describes a failure that travels to a caller or a handler.">
+  <title>Errors, package names, and reserved spellings | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Errors, package names, and reserved spellings</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="04-access-and-storage.html">Previous · Access, storage, and shared state</a> · <a href="06-records-and-patterns.html">Next · Contextual words in records and patterns</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/05-errors-and-reserved-spellings.md">Markdown edition</a></nav>
+<p>A package groups types under a name. An exception describes a failure that travels to a caller or a handler.</p>
+
+<h2>Use the fragments</h2>
+
+<p>A package groups types under a name. An exception describes a failure that travels to a caller or a handler.</p>
+
+<p>For a local statement, place it inside <code>public static void main(String[] args)</code> in a class named <code>ReceiptPractice</code>. Save it in <code>ReceiptPractice.java</code>. Use <code>javac ReceiptPractice.java</code> from a JDK 25, then <code>java ReceiptPractice</code>. Take class declarations, package declarations and module descriptors as separate examples.</p>
+
+<h2>Examples by spelling</h2>
+
+<h3>package</h3>
+
+<p>Place a compilation unit in a named package. This line precedes imports and type declarations.</p>
+
+<pre><code class="language-java">package training.receipts;
+class Receipt { }</code></pre>
+
+<p>The class belongs to training.receipts.</p>
+
+<h3>import</h3>
+
+<p>Let code refer to an accessible type by its simple name. Put the import before the class.</p>
+
+<pre><code class="language-java">import java.util.List;
+class Receipt { List&lt;Integer&gt; amounts = List.of(25); }</code></pre>
+
+<p>The list contains the one training amount 25.</p>
+
+<h3>try</h3>
+
+<p>Start a region with an associated handler or cleanup.</p>
+
+<pre><code class="language-java">try { System.out.println(Integer.parseInt(&quot;25&quot;)); }
+catch (NumberFormatException failure) { System.out.println(&quot;invalid&quot;); }</code></pre>
+
+<p>This input prints 25.</p>
+
+<h3>catch</h3>
+
+<p>Handle a matching exception from a try block.</p>
+
+<pre><code class="language-java">try { Integer.parseInt(&quot;wrong&quot;); }
+catch (NumberFormatException failure) { System.out.println(&quot;invalid&quot;); }</code></pre>
+
+<p>It prints invalid.</p>
+
+<h3>finally</h3>
+
+<p>Run cleanup when leaving a try statement under ordinary execution.</p>
+
+<pre><code class="language-java">try { System.out.println(&quot;check&quot;); }
+finally { System.out.println(&quot;finish&quot;); }</code></pre>
+
+<p>It prints check then finish.</p>
+
+<h3>throw</h3>
+
+<p>Send a failure along the exception path.</p>
+
+<pre><code class="language-java">static void reject() { throw new IllegalArgumentException(&quot;bad amount&quot;); }</code></pre>
+
+<p>Calling reject raises the named exception.</p>
+
+<h3>throws</h3>
+
+<p>Declare an exception that may leave a method.</p>
+
+<pre><code class="language-java">static void fail() throws java.io.IOException {
+    throw new java.io.IOException(&quot;training failure&quot;);
+}</code></pre>
+
+<p>Callers must handle or declare this checked exception.</p>
+
+<h3>assert</h3>
+
+<p>Check an internal expectation when assertions are enabled.</p>
+
+<pre><code class="language-java">assert 250 &gt;= 0 : &quot;amount must be positive or zero&quot;;</code></pre>
+
+<p>This expectation passes when enabled. Use java -ea to enable assertions. Use ordinary validation for input.</p>
+
+<h3>const</h3>
+
+<p>Recognise a reserved word that has no declaration form in Java.</p>
+
+<pre><code class="language-java">const int amount = 250;</code></pre>
+
+<p>This intentionally fails. Use final int amount = 250; for an assigned-once local.</p>
+
+<h3>goto</h3>
+
+<p>Recognise a reserved word that does not introduce a Java jump.</p>
+
+<pre><code class="language-java">goto done;</code></pre>
+
+<p>This intentionally fails. Use loop controls or a named method.</p>
+
+<h3>_</h3>
+
+<p>Declare an unnamed variable in a permitted Java SE 25 context.</p>
+
+<pre><code class="language-java">for (int _ : new int[] { 20, 50 }) { System.out.println(&quot;row&quot;); }</code></pre>
+
+<p>It prints row twice. No expression can use that unnamed value.</p>
+
+<h2>Compare another language</h2>
+
+<p>C supports goto and uses status returns in many libraries. Java reserves goto and handles exceptions with explicit language statements.</p>
+
+<h2>Try it</h2>
+
+<p>In the catch example, change wrong to 17 and print the parsed value in the try block. It prints 17 and skips the handler.</p>
+
+<h2>Apply it to Umicom</h2>
+
+<p>Describe the non-destructive behaviour you expect from a malformed sample before proposing an improvement to a Studio import command.</p>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../programming-across-languages/index.html">Programming across languages</a></li>
+<li><a href="../../learning-java/index.html">Learning Java</a></li>
+<li><a href="../../c23-keyword-reference/index.html">C23 keyword reference</a></li>
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-3.html#jls-3.9">Java SE 25 lexical structure, section 3.9</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="04-access-and-storage.html">Previous · Access, storage, and shared state</a> · <a href="06-records-and-patterns.html">Next · Contextual words in records and patterns</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/05-errors-and-reserved-spellings.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

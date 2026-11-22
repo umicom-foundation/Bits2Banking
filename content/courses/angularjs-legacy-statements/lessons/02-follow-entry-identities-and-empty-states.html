@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/angularjs-legacy-statements/lessons/02-follow-entry-identities-and-empty-states.html
+
+PURPOSE:
+Trace AngularJS ngRepeat identities and read the empty-state branch with an unchanged native report.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Trace AngularJS ngRepeat identities and read the empty-state branch with an unchanged native report.">
+  <title>Follow entry identities and empty states | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Follow entry identities and empty states</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="01-read-a-legacy-component.html">Previous · Read a legacy statement component</a> · <a href="03-plan-a-host-migration.html">Next · Plan a host migration around the native contract</a> · <a href="../../../lessons/04-web/angularjs-legacy-statements/02-follow-entry-identities-and-empty-states.md">Markdown edition</a></nav>
+<p>Trace AngularJS ngRepeat identities and read the empty-state branch with an unchanged native report.</p>
+
+<h2>Use a stable key</h2>
+
+<p>A stable identity is a name for one item that remains the same when its position changes. AngularJS 1.x uses <code>ng-repeat</code> to display one copy of a row template per entry. The <code>track by</code> expression tells the framework which row identity it should use. The C lab requires ascending positive IDs before producing a snapshot.</p>
+
+<pre><code class="language-html">&lt;p ng-if=&quot;$ctrl.report &amp;&amp; !$ctrl.report.rows.length&quot; role=&quot;status&quot;&gt;
+  No entries in this statement.
+&lt;/p&gt;
+&lt;table ng-if=&quot;$ctrl.report &amp;&amp; $ctrl.report.rows.length&quot;&gt;
+  &lt;caption&gt;Fictional statement entries&lt;/caption&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th scope=&quot;col&quot;&gt;Entry&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Cents&lt;/th&gt;
+    &lt;th scope=&quot;col&quot;&gt;State&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr ng-repeat=&quot;row in $ctrl.report.rows track by row.id&quot;&gt;
+      &lt;th scope=&quot;row&quot;&gt;{{row.id}}&lt;/th&gt;&lt;td&gt;{{row.cents}}&lt;/td&gt;&lt;td&gt;{{row.status}}&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+
+<ol>
+<li>Below the summary in <code>statement-summary.html</code>, add the sample table and empty message.</li>
+<li>Trace the supplied three-row snapshot. Predict IDs 101, 102 and 103, including the visibly pending row. The caption tells the reader what the table represents.</li>
+<li>Pass the empty version 1 snapshot. The empty message should appear and the table should be absent.</li>
+<li>Draw a refusal box for a missing snapshot, then a separate box for a successful empty one. The parent must report a failed read separately.</li>
+</ol>
+
+<p>The template interpolates the cents and state as text. Keep unchecked source data away from HTML-producing directives. Upstream admission should refuse an unsupported version or a repeated key before replacing the last valid screen result.</p>
+
+<h2>Write a regression note</h2>
+
+<p>For a migration of your Umicom Bank teaching example, record the row IDs, cents, column names and empty message. A person reviewing the replacement can now compare the two views without access to the original business implementation.</p>
+
+<ul>
+<li><a href="../../../labs/native/web-statement-contract/statement-report.json">Three-row practice snapshot</a></li>
+<li><a href="../../../labs/native/web-statement-contract/statement-report-empty.json">Empty practice snapshot</a></li>
+<li><a href="https://docs.angularjs.org/api/ng/directive/ngRepeat">AngularJS ngRepeat reference</a></li>
+<li><a href="../../nodejs-native-reporting/index.html">Node.js and Native Statement Reports</a></li>
+</ul>
+
+<h2>Follow another path</h2>
+
+<ul>
+<li><a href="../../nodejs-native-reporting/index.html">Node.js and Native Statement Reports</a></li>
+<li><a href="../../react-native-statements/index.html">React and Native Statement Data</a></li>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+<li><a href="https://docs.angularjs.org/misc/version-support-status">AngularJS support status</a></li>
+<li><a href="https://angular.dev/api/core/Component">Angular component reference</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="01-read-a-legacy-component.html">Previous · Read a legacy statement component</a> · <a href="03-plan-a-host-migration.html">Next · Plan a host migration around the native contract</a> · <a href="../../../lessons/04-web/angularjs-legacy-statements/02-follow-entry-identities-and-empty-states.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

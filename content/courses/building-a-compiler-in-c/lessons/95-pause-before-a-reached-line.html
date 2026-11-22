@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/95-pause-before-a-reached-line.html
+
+PURPOSE:
+Teach one-shot source line pauses and distinguish source location from execution.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pause before a reached source line | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav></div></header>
+<main id="main" class="simple-page">
+  <article>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="94-supply-a-signed-browser-input.html">Previous lesson</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/95-pause-before-a-reached-line.md">Markdown manuscript</a></nav>
+    <h1>Pause before a reached source line</h1>
+    <p>A debugger can pause a program at a place you want to inspect. The temporary <code>until</code> command in the Umicom C source interpreter pauses before the next reached statement that begins on the requested line. A line can be present in the file and still be skipped by a branch.</p>
+    <h2>Practice with two runs</h2>
+    <ol>
+      <li>Save the program below as <code>pause.c</code> with its first line at line 1. Use an Umicom C build that supports <code>until</code>.</li>
+      <li>In a terminal run <code>umicom-c interpret pause.c --step</code>. The prompt identifies the next statement. Type <code>until 6</code> and press Enter. Expect output for the initial value and the condition, then a prompt at line 6 before <code>total += 34;</code> executes. Line 4 is inside a branch whose condition is false.</li>
+      <li>Type <code>next</code> to execute line 6, then <code>next</code> again to return. Expect <code>Result: 42</code>. Rerun and type <code>until 4</code>. Execution reaches its normal result and reports that it never reached line 4.</li>
+      <li>Start again and type <code>until 6</code>, then <code>quit</code> at the pause. Check that the completed statements remain in the trace and there is no <code>Result:</code> line.</li>
+    </ol>
+    <pre><code>int main(void) {
+    int total = 8;
+    if (0) {
+        total += 99;
+    }
+    total += 34;
+    return total;
+}</code></pre>
+    <h2>Explain the checks</h2>
+    <p>A line target controls where the console prompts. It leaves the interpreter’s instruction limit in force. Try the same session with <code>--max-steps 1</code>. The budget stops the run before it reaches line 6. An invalid number such as <code>until 6junk</code> leaves the current prompt in place.</p>
+    <p>Trace rows and the returned value are on standard output. Prompts and reports about an unreached line are diagnostic messages. An editor can display the upcoming source line and keep the execution result separate. Move line 6 across two lines and predict where <code>until</code> will stop. It matches the line on which the statement begins.</p>
+    <p>If the program cannot find the command, check that your executable came from the current Umicom C source build. Then recheck file line numbers and confirm that you started with <code>--step</code>. <a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/source-interpreter.md">Umicom C interpreter guide</a></p>
+  </article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/swift-payment-messages/lessons/03-apply-payment-evidence-in-c.html
+
+PURPOSE:
+Write a native status gate that keeps repeats and mismatches from posting a second result.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Write a native status gate that keeps repeats and mismatches from posting a second result.">
+  <title>Apply Payment Evidence in C23 | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/applied-native-courses.md">Applied native courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Apply Payment Evidence in C23</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="02-normalize-message-evidence.html">Previous lesson · Normalize Message Evidence for Review</a>
+      </nav>
+      <p>Write a native status gate that keeps repeats and mismatches from posting a second result.</p>
+      <h2>Choose the narrow state machine</h2>
+      <p>A state machine names each permitted condition and the events that can move a record to another condition. This exercise starts with an instruction awaiting status. A modeled accepted status moves it to accepted. A matched independent statement can then mark it reconciled. This program has no ledger postings.</p>
+      <pre><code class="language-c">#include &lt;assert.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+enum State { AWAITING, ACCEPTED, REJECTED, RECONCILED };
+enum Event { ACCEPT_STATUS, REJECT_STATUS, MATCHED_STATEMENT };
+enum Outcome { CHANGED, REPEAT, REVIEW };
+struct Payment { unsigned reference; int64_t cents; unsigned currency; enum State state; };
+
+static enum Outcome apply(struct Payment *row, struct Payment linked, enum Event event)
+{
+    // All incoming values have passed version mapping in this paper model.
+    if (row-&gt;reference != linked.reference || row-&gt;cents != linked.cents ||
+        row-&gt;currency != linked.currency || linked.cents &lt;= 0) {
+        return REVIEW;
+    }
+    switch (event) {
+    case ACCEPT_STATUS:
+        if (row-&gt;state == ACCEPTED || row-&gt;state == RECONCILED) return REPEAT;
+        if (row-&gt;state != AWAITING) return REVIEW;
+        row-&gt;state = ACCEPTED;
+        return CHANGED;
+    case REJECT_STATUS:
+        if (row-&gt;state == REJECTED) return REPEAT;
+        if (row-&gt;state != AWAITING) return REVIEW;
+        row-&gt;state = REJECTED;
+        return CHANGED;
+    case MATCHED_STATEMENT:
+        if (row-&gt;state == RECONCILED) return REPEAT;
+        if (row-&gt;state != ACCEPTED) return REVIEW;
+        row-&gt;state = RECONCILED;
+        return CHANGED;
+    }
+    return REVIEW;
+}
+
+int main(void)
+{
+    struct Payment row = {201, 12500, 840, AWAITING};
+    const struct Payment linked = row;
+    const struct Payment wrong_amount = {201, 12499, 840, AWAITING};
+    assert(apply(&amp;row, linked, MATCHED_STATEMENT) == REVIEW);
+    assert(apply(&amp;row, linked, ACCEPT_STATUS) == CHANGED);
+    assert(apply(&amp;row, linked, ACCEPT_STATUS) == REPEAT);
+    assert(apply(&amp;row, wrong_amount, MATCHED_STATEMENT) == REVIEW);
+    assert(row.state == ACCEPTED);
+    assert(apply(&amp;row, linked, MATCHED_STATEMENT) == CHANGED);
+    assert(apply(&amp;row, linked, MATCHED_STATEMENT) == REPEAT);
+    puts(&quot;P-201 reconciled once&quot;);
+    return 0;
+}</code></pre>
+      <p>Here 840 is the local numeric identifier for the USD classroom row. Use an agreed currency-code table at the adapter. A live service should retain each source message identity separately before applying its own transaction and replay rules.</p>
+      <ol>
+        <li>Copy into payment_evidence.c and keep assert checks enabled.</li>
+        <li>Build with the supplied C23 command. On Windows use a configured GCC toolchain, name the output payment-evidence.exe and run .\payment-evidence.exe in PowerShell.</li>
+        <li>Try a matching reference P-201 with a different currency number. The gate should keep the existing state and return REVIEW.</li>
+      </ol>
+      <pre><code class="language-text">cc -std=c23 -Wall -Wextra -pedantic payment_evidence.c -o payment-evidence
+./payment-evidence
+Expected: P-201 reconciled once</code></pre>
+      <h2>Read an x86-64 Assembly comparison</h2>
+      <p>On a System V AMD64 target, the first two integer parameters arrive in RDI and RSI. The comparison writes zero or one to EAX. This illustration compares the count of minor units only. The C gate still owns the reference, currency and business-state checks.</p>
+      <pre><code class="language-asm"># Intel syntax, System V AMD64
+same_minor_units:
+    xor eax, eax
+    cmp rdi, rsi
+    sete al
+    ret</code></pre>
+      <p>Follow the 12,500 and 12,499 paper values through CMP and SETE. The unequal comparison leaves the return value at zero. An object built for another calling convention requires that convention's argument registers.</p>
+      <p><a href="../../../lessons/07-practical-domains/swift-payment-messages/03-apply-payment-evidence-in-c.md">Written edition</a></p>
+    </article>
+  </main>
+</body>
+</html>

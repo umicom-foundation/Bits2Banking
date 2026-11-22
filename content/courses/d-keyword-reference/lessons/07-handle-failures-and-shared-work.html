@@ -1,0 +1,101 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/d-keyword-reference/lessons/07-handle-failures-and-shared-work.html
+
+PURPOSE:
+Read a deliberate classroom error, then see why shared state needs explicit coordination.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Handle a failure and plan shared work | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Handle a failure and plan shared work</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="06-ask-the-compiler-about-types.html">Previous lesson: Ask the compiler about a type</a> <a href="08-recognise-reserved-and-historical-words.html">Next lesson: Recognise reserved and historical D words</a></nav>
+      <p>Read a deliberate classroom error, then see why shared state needs explicit coordination.</p>
+      <h2>Read the message and its order</h2>
+      <p>An exception signals a failure that transfers control to a suitable handler. The example raises a fictional missing amount and prints the report. Its finally block then records that the review finished.</p>
+      <h2>Connect the exercise to the build tools</h2>
+      <p>Use small fixtures for successful input, deliberate failure and cleanup. In Umicom Studio, keep all three results visible when you read a test report. Before expanding a toy example to multiple workers, decide which thread owns each value and how others may access it.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-try"><th scope="row"><code>try</code></th><td><code>try { inspect_entry(); } catch (Exception failure) { writeln(failure.msg); }</code></td><td>Start a block whose raised exceptions can reach an attached handler.</td></tr>
+          <tr id="kw-throw"><th scope="row"><code>throw</code></th><td><code>throw new Exception(&quot;missing amount&quot;);</code></td><td>Raise an exception with a useful description.</td></tr>
+          <tr id="kw-catch"><th scope="row"><code>catch</code></th><td><code>catch (Exception failure) { writeln(failure.msg); }</code></td><td>Handle an exception matching this type.</td></tr>
+          <tr id="kw-finally"><th scope="row"><code>finally</code></th><td><code>finally { writeln(&quot;finished review&quot;); }</code></td><td>Run the cleanup block when control leaves this try construct according to its control-flow rules.</td></tr>
+          <tr id="kw-scope"><th scope="row"><code>scope</code></th><td><code>scope(exit) writeln(&quot;leaving function&quot;);</code></td><td>Schedule an action when this scope exits. scope also qualifies declarations and parameters.</td></tr>
+          <tr id="kw-shared"><th scope="row"><code>shared</code></th><td><code>shared int job_count;</code></td><td>Declare shared state and select appropriate synchronization before accessing it from multiple workers.</td></tr>
+          <tr id="kw-synchronized"><th scope="row"><code>synchronized</code></th><td><code>synchronized (lock) { ++count; }</code></td><td>Protect this block with a suitable shared lock object. Every access needs to follow the same locking contract.</td></tr>
+          <tr id="kw-__gshared"><th scope="row"><code>__gshared</code></th><td><code>__gshared int legacy_counter;</code></td><td>Select global storage without the shared qualifier. Take responsibility for concurrency separately.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">TRY a review of the entry
+IF a matching exception is raised, show its message
+WHEN leaving the review, show the finish message</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.d</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-d">import std.stdio : writeln;
+
+void inspect_entry()
+{
+    throw new Exception(&quot;missing amount&quot;);
+}
+
+void main()
+{
+    try {
+        inspect_entry();
+    } catch (Exception failure) {
+        writeln(failure.msg);
+    } finally {
+        writeln(&quot;finished review&quot;);
+    }
+}</code></pre>
+      <pre><code class="language-text">dmd -run practice.d</code></pre>
+      <p>Expected output</p>
+      <pre><code class="language-text">missing amount
+finished review</code></pre>
+      <p>If the terminal cannot find dmd, check the D compiler installation for your operating system. If your course uses another documented D compiler, use its build and run instructions. You can still trace the example without installing a compiler.</p>
+      <h2>Try a change</h2>
+      <p>Replace the throw with a writeln that prints entry accepted. Which output line still comes from the finally block?</p>
+      <details><summary>Check your answer</summary>      <p>The output is <code>entry accepted</code> followed by <code>finished review</code>. The catch block runs only when its exception is raised.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../learning-d/index.html">Continue Learning D</a></li>
+        <li><a href="https://dlang.org/spec/lex.html">D language specification, Lexical grammar and Keywords</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/d-special-token-reference/lessons/02-record-compiler-identity.html
+
+PURPOSE:
+Separate a compiler's vendor name and encoded version from the version of your teaching example.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Record which compiler read a program | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Record which compiler read a program</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="01-read-build-time.html">Previous lesson: Read the date and time of a build</a> <a href="03-stop-reading-at-a-marker.html">Next lesson: Stop reading source at an explicit marker</a></nav>
+      <p>Separate a compiler's vendor name and encoded version from the version of your teaching example.</p>
+      <h2>Read the report as evidence</h2>
+      <p>A vendor is whoever supplies the compiler. A version identifies an edition of that compiler. D lets an implementation choose the text and integer used here. A number such as 2100 is an illustration, rather than a number every compiler must print.</p>
+      <h2>Write a short troubleshooting note</h2>
+      <p>When a keyword example behaves differently in Umicom Studio and a terminal, save the command, compiler identity, exact output and source filename together. A version printed inside this program describes the compiler that built it. The program has its own source history and might be unchanged.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-__VENDOR__"><th scope="row"><code>__VENDOR__</code></th><td><code>writeln(__VENDOR__);</code></td><td>Print an implementation-defined description of the compiler vendor.</td></tr>
+          <tr id="kw-__VERSION__"><th scope="row"><code>__VERSION__</code></th><td><code>writeln(__VERSION__);</code></td><td>Print the integer version supplied by the compiler implementation.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">ASK the scanner for the tool's vendor text and version integer
+SHOW them as two clearly labelled results</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.d</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-d">import std.stdio : writeln;
+
+void main()
+{
+    writeln(&quot;vendor &quot;, __VENDOR__);
+    writeln(&quot;version &quot;, __VERSION__);
+}</code></pre>
+      <pre><code class="language-text">dmd -run practice.d</code></pre>
+      <p>Expected output</p>
+      <pre><code class="language-text">vendor a compiler-provided description
+version 2100</code></pre>
+      <p>If the terminal cannot find dmd, check the D compiler installation for your operating system. If your course uses another documented D compiler, use its build and run instructions. You can still trace the example without installing a compiler.</p>
+      <h2>Try a change</h2>
+      <p>Would you compare the exact version line against 2100 in a lesson meant to run on many D compilers? Explain your choice.</p>
+      <details><summary>Check your answer</summary>      <p>Check that the result is an integer and record its actual value. Use an exact literal only when a particular documented compiler version is part of the exercise.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../learning-d/index.html">Continue Learning D</a></li>
+        <li><a href="https://dlang.org/spec/lex.html#specialtokens">D language specification, Special Tokens</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

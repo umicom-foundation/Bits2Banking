@@ -107,3 +107,5 @@ Read byte 5 with `([IO.File]::ReadAllBytes($artifact))[5]`. The example stores a
 Try the ordinary `exec` command with this artifact and check the refusal. A host that does not know how to supply the parameter cannot interpret the placeholder as the user's value. Repeat a successful `exec-input` run and take a second SHA-256 digest of the artifact. The two digests should match. This lesson covers one signed parameter and a bounded computation in Umicom's bytecode format.
 
 [Previous lesson on Boolean words](93-lower-boolean-words-without-changing-the-vm.md)
+
+[Next lesson on pausing before a reached line](95-pause-before-a-reached-line.md).

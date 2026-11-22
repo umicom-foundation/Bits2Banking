@@ -1,0 +1,101 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/accessible-statement-review/lessons/02-filter-posted-rows-with-a-status-message.html
+
+PURPOSE:
+Teach Filter posted rows with a status message through original worked exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Use a native checkbox to show only posted rows and announce the number of visible records.">
+  <title>Filter posted rows with a status message | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../course-series.html">Choose a subject</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Filter posted rows with a status message</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="01-build-a-readable-statement-table.html">Previous: Build a readable statement table</a>
+      </nav>
+      <h2>What you will learn</h2>
+      <p>Use a native checkbox to show only posted rows and announce the number of visible records.</p>
+      <h2>Start with all rows visible</h2>
+      <p>Build on statement.html from the previous lesson. Add the controls immediately after the h1. Leave the checkbox disabled in the source. The script enables it once it can handle changes, so the unenhanced view remains readable.</p>
+      <pre><code class="language-html">&lt;p&gt;&lt;label&gt;&lt;input id=&quot;posted-only&quot; type=&quot;checkbox&quot; disabled&gt;
+  Show only posted rows&lt;/label&gt;&lt;/p&gt;
+&lt;p id=&quot;review-status&quot; role=&quot;status&quot;&gt;3 rows shown.&lt;/p&gt;</code></pre>
+      <h2>Update the view from the checkbox</h2>
+      <p>Place this script before the closing html tag, after the main element. The script reads the state stored with each row. The hidden property changes visibility. The status element receives plain text with the visible count.</p>
+      <pre><code class="language-html">&lt;script&gt;
+const postedOnly = document.getElementById(&quot;posted-only&quot;);
+const status = document.getElementById(&quot;review-status&quot;);
+const rows = document.querySelectorAll(&quot;#statement-rows tr&quot;);
+
+function updateReview() {
+  let visible = 0;
+  for (const row of rows) {
+    row.hidden = postedOnly.checked &amp;&amp; row.dataset.state !== &quot;posted&quot;;
+    if (!row.hidden) visible += 1;
+  }
+  status.textContent = visible + &quot; rows shown.&quot;;
+}
+
+postedOnly.addEventListener(&quot;change&quot;, updateReview);
+updateReview();
+postedOnly.disabled = false;
+&lt;/script&gt;</code></pre>
+      <p>Reload and expect 3 rows shown. Press Tab to reach the checkbox and Space to select it. Two rows remain, the checkbox keeps focus, and the status reads 2 rows shown. Press Space again to restore all three rows.</p>
+      <h2>Practice and check your answer</h2>
+      <p>Add a fourth row with data-state=&quot;pending&quot;, a new reference and an invented amount. Reload, select the checkbox again, then reload with scripting turned off.</p>
+      <details><summary>Worked answer</summary><p>With scripting enabled, the status updates from 4 rows shown to 2 rows shown. With scripting off, all four rows are visible and the checkbox remains disabled. Update the fallback status in the HTML to match the new row count.</p></details>
+      <h2>If the filter appears to do nothing</h2>
+      <p>Check that every ID matches its spelling in the example and that the script follows the elements it uses. Open the browser console to read a reported error. Confirm that the row you expected to hide is marked pending in its data-state attribute.</p>
+      <p><a href="../../../lessons/04-web/accessible-statement-review/02-filter-posted-rows-with-a-status-message/" data-lesson-source="content/lessons/04-web/accessible-statement-review/02-filter-posted-rows-with-a-status-message.md">Open the written lesson</a></p>
+      <h2>Continue learning</h2>
+      <ul>
+        <li><a href="../../learning-html/index.html">Learning HTML</a></li>
+        <li><a href="../../learning-css/index.html">Learning CSS</a></li>
+        <li><a href="../../learning-javascript/index.html">Learning JavaScript</a></li>
+      </ul>
+      <h2>Further reading</h2>
+      <ul>
+        <li><a href="https://techsustainify.com/">Tech Sustainify course catalogue</a></li>
+        <li><a href="https://www.w3schools.com/html/html_accessibility.asp">W3Schools HTML accessibility tutorial</a></li>
+      </ul>
+      <nav aria-label="Continue this course">
+        <a href="../index.html">Course contents</a>
+        <a href="01-build-a-readable-statement-table.html">Previous: Build a readable statement table</a>
+      </nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

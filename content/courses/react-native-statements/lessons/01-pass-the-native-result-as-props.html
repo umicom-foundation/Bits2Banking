@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/react-native-statements/lessons/01-pass-the-native-result-as-props.html
+
+PURPOSE:
+Draw a summary card on paper, then make React show the fields calculated by a native C program.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Draw a summary card on paper, then make React show the fields calculated by a native C program.">
+  <title>Pass the native result as props | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Pass the native result as props</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-filter-without-changing-the-posted-total.html">Next · Filter rows without changing the posted total</a> · <a href="../../../lessons/04-web/react-native-statements/01-pass-the-native-result-as-props.md">Markdown edition</a></nav>
+<p>Draw a summary card on paper, then make React show the fields calculated by a native C program.</p>
+
+<h2>Trace the receipt first</h2>
+
+<p>Use fictional entries 101, 102 and 103 in this order. The C23 reporter counts posted entries 101 and 102. Their 2600 and −850 cents sum to 1750. Entry 103 contributes 500 cents only to the pending rows displayed on the page.</p>
+
+<p>C produces a snapshot, a fixed record of one known result. A React component is a function that describes one part of a page. Its props are the inputs from a parent component. Keep the calculation in the C reporter and pass its ready-to-display fields to the web view.</p>
+
+<ul>
+<li><a href="../../../labs/native/web-statement-contract/statement-report.c">C23 statement reporter</a></li>
+<li><a href="../../../labs/native/web-statement-contract/statement-report.json">Three-row practice snapshot</a></li>
+<li><a href="../../../labs/native/web-statement-contract/statement-report-empty.json">Empty practice snapshot</a></li>
+</ul>
+
+<h2>Create a local component</h2>
+
+<pre><code class="language-jsx">import report from &quot;./statement-report.json&quot;;
+
+function PostedSummary({ postedCents, postedCount }) {
+  // Render the amounts supplied by the native statement owner.
+  return &lt;section aria-labelledby=&quot;posted-heading&quot;&gt;
+    &lt;h2 id=&quot;posted-heading&quot;&gt;Posted summary&lt;/h2&gt;
+    &lt;p&gt;{postedCents} cents in {postedCount} posted entries.&lt;/p&gt;
+  &lt;/section&gt;;
+}
+
+export default function StatementPage() {
+  return &lt;PostedSummary postedCents={report.postedCents}
+                        postedCount={report.postedCount} /&gt;;
+}</code></pre>
+
+<ol>
+<li>Use a new practice copy of an existing React project. Save the three-row snapshot as <code>statement-report.json</code> beside your <code>StatementPage.jsx</code> file.</li>
+<li>Put the example in <code>StatementPage.jsx</code>. Import the default export into your existing project entry and render <code>&lt;StatementPage /&gt;</code> once.</li>
+<li>Use your local project’s normal preview. Look for the heading Posted summary and the line <code>1750 cents in 2 posted entries.</code>. If JSON import is unsupported in that setup, start with the same already parsed object passed as props.</li>
+</ol>
+
+<h2>Try the empty report</h2>
+
+<p>Predict what should appear if there are no rows. In your practice copy substitute the empty snapshot. The expected text is <code>0 cents in 0 posted entries.</code>. Keep the difference between a successful zero and a failure for the next lessons.</p>
+
+<p>For an Umicom Bank practice exercise, write down the signed total, unit and row count that a read-only Framework client must receive. The React component needs only the fields it displays.</p>
+
+<ul>
+<li><a href="https://react.dev/learn/thinking-in-react">Thinking in React</a></li>
+<li><a href="../../learning-react/index.html">Learning React</a></li>
+</ul>
+
+<h2>Follow another path</h2>
+
+<ul>
+<li><a href="../../learning-react/index.html">Learning React</a></li>
+<li><a href="../../nodejs-native-reporting/index.html">Node.js and Native Statement Reports</a></li>
+<li><a href="../../angularjs-legacy-statements/index.html">AngularJS and Legacy Statement Screens</a></li>
+<li><a href="../../practical-web-and-data-foundations/index.html">Practical Web and Data Foundations</a></li>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-filter-without-changing-the-posted-total.html">Next · Filter rows without changing the posted total</a> · <a href="../../../lessons/04-web/react-native-statements/01-pass-the-native-result-as-props.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

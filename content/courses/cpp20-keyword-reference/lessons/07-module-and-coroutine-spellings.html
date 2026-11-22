@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/cpp20-keyword-reference/lessons/07-module-and-coroutine-spellings.html
+
+PURPOSE:
+Recognise module and coroutine syntax and tell when an example requires a configured toolchain or intentionally fails.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Recognise module and coroutine syntax and tell when an example requires a configured toolchain or intentionally fails.">
+  <title>Read modules, coroutines and reserved words | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a>
+      <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Read modules, coroutines and reserved words</h1>
+      <nav aria-label="Navigate this lesson"><a href="../index.html">Course contents</a>
+      <a href="06-compile-time-and-templates.html">Previous lesson — Ask the compiler to compute and check</a>
+      <a href="08-alternative-operator-tokens.html">Next lesson — Read word forms of operators</a></nav>
+      <h2>What you will learn</h2>
+      <p>Recognise module and coroutine syntax and tell when an example requires a configured toolchain or intentionally fails.</p>
+      <h2>Read the words in context</h2>
+      <p>A <strong>module</strong> groups declarations with an interface other source files can import. A <strong>coroutine</strong> is a function whose execution can suspend and resume. Its return type and associated promise type describe how suspension, results and cleanup work. Each coroutine line below is a fragment from a coroutine with a suitable return type and promise. Module declarations go in appropriately configured module source files.</p>
+      <h2>Reserved keywords in this lesson</h2>
+      <table><thead><tr><th scope="col">Spelling</th><th scope="col">Meaning</th><th scope="col">Read this example</th></tr></thead><tbody>
+<tr><td><code>export</code></td><td>In C++20 modules, can make a declaration visible to importers. The declaration example goes inside a module interface unit.</td><td><code>export int count_receipts();</code></td></tr>
+<tr><td><code>co_await</code></td><td>Awaits an operation in a coroutine. With the coroutine header, this example chooses an awaitable that does not suspend.</td><td><code>co_await std::suspend_never{};</code></td></tr>
+<tr><td><code>co_return</code></td><td>Ends a coroutine and follows the promise's completion protocol. Here the promise provides return_void.</td><td><code>co_return;</code></td></tr>
+<tr><td><code>co_yield</code></td><td>Sends a value to the promise's yield_value operation as part of coroutine suspension handling.</td><td><code>co_yield 25;</code></td></tr>
+<tr><td><code>asm</code></td><td>A conditionally supported declaration. An empty instruction string here is shown as syntax only. Actual meaning depends on the compiler and target.</td><td><code>asm(&quot;&quot;);</code></td></tr>
+<tr><td><code>register</code></td><td>Reserved and unused in C++20. The historical storage-class declaration is intentionally invalid in C++20.</td><td><code>register int count = 3;</code></td></tr>
+</tbody></table>
+      <h2>Contextual spellings</h2>
+      <table><thead><tr><th scope="col">Spelling</th><th scope="col">Meaning</th><th scope="col">Read this example</th></tr></thead><tbody>
+<tr><td><code>module</code></td><td>Declares the named module in this lexical context. The word also has ordinary identifier uses outside the special context, subject to the module-name rules.</td><td><code>export module receipt_totals;</code></td></tr>
+<tr><td><code>import</code></td><td>Makes the exported module declarations available here. The word can also have ordinary identifier uses outside the special syntax.</td><td><code>import receipt_totals;</code></td></tr>
+</tbody></table>
+      <h2>Check the entry context</h2>
+      <p>final and override have special meaning in suitable class declarations. import and module have special lexical forms in the module grammar. The ordinary declaration <code>int import = 1, module = 2;</code> is allowed. C++20 counting keeps these two special spellings separate from the unconditionally reserved Table 5 inventory. The spelling export is already in Table 5.</p>
+      <h2>Try it and check</h2>
+      <p>Write the order of work if one file declares export module receipt_totals and another uses import receipt_totals. Which one must the build make available first?</p>
+      <p><strong>Check:</strong> Build or register the module interface first so the importing file can use its exported declarations. The representation used by the toolchain for the interface can vary. The register declaration in this lesson is an intentionally rejected check in strict C++20.</p>
+      <h2>Apply it to an Umicom project</h2>
+      <p>Sketch an Umicom Studio build graph with two source files and a dependency from the importer to the module interface. Use a C++20-enabled practice project and compare the actual compiler documentation before choosing module flags.</p>
+      <p><a href="../../../umicom/repositories/" data-lesson-source="content/umicom/repositories.md">Find the Umicom application repositories</a>.</p>
+      <p><a href="../../../lessons/03-native-code/cpp20-keyword-reference/07-module-and-coroutine-spellings/" data-lesson-source="content/lessons/03-native-code/cpp20-keyword-reference/07-module-and-coroutine-spellings.md">Open the written lesson</a></p>
+      <nav aria-label="Continue learning"><a href="../index.html">Course contents</a>
+      <a href="06-compile-time-and-templates.html">Previous lesson — Ask the compiler to compute and check</a>
+      <a href="08-alternative-operator-tokens.html">Next lesson — Read word forms of operators</a></nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

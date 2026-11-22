@@ -26,6 +26,18 @@ You need a Studio build that exposes the learning catalogue's manifest-path fiel
 
 The native reader presents verified text and declared resources. It is not a full web browser and does not run page scripts. Open the course index in a browser when you want the web presentation. A link to material outside the selected pack can be refused by the reader; use the corresponding course pack or browser for that reference. The shelf holds at most 32 packs at once. Remove an unused shelf entry before adding another; this does not delete course files.
 
+## Work through a synthetic bank statement
+
+Open these packs in the Bits2Banking desktop reader or in Studio's Learning Catalogue. Each guide links to its web lessons and Markdown manuscripts. Choose a pack first, then use the lesson order in the guide. Where an exercise calls for a compiler, database or browser, run it with the tool named in the lesson.
+
+| Study path | Manifest |
+| --- | --- |
+| Native statement calculations with Umicom C and C23 | [`native-statement-calculations.json`](native-statement-calculations.json) |
+| SQL statement reconciliation | [`sql-statement-reconciliation.json`](sql-statement-reconciliation.json) |
+| Accessible statement review with HTML, CSS and JavaScript | [`accessible-statement-review.json`](accessible-statement-review.json) |
+| Go statement tools | [`go-statement-tools.json`](go-statement-tools.json) |
+
+The exercises share fictional accounts and transactions. You can start with any path, then compare its result with the result from another tool.
 
 ## Larger courses and manuscript companions
 
@@ -241,3 +253,47 @@ Select learning-packs/native-language-interoperability.json with the complete Bi
 <!-- Earlier count retained for review: - Learning D: [learning-d.json](learning-d.json), 31 lessons including runtime type inspection, callbacks, field metadata, compile-time admission, explicit range validation and input-range ownership. -->
 <!-- Prior D count retained: 32 before explicit enum admission. -->
 - Learning D: [learning-d.json](learning-d.json), 51 lessons including runtime type inspection, callbacks, field metadata, compile-time admission, explicit range validation and input-range ownership.
+
+## Connected programming, mathematics and project courses
+
+Start with the [learning pathways](../content/start/connected-learning.md). Open one pack at a time in the desktop reader. If a link points into another course, load that course’s pack separately or follow the link in the browser edition.
+
+| Course | Manifest |
+| --- | --- |
+| Programming across languages | [programming-across-languages.json](programming-across-languages.json) |
+| Umicom C checked integer keywords and syntax | [umicom-c-keyword-reference.json](umicom-c-keyword-reference.json) |
+| C23 Keywords for Beginners | [c23-keyword-reference.json](c23-keyword-reference.json) |
+| C++20 Keyword and Token Reference | [cpp20-keyword-reference.json](cpp20-keyword-reference.json) |
+| Go Keywords for Beginners | [go-keyword-reference.json](go-keyword-reference.json) |
+| Python 3.14 keyword reference | [python-keyword-reference.json](python-keyword-reference.json) |
+| Java SE 25 keyword reference | [java-keyword-reference.json](java-keyword-reference.json) |
+| D Keywords for Beginners | [d-keyword-reference.json](d-keyword-reference.json) |
+| D Special Tokens for Beginners | [d-special-token-reference.json](d-special-token-reference.json) |
+| First C# Statements | [first-csharp-statements.json](first-csharp-statements.json) |
+| Mathematics for Application Builders | [mathematics-for-application-builders.json](mathematics-for-application-builders.json) |
+| Bookkeeping from Your First Entry | [bookkeeping-from-first-entry.json](bookkeeping-from-first-entry.json) |
+| Pricing Financial Instruments from Cash Flows | [pricing-from-cashflows.json](pricing-from-cashflows.json) |
+| Practical Web and Data Foundations | [practical-web-and-data-foundations.json](practical-web-and-data-foundations.json) |
+
+## Applied native courses
+
+Start with the [applied course guide](../content/start/applied-native-courses.md). Choose one offline pack and follow its lesson order. Use the linked browser editions when moving between courses.
+
+| Course | Manifest |
+| --- | --- |
+| React and Native Statement Data | [react-native-statements.json](react-native-statements.json) |
+| Node.js and Native Statement Reports | [nodejs-native-reporting.json](nodejs-native-reporting.json) |
+| AngularJS and Legacy Statement Screens | [angularjs-legacy-statements.json](angularjs-legacy-statements.json) |
+| Bootstrap and Native Statement Reports | [bootstrap-native-statements.json](bootstrap-native-statements.json) |
+| Spring Framework with a Native C23 Receipt Rule | [spring-framework-with-c23.json](spring-framework-with-c23.json) |
+| Spring Boot with a Native C23 Service | [spring-boot-native-service.json](spring-boot-native-service.json) |
+| MySQL Ledger Practice in C23 | [mysql-c23-ledger.json](mysql-c23-ledger.json) |
+| Oracle Database Ledger Practice in C23 | [oracle-database-c23-ledger.json](oracle-database-c23-ledger.json) |
+| MongoDB Receipt Documents in C23 | [mongodb-c23-documents.json](mongodb-c23-documents.json) |
+| RabbitMQ Outbox Practice in C23 | [rabbitmq-c23-outbox.json](rabbitmq-c23-outbox.json) |
+| Banking Technology Foundations | [banking-technology-foundations.json](banking-technology-foundations.json) |
+| Build a Banking Application in C | [build-a-bank-application-in-c.json](build-a-bank-application-in-c.json) |
+| UK Open Banking Account Access | [open-banking-account-access.json](open-banking-account-access.json) |
+| Swift Payment Messages and ISO 20022 | [swift-payment-messages.json](swift-payment-messages.json) |
+| FpML for Treasury and Trade Confirmation | [fpml-for-treasury.json](fpml-for-treasury.json) |
+| Build a Trading Application in C | [build-a-trading-application-in-c.json](build-a-trading-application-in-c.json) |

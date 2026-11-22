@@ -1,0 +1,109 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/sql-statement-reconciliation/lessons/01-summarise-posted-movements.html
+
+PURPOSE:
+Teach Summarise posted movements through original worked exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Show a posted movement per account, including a training account that has no entries.">
+  <title>Summarise posted movements | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../course-series.html">Choose a subject</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Summarise posted movements</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="02-distinguish-mismatches-and-missing-totals.html">Next: Distinguish mismatches and missing totals</a>
+      </nav>
+      <h2>What you will learn</h2>
+      <p>Show a posted movement per account, including a training account that has no entries.</p>
+      <h2>Set up a practice database</h2>
+      <p>Start sqlite3 :memory: in a terminal. This database lasts for that SQLite process. Leave it open for the next lesson. A primary key identifies one row. A foreign key relates an entry to its account. Paste these statements and press Enter after every completed statement.</p>
+      <pre><code class="language-sql">PRAGMA foreign_keys = ON;
+CREATE TABLE account (
+    name TEXT PRIMARY KEY NOT NULL
+);
+CREATE TABLE entry (
+    reference INTEGER PRIMARY KEY,
+    account TEXT NOT NULL REFERENCES account(name),
+    cents INTEGER NOT NULL,
+    state TEXT NOT NULL CHECK (state IN ('posted', 'pending'))
+);
+INSERT INTO account VALUES ('reserve'), ('operating'), ('clearing');
+INSERT INTO entry VALUES
+    (101, 'reserve', 2600, 'posted'),
+    (102, 'reserve', -850, 'posted'),
+    (103, 'reserve', 500, 'pending'),
+    (104, 'operating', 1200, 'posted'),
+    (105, 'operating', -300, 'posted'),
+    (106, 'operating', -150, 'pending');</code></pre>
+      <h2>Query matched and unmatched accounts</h2>
+      <p>A left join keeps each account. Its ON condition selects only that account’s posted entries. SUM adds matched amounts; an account with no matching amounts produces NULL, which COALESCE replaces with zero.</p>
+      <pre><code class="language-sql">CREATE VIEW posted_movement AS
+SELECT a.name AS account, COALESCE(SUM(e.cents), 0) AS posted_cents
+FROM account AS a
+LEFT JOIN entry AS e
+    ON e.account = a.name AND e.state = 'posted'
+GROUP BY a.name;
+
+SELECT account, posted_cents
+FROM posted_movement
+ORDER BY account;</code></pre>
+      <pre><code class="language-text">clearing|0
+operating|900
+reserve|1750</code></pre>
+      <h2>Practice and check your answer</h2>
+      <p>Change a copy of the SELECT inside the view by moving the state test to a WHERE clause below the join. Predict which row disappears.</p>
+      <details><summary>Worked answer</summary><p>Clearing disappears because the unmatched right-side state is NULL and WHERE keeps only true conditions. Put the state requirement inside ON for a report that includes every account.</p></details>
+      <h2>If the result differs</h2>
+      <p>If SQLite reports that a table already exists, you are reusing the same practice database. Start a fresh sqlite3 :memory: process and paste the steps in order. If the query prints columns in a different style, compare the account and amount values rather than the separators.</p>
+      <p><a href="../../../lessons/04-web/sql-statement-reconciliation/01-summarise-posted-movements/" data-lesson-source="content/lessons/04-web/sql-statement-reconciliation/01-summarise-posted-movements.md">Open the written lesson</a></p>
+      <h2>Continue learning</h2>
+      <ul>
+        <li><a href="../../learning-sql/index.html">Learning SQL</a></li>
+        <li><a href="../../framework-and-finance/index.html">Learning Umicom Framework and Financial Systems</a></li>
+      </ul>
+      <h2>Further reading</h2>
+      <ul>
+        <li><a href="https://techsustainify.com/">Tech Sustainify course catalogue</a></li>
+        <li><a href="https://www.w3schools.com/sql/default.asp">W3Schools SQL tutorial</a></li>
+      </ul>
+      <nav aria-label="Continue this course">
+        <a href="../index.html">Course contents</a>
+        <a href="02-distinguish-mismatches-and-missing-totals.html">Next: Distinguish mismatches and missing totals</a>
+      </nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

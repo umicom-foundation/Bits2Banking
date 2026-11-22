@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/d-special-token-reference/lessons/04-map-a-diagnostic-back-to-source.html
+
+PURPOSE:
+Label the next generated source line and use the reported location to find the teaching example.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map a diagnostic back to source | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Map a diagnostic back to source</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="03-stop-reading-at-a-marker.html">Previous lesson: Stop reading source at an explicit marker</a> <a href="../../learning-d/index.html">Continue to Continue Learning D</a></nav>
+      <p>Label the next generated source line and use the reported location to find the teaching example.</p>
+      <h2>Distinguish a physical line from a logical line</h2>
+      <p>A generator can emit a statement in <code>practice.d</code> that came from rule 240 of <code>statement_rules.d</code>. <code>#line</code> sets the source location for the very next line. The line containing <code>writeln</code> below becomes logical line 240. For this lesson the source name is fictional. A real generator should use a location the learner can find.</p>
+      <h2>Compare the two language mechanisms</h2>
+      <p>The spelling <code>#line __LINE__ &quot;statement_rules.d&quot;</code> also fits D’s grammar. It uses the line value in scope at the directive. The lesson uses a fixed number so you can predict the result without counting the lines before the directive.</p>
+      <p>C also supports <code>#line</code> and the <code>__LINE__</code> and <code>__FILE__</code> macros. D describes <code>#line</code> as a special token sequence interpreted by its scanner, and <code>__LINE__</code> and <code>__FILE__</code> as special keywords. In Studio, read the source path and line in a compiler message to locate the problem. An editor can display the mapping without owning the compiler's lexical behaviour.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-hash-line"><th scope="row"><code>#line</code></th><td><code>#line 240 &quot;statement_rules.d&quot;</code></td><td>Assign a logical file name and a number to the following source line. The physical file still has its original name and contents.</td></tr>
+          <tr id="kw-__LINE__"><th scope="row"><code>__LINE__</code></th><td><code>writeln(__LINE__);</code></td><td>Get the logical source line at the point of use.</td></tr>
+          <tr id="kw-__FILE__"><th scope="row"><code>__FILE__</code></th><td><code>writeln(__FILE__);</code></td><td>Get the source file name used at this point. Outside a fixed teaching mapping the path style can vary by compiler.</td></tr>
+          <tr id="kw-__FILE_FULL_PATH__"><th scope="row"><code>__FILE_FULL_PATH__</code></th><td><code>writeln(__FILE_FULL_PATH__);</code></td><td>Get the absolute source path at the point of use. Use a local teaching workspace when observing it.</td></tr>
+          <tr id="kw-__MODULE__"><th scope="row"><code>__MODULE__</code></th><td><code>writeln(__MODULE__);</code></td><td>Get the module name at the point of use.</td></tr>
+          <tr id="kw-__FUNCTION__"><th scope="row"><code>__FUNCTION__</code></th><td><code>writeln(__FUNCTION__);</code></td><td>Get the qualified function name at the point of use.</td></tr>
+          <tr id="kw-__PRETTY_FUNCTION__"><th scope="row"><code>__PRETTY_FUNCTION__</code></th><td><code>writeln(__PRETTY_FUNCTION__);</code></td><td>Describe the function with signature details in the compiler's string form.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">SET the next logical position to statement_rules.d line 240
+READ the file name and line for the print statement
+SHOW both parts together</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.d</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-d">import std.stdio : writeln;
+
+void main()
+{
+#line 240 &quot;statement_rules.d&quot;
+    writeln(__FILE__, &quot; line &quot;, __LINE__);
+}</code></pre>
+      <pre><code class="language-text">dmd -run practice.d</code></pre>
+      <p>Expected output</p>
+      <pre><code class="language-text">statement_rules.d line 240</code></pre>
+      <p>If the terminal cannot find dmd, check the D compiler installation for your operating system. If your course uses another documented D compiler, use its build and run instructions. You can still trace the example without installing a compiler.</p>
+      <h2>Try a change</h2>
+      <p>Insert one empty line immediately after #line and predict the new number. Does the new number tell you the physical location of practice.d?</p>
+      <details><summary>Check your answer</summary>      <p>The empty line takes logical number 240. The statement that prints the values moves to logical line 241. The output reports the logical location supplied to the compiler.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../learning-d/index.html">Continue Learning D</a></li>
+        <li><a href="https://dlang.org/spec/lex.html#specialtokens">D language specification, Special Tokens</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/practical-web-and-data-foundations/lessons/02-put-rows-on-a-web-page.html
+
+PURPOSE:
+Put the entries on a web page in the Bits2Banking web and data course.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Use HTML for a labelled table and JavaScript to add a row through the browser's document objects.">
+  <title>Put the entries on a web page | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" href="../../../assets/branding/umicom-icon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="../../../assets/branding/umicom.ico" type="image/x-icon">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a href="../../index.html" class="logo">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation" width="176">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Put the entries on a web page</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="01-read-a-statement-as-json.html">Previous lesson · Read a statement as JSON</a>
+        <a href="03-check-a-record-with-typescript.html">Next lesson · Check a record with TypeScript</a>
+      </nav>
+      <p>Use HTML for a labelled table and JavaScript to add a row through the browser's document objects.</p>
+      <h2 id="mark-the-parts-a-reader-needs">Mark the parts a reader needs</h2>
+      <p>A web browser opens an HTML file as a page. A table uses a caption for its name, column headings for what each value means and one row per entry. JavaScript is a language that can change the visible page after it opens.</p>
+      <p>The browser builds an internal representation of the page called the Document Object Model, or DOM. JavaScript can ask for an element by its <code>id</code>. Here <code>entries</code> names the table body, where the data rows go.</p>
+      <h2 id="make-a-small-complete-page">Make a small complete page</h2>
+      <p>Copy the example into a practice file named <code>statement.html</code> and open that file in a browser. Keep your existing lessons and use a separate folder for this experiment.</p>
+      <pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;Practice statement&lt;/title&gt;
+&lt;h1&gt;Practice statement&lt;/h1&gt;
+&lt;table&gt;
+  &lt;caption&gt;Reserve changes in cents&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th scope=&quot;col&quot;&gt;Status&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Cents&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody id=&quot;entries&quot;&gt;&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;script&gt;
+  const entries = [
+    {status: &quot;posted&quot;, cents: 2600},
+    {status: &quot;posted&quot;, cents: -850},
+    {status: &quot;pending&quot;, cents: 500}
+  ];
+
+  // The table owns its data rows. Add plain text under its headings.
+  const table = document.getElementById(&quot;entries&quot;);
+  for (const entry of entries) {
+    const row = table.insertRow();
+    row.insertCell().textContent = entry.status;
+    row.insertCell().textContent = String(entry.cents);
+  }
+&lt;/script&gt;
+&lt;/html&gt;</code></pre>
+      <p>The square brackets hold three entries. Read <code>for (const entry of entries)</code> as “take the next entry, one at a time”. The code adds a row, then fills in status and cents. <code>String</code> turns a number into display text. <code>textContent</code> puts text in the cell so the browser leaves it as text.</p>
+      <h2 id="trace-and-change-one-row">Trace and change one row</h2>
+      <p>Before running it, say which entry will appear in the middle row. The answer is <code>posted</code>, <code>-850</code>. Change the last status from <code>pending</code> to <code>posted</code>, save and reload. The last row should say <code>posted</code> and <code>500</code>.</p>
+      <p>If all you see is a blank table, check that <code>id=&quot;entries&quot;</code> matches the exact name passed to <code>getElementById</code> and that the script follows the table. If the browser shows the source as plain text, check the filename ends in <code>.html</code>.</p>
+      <h2 id="connect-to-umicom">Connect to Umicom</h2>
+      <p>A list in a Framework application also needs clear headings and separately named data. Try the complete browser exercise, then compare its table with the Umicom C form. The form sends a number to WebServer. This page builds rows from its own practice values.</p>
+      <ul>
+        <li><a href="../../accessible-statement-review/index.html">Accessible Statement Review</a></li>
+        <li><a href="../../../labs/statement-cvm-web/index.html">Umicom WebServer practice form</a></li>
+        <li><a href="https://dom.spec.whatwg.org/#dom-node-textcontent">DOM text-content rules</a></li>
+      </ul>
+      <p><a href="../../../lessons/04-web/practical-web-and-data-foundations/02-put-rows-on-a-web-page.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

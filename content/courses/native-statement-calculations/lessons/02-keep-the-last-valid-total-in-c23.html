@@ -1,0 +1,113 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/native-statement-calculations/lessons/02-keep-the-last-valid-total-in-c23.html
+
+PURPOSE:
+Teach Keep the last valid total in C23 through original worked exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Check the range before adding to a total, and prove that failure preserves the previous value.">
+  <title>Keep the last valid total in C23 | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../course-series.html">Choose a subject</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Keep the last valid total in C23</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="01-calculate-posted-cents-in-umicom-c.html">Previous: Calculate posted cents in Umicom C</a>
+      </nav>
+      <h2>What you will learn</h2>
+      <p>Check the range before adding to a total, and prove that failure preserves the previous value.</p>
+      <h2>Set an arithmetic contract</h2>
+      <p>A signed 64-bit integer represents a fixed range of whole numbers. The add_cents function takes the address of a caller-owned total. It returns true and updates that total when addition fits. It returns false before making any write when the addition would exceed the range.</p>
+      <h2>Build a small positive and negative check</h2>
+      <p>Save the following as checked_total.c. Use a C23 toolchain with the standard fixed-width integer types. The program exits with failure if either the posted value or the refusal behaviour is wrong.</p>
+      <pre><code class="language-c">#include &lt;stdbool.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+static bool add_cents(int64_t *total, int64_t amount)
+{
+    /* Reject before changing the caller's last accepted total. */
+    if ((amount &gt; 0 &amp;&amp; *total &gt; INT64_MAX - amount) ||
+        (amount &lt; 0 &amp;&amp; *total &lt; INT64_MIN - amount)) {
+        return false;
+    }
+    *total += amount;
+    return true;
+}
+
+int main(void)
+{
+    int64_t reserve = 0;
+    if (!add_cents(&amp;reserve, 2600) ||
+        !add_cents(&amp;reserve, -850) || reserve != 1750) {
+        return 1;
+    }
+
+    int64_t boundary = INT64_MAX;
+    if (add_cents(&amp;boundary, 1) || boundary != INT64_MAX) {
+        return 1;
+    }
+
+    puts(&quot;posted reserve 1750; overflow refused; last value retained&quot;);
+    return 0;
+}</code></pre>
+      <pre><code class="language-text">gcc -std=c23 -Wall -Wextra -Wpedantic checked_total.c -o checked_total
+./checked_total</code></pre>
+      <p>In PowerShell use checked_total.exe as the output name and run .\checked_total.exe. Expect the line shown by puts and a successful exit. On the boundary test, check the arithmetic on paper. INT64_MAX is greater than INT64_MAX minus 1, so the function returns before reaching the addition.</p>
+      <h2>Practice and check your answer</h2>
+      <p>Add another failure case at the smallest possible total. What value should remain after trying to subtract one cent?</p>
+      <details><summary>Worked answer</summary><p>Start a fresh total at INT64_MIN. Call add_cents with -1 and confirm that it returns false. The stored total should remain equal to INT64_MIN. Check both the returned status and the stored value.</p></details>
+      <h2>Continue to verification</h2>
+      <p>The next practice course groups the training ledger by account using SQL. Use the same definition of posted movement in both tools so the results are comparable.</p>
+      <p><a href="../../sql-statement-reconciliation/index.html">SQL Statement Reconciliation</a></p>
+      <p><a href="../../../lessons/03-native-code/native-statement-calculations/02-keep-the-last-valid-total-in-c23/" data-lesson-source="content/lessons/03-native-code/native-statement-calculations/02-keep-the-last-valid-total-in-c23.md">Open the written lesson</a></p>
+      <h2>Continue learning</h2>
+      <ul>
+        <li><a href="../../learning-c/index.html">Learning C</a></li>
+        <li><a href="../../building-a-compiler-in-c/index.html">Building a Compiler in C</a></li>
+      </ul>
+      <h2>Further reading</h2>
+      <ul>
+        <li><a href="https://techsustainify.com/">Tech Sustainify course catalogue</a></li>
+        <li><a href="https://www.w3schools.com/c/index.php">W3Schools C tutorial</a></li>
+      </ul>
+      <nav aria-label="Continue this course">
+        <a href="../index.html">Course contents</a>
+        <a href="01-calculate-posted-cents-in-umicom-c.html">Previous: Calculate posted cents in Umicom C</a>
+      </nav>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

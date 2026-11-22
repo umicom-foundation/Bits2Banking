@@ -1,0 +1,109 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/go-keyword-reference/lessons/02-choose-and-repeat.html
+
+PURPOSE:
+Carry a loop through a short list, then choose one way to respond to its total.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Choose and repeat with Go | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Choose and repeat with Go</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="01-write-a-first-go-program.html">Previous lesson: Write a first Go program</a> <a href="03-describe-data-and-behaviour.html">Next lesson: Describe data and behaviour</a></nav>
+      <p>Carry a loop through a short list, then choose one way to respond to its total.</p>
+      <h2>Follow one position at a time</h2>
+      <p>The three-part <code>for</code> in Go covers the same basic pattern as the C loop. <code>range</code> makes it easier to walk a slice, which is a sequence of values in this example. <code>_, cents</code> uses the blank identifier to ignore the position. Unlike a C switch, an ordinary Go switch does not fall through by default.</p>
+      <h2>Keep the filter readable</h2>
+      <p>The next program uses a toy rule to ignore negative values. That rule is only for demonstrating control flow. A real statement would often retain a negative transaction and use a separate posted flag.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-if"><th scope="row"><code>if</code></th><td><code>if total &gt; 0 { report() }</code></td><td>Run the block when the condition is true. Go requires braces for this body.</td></tr>
+          <tr id="kw-else"><th scope="row"><code>else</code></th><td><code>if total &gt; 0 { report() } else { reset() }</code></td><td>Take the other branch when the condition is false. Write else on the same line as the closing brace of the first block.</td></tr>
+          <tr id="kw-for"><th scope="row"><code>for</code></th><td><code>for i := 0; i &lt; 3; i++ { total += i }</code></td><td>Use setup, a condition and an update. Go does not surround them with parentheses.</td></tr>
+          <tr id="kw-range"><th scope="row"><code>range</code></th><td><code>for i, cents := range amounts { use(i, cents) }</code></td><td>Walk a slice and receive the index and value. The meaning of the variables depends on the thing ranged over.</td></tr>
+          <tr id="kw-break"><th scope="row"><code>break</code></th><td><code>if total &gt; 100 { break }</code></td><td>Leave the closest surrounding for, switch or select, unless a label selects another permitted target.</td></tr>
+          <tr id="kw-continue"><th scope="row"><code>continue</code></th><td><code>if cents &lt; 0 { continue }</code></td><td>Skip to the next iteration of the surrounding loop.</td></tr>
+          <tr id="kw-switch"><th scope="row"><code>switch</code></th><td><code>switch code { case 1: report(); default: reset() }</code></td><td>Choose a matching clause. The chosen clause normally ends without executing the next one.</td></tr>
+          <tr id="kw-case"><th scope="row"><code>case</code></th><td><code>case 1: report()</code></td><td>Mark one matching clause of a switch, or a communication clause of a select.</td></tr>
+          <tr id="kw-default"><th scope="row"><code>default</code></th><td><code>default: reset()</code></td><td>Use a fallback in a switch. A default in select instead lets the statement proceed when no communication can proceed.</td></tr>
+          <tr id="kw-fallthrough"><th scope="row"><code>fallthrough</code></th><td><code>case 1: report(); fallthrough</code></td><td>In an expression switch, explicitly enter the next clause. This belongs at the end of a non-final clause.</td></tr>
+          <tr id="kw-goto"><th scope="row"><code>goto</code></th><td><code>if bad { goto done }; report(); done: return</code></td><td>Jump to a permitted label in the same function. Use normal branches for straightforward decisions.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">START total at 0
+FOR each amount
+    IF amount is negative, skip this turn
+    ADD amount to total
+IF the total equals the practice result, label it as practice
+OTHERWISE label it as unexpected</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.go</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+func main() {
+    amounts := []int{425, -25, 100}
+    total := 0
+    for _, cents := range amounts {
+        if cents &lt; 0 {
+            continue
+        }
+        total += cents
+    }
+    switch total {
+    case 525:
+        fmt.Println(&quot;practice total&quot;, total)
+    default:
+        fmt.Println(&quot;unexpected&quot;, total)
+    }
+}</code></pre>
+      <pre><code class="language-text">go run practice.go</code></pre>
+      <p>Expected line</p>
+      <pre><code class="language-text">practice total 525</code></pre>
+      <p>If the terminal cannot find go, complete the setup for your operating system before running the command. If Go reports a missing package or main function, check that the whole program was copied and saved as practice.go. The paper trace still works without a toolchain.</p>
+      <h2>Try a change</h2>
+      <p>Delete the check that skips negative values and predict which switch clause runs.</p>
+      <details><summary>Check your answer</summary>      <p>The new total is 500. Expect <code>unexpected 500</code> from the default clause.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../go-statement-tools/index.html">Go Statement Tools</a></li>
+        <li><a href="https://go.dev/ref/spec#Keywords">The Go language specification, Keywords</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

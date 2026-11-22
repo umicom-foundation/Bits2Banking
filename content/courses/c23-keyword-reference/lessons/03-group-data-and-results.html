@@ -1,0 +1,107 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/c23-keyword-reference/lessons/03-group-data-and-results.html
+
+PURPOSE:
+Read short functions, group related facts and distinguish a missing object from a real one.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Group data and return results | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Group data and return results</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="02-choose-and-repeat.html">Previous lesson: Choose an action and repeat it</a> <a href="04-control-lifetime-and-access.html">Next lesson: Control lifetime and access</a></nav>
+      <p>Read short functions, group related facts and distinguish a missing object from a real one.</p>
+      <h2>Give a group a name</h2>
+      <p>An entry can have an amount and a posted flag. A structure keeps both facts together. A field name after a dot reaches just that part of the entry. A union gives multiple views of a shared region. It needs a separate way to tell which kind of value is currently stored.</p>
+      <h2>Recognise absence and type</h2>
+      <p>A pointer is a value that can name the location of an object. Use <code>nullptr</code> when there is no object selected. <code>sizeof</code> reports storage size, while <code>_Generic</code> selects an expression by type. A C byte is the unit measured by <code>sizeof</code>, and its bit count is set by the implementation.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-void"><th scope="row"><code>void</code></th><td><code>void clear(void) { }</code></td><td>No result value. The void inside the parentheses makes the zero-parameter form explicit.</td></tr>
+          <tr id="kw-return"><th scope="row"><code>return</code></th><td><code>int entry_count(void) { return 3; }</code></td><td>Finish a function and, when the result type permits, give a value to the caller.</td></tr>
+          <tr id="kw-struct"><th scope="row"><code>struct</code></th><td><code>struct Entry { int cents; bool posted; };</code></td><td>Group named fields that each have their own storage.</td></tr>
+          <tr id="kw-union"><th scope="row"><code>union</code></th><td><code>union Reading { int units; double ratio; };</code></td><td>Provide different member views of shared storage. Track which member is in use.</td></tr>
+          <tr id="kw-enum"><th scope="row"><code>enum</code></th><td><code>enum Phase { DRAFT, POSTED };</code></td><td>Give a controlled family of integer constants meaningful names.</td></tr>
+          <tr id="kw-typedef"><th scope="row"><code>typedef</code></th><td><code>typedef int WholeCents;</code></td><td>Make another name for an existing type. This does not itself create a distinct integer type.</td></tr>
+          <tr id="kw-const"><th scope="row"><code>const</code></th><td><code>const int opening_cents = 500;</code></td><td>Prevent writes through an object of this const-qualified type.</td></tr>
+          <tr id="kw-nullptr"><th scope="row"><code>nullptr</code></th><td><code>struct Entry *selected = nullptr;</code></td><td>Represent a null pointer, which points to no object. Check it before accessing a field.</td></tr>
+          <tr id="kw-sizeof"><th scope="row"><code>sizeof</code></th><td><code>sizeof(char)</code></td><td>Ask how many C bytes the type or expression occupies. sizeof(char) is always 1.</td></tr>
+          <tr id="kw-_Generic"><th scope="row"><code>_Generic</code></th><td><code>_Generic(42, int: 1, default: 0)</code></td><td>Select an expression by a compatible type. This example selects 1.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">GROUP an amount and a posting flag into one entry
+IF the entry is posted, give its amount back
+OTHERWISE give zero back</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.c</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <p>Use PowerShell with a C23 GCC installation on your search path. If you already have MSYS2 UCRT64 GCC at its usual Windows location, enter <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code> in that session.</p>
+      <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+typedef int WholeCents;
+
+struct Entry {
+    WholeCents cents;
+    bool posted;
+};
+
+static WholeCents posted_cents(struct Entry entry)
+{
+    return entry.posted ? entry.cents : 0;
+}
+
+int main(void)
+{
+    const struct Entry credit = {425, true};
+    printf(&quot;%d\n&quot;, posted_cents(credit));
+    return 0;
+}</code></pre>
+      <pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Wpedantic -Werror practice.c -o practice.exe
+if ($LASTEXITCODE -eq 0) { .\practice.exe }</code></pre>
+      <p>Expected line</p>
+      <pre><code class="language-text">425</code></pre>
+      <p>Use a compiler that accepts C23. A dialect diagnostic means the compiler has not accepted the selected language mode. A missing header diagnostic can mean the platform toolchain or SDK is absent. If the optional forms in the table are unavailable, try the self-contained main program instead.</p>
+      <h2>Try a change</h2>
+      <p>Set the posted field to false. Does that erase cents from the structure, or change only what the function returns?</p>
+      <details><summary>Check your answer</summary>      <p>The structure still stores 425. The filter function returns <code>0</code> for an entry that has not posted.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../native-statement-calculations/index.html">Native Statement Calculations</a></li>
+        <li><a href="https://www9.open-std.org/JTC1/SC22/WG14/www/docs/n3220.pdf">WG14 public draft N3220, section 6.4.1 and Annex A</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

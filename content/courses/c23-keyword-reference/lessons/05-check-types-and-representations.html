@@ -1,0 +1,96 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/c23-keyword-reference/lessons/05-check-types-and-representations.html
+
+PURPOSE:
+Inspect memory requirements and types, then make a build reject a broken assumption.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Check types and representations | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Check types and representations</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="04-control-lifetime-and-access.html">Previous lesson: Control lifetime and access</a> <a href="06-read-optional-and-older-forms.html">Next lesson: Read optional and older forms</a></nav>
+      <p>Inspect memory requirements and types, then make a build reject a broken assumption.</p>
+      <h2>Separate size from placement</h2>
+      <p>Size tells you how much space a type needs. Alignment tells you which memory positions are acceptable for storing it. Imagine a shelf grid where a container must begin at every second square. Its width is a different question from the set of places at which you may start it.</p>
+      <h2>State a promise that the tool checks</h2>
+      <p>A static assertion is checked during translation, before the program can run. Use one to explain a requirement. During exploration let a failed assertion tell you which assumption needs review. In the example <code>typeof_unqual</code> copies the type of a read-only int without making the copy read-only.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-alignas"><th scope="row"><code>alignas</code></th><td><code>alignas(int) unsigned char buffer[sizeof(int)];</code></td><td>Request storage that meets the alignment needed by int. Matching alignment alone does not turn this array into an int.</td></tr>
+          <tr id="kw-alignof"><th scope="row"><code>alignof</code></th><td><code>alignof(int)</code></td><td>Ask the implementation which alignment an int needs.</td></tr>
+          <tr id="kw-static_assert"><th scope="row"><code>static_assert</code></th><td><code>static_assert(sizeof(char) == 1, &quot;one C byte&quot;);</code></td><td>Stop translation if a constant assumption is false.</td></tr>
+          <tr id="kw-typeof"><th scope="row"><code>typeof</code></th><td><code>const int rate = 3; typeof(rate) copy = 4;</code></td><td>Use the type of rate, retaining its const qualification in this example.</td></tr>
+          <tr id="kw-typeof_unqual"><th scope="row"><code>typeof_unqual</code></th><td><code>const int rate = 3; typeof_unqual(rate) copy = 4;</code></td><td>Use the unqualified version of the type. The new copy can be assigned another value.</td></tr>
+          <tr id="kw-_Atomic"><th scope="row"><code>_Atomic</code></th><td><code>_Atomic(int) work_count = 0;</code></td><td>Use an atomic integer object when individually atomic operations are needed. A sequence of operations may still need coordination.</td></tr>
+          <tr id="kw-_BitInt"><th scope="row"><code>_BitInt</code></th><td><code>unsigned _BitInt(9) flags = 257;</code></td><td>Declare a 9-bit unsigned integer. A storage byte count can exceed the bit width's minimum size.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">CHECK the size assumption before running
+COPY the type of source without its read-only label
+COPY the value and add 3 to the editable copy</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.c</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <p>Use PowerShell with a C23 GCC installation on your search path. If you already have MSYS2 UCRT64 GCC at its usual Windows location, enter <code>$env:Path = 'C:\msys64\ucrt64\bin;' + $env:Path</code> in that session.</p>
+      <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+static_assert(sizeof(char) == 1, &quot;one C byte&quot;);
+
+int main(void)
+{
+    const int source = 4;
+    typeof_unqual(source) editable = source;
+    editable += 3;
+    printf(&quot;%d\n&quot;, editable);
+    return 0;
+}</code></pre>
+      <pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Wpedantic -Werror practice.c -o practice.exe
+if ($LASTEXITCODE -eq 0) { .\practice.exe }</code></pre>
+      <p>Expected line</p>
+      <pre><code class="language-text">7</code></pre>
+      <p>Use a compiler that accepts C23. A dialect diagnostic means the compiler has not accepted the selected language mode. A missing header diagnostic can mean the platform toolchain or SDK is absent. If the optional forms in the table are unavailable, try the self-contained main program instead.</p>
+      <h2>Try a change</h2>
+      <p>Change typeof_unqual to typeof in the small program. Predict which line the compiler should reject, then restore the working form.</p>
+      <details><summary>Check your answer</summary>      <p>The declaration selects a const type after the change. <code>editable += 3;</code> attempts to change the const object, so translation should report an error.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../native-statement-calculations/index.html">Native Statement Calculations</a></li>
+        <li><a href="https://www9.open-std.org/JTC1/SC22/WG14/www/docs/n3220.pdf">WG14 public draft N3220, section 6.4.1 and Annex A</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

@@ -2,7 +2,14 @@
 
 Start with files, folders and simple programs. Then choose a subject that helps you build something you understand. You do not need to study every language before making a first application. Each course names its prerequisites and distinguishes available lessons from later topics.
 
+- [Learning pathways](connected-learning.md) connects beginner programming, language references, mathematics, bookkeeping, instrument pricing and Umicom practice projects.
+- [Technology topic map](technology-topic-map.md) helps you find a course by subject and shows where a linked foundation provides a first step.
+
 [Introduction to Computers](../courses/learning-computer-architecture/index.html) · [Learning JavaScript](../courses/learning-javascript/index.html) · [Learning PHP](../courses/learning-php/index.html)
+
+## Applied web, service and finance courses
+
+Start the [applied native courses](applied-native-courses.md) with a paper example, then follow one interface, data service or fictional financial project.
 
 ## How to use a lesson
 
@@ -261,6 +268,10 @@ New lessons have matching HTML and Markdown. HTML is for browser reading; Markdo
 
 Follow the [ordered course routes](../courses/finance-and-systems.html) for pricing in C, C++ and Java; Bitcoin concepts and source; blockchain construction; Calypso integration; Linux systems; and a web server in C. Each route lists prerequisites and available lessons.
 
+- [Bitcoin, money and blockchain from first principles](../lessons/14-blockchain-ledgers/bitcoin-study-route/index.md) — Start with bank deposits, trust and consensus, then verify a C classroom chain offline.
+- [Build a graphics library from scratch](../lessons/03-native-code/graphics-from-scratch/index.md) — Draw and inspect pixels in C, then learn the Assembly, D and GTK4 boundaries.
+- [Run pseudocode with Umicom C](../lessons/03-native-code/pseudocode-to-native/index.md) — Run a familiar worked example and compare it with four native-language forms.
+
 ## Mobile and native-language starter courses
 
 Each course starts with its own setup summary. These routes currently contain two introductory lessons each; they are starting points for continued study.
@@ -276,3 +287,12 @@ Each course starts with its own setup summary. These routes currently contain tw
 - [Learning Fortran](../lessons/03-native-code/learning-fortran/index.md)
 - [Learning Odin](../lessons/03-native-code/learning-odin/index.md)
 - [Learning Nim](../lessons/03-native-code/learning-nim/index.md)
+
+## Statement data in practice
+
+Use four small projects to verify the same synthetic ledger.
+
+- [Native Statement Calculations](../lessons/03-native-code/native-statement-calculations/index.md) — Use Umicom C and C23 to verify a statement total and preserve the last accepted value when arithmetic fails.
+- [SQL Statement Reconciliation](../lessons/04-web/sql-statement-reconciliation/index.md) — Group posted movements with SQLite, then compare calculated totals with a statement supplied for review.
+- [Accessible Statement Review](../lessons/04-web/accessible-statement-review/index.md) — Create a small HTML and CSS statement page and add a progressively enhanced, keyboard-operable filter.
+- [Go Statement Tools](../lessons/04-web/go-statement-tools/index.md) — Read a local training statement with Go’s standard library, reject malformed data, then print deterministic account totals.

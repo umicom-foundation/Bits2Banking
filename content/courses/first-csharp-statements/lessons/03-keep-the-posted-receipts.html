@@ -1,0 +1,110 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/first-csharp-statements/lessons/03-keep-the-posted-receipts.html
+
+PURPOSE:
+Build a new typed list of the posted amounts and preserve all original entries.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Build a new typed list of the posted amounts and preserve all original entries.">
+  <title>Keep only the posted receipts | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Keep only the posted receipts</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="02-count-posted-receipts.html">Previous lesson · Count posted receipts</a>
+        <a href="04-check-the-total.html">Next lesson · Check the posted total</a>
+      </nav>
+      <p>Build a new typed list of the posted amounts and preserve all original entries.</p>
+      <h2>Choose the items to keep</h2>
+      <p>A list is a collection that can grow when you add an item. A filter is a rule for choosing which items to keep. Start with three complete receipts. Keep only the amounts from posted receipts. On paper, draw an empty column. Write 2600 in it, then -850. Leave the pending amount of 500 in the original receipt list only.</p>
+      <h2>Make a list in C#</h2>
+      <p>A <code>Receipt</code> is a small class that groups the status and amount. <code>new Receipt(...)</code> makes one receipt. <code>new List&lt;int&gt;()</code> creates an empty list that stores whole numbers. <code>Add</code> appends an amount. The full example below uses <code>foreach</code> because the loop needs each receipt without its position.</p>
+      <pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+
+class Receipt
+{
+    public readonly string Status;
+    public readonly int Cents;
+
+    public Receipt(string status, int cents)
+    {
+        Status = status;
+        Cents = cents;
+    }
+}
+
+static class Program
+{
+    static void Main()
+    {
+        Receipt[] original = {
+            new Receipt(&quot;posted&quot;, 2600),
+            new Receipt(&quot;posted&quot;, -850),
+            new Receipt(&quot;pending&quot;, 500)
+        };
+        // Own the filtered amounts separately from the original receipts.
+        List&lt;int&gt; posted = new List&lt;int&gt;();
+        foreach (Receipt receipt in original)
+        {
+            if (receipt.Status == &quot;posted&quot;)
+            {
+                posted.Add(receipt.Cents);
+            }
+        }
+        foreach (int cents in posted)
+        {
+            Console.WriteLine(cents);
+        }
+        Console.WriteLine(&quot;Kept: &quot; + posted.Count);
+    }
+}</code></pre>
+      <p>Run it in the same practice project. Expect <code>2600</code>, then <code>-850</code>, then <code>Kept: 2</code>, each on its own line. <code>Count</code> tells you the number of items that were added to the new list. The <code>readonly</code> fields keep their assigned values after the receipt is created.</p>
+      <h2>Try a second result</h2>
+      <p>Change the first receipt to <code>pending</code>. The remaining output should be <code>-850</code> and <code>Kept: 1</code>. Restore the original before the next lesson. If your program still prints the amount of the last pending receipt, inspect the status test and the braces that enclose the call to <code>Add</code>.</p>
+      <h2>Connect to Umicom</h2>
+      <p>A practice Umicom Bank screen can keep the original receipt list and show a filtered view beside it. Once a filter is easy to explain, compare it with a browser filter or a database query.</p>
+      <ul>
+        <li><a href="../../accessible-statement-review/index.html">Accessible Statement Review</a></li>
+        <li><a href="../../sql-statement-reconciliation/index.html">SQL Statement Reconciliation</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1">C# List type</a></li>
+      </ul>
+      <p><a href="../../../lessons/02-programming/first-csharp-statements/03-keep-the-posted-receipts.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

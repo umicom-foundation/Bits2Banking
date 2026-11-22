@@ -1,0 +1,95 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/react-native-statements/lessons/03-show-loading-empty-and-error-states.html
+
+PURPOSE:
+Render three different outcomes from the native snapshot boundary and trace a complete screen check.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Render three different outcomes from the native snapshot boundary and trace a complete screen check.">
+  <title>Show loading, empty and error states | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Show loading, empty and error states</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-filter-without-changing-the-posted-total.html">Previous · Filter rows without changing the posted total</a> · <a href="../../../lessons/04-web/react-native-statements/03-show-loading-empty-and-error-states.md">Markdown edition</a></nav>
+<p>Render three different outcomes from the native snapshot boundary and trace a complete screen check.</p>
+
+<h2>Decide what each screen means</h2>
+
+<ul>
+<li>Loading means the application has asked for a response and is still waiting.</li>
+<li>Ready with an empty rows array means the request succeeded and there are no entries.</li>
+<li>Error means the snapshot could not be accepted, for example because its version is unknown or its source failed. Review the full report in the native reporting course.</li>
+</ul>
+
+<pre><code class="language-jsx">import StatementRows from &quot;./StatementRows.jsx&quot;;
+
+export function ReportView({ result }) {
+  // Require a checked snapshot before either child can render money.
+  if (result.kind === &quot;loading&quot;)
+    return &lt;p role=&quot;status&quot;&gt;Loading statement.&lt;/p&gt;;
+  if (result.kind !== &quot;ready&quot;)
+    return &lt;p role=&quot;alert&quot;&gt;Statement unavailable.&lt;/p&gt;;
+  const { snapshot } = result;
+  if (snapshot.rows.length === 0)
+    return &lt;p role=&quot;status&quot;&gt;No entries in this statement.&lt;/p&gt;;
+  return &lt;&gt;&lt;p&gt;{snapshot.postedCents} posted cents.&lt;/p&gt;
+    &lt;StatementRows snapshot={snapshot} /&gt;&lt;/&gt;;
+}</code></pre>
+
+<ol>
+<li>Pass <code>{ kind: &quot;loading&quot; }</code> and predict the message before observing the screen.</li>
+<li>Pass <code>{ kind: &quot;ready&quot;, snapshot: emptyReport }</code> using the empty fixture. Expect No entries in this statement.</li>
+<li>Pass <code>{ kind: &quot;error&quot; }</code> and expect Statement unavailable. A failed request must not appear as a valid zero total.</li>
+<li>Pass <code>{ kind: &quot;ready&quot;, snapshot: trainingReport }</code> using the three-row fixture already checked by the adapter. Expect 1750 posted cents and all three rows visible until the checkbox changes.</li>
+</ol>
+
+<p>This component receives an already checked snapshot. Supply the result from a trusted boundary adapter. On a refreshed page keep a late response from replacing a newer request by cancelling or ignoring the older request in that adapter.</p>
+
+<h2>Apply it to Umicom Automated Testing</h2>
+
+<p>Use the four outcomes above as an acceptance checklist. A check is complete when it records what the test supplied, what the screen showed, and whether keyboard focus remained usable. Ask a second learner to distinguish pending and posted rows without relying on colour.</p>
+
+<ul>
+<li><a href="../../../labs/native/web-statement-contract/statement-report.json">Three-row practice snapshot</a></li>
+<li><a href="../../../labs/native/web-statement-contract/statement-report-empty.json">Empty practice snapshot</a></li>
+<li><a href="../../nodejs-native-reporting/index.html">Node.js and Native Statement Reports</a></li>
+<li><a href="https://react.dev/learn/thinking-in-react">Thinking in React</a></li>
+</ul>
+
+<h2>Follow another path</h2>
+
+<ul>
+<li><a href="../../learning-react/index.html">Learning React</a></li>
+<li><a href="../../nodejs-native-reporting/index.html">Node.js and Native Statement Reports</a></li>
+<li><a href="../../angularjs-legacy-statements/index.html">AngularJS and Legacy Statement Screens</a></li>
+<li><a href="../../practical-web-and-data-foundations/index.html">Practical Web and Data Foundations</a></li>
+<li><a href="../../../start/applied-native-courses.md">Applied native courses</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-filter-without-changing-the-posted-total.html">Previous · Filter rows without changing the posted total</a> · <a href="../../../lessons/04-web/react-native-statements/03-show-loading-empty-and-error-states.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

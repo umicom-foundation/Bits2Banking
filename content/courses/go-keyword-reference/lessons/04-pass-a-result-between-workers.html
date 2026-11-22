@@ -1,0 +1,97 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/go-keyword-reference/lessons/04-pass-a-result-between-workers.html
+
+PURPOSE:
+Send one value through a channel, know when cleanup runs and avoid depending on timing.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pass a result between workers | Bits2Banking</title>
+  <link rel="stylesheet" href="../../../courses/assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"><span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a> <a href="../../course-series.html">Choose a subject</a></nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Pass a result between workers</h1>
+      <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> <a href="03-describe-data-and-behaviour.html">Previous lesson: Describe data and behaviour</a> <a href="../../go-statement-tools/index.html">Continue to Go Statement Tools</a></nav>
+      <p>Send one value through a channel, know when cleanup runs and avoid depending on timing.</p>
+      <h2>Sketch the hand-off</h2>
+      <p>A goroutine is a separate flow of execution inside a Go program. Think of the channel as a hand-off point. The worker brings one result, and the main function receives it. A one-case select waits for that hand-off. Neither side needs a guessed delay.</p>
+      <h2>Distinguish a keyword from a built-in name</h2>
+      <p><code>chan</code> is reserved, while <code>make</code>, <code>close</code>, <code>nil</code>, <code>true</code> and type names such as <code>int</code> are predeclared identifiers. The token <code>&lt;-</code> marks a send or receive direction depending on location. <code>defer</code> registers cleanup for the surrounding function rather than creating a worker.</p>
+      <h2>Keywords and examples</h2>
+      <p>Each row shows a separate example. Some belong inside a function, and some use a name introduced earlier. The full program below is the first one to copy.</p>
+      <table>
+        <caption>Words in this lesson</caption>
+        <thead><tr><th scope="col">Word</th><th scope="col">Example</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr id="kw-go"><th scope="row"><code>go</code></th><td><code>go send(out)</code></td><td>Start a function call in a goroutine. The caller can continue independently.</td></tr>
+          <tr id="kw-chan"><th scope="row"><code>chan</code></th><td><code>out := make(chan int)</code></td><td>Create a channel that carries int messages. The word make is a predeclared built-in.</td></tr>
+          <tr id="kw-select"><th scope="row"><code>select</code></th><td><code>select { case cents := &lt;-out: fmt.Println(cents) }</code></td><td>Wait for a channel operation from the supplied cases. If several can proceed, do not rely on which one is chosen.</td></tr>
+          <tr id="kw-defer"><th scope="row"><code>defer</code></th><td><code>defer close(out)</code></td><td>Schedule cleanup for when the surrounding function returns. close is a built-in.</td></tr>
+        </tbody>
+      </table>
+      <h2>Trace the steps on paper</h2>
+      <p>Pseudocode uses ordinary words to show the order of steps. Read the plan one line at a time before reading the program.</p>
+      <pre><code class="language-text">MAKE a channel for an integer result
+START the worker
+WORKER: send one result, then close the channel
+MAIN: wait for the result and show it</code></pre>
+      <h2>Run the complete example</h2>
+      <p>Save the whole program as <code>practice.go</code>. Open a terminal in that folder, then enter the command shown for your language.</p>
+      <pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+func send(out chan&lt;- int) {
+    defer close(out)
+    out &lt;- 425
+}
+
+func main() {
+    out := make(chan int)
+    go send(out)
+    select {
+    case received := &lt;-out:
+        fmt.Println(&quot;received&quot;, received)
+    }
+}</code></pre>
+      <pre><code class="language-text">go run practice.go</code></pre>
+      <p>Expected line</p>
+      <pre><code class="language-text">received 425</code></pre>
+      <p>If the terminal cannot find go, complete the setup for your operating system before running the command. If Go reports a missing package or main function, check that the whole program was copied and saved as practice.go. The paper trace still works without a toolchain.</p>
+      <h2>Try a change</h2>
+      <p>Name the exact line where the worker hands over the number. What stays the same if either side happens to reach its channel operation first?</p>
+      <details><summary>Check your answer</summary>      <p>The send is <code>out &lt;- 425</code>. The receiver and sender still meet on the channel and transfer 425.</p>
+      </details>
+      <h2>Keep learning</h2>
+      <ul>
+        <li><a href="../../programming-across-languages/index.html">Compare programs across languages</a></li>
+        <li><a href="../../go-statement-tools/index.html">Go Statement Tools</a></li>
+        <li><a href="https://go.dev/ref/spec#Keywords">The Go language specification, Keywords</a></li>
+      </ul>
+    </article>
+  </main>
+</body>
+</html>

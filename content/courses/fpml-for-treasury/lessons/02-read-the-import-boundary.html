@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/fpml-for-treasury/lessons/02-read-the-import-boundary.html
+
+PURPOSE:
+Trace a versioned XML document to a smaller record a treasury service can review.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Trace a versioned XML document to a smaller record a treasury service can review.">
+  <title>Read and Validate the Import Boundary | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom Foundation">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/applied-native-courses.md">Applied native courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Read and Validate the Import Boundary</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="01-read-the-two-legs.html">Previous lesson · Read the Two Sides of a Swap</a>
+        <a href="03-check-terms-in-c.html">Next lesson · Check the Mapped Terms in C23</a>
+      </nav>
+      <p>Trace a versioned XML document to a smaller record a treasury service can review.</p>
+      <h2>Separate structure from business rules</h2>
+      <p>A namespace identifies a vocabulary. An XML Schema, often called an XSD, defines permitted structures in that vocabulary. A valid structure is one input to review. This lab also checks that the parties are distinct, the legs reverse, the currency matches the import box, and the trade reference has not changed meaning.</p>
+      <pre><code class="language-text">1. Save the source identity with the approved parser's fixture.
+2. Select the namespace, pinned version and confirmation view.
+3. Validate the document against the approved local schema.
+4. Map the terms and check the narrower training rules.
+5. Compare the id and version with the accepted record.
+6. Return a candidate or a review result.</code></pre>
+      <p>An adapter is the small piece of software that connects different representations. A production XML adapter needs a maintained parser, a local schema pack and explicit limits on document size and nesting. Configure the parser so an exercise cannot fetch external resources. The project receives an already checked record and keeps the original confirmation identity for review.</p>
+      <h2>Decide what to do with a repeat</h2>
+      <ul>
+        <li>First appearance of TRN-401 revision 1, all fields valid. Create one candidate record.</li>
+        <li>Second appearance of TRN-401 revision 1 with identical terms. Mark as duplicate and keep one candidate.</li>
+        <li>Second appearance of TRN-401 revision 1 with a different fixed payer. Mark for review and leave the first record intact.</li>
+        <li>TRN-401 revision 2 with changed terms. Send to the proposed amendment review path. Production amendment semantics belong to the agreed business process.</li>
+      </ul>
+      <p>An idempotent operation has the same effect after one application or after a repeat with the same valid identity and content. A delivery count can increase even when the number of saved trades stays at one.</p>
+      <h2>Connect the review to treasury and trading</h2>
+      <p>In a TMS practice screen, show the normalized trade id, currency, both leg directions and the current review state together. Keep accepted records separate from any new candidate. A Trader practice importer can use the same terms for an exposure display once the terms have been reviewed.</p>
+      <ul>
+        <li><a href="../../introduction-to-treasury-management-systems/index.html">Introduction to Treasury Management Systems</a></li>
+        <li><a href="../../learning-xml/index.html">Learning XML</a></li>
+        <li><a href="https://www.fpml.org/latest_news/isda-has-republished-the-recommendation-for-fpml-version-5-13-build-8/">ISDA FpML 5.13 Recommendation 2, build 8 notice</a></li>
+      </ul>
+      <p><a href="../../../lessons/07-practical-domains/fpml-for-treasury/02-read-the-import-boundary.md">Written edition</a></p>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/practical-web-and-data-foundations/lessons/01-read-a-statement-as-json.html
+
+PURPOSE:
+Read a statement as JSON in the Bits2Banking web and data course.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Read a small text record and identify each field, each entry and the group they belong to.">
+  <title>Read a statement as JSON | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" href="../../../assets/branding/umicom-icon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="../../../assets/branding/umicom.ico" type="image/x-icon">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a href="../../index.html" class="logo">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation" width="176">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Read a statement as JSON</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="02-put-rows-on-a-web-page.html">Next lesson · Put the entries on a web page</a>
+      </nav>
+      <p>Read a small text record and identify each field, each entry and the group they belong to.</p>
+      <h2 id="start-with-the-information">Start with the information</h2>
+      <p>A statement lists changes to an amount of money over time. Imagine this one belongs to a fictional reserve account. The first entry adds 2,600 cents. The second removes 850 cents. Both are posted, which means they have been recorded for this exercise. The last entry of 500 cents is pending. Leave it out of the posted calculation.</p>
+      <p>A field is one named piece of information. An entry in this lesson has an ID, a status and an amount. The ID is a number used to recognise that entry. Use cents so each amount is a whole number.</p>
+      <h2 id="read-the-same-record-as-text">Read the same record as text</h2>
+      <p>JSON is a text format for exchanging information. Braces <code>{}</code> surround an object, which groups named fields. Square brackets <code>[]</code> surround an array, which lists values in order. Double quotes surround each field name and each piece of text. Numbers such as <code>-850</code> have no quotes.</p>
+      <pre><code class="language-json">{
+  &quot;entries&quot;: [
+    {&quot;id&quot;: 1, &quot;status&quot;: &quot;posted&quot;, &quot;cents&quot;: 2600},
+    {&quot;id&quot;: 2, &quot;status&quot;: &quot;posted&quot;, &quot;cents&quot;: -850},
+    {&quot;id&quot;: 3, &quot;status&quot;: &quot;pending&quot;, &quot;cents&quot;: 500}
+  ]
+}</code></pre>
+      <p>Start at the outer braces. Find the field named <code>entries</code>, then count its three items. The second item pairs <code>cents</code> with <code>-850</code>. A comma separates entries. A standard JSON document has no comma after the last entry.</p>
+      <h2 id="try-it-on-paper">Try it on paper</h2>
+      <p>Imagine a fourth posted item for 100 cents. Draw its object before editing the text. Which three fields must appear? What is the new posted total?</p>
+      <p>Check yourself by adding <code>{&quot;id&quot;: 4, &quot;status&quot;: &quot;posted&quot;, &quot;cents&quot;: 100}</code> as a fourth item, with a comma after the previous item. The posted total becomes <code>2600 - 850 + 100 = 1850</code> cents. Restore the original three entries before moving to the next exercise.</p>
+      <p>For the later Node.js exercise, save the original example as plain text in a new practice folder. Name it <code>statement.json</code>. If your editor saves <code>statement.json.txt</code>, rename the file and keep the <code>.json</code> ending.</p>
+      <h2 id="connect-to-umicom">Connect to Umicom</h2>
+      <p>A file importer in a practice edition of Umicom Bank could read these fields before deciding whether their values are suitable. The structure tells an importer where the fields are. A separate rule checks whether each value is allowed.</p>
+      <ul>
+        <li><a href="../../preparing-llm-training-data/lessons/03-json-jsonl-and-chat-records.html">Read JSON, JSONL and chat records</a></li>
+        <li><a href="https://www.rfc-editor.org/rfc/rfc8259.html">JSON format specification</a></li>
+      </ul>
+      <p><a href="../../../lessons/04-web/practical-web-and-data-foundations/01-read-a-statement-as-json.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>

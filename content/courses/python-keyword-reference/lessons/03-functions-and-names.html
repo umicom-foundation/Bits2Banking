@@ -1,0 +1,171 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/python-keyword-reference/lessons/03-functions-and-names.html
+
+PURPOSE:
+Define procedures, return results and see which part of a program owns a name.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Define procedures, return results and see which part of a program owns a name.">
+  <title>Functions, results, and where names belong | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Functions, results, and where names belong</h1>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-choices-and-repetition.html">Previous · Choices and repetition</a> · <a href="04-structures-and-resources.html">Next · Classes, imports, and resources</a> · <a href="../../../lessons/04-web/python-keyword-reference/03-functions-and-names.md">Markdown edition</a></nav>
+<p>Define procedures, return results and see which part of a program owns a name.</p>
+
+<h2>Before you try a word</h2>
+
+<p>A function groups steps under one name. Scope is the region where a name can be used. Have a caller supply an input and receive a result before experimenting with shared state.</p>
+
+<p>Each fragment is self-contained. Copy one highlighted fragment to a fresh file named <code>receipt.py</code>, open a terminal in that folder and run <code>python receipt.py</code>. This reference uses Python 3.14. Start by predicting the result on paper if you have no interpreter.</p>
+
+<h2>Reserved word examples</h2>
+
+<h3>def</h3>
+
+<p>Create a named function.</p>
+
+<pre><code class="language-python">def show_count():
+    print(3)
+
+show_count()</code></pre>
+
+<p>Expected output</p>
+
+<pre><code class="language-text">3</code></pre>
+
+<h3>return</h3>
+
+<p>Stop the current function call and send a value to its caller.</p>
+
+<pre><code class="language-python">def double(count):
+    return count + count
+
+print(double(3))</code></pre>
+
+<p>Expected output</p>
+
+<pre><code class="language-text">6</code></pre>
+
+<h3>lambda</h3>
+
+<p>Make a small function from one expression.</p>
+
+<pre><code class="language-python">amounts = [[7, &quot;a&quot;], [3, &quot;b&quot;]]
+print(sorted(amounts, key=lambda row: row[0])[0][1])</code></pre>
+
+<p>Expected output</p>
+
+<pre><code class="language-text">b</code></pre>
+
+<h3>global</h3>
+
+<p>Tell an inner block that assignment should bind a module-level name.</p>
+
+<pre><code class="language-python">count = 2
+
+def reset():
+    global count
+    count = 0
+
+reset()
+print(count)</code></pre>
+
+<p>Expected output</p>
+
+<pre><code class="language-text">0</code></pre>
+
+<h3>nonlocal</h3>
+
+<p>Assign to a name that already exists in an enclosing function.</p>
+
+<pre><code class="language-python">def outer():
+    count = 2
+    def reset():
+        nonlocal count
+        count = 0
+    reset()
+    return count
+
+print(outer())</code></pre>
+
+<p>Expected output</p>
+
+<pre><code class="language-text">0</code></pre>
+
+<h3>del</h3>
+
+<p>Delete a binding or remove an element from a collection. Other references may still keep the object alive.</p>
+
+<pre><code class="language-python">rows = [2, 4]
+del rows[0]
+print(rows)</code></pre>
+
+<p>Expected output</p>
+
+<pre><code class="language-text">[4]</code></pre>
+
+<h3>yield</h3>
+
+<p>Produce one value and pause a generator function until the caller asks for another value.</p>
+
+<pre><code class="language-python">def labels():
+    yield &quot;first&quot;
+    yield &quot;second&quot;
+
+print(list(labels()))</code></pre>
+
+<p>Expected output</p>
+
+<pre><code class="language-text">['first', 'second']</code></pre>
+
+<h2>Compare the meaning in another language</h2>
+
+<p>C, Go and Python share <code>return</code>. Python uses <code>def</code> to define a named function. Go uses <code>func</code>, and C writes the result type at the start of the declaration. A generator supplies values over successive requests.</p>
+
+<h2>Try it</h2>
+
+<p>Pass 8 to double. The result is 16. Decide whether the function needs to know which screen will display it.</p>
+
+<h2>Apply it to Umicom</h2>
+
+<p>Define one reproducible calculation before displaying it in Umicom Studio IDE or calling it through Framework. A tiny function with explicit inputs is easy to qualify.</p>
+
+<h2>Continue in another course</h2>
+
+<ul>
+<li><a href="../../programming-across-languages/index.html">Programming across languages</a></li>
+<li><a href="../../learning-python/index.html">Learning Python</a></li>
+<li><a href="../../c23-keyword-reference/index.html">C23 keyword reference</a></li>
+<li><a href="https://docs.python.org/3.14/reference/lexical_analysis.html#keywords">Python 3.14 lexical reference</a></li>
+<li><a href="https://docs.python.org/3.14/reference/simple_stmts.html">Python 3.14 simple statements</a></li>
+<li><a href="https://docs.python.org/3.14/reference/compound_stmts.html">Python 3.14 compound statements</a></li>
+</ul>
+    <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a href="02-choices-and-repetition.html">Previous · Choices and repetition</a> · <a href="04-structures-and-resources.html">Next · Classes, imports, and resources</a> · <a href="../../../lessons/04-web/python-keyword-reference/03-functions-and-names.md">Markdown edition</a></nav>
+  </main>
+</body>
+</html>

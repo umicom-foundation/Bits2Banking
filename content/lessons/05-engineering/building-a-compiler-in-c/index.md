@@ -238,3 +238,5 @@ Inspect resource requirements without executing a program, trace stack behavior,
 1. [Lower Boolean words without changing the VM](93-lower-boolean-words-without-changing-the-vm.md)
 
 1. [Supply a signed input in a browser worker](94-supply-a-signed-browser-input.md)
+
+1. [Pause before a reached source line](95-pause-before-a-reached-line.md)

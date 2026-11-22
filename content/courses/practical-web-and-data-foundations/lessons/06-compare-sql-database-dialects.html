@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/practical-web-and-data-foundations/lessons/06-compare-sql-database-dialects.html
+
+PURPOSE:
+Compare SQL database dialects in the Bits2Banking web and data course.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Use a common SQL query to total the statement, then identify two different ways a database can assign record IDs.">
+  <title>Compare SQL database dialects | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" href="../../../assets/branding/umicom-icon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="../../../assets/branding/umicom.ico" type="image/x-icon">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a href="../../index.html" class="logo">
+        <img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation" width="176">
+        <span>Bits2Banking</span>
+      </a>
+      <nav aria-label="Learning navigation">
+        <a href="../../index.html">Courses</a>
+        <a href="../../../start/connected-learning.md">Connected learning paths</a>
+        <a href="../../../start/technology-topic-map.md">Explore technology by topic</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="simple-page">
+    <article>
+      <h1>Compare SQL database dialects</h1>
+      <nav aria-label="Lesson navigation">
+        <a href="../index.html">Course contents</a>
+        <a href="05-add-posted-cents-in-a-spreadsheet.html">Previous lesson · Add posted cents in a spreadsheet</a>
+        <a href="../../sql-statement-reconciliation/index.html">Next course · SQL Statement Reconciliation</a>
+      </nav>
+      <p>Use a common SQL query to total the statement, then identify two different ways a database can assign record IDs.</p>
+      <h2 id="move-from-cells-to-rows">Move from cells to rows</h2>
+      <p>A database keeps information in an organised form. A relational database uses named tables, with fields in columns and entries in rows. SQL is the language used here to create a table and ask it a question. Some parts of SQL are shared between database programs. A dialect is the particular set of rules and spelling used by one database program.</p>
+      <p>If you have a local database and know how to use a scratch database, run the following block there once. The lesson works on paper too. Read the statement one line at a time and point to the records it includes.</p>
+      <h2 id="use-one-common-statement-query">Use one common statement query</h2>
+      <pre><code class="language-sql">-- Create a practice table with explicit IDs for these fictional records.
+CREATE TABLE practice_statement (
+    id INTEGER PRIMARY KEY,
+    status VARCHAR(7) NOT NULL,
+    cents INTEGER NOT NULL
+);
+
+INSERT INTO practice_statement (id, status, cents) VALUES
+    (1, 'posted', 2600),
+    (2, 'posted', -850),
+    (3, 'pending', 500);
+
+-- Match the spreadsheet condition and give an empty match a zero total.
+SELECT COALESCE(SUM(cents), 0) AS posted_cents
+FROM practice_statement
+WHERE status = 'posted';</code></pre>
+      <p><code>WHERE</code> keeps the rows that match. <code>SUM(cents)</code> adds their values. <code>COALESCE</code> chooses the first value that is present. If no row matches and the sum is absent, it uses zero. The result is one column named <code>posted_cents</code> with value <code>1750</code>.</p>
+      <h2 id="compare-how-two-database-programs-choose-ids">Compare how two database programs choose IDs</h2>
+      <p>The example above gives every row an ID. A fresh practice table can also ask the database to assign it. PostgreSQL has identity columns. MySQL uses <code>AUTO_INCREMENT</code> for this example. Both declare the ID as a primary key so it identifies each row uniquely. Read the statements side by side and find the words that belong to each database.</p>
+      <pre><code class="language-sql">-- PostgreSQL form for a new practice table.
+CREATE TABLE postgres_practice (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cents INTEGER NOT NULL
+);</code></pre>
+      <pre><code class="language-sql">-- MySQL form for a new practice table.
+CREATE TABLE mysql_practice (
+    id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    cents INTEGER NOT NULL
+);</code></pre>
+      <p>The database-specific part is how a new ID is created. The filter and sum are the same idea in both databases. Use the statement that matches the database where you create the table.</p>
+      <h2 id="try-it-and-connect-to-umicom">Try it and connect to Umicom</h2>
+      <p>Predict the result if the last query looks for <code>pending</code>. Check for <code>500</code>. Try a status that none of your rows have. <code>SUM</code> alone would be missing, and the <code>COALESCE</code> call returns <code>0</code>. If the database says the practice table already exists, move to a new scratch database or ask the existing practice table the question without recreating it.</p>
+      <p>An Umicom Bank or TMS report can check the same few records through a spreadsheet and a query. Write down which database version ran the query and whether it was the portable calculation or the optional ID example. That makes a comparison useful to someone reviewing a data change.</p>
+      <ul>
+        <li><a href="../../sql-statement-reconciliation/index.html">SQL Statement Reconciliation</a></li>
+        <li><a href="https://www.postgresql.org/docs/current/ddl-identity-columns.html">PostgreSQL identity columns</a></li>
+        <li><a href="https://dev.mysql.com/doc/refman/8.4/en/example-auto-increment.html">MySQL AUTO_INCREMENT</a></li>
+      </ul>
+      <p><a href="../../../lessons/04-web/practical-web-and-data-foundations/06-compare-sql-database-dialects.md">Read the Markdown edition</a></p>
+    </article>
+  </main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · Original learning material.</div></footer>
+</body>
+</html>
