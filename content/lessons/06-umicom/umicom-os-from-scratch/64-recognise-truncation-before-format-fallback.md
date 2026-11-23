@@ -103,3 +103,5 @@ Before executing a change, predict the result at one byte below, exactly at and 
 
 
 [Course contents](index.md) · [Previous lesson](63-qualify-installed-media-recovery-behaviour.md)
+
+[Next lesson](65-read-a-filesystem-header-within-its-partition.md)

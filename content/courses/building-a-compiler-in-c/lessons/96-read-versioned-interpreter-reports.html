@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/96-read-versioned-interpreter-reports.html
+
+PURPOSE:
+Teach how an editor or test tool can read the interpreter's versioned execution events.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Read versioned interpreter reports | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav></div></header>
+<main id="main" class="simple-page">
+  <article>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="95-pause-before-a-reached-line.html">Previous lesson</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/96-read-versioned-interpreter-reports.md">Markdown manuscript</a></nav>
+    <h1>Read versioned interpreter reports</h1>
+    <p>A person can read the interpreter's normal trace. An editor or test runner needs a predictable format so it can find the same fields on every run. JSON Lines gives it one structured object per line.</p>
+    <h2>Read a successful run</h2>
+    <ol>
+      <li>Save this C program as <code>charge.c</code> with its first source line on line 1.</li>
+      <li>Use an Umicom C executable that lists <code>--jsonl</code> in its help. If PowerShell cannot find <code>umicom-c</code>, use the full path to the executable you built.</li>
+      <li>Run the PowerShell commands below. Expect a <code>step</code> for the declaration, a <code>step</code> for the return, and a <code>result</code> with the value <code>42</code>.</li>
+    </ol>
+    <pre><code>int main(void) {
+    int amount = 40;
+    return amount + 2;
+}</code></pre>
+    <pre><code>$events = @(umicom-c interpret charge.c --jsonl | ConvertFrom-Json)
+$runExit = $LASTEXITCODE
+$events | Format-Table event, stepKind, firstLine, ok, value
+$runExit</code></pre>
+    <p>Each record contains <code>schema</code> with the value <code>1</code>. The schema is the agreed layout of a record. A consumer can check the version before reading fields such as <code>firstLine</code> or <code>value</code>. In this run <code>firstLine</code> is <code>2</code> for the declaration and <code>3</code> for the return. An exit code of <code>0</code> means the tool finished successfully. The program returns <code>42</code> in the final event.</p>
+    <h2>See what a failed run keeps</h2>
+    <p>Change <code>return amount + 2;</code> to <code>return amount / 0;</code> and save the file. Run the same PowerShell block. The declaration still produces a successful step. The return step has <code>ok</code> set to <code>False</code>. The interpreter prints a separate diagnostic about division by zero. Expect exit code <code>1</code> and no <code>result</code> event.</p>
+    <p>Restore the addition and run it again. An editor could use <code>firstLine</code> to highlight a step and display diagnostics beside the source. Explain why it should check both the exit code and the final <code>result</code> event before displaying a returned value. Keep prompts and diagnostics separate from the JSON objects when collecting the report. <a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/source-interpreter.md">Umicom C interpreter guide</a></p>
+    <nav aria-label="Continue the course"><a href="97-check-a-constant-before-running.html">Next lesson, check a constant before running C</a></nav>
+  </article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer>
+</body>
+</html>

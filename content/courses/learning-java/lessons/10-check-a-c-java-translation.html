@@ -65,6 +65,16 @@ int main(void) {
 <h2>3. Check the boundary</h2>
 <p>In a new source copy, initialize <code>net</code> to <code>2147483647</code> and reassign it with <code>net = net + 1;</code>. Run the translation with an unused destination. Expect a diagnostic and no destination file. This arithmetic lies outside the shared signed 32-bit range. Keep this as a translation refusal exercise.</p>
 <p>The profile supports decimal integer expressions, initialized locals, simple assignments and a final return. Java objects, parameters, loops and general project conversion need additional implementation. Try another pair of small values and repeat both compilation checks.</p>
+<h2>4. Check the installed translator from C</h2>
+<p>The earlier steps call the command-line tool. A C application can call the same translator through the Umicom C SDK. A CMake component names what the code needs. The imported target supplies the installed headers and libraries needed to link the application.</p>
+<p>From an Umicom C source directory already built into <code>build</code>, use PowerShell to stage the SDK and build the independent example.</p>
+<pre><code>cmake --install .\build --prefix .\installed-sdk
+$translationPackage = (Resolve-Path -LiteralPath .\installed-sdk\lib\cmake\UmicomC).Path
+cmake -S .\examples\translate_sdk_consumer -B .\build-translation-consumer "-DUmicomC_DIR=$translationPackage"
+cmake --build .\build-translation-consumer
+ctest --test-dir .\build-translation-consumer --output-on-failure</code></pre>
+<p>Expect <code>umicom.c.installed_translation_consumer</code> to pass. Open the example's <code>main.c</code>, find the two translation calls, and explain where the second call gets its source length. The test checks the restored C text. Steps 1 and 2 give you the separate Java and C program results.</p>
+<p>If CMake refuses the <code>Translation</code> component before building the example, find the <code>UmicomCConfig.cmake</code> file from your installed SDK and check the directory you passed. <a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/embedding.md">Umicom C SDK guide</a></p>
 <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="09-test-the-runnable-jar.html">Previous lesson</a></nav>
 <p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/03-native-code/learning-java/10-check-a-c-java-translation.md">Markdown edition</a></p>
 </article></main>

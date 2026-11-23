@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/65-read-a-filesystem-header-within-its-partition.html
+
+PURPOSE:
+Teach what a bounded filesystem header can establish about a selected partition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Read a filesystem header within its partition | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="64-recognise-truncation-before-format-fallback.html">Previous lesson</a></nav>
+    <h1>Read a filesystem header within its partition</h1>
+    <p>A partition table describes where a part of a disk begins and ends. An ext-family superblock records details such as how many filesystem blocks the volume contains. In this exercise you give Framework a simulated partition and one real byte window in memory. You will predict when the C program may request the header. <a href="https://docs.kernel.org/filesystems/ext4/super.html">Linux kernel superblock format</a></p>
+    <h2>Draw the byte window</h2>
+    <ol>
+      <li>The partition starts at logical block 2048. Each logical block has 512 bytes, so the partition starts at byte 1,048,576.</li>
+      <li>The superblock begins 1024 bytes into the partition. Add 1024 to get the absolute read position, 1,049,600.</li>
+      <li>The superblock occupies 1024 bytes. The partition needs at least 2048 bytes from its beginning to cover its first complete superblock.</li>
+    </ol>
+    <p>The short scenario ends at logical block 2050. In this table the final block is included, so the partition contains three blocks, or 1536 bytes. The header needs four 512-byte logical blocks. Framework refuses that read before the callback runs. The underlying C array still contains the full header.</p>
+    <h2>Follow the C program</h2>
+    <p>The callback is the function that supplies bytes to Framework. It accepts a request only at byte 1,049,600 and only for a 1024-byte copy. This makes the observable test independent of other memory on the machine.</p>
+    <pre><code class="language-c">UmiStatus status = UmiGptPartitionProbeFilesystem(ReadHeader, &amp;fixture,
+    UINT64_C(307200000), &amp;image, &amp;partition,
+    UMI_GPT_FILESYSTEM_EXT_SUPERBLOCK, &amp;observed);</code></pre>
+    <p>The fixture reports a 4096-byte <strong>filesystem block</strong> even though its disk <strong>logical block</strong> is 512 bytes. The number 4096 also appears as the filesystem block count. Multiply 4096 filesystem blocks by 4096 bytes per filesystem block to get the reported volume length of 16,777,216 bytes.</p>
+    <h2>Run, predict and explain</h2>
+    <ol>
+      <li>Use the <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-filesystem-header/README.md">lab guide</a> to build the C23 client.</li>
+      <li>Run <code>present</code>, <code>partition-too-short</code> and <code>unknown-signature</code>. Compare their expected read counts: 1, 0 and 1.</li>
+      <li>Explain why the unchanged result after a refusal still belongs to the previous inspection. If a test disagrees, check the supplied last block, requested offset and byte count before editing the expected outcome.</li>
+    </ol>
+    <p>For a final experiment, use a last block of 2051 and keep the original superblock. Predict how many reads occur, then run <code>volume-too-large</code>. Four logical blocks cover the complete header, so one read can occur. Its claimed 16,777,216-byte volume exceeds the 2048-byte partition, so Framework still refuses the observation. Header bounds, volume bounds and a boot test answer three separate questions.</p>
+  </article></main>
+</body>
+</html>

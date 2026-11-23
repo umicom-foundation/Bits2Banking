@@ -38,3 +38,5 @@ ctest --test-dir $wireBuild --no-tests=error -R '^framework[.]web[.]fastcgi_resp
 ```
 
 Expect four passing tests. The exchange fixture splits a header between two worker records and delivers the records one byte at a time. The binary fixture includes a zero byte in the body. The length fixtures accept the exact byte count and refuse a mismatch before either output changes. If the exchange fixture fails, first check whether `END_REQUEST` was accepted, then inspect the blank line and count the bytes after it. These fixtures exercise the shared C adapter. A deployed worker and browser delivery need their own checks.
+
+[Next lesson on checking routes before listening](43-check-native-routes-before-listening.md).

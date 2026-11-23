@@ -69,3 +69,5 @@ failure and forced-recovery transcripts.
 - [Hosted lab instructions](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/boot-handoff/README.md)
 - [Qualify normal boot at separate boundaries](99-qualify-normal-boot-at-separate-boundaries.md)
 - [Course contents](index.md)
+
+[Next lesson on the x64 Kernel stack](129-set-up-the-x64-kernel-stack.md)

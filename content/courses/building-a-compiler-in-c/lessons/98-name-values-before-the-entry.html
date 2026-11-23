@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/98-name-values-before-the-entry.html
+
+PURPOSE:
+Practise declaration order with constexpr integers, anonymous enum and static_assert.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Name values before the entry | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="97-check-a-constant-before-running.html">Previous lesson</a></nav>
+    <h1>Name values before the entry</h1>
+    <p>Suppose a grid has six columns and seven rows. Each cell takes one step, followed by one step to finish. Giving each quantity a name makes the final number easier to check.</p>
+    <h2>Write the quantities in the order you need them</h2>
+    <pre><code class="language-c">constexpr int COLUMNS = 6;
+constexpr int ROWS = 7;
+enum { GRID_STEPS = COLUMNS * ROWS, FINAL_STEP };
+static_assert(FINAL_STEP == 43, "Expect 42 cells and one final step");
+
+int main(void) {
+    return FINAL_STEP;
+}</code></pre>
+    <p>The word <code>constexpr</code> introduces a fixed value. An <code>enum</code> names related integers. The expression for <code>GRID_STEPS</code> gives it the value 42. The next name has no written value, so it gets 43. The compiler learns those values before the entry begins. <a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf">WG14 C23 working draft, sections 6.7.1 and 6.7.2.2</a></p>
+    <h2>Run and change one thing</h2>
+    <ol>
+      <li>Save the program as <code>grid.c</code>. Run <code>umicom-c interpret grid.c</code> and expect <code>Result: 43</code>.</li>
+      <li>Change <code>ROWS</code> to 8. Run <code>umicom-c interpret grid.c --check-only</code>. Read the assertion message and calculate the new value of <code>FINAL_STEP</code> on paper. It is 49.</li>
+      <li>Restore <code>ROWS</code> to 7. Move its declaration below the enumeration. Repeat the check and find the earlier use of <code>ROWS</code> in the diagnostic. Restore the original order.</li>
+    </ol>
+    <h2>Express the same calculation in pseudocode</h2>
+    <pre><code class="language-text">BEGIN
+LET cells = 6 * 7;
+RETURN cells + 1;
+END</code></pre>
+    <p>Save this as <code>grid.pseudo</code> and run <code>umicom-c pseudocode grid.pseudo</code>. It also returns 43. Here the calculation is an executed statement, so the interpreter can report it as a step. The C example resolves the named constants during admission and executes the return.</p>
+    <p>Use one signed integer per <code>constexpr int</code> declaration in this Umicom C profile. The file-scope table holds up to 32 combined enumeration and fixed integer names. It supports reading those values in calculations. Address operations and block-scope <code>constexpr</code> require a wider profile.</p>
+  </article></main>
+</body>
+</html>

@@ -15,6 +15,8 @@ MIT
 
 ![Umicom](../../../assets/branding/umicom-wordmark.svg)
 
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" alt="Umicom icon" width="28"></a>
+
 # Check a C and Java translation
 
 A local variable belongs to one function or method. In this lab, a
@@ -99,5 +101,23 @@ The profile supports decimal integer expressions, initialized locals,
 simple assignments and a final return. Java objects, parameters, loops
 and general project conversion need additional implementation. Try
 different small values and repeat both compilation checks.
+
+## 4. Check the installed translator from C
+
+The earlier steps call the command-line tool. A C application can call the same translator through the Umicom C SDK. A CMake component names what the code needs. The imported target supplies the installed headers and the libraries needed to link the application.
+
+From an Umicom C source directory already built into `build`, use PowerShell to stage the SDK and build the small independent example.
+
+~~~powershell
+cmake --install .\build --prefix .\installed-sdk
+$translationPackage = (Resolve-Path -LiteralPath .\installed-sdk\lib\cmake\UmicomC).Path
+cmake -S .\examples\translate_sdk_consumer -B .\build-translation-consumer "-DUmicomC_DIR=$translationPackage"
+cmake --build .\build-translation-consumer
+ctest --test-dir .\build-translation-consumer --output-on-failure
+~~~
+
+Expect the `umicom.c.installed_translation_consumer` test to pass. Open the example's `main.c`, find the two translation calls, and explain where the second call gets its source length. The test checks the restored C text. Steps 1 and 2 give you the separate Java and C program results.
+
+If CMake refuses the `Translation` component before building the example, find the `UmicomCConfig.cmake` file from your installed SDK and confirm that its containing directory is the one you passed. [Umicom C SDK guide](https://github.com/umicom-foundation/umicom-c/blob/main/docs/embedding.md)
 
 [Course contents](index.md) · [Previous lesson](09-test-the-runnable-jar.md)

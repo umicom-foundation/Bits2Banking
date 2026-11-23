@@ -43,6 +43,7 @@ cmake --build $wireBuild
 ctest --test-dir $wireBuild --no-tests=error -R '^framework[.]web[.]fastcgi_response[.](actual-exchange|binary|status-and-length|wrong-length)$'
 </code></pre>
 <p>Expect four passing tests. The exchange fixture splits a header between two worker records and delivers the records one byte at a time. The binary fixture includes a zero byte in the body. The length fixtures accept the exact byte count and refuse a mismatch before either output changes. If the exchange fixture fails, first check whether <code>END_REQUEST</code> was accepted, then inspect the blank line and count the bytes after it. These fixtures exercise the shared C adapter. A deployed worker and browser delivery need their own checks.</p>
+<p><a href="43-check-native-routes-before-listening.html">Next lesson on checking routes before listening</a></p>
 </article></main>
 <footer>Sammy Hegab · Umicom Foundation · MIT</footer>
 </body></html>

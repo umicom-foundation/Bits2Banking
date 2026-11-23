@@ -49,7 +49,12 @@ MIT for original learning material.
     <h2>Explain the checks</h2>
     <p>A line target controls where the console prompts. It leaves the interpreter’s instruction limit in force. Try the same session with <code>--max-steps 1</code>. The budget stops the run before it reaches line 6. An invalid number such as <code>until 6junk</code> leaves the current prompt in place.</p>
     <p>Trace rows and the returned value are on standard output. Prompts and reports about an unreached line are diagnostic messages. An editor can display the upcoming source line and keep the execution result separate. Move line 6 across two lines and predict where <code>until</code> will stop. It matches the line on which the statement begins.</p>
+    <h2>Separate program text from interactive commands</h2>
+    <p>Repeat the same program in PowerShell with standard input supplying its text. This run streams the trace and prints <code>Result: 42</code> after the input closes.</p>
+    <pre><code>Get-Content -LiteralPath pause.c -Raw | umicom-c interpret --stdin</code></pre>
+    <p>Using <code>--stdin</code> and <code>--step</code> together makes both the program and the prompt ask for the same stream. The CLI refuses that combination before reading the program. Draw a diagram with the program file, command input and trace output as separate arrows, then show which arrow changes in the piped version.</p>
     <p>If the program cannot find the command, check that your executable came from the current Umicom C source build. Then recheck file line numbers and confirm that you started with <code>--step</code>. <a href="https://github.com/umicom-foundation/umicom-c/blob/main/docs/source-interpreter.md">Umicom C interpreter guide</a></p>
+    <nav aria-label="Continue the course"><a href="96-read-versioned-interpreter-reports.html">Next lesson, read versioned interpreter reports</a></nav>
   </article>
 </main>
 <footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer>

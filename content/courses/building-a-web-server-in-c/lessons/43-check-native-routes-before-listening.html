@@ -1,0 +1,65 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/43-check-native-routes-before-listening.html
+
+PURPOSE:
+Teach how a native local-service route check separates policy from live transport.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Check native routes before listening | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav></div></header>
+<main id="main" class="simple-page">
+  <article>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="42-turn-a-worker-document-into-http.html">Previous lesson</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/43-check-native-routes-before-listening.md">Markdown manuscript</a></nav>
+    <h1>Check native routes before listening</h1>
+    <p>A route connects a request path to a response handler. In a live server a <strong>listener</strong> accepts connections. An in-memory check supplies a request directly to the same parser and service without opening that listener.</p>
+    <h2>Run one local check</h2>
+    <ol>
+      <li>Use a built Umicom Framework local service example with <code>--check-routes</code> in its help. On Windows, use the full path to its executable if the command is unavailable from your terminal.</li>
+      <li>Run the command below. The port supplies the values expected by the local browser admission policy. The check does not use the port to listen.</li>
+      <li>Expect <code>Local route and browser admission checks passed in memory.</code> A failure prints the case name and expected and observed HTTP status. Compare the named contract before retrying.</li>
+    </ol>
+    <pre><code>umicom-web-local-service-example --port 8080 --check-routes</code></pre>
+    <h2>Follow the evidence in C</h2>
+    <ol>
+      <li>Open Framework’s <code>examples/web/local_service.c</code>. Follow <code>UmiWebRequestParseStrict</code>, then <code>UmiWebServiceHandleBody</code>. Identify where the check compares machine status, HTTP status and response bytes separately.</li>
+      <li>Write a table of expected results. The home and health routes should return HTTP 200 under the configured policy. The controlled unrelated Host and Origin checks should each receive 403. Describe why the two refusals need separate cases.</li>
+      <li>In a branded build, identify how the held response body is compared to the expected SVG or ICO asset. Locate the release call and explain why the comparison needs to happen while the body is still owned.</li>
+    </ol>
+    <h2>Predict what each method should do</h2>
+    <p>The method says what the sender wants. A response header describes the reply, while its body holds the returned data. Find these cases in the C example. Cover the last column, predict each outcome, then compare your answers with the table and with the source.</p>
+    <table>
+      <thead><tr><th scope="col">Request</th><th scope="col">Expected HTTP status</th><th scope="col">What the in-memory check compares</th></tr></thead>
+      <tbody>
+        <tr><td><code>HEAD /api/health</code></td><td>200</td><td>The selected representation has the JSON type. The service result still carries its data at this stage.</td></tr>
+        <tr><td><code>POST /api/echo</code> with <code>message=ready+check</code></td><td>200</td><td>The reply has a plain-text type and includes every original byte in order.</td></tr>
+        <tr><td><code>POST /favicon.ico</code> with branding enabled</td><td>405</td><td>The <code>Allow</code> header names <code>GET</code> and <code>HEAD</code>. A successful favicon request uses an icon type.</td></tr>
+      </tbody>
+    </table>
+    <p>Imagine the echo handler sends HTTP 200 and returns only <code>message=ready</code>. Explain which check fails. Then explain why a live <code>HEAD</code> response should keep its selected representation's headers while sending no body bytes. The in-memory test checks the route choice and representation. The later network test checks the response sent to the client.</p>
+    <p>Propose a separate loopback test that would verify listening, forwarding, finishing the response, and shutdown. Describe each observation you would keep. An installed SDK test adds package identity and linking evidence before testing in-memory behavior.</p>
+    <p>Read the Framework local web service guide for build steps and supported loopback commands. <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/local-web-service.html">Framework local web service guide</a></p>
+  <p><a rel="next" href="44-request-a-single-byte-range.html">Next lesson on requesting bytes</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer>
+</body>
+</html>

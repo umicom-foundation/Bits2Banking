@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/129-set-up-the-x64-kernel-stack.html
+
+PURPOSE:
+Explain what the x64 entry checks before calling compiled C on a Kernel-owned stack.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Set up the x64 Kernel stack | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="128-observe-the-boot-reservation-plan.html">Previous lesson</a></nav>
+    <h1>Set up the x64 Kernel stack</h1>
+    <p>When compiled C calls another function, it uses a stack, a region of memory that holds return addresses and temporary values. Umicom Kernel's Assembly entry uses an area reserved for the Kernel. You can inspect this area inside the linked x64 file before a loader or virtual machine runs it.</p>
+    <h2>Follow the first transfer</h2>
+    <ol>
+      <li>The caller must supply a readable handoff record in a mapped memory region. It places the address in register <code>RDI</code> and the byte length in <code>RSI</code>.</li>
+      <li>The Assembly entry checks the numerical bounds and the proposed region's separation from the Kernel image. A numeric check cannot tell whether the caller actually mapped the memory. The caller supplies that guarantee.</li>
+      <li>The Assembly loads the address of the top of the Kernel's reserved stack into <code>RSP</code>. The C entry can then use the stack under the System V AMD64 calling convention.</li>
+    </ol>
+    <pre><code class="language-asm">leaq __umicom_x86_stack_top(%rip), %rsp
+xorq %rbp, %rbp
+call UmicomKernelX86BootEntry</code></pre>
+    <p>The linker aligns the stack top to a 16-byte boundary. The <code>call</code> instruction stores an eight-byte return address, so <code>RSP + 8</code> is a multiple of 16 when the C function begins. <a href="https://gitlab.com/x86-psABIs/x86-64-ABI/-/blob/master/x86-64-ABI/low-level-sys-info.tex">System V AMD64 stack convention</a></p>
+    <h2>Inspect the file</h2>
+    <ol>
+      <li>Follow the <a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/docs/X86_64_ENTRY_CONTRACT.md">Kernel x64 build guide</a> to build the standalone ELF.</li>
+      <li>Run this from the Kernel checkout. Adjust the build folder if you chose a different one.
+      <pre><code class="language-powershell">llvm-readelf --file-header --program-headers --symbols build/x86_64-entry/umicom-kernel-x64-entry.elf</code></pre></li>
+      <li>Find <code>__umicom_x86_stack_bottom</code> and <code>__umicom_x86_stack_top</code> in the symbol listing. Subtract the bottom from the top. Expect hexadecimal <code>0x4000</code>, or 16,384 bytes. Check that the containing memory segment permits reading and writing and has no execute flag.</li>
+    </ol>
+    <p>For example, subtract <code>0x203000</code> from <code>0x207000</code>. The first possible return-address slot is immediately below <code>0x207000</code>. Explain why the difference between these two symbols is the size of the stack even if a second build places it at different addresses.</p>
+    <p>The file inspection checks the linked entry, segment permissions and stack placement. A real boot also needs a loader that supplies the mappings and a valid record, then transfers control on the chosen machine.</p>
+  </article></main>
+</body>
+</html>

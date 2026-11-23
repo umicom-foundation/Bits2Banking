@@ -240,3 +240,7 @@ Inspect resource requirements without executing a program, trace stack behavior,
 1. [Supply a signed input in a browser worker](94-supply-a-signed-browser-input.md)
 
 1. [Pause before a reached source line](95-pause-before-a-reached-line.md)
+1. [Read versioned interpreter reports](96-read-versioned-interpreter-reports.md)
+1. [Check a constant before running C](97-check-a-constant-before-running.md)
+
+1. [Name values before the entry](98-name-values-before-the-entry.md)

@@ -17,6 +17,10 @@ MIT
 
 # Qualify produced images in stages
 
+![Umicom](../../../assets/branding/umicom-wordmark.svg)
+
+[Umicom icon](../../../assets/branding/umicom.ico)
+
 ## Prepare the producer review
 
 Return to the media-stage and media-iso workflow from lesson 43. Setup accepts supported x86-64 Linux boot-protocol inputs, copies only the reviewed files into a new tree and invokes the explicitly selected native Linux GRUB program. The process exit code reports whether that program completed successfully; it cannot prove the resulting image is structurally acceptable or boots.
@@ -46,6 +50,48 @@ A successful memory fixture checks parser behaviour. A successful producer run c
 Run the installed lab endian scenario, record its status and flags, then explain why it must not be labelled a boot failure: no boot was attempted. Read the Setup media.iso_endian case and identify where completed remains false even after the producer callback succeeds.
 
 For a real failed build, retain the producer log and partial output, compare receipt-bound inputs and isolate the first failed stage. For a structural refusal, identify the unsupported or malformed record. For a guest failure, preserve serial output and firmware identity. Only then choose the next repair or qualification step. These exercises do not authorize writing a device or releasing an image.
+
+## Find out where an ISO came from
+
+An ISO is a file that represents an optical disc. Provenance is the record of who made the file and how. Start with the build run you chose from the project repository. Record the reviewed Umicom OS, Framework and Buildroot commits. A commit is a saved revision of the project's files. Buildroot is the tool that assembles the small Linux system used by the Foundation guest. The OS source lists which Buildroot commit to use.
+
+SHA-256 calculates a fingerprint from a file's bytes. Written in hexadecimal, it has 64 characters using digits 0–9 and letters A–F. If the fingerprint matches a separately reviewed checksum, it gives evidence that you have the expected bytes. A fingerprint and file from an unknown source can agree with each other. Review the origin before relying on the checksum.
+
+The Umicom OS `tools/optical-qualification/review-candidate.cmake` tool ties together four downloads from the same selected workflow run: guest evidence, optical evidence, the Foundation bundle and the optical candidate. It compares recorded revisions, bundle and ISO hashes, and the saved direct-boot results. `UMICOM_OPTICAL_CANDIDATE_FILES 1` is the file review record. Its `firmware-boot=not-run` line describes that stage. The direct-boot runner loads the kernel itself, so an optical boot through firmware still needs its own evidence.
+
+## Plan four observations of the same file
+
+Firmware is the code that starts first and looks for something to boot. BIOS and UEFI are two ways a PC or a virtual machine can start. Umicom OS also has two guest modes. In a normal run, Foundation starts its two test services and reaches the ready state. In a forced recovery run, Foundation skips those services and reaches the recovery console. A serial log is the text the host captures from the guest's serial output.
+
+| Firmware | Guest mode | What to look for in the serial log |
+| --- | --- | --- |
+| BIOS | Normal | Two services completed and Foundation reported ready. |
+| BIOS | Forced recovery | Recovery was requested and no services completed. |
+| UEFI | Normal | Two services completed and Foundation reported ready. |
+| UEFI | Forced recovery | Recovery was requested and no services completed. |
+
+1. Keep the original artifacts in four separate ordinary folders. Record the run reference and the reviewed ISO and bundle manifest digests. Keep notes in another folder.
+2. For an authorised test, use a dedicated virtual machine with the ISO attached as optical media and no writable guest disk. Save a separate folder per run ID. In it, keep the host's firmware and attachment record, the actual emulator process exit, and the complete serial log through `UMICOM_SHUTDOWN`. Record the ISO, host record and log hashes.
+3. Give the owner-reviewed evidence to `tools/optical-qualification/verify-firmware-captures.cmake`. It calls the native optical checker for the BIOS pair and the UEFI pair. The checker requires exit code zero, the matching ISO and bundle, and the expected markers in each complete log. The combined `UMICOM_OPTICAL_FIRMWARE_MATRIX 1` receipt covers the four submitted captures. The reviewer confirms the host settings and attachment from the original records.
+4. If a run fails or stops early, preserve its files and label the outcome. Keep USB, physical discs, Secure Boot and installation for separate reviews with their own evidence.
+
+Find `docs/foundation/optical-candidate-review.md` and `docs/foundation/optical-firmware-matrix.md` in the Umicom OS checkout. Start with the [native image workflow](https://github.com/umicom-foundation/umicom-os/blob/main/docs/foundation/native-image-workflow.md).
+
+## Practise with ordinary files
+
+Save a short text file in a scratch folder. Make a copy under a different name. In PowerShell, enter the full paths to the two files. The commands read their bytes.
+
+~~~powershell
+$FirstFile = Read-Host 'Full path to the first text file'
+$SecondFile = Read-Host 'Full path to its copy'
+$FirstHash = (Get-FileHash -LiteralPath $FirstFile -Algorithm SHA256 -ErrorAction Stop).Hash
+$SecondHash = (Get-FileHash -LiteralPath $SecondFile -Algorithm SHA256 -ErrorAction Stop).Hash
+$FirstHash -eq $SecondHash
+~~~
+
+Expect `True` for a byte-for-byte copy. Change one letter in the copy, save it, and rerun the commands. Expect `False`. Changing a filename leaves the bytes alone, while saving a changed letter changes the bytes. [PowerShell file-hash reference](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/get-filehash)
+
+On paper, suppose your file review matches ISO A. BIOS normal has a complete log for A, BIOS recovery used ISO B, UEFI normal has a complete log for A, and UEFI recovery was never run. Mark each row in your own table. The BIOS recovery row has an ISO mismatch. The UEFI recovery row is pending. Keep both rows visible and record the matrix as incomplete. This exercise uses only ordinary files and paper.
 
 [Installed SDK lab and commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-iso-inspection/README.md) · [Course contents](../../../courses/umicom-os-from-scratch/index.html)
 

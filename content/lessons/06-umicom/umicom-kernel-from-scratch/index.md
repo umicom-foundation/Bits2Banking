@@ -402,3 +402,5 @@ Inspect a fixed TCP header and mandatory pseudo-header checksum while keeping pa
 1. [Decode option values before changing connection state](127-decode-option-values-before-changing-connection-state.md)
 
 1. [Observe the boot reservation plan](128-observe-the-boot-reservation-plan.md)
+
+1. [Set up the x64 Kernel stack](129-set-up-the-x64-kernel-stack.md)

@@ -149,3 +149,7 @@ Encode bounded requests, retain one worker reply and examine completion before c
 - [Read a FastCGI reply before forwarding](41-read-a-fastcgi-reply-before-forwarding.md)
 
 - [Turn a worker document into HTTP](42-turn-a-worker-document-into-http.md)
+
+1. [Check native routes before listening](43-check-native-routes-before-listening.md).
+
+1. [Request a single byte range](44-request-a-single-byte-range.md).

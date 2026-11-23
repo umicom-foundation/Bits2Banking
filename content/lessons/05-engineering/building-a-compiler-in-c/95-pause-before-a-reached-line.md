@@ -45,4 +45,16 @@ The target changes where the console prompts. Try the same run with **--max-step
 
 Trace rows and the returned value go to standard output. Prompts and information about an unreached line go to the diagnostic stream. Predict what happens if you split the line 6 statement across two lines. The pause matches the line where the statement begins.
 
+## Separate program text from commands
+
+In PowerShell, send the same program text through the input stream. Expect the trace and **Result: 42** after the stream closes.
+
+~~~powershell
+Get-Content -LiteralPath pause.c -Raw | umicom-c interpret --stdin
+~~~
+
+**--stdin** and **--step** compete for the same input stream. The CLI refuses the combination before reading the program. Draw separate arrows for program text, interactive commands and trace output. Explain which arrows the file-based and piped runs need.
+
 If the tool cannot find the command, check which Umicom C executable is on your path and check that you used **--step**. [Umicom C interpreter guide](https://github.com/umicom-foundation/umicom-c/blob/main/docs/source-interpreter.md)
+
+[Next lesson, read versioned interpreter reports](96-read-versioned-interpreter-reports.md)

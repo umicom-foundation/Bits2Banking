@@ -1,0 +1,62 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/97-check-a-constant-before-running.html
+
+PURPOSE:
+Teach the difference between checking constant C declarations and executing a program.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Check a constant before running C | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav></div></header>
+<main id="main" class="simple-page">
+  <article>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="96-read-versioned-interpreter-reports.html">Previous lesson</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/97-check-a-constant-before-running.md">Markdown manuscript</a></nav>
+    <h1>Check a constant before running C</h1>
+    <p>Imagine four groups of six chairs. You can check on paper that this arrangement needs 24 chairs. C can perform the same constant check while it prepares your source. A static assertion asks for a condition that evaluates to a nonzero integer.</p>
+    <h2>Check the source, then run it</h2>
+    <ol>
+      <li>Predict the result and save the program as <code>chairs.c</code>.</li>
+      <li>Use the current Umicom C tool to check the source. Expect <code>Source accepted for interpretation.</code></li>
+      <li>Run it normally. Expect a step for the declaration of <code>groups</code>, a return step and <code>Result: 24</code>.</li>
+    </ol>
+    <pre><code>static_assert(4 * 6 == 24);
+
+int main(void) {
+    int groups = 4;
+    static_assert(6 &gt; 0);
+    return groups * 6;
+}</code></pre>
+    <pre><code>umicom-c interpret chairs.c --check-only
+umicom-c interpret chairs.c</code></pre>
+    <p>The first assertion appears before the function. The second appears inside it. Both use fixed integer expressions, so the compiler can check them during source admission. The result events describe the program's execution.</p>
+    <h2>Change one thing at a time</h2>
+    <ol>
+      <li>Set <code>groups</code> to <code>5</code> and keep both assertions as written. Predict the result, then run it again. The source still passes the constant checks and the returned value becomes <code>30</code>.</li>
+      <li>In a fresh copy, put <code>if (0) { static_assert(0); }</code> before the return. Run with <code>--check-only</code>. Expect a diagnostic that the static assertion evaluated to zero. The compiler checks the declaration while preparing the source, even inside a branch execution would skip.</li>
+      <li>Explain the preparation in your own words. A plan can say “check the fixed calculation, stop if it fails, then prepare the instructions that will run later.”</li>
+    </ol>
+    <p>Use a fixed expression in <code>static_assert</code>. This Umicom C profile accepts the form without a message at file scope or inside a C block. <a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf">C23 working draft, section 6.7.11</a></p>
+    <p><a rel="next" href="98-name-values-before-the-entry.html">Next lesson on naming fixed values</a></p>
+  </article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT</div></footer>
+</body>
+</html>

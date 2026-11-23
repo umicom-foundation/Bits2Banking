@@ -160,3 +160,7 @@ Use the existing installed C23 media client to distinguish creation, payload wri
 - [Qualify installed media recovery behaviour](63-qualify-installed-media-recovery-behaviour.md)
 
 - [Recognise truncation before format fallback](64-recognise-truncation-before-format-fallback.md)
+
+## Read filesystem headers through Framework
+
+- [Read a filesystem header within its partition](65-read-a-filesystem-header-within-its-partition.md)

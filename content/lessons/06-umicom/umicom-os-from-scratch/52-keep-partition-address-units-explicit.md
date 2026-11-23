@@ -78,6 +78,38 @@ The backup header occupies the final logical block. Its byte address is source l
 
 Carry observed logical-block geometry alongside the source identity. Do not substitute a filesystem cluster size, a physical-sector size or an assumed universal value. The read-only Framework service supports both teaching geometries, while the existing Boot Media transfer workflow retains its separate 512-byte image policy. Inspection support alone does not authorize or qualify a new device-writing format.
 
+## Check a plan using whole blocks
+
+A disk plan can require one partition of a given type and a minimum number of bytes. For this example, the plan asks for an EFI System partition and an x86-64 Linux root partition. A type GUID is the identifier for a declared use. A unique partition GUID identifies one particular partition. Framework checks the exact stored type and reports the matching partition. [Discoverable Partitions Specification](https://uapi-group.org/specifications/specs/discoverable_partitions_specification/)
+
+Suppose a paper observation records 512 bytes per logical block and these three occupied ranges. Both endpoints are included. The minimum sizes are small on purpose so the arithmetic is easy to follow.
+
+| GPT slot | Declared type | First block | Last block | Required minimum bytes |
+| --- | --- | ---: | ---: | ---: |
+| 2 | EFI System | 60 | 61 | 513 |
+| 9 | x86-64 Linux root | 80 | 85 | 3073 |
+| 12 | Other data | 100 | 103 | None in this plan |
+
+Count the blocks in each partition as last minus first plus one. Divide the minimum byte count by the block size, then add one block if there is a remainder. Dividing first also avoids adding extra bytes to a very large integer before the division. Framework's `UmiGptImageMatchRequirements` applies this rule after it checks the supplied geometry.
+
+~~~c
+/* Round a reviewed byte minimum up to whole logical blocks. */
+uint64_t requiredBlocks = minimumBytes / blockBytes;
+if (minimumBytes % blockBytes != 0U) {
+    ++requiredBlocks;
+}
+~~~
+
+1. Work out the observed and required block counts for EFI and root. Decide if the complete plan passes.
+2. On paper, extend the root range to end at block 86. Keep the other ranges and minimum sizes. Decide if the complete plan now passes.
+3. From the passing paper layout, consider two separate variations. In one, remove the root row. In the other, keep the root row and give slot 12 the same root type. Predict each outcome.
+
+## Check your answers
+
+EFI has two blocks and needs two. Root has six blocks and needs seven because 3073 is one byte more than six 512-byte blocks. The original plan is refused as undersized, and the output receives no partial match. Ending the root at 86 gives it seven blocks, so the revised paper plan passes. Removing the root gives a missing-type refusal. Giving slot 12 the same root type gives an ambiguous-type refusal even though slot 9 is still large enough. Matching two alternatives leaves the planned root unresolved.
+
+The Umicom OS owner's disk reviewer has a separate `--check-plan` option with `--esp-min-bytes` and `--root-min-bytes`. After building it with the matching Framework SDK, the owner supplies the reviewed raw image and its independently recorded SHA-256 as well as both byte counts from the real plan. A completed version-3 receipt records both matched slots, their unique GUIDs and the observed whole blocks. Find the owner commands in `docs/foundation/persistent-disk-layout-review.md` in the Umicom OS checkout. This paper exercise uses no image. Filesystem content, the bootloader and boot with persistent data each need separate evidence.
+
 [Primary GPT format reference](https://uefi.org/specs/UEFI/2.11/05_GUID_Partition_Table_Format.html)
 
 [Standalone lesson](../../../courses/umicom-os-from-scratch/lessons/52-keep-partition-address-units-explicit.html)
