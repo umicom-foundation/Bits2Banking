@@ -1,0 +1,106 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/115-translate-short-circuit-conditions-across-c-and-d.html
+
+PURPOSE:
+Translate short-circuit conditions across C23 and D
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Translate short-circuit conditions across C23 and D | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Translate short-circuit conditions across C23 and D</h1>
+<p>A condition answers a yes-or-no question. Short-circuit evaluation lets the program stop checking a condition as soon as the answer is known. In this lesson, you will predict which part runs, translate the same small function between C23 and D, and see why the function returns 42.</p>
+<h2>1. Start on the left</h2>
+<p>In an integer condition, zero means false and any nonzero value means true. The left and right parts of an operator are called <strong>operands</strong>. In C23 and D, <code>&amp;&amp;</code> and <code>||</code> begin with the left operand.</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Read it as</th>
+<th>What can settle the answer early</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>!</code></td>
+<td>NOT</td>
+<td>It reads one operand. An integer equal to zero gives true. A nonzero integer gives false.</td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>AND</td>
+<td>A false left side settles the result as false. The right side is skipped.</td>
+</tr>
+<tr>
+<td><code>||</code></td>
+<td>OR</td>
+<td>A true left side settles the result as true. The right side is skipped.</td>
+</tr>
+</tbody>
+</table>
+<p>Put a finger on the left operand before reading the right. In <code>0 &amp;&amp; (2 &lt; 3)</code>, the zero settles the answer. In <code>1 || (2 &lt; 3)</code>, the one settles the answer. The comparison can be read and checked as source in both examples. The running program skips the comparison.</p>
+<p>This matters when a later calculation needs an earlier check. Before dividing by an integer, you can arrange for the program to check that the divisor is nonzero first. Trace this idea on paper with a divisor of 0 and then a divisor of 4.</p>
+<pre><code class="language-text">IF the divisor is nonzero
+    TEST whether 12 divided by the divisor is greater than 2
+ELSE
+    SET the answer TO false
+</code></pre>
+<p>When the divisor is 0, you get false without doing the division. When the divisor is 4, you calculate 3 and get true. This is the step-by-step meaning of <code>(divisor != 0) &amp;&amp; (12 / divisor &gt; 2)</code>.</p>
+<h2>2. Trace the same function before translating</h2>
+<p>Save this function as <code>with-logical.c</code> in a practice folder.</p>
+<pre><code class="language-c">int answer(void) {
+    int ready = 0;
+    int permitted = (ready != 0) || (2 &lt; 3);
+    return (permitted &amp;&amp; !ready) * 42;
+}
+</code></pre>
+<ol>
+<li><code>ready</code> starts at 0, so the comparison <code>(ready != 0)</code> gives false. OR still needs an answer from its right side.</li>
+<li><code>(2 &lt; 3)</code> gives true. The integer <code>permitted</code> therefore receives 1.</li>
+<li>The left side of <code>permitted &amp;&amp; !ready</code> is true. AND checks <code>!ready</code>, which is also true because <code>ready</code> is zero. The result is 1 in the multiplication, so <code>answer</code> returns 42.</li>
+</ol>
+<p>Change the starting value to 1 on paper and trace the same lines. The left side of OR now gives true, so it skips <code>(2 &lt; 3)</code>. AND then checks <code>!ready</code>, which gives false. The function would return 0. Keep the saved C file at its original value of 0 for the translation exercise.</p>
+<h2>3. Translate there and back</h2>
+<p>Run the two commands from your practice folder if you have a build of the Umicom C translator that supports this checked profile. Use fresh output filenames. If translation is refused, keep the source and check the first source location in the diagnostic before trying a new output name.</p>
+<pre><code class="language-powershell">umicom-c translate c-to-d with-logical.c with-logical.d
+umicom-c translate d-to-c with-logical.d with-logical-roundtrip.c
+</code></pre>
+<p>The generated D function has empty parameter parentheses after <code>answer</code>. Compare the inner expressions with your original C file.</p>
+<pre><code class="language-d">int answer() {
+    int ready = 0;
+    int permitted = (ready != 0) || (2 &lt; 3);
+    return (permitted &amp;&amp; !ready) * 42;
+}
+</code></pre>
+<p>C23’s integer logical operators produce <code>int</code> values 0 or 1. D’s logical expressions in this example produce <code>bool</code>. D converts false to 0 and true to 1 in the integer assignment and multiplication. The result of the written calculation is the same in the two languages.</p>
+<p>The generated C file returns to the original text. A function called <code>answer</code> does the calculation. A separate <code>main</code> function lets you run it and print its result. Save the following small driver as <code>driver.c</code>.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+int answer(void);
+int main(void) { const int value=answer(); printf(&quot;%d\n&quot;,value); return value==42?0:1; }
+</code></pre>
+<p>Compile the driver together with the generated C file. Run the example only after the compile succeeds. You can use any C23 compiler with equivalent options. This sample command uses GCC in PowerShell.</p>
+<pre><code class="language-powershell">gcc -std=c23 driver.c with-logical-roundtrip.c -o logical-check.exe
+if ($LASTEXITCODE -eq 0) { .\logical-check.exe }
+</code></pre>
+<p>The stored C check printed this value. The D text was checked against the expected translation. Running the D file needs a separate D compiler.</p>
+<pre><code class="language-text">42
+</code></pre>
+<h2>4. Show the grouping you mean</h2>
+<p>For the checked translator, group each comparison with parentheses, as in <code>(ready != 0) || (2 &lt; 3)</code>. Group the whole answer before using it in another calculation, as in <code>(permitted &amp;&amp; !ready) * 42</code>. If the translator refuses an expression, check that each operand is complete and that the two characters in <code>&amp;&amp;</code> or <code>||</code> touch. The checked translator can require parentheses even in a C expression that ordinary C accepts.</p>
+<p>Single <code>&amp;</code> and <code>|</code> work on individual bits. They use both operands. For example, <code>2 &amp; 1</code> gives 0 because the binary digits <code>10</code> and <code>01</code> have no position where both are 1. The logical expression <code>2 &amp;&amp; 1</code> gives true because both integers are nonzero. In a Studio IDE review, put the safety check on the left when you need it to decide whether the right side can run.</p>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf#page=107">C working draft, sections 6.5.13 and 6.5.14</a> · <a href="https://dlang.org/spec/expression.html#logical_expressions">D logical expressions</a> · <a href="https://dlang.org/spec/type.html#bool">D Boolean conversions</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="114-watch-one-integer-slot.html">Previous lesson · Watch one integer slot</a> · <a href="113-compare-signed-integers-between-c-and-d.html">Related lesson · Compare signed integers between C and D</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/115-translate-short-circuit-conditions-across-c-and-d.md">Markdown edition</a> · <a rel="next" href="116-read-the-instruction-budget-at-a-pause.html">Next lesson · Read the instruction budget at a pause</a> · <a href="../../c23-keyword-reference/index.html">C23 keyword reference</a> · <a href="../../d-keyword-reference/index.html">D keyword reference</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

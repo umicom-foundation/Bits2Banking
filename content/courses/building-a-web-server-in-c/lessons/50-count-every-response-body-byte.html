@@ -1,0 +1,83 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/50-count-every-response-body-byte.html
+
+PURPOSE:
+Count every response body byte
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Count every response body byte | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Count every response body byte</h1>
+<p>A response body is the data that follows the HTTP headers. Some bodies contain a byte with the value zero. This lesson follows a three-byte body through Umicom Framework’s response formatter. You can do the whole exercise on paper.</p>
+<h2>1. Count the bytes in the C array</h2>
+<p>Here are the exact three practice bytes.</p>
+<pre><code class="language-c">static const unsigned char payload[] = {'a', 0U, 'c'};
+</code></pre>
+<p>Draw three squares. Write <code>a</code> in the first, numeric zero in the second and <code>c</code> in the third. In the fixture’s byte encoding they are <code>61 00 63</code> in hexadecimal. Hexadecimal gives a compact way to write each byte using two digits. The middle value is a <strong>zero byte</strong>, also called <strong>NUL</strong>. The character <code>'0'</code> would be a different byte.</p>
+<p>C text strings use a zero byte as the end marker. A text-length operation on these bytes would stop after the first character. A <strong>counted body</strong> carries its own length. In this C array, <code>sizeof payload</code> is three because every <code>unsigned char</code> occupies one byte. The counted copy keeps all three, including the zero in the middle.</p>
+<p>In Umicom Framework, <code>UmiWebResponseSetBodyBytes</code> copies the requested bytes into the response’s inline body. <strong>Inline</strong> means the storage is inside the response object. The function places its own zero byte immediately after the copied bytes. That extra marker occupies storage and stays outside the three-byte body.</p>
+<h2>2. Read the headers and the returned byte count</h2>
+<p>The saved practice response already had status <code>201 Created</code>, media type <code>application/octet-stream</code>, and the example header <code>X-Demo: unchanged</code>. These fields are <strong>metadata</strong>. They describe the response and its data. Changing the inline bytes keeps those fields, including the chosen status. The fixture chooses 201 so you can see what survives a body change.</p>
+<p>Here are the header lines from the closed-connection format. The fixture uses HTTP’s carriage-return and line-feed bytes after each line. The empty line ends the header section.</p>
+<pre><code class="language-text">HTTP/1.1 201 Created
+Content-Type: application/octet-stream
+X-Demo: unchanged
+Content-Length: 3
+Connection: close
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Formatter exercise</th>
+<th>Content-Length in the header</th>
+<th>Bytes after the header section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Body included</td>
+<td>3</td>
+<td><code>61 00 63</code></td>
+</tr>
+<tr>
+<td>HEAD, headers only</td>
+<td>3</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>If a HEAD response supplies <code>Content-Length</code>, that number describes what the corresponding GET would transfer as content. HEAD sends no body. The value is still 3 here because the selected body contains three bytes. The formatter also returns an output count for the complete formatted buffer. In the exercise, that returned count is three bytes smaller for HEAD because it ends at the header boundary.</p>
+<p><code>UmiWebResponseFormatClosed</code> takes a Boolean flag for this choice. <code>false</code> includes the inline body and <code>true</code> emits the headers only. Read the returned status and use the returned output count on success. A counted result can contain zero bytes inside the part you need.</p>
+<h2>3. Check a refusal before using a new result</h2>
+<p>Start again with the same response and ask for one byte while giving the setter a null pointer. A <strong>null pointer</strong> here means there is no input storage to read. The result is <code>UMI_STATUS_INVALID_ARGUMENT</code>. The old body, status and headers stay in place.</p>
+<p>A byte array has a fixed number of slots. The inline setter reserves one slot for its trailing marker. The largest payload it accepts is <code>UMI_WEB_BODY_CAPACITY - 1</code> bytes. Asking for the full array capacity gives <code>UMI_STATUS_CAPACITY_EXCEEDED</code> and leaves the old response intact. A zero-length request can use <code>NULL</code> and clears the inline body on success.</p>
+<pre><code class="language-text">COPY exactly the requested bytes into the inline body if the arguments are valid
+CHECK the returned status before using a new body
+FORMAT with the selected response method
+CHECK the formatter status before using the returned byte count
+</code></pre>
+<h2>4. Follow the body that has its own lifetime</h2>
+<p>A handler can also use a separate owned body. <strong>Ownership</strong> means the caller is responsible for holding that object while it is needed and releasing it when finished. The saved exercise creates an owned body containing the three bytes <code>x</code>, zero and <code>y</code> with <code>UmiWebResponseBodyCreate</code>. It is a separate object from the inline storage.</p>
+<ol>
+<li>With the inline body empty, format the headers for the owned body’s three-byte length using <code>UmiWebResponseFormatClosedHeaders</code>.</li>
+<li>Set the inline body to two bytes, <code>a</code> and <code>b</code>. The owned object still contains its original three bytes. If you now ask to format headers for the owned body, the formatter refuses the mixed choice with <code>UMI_STATUS_INVALID_ARGUMENT</code> and gives an output length of zero. Use neither the previous header bytes nor an assumed new response as the result of this call.</li>
+<li>Choose the owned body for this exercise. Clear the inline body with <code>UmiWebResponseSetBodyBytes(response, NULL, 0U)</code>. The owned body keeps its bytes while you format the headers again. Release the owned object with <code>UmiWebResponseBodyDestroy</code> when the caller has finished using it.</li>
+</ol>
+<p>For a WebServer or Framework application response, write down which object owns the bytes, the length that belongs to that object, and whether the method includes the body. The exercise checks data and formatting in memory. A deployed request has its own test evidence.</p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6">HTTP Semantics on Content-Length</a> · <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2">HTTP Semantics on HEAD</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="49-read-status-codes-before-deciding.html">Previous lesson · Read status codes before deciding what to do</a> · <a href="48-check-export-and-download-headers.html">Related lesson · Check export and download headers</a> · <a href="41-read-a-fastcgi-reply-before-forwarding.html">Related lesson · Read a FastCGI reply before forwarding</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/50-count-every-response-body-byte.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -262,3 +262,5 @@ Inspect resource requirements without executing a program, trace stack behavior,
 1. [Translate grouped integer literals between C and D](112-translate-grouped-integer-literals-between-c-and-d.md)
 1. [Compare signed integers between C and D](113-compare-signed-integers-between-c-and-d.md)
 1. [Watch one integer slot](114-watch-one-integer-slot.md)
+1. [Translate short-circuit conditions across C23 and D](115-translate-short-circuit-conditions-across-c-and-d.md)
+1. [Read the instruction budget at a pause](116-read-the-instruction-budget-at-a-pause.md)

@@ -112,3 +112,5 @@ Start with `202`. Later, suppose a separate status request receives `504`. Your 
 [HTTP status code registry](https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml) · [HTTP status semantics](https://www.rfc-editor.org/rfc/rfc9110.html#section-15) · [HTTP/1.1 status lines](https://www.rfc-editor.org/rfc/rfc9112.html#section-4) · [Rate limit response](https://www.rfc-editor.org/rfc/rfc6585.html#section-4)
 
 [Course contents](index.md) · [Previous lesson · Check export and download headers](48-check-export-and-download-headers.md) · [Related lesson · Read a FastCGI reply before forwarding](41-read-a-fastcgi-reply-before-forwarding.md) · [Related lesson · Understand capped request counters](46-understand-capped-request-counters.md) · [HTML edition](../../../courses/building-a-web-server-in-c/lessons/49-read-status-codes-before-deciding.html)
+
+[Next lesson · Count every response body byte](50-count-every-response-body-byte.md)

@@ -159,3 +159,4 @@ Encode bounded requests, retain one worker reply and examine completion before c
 1. [Read media types from filename extensions](47-read-media-types-from-filename-extensions.md).
 1. [Check export and download headers](48-check-export-and-download-headers.md).
 1. [Read status codes before deciding what to do](49-read-status-codes-before-deciding.md).
+1. [Count every response body byte](50-count-every-response-body-byte.md).

@@ -31,6 +31,7 @@ Define a passing result, preview a small native test plan and keep evidence for 
 - [Read a workflow summary](08-read-a-workflow-summary.md)
 - [Read counted results from a running test log](09-read-counted-results-from-a-running-test-log.md)
 - [Keep the outer test total](10-keep-the-outer-test-total.md)
+- [Keep startup evidence with its test attempt](11-keep-startup-evidence-with-its-test-attempt.md)
 
 ## Try the optional native lab
 

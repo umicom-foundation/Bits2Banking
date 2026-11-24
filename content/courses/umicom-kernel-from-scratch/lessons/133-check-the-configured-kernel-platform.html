@@ -1,0 +1,139 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/133-check-the-configured-kernel-platform.html
+
+PURPOSE:
+Check the configured Kernel platform
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check the configured Kernel platform | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Check the configured Kernel platform</h1>
+<p>Imagine you are reviewing a saved Umicom Kernel build record. The source and linked image still have the same fingerprints, but the saved virtual machine label has changed. This lesson follows the review on paper. You only need the example on this page.</p>
+<h2>1. Ask what each field tells you</h2>
+<p>A <strong>fingerprint</strong>, also called a <strong>digest</strong>, is a string calculated from data. SHA-256 is the method this record uses. The source fingerprint describes the selected source inventory. The image fingerprint describes the selected linked ELF files. <strong>ELF</strong> is a file format used here for the linked Kernel image and other build outputs.</p>
+<p>The same record holds three labels taken from the selected build settings. Read each as an answer to a different question.</p>
+<table>
+<thead>
+<tr>
+<th>Saved field</th>
+<th>Question it answers</th>
+<th>Practice value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sourceSha256</code></td>
+<td>Which source file records did this capture identify?</td>
+<td>The saved source fingerprint</td>
+</tr>
+<tr>
+<td><code>imagesSha256</code></td>
+<td>Which linked ELF file records did this capture identify?</td>
+<td>The saved image fingerprint</td>
+</tr>
+<tr>
+<td><code>ARCHITECTURE</code></td>
+<td>Which processor instruction family did the configuration select?</td>
+<td><code>riscv64</code>, the 64-bit RISC-V family</td>
+</tr>
+<tr>
+<td><code>ABI</code></td>
+<td>What agreement did the build select for separately compiled code?</td>
+<td><code>lp64</code>, a RISC-V integer calling convention with 64-bit C long values and pointers</td>
+</tr>
+<tr>
+<td><code>MACHINE</code></td>
+<td>Which virtual board and machine option did the build record?</td>
+<td><code>virt,aclint=off</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>ABI</strong> stands for <strong>application binary interface</strong>. It includes rules such as where a function receives arguments and how large a pointer is. The machine label describes the board setting for a guest, which is a program or system prepared to run inside the emulator. Here <code>virt</code> names a virtual board and <code>aclint=off</code> is an explicit setting for its local interrupt devices.</p>
+<h2>2. Compare a saved record with the intended build</h2>
+<p>This is an extract from a synthetic receipt. The receipt’s full source and image fingerprints come from fixed exercise inputs. The image bytes in that exercise are plain text. There is no executable Kernel in the exercise.</p>
+<pre><code class="language-json">{
+  &quot;sourceSha256&quot;: &quot;a397a4cd51c802c4125e27a7b4497ee4be2411e7c4b9c1b7789fea70cd71c385&quot;,
+  &quot;imagesSha256&quot;: &quot;1a7932fba9b443d43d5e3aed159d4557ec3666a9cc77067324bc5226247afd1d&quot;,
+  &quot;ARCHITECTURE&quot;: &quot;riscv64&quot;,
+  &quot;ABI&quot;: &quot;lp64&quot;,
+  &quot;MACHINE&quot;: &quot;virt,aclint=off&quot;
+}
+</code></pre>
+<p>Copy the five keys onto paper. Keep the two fingerprint values fixed. Use these expected configuration values for every row below, except where the exercise says to omit an expected value.</p>
+<pre><code class="language-text">Expected ARCHITECTURE = riscv64
+Expected ABI          = lp64
+Expected MACHINE      = virt,aclint=off
+</code></pre>
+<p>The configured Kernel identity check uses matching architecture, ABI and machine settings for capture and verification. The ordinary manual file-identity check compares the source and ELF records and checks the record’s scope. For a manual review that also needs the configured labels, read the build settings and supply all three values with <code>VERIFY_CONFIGURED_CONTEXT</code> enabled. For the paper exercise, recognize these options without running a command.</p>
+<pre><code class="language-text">-DVERIFY_CONFIGURED_CONTEXT=ON
+-DARCHITECTURE=riscv64
+-DABI=lp64
+-DMACHINE=virt,aclint=off
+</code></pre>
+<h2>3. Change one item and predict the report</h2>
+<p>Start with the original five keys for each row. Compare on paper before reading the decision. The six rows reproduce the outcomes checked with fixed, inert data.</p>
+<table>
+<thead>
+<tr>
+<th>Change for this round</th>
+<th>Expected configured identity decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keep all three labels and expectations as shown.</td>
+<td>The saved identity agrees.</td>
+</tr>
+<tr>
+<td>Replace the saved architecture with <code>x86_64</code>.</td>
+<td>Report a difference for <code>ARCHITECTURE</code>.</td>
+</tr>
+<tr>
+<td>Replace the saved ABI with <code>ilp32</code>.</td>
+<td>Report a difference for <code>ABI</code>.</td>
+</tr>
+<tr>
+<td>Replace the saved machine label with <code>virt</code>.</td>
+<td>Report a difference for <code>MACHINE</code>.</td>
+</tr>
+<tr>
+<td>Remove the saved machine label.</td>
+<td>Report a difference for <code>MACHINE</code>.</td>
+</tr>
+<tr>
+<td>Keep the saved record and leave out the expected machine value.</td>
+<td>Ask for a nonempty <code>MACHINE</code> expectation.</td>
+</tr>
+</tbody>
+</table>
+<p>The machine comparison uses the full saved string. <code>virt</code> and <code>virt,aclint=off</code> are different strings even if an emulator’s default setting would produce the same behaviour.</p>
+<p>Here is the order to follow in your next paper review.</p>
+<pre><code class="language-text">CHECK the saved format, source file records, linked ELF records and scope fields
+IF configured label checking is enabled
+    REQUIRE an expected architecture, ABI and machine
+    COMPARE the three labels in that order
+    REPORT the first differing or missing saved label
+RECORD the identity result
+KEEP any runtime test result with its own evidence
+</code></pre>
+<p>Now imagine the saved ELF fingerprint differs and the saved machine label also differs. The file comparison comes first, so address the ELF evidence before interpreting the label result. Keep the original receipt. Confirm which build directory supplied the selected image and which settings supplied the expected machine label.</p>
+<h2>4. Choose the next evidence</h2>
+<p>A matching identity says the selected source and ELF records agree with the saved fingerprints and, when configured checking is enabled, that the three labels agree. A claim that the operating system reached its first boot screen needs a separate test record that identifies the linked image, the environment in which it ran and the observed outcome. The exercises here compare saved data with configured expectations and involve no build, firmware or guest.</p>
+<p>In the Umicom Kernel checkout, <code>docs/BUILD_IDENTITY.md</code> describes the review. The matching capture and standard verification settings are in <code>cmake/Qualification.cmake</code>. Keep each result with the configuration and artifact records you would use to explain it to another contributor.</p>
+<p><a href="https://riscv-non-isa.github.io/riscv-elf-psabi-doc/">RISC-V ABI specification</a> · <a href="https://www.qemu.org/docs/master/system/riscv/virt.html#machine-specific-options">QEMU virtual board settings</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="132-read-the-scope-of-a-kernel-build-identity.html">Previous lesson · Read the scope of a Kernel build identity</a> · <a href="108-distinguish-input-identity-from-guest-evidence.html">Related lesson · Distinguish input identity from guest evidence</a> · <a href="../../umicom-os-from-scratch/lessons/48-qualify-produced-images-in-stages.html">Umicom OS · Qualify produced images in stages</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/133-check-the-configured-kernel-platform.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

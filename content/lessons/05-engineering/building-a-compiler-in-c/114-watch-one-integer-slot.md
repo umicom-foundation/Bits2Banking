@@ -108,3 +108,5 @@ Use `umicom-c pseudocode watch-practice.txt --step --jsonl` with the same two wa
 The same habit helps when reading results for Umicom Studio IDE. Keep the trace of what ran separate from the paused view of what the program is about to do.
 
 [Course contents](index.md) · [Previous lesson · Compare signed integers between C and D](113-compare-signed-integers-between-c-and-d.md) · [Related lesson · Inspect paused integer slots](110-inspect-paused-integer-slots.md) · [Related lesson · Separate instruction fuel from wall-clock time](59-separate-instruction-fuel-from-wall-clock-time.md) · [HTML edition](../../../courses/building-a-compiler-in-c/lessons/114-watch-one-integer-slot.html) · [C23 keyword reference](../../03-native-code/c23-keyword-reference/index.md)
+
+[Next lesson · Translate short-circuit conditions across C23 and D](115-translate-short-circuit-conditions-across-c-and-d.md)

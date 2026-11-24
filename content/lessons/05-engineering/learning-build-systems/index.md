@@ -65,3 +65,4 @@ Keep a short record of the command, source revision, output directory and observ
 1. [See which library Ninja will link](29-see-which-library-ninja-will-link.md)
 1. [Match a dry plan to its recipe digest](30-match-a-dry-plan-to-its-recipe-digest.md)
 1. [Measure the process temporary volume](31-measure-the-process-temporary-volume.md)
+1. [Read child and fixture deadlines](32-read-child-and-fixture-deadlines.md)

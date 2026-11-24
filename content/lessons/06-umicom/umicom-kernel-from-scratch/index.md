@@ -417,3 +417,4 @@ Observe a queued message without consuming it, then check its header before publ
 Read the scope of a saved build identity and connect it to separate test evidence.
 
 1. [Read the scope of a Kernel build identity](132-read-the-scope-of-a-kernel-build-identity.md)
+1. [Check the configured Kernel platform](133-check-the-configured-kernel-platform.md)

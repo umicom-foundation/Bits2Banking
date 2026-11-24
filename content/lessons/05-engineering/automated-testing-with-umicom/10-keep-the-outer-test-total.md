@@ -114,3 +114,5 @@ A Studio test view can display a partial count while the run continues. Keep the
 [CTest command reference](https://cmake.org/cmake/help/latest/manual/ctest.1.html)
 
 [Course contents](index.md) · [Previous lesson · Read counted results from a running test log](09-read-counted-results-from-a-running-test-log.md) · [Related lesson · Read a workflow summary](08-read-a-workflow-summary.md) · [HTML edition](../../../courses/automated-testing-with-umicom/lessons/10-keep-the-outer-test-total.html)
+
+[Next lesson · Keep startup evidence with its test attempt](11-keep-startup-evidence-with-its-test-attempt.md)

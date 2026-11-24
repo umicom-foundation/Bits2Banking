@@ -68,3 +68,5 @@ If a verifier refuses a saved record, keep the original. Compare its schema, ver
 In the Umicom Kernel checkout, `docs/BUILD_IDENTITY.md` explains when to capture or verify a saved record. `cmake/QualificationEvidence.cmake` implements these checks. `tests/qualification/check_evidence.cmake` includes cases for a true flag, a wrong value type and a missing value.
 
 [Course contents](index.md) · [Previous lesson · Check the front message header](131-check-the-front-message-header.md) · [Distinguish input identity from guest evidence](../../../courses/umicom-kernel-from-scratch/lessons/108-distinguish-input-identity-from-guest-evidence.html) · [Record enough evidence to understand a build result](../../05-engineering/learning-build-systems/08-record-build-identity.md) · [HTML edition](../../../courses/umicom-kernel-from-scratch/lessons/132-read-the-scope-of-a-kernel-build-identity.html)
+
+[Next lesson · Check the configured Kernel platform](133-check-the-configured-kernel-platform.md)

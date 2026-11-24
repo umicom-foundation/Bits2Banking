@@ -111,3 +111,5 @@ ELSE
 Two equal readings can come from different volumes. Use the folder destinations from your system or build configuration to make that distinction. Keep those destinations beside the results in your Umicom Studio IDE build notes. A measurement leaves the available space unchanged. Other work can use that space between your measurement and the build.
 
 [Course contents](index.md) · [Previous lesson · Match a dry plan to its recipe digest](30-match-a-dry-plan-to-its-recipe-digest.md) · [Related lesson · Check available storage before building](27-check-available-storage-before-building.md) · [HTML edition](../../../courses/learning-build-systems/lessons/31-measure-the-process-temporary-volume.html)
+
+[Next lesson · Read child and fixture deadlines](32-read-child-and-fixture-deadlines.md)

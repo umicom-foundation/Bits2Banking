@@ -1,0 +1,87 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/32-read-child-and-fixture-deadlines.html
+
+PURPOSE:
+Read child and fixture deadlines
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read child and fixture deadlines | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read child and fixture deadlines</h1>
+<p>One build test can launch many smaller commands. The test runner can keep time both for each command and for the whole group. In this lesson you will decide which clock applies to three saved Umicom C observations and then draw a small timeline.</p>
+<h2>1. Name the two clocks</h2>
+<p>A <strong>child process</strong> is a command started by another program. The Umicom C interpreter console fixture starts several commands to test the same tool in different ways. In the fixture script, <code>execute_process(... TIMEOUT 10)</code> gives an individual invocation ten seconds. The <strong>fixture</strong> is the full test script with its setup, child commands and assertions. The CTest <code>TIMEOUT</code> property gives that registered test its overall limit.</p>
+<table>
+<thead>
+<tr>
+<th>Clock</th>
+<th>What contributes to it</th>
+<th>What its refusal tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Child deadline</td>
+<td>Elapsed time for one invocation</td>
+<td>That invocation did not finish before its limit</td>
+</tr>
+<tr>
+<td>Whole-fixture deadline</td>
+<td>The full script, including child launches, setup and checks</td>
+<td>The registered test reached its overall bound</td>
+</tr>
+</tbody>
+</table>
+<p>Consider a paper fixture with eight child commands that take seven seconds each and ten further seconds of setup and checking. Each child fits its own ten-second limit. Together the work takes 66 seconds, so the group cannot finish under a 60-second overall limit. If one child alone needs 11 seconds, it can still fail its own bound even when the whole fixture has plenty of time.</p>
+<h2>2. Read the saved Windows observations</h2>
+<p>These are observations of the named console fixture, rather than timings for every Umicom C test.</p>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>What the saved evidence says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Earlier registered run</td>
+<td>The fixture was registered with a 60-second whole-test limit. CTest marked it <code>Timeout</code>.</td>
+</tr>
+<tr>
+<td>Direct control</td>
+<td>The same identified script and executable finished successfully in 66.01 seconds when the outer CTest deadline was absent. Its script still supervised each child.</td>
+</tr>
+<tr>
+<td>Later selected registered run</td>
+<td>A Windows-only 120-second whole-test limit was registered for that test. Its result row reported a pass in 54.34 seconds. All 47 selected tests passed.</td>
+</tr>
+</tbody>
+</table>
+<p>The 66.01-second direct control was longer than the earlier 60-second allowance. The later registered pass used the 120-second Windows bound. The saved result times describe individual runs, which can experience different process startup and scheduling delays. The later result gives no measurement of what caused each delay. The ordinary registration still gives 60 seconds on other platforms, and the existing ten-second child bounds remain in the script.</p>
+<h2>3. Decide what to preserve after a timeout</h2>
+<p>Copy the following fields onto paper for a build test in Umicom Studio IDE.</p>
+<pre><code class="language-text">REGISTERED TEST NAME:
+WHOLE-FIXTURE LIMIT:
+CHILD INVOCATION LIMIT:
+LAST OBSERVED CASE OR RESULT:
+SCRIPT AND EXECUTABLE IDENTITIES:
+LATER CONTROL OR RERUN:
+</code></pre>
+<p>Use the earlier registered observation to fill in the first part. Enter the 66.01-second control and 54.34-second selected result as separate rows. A direct control tells you whether the script and its checks can finish in that setting. The registered run supplies the result that includes the test runner’s own limit. Keep both with their source, executable and environment so a colleague can review the sequence.</p>
+<p>Instruction fuel is a third number if the tool runs a virtual machine. It counts operations inside the interpreter. A host timeout describes elapsed seconds in the surrounding command or test. Changing one of the time limits leaves the interpreter’s fuel assertions in place.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="31-measure-the-process-temporary-volume.html">Previous lesson · Measure the process temporary volume</a> · <a href="28-read-a-ninja-progress-record.html">Related lesson · Read a Ninja progress record</a> · <a href="../../building-a-compiler-in-c/lessons/59-separate-instruction-fuel-from-wall-clock-time.html">Related lesson · Separate instruction fuel from wall-clock time</a> · <a href="../../building-a-compiler-in-c/lessons/116-read-the-instruction-budget-at-a-pause.html">Related lesson · Read the instruction budget at a pause</a> · <a href="../../../lessons/05-engineering/learning-build-systems/32-read-child-and-fixture-deadlines.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
