@@ -56,3 +56,5 @@ Follow the WebServer lab only in a training workspace. Its exercise and this sma
 - [Published Umicom C language guide](https://github.com/umicom-foundation/umicom-c/blob/main/docs/language.md)
 
 [Course contents](index.md) · [Previous · Repeat, skip and stop a counted loop](03-repeat-skip-and-stop.md) · [Browser edition](../../../courses/umicom-c-keyword-reference/lessons/04-call-the-checked-input-profile.html)
+
+[Next lesson: Guard calculations with AND and OR](05-guard-calculations-with-and-or.md)

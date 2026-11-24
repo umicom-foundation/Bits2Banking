@@ -69,3 +69,5 @@ Predict the response for bytes 3 through 99. The preview can stop the selection 
 The 1 MiB limit applies to the response bytes. Framework can read a small range in a larger ordinary file and measure its full length through the same open handle. The native C23 fixture uses a 1,048,580-byte file. Its `bytes=-3` request receives 206 with `Content-Range: bytes 1048577-1048579/1048580` and `Content-Length: 3`. A request for all the bytes receives 413. A request starting at byte 1,048,580 receives 416 because the last byte position is one less than the file length.
 
 Follow the [C23 response checks](https://github.com/umicom-foundation/umicom-framework/blob/main/tests/web/test_static_ranges.c) to see how a binary fixture verifies the exact bytes and framing before a listener is involved.
+
+[Next lesson · Read response status and body length](45-read-response-status-and-body.md)

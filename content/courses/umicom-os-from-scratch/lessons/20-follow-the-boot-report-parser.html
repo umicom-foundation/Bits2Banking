@@ -13,7 +13,8 @@ LICENCE:
 MIT
 -->
 <!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Follow the boot-report parser | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../index.html"><!-- Canonical Framework wordmark replaces this earlier course identity; retained for review. <img src="../../../assets/branding/umicom-logo-on-dark.svg" width="160" height="44" alt="Umicom"> -->
-<img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Follow the boot-report parser</h1>
+<!-- Keep the previous offline alias available for design review alongside the approved wordmark. <img src="../../../assets/branding/umicom-logo-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"> -->
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"> Bits2Banking</a></div></header><main id="main" class="simple-page"><article><h1>Follow the boot-report parser</h1>
 <p>Follow captured startup observations from bytes to a checked comparison. Use the real Framework parser, then inspect the OS command that consumes it.</p>
 <p>You need a text editor, a terminal, CMake 3.24 or newer, Ninja and a C23-capable C compiler. A terminal accepts commands as text. CMake describes how a program is assembled; Ninja carries out the necessary compilation commands. A compiler translates C source into machine instructions. This lab runs on the current computer; it does not install or boot an operating system.</p>
 <p>On Windows, install MSYS2 from its official installer, open its UCRT64 terminal and install the toolchain with the following command. Accept the package manager's prompts. If it requests a restart during a system update, complete that update first.</p>
@@ -43,6 +44,55 @@ ctest --test-dir build/boot-report-learning --output-on-failure --no-tests=error
 <p>The local result begins at zero. The caller's output is replaced only after every field and relationship is valid. This is useful for a UI that must keep showing the previous accepted observation while a new file is rejected. A local variable with an uninitialised value must never be displayed after a failed call; main.c returns before using it.</p>
 <p><strong>Exercise.</strong> In a copy of the lab, change completed=2 to completed=3 while keeping planned=2. Rebuild and run. Expect a nonzero exit because more services cannot complete than were planned. Restore the record afterwards.</p>
 <p>A parse error is evidence of an unacceptable record. It is not proof that a host was attacked. Record the actual bytes, source identity and producer version before deciding whether the cause was truncation, a wrong format, a software defect or malicious input.</p>
+<h2>Compare observations and capture bytes</h2>
+<p>A boot report tells you what the collector recorded about startup. A file digest is a short fingerprint made from the file's bytes. If two reports contain the same observations with their fields in a different order, the parser can produce matching values while the file digests differ.</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Did the service counts, state or other fields change?</td>
+<td>Compare the parsed reports.</td>
+</tr>
+<tr>
+<td>Is this exactly the file whose digest I saved?</td>
+<td>Compare the capture digest, including line breaks and field order.</td>
+</tr>
+<tr>
+<td>Which source revision does the report claim?</td>
+<td>Read the report's declared source ID and compare it with the expected ID.</td>
+</tr>
+</tbody>
+</table>
+<p>Try this with two synthetic files. They both report two completed services and the ready state. The second file swaps the order of the lines for mode and state. Both files have the same length. The fixture build gives both files a final line feed, even on a checkout configured to use Windows line endings.</p>
+<ol>
+<li>Open <code>labs/framework/boot-report-comparison/fixtures/first.txt</code> and <code>reordered.txt</code> from that directory. Find the two lines whose order changes.</li>
+<li>In <code>labs/framework/boot-report-comparison/capture_identity.c</code>, find <code>UmiBootReportInspectFile</code>. It reads the selected file once, then parses and hashes the same bytes. The third argument accepts the digest you expect.</li>
+<li>Find <code>UmiBootReportCompare</code>. This call compares field values and returns a change mask. A zero mask means that no reported field changed.</li>
+<li>Look for the retry with the earlier file's digest. When it checks the reordered file, the function refuses and the caller keeps its previously accepted snapshot.</li>
+</ol>
+<p>From the Bits2Banking folder in PowerShell, reuse the compiler setup above and run:</p>
+<pre><code class="language-powershell">cmake -S labs/framework/boot-report-comparison -B build/boot-capture-learning -G Ninja -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework -DUMICOM_LEARNING_BOOT_CAPTURE=ON
+cmake --build build/boot-capture-learning --parallel 2
+ctest --test-dir build/boot-capture-learning --verbose --no-tests=error
+</code></pre>
+<p>From the Bits2Banking folder in Bash on Linux, use the matching checkout path:</p>
+<pre><code class="language-sh">cmake -S labs/framework/boot-report-comparison -B build/boot-capture-learning -G Ninja -DUMICOM_FRAMEWORK_SOURCE=&quot;$HOME/umicom/Umicom-Applications/framework&quot; -DUMICOM_LEARNING_BOOT_CAPTURE=ON
+cmake --build build/boot-capture-learning --parallel 2
+ctest --test-dir build/boot-capture-learning --verbose --no-tests=error
+</code></pre>
+<p>Read the output of <code>learning.boot_report.capture_identity</code>. It should include these three lines.</p>
+<pre><code class="language-text">Parsed fields and file lengths match.
+Capture digests differ.
+The original digest refuses the reordered capture.
+</code></pre>
+<p>If the capture test is missing, check that <code>UMICOM_LEARNING_BOOT_CAPTURE</code> and <code>BUILD_TESTING</code> are enabled. If the compiler cannot find <code>UmiBootReportInspectFile</code>, use a Framework checkout containing both <code>boot_report_file.c</code> and its matching capture-aware header. If the fixtures fail to parse, restore the checked-in examples and reconfigure so CMake recreates the two data files.</p>
+<p><strong>On paper.</strong> Change <code>completed=2</code> to <code>completed=1</code> in the reordered example and leave the state ready. The digest changes because a byte changed. The parser refuses a ready report with unfinished work, so there is no valid change mask. Change the state to starting as well. The two fields can now be compared with the accepted ready report. Trace that same transition in the original parser lab above.</p>
+<p>Umicom OS offers an opt-in JSON comparison that accepts an expected digest for each saved report. Gather the digests at capture time and keep them with the qualification record. The reviewed digests identify the exact input bytes. Trust in the collector and an actual boot result require their own evidence.</p>
 <h2>Read the source</h2>
 <p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/src/platform/boot_report.c">Open the example source</a>.</p>
 <nav aria-label="Lesson navigation"><p><a href="../index.html">Course contents</a> · <a href="19-read-a-captured-boot-observation.html">Previous: Read a captured boot observation</a> · <a href="21-validate-caller-owned-report-fields.html">Next: Validate caller-owned report fields</a></p>

@@ -1,0 +1,105 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/48-check-export-and-download-headers.html
+
+PURPOSE:
+Check export and download headers
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check export and download headers | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Check export and download headers</h1>
+<p>A file can hold numbers, a printable page or an archive containing several items. Its <strong>media type</strong> is the label a web server puts in the response header named <code>Content-Type</code>. Use one fictional export to check four labels before handing a course page to another reader. You can predict the labels on paper before using a preview.</p>
+<h2>Draw the two columns on paper</h2>
+<p>Write the headings <strong>label</strong> and <strong>amount_cents</strong>. Write <code>demo</code> in the first column of the next row and <code>1250</code> in the second. Cents are whole numbers here. The label identifies the exercise and contains no account information.</p>
+<p>CSV means <strong>comma-separated values</strong>. Each line is a row, and the comma marks the boundary between columns in this example.</p>
+<pre><code class="language-text">label,amount_cents
+demo,1250
+</code></pre>
+<p>TSV means <strong>tab-separated values</strong>. The same two rows contain a tab character between the fields. A tab is one character even when your editor shows it as several spaces.</p>
+<h3>1. Choose a practice document root</h3>
+<p>Work in a private copy of an approved, branded Bits2Banking export. Its document root is the directory containing <code>index.html</code>. Use a practice copy with fresh names for all four files.</p>
+<h3>2. Create the two small tables</h3>
+<p>Open PowerShell. Enter the full absolute path to the practice document root at the prompt. The commands insert actual tabs in the TSV file.</p>
+<pre><code class="language-powershell">$ExportRoot = Read-Host 'Enter the full path to the practice document root'
+Set-Content -LiteralPath (Join-Path $ExportRoot 'balances.csv') -Encoding ascii -Value @(
+    'label,amount_cents'
+    'demo,1250'
+)
+$Tab = [char]9
+Set-Content -LiteralPath (Join-Path $ExportRoot 'balances.tsv') -Encoding ascii -Value @(
+    &quot;label${Tab}amount_cents&quot;
+    &quot;demo${Tab}1250&quot;
+)
+</code></pre>
+<h3>3. Add the two course downloads</h3>
+<p>In that same practice directory, place a genuine small course PDF named <code>lesson.pdf</code> and a genuine small offline archive named <code>offline-pack.zip</code>. Use approved learning material you have permission to serve. Give each resource its correct filename and format. The rooted preview’s ordinary response limit is 1 MiB per file.</p>
+<h2>Read a HEAD response before downloading</h2>
+<p>An HTTP request tells the server which action you want and which path it should look up. <strong>GET</strong> returns the metadata and the representation bytes. <strong>HEAD</strong> ends after the metadata. The rooted preview can include a <code>Content-Length</code> giving the file length that the corresponding GET would send.</p>
+<p>Use the local static preview built from the current Framework checkout. When you are ready to run your own preview, select the same practice directory in the first PowerShell window. Use the full executable path on Windows if the command is absent from your search path.</p>
+<pre><code class="language-powershell">umicom-web-local-service-example --port 8080 --root &quot;$ExportRoot&quot;
+</code></pre>
+<p>Once your practice preview is running, use a second PowerShell window for the following commands. <code>curl.exe --head</code> sends HEAD. The address <code>127.0.0.1</code> means this computer.</p>
+<pre><code class="language-powershell">$PracticeSite = 'http://127.0.0.1:8080'
+curl.exe --head --show-error &quot;$PracticeSite/balances.csv&quot;
+curl.exe --head --show-error &quot;$PracticeSite/balances.tsv&quot;
+curl.exe --head --show-error &quot;$PracticeSite/lesson.pdf&quot;
+curl.exe --head --show-error &quot;$PracticeSite/offline-pack.zip&quot;
+</code></pre>
+<p>Read the HTTP status line before looking at the headers. For these existing, small files in the current rooted preview, expect status <code>200</code>. Then compare <code>Content-Type</code> with the table. The name on the left of the colon identifies the header. The value on the right names the media type.</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Expected Content-Type value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>balances.csv</code></td>
+<td><code>text/csv</code></td>
+</tr>
+<tr>
+<td><code>balances.tsv</code></td>
+<td><code>text/tab-separated-values</code></td>
+</tr>
+<tr>
+<td><code>lesson.pdf</code></td>
+<td><code>application/pdf</code></td>
+</tr>
+<tr>
+<td><code>offline-pack.zip</code></td>
+<td><code>application/zip</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-text">SEND HEAD for the practice file
+READ the status line
+IF the status is not 200, RECORD it and CHECK the file or route
+OTHERWISE, READ Content-Type
+COMPARE the declared media type with the expected value
+RECORD the file name, status and media type
+</code></pre>
+<p>The type describes what the server has declared. A separate file check confirms that the spreadsheet importer reads the correct delimiter or that the course PDF or ZIP opens in a tool you trust. A matching header by itself does not prove that the format is valid.</p>
+<h2>Practise finding a mismatch</h2>
+<ol>
+<li>Predict the result for a fresh practice copy named <code>balances.csv.backup</code>. The final suffix is <code>.backup</code>, so this preview declares its usual fallback <code>application/octet-stream</code>. The comma or tab characters in the stored text stay as they were.</li>
+<li>If a requested file returns <code>404</code>, first check the exact name and the selected document root. If a file is too large for the ordinary preview, choose a smaller course resource before retrying. If the preview returns the fallback type for one of the four named formats, check the actual final suffix and that the running copy contains the current media type registry.</li>
+<li>Write a four-row check result for a practice Umicom TMS export page or a Bits2Banking download page. Keep the observed header and any separate file check as two pieces of evidence.</li>
+</ol>
+<p><a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2">HTTP HEAD semantics</a> · <a href="https://www.iana.org/assignments/media-types/">IANA media type registry</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="47-read-media-types-from-filename-extensions.html">Previous lesson · Read media types from filename extensions</a> · <a href="44-request-a-single-byte-range.html">Related lesson · Request a single byte range</a> · <a href="../../../umicom/native-statement-web-lab.md">Umicom WebServer practice guide</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/48-check-export-and-download-headers.md">Markdown edition</a> · <a rel="next" href="49-read-status-codes-before-deciding.html">Next lesson · Read status codes before deciding what to do</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/18-record-an-absolute-symbol-address.html
+
+PURPOSE:
+  Teach a beginner to record an absolute symbol address using object-only exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Record an absolute symbol address | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Record an absolute symbol address</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="17-split-a-constant-into-two-instructions.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="19-pair-a-location-with-a-relative-address.html">Next lesson</a> · <a href="../../../lessons/03-native-code/learning-riscv-assembly/18-record-an-absolute-symbol-address.md">Markdown edition</a></nav>
+<p>In Assembly, a <strong>symbol</strong> gives a name to a location. You can define its storage in one section and refer to its address in another section. The assembler writes enough information for the linker to find the final address once it chooses where the sections belong. That information is a <strong>relocation</strong>.</p>
+<h2>Give an address two parts</h2>
+<p>Save this file as <code>absolute.s</code>. The function places the address of <code>course_seed</code> in the usual result register <code>a0</code>. The data word at that address contains 23. Read the two roles separately while tracing the example.</p>
+<pre><code class="language-asm">.text
+.globl absolute_seed_address
+absolute_seed_address:
+    lui a0, %hi(course_seed)
+    addi a0, a0, %lo(course_seed)
+    ret
+
+.data
+.globl course_seed
+course_seed:
+    .word 23
+</code></pre>
+<pre><code class="language-text">clang --target=riscv64-unknown-elf -march=rv64i -mabi=lp64 -mno-relax -c absolute.s -o absolute.o
+llvm-objdump -dr -M no-aliases absolute.o
+</code></pre>
+<p>Find <code>R_RISCV_HI20</code> at instruction offset 0 and <code>R_RISCV_LO12_I</code> at offset 4. They both name <code>course_seed</code>. <code>%hi</code> and <code>%lo</code> tell the assembler how to split the final address once it is available. The zero immediates in the object are placeholders the linker will fill.</p>
+<ol>
+<li>Point to the label that names the start of the function.</li>
+<li>Point to the label that names the data.</li>
+<li>Cover the relocation lines and ask if the two instructions alone tell you the final address. Then reveal the symbol names the linker receives.</li>
+<li>Change the data value from 23 to 24 and assemble again. The object should still refer to the named address with the same two relocation types. The stored word changes.</li>
+</ol>
+<p>The example uses an absolute address pair for a range that fits those instructions. A relocatable operating system component often needs a pair based on the location of its instruction instead. The next lesson shows that form.</p>
+<p><a href="https://docs.riscv.org/reference/abi/riscv-elf-object-files.html">RISC-V ELF object format and absolute addresses</a></p>
+  </article></main>
+</body>
+</html>

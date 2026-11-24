@@ -55,3 +55,5 @@ Use explicit boundary values and paper traces alongside comparison tests. Each p
 
 [Course contents](index.md) · [Previous lesson](15-inspect-unresolved-call-symbols.md)
 
+[Next lesson: Split a constant into two instructions](17-split-a-constant-into-two-instructions.md)
+

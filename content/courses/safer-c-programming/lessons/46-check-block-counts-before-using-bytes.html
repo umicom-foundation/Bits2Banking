@@ -1,0 +1,72 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/46-check-block-counts-before-using-bytes.html
+
+PURPOSE:
+Check block counts before using bytes
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check block counts before using bytes | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Check block counts before using bytes</h1>
+<p>An image description may express a length in blocks, while memory planning needs bytes. A block is a fixed-sized portion of the teaching format. This example uses 512 bytes per block and calculates the requirement without allocating memory or accessing a drive.</p>
+<h2>Count in the right unit</h2>
+<p>Eight blocks of 512 bytes occupy 4096 bytes. A count of blocks and a count of bytes both fit in <code>size_t</code> while representing different units. Give the variables names that show which quantity each holds.</p>
+<h2>Check the edge</h2>
+<p><code>SIZE_MAX</code> is the largest value representable by <code>size_t</code>. Dividing it by 512 gives the largest block count whose byte total fits. <code>ckd_mul</code> allows that result and refuses one more block. A fixed-size plan still needs a separate decision for zero blocks.</p>
+<h2>Connect to Umicom OS and Kernel</h2>
+<p>An image inspector can validate counts before reporting a byte requirement. Kernel code may need a freestanding arithmetic helper with the same input units and refusal behavior. A good count alone says nothing about the availability of memory or the identity of a drive.</p>
+<h2>Trace the logic</h2>
+<pre><code class="language-text">IF THE DESCRIPTOR REQUIRES AN ITEM AND count IS ZERO
+    REFUSE THE REQUEST
+MULTIPLY count BY bytes per block INTO temporary
+IF THE RESULT FITS
+    SAVE THE BYTE COUNT
+</code></pre>
+<pre><code class="language-c">static bool block_bytes(size_t blocks, size_t *bytes)
+{
+    /* The toy descriptor requires a nonempty run of 512-byte blocks. */
+    if (blocks == 0U) return false;
+    size_t candidate;
+    if (ckd_mul(&amp;candidate, blocks, (size_t)512)) return false;
+    *bytes = candidate;
+    return true;
+}
+</code></pre>
+<h2>Build and run one practice case</h2>
+<ol>
+<li>Open a PowerShell terminal with GCC, CMake and Ninja on the search path. To use Clang, select <code>clang</code> in the configure command and choose a separate build directory in all three commands. Check that the selected C compiler and its headers provide <code>&lt;stdckdint.h&gt;</code>. If that header is missing, the final lesson demonstrates <code>size_t</code> guards using only older headers.</li>
+<li>Open <code>labs/native/checked-integers/multiply.c</code>. Read the successful case and at least one refusal case.</li>
+<li>Run the commands one at a time. Stop on the first error so an earlier executable cannot be mistaken for the latest build.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking&quot;
+cmake -S labs/native/checked-integers -B build/checked-integers -G Ninja -DCMAKE_C_COMPILER=gcc
+cmake --build build/checked-integers --target checked-integers-multiply
+ctest --test-dir build/checked-integers -R &quot;^lesson[.]checked-integers[.]multiply$&quot; -V --no-tests=error
+</code></pre>
+<p>Expect one passing test and this line of program output.</p>
+<pre><code class="language-text">Eight blocks need 4096 bytes. The oversized count was refused.
+</code></pre>
+<h2>Try a change</h2>
+<p>Use 4096 bytes per practice block everywhere in the example. Base the edge case on <code>SIZE_MAX / 4096</code>. Work out the expected byte count for eight blocks before rerunning.</p>
+<h2>If a result differs</h2>
+<p>If both large counts pass, ensure the operands are passed to <code>ckd_mul</code> independently. Passing <code>count * width</code> would compute the result before it is checked.</p>
+<h2>Read the C language reference</h2>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf#page=326">WG14 N3220, section 7.20.1 on checked integer operations</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="45-separate-subtraction-from-a-debit-rule.html">Previous: Separate subtraction from a debit rule</a> · <a href="47-publish-a-complete-record-size.html">Next: Publish a complete record size</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

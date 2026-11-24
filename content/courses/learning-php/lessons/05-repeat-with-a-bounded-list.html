@@ -1,0 +1,119 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-php/lessons/05-repeat-with-a-bounded-list.html
+
+PURPOSE:
+Repeat with a bounded list
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repeat with a bounded list | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Repeat with a bounded list</h1>
+<p>A loop repeats a task. For a list of amounts, decide whether you are walking a collection, counting a fixed number of steps or repeating until a condition changes.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Small PHP example</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>for</code></td>
+<td><code>for ($i = 0; $i &lt; 3; ++$i) { echo $i; }</code></td>
+<td>Performs setup, tests before each iteration and advances after it.</td>
+</tr>
+<tr>
+<td><code>foreach</code></td>
+<td><code>foreach ($amounts as $amount) { echo $amount; }</code></td>
+<td>Visits each value in an array or iterable object.</td>
+</tr>
+<tr>
+<td><code>as</code></td>
+<td><code>foreach ($amounts as $key =&gt; $value) { echo $key; }</code></td>
+<td>Names what each iteration receives.</td>
+</tr>
+<tr>
+<td><code>while</code></td>
+<td><code>while ($remaining &gt; 0) { --$remaining; }</code></td>
+<td>Tests before each pass.</td>
+</tr>
+<tr>
+<td><code>do</code></td>
+<td><code>do { --$remaining; } while ($remaining &gt; 0);</code></td>
+<td>Runs the body once before its first test.</td>
+</tr>
+<tr>
+<td><code>continue</code></td>
+<td><code>if ($amount &lt; 0) { continue; }</code></td>
+<td>Skips the remainder of the current iteration.</td>
+</tr>
+<tr>
+<td><code>endfor</code></td>
+<td><code>for ($i = 0; $i &lt; 2; ++$i): echo $i; endfor;</code></td>
+<td>Ends a colon-delimited counter loop.</td>
+</tr>
+<tr>
+<td><code>endforeach</code></td>
+<td><code>foreach ($amounts as $amount): echo $amount; endforeach;</code></td>
+<td>Ends a colon-delimited collection loop.</td>
+</tr>
+<tr>
+<td><code>endwhile</code></td>
+<td><code>while ($remaining &gt; 0): --$remaining; endwhile;</code></td>
+<td>Ends a colon-delimited while loop.</td>
+</tr>
+<tr>
+<td><code>goto</code></td>
+<td>Inside one function, <code>goto finished; finished: return 0;</code></td>
+<td>Transfers to a label in the same context. PHP limits jumps into loops or switches. Read this form when maintaining older code.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-php">&lt;?php
+$total = 0;
+foreach ([100, -8, 40] as $amount) {
+    if ($amount &lt; 0) {
+        continue;
+    }
+    $total += $amount;
+}
+echo $total, &quot;\n&quot;;
+</code></pre>
+<p>Expect <code>140</code>. Move the negative entry to the start and the end. Neither position should alter the result.</p>
+<pre><code class="language-c">/* C walks the same bounded list with an explicit index and element count. */
+int amounts[] = {100, -8, 40};
+int total = 0;
+for (size_t i = 0; i &lt; sizeof amounts / sizeof amounts[0]; ++i) {
+    if (amounts[i] &lt; 0) continue;
+    total += amounts[i];
+}
+</code></pre>
+<pre><code class="language-text">FOR EACH amount in the list
+    IF amount is negative THEN skip this amount
+    ADD amount to the total
+RETURN the total
+</code></pre>
+<p>The C fragment needs <code>&lt;stddef.h&gt;</code> for <code>size_t</code> in a standalone file. In a Umicom Framework batch validator, count validated entries and bound the accumulated total before publishing it. Add a zero entry and an empty collection to the PHP practice. An empty collection should yield zero because the accumulator starts at zero. <a href="https://www.php.net/manual/en/language.control-structures.php">PHP loops and jumps</a></p>
+<h2>Run the examples</h2>
+<ol>
+<li>Save the PHP example as <code>practice.php</code>. Keep the opening PHP tag. In a terminal with PHP available, run <code>php practice.php</code> and compare the output with the expected result above.</li>
+<li>Open the C23 lab linked below and save it as <code>main.c</code>. From a terminal with GCC, run <code>gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o native-keywords.exe</code>. In PowerShell run <code>.\native-keywords.exe</code> and find the <code>loops</code> row.</li>
+<li>If the shell cannot find a compiler or PHP, start with the pseudocode and compare your predicted result with the examples.</li>
+</ol>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="04-choose-a-payment-state.html">Previous lesson · Choose a payment state</a> · <a href="06-keep-zero-and-missing-separate.html">Next lesson · Keep zero and missing separate</a> · <a href="../../../lessons/04-web/learning-php/05-repeat-with-a-bounded-list.md">Markdown edition</a> · <a href="../../../labs/native/php-keyword-comparison/main.c">Complete C23 lab</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

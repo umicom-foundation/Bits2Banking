@@ -1,0 +1,142 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-php/lessons/08-describe-a-shared-object-operation.html
+
+PURPOSE:
+Describe a shared object operation
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Describe a shared object operation | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Describe a shared object operation</h1>
+<p>A class groups data with operations. An interface allows different classes to promise the same operation. The boundary is useful in a ledger that can read totals from more than one source.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Small PHP example</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>interface</code></td>
+<td><code>interface TotalReader { public function total(): int; }</code></td>
+<td>Records the method that an implementation must supply.</td>
+</tr>
+<tr>
+<td><code>class</code></td>
+<td><code>class FixedTotal { public function total(): int { return 42; } }</code></td>
+<td>Defines a class and its methods.</td>
+</tr>
+<tr>
+<td><code>implements</code></td>
+<td><code>class FixedTotal implements TotalReader { /* total goes here */ }</code></td>
+<td>Declares a class's agreement with the interface. It must supply all required methods.</td>
+</tr>
+<tr>
+<td><code>abstract</code></td>
+<td><code>abstract class Reader { abstract public function total(): int; }</code></td>
+<td>Defines an incomplete base that cannot be instantiated.</td>
+</tr>
+<tr>
+<td><code>extends</code></td>
+<td><code>class FixedTotal extends Reader { /* implement total */ }</code></td>
+<td>Builds a subtype from a base class.</td>
+</tr>
+<tr>
+<td><code>final</code></td>
+<td><code>final class FixedTotal { /* methods */ }</code></td>
+<td>Prevents subclassing. A final method cannot be overridden.</td>
+</tr>
+<tr>
+<td><code>public</code></td>
+<td><code>public function total(): int { return 42; }</code></td>
+<td>Makes a member callable from outside the class.</td>
+</tr>
+<tr>
+<td><code>protected</code></td>
+<td><code>protected int $total = 42;</code></td>
+<td>Makes a property available within the class and permitted related classes.</td>
+</tr>
+<tr>
+<td><code>private</code></td>
+<td><code>private int $total = 42;</code></td>
+<td>Limits direct access to the declaring class.</td>
+</tr>
+<tr>
+<td><code>var</code></td>
+<td>Inside a class, <code>var $legacy = 0;</code></td>
+<td>Declares a public property with older spelling. Prefer an explicit visibility word.</td>
+</tr>
+<tr>
+<td><code>readonly</code></td>
+<td><code>public readonly int $amount;</code></td>
+<td>Declares a typed property with restricted reassignment after initialization. The property form starts in PHP 8.1.</td>
+</tr>
+<tr>
+<td><code>new</code></td>
+<td><code>$reader = new FixedTotal();</code></td>
+<td>Creates an instance.</td>
+</tr>
+<tr>
+<td><code>instanceof</code></td>
+<td><code>$reader instanceof TotalReader</code></td>
+<td>Checks whether the object satisfies a named type.</td>
+</tr>
+<tr>
+<td><code>clone</code></td>
+<td><code>$next = clone $reader;</code></td>
+<td>Creates a shallow copy, then invokes <code>__clone</code> if defined. Referenced objects can still be shared.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-php">&lt;?php
+interface TotalReader {
+    public function total(): int;
+}
+
+final class FixedTotal implements TotalReader {
+    public function total(): int {
+        return 42;
+    }
+}
+
+$reader = new FixedTotal();
+if ($reader instanceof TotalReader) {
+    echo $reader-&gt;total(), &quot;\n&quot;;
+}
+</code></pre>
+<p>Expect <code>42</code>. Change the returned number and run again. Remove the method temporarily. The incomplete implementation fails before showing a total. Restore the method before trying the next exercise.</p>
+<pre><code class="language-c">/* C makes a reusable operation and its context explicit in the type. */
+struct TotalReader {
+    int (*read_total)(const void *context);
+    const void *context;
+};
+</code></pre>
+<pre><code class="language-text">REQUIRE each reader to have a read total operation
+CREATE the reader with its own data
+ASK the reader for the total
+</code></pre>
+<p>Umicom Framework can define a C contract like this without recreating class syntax. In a real report distinguish the result of the call from the amount it returns. An unavailable source should be distinguishable from a source whose total is zero. <a href="https://www.php.net/manual/en/language.oop5.php">PHP classes and objects</a></p>
+<h2>Run the examples</h2>
+<ol>
+<li>Save the PHP example as <code>practice.php</code>. Keep the opening PHP tag. In a terminal with PHP available, run <code>php practice.php</code> and compare the output with the expected result above.</li>
+<li>Open the C23 lab linked below and save it as <code>main.c</code>. From a terminal with GCC, run <code>gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o native-keywords.exe</code>. In PowerShell run <code>.\native-keywords.exe</code> and find the <code>objects</code> row.</li>
+<li>If the shell cannot find a compiler or PHP, start with the pseudocode and compare your predicted result with the examples.</li>
+</ol>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="07-pass-an-operation-to-a-function.html">Previous lesson · Pass an operation to a function</a> · <a href="09-choose-between-named-implementations.html">Next lesson · Choose between named implementations</a> · <a href="../../../lessons/04-web/learning-php/08-describe-a-shared-object-operation.md">Markdown edition</a> · <a href="../../../labs/native/php-keyword-comparison/main.c">Complete C23 lab</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

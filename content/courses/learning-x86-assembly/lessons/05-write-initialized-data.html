@@ -1,0 +1,143 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-x86-assembly/lessons/05-write-initialized-data.html
+
+PURPOSE:
+  Teach a beginner to write initialized data in NASM using object-only exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Write initialized data in NASM | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Write initialized data in NASM</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="04-follow-arguments-through-a-function.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="06-reserve-storage.html">Next lesson</a> · <a href="../../../lessons/03-native-code/learning-x86-assembly/05-write-initialized-data.md">Markdown edition</a></nav>
+<p>An assembler can turn a short text file into an object file. An object file can hold instructions, data and information about their locations. This lesson creates a small practice record in its data section. You can inspect the record in the object without building or starting an application.</p>
+<h2>Choose a width</h2>
+<p>The directive tells the assembler how wide each data unit is. A name followed by a colon is a label. It marks the position of the next byte. These directives describe data for the assembler.</p>
+<table>
+<thead>
+<tr>
+<th>Directive</th>
+<th style="text-align: right;">Bytes per unit</th>
+<th>Operand used below</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DB</code></td>
+<td style="text-align: right;">1</td>
+<td>An ASCII tag containing three one-byte characters</td>
+</tr>
+<tr>
+<td><code>DW</code></td>
+<td style="text-align: right;">2</td>
+<td>An integer occupying one word</td>
+</tr>
+<tr>
+<td><code>DD</code></td>
+<td style="text-align: right;">4</td>
+<td>An integer occupying one doubleword</td>
+</tr>
+<tr>
+<td><code>DQ</code></td>
+<td style="text-align: right;">8</td>
+<td>An integer occupying one quadword</td>
+</tr>
+<tr>
+<td><code>DT</code></td>
+<td style="text-align: right;">10</td>
+<td>The extended-precision floating-point literal <code>1.0</code></td>
+</tr>
+<tr>
+<td><code>DO</code></td>
+<td style="text-align: right;">16</td>
+<td>Exactly 16 ASCII characters in one unit</td>
+</tr>
+<tr>
+<td><code>DY</code></td>
+<td style="text-align: right;">32</td>
+<td>Exactly 32 ASCII characters in one unit</td>
+</tr>
+<tr>
+<td><code>DZ</code></td>
+<td style="text-align: right;">64</td>
+<td>Exactly 64 ASCII characters in one unit</td>
+</tr>
+</tbody>
+</table>
+<p>The wider <code>DT</code>, <code>DO</code>, <code>DY</code> and <code>DZ</code> directives reject integer numeric operands. Use the supported operand type for the directive you select. In the example, the point in <code>1.0</code> identifies a floating-point literal. The three wide strings have exact widths so you can count their bytes directly. <a href="https://www.nasm.us/doc/nasm03.html#section-3.2.1">NASM manual, initialized data and constants</a></p>
+<h2>Assemble the practice record</h2>
+<ol>
+<li>In a practice folder, save the following text as <code>record-data.asm</code>. It describes a fictional review record and three text samples.</li>
+</ol>
+<pre><code class="language-nasm">section .data
+format_tag:    db 'B2B'  ; Three ASCII bytes identify the practice format.
+review_day:    dw 0x0205
+entry_number:  dd 0x01020306
+ledger_order:  dq 0x0807060504030201
+extended_unit: dt 1.0   ; Store one x87 extended-precision value.
+wide_text:     do 'red-orange-green'
+row_text:      dy '0123456789abcdefghijklmnopqrstuv'
+block_text:    dz 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'
+record_end:
+</code></pre>
+<ol>
+<li>If NASM and LLVM’s object inspector are already available, assemble an x86-64 ELF object and inspect its data and labels.</li>
+</ol>
+<pre><code class="language-powershell">nasm -f elf64 record-data.asm -o record-data.o
+llvm-objdump --full-contents --section=.data record-data.o
+llvm-objdump --syms record-data.o
+</code></pre>
+<ol>
+<li>Find the leading bytes <code>42 32 42 05 02 06 03 02 01</code>. The start of this record contains the ASCII letters and digit of <code>B2B</code>. On x86, the least significant byte of a multi-byte integer appears first. The word <code>0x0205</code> therefore appears as <code>05 02</code>. This convention is called little-endian byte order.</li>
+<li>Compare the offsets of <code>format_tag</code> and <code>record_end</code>. This record spans <code>3 + 2 + 4 + 8 + 10 + 16 + 32 + 64 = 139</code> bytes. Object headers, labels and any padding contribute to the file separately.</li>
+</ol>
+<p>The tag contains exactly three bytes. A reader that expects a C string would need an explicit terminating zero or a supplied byte count. When a record is read by Umicom Framework or another application, specify the byte widths, field lengths and byte order in its format so another tool can read the same file. <a href="https://www.nasm.us/doc/nasm03.html#section-3.4.4">NASM manual, string constants</a></p>
+<h2>Compare the layout with another assembler</h2>
+<p>Save the following GNU-style source as <code>record-data-compare.s</code>. It places the same fields at the same offsets. The <code>.byte</code> row spells out the ten expected bytes of the extended-precision value to make the comparison independent of assembler-specific floating-point syntax.</p>
+<pre><code class="language-asm">.data
+format_tag:    .ascii &quot;B2B&quot;
+review_day:    .short 0x0205
+entry_number:  .long  0x01020306
+ledger_order:  .quad  0x0807060504030201
+extended_unit: .byte  0,0,0,0,0,0,0,0x80,0xff,0x3f
+wide_text:     .ascii &quot;red-orange-green&quot;
+row_text:      .ascii &quot;0123456789abcdefghijklmnopqrstuv&quot;
+block_text:    .ascii &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_&quot;
+record_end:
+</code></pre>
+<p>Use either available assembler to create an object and inspect its data. The Clang command below explicitly selects ELF. GNU <code>as</code> uses its configured object format.</p>
+<pre><code class="language-powershell">clang --target=x86_64-unknown-linux-gnu -c record-data-compare.s -o record-data-clang.o
+llvm-objdump --full-contents --section=.data record-data-clang.o
+as --64 -o record-data-gnu.o record-data-compare.s
+llvm-objdump --full-contents --section=.data record-data-gnu.o
+</code></pre>
+<p>Use the labels to compare the 139-byte record if the section ends with padding. An inspector may display several bytes together. Read them in the order shown and break the group into two hex digits per byte. <a href="https://llvm.org/docs/CommandGuide/llvm-objdump.html">LLVM object inspector guide</a></p>
+<h2>Check your understanding</h2>
+<ol>
+<li>If an additional one-byte flag follows the tag, what happens to <code>review_day</code>? It moves from offset 3 to offset 4 unless the record layout is changed elsewhere.</li>
+<li>What could happen if you write the day with <code>DD</code> and keep reading it as a word? The following fields move because <code>DD</code> writes four bytes. A reader using the former offsets would read some bytes from the wrong field.</li>
+<li>Why inspect the output instead of immediately linking it? The object already shows whether the record’s data bytes and defined offsets match the format.</li>
+</ol>
+  </article></main>
+</body>
+</html>

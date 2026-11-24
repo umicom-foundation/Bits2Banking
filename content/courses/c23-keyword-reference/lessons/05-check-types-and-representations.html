@@ -80,6 +80,35 @@ if ($LASTEXITCODE -eq 0) { .\practice.exe }</code></pre>
       <p>Expected line</p>
       <pre><code class="language-text">7</code></pre>
       <p>Use a compiler that accepts C23. A dialect diagnostic means the compiler has not accepted the selected language mode. A missing header diagnostic can mean the platform toolchain or SDK is absent. If the optional forms in the table are unavailable, try the self-contained main program instead.</p>
+      <h2>Measure a literal or an object type</h2>
+<p>A <strong>literal</strong> writes a value directly in your source. The value <code>17</code> uses type <code>int</code> in C because it fits that type. The ordinary character constant <code>'A'</code> also has type <code>int</code> in C. If you store it in a variable declared with type <code>char</code>, that variable has the size of <code>char</code>.</p>
+<p>Save this as <code>measure-literals.c</code>.</p>
+<pre><code class="language-c">int main(void)
+{
+    int number_size = sizeof 17;
+    int character_size = sizeof('A');
+    return number_size * 10 + character_size;
+}
+</code></pre>
+<p>Try it with the checked Umicom C interpreter.</p>
+<pre><code class="language-text">umicom-c interpret measure-literals.c
+</code></pre>
+<p>Expect <code>Result: 44</code> in this profile. Both sizes are four bytes because the profile uses a 32-bit signed <code>int</code>. Here ten times the first size plus the second size lets us see both results in one return value. Change <code>17</code> to <code>23</code> and <code>'A'</code> to <code>'B'</code>, then run it again. The type and size of each literal stay the same.</p>
+<h2>Compare the types in a hosted C23 compiler</h2>
+<p>In a larger C program, let the compiler check the relationships between sizes. Different C targets can give <code>int</code> different sizes. The following checks use type relationships so they still make sense on another target.</p>
+<p>Save this as <code>compare-literal-types.c</code>.</p>
+<pre><code class="language-c">char letter = 'A';
+
+static_assert(sizeof 17 == sizeof(int));
+static_assert(sizeof('A') == sizeof(int));
+static_assert(sizeof letter == sizeof(char));
+static_assert(sizeof letter == 1);
+static_assert(sizeof(17 + 4) == sizeof(int));
+</code></pre>
+<p>Run <code>gcc -std=c23 -Werror -fsyntax-only compare-literal-types.c</code>, or use the same flags with <code>clang</code>. The compiler checks the source and returns zero when all five assertions are true. It creates no executable.</p>
+<p>To isolate the grouped expression, change <code>sizeof 17</code> in the first program to <code>sizeof(17 + 4)</code>. A hosted C23 syntax check accepts this expression. The current direct Umicom interpreter refuses the addition inside the size operand. Use a supported single literal, a declared integer name or a supported type spelling in that profile.</p>
+<p>In these examples, the size comes from the type. The number of text characters you type and the numerical value stored in the object do not change its byte count. In Umicom Studio, keep the compiler profile with your example so you can reproduce its accepted syntax and result.</p>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf">WG14 working draft N3220, character constants and size operators</a></p>
       <h2>Try a change</h2>
       <p>Change typeof_unqual to typeof in the small program. Predict which line the compiler should reject, then restore the working form.</p>
       <details><summary>Check your answer</summary>      <p>The declaration selects a const type after the change. <code>editable += 3;</code> attempts to change the const object, so translation should report an error.</p>

@@ -39,3 +39,34 @@ if(BUILD_TESTING)
     add_test(NAME learning.boot_report.comparison COMMAND boot-report-learning)
     set_tests_properties(learning.boot_report.comparison PROPERTIES TIMEOUT 10)
 endif()
+
+# Build the exact-capture practice only when requested. The original text-only
+# parser lab remains usable with older Framework source checkouts.
+option(UMICOM_LEARNING_BOOT_CAPTURE "Build the boot capture identity lab" OFF)
+if(UMICOM_LEARNING_BOOT_CAPTURE)
+    if(NOT EXISTS "${UMICOM_FRAMEWORK_SOURCE}/src/platform/boot_report_file.c")
+        message(FATAL_ERROR "The capture practice needs Framework source containing boot_report_file.c")
+    endif()
+    add_executable(boot-report-capture-learning capture_identity.c
+        "${UMICOM_FRAMEWORK_SOURCE}/src/platform/boot_report_file.c"
+        "${UMICOM_FRAMEWORK_SOURCE}/src/platform/input_file.c"
+        "${UMICOM_FRAMEWORK_SOURCE}/src/platform/output_file.c"
+        "${UMICOM_FRAMEWORK_SOURCE}/src/base/sha256.c")
+    target_link_libraries(boot-report-capture-learning PRIVATE boot_report_learning)
+    if(MSVC)
+        target_compile_options(boot-report-capture-learning PRIVATE /W4 /WX)
+    else()
+        target_compile_options(boot-report-capture-learning PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror)
+    endif()
+    if(BUILD_TESTING)
+        # Define the capture bytes independently of a contributor's Git checkout
+        # line-ending policy. The portable fixture always ends in a single LF.
+        set(_capture_dir "${CMAKE_CURRENT_BINARY_DIR}/capture-fixtures")
+        file(MAKE_DIRECTORY "${_capture_dir}")
+        configure_file(fixtures/first.txt "${_capture_dir}/first.txt" @ONLY NEWLINE_STYLE UNIX)
+        configure_file(fixtures/reordered.txt "${_capture_dir}/reordered.txt" @ONLY NEWLINE_STYLE UNIX)
+        add_test(NAME learning.boot_report.capture_identity COMMAND boot-report-capture-learning
+            "${_capture_dir}/first.txt" "${_capture_dir}/reordered.txt")
+        set_tests_properties(learning.boot_report.capture_identity PROPERTIES TIMEOUT 10)
+    endif()
+endif()

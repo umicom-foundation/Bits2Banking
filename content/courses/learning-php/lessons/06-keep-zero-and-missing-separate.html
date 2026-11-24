@@ -1,0 +1,120 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-php/lessons/06-keep-zero-and-missing-separate.html
+
+PURPOSE:
+Keep zero and missing separate
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep zero and missing separate | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep zero and missing separate</h1>
+<p>An application can receive a field that is missing, a field containing zero or a field containing no usable text. Learn to ask which condition applies before deciding what the field means.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Small PHP example</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>array</code></td>
+<td><code>$row = array("total" =&gt; 0);</code></td>
+<td>Creates an ordered map. The shorter literal <code>["total" =&gt; 0]</code> is also available.</td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td><code>list($debit, $credit) = [15, 27];</code></td>
+<td>Unpacks elements into separate variables.</td>
+</tr>
+<tr>
+<td><code>isset</code></td>
+<td><code>isset($row["total"])</code></td>
+<td>Is true when the field exists and its value is other than null. A valid zero passes this check.</td>
+</tr>
+<tr>
+<td><code>empty</code></td>
+<td><code>empty($row["total"])</code></td>
+<td>Treats a missing field and several false-like values, including zero, as empty.</td>
+</tr>
+<tr>
+<td><code>unset</code></td>
+<td><code>unset($row["draft"]);</code></td>
+<td>Removes the named entry.</td>
+</tr>
+<tr>
+<td><code>const</code></td>
+<td><code>const UNIT = 100;</code></td>
+<td>Defines a constant. Inside a class the access form is <code>ClassName::UNIT</code>.</td>
+</tr>
+<tr>
+<td><code>and</code></td>
+<td><code>($ready and $valid)</code></td>
+<td>Requires both conditions. Parenthesize when assigning this result.</td>
+</tr>
+<tr>
+<td><code>or</code></td>
+<td><code>($ready or $override)</code></td>
+<td>Requires at least one condition. Parentheses make its low precedence visible.</td>
+</tr>
+<tr>
+<td><code>xor</code></td>
+<td><code>($debit xor $credit)</code></td>
+<td>Requires exactly one true condition.</td>
+</tr>
+<tr>
+<td><code>echo</code></td>
+<td><code>echo $total, "\n";</code></td>
+<td>Writes output and can accept several expressions.</td>
+</tr>
+<tr>
+<td><code>print</code></td>
+<td><code>print "saved";</code></td>
+<td>Writes one expression and also returns 1.</td>
+</tr>
+</tbody>
+</table>
+<p>Assignment binds more tightly than the three word operators. Use parentheses or <code>&amp;&amp;</code> and <code>||</code> when that is the clearer condition. In PHP, <code>empty</code> and <code>isset</code> answer different questions.</p>
+<pre><code class="language-php">&lt;?php
+$row = [&quot;total&quot; =&gt; 0];
+list($first, $second) = [15, 27];
+if (isset($row[&quot;total&quot;])) {
+    $row[&quot;total&quot;] = $first + $second;
+}
+echo $row[&quot;total&quot;], &quot;\n&quot;;
+</code></pre>
+<p>Expect <code>42</code>. Set <code>total</code> to <code>null</code> and predict whether the addition is admitted. Restore zero and change <code>isset</code> to <code>!empty</code>. Watch how the two variants treat zero.</p>
+<pre><code class="language-c">/* A presence flag and integer value model two different facts. */
+struct Total { bool present; int pennies; };
+struct Total row = {true, 0};
+if (row.present) row.pennies = 15 + 27;
+</code></pre>
+<pre><code class="language-text">IF the total field has a value THEN
+    ADD the first and second amounts
+    SAVE the result
+END IF
+</code></pre>
+<p>This C23 structure can represent a usable zero without giving zero two meanings. Apply the same separation when admitting data for a Umicom Bank report. A nullable input needs a decision about whether it is unknown, absent, or invalid before counting it. <a href="https://www.php.net/manual/en/language.types.array.php">PHP arrays</a> · <a href="https://www.php.net/manual/en/language.operators.logical.php">PHP logical operators</a></p>
+<h2>Run the examples</h2>
+<ol>
+<li>Save the PHP example as <code>practice.php</code>. Keep the opening PHP tag. In a terminal with PHP available, run <code>php practice.php</code> and compare the output with the expected result above.</li>
+<li>Open the C23 lab linked below and save it as <code>main.c</code>. From a terminal with GCC, run <code>gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o native-keywords.exe</code>. In PowerShell run <code>.\native-keywords.exe</code> and find the <code>values</code> row.</li>
+<li>If the shell cannot find a compiler or PHP, start with the pseudocode and compare your predicted result with the examples.</li>
+</ol>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="05-repeat-with-a-bounded-list.html">Previous lesson · Repeat with a bounded list</a> · <a href="07-pass-an-operation-to-a-function.html">Next lesson · Pass an operation to a function</a> · <a href="../../../lessons/04-web/learning-php/06-keep-zero-and-missing-separate.md">Markdown edition</a> · <a href="../../../labs/native/php-keyword-comparison/main.c">Complete C23 lab</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

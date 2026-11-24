@@ -1,0 +1,151 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-x86-assembly/lessons/06-reserve-storage.html
+
+PURPOSE:
+  Teach a beginner to reserve storage in NASM using object-only exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve storage in NASM | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Reserve storage in NASM</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="05-write-initialized-data.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="07-count-and-repeat-bytes.html">Next lesson</a> · <a href="../../../lessons/03-native-code/learning-x86-assembly/06-reserve-storage.md">Markdown edition</a></nav>
+<p>A practice application might need room to prepare a record before it has any values to write. NASM reserve directives describe how much space to set aside. For this lesson, put those declarations in <code>.bss</code>, the section used for storage without an initialized payload. The object records the extent of the storage so later tools know how much room is needed. <a href="https://www.nasm.us/doc/nasm03.html#section-3.2.2">NASM manual, RES directives</a></p>
+<h2>Count units and convert them to bytes</h2>
+<p>Each directive takes one operand. The operand counts units of the width named by that directive. Multiply the count by the width to find the bytes reserved.</p>
+<table>
+<thead>
+<tr>
+<th>Directive</th>
+<th style="text-align: right;">Bytes per unit</th>
+<th style="text-align: right;">Practice count</th>
+<th style="text-align: right;">Bytes reserved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RESB</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td><code>RESW</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td><code>RESD</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td><code>RESQ</code></td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td><code>REST</code></td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td><code>RESO</code></td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td><code>RESY</code></td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">64</td>
+</tr>
+<tr>
+<td><code>RESZ</code></td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">64</td>
+</tr>
+</tbody>
+</table>
+<p>Use small literal counts at first so they are known when assembly assigns positions. The unit widths do not align the next location automatically. If a design needs an alignment boundary, choose and verify that boundary separately. <a href="https://www.nasm.us/doc/nasm03.html#section-3.2.2">NASM manual, reserved storage and critical expressions</a></p>
+<h2>Reserve a practice workspace</h2>
+<ol>
+<li>Save the following text as <code>record-scratch.asm</code> in the same practice folder.</li>
+</ol>
+<pre><code class="language-nasm">section .bss
+tag_buffer:     resb 3   ; Leave room for the three-byte tag.
+day_slots:      resw 2
+entry_slots:    resd 3
+order_slots:    resq 2
+extended_slots: rest 2
+colour_block:   reso 1
+review_rows:    resy 2
+review_block:   resz 1
+scratch_end:
+</code></pre>
+<ol>
+<li>If NASM and LLVM’s object inspector are already available, assemble an x86-64 ELF object and read its section and symbol records.</li>
+</ol>
+<pre><code class="language-powershell">nasm -f elf64 record-scratch.asm -o record-scratch.o
+llvm-readobj --sections --symbols record-scratch.o
+</code></pre>
+<ol>
+<li>Find <code>.bss</code> and check that its type is <code>SHT_NOBITS</code>. In this ELF object, that section describes a range of storage without occupying an equal number of initialized bytes in the file. Count the reserved bytes as <code>3 + 4 + 12 + 16 + 20 + 16 + 64 + 64 = 199</code>. Compare <code>scratch_end</code> with <code>tag_buffer</code> for the same 199-byte span.</li>
+<li>Compare this output to the object from the previous lesson. The initialized record has data bytes in <code>.data</code>. The scratch example records its size, symbols and offsets in the object. File size alone will include metadata and cannot tell you how much storage each section describes.</li>
+</ol>
+<p>In a normally linked and loaded native program, the loader can supply zero-filled storage for its BSS range. That happens later. This worksheet assembles and inspects an object only. Code that fills a scratch buffer must still keep track of its capacity and how many bytes it has written before attempting to read a record.</p>
+<h2>Compare the reserved layout with another assembler</h2>
+<p>Save the following GNU-style source as <code>record-scratch-compare.s</code>. Each <code>.zero</code> operand is already a byte count. The <code>.bss</code> section gives these ranges uninitialized storage semantics in the ELF object.</p>
+<pre><code class="language-asm">.bss
+tag_buffer:     .zero 3
+day_slots:      .zero 2 * 2
+entry_slots:    .zero 3 * 4
+order_slots:    .zero 2 * 8
+extended_slots: .zero 2 * 10
+colour_block:   .zero 1 * 16
+review_rows:    .zero 2 * 32
+review_block:   .zero 1 * 64
+scratch_end:
+</code></pre>
+<p>Use either available assembler to produce an object. The inspector shows the object’s native format.</p>
+<pre><code class="language-powershell">clang --target=x86_64-unknown-linux-gnu -c record-scratch-compare.s -o record-scratch-clang.o
+llvm-readobj --sections --symbols record-scratch-clang.o
+as --64 -o record-scratch-gnu.o record-scratch-compare.s
+llvm-readobj --sections --symbols record-scratch-gnu.o
+</code></pre>
+<p>An ELF inspector identifies the section as <code>SHT_NOBITS</code>. A GNU assembler configured for Windows can instead produce COFF and identify the range as uninitialized data, with no raw data pointer. Section sizes may include padding in that format. Compare the two labels to recover the exact span in either object. <a href="https://sourceware.org/binutils/docs/as/Bss.html">GNU assembler section reference</a></p>
+<h2>Check your understanding</h2>
+<ol>
+<li>How much space does <code>RESY 2</code> reserve? Two 32-byte units reserve 64 bytes.</li>
+<li>What changes if <code>day_slots</code> uses <code>RESB 2</code>? Only 2 bytes are reserved there, so the later labels move 2 bytes earlier.</li>
+<li>When reviewing a data import in Umicom Bank or an example built on Framework, which measurement would you use before writing a record? Use the capacity of the receiving buffer. Before reading a field, check how many bytes were actually written or received.</li>
+</ol>
+  </article></main>
+</body>
+</html>

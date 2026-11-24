@@ -1,0 +1,123 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/rust-keyword-reference/lessons/01-name-values-and-functions.html
+
+PURPOSE:
+  Teach the selected strict words in the Rust 2024 edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Name values and functions | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Name values and functions</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="next" href="02-make-a-decision-and-repeat.html">Next lesson</a></nav>
+<h2>Read an example before memorising the words</h2>
+<p>You are adding up the items on a practice shelf. Start with five, add twelve, then add seven more. The program prints 24. Each name has a type so the compiler can tell what can be stored in it.</p>
+<pre><code class="language-rust">const BASE: u32 = 12;
+static EXTRA: u32 = 7;
+
+fn shelf_total(seed: u8) -&gt; u32 {
+    let mut total = seed as u32;
+    total += BASE;
+    let _ = &quot;Practice shelf&quot;;
+    return total + EXTRA;
+}
+
+fn main() {
+    println!(&quot;{}&quot;, shelf_total(5));
+}
+</code></pre>
+<h2>Match each word to its job</h2>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Example</th>
+<th>What it tells Rust</th>
+</tr>
+</thead>
+<tbody>
+<tr id="kw-wildcard">
+<td><code>_</code></td>
+<td><code>let _ = "Practice shelf";</code></td>
+<td>The value has no name in this pattern. The expression on the right is still evaluated.</td>
+</tr>
+<tr id="kw-as">
+<td><code>as</code></td>
+<td><code>seed as u32</code></td>
+<td>Convert the value to the named type. Here the range of <code>u32</code> can hold every <code>u8</code> value.</td>
+</tr>
+<tr id="kw-const">
+<td><code>const</code></td>
+<td><code>const BASE: u32 = 12;</code></td>
+<td>Give a name to a value the compiler can determine without running this function.</td>
+</tr>
+<tr id="kw-fn">
+<td><code>fn</code></td>
+<td><code>fn shelf_total(seed: u8) -&gt; u32</code></td>
+<td>Define a function, its input, and its result type.</td>
+</tr>
+<tr id="kw-let">
+<td><code>let</code></td>
+<td><code>let count = 5;</code></td>
+<td>Bind a name to a value in the current scope.</td>
+</tr>
+<tr id="kw-mut">
+<td><code>mut</code></td>
+<td><code>let mut total = seed as u32;</code></td>
+<td>Permit the binding to receive a new value, such as after <code>total += BASE</code>.</td>
+</tr>
+<tr id="kw-return">
+<td><code>return</code></td>
+<td><code>return total + EXTRA;</code></td>
+<td>End this function and give its result to the caller.</td>
+</tr>
+<tr id="kw-static">
+<td><code>static</code></td>
+<td><code>static EXTRA: u32 = 7;</code></td>
+<td>Give one named object storage for the program's lifetime. This object is immutable.</td>
+</tr>
+</tbody>
+</table>
+<p>The name <code>main</code> selects the starting function in this program. <code>u8</code> and <code>u32</code> name unsigned integer types with 8 and 32 bits. The Rust keyword list separately classifies these eight spellings as strict. <a href="https://doc.rust-lang.org/reference/keywords.html#strict-keywords">Rust Reference, strict keywords</a></p>
+<h2>Try the program</h2>
+<ol>
+<li>Save it as <code>shelf.rs</code> in a practice folder. Use <code>rustc --version</code> to check that your compiler is available and supports the 2024 edition.</li>
+<li>In PowerShell run <code>rustc --edition=2024 shelf.rs -o shelf.exe</code>. If the compiler reports a problem, read the file and line before starting the program.</li>
+<li>Run <code>.\shelf.exe</code>. Expect <code>24</code>. Remove <code>mut</code> and compile again. The assignment should now be refused. Put <code>mut</code> back to recover.</li>
+</ol>
+<h2>Do the same calculation in C</h2>
+<p>This small Umicom C comparison uses the same numbers in its signed integer profile. The return value is shown by the interpreter. The two languages use different rules for a binding that may change.</p>
+<pre><code class="language-c">constexpr int BASE = 12;
+constexpr int EXTRA = 7;
+
+int main(void) {
+    int total = 5;
+    total += BASE;
+    return total + EXTRA;
+}
+</code></pre>
+<p>Save as <code>shelf.c</code> and run <code>umicom-c interpret shelf.c</code>. Expect <code>Result: 24</code>. In C, the local is writable with this declaration. Adding <code>const</code> makes the assignment invalid in this profile. Try the C practice first if you have Umicom C available already.</p>
+<p><a href="../../../lessons/03-native-code/rust-keyword-reference/01-name-values-and-functions.md">Markdown edition</a></p>
+  </article></main>
+</body>
+</html>

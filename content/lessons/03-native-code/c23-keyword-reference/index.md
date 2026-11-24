@@ -35,6 +35,17 @@ Paper and pencil are enough to start. To run a program, save it as a plain text 
 1. [Check types and representations](05-check-types-and-representations.md) Inspect memory requirements and types, then make a build reject a broken assumption.
 1. [Read optional and older forms](06-read-optional-and-older-forms.md) Identify an optional feature, a reserved spelling or a compatibility spelling before you try to use it.
 
+1. [Read alternative C punctuators](07-read-alternative-punctuators.md) Track the original spelling of six alternate tokens across blocks, arrays and preprocessing.
+
+## Find alternate punctuation
+
+- [`<%`](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html#punct-open-brace)
+- [`%>`](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html#punct-close-brace)
+- [`<:`](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html#punct-open-bracket)
+- [`:>`](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html#punct-close-bracket)
+- [`%:`](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html#punct-hash)
+- [`%:%:`](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html#punct-double-hash)
+
 ## Find a word
 
 - [`_Alignas`](../../../courses/c23-keyword-reference/lessons/06-read-optional-and-older-forms.html#kw-_Alignas)

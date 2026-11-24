@@ -88,6 +88,53 @@ Expected line
 
 Use a compiler that accepts C23. A dialect diagnostic means the compiler has not accepted the selected language mode. A missing header diagnostic can mean the platform toolchain or SDK is absent. If the optional forms in the table are unavailable, try the self-contained main program instead.
 
+## Measure a literal or an object type
+
+A **literal** writes a value directly in your source. The value `17` uses type `int` in C because it fits that type. The ordinary character constant `'A'` also has type `int` in C. If you store it in a variable declared with type `char`, that variable has the size of `char`.
+
+Save this as `measure-literals.c`.
+
+~~~c
+int main(void)
+{
+    int number_size = sizeof 17;
+    int character_size = sizeof('A');
+    return number_size * 10 + character_size;
+}
+~~~
+
+Try it with the checked Umicom C interpreter.
+
+~~~text
+umicom-c interpret measure-literals.c
+~~~
+
+Expect `Result: 44` in this profile. Both sizes are four bytes because the profile uses a 32-bit signed `int`. Here ten times the first size plus the second size lets us see both results in one return value. Change `17` to `23` and `'A'` to `'B'`, then run it again. The type and size of each literal stay the same.
+
+## Compare the types in a hosted C23 compiler
+
+In a larger C program, let the compiler check the relationships between sizes. Different C targets can give `int` different sizes. The following checks use type relationships so they still make sense on another target.
+
+Save this as `compare-literal-types.c`.
+
+~~~c
+char letter = 'A';
+
+static_assert(sizeof 17 == sizeof(int));
+static_assert(sizeof('A') == sizeof(int));
+static_assert(sizeof letter == sizeof(char));
+static_assert(sizeof letter == 1);
+static_assert(sizeof(17 + 4) == sizeof(int));
+~~~
+
+Run `gcc -std=c23 -Werror -fsyntax-only compare-literal-types.c`, or use the same flags with `clang`. The compiler checks the source and returns zero when all five assertions are true. It creates no executable.
+
+To isolate the grouped expression, change `sizeof 17` in the first program to `sizeof(17 + 4)`. A hosted C23 syntax check accepts this expression. The current direct Umicom interpreter refuses the addition inside the size operand. Use a supported single literal, a declared integer name or a supported type spelling in that profile.
+
+In these examples, the size comes from the type. The number of text characters you type and the numerical value stored in the object do not change its byte count. In Umicom Studio, keep the compiler profile with your example so you can reproduce its accepted syntax and result.
+
+[WG14 working draft N3220, character constants and size operators](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+
 ## Try a change
 
 Change typeof_unqual to typeof in the small program. Predict which line the compiler should reject, then restore the working form.

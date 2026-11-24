@@ -1,0 +1,79 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/102-require-a-complete-debugger-command.html
+
+PURPOSE:
+Require a complete debugger command
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Require a complete debugger command | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Require a complete debugger command</h1>
+<p>A debugger reads commands that tell a program when to step, continue or stop. The command stream may come from a terminal, a file or another program. Read the complete command line before choosing an action. A line that looks valid at its start may contain an extra byte later.</p>
+<h2>Understand the bytes in a line</h2>
+<table>
+<thead>
+<tr>
+<th>Bytes or event</th>
+<th>What it means in this exercise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0D 0A</code></td>
+<td>Carriage return and line feed, a common Windows line ending.</td>
+</tr>
+<tr>
+<td><code>0A</code></td>
+<td>Line feed.</td>
+</tr>
+<tr>
+<td><code>1A</code></td>
+<td>A control byte associated with Ctrl+Z. A translated Windows C input stream can treat it as end-of-file.</td>
+</tr>
+<tr>
+<td><code>00</code></td>
+<td>A zero byte. It may terminate a C string, so a command reader needs to recognize and reject it before parsing.</td>
+</tr>
+<tr>
+<td>End of the stream</td>
+<td>There are no more bytes. A complete last command may end here without a newline.</td>
+</tr>
+</tbody>
+</table>
+<p>Windows binary input mode supplies the original redirected bytes. The checked Umicom C debugger can then reject malformed commands and still recognize a legitimate CRLF line ending. The terminal can continue to use its normal interactive input mode. The interpreter's source-file input is separate from the debugger's command input. <a href="https://learn.microsoft.com/en-us/cpp/c-runtime-library/translation-mode-constants?view=msvc-170">Microsoft C runtime translation modes</a></p>
+<h2>Define when a command is admitted</h2>
+<p>The command reader can collect up to 63 command bytes in this profile. CRLF completes the physical line and the carriage return does not use one of those bytes. A disallowed control byte or excess command text makes the entire line invalid. The reader advances to the next line before asking again. Only a validated command goes to the source or instruction debugger.</p>
+<pre><code class="language-text">READ the whole command through its line ending or actual end of stream
+IF it contains a forbidden byte OR is longer than the command limit
+    REFUSE the command without moving the program
+OTHERWISE
+    INTERPRET the complete command
+</code></pre>
+<p>Read the three expected behaviors together. A valid <code>continue</code> ending at actual end-of-stream can complete the small test program. A longer line beginning with <code>continue</code> and containing a forbidden byte leaves the program paused. A valid line of 63 command bytes followed by CRLF is admitted, and the neighboring 64-byte line is refused.</p>
+<h2>Observe the existing tests</h2>
+<ol>
+<li>Open <code>tests/check_debugger.cmake</code> in the Umicom C checkout. Find the controlled long, end-of-file and bytecode cases. The fixtures create their own known byte sequences.</li>
+<li>Open a terminal beside a configured Umicom C build with testing enabled. Build the <code>umicom-c</code> target before invoking its debugger CLI tests.</li>
+<li>Replace <code>build</code> below if your configured build has a different name. Expect three selected, passing tests. Read the printed test name before recording a pass.</li>
+</ol>
+<pre><code class="language-powershell">cmake --build build --target umicom-c
+ctest --test-dir build -R &quot;^umicom[.]c[.]debugger[.](long|eof|bytecode)$&quot; --output-on-failure --no-tests=error
+</code></pre>
+<p>Use the automated fixtures for control-byte checks so you know exactly which bytes reached the parser. When a boundary result seems surprising, look at the input bytes and the program step separately. A text editor or test script can translate line endings before the debugger reads them. The fixture checks the CRLF bytes to keep that translation visible.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="101-read-adjacent-assertion-messages.html">Previous: Read adjacent assertion messages</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/102-require-a-complete-debugger-command.md">Markdown edition</a> · <a rel="next" href="103-translate-whitespace-that-both-languages-admit.html">Next: Translate whitespace that both languages admit</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

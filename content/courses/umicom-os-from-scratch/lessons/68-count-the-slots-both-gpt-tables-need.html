@@ -1,0 +1,92 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/68-count-the-slots-both-gpt-tables-need.html
+
+PURPOSE:
+Count the slots both GPT tables need
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Count the slots both GPT tables need | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Count the slots both GPT tables need</h1>
+<p>An Umicom OS saved disk receipt describes where a disk image could hold partitions. Sometimes the receipt leaves too little room for the disk's own table. In this lesson you will spot that mistake using numbers on paper, with no disk image or special equipment.</p>
+<p>If you are new to disk layouts, start with the lesson that explains why even a small GPT table needs reserved space. The FAT32 lesson shows another calculation that uses a lower bound.</p>
+<h2>1. Tell a slot from a partition</h2>
+<p>GPT stands for GUID Partition Table. A partition is an area set aside for a purpose, such as holding startup files. A GPT slot is a row in the table where that partition can be described. The row numbers start at zero. Slot <code>128</code> is the 129th row. Empty rows still occupy space in the table.</p>
+<p>The saved receipt gives the number of occupied slots and identifies two selected slots. The EFI System Partition is the role for firmware startup files. The root partition is the role for the main operating-system filesystem. If the EFI slot is <code>0</code>, the root slot is <code>128</code>, and the receipt counts three occupied slots, the table needs space for at least 129 rows. If both selected slots are near the start and the receipt counts 129 occupied slots, the table still needs at least 129 rows. Use the larger of the occupied count and the highest selected slot plus one.</p>
+<h2>2. Count blocks at both ends</h2>
+<p>This saved receipt format uses logical blocks of 512 bytes. GPT reserves at least 16 KiB, or 16,384 bytes, for each entry array. The saved text does not give the actual entry size. Use the minimum entry size of 128 bytes to calculate the smallest possible table. Round any partially used block up to a whole block. <a href="https://uefi.org/specs/UEFI/2.11/05_GUID_Partition_Table_Format.html">UEFI Specification, GUID Partition Table Format</a></p>
+<p>Take an image with 800,000 blocks, numbered <code>0</code> through <code>799999</code>. Use EFI slot <code>0</code>, root slot <code>128</code> and three occupied slots.</p>
+<ol>
+<li>The highest selected slot requires <code>128 + 1 = 129</code> slots. That exceeds the occupied count of three.</li>
+<li>At 128 bytes per entry, 129 slots need <code>129 × 128 = 16512</code> bytes. This exceeds 16,384 bytes. The remainder after 32 blocks needs one more block, so each entry array needs at least 33 blocks.</li>
+<li>At the start, block <code>0</code> holds the protective master boot record, which marks the disk for older tools. Block <code>1</code> holds the primary GPT header. With 33 blocks for the entry array, the earliest usable block is <code>2 + 33 = 35</code>.</li>
+<li>At the end, the backup GPT header occupies block <code>799999</code>. Reserving 33 blocks before it for the backup array leaves <code>799965</code> as the latest usable block.</li>
+</ol>
+<p>The two reservations leave <code>35</code> through <code>799965</code>, inclusive, as the widest possible usable interval for these claims. An actual image can reserve more space. In the Umicom OS C reviewer, the byte-to-block rounding uses integer arithmetic after bounding the inputs. With 16,512 bytes, <code>(16512 + 511) / 512</code> gives <code>33</code> when the remainder is discarded.</p>
+<h2>3. Decide which claims fit</h2>
+<p>Use the same 800,000-block image size on paper. In each case, assume the EFI slot is <code>0</code> and the other receipt fields are valid. Write down the minimum blocks per array, then decide whether the claimed endpoint is possible.</p>
+<table>
+<thead>
+<tr>
+<th>Root slot</th>
+<th>Occupied slots</th>
+<th>Claim to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>127</code></td>
+<td>3</td>
+<td>First usable block <code>34</code></td>
+</tr>
+<tr>
+<td><code>128</code></td>
+<td>3</td>
+<td>First usable block <code>34</code></td>
+</tr>
+<tr>
+<td><code>128</code></td>
+<td>3</td>
+<td>Last usable block <code>799966</code></td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>129</td>
+<td>First usable block <code>35</code></td>
+</tr>
+<tr>
+<td><code>255</code></td>
+<td>3</td>
+<td>Last usable block <code>799934</code></td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Slot <code>127</code> requires 128 slots and a 32-block array. Block <code>34</code> can be the first usable block.</li>
+<li>Slot <code>128</code> requires a 33-block array. Block <code>34</code> would be inside the minimum primary reservation.</li>
+<li>The same claim requires 33 blocks for the backup array. Block <code>799966</code> would be inside that reservation.</li>
+<li>With 129 occupied entries, each array still needs 33 blocks. Block <code>35</code> can be the first usable block.</li>
+<li>Slot <code>255</code> requires 256 slots. Each array needs <code>32768 / 512 = 64</code> blocks. Block <code>799934</code> can be the last usable block.</li>
+</ol>
+<h2>4. Follow up on a rejected receipt</h2>
+<p>The Umicom OS saved-receipt reviewer refuses an interval that reaches into either minimum reservation. Keep the original receipt and its recorded image checksum. Check the 512-byte units, the zero-based slot numbers, the occupied count and the arithmetic at both ends. If the original image needs inspection, ask for a fresh receipt through the project's read-only inspection workflow for an ordinary image file. Keep the old receipt alongside the new one so the claims can be compared.</p>
+<p>In Umicom Framework, the separate GPT image reader examines the actual table locations, entry size and both copies. A satisfactory saved-text calculation establishes only that the reported interval fits the minimum reservation. Actual table contents, filesystem condition and the result of starting the operating system each need their own evidence.</p>
+<h2>Where to find the implementation</h2>
+<p>In the Umicom OS checkout, the C implementation is in <code>tools/persistent-receipt-review/receipt.c</code>. The companion <code>tools/persistent-receipt-review/test_receipt.c</code> covers saved text with too little space at the primary end, too little space at the backup end and nearby values that fit.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="67-keep-boot-option-text-in-its-argument.html">Previous lesson · Keep boot option text in its argument</a> · <a href="53-reserve-table-space-before-partitions.html">Reserve table space before partitions</a> · <a href="66-check-the-minimum-space-for-fat32.html">Check the minimum space for a FAT32 volume</a> · <a href="../../../lessons/06-umicom/umicom-os-from-scratch/68-count-the-slots-both-gpt-tables-need.md">Markdown edition</a></nav>
+<p><a rel="next" href="69-follow-the-first-blocked-boot-service.html">Next lesson · Follow the first blocked boot service</a></p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

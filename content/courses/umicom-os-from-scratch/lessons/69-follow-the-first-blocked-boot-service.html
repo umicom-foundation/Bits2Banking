@@ -1,0 +1,128 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/69-follow-the-first-blocked-boot-service.html
+
+PURPOSE:
+Follow the first blocked boot service
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Follow the first blocked boot service | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Follow the first blocked boot service</h1>
+<p>An Umicom OS boot plan lists the services the operating system would start. A
+service is a program with one job. One service can name another as a
+prerequisite, which means the prerequisite must finish successfully before
+the service can start. In this lesson you will read a plan on paper and
+follow its dependency lines.</p>
+<h2>1. Read a service declaration</h2>
+<p>A declaration has a service ID, executable path, prerequisite and timeout,
+separated by vertical bars. The ID is the name other declarations use. A
+single dash in the prerequisite field means the service has no prerequisite.
+Read each arrow in this lesson as “requires”.</p>
+<pre><code class="language-text">service=report|/usr/libexec/umicom-report|ledger|1000
+report → ledger
+</code></pre>
+<p>This line says that <code>report</code> requires <code>ledger</code>. The timeout is 1,000
+milliseconds. The parser checks the prerequisite name separately.
+The Umicom OS plan inspector shares the startup parser, so the same
+dependency rule applies when you review the plan.</p>
+<h2>2. Follow the first blocked declaration</h2>
+<p>Read the sample below as plain text. The header is line 1 and the comment
+counts as line 3.</p>
+<pre><code class="language-text">UMICOM_OS_BOOT 1
+hostname=classroom
+# Services for a sample accounting report
+service=report|/usr/libexec/umicom-report|ledger|1000
+service=ledger|/usr/libexec/umicom-ledger|rates|1000
+service=rates|/usr/libexec/umicom-rates|ledger|1000
+service=clock|/usr/libexec/umicom-clock|-|1000
+</code></pre>
+<ol>
+<li>Find the service with a dash. The parser can place <code>clock</code> in the draft
+   order because it has no prerequisite.</li>
+<li>Check the remaining services. <code>ledger</code> needs <code>rates</code>, and <code>rates</code> needs
+   <code>ledger</code>. Neither can go first. This repeated chain is a dependency cycle.</li>
+<li>Note the first declaration that remains blocked. The diagnostic points
+   to line 4, where <code>report</code> waits for <code>ledger</code>. The cycle itself is the
+   pair on lines 5 and 6. Follow the names from line 4 until one repeats.</li>
+</ol>
+<p>This plan is refused as a whole. The inspector cannot publish an accepted
+order for the plan, even though it could choose one independent service while
+checking the dependencies.</p>
+<h2>3. Practise reading the indicated line</h2>
+<p>For each situation, decide which declaration needs attention before reading
+the answer column.</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Where the diagnostic points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A declaration on line 3 names a prerequisite that never appears.</td>
+<td>Line 3, which contains the reference to check.</td>
+</tr>
+<tr>
+<td>A second declaration uses the same ID on line 6, following a comment and blank line.</td>
+<td>Line 6, where the repeated ID was found.</td>
+</tr>
+<tr>
+<td>A service uses its own ID as its prerequisite on line 3.</td>
+<td>Line 3, which contains the self-reference.</td>
+</tr>
+<tr>
+<td>The sample above leaves <code>report</code> waiting on a cycle.</td>
+<td>Line 4, the first blocked declaration.</td>
+</tr>
+</tbody>
+</table>
+<p>Now suppose the requirements say that <code>rates</code> can start independently.
+Change its prerequisite to a dash on paper. The shared parser selects the
+first ready declaration each time, in source order. Work out the order.</p>
+<p>The answer is <code>rates</code>, <code>ledger</code>, <code>report</code>, then <code>clock</code>. Once <code>rates</code>
+is selected, <code>ledger</code> becomes ready. Once <code>ledger</code> is selected, <code>report</code>
+becomes ready. Each appears before <code>clock</code> in the source.</p>
+<h2>4. Keep the reason and the location together</h2>
+<p>Record both the diagnostic and the original line when reviewing a refused
+plan. Count physical lines, including comments and blank lines. Check the
+prerequisite names against the intended service design before changing an
+edge in the plan. When reviewing a real configuration, compare it with the
+Umicom OS guide at <code>docs/foundation/boot-plan-inspection.md</code>.</p>
+<p>In <code>boot/foundation/config.c</code>, the C parser records the source line for
+each admitted service declaration while building a temporary plan.
+<code>UmiOsBootConfigParseDetailed</code> retains the graph error category on refusal
+and returns the corresponding line. The caller's previously accepted
+configuration remains intact. The lesson illustrates the expected
+diagnostics from the source. Actual service execution and boot qualification
+require separate evidence.</p>
+<h2>5. Identify an empty declaration</h2>
+<p>Read the plan below on paper. Count the header, comments and blank line before choosing the first line to correct.</p>
+<pre><code class="language-text">UMICOM_OS_BOOT 1
+# A practice plan for the reporting service
+
+hostname=
+# Add the reporting service below
+service=</code></pre>
+<ol>
+<li>The first diagnostic identifies the empty hostname on line 4. Supply <code>hostname=classroom</code> on paper and read the plan again.</li>
+<li>The next diagnostic identifies the empty service on line 6. Try replacing it with <code>service=report|/usr/libexec/umicom-report|-|1000</code> on paper.</li>
+<li>Now imagine replacing line 6 with <code>owner=classroom</code>. The parser treats <code>owner</code> as an unknown field. Compare this with the earlier known field named <code>service</code> that was missing its value.</li>
+</ol>
+<p>Each rejected plan leaves the previous accepted configuration intact. Record the field and the physical line number together when you review a saved plan.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="68-count-the-slots-both-gpt-tables-need.html">Previous lesson · Count the slots both GPT tables need</a> · <a href="03-service-dependencies.html">Plan startup before executing it</a> · <a href="04-failure-and-recovery.html">Keep rejected state separate from recovery</a> · <a href="../../../lessons/06-umicom/umicom-os-from-scratch/69-follow-the-first-blocked-boot-service.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

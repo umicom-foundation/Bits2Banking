@@ -1,0 +1,81 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/28-read-a-ninja-progress-record.html
+
+PURPOSE:
+Read a Ninja progress record
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a Ninja progress record | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read a Ninja progress record</h1>
+<p>A build tool reports actions while it works. A progress line tells you about completed actions and planned work. A final result records whether the command succeeded. Keep both facts in your notes.</p>
+<h2>Read the default status</h2>
+<p>Ninja's default status places two decimal counts before the command description. In <code>[18/29] Linking C executable sample.exe</code>, 18 actions have finished and 29 are planned. The description begins after the space beside the last bracket. <a href="https://ninja-build.org/manual.html#_environment_variables">Ninja default status</a></p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Value in the example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Finished actions</td>
+<td>18</td>
+</tr>
+<tr>
+<td>Planned actions</td>
+<td>29</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Linking C executable sample.exe</td>
+</tr>
+<tr>
+<td>Result of the whole build</td>
+<td>Await the exit result</td>
+</tr>
+</tbody>
+</table>
+<p>A file can contain progress records, compiler messages and lines from the build tool. The shared Framework reader locates the numeric fields without running Ninja. It returns a byte offset and a count into the original line so a caller can retain the original description.</p>
+<pre><code class="language-c">#include &quot;umicom/build/ninja_progress.h&quot;
+
+static const char line[] = &quot;[18/29] Linking C executable sample.exe\r\n&quot;;
+UmiBuildNinjaProgress progress;
+UmiStatus status = UmiBuildNinjaProgressParse(line, sizeof line - 1U, &amp;progress);
+</code></pre>
+<p>On <code>UMI_STATUS_OK</code>, <code>progress.finishedCommands</code> is 18 and <code>progress.plannedCommands</code> is 29. The two line-ending bytes are outside the description. The source uses <code>sizeof line - 1U</code> to leave out the C string's final zero. A counted source read can pass its own exact length.</p>
+<pre><code class="language-text">READ a complete line
+IF the prefix matches the default progress format
+    STORE the counts and description span
+ELSE retain the original line for the appropriate reader
+WAIT FOR the build exit result before recording success
+</code></pre>
+<h2>Compare three observations</h2>
+<ol>
+<li>Read the complete line above. Confirm that the description can be copied using only the returned offset and length.</li>
+<li>Try <code>[29/29] Linking sample.exe</code>. The progress counts agree. Leave the build's final result open until you observe the exit status.</li>
+<li>Try a normal <code>FAILED: sample.c</code> line or a custom progress format. Expect <code>UMI_STATUS_NOT_FOUND</code> for this reader. Preserve the raw line so a different parser can handle it.</li>
+<li>Try <code>[30/29] Impossible counters</code>. Expect <code>UMI_STATUS_PARSE_ERROR</code> with the previous admitted output unchanged.</li>
+<li>Use the existing progress fixture in a configured SDK checkout. With the current Framework tests built, select the data-only case in that checkout. Replace <code>build/hosted</code> with the folder containing its test files.</li>
+</ol>
+<pre><code class="language-powershell">ctest --test-dir build/hosted -R '^framework\.build_diagnostics\.ninja_progress$' --output-on-failure
+</code></pre>
+<p>If no test is listed, use <code>ctest --test-dir build/hosted -N</code> to inspect the configured names. The progress fixture checks a counted source span and numeric boundaries without running a build tool. Track the build's exit status and test results with the correct revision for your own project.</p>
+<p>A Studio build view can retain these fields and present a clear progress update while another shared service collects diagnostics and final outcomes. Continue with the earlier saved-test lesson when comparing results after a failed build.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="27-check-available-storage-before-building.html">Previous lesson · Check available storage before building</a> · <a href="26-recognize-stale-tests-after-a-failed-build.html">Related lesson · Recognize stale tests after a failed build</a> · <a href="../../../lessons/05-engineering/learning-build-systems/28-read-a-ninja-progress-record.md">Markdown edition</a> · <a rel="next" href="29-see-which-library-ninja-will-link.html">Next lesson · See which library Ninja will link</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

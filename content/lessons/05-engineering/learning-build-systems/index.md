@@ -59,3 +59,9 @@ Keep a short record of the command, source revision, output directory and observ
 1. [Detect incomplete source before a long compilation](25-detect-incomplete-source-before-compilation.md)
 
 1. [Recognize stale tests after a failed build](26-recognize-stale-tests-after-a-failed-build.md)
+
+1. [Check available storage before building](27-check-available-storage-before-building.md)
+1. [Read a Ninja progress record](28-read-a-ninja-progress-record.md)
+1. [See which library Ninja will link](29-see-which-library-ninja-will-link.md)
+1. [Match a dry plan to its recipe digest](30-match-a-dry-plan-to-its-recipe-digest.md)
+1. [Measure the process temporary volume](31-measure-the-process-temporary-volume.md)

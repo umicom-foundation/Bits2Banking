@@ -1,0 +1,102 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/22-verify-an-unused-authenticator-step.html
+
+PURPOSE:
+Verify an unused authenticator step
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verify an unused authenticator step | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Verify an unused authenticator step</h1>
+<p>A password and an authenticator code answer two different questions in a sign-in workflow. The password check comes first. The authenticator check then verifies a decimal code for the account’s registered seed and expected time step. Keep the two results separate until both checks succeed.</p>
+<h2>Follow the time window</h2>
+<p>The practice application uses Framework’s <code>UmiTotpVerify</code>. A <strong>time step</strong> is a numbered interval of 30 seconds, starting at the reference time. At 59 seconds the current step is 1. At 60 seconds the current step is 2 and the previous step is 1. At 90 seconds step 1 is outside the current and previous pair.</p>
+<table>
+<thead>
+<tr>
+<th>Time in seconds</th>
+<th>Current step</th>
+<th>Previous step</th>
+<th>Where step 1 falls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>59</td>
+<td>1</td>
+<td>0</td>
+<td>Current</td>
+</tr>
+<tr>
+<td>60</td>
+<td>2</td>
+<td>1</td>
+<td>Previous</td>
+</tr>
+<tr>
+<td>90</td>
+<td>3</td>
+<td>2</td>
+<td>Outside the window</td>
+</tr>
+</tbody>
+</table>
+<p>Authenticators sometimes show the old code just as a new window begins. Framework’s previous-step allowance covers that boundary. A <strong>replay record</strong> keeps the latest accepted step for the credential. If the account already used step 1, its code is refused at 60 seconds even though the window still admits that step. An independent practice record without the prior use can accept it there.</p>
+<h2>Run the C example</h2>
+<p>Use a public RFC 6238 test seed and code. Open <code>labs/framework/totp-practice/replay.c</code>. Find the current acceptance, the repeat refusal, the independently valid previous step and the expired step. The tests supply time explicitly so results do not depend on your clock.</p>
+<p>Use the source checkout procedure in this section, then run the <code>replay</code> case. It prints <code>Accepted step 1 once. The replay and expired code were refused.</code> This practice target uses Windows CNG through the existing Framework MAC callback. The native verifier target consumes the code as counted text. The number of digits is important because an authenticator can show a leading zero.</p>
+<h2>Connect to Umicom applications</h2>
+<p>Umicom Bank and Studio can require the same Framework verifier for applicable sign-in workflows. The application should give the service the credential and its current replay state. The complete sign-in path also needs to persist the accepted step for that credential before issuing a session. This example uses only in-memory practice records.</p>
+<p>If a code fails, diagnose its clock window separately from prior use. Never mark a code as accepted merely because its digits have the correct length. <a href="https://www.rfc-editor.org/rfc/rfc6238.html">RFC 6238 validation and test vectors</a></p>
+<h2>Build from a Framework source checkout</h2>
+<p>This exercise selects the native Windows CNG provider. Use Windows and a C23 toolchain for this case. Open PowerShell with GCC, CMake and Ninja available. Confirm the Framework and course folders match the paths in these commands. Run the commands separately and stop if a command fails.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking&quot;
+cmake -S labs/framework/totp-practice -B build/totp-practice -G Ninja -DCMAKE_C_COMPILER=gcc -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/totp-practice --target totp-practice-replay
+ctest --test-dir build/totp-practice -R &quot;^lesson[.]totp[.]replay$&quot; -V --no-tests=error
+</code></pre>
+<p>Expect one passing test. Use a separate directory for Clang. For an existing installed SDK, omit the source option, point <code>CMAKE_PREFIX_PATH</code> to that SDK, and configure a fresh build directory. The exercise requests the shared <code>security</code> component.</p>
+<h2>Read the C entry point</h2>
+<pre><code class="language-c">int main(void)
+{
+    /* RFC 6238 uses publicly published input here instead of account data. */
+    static const uint8_t seed[] = &quot;12345678901234567890&quot;;
+    static const char code[] = &quot;94287082&quot;;
+    const UmiTotpProfile profile = {.algorithm = UMI_TOTP_SHA1, .digits = 8U,
+        .mac = UmiTotpPlatformMac};
+    UmiTotpReplay used = {0};
+
+    /* At 59 seconds the public code belongs to time step 1. */
+    if (UmiTotpVerify(&amp;profile, seed, sizeof seed - 1U, code, sizeof code - 1U, 59U, &amp;used) != UMI_STATUS_OK ||
+        !used.has_last_step || used.last_step != 1U) return 1;
+    if (UmiTotpVerify(&amp;profile, seed, sizeof seed - 1U, code, sizeof code - 1U, 60U, &amp;used) !=
+        UMI_STATUS_PERMISSION_DENIED || used.last_step != 1U) return 2;
+
+    /* An independent example shows the previous step is still in the window. */
+    UmiTotpReplay fresh = {0};
+    if (UmiTotpVerify(&amp;profile, seed, sizeof seed - 1U, code, sizeof code - 1U, 60U, &amp;fresh) != UMI_STATUS_OK ||
+        !fresh.has_last_step || fresh.last_step != 1U) return 3;
+    UmiTotpReplay expired = {0};
+    if (UmiTotpVerify(&amp;profile, seed, sizeof seed - 1U, code, sizeof code - 1U, 90U, &amp;expired) !=
+        UMI_STATUS_PERMISSION_DENIED || expired.has_last_step) return 4;
+
+    puts(&quot;Accepted step 1 once. The replay and expired code were refused.&quot;);
+    return 0;
+}
+</code></pre>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="21-revisions-and-all-or-nothing-edits.html">Previous: Keep revision exhaustion from partly changing an identity</a> · <a href="23-preserve-replay-state-after-provider-failure.html">Next: Preserve replay state after provider failure</a> · <a href="../../../lessons/05-engineering/learning-cyber-security/22-verify-an-unused-authenticator-step.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

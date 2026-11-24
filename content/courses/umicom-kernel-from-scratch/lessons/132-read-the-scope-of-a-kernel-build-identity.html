@@ -1,0 +1,83 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/132-read-the-scope-of-a-kernel-build-identity.html
+
+PURPOSE:
+Read the scope of a Kernel build identity
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read the scope of a Kernel build identity | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read the scope of a Kernel build identity</h1>
+<p>An Umicom Kernel build identity is a saved record of source files and built ELF files, a format the Kernel uses for executable code. A checksum helps identify the bytes in a file. Two fields in the record tell you which additional claims the record makes. In this lesson you will read four lines of JSON and practise deciding what evidence to look for next. You only need this page or a piece of paper.</p>
+<p>If you are new to build records, start with the short example in Learning Build Systems. The earlier Kernel lesson follows the records for a host tool and a separate guest.</p>
+<h2>1. Read the two scope fields</h2>
+<p>Here is a shortened example in JSON, a text format for named values. The complete record also needs source and ELF checksums and file lists.</p>
+<pre><code class="language-json">{
+  &quot;schema&quot;: &quot;umicom.kernel.build-identity&quot;,
+  &quot;version&quot;: 1,
+  &quot;sourceStableDuringBuildVerified&quot;: false,
+  &quot;runtimePassed&quot;: false
+}
+</code></pre>
+<p><code>sourceStableDuringBuildVerified</code> set to <code>false</code> means this record makes no claim that someone observed the source staying unchanged throughout compilation. Capturing a snapshot checks the source at the time it is read. Answering a question about the whole build interval requires evidence that covers that interval.</p>
+<p><code>runtimePassed</code> set to <code>false</code> means this record makes no claim that a runtime test passed. A separate test log can still show a pass or a failure for a matching executable and test environment.</p>
+<p>Both values must be JSON Booleans. A Boolean is a value with two possibilities, <code>true</code> and <code>false</code>. Writing <code>"false"</code> creates text, which has a different type. A missing field leaves the required value unstated.</p>
+<h2>2. Follow the verification order</h2>
+<p>The Kernel build-identity verifier first checks that the saved record has the expected schema and version and that the file identities agree. It then checks that both scope fields are present Booleans with the value <code>false</code>. Each step answers a different question. Matching file identities cannot supply a scope claim, and correctly written scope flags cannot make changed files match.</p>
+<p>Start from an imagined complete record in which all file identities agree and both scope fields are <code>false</code>. Make one change at a time in your notes. Use the right column to check which rule you applied.</p>
+<table>
+<thead>
+<tr>
+<th>Change to the example</th>
+<th>Expected verification decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Leave both fields as Boolean <code>false</code></td>
+<td>The scope check can pass.</td>
+</tr>
+<tr>
+<td>Set <code>runtimePassed</code> to Boolean <code>true</code></td>
+<td>Refuse the runtime claim because it exceeds the scope of this record.</td>
+</tr>
+<tr>
+<td>Set <code>sourceStableDuringBuildVerified</code> to Boolean <code>true</code></td>
+<td>Refuse the build-stability claim because it exceeds the scope of this record.</td>
+</tr>
+<tr>
+<td>Write <code>"false"</code> for <code>runtimePassed</code></td>
+<td>Refuse that field because it is text.</td>
+</tr>
+<tr>
+<td>Omit <code>sourceStableDuringBuildVerified</code></td>
+<td>Refuse the record because the field is missing.</td>
+</tr>
+<tr>
+<td>Keep both values <code>false</code> and change the ELF checksum</td>
+<td>Refuse the mismatched file identity before checking the scope fields.</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Match evidence to the next question</h2>
+<p>If you need to know whether a test passed, look for a separate test result that identifies the executable by checksum, the target and the test outcome. The target might be a host process or a guest running under a virtual machine. Keep the test result alongside the build identity so that readers can check the connection.</p>
+<p>If the question is whether files stayed unchanged during compilation, look for a separate record of what was monitored and when. Equal checksums from before and after the build establish what matched at those two times. A claim about the full interval needs a method that covers the interval.</p>
+<p>If a verifier refuses a saved record, keep the original. Compare its schema, version and intended source and ELF files. For a missing or mistyped scope field, ask for the original capture or follow the Kernel guide to capture a new identity for the reviewed files. Keep new captures with their own build outputs. Hand-editing a flag would lose the connection to what the capture actually recorded. These practice decisions describe saved data only and do not involve launching Umicom Kernel or a guest.</p>
+<h2>Where to find the implementation</h2>
+<p>In the Umicom Kernel checkout, <code>docs/BUILD_IDENTITY.md</code> explains when to capture or verify a saved record. <code>cmake/QualificationEvidence.cmake</code> implements these checks. <code>tests/qualification/check_evidence.cmake</code> includes cases for a true flag, a wrong value type and a missing value.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="131-check-the-front-message-header.html">Previous lesson · Check the front message header</a> · <a href="108-distinguish-input-identity-from-guest-evidence.html">Distinguish input identity from guest evidence</a> · <a href="../../learning-build-systems/lessons/08-record-build-identity.html">Record enough evidence to understand a build result</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/132-read-the-scope-of-a-kernel-build-identity.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

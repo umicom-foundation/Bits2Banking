@@ -1,0 +1,86 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/47-read-media-types-from-filename-extensions.html
+
+PURPOSE:
+Read media types from filename extensions
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read media types from filename extensions | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read media types from filename extensions</h1>
+<p>A browser reads two pieces of information when a server returns a
+file. It receives the file bytes and a <code>Content-Type</code> header. The
+header gives a name for the format. For example, <code>image/avif</code>
+identifies an AVIF image.</p>
+<h2>Predict the media type before sending a response</h2>
+<p>Read the final filename suffix by starting at the last dot.
+<code>cover.AVIF</code> and <code>cover.avif</code> both name an AVIF file.
+<code>cover.avif.backup</code> ends in <code>.backup</code>. The preview's ordinary
+fallback for an unknown suffix is <code>application/octet-stream</code>,
+which describes general binary data.</p>
+<p>Save this example as <code>show-media-types.c</code>. It calls the same
+Framework classifier as the local static preview.</p>
+<pre><code class="language-c">#include &quot;umicom/web/mime.h&quot;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const char *const paths[] = {
+        &quot;assets/cover.AVIF&quot;,
+        &quot;assets/background.WebP&quot;,
+        &quot;assets/headline.WOFF2&quot;,
+        &quot;assets/intro.MP4&quot;,
+        &quot;assets/cover.avif.backup&quot;
+    };
+
+    /* The classifier returns a media type based on each supplied path. */
+    for (size_t index = 0U; index &lt; sizeof paths / sizeof paths[0]; ++index)
+        puts(umi_web_mime_from_path(paths[index]));
+    return 0;
+}
+</code></pre>
+<ol>
+<li>Open PowerShell beside the practice file. Use a current GCC on your
+   path and point it at the Framework source checkout.</li>
+<li>Build the exercise and run it. Compare its lines with the expected
+   types below.</li>
+<li>Change the suffix of the fourth input to <code>.woff</code>. Expect
+   <code>font/woff</code> in that position. The program only receives path strings,
+   so this change is an exercise in classification. To serve real
+   content, supply bytes encoded in the format named by their suffix.</li>
+</ol>
+<pre><code class="language-powershell">$Framework = Read-Host 'Enter the full path to the Umicom Framework checkout'
+gcc -std=c23 -I &quot;$Framework/include&quot; show-media-types.c &quot;$Framework/src/web/mime.c&quot; -o show-media-types.exe
+if ($LASTEXITCODE -eq 0) { &amp; .\show-media-types.exe }
+</code></pre>
+<pre><code class="language-text">image/avif
+image/webp
+font/woff2
+video/mp4
+application/octet-stream
+</code></pre>
+<h2>Check an exported asset in the browser</h2>
+<p>When you use the local preview from the preceding course, open the
+browser's network panel and select an asset request. Find
+<code>Content-Type</code> among the response headers. If the format is unexpected,
+compare the path in the request to the final suffix of the file in the
+selected document root.</p>
+<p>This is the same decision used when Umicom WebServer sends static
+preview files for an Umicom site. Use the existing Umicom logo and icon
+as supplied. SVG and ICO retain their own media types. <a href="https://www.iana.org/assignments/media-types/">IANA media type registry</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="46-understand-capped-request-counters.html">Previous lesson · Understand capped request counters</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/47-read-media-types-from-filename-extensions.md">Markdown edition</a> · <a rel="next" href="48-check-export-and-download-headers.html">Next lesson · Check export and download headers</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

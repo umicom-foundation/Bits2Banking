@@ -95,6 +95,8 @@ Sort these spellings into C23 keyword, alternate spelling, preprocessing directi
 
 `constexpr` is a keyword. `_Bool` is an alternate spelling. `#include` is a directive. `[[noreturn]]` is an attribute form.
 
+[Next lesson: Read alternative C punctuators](07-read-alternative-punctuators.md)
+
 ## Keep learning
 
 - [Compare programs across languages](../../../courses/programming-across-languages/index.html)

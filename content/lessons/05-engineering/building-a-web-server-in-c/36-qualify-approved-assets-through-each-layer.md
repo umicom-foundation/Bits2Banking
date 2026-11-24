@@ -14,6 +14,8 @@ MIT
 -->
 
 
+![Umicom](../../../assets/branding/umicom-wordmark.svg) · [Umicom icon](../../../assets/branding/umicom-icon.svg) · [Windows icon](../../../assets/branding/umicom.ico)
+
 # Qualify approved assets through each delivery layer
 
 ## Use the artwork that ships with the SDK
@@ -31,6 +33,84 @@ Set-Location "C:\umicom\Umicom-Bits2Banking"
 ```
 
 Run each command separately after the documented lab build and stop on an error. Substitute your actual installed prefix if it differs. Both inspections should report the same admitted representation length. HEAD should plan no body bytes. The historical body-sent label describes the selected serialization path; the added transport line explicitly says no bytes were sent to a peer. This tool does not prove a browser received the image.
+
+## Check static media types in memory
+
+A media type tells a reader how to interpret the response bytes. In HTTP, it appears in the `Content-Type` header. For example, `text/css` identifies a style sheet and `image/svg+xml` identifies an SVG drawing.
+
+Framework checks the final filename extension and matches the ASCII letters A to Z with a to z. CSS, MjS and ICO can therefore use the same registered types as their lowercase forms. An unknown final extension or a filename without one gets the generic `application/octet-stream` value. A period in a parent directory does not give its child file an extension.
+
+The C23 program below classifies six path strings. It reports the first mismatch and exits with a failure status. The program runs in memory and opens no assets. The native preview uses this same classification when it prepares headers for a rooted file.
+
+~~~c
+#include "umicom/web/mime.h"
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void)
+{
+    const struct
+    {
+        const char *path, *expected;
+    } examples[] = {
+        {"assets/STYLE.CSS", "text/css; charset=utf-8"},
+        {"assets/worker.MjS", "text/javascript; charset=utf-8"},
+        {"assets/logo.sVg", "image/svg+xml"},
+        {"assets/UMICOM.ICO", "image/vnd.microsoft.icon"},
+        {"assets/logo.ICO.bIn", "application/octet-stream"},
+        {"assets.css/worker", "application/octet-stream"}
+    };
+
+    /* Ask the Framework to classify each path string in memory. */
+    for (size_t i = 0U; i < sizeof(examples) / sizeof(examples[0]); ++i)
+    {
+        const char *type = umi_web_mime_from_path(examples[i].path);
+        if (strcmp(type, examples[i].expected) != 0)
+        {
+            fprintf(stderr, "%s: expected %s, got %s\n",
+                    examples[i].path, examples[i].expected, type);
+            return EXIT_FAILURE;
+        }
+        printf("%s -> %s\n", examples[i].path, type);
+    }
+    return EXIT_SUCCESS;
+}
+~~~
+
+1. Using a Framework source checkout and a C23-capable GCC, save the program as `check-mime.c` in a new exercise folder. Open PowerShell in that folder.
+2. Set the Framework path for your checkout and compile. Stop if the command reports an error.
+
+   ~~~powershell
+   $framework = 'C:\umicom\Umicom-Applications\framework'
+   gcc -std=c23 -Wall -Wextra -Wpedantic -I "$framework\include" .\check-mime.c "$framework\src\web\mime.c" -o .\check-mime.exe
+   ~~~
+
+3. Run the program and compare all six lines with the expected output.
+
+   ~~~powershell
+   .\check-mime.exe
+   ~~~
+
+~~~
+assets/STYLE.CSS -> text/css; charset=utf-8
+assets/worker.MjS -> text/javascript; charset=utf-8
+assets/logo.sVg -> image/svg+xml
+assets/UMICOM.ICO -> image/vnd.microsoft.icon
+assets/logo.ICO.bIn -> application/octet-stream
+assets.css/worker -> application/octet-stream
+~~~
+
+If the test prints a different type for a known suffix, check that your header and MIME source come from the same current Framework checkout. For a surprising fallback, read the final extension of the filename and separate the directory name from the filename.
+
+To check the same behavior through the registered native tests, set the path below to your configured Framework build. The four cases cover direct classification and rooted CSS, JavaScript module and ICO response headers.
+
+~~~powershell
+ctest --test-dir 'C:\path\to\framework-build' --no-tests=error -R '^framework[.]web[.]static_preview[.]mime-' --output-on-failure
+~~~
+
+[Framework MIME API](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/mime.h) · [Native preview checks](https://github.com/umicom-foundation/umicom-framework/blob/main/tests/web/test_static_preview.c) · [Read response status and body length](45-read-response-status-and-body.md)
 
 ## Then observe the real transport
 

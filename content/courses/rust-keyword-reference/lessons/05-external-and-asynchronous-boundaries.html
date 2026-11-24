@@ -1,0 +1,128 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/rust-keyword-reference/lessons/05-external-and-asynchronous-boundaries.html
+
+PURPOSE:
+  Teach the selected strict words in the Rust 2024 edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Read external and asynchronous boundaries | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Read external and asynchronous boundaries</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-link-types-and-ownership.html">Previous lesson</a> · <a rel="next" href="06-words-that-depend-on-context.html">Next lesson</a></nav>
+<h2>Prepare a future</h2>
+<p>A future is a value that represents work that can make progress when asked. In this example, the main function prepares a future, prints one line, and drops the future. Read the code and predict which message appears.</p>
+<pre><code class="language-rust">async fn count_reviewed() -&gt; u32 {
+    println!(&quot;Counting the reviewed entries&quot;);
+    7
+}
+
+fn main() {
+    let pending = async {
+        let total = count_reviewed().await;
+        println!(&quot;Reviewed {total}&quot;);
+    };
+
+    println!(&quot;Future prepared&quot;);
+    drop(pending);
+}
+</code></pre>
+<p>The output is <code>Future prepared</code>. Creating the <code>async</code> block produces the future. Its body does not start because nothing polls the future to make it progress. If an executor drove this future, <code>.await</code> would let it wait for the result of <code>count_reviewed()</code>. A future that is already ready can supply its result without suspending. An async block does not start a background thread on its own. <a href="https://doc.rust-lang.org/reference/expressions/block-expr.html#async-blocks">Rust Reference, async blocks</a> · <a href="https://doc.rust-lang.org/reference/expressions/await-expr.html">Rust Reference, await expressions</a></p>
+<h2>Read a value across a language boundary</h2>
+<p>Imagine a practice file format with version number 7. The C function owns that number. Rust imports the function using the C application binary interface, or ABI. The ABI is the agreement on how the caller and the compiled function pass arguments and return a result.</p>
+<p>Save this function as <code>schema-version.c</code>.</p>
+<pre><code class="language-c">#include &lt;stdint.h&gt;
+
+/* Report the version of this practice format without accessing external state. */
+uint32_t practice_schema_version(void) {
+    return UINT32_C(7);
+}
+</code></pre>
+<p>Save this Rust caller as <code>version-boundary.rs</code>.</p>
+<pre><code class="language-rust">unsafe extern &quot;C&quot; {
+    fn practice_schema_version() -&gt; u32;
+}
+
+fn schema_version() -&gt; u32 {
+    // SAFETY: the linked C function takes no arguments, returns uint32_t
+    // and has no caller preconditions. The return type matches Rust u32.
+    unsafe { practice_schema_version() }
+}
+
+fn main() {
+    println!(&quot;Schema version {}&quot;, schema_version());
+}
+</code></pre>
+<p>The outer <code>unsafe extern</code> block places responsibility for the declared signature on its author. Rust cannot check the C definition merely by reading this block. The imported function defaults to unsafe to call. The small wrapper contains the call and explains why it satisfies the contract for the linked C implementation. A regular call to <code>schema_version()</code> then has no extra work for the caller. <a href="https://doc.rust-lang.org/reference/items/external-blocks.html">Rust Reference, external blocks</a> · <a href="https://doc.rust-lang.org/edition-guide/rust-2024/unsafe-extern.html">Rust 2024 Edition Guide, unsafe extern blocks</a> · <a href="https://doc.rust-lang.org/reference/unsafe-keyword.html">Rust Reference, unsafe</a></p>
+<h2>Match each word to its job</h2>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Example</th>
+<th>What it tells Rust</th>
+</tr>
+</thead>
+<tbody>
+<tr id="kw-async">
+<td><code>async</code></td>
+<td><code>async fn count_reviewed() -&gt; u32</code></td>
+<td>Calling this function creates a future whose result, when ready, is a <code>u32</code>.</td>
+</tr>
+<tr id="kw-await">
+<td><code>await</code></td>
+<td><code>count_reviewed().await</code></td>
+<td>Obtain the ready value or suspend the enclosing future until it can proceed. Use this inside an async context.</td>
+</tr>
+<tr id="kw-extern">
+<td><code>extern</code></td>
+<td><code>unsafe extern "C" { fn practice_schema_version() -&gt; u32; }</code></td>
+<td>Declare a function supplied outside this Rust crate, using the C ABI. The linker must find its implementation.</td>
+</tr>
+<tr id="kw-unsafe">
+<td><code>unsafe</code></td>
+<td><code>unsafe { practice_schema_version() }</code></td>
+<td>Permit this call in a small block where the author has checked the requirements Rust cannot verify. In <code>unsafe extern</code> the word assigns responsibility for the external declarations.</td>
+</tr>
+</tbody>
+</table>
+<p>All four spellings are strict keywords in Rust 2024. <a href="https://doc.rust-lang.org/reference/keywords.html#strict-keywords">Rust Reference, strict keywords</a></p>
+<h2>Try the two programs</h2>
+<ol>
+<li>Save the first program as <code>prepare-future.rs</code>. In PowerShell run <code>rustc --edition=2024 prepare-future.rs -o prepare-future.exe</code>. After compilation succeeds, run <code>.\prepare-future.exe</code> and expect the single line <code>Future prepared</code>.</li>
+<li>For the C and Rust practice, check <code>rustc -vV</code> and <code>gcc -dumpmachine</code>. The commands below use a Windows GNU Rust toolchain and a C compiler for the same architecture and ABI. Work in the folder containing the two saved files.</li>
+</ol>
+<pre><code class="language-powershell">gcc -std=c23 -c schema-version.c -o schema-version.o
+rustc --edition=2024 version-boundary.rs -C link-arg=schema-version.o -o version-boundary.exe
+.\version-boundary.exe
+</code></pre>
+<ol>
+<li>Run each line only after the preceding one succeeds. Expect <code>Schema version 7</code>. If the linker cannot find <code>practice_schema_version</code>, rebuild the C object and check the file name and target compatibility. The <code>link-arg</code> option passes that object along to the linker. <a href="https://doc.rust-lang.org/rustc/codegen-options/index.html#link-arg">The rustc book, link arguments</a></li>
+<li>Remove just the <code>unsafe { ... }</code> wrapper around the call and try compiling. The compiler should refuse the unmarked call. Restore the block and its safety comment. Keep both signatures fixed while experimenting with the returned version number.</li>
+</ol>
+<h2>Compare with a C caller</h2>
+<p>A C caller can declare <code>uint32_t practice_schema_version(void);</code> in a header, include it, and call the function in the ordinary way. Both callers need declarations that match the linked definition. Rust adds the external ABI marker and makes the responsibility for an unchecked foreign call visible. A small version function makes that agreement easy to review. A real Umicom component can use the same lesson when it documents which numeric version fields callers may read across an interface.</p>
+<p><a href="../../../lessons/03-native-code/rust-keyword-reference/05-external-and-asynchronous-boundaries.md">Markdown edition</a></p>
+  </article></main>
+</body>
+</html>

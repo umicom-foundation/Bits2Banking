@@ -58,3 +58,5 @@ Ask another learner to work out both expected outputs using only the sample and 
 - [Umicom C and C23 statement calculations](../../../courses/native-statement-calculations/index.html)
 
 [Course contents](index.md) · [Previous · Give a task a name and a result](06-give-a-task-a-name-and-a-result.md) · [Browser edition](../../../courses/programming-across-languages/lessons/07-plan-a-first-umicom-change.html)
+
+[Next lesson · Pass two integers through the C ABI](08-pass-two-integers-through-the-c-abi.md)

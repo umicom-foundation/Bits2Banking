@@ -151,3 +151,5 @@ Media can describe image and video assets, Studio can describe documentation or 
 
 
 [Previous: Copy metadata with explicit pointer ownership](42-copy-metadata-with-explicit-pointer-ownership.md)
+
+[Next: Add with a checked result](44-add-with-a-checked-result.md)

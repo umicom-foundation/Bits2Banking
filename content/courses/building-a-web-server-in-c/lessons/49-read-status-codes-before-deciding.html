@@ -1,0 +1,126 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/49-read-status-codes-before-deciding.html
+
+PURPOSE:
+Read status codes before deciding what to do
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read status codes before deciding what to do | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read status codes before deciding what to do</h1>
+<p>Imagine a practice site that prepares a book export. Your request contains a fictional title and a page count. The site sends back an HTTP status code. That number tells you what happened to the request so far and which information to read next.</p>
+<h2>Separate the number from the words</h2>
+<p>A status code is a three-digit number in an HTTP response. In the line below, <code>202</code> is the code and <code>Accepted</code> is its human-readable reason phrase.</p>
+<pre><code class="language-text">HTTP/1.1 202 Accepted
+</code></pre>
+<p>Use the numeric code when choosing a program action. The words help a person read an HTTP/1.1 transcript. A reason phrase can be absent or different in another service. This example means that the request was accepted for processing. Keep its result pending until you have separate evidence of completion.</p>
+<h2>Choose the next step for each code</h2>
+<p>Use fictional files and identifiers throughout the exercise. A worker is the part of a service that carries out a task, such as preparing an export. A gateway passes requests to another service and returns the response.</p>
+<table>
+<thead>
+<tr>
+<th>Code and phrase</th>
+<th>What it tells you</th>
+<th>What to record or check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>202 Accepted</code></td>
+<td>The service accepted the work for processing.</td>
+<td>Record a pending result. Use the service’s documented job status information if it supplies any.</td>
+</tr>
+<tr>
+<td><code>412 Precondition Failed</code></td>
+<td>A request condition failed. For example, the version named in an <code>If-Match</code> header did not match the current version.</td>
+<td>Read the current version and compare it with your intended change before submitting again.</td>
+</tr>
+<tr>
+<td><code>422 Unprocessable Content</code></td>
+<td>The service understood the content and its syntax. It could not carry out the requested instructions.</td>
+<td>Read the validation details. A fictional export that asks for zero pages may need a valid page count.</td>
+</tr>
+<tr>
+<td><code>429 Too Many Requests</code></td>
+<td>The service applied a limit to the rate of requests.</td>
+<td>Look for a <code>Retry-After</code> header. Follow the wait it specifies when present, then check whether the operation may be repeated.</td>
+</tr>
+<tr>
+<td><code>502 Bad Gateway</code></td>
+<td>The gateway received an invalid response from a service it called.</td>
+<td>Record the gateway error and use the documented work status before repeating a request that can start another job.</td>
+</tr>
+<tr>
+<td><code>504 Gateway Timeout</code></td>
+<td>The gateway waited for another service and did not receive a reply in time.</td>
+<td>Record the timeout. Check the work’s status before acting on an assumption about completion.</td>
+</tr>
+</tbody>
+</table>
+<p>An <code>If-Match</code> header expresses a condition about the current representation. A representation is the form in which the service sends a resource. For a paper exercise, suppose the draft you read has version A and the server now holds version B. Under the matching condition, a rejected update can report <code>412</code>.</p>
+<p>A <code>Retry-After</code> value of <code>5</code> asks the client to wait at least five seconds. Draw a small timeline and count five seconds after the response. Use a second exercise card to show what a client might do when the service provides its own retry instructions.</p>
+<h2>Read the same labels in a small C23 program</h2>
+<p>Save this as <code>status-practice.c</code> in a fresh practice folder. It asks Framework for each label. It uses an array, which is an ordered list of values, and a <code>for</code> loop to read them one at a time.</p>
+<pre><code class="language-c">#include &quot;umicom/web/types.h&quot;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const int codes[] = {
+        UMI_HTTP_STATUS_ACCEPTED,
+        UMI_HTTP_STATUS_PRECONDITION_FAILED,
+        UMI_HTTP_STATUS_UNPROCESSABLE_CONTENT,
+        UMI_HTTP_STATUS_TOO_MANY_REQUESTS,
+        UMI_HTTP_STATUS_BAD_GATEWAY,
+        UMI_HTTP_STATUS_GATEWAY_TIMEOUT
+    };
+
+    /* The exercise calls the shared lookup with fictional status values. */
+    for (size_t index = 0U; index &lt; sizeof codes / sizeof codes[0]; ++index) {
+        printf(&quot;%d %s\n&quot;, codes[index], umi_http_status_reason(codes[index]));
+    }
+    return 0;
+}
+</code></pre>
+<p>If you have GCC with C23 support and the current Framework source, run these commands in PowerShell. The exercise makes a local function call that reads the registered labels. You can also predict the output from the table.</p>
+<pre><code class="language-powershell">$Framework = Read-Host 'Enter the full path to the Framework checkout'
+gcc -std=c23 -Wall -Wextra -Werror -I &quot;$Framework/include&quot; status-practice.c &quot;$Framework/src/web/types.c&quot; -o status-practice.exe
+if ($LASTEXITCODE -ne 0) { throw 'Compile failed. Check the source and Framework paths.' }
+.\status-practice.exe
+</code></pre>
+<pre><code class="language-text">202 Accepted
+412 Precondition Failed
+422 Unprocessable Content
+429 Too Many Requests
+502 Bad Gateway
+504 Gateway Timeout
+</code></pre>
+<p>The label summarizes the code. Confirming a real job outcome requires evidence from the service that handles that job. The lookup provides the same descriptive words that you can compare with the registry.</p>
+<h2>Follow a fictional request by hand</h2>
+<p>Draw a request card with the title <code>Practice book</code> and job label <code>demo-42</code>. Read one response card at a time. Trace the decision before writing any code.</p>
+<pre><code class="language-text">READ the numeric response code
+IF the code is 202, RECORD the job as pending
+IF the code is 412, READ the current version and check the condition
+IF the code is 422, READ the validation details and review the input
+IF the code is 429, CHECK Retry-After and record the wait
+IF the code is 502 or 504, RECORD the gateway outcome
+    and check work status before repeating the operation
+</code></pre>
+<p>Start with <code>202</code>. Later, suppose a separate status request receives <code>504</code>. Your paper record shows that the original job was accepted and that you have yet to confirm its final state. A Bits2Banking export or a synthetic Umicom TMS task can use this same evidence pattern.</p>
+<p><a href="https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml">HTTP status code registry</a> · <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-15">HTTP status semantics</a> · <a href="https://www.rfc-editor.org/rfc/rfc9112.html#section-4">HTTP/1.1 status lines</a> · <a href="https://www.rfc-editor.org/rfc/rfc6585.html#section-4">Rate limit response</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="48-check-export-and-download-headers.html">Previous lesson · Check export and download headers</a> · <a href="41-read-a-fastcgi-reply-before-forwarding.html">Related lesson · Read a FastCGI reply before forwarding</a> · <a href="46-understand-capped-request-counters.html">Related lesson · Understand capped request counters</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/49-read-status-codes-before-deciding.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

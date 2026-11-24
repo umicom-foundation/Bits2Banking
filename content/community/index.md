@@ -1,3 +1,20 @@
+<!--
+Umicom Bits2Banking
+File: content/community/index.md
+
+PURPOSE:
+Guide beginners through the Community learning route.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+![Umicom](../assets/branding/umicom-wordmark.svg)
+
 # Community learning: your first development steps
 
 Let us start with one small task at a time. You do not need programming experience. The first step is opening a terminal and finding your current folder. Each lesson explains what to type, what the command means and what you should see.
@@ -25,7 +42,10 @@ Every lesson has a Markdown page, a [printable HTML handout](handouts/index.html
 
 ## Practice project
 
+<!-- The repository README remains available in a source checkout. The website index owns its URL and offers the same files and build steps.
 [Notes word-count source and build guide](examples/notes-word-count/README.md). This small C component can be compiled without building Umicom Framework. Later, follow the real Framework source in lesson eleven.
+-->
+[Notes word-count source and build guide](examples/notes-word-count/index.html). This small C component can be compiled without building Umicom Framework. Later, follow the real Framework source in lesson eleven.
 
 ## Where to go next
 

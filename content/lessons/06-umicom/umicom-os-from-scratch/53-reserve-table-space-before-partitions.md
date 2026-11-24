@@ -71,3 +71,5 @@ Do not broaden an image profile just because one producer creates different meta
 [Primary GPT format reference](https://uefi.org/specs/UEFI/2.11/05_GUID_Partition_Table_Format.html)
 
 [Standalone lesson](../../../courses/umicom-os-from-scratch/lessons/53-reserve-table-space-before-partitions.html)
+
+[Continue the topic · Count the slots both GPT tables need](68-count-the-slots-both-gpt-tables-need.md)

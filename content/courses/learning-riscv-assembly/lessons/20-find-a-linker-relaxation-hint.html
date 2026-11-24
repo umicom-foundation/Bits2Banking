@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/20-find-a-linker-relaxation-hint.html
+
+PURPOSE:
+  Teach a beginner to find a linker relaxation hint using object-only exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Find a linker relaxation hint | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Find a linker relaxation hint</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="19-pair-a-location-with-a-relative-address.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="21-choose-a-local-or-imported-address.html">Next lesson</a> · <a href="../../../lessons/03-native-code/learning-riscv-assembly/20-find-a-linker-relaxation-hint.md">Markdown edition</a></nav>
+<p>A linker may have a shorter way to encode an address once it knows the final layout. RISC-V object files can mark some instructions as eligible for such a change. The term <strong>relaxation</strong> describes this opportunity. A tool that displays one input object can show the hints before any linking happens.</p>
+<h2>Compare the same source twice</h2>
+<p>Use the <code>relative.s</code> file from the previous lesson. Keep its two labels and build it with both assembler options. Keep the resulting objects under different names.</p>
+<pre><code class="language-text">clang --target=riscv64-unknown-elf -march=rv64i -mabi=lp64 -mno-relax -c relative.s -o fixed.o
+clang --target=riscv64-unknown-elf -march=rv64i -mabi=lp64 -mrelax -c relative.s -o eligible.o
+llvm-objdump -dr -M no-aliases fixed.o
+llvm-objdump -dr -M no-aliases eligible.o
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Look for</th>
+<th>Fixed object</th>
+<th>Eligible object</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Upper PC-relative relocation</td>
+<td>One, naming the data symbol</td>
+<td>One, naming the data symbol</td>
+</tr>
+<tr>
+<td>Lower PC-relative relocation</td>
+<td>One, naming the pairing label</td>
+<td>One, naming the pairing label</td>
+</tr>
+<tr>
+<td>Relaxation entries</td>
+<td>Zero</td>
+<td>Two, at the locations of the address instructions</td>
+</tr>
+</tbody>
+</table>
+<p>In both listings, first compare the printed instruction words. They are identical for this source and target. Then count <code>R_RISCV_RELAX</code> lines. These extra lines describe a possibility available to a later linker. They carry no new instruction for the processor to execute.</p>
+<p>Keep the target and assembler options written next to your record. If your two objects show the same set of relocations, check which flag reached the assembler and which filename you inspected. A firmware engineer can inspect the linked output separately when exact instruction layout matters. Here the exercise ends at the object files.</p>
+<p><a href="https://docs.riscv.org/reference/abi/riscv-elf-linker-relaxation.html">RISC-V linker relaxation</a></p>
+  </article></main>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-x86-assembly/lessons/07-count-and-repeat-bytes.html
+
+PURPOSE:
+  Teach a beginner to count and repeat bytes in NASM using object-only exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Count and repeat bytes in NASM | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Count and repeat bytes in NASM</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="06-reserve-storage.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="08-include-a-known-byte-fixture.html">Next lesson</a> · <a href="../../../lessons/03-native-code/learning-x86-assembly/07-count-and-repeat-bytes.md">Markdown edition</a></nav>
+<h2>Give the length a name</h2>
+<p>A practice record starts with one marker byte, contains three zero bytes, and ends with another marker. The record is five bytes long. Ask the assembler to calculate that number from the two positions. Then store the calculated length and the record's offset from its section in two extra bytes.</p>
+<pre><code class="language-nasm">section .rodata
+record_start:
+    db 0x51
+    times 3 db 0
+    db 0x7e
+record_length equ $ - record_start
+record_offset equ record_start - $$
+    db record_length, record_offset
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Spelling</th>
+<th>Example</th>
+<th>What it tells the assembler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>times</code></td>
+<td><code>times 3 db 0</code></td>
+<td>Assemble the data declaration three times. The source produces three adjacent bytes.</td>
+</tr>
+<tr>
+<td><code>equ</code></td>
+<td><code>record_length equ $ - record_start</code></td>
+<td>Give a single assembly-time value to the name. The directive itself adds no bytes.</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td><code>$ - record_start</code></td>
+<td>Use the position at the start of the current source statement to calculate the distance from the label.</td>
+</tr>
+<tr>
+<td><code>$$</code></td>
+<td><code>record_start - $$</code></td>
+<td>Subtract the section's beginning to obtain an offset within it.</td>
+</tr>
+</tbody>
+</table>
+<p>The first expression is evaluated when its <code>equ</code> statement is assembled. The number is used again by <code>db</code>, which emits it as one byte. For this small record, all quantities fit in a byte. A larger format would need a larger length field and a defined byte order. <a href="https://www.nasm.us/doc/nasm03.html">NASM manual, data and expression syntax</a></p>
+<h2>Inspect the result without running it</h2>
+<ol>
+<li>Save the NASM source as <code>count-record.asm</code> in a practice folder. Run <code>nasm -f elf64 count-record.asm -o count-record.o</code>.</li>
+<li>Run <code>llvm-objdump -s -j .rodata count-record.o</code>. Find these seven bytes in order, <code>51 00 00 00 7e 05 00</code>.</li>
+<li>Change the repeat count to four, assemble again, and check for one additional zero byte and a length field of <code>06</code>. The record remains at offset zero because it is the first data in the section.</li>
+</ol>
+<p>If the inspector reports that the section is missing, check the file name, assembler exit code and the spelling of <code>.rodata</code>. An object file contains assembly output and layout information for a linker. This exercise examines bytes and does not build a runnable application.</p>
+<h2>Compare the same layout with the Clang assembler</h2>
+<pre><code class="language-asm">.section .rodata,&quot;a&quot;,@progbits
+section_start:
+record_start:
+    .byte 0x51
+    .fill 3, 1, 0
+    .byte 0x7e
+.equ record_length, . - record_start
+.equ record_offset, record_start - section_start
+    .byte record_length, record_offset
+</code></pre>
+<p>Save as <code>count-record.s</code> and run <code>clang --target=x86_64-unknown-linux-gnu -c count-record.s -o count-record-clang.o</code>. Inspect its <code>.rodata</code> section with the same <code>llvm-objdump</code> command and the new output path. Both source styles describe the same bytes using different assembler conventions.</p>
+<p>In C, you might define a file header whose length is calculated by the code that writes it. Here the bytes are fixed at assembly time. The separate length field helps another program check where the record ends.</p>
+  </article></main>
+</body>
+</html>

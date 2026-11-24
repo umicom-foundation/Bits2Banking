@@ -1,0 +1,71 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/23-preserve-replay-state-after-provider-failure.html
+
+PURPOSE:
+Preserve replay state after provider failure
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preserve replay state after provider failure | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Preserve replay state after provider failure</h1>
+<p>Verification can fail because a code does not match, or because the provider could not finish the calculation. A sign-in workflow needs both facts available so its developer can diagnose the system. It can still report a general refusal to the person trying to sign in.</p>
+<h2>Use a controlled interruption</h2>
+<p>The <code>provider_failure.c</code> practice program first verifies the current step using the existing Windows CNG callback. A <strong>callback</strong> is a function that a service can invoke when it needs work from another component. The practice callback calls the actual provider on its first invocation and reports <code>UMI_STATUS_UNAVAILABLE</code> on the second invocation. This makes the later step fail predictably even though the first calculation succeeded.</p>
+<p>The test starts with an already consumed step 0 and checks both the saved flag and number. Framework examines the admitted time window before publishing a new accepted step. The interrupted attempt preserves step 0. Replacing the practice callback with the usual provider lets the retry consume step 1.</p>
+<pre><code class="language-text">READ the previous replay record
+CHECK each step required by the verifier
+IF a provider cannot finish
+    KEEP the previous record and refuse this attempt
+IF the code is valid and the step is unused
+    PUBLISH the accepted step
+</code></pre>
+<h2>Build and observe the case</h2>
+<p>Use the source checkout commands in this section and select <code>provider_failure</code>. Read the callback count and the replay checks in <code>labs/framework/totp-practice/provider_failure.c</code> before running it. Expect <code>The interrupted check preserved replay state. The corrected retry consumed step 1.</code></p>
+<p>If the case reports unavailable after the corrected retry, check that the Windows CNG provider is available to the test process. Look at its origin and status in the local test output. The practice callback should be selected only for the first attempt. A provider fault cannot authorize a new session.</p>
+<p>In a Bank sign-in handler, persist the accepted replay step through the credential store's normal transaction. The application can issue a session only after that transaction and the preceding factors succeed. The lesson demonstrates the verification part with local test data.</p>
+<h2>Build from a Framework source checkout</h2>
+<p>This exercise selects the native Windows CNG provider. Use Windows and a C23 toolchain for this case. Open PowerShell with GCC, CMake and Ninja available. Confirm the Framework and course folders match the paths in these commands. Run the commands separately and stop if a command fails.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking&quot;
+cmake -S labs/framework/totp-practice -B build/totp-practice -G Ninja -DCMAKE_C_COMPILER=gcc -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/totp-practice --target totp-practice-provider_failure
+ctest --test-dir build/totp-practice -R &quot;^lesson[.]totp[.]provider_failure$&quot; -V --no-tests=error
+</code></pre>
+<p>Expect one passing test. Use a separate directory for Clang. For an existing installed SDK, omit the source option, point <code>CMAKE_PREFIX_PATH</code> to that SDK, and configure a fresh build directory. The exercise requests the shared <code>security</code> component.</p>
+<h2>Read the C entry point</h2>
+<pre><code class="language-c">int main(void)
+{
+    /* The fixed inputs identify an RFC test vector, independent of the clock. */
+    static const uint8_t seed[] = &quot;12345678901234567890&quot;;
+    static const char code[] = &quot;94287082&quot;;
+    PracticeProvider provider = {0};
+    UmiTotpProfile profile = {.algorithm = UMI_TOTP_SHA1, .digits = 8U,
+        .mac = refuse_second_step, .mac_context = &amp;provider};
+    UmiTotpReplay replay = {.last_step = 0U, .has_last_step = true};
+    if (UmiTotpVerify(&amp;profile, seed, sizeof seed - 1U, code, sizeof code - 1U, 59U, &amp;replay) !=
+        UMI_STATUS_UNAVAILABLE || provider.calls != 2U || !replay.has_last_step || replay.last_step != 0U) return 1;
+
+    /* Correct the dependency and retry without rebuilding the replay record. */
+    profile.mac = UmiTotpPlatformMac;
+    profile.mac_context = NULL;
+    if (UmiTotpVerify(&amp;profile, seed, sizeof seed - 1U, code, sizeof code - 1U, 59U, &amp;replay) != UMI_STATUS_OK ||
+        !replay.has_last_step || replay.last_step != 1U) return 2;
+    puts(&quot;The interrupted check preserved replay state. The corrected retry consumed step 1.&quot;);
+    return 0;
+}
+</code></pre>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="22-verify-an-unused-authenticator-step.html">Previous: Verify an unused authenticator step</a> · <a href="24-inspect-an-enrollment-uri-without-disclosing-it.html">Next: Inspect an enrollment URI without disclosing it</a> · <a href="../../../lessons/05-engineering/learning-cyber-security/23-preserve-replay-state-after-provider-failure.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

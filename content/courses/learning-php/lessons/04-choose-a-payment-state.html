@@ -1,0 +1,117 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-php/lessons/04-choose-a-payment-state.html
+
+PURPOSE:
+Choose a payment state
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Choose a payment state | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Choose a payment state</h1>
+<p>A keyword is a word the language already uses. For example, <code>if</code> introduces a choice. In this lesson a price is expressed as whole pennies, so the examples do not round a floating-point value.</p>
+<h2>Make two kinds of choice</h2>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Small PHP example</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>if</code></td>
+<td><code>if ($paid === 0) { echo "unpaid"; }</code></td>
+<td>Checks the first condition.</td>
+</tr>
+<tr>
+<td><code>elseif</code></td>
+<td><code>elseif ($paid &lt; 4200) { echo "partial"; }</code></td>
+<td>Checks a second condition if the first was false. Keep it in the same chain.</td>
+</tr>
+<tr>
+<td><code>else</code></td>
+<td><code>else { echo "complete"; }</code></td>
+<td>Runs when the preceding tests were false.</td>
+</tr>
+<tr>
+<td><code>switch</code></td>
+<td><code>switch ($status) { case "open": break; default: break; }</code></td>
+<td>Chooses among labelled paths. Its equality rule can coerce values.</td>
+</tr>
+<tr>
+<td><code>case</code></td>
+<td><code>case "open": echo "Review"; break;</code></td>
+<td>Marks a value to match within a switch.</td>
+</tr>
+<tr>
+<td><code>break</code></td>
+<td><code>break;</code></td>
+<td>Leaves the switch or enclosing loop at that point.</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td><code>default: echo "Unknown";</code></td>
+<td>Supplies the fallback in a switch or match.</td>
+</tr>
+<tr>
+<td><code>match</code></td>
+<td><code>match ($status) { "open" =&gt; "Review", default =&gt; "Unknown" }</code></td>
+<td>Produces a value and uses strict identity for its arms. Requires PHP 8.0 or later.</td>
+</tr>
+<tr>
+<td><code>endif</code></td>
+<td><code>if ($ready): echo "Ready"; endif;</code></td>
+<td>Ends the colon-delimited form of an if statement.</td>
+</tr>
+<tr>
+<td><code>endswitch</code></td>
+<td><code>switch ($status): case "open": break; endswitch;</code></td>
+<td>Ends the colon-delimited switch.</td>
+</tr>
+</tbody>
+</table>
+<p>Do not mix braces and colon endings for a single statement. A switch case keeps running into the next case unless control leaves it. A match expression chooses one result. For data that enters an application, normalize the type at the boundary, then choose the control form that expresses your intent.</p>
+<pre><code class="language-php">&lt;?php
+$paid = 2100;
+if ($paid === 0) {
+    echo &quot;unpaid\n&quot;;
+} elseif ($paid &lt; 4200) {
+    echo &quot;partial\n&quot;;
+} else {
+    echo &quot;complete\n&quot;;
+}
+</code></pre>
+<p>Expect <code>partial</code>. Change 2100 to 0, then to 4200. Predict the output before each run.</p>
+<h2>Compare three forms</h2>
+<pre><code class="language-c">/* An integer boundary makes these cases deliberate in C23 as well. */
+int paid = 2100;
+const char *state = paid == 0 ? &quot;unpaid&quot; : paid &lt; 4200 ? &quot;partial&quot; : &quot;complete&quot;;
+</code></pre>
+<pre><code class="language-text">IF paid equals zero THEN state is unpaid
+ELSE IF paid is below 4200 THEN state is partial
+ELSE state is complete
+</code></pre>
+<p>The C example already has an integer type. When reviewing a route in Umicom WebServer, first establish that the input bytes represent the whole permitted number. The choice can then stay in a small C function. If your PHP output surprises you, echo a newline after each result and check whether the input was a string before comparing it. <a href="https://www.php.net/manual/en/language.control-structures.php">PHP control structures</a></p>
+<h2>Run the examples</h2>
+<ol>
+<li>Save the PHP example as <code>practice.php</code>. Keep the opening PHP tag. In a terminal with PHP available, run <code>php practice.php</code> and compare the output with the expected result above.</li>
+<li>Open the C23 lab linked below and save it as <code>main.c</code>. From a terminal with GCC, run <code>gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o native-keywords.exe</code>. In PowerShell run <code>.\native-keywords.exe</code> and find the <code>choices</code> row.</li>
+<li>If the shell cannot find a compiler or PHP, start with the pseudocode and compare your predicted result with the examples.</li>
+</ol>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="03-count-text-at-the-right-boundary.html">Previous lesson · Count text at the right boundary</a> · <a href="05-repeat-with-a-bounded-list.html">Next lesson · Repeat with a bounded list</a> · <a href="../../../lessons/04-web/learning-php/04-choose-a-payment-state.md">Markdown edition</a> · <a href="../../../labs/native/php-keyword-comparison/main.c">Complete C23 lab</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

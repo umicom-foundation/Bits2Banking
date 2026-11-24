@@ -1,0 +1,116 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-c-keyword-reference/lessons/05-guard-calculations-with-and-or.html
+
+PURPOSE:
+  Teach short-circuit evaluation through a guarded integer exercise in Umicom pseudocode and C.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guard calculations with AND and OR | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Guard calculations with AND and OR</h1>
+    <nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="04-call-the-checked-input-profile.html">Previous lesson</a> · <a href="02-choose-with-if-and-literals.html">Earlier lesson on if and else</a></nav>
+<h2>Use both checks or either check</h2>
+<p>A condition asks a question. The answer is true or false. Use <code>AND</code> when two questions must both have a true answer. Use <code>OR</code> when one true answer is enough.</p>
+<table>
+<thead>
+<tr>
+<th>Left answer</th>
+<th>Right answer</th>
+<th>AND</th>
+<th>OR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>false</td>
+<td>true</td>
+<td>false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<p>The checked Umicom pseudocode profile starts each combined condition with the left expression. If it already knows the answer, it skips the right expression. This is called <strong>short-circuit evaluation</strong>. With <code>AND</code>, a false left side settles the answer. With <code>OR</code>, a true left side settles it.</p>
+<h2>Trace a guarded division</h2>
+<p>Imagine an Umicom Bank training screen that reviews a batch of pretend entries. There are zero entries, and you want to avoid dividing by the count. Save the following as <code>guarded-review.ump</code>.</p>
+<pre><code class="language-text">BEGIN
+    LET entries = 0;
+    LET total = 12;
+    LET review = 0;
+    IF (entries != 0 AND total / entries &gt; 3) THEN BEGIN
+        review = 1;
+    END
+    IF (entries == 0 OR total / entries &gt; 3) THEN BEGIN
+        review = review + 2;
+    END
+    RETURN review;
+END
+</code></pre>
+<p>First trace it on paper. The first comparison is false, so the interpreter skips the division and leaves <code>review</code> at zero. The second comparison is true, so it skips that division too and adds two. It returns 2.</p>
+<p>Run <code>umicom-c pseudocode guarded-review.ump</code> with an Umicom C build containing the checked logical words. The command prints the returned integer. Then change <code>entries</code> to 3 and run again. Both divisions are now reached safely. Each yields 4, and the review value becomes 3.</p>
+<p>To see a real error, go back to zero entries and change <code>entries != 0</code> to <code>entries &gt;= 0</code> in the first condition. The left side is true and the division is evaluated. Expect the checked interpreter to report division by zero. Restore the first comparison afterwards.</p>
+<h2>Compare the C form</h2>
+<p>C uses <code>&amp;&amp;</code> for AND and <code>||</code> for OR. The same decisions in plain C read as follows.</p>
+<pre><code class="language-c">int main(void)
+{
+    int entries = 0;
+    int total = 12;
+    int review = 0;
+    if (entries != 0 &amp;&amp; total / entries &gt; 3) {
+        review = 1;
+    }
+    if (entries == 0 || total / entries &gt; 3) {
+        review = review + 2;
+    }
+    return review;
+}
+</code></pre>
+<p>Save this as <code>guarded-review.c</code>. Use <code>umicom-c interpret guarded-review.c</code> to see the same result. The checked <code>pseudocode</code> command recognises <code>AND</code> and <code>OR</code> in expressions. Keep the symbolic forms in a C source file.</p>
+<h2>Decide which operation groups first</h2>
+<p>When you write <code>1 OR 0 AND 0</code>, the interpreter groups AND first. It reads the expression as <code>1 OR (0 AND 0)</code>, which returns 1. Writing <code>(1 OR 0) AND 0</code> gives 0 because the parentheses change the grouping.</p>
+<pre><code class="language-text">BEGIN
+    RETURN 1 OR 0 AND 0;
+END
+</code></pre>
+<p>Save that example as <code>group-the-checks.ump</code>. Run it as written. Then add the parentheses from the second form and run it again. When you read a longer condition in Studio, add parentheses where they make your intended grouping easier to see. Keep a guard on the left when evaluating the right side would fail for some inputs.</p>
+<p>In an application, identify the required data check before evaluating values that depend on it. Follow that rule in paper examples and in the corresponding C tests. These exercises use synthetic integer counts and pass no real banking data to the interpreter.</p>
+    <p><a href="../../../lessons/03-native-code/umicom-c-keyword-reference/05-guard-calculations-with-and-or.md">Markdown edition</a> · <a href="../../c23-keyword-reference/index.html">Related C23 keywords</a></p>
+  </article></main>
+</body>
+</html>

@@ -144,3 +144,5 @@ Suppose a source file was saved at 10:00, its object file was rebuilt at 10:02, 
 
 
 [Previous: Detect incomplete source before a long compilation](25-detect-incomplete-source-before-compilation.md)
+
+[Next: Check available storage before building](27-check-available-storage-before-building.md)

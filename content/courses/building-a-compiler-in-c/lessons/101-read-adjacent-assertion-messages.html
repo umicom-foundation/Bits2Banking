@@ -1,0 +1,56 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/101-read-adjacent-assertion-messages.html
+
+PURPOSE:
+Read adjacent assertion messages
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read adjacent assertion messages | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read adjacent assertion messages</h1>
+<p>An assertion is a check that a stated condition holds. A <strong>static assertion</strong> checks a fixed condition while the compiler prepares the program. If the condition fails, the compiler can show the message attached to it and report the source location.</p>
+<h2>Follow the quotation marks</h2>
+<p>Think of <code>"The record "</code> and <code>"contains 42 fields"</code> as two parts of one sentence. In hosted C23, adjacent quoted string fragments are combined during translation. A comment or line break between the closing quote and the next opening quote can make a long message easier to read. The space after <code>record</code> is inside the first fragment so it becomes part of the sentence.</p>
+<p>The checked Umicom C profile accepts ordinary ASCII quoted fragments in a static assertion. It preserves their source spelling for diagnosis. The quotes still help you see which fragments were written. This lesson uses assertion messages and does not require an ordinary string variable or a string-processing runtime.</p>
+<pre><code class="language-c">int main(void)
+{
+    /* The compiler checks the fixed condition before preparing execution. */
+    static_assert(6 * 7 == 42, &quot;The record &quot; /* Keep the phrase readable. */
+                              &quot;contains 42 fields&quot;);
+    return 42;
+}
+</code></pre>
+<h2>Read a correct source and a refusal</h2>
+<ol>
+<li>Open <code>labs/native/compiler-source-boundaries/assertion_message.c</code> in the Bits2Banking checkout. Find the fixed calculation and the two quoted fragments.</li>
+<li>Run <code>umicom-c interpret labs/native/compiler-source-boundaries/assertion_message.c</code>. Expect <code>Result: 42</code> from the program’s return statement.</li>
+<li>Join the two fragments into <code>"The record contains 42 fields"</code> in a practice copy. Repeat the run. On this example the same two execution instructions produce 42. The message belongs to preparation.</li>
+<li>In another copy, compare <code>6 * 7</code> with 41. Use <code>umicom-c interpret</code> on that copy with <code>--check-only</code>. Expect the assertion diagnostic to begin at the first opening quote. Restore the comparison before you move on.</li>
+</ol>
+<h2>Keep the exact place where spelling failed</h2>
+<p>The component that recognizes source tokens is the <strong>lexer</strong>. It first checks each quoted fragment’s end and valid characters. After a fragment, it may skip permitted whitespace and comments and look for another opening quote. It leaves the next ordinary token for the parser. A malformed later fragment should identify that later location. A well-formed message attached to a false condition can identify the message’s start.</p>
+<pre><code class="language-text">READ one complete quoted fragment
+LOOK across permitted whitespace and comments
+WHILE there is another opening quote
+    READ and check the next fragment
+KEEP the original range for a diagnostic
+</code></pre>
+<p>If no space appears between two words, check the quoted text itself. Whitespace between the two closing and opening quotes does not supply a character to the resulting sentence in hosted C.</p>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf#page=80">C23 working draft, string literals and translation</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="100-align-record-fields.html">Previous: Align the fields in a record</a> · <a href="102-require-a-complete-debugger-command.html">Next: Require a complete debugger command</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/101-read-adjacent-assertion-messages.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -60,3 +60,5 @@ Consider four observations: current source matches; the ELF hash changed; a tran
 Preserve the earlier record and failing transcript. Review which source or tool changed, rebuild through the configured workflow and collect fresh execution evidence. Do not rewrite the stored ELF hash merely to silence the verifier. These checks connect the evidence; they do not authenticate an untrusted machine or prove the Kernel is ready for deployment.
 
 [Course contents](index.md) · [Previous lesson](107-separate-a-guest-runtime-from-source-grammar.md) · [Next lesson](109-admit-udp-with-an-explicit-checksum-policy.md)
+
+[Continue the topic · Read the scope of a Kernel build identity](132-read-the-scope-of-a-kernel-build-identity.md)

@@ -41,3 +41,5 @@ A later invalid line could leave the system partly started. Validating the whole
 [Previous: Build one real OS component](02-build-the-parser.md)
 
 [Next: Keep rejected state separate from recovery](04-failure-and-recovery.md)
+
+[Continue the topic · Follow the first blocked boot service](69-follow-the-first-blocked-boot-service.md)

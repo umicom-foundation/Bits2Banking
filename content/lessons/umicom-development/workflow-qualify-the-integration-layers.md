@@ -50,6 +50,26 @@ Run the five lab scenarios after a successful build. In a separate Framework tes
 
 A missing lifecycle header points to SDK selection. A missing symbol points to library or installation identity. A wrong callback count points to plan/executor behavior. A real backend failure belongs to that backend’s evidence. Start with the earliest demonstrated failure instead of treating every symptom as a build-system defect.
 
+## Keep the result when its output is incomplete
+
+A test has an outcome, such as failed, skipped or timed out. It can also have diagnostic text. The text helps you investigate the outcome, and the result still needs to describe what happened when the text exceeds the capture limit.
+
+The shared Umicom Automated Testing runner keeps a bounded prefix of an overlong diagnostic. An earlier driver timeout, cancellation, reported failure or explicit skip remains visible. If the attempt would otherwise pass, the missing output boundary becomes a capacity failure. The workflow can still report which later step did not run and whether cleanup was reached.
+
+| Test adapter observation | Expected workflow finding |
+| --- | --- |
+| Driver returns a timeout with overlong text | Timed out, with the bounded prefix |
+| Driver returns cancellation with overlong text | Cancelled, with the bounded prefix |
+| Driver reports a failed or skipped test with overlong text | The reported state remains visible |
+| Driver reports a passing test with overlong text | Capacity failure |
+
+1. Open `tests/uat/test_workflow.c` in the Framework checkout and find the table of overflow cases. Follow how the test adapter fills its text buffer and supplies its result separately.
+2. In a configured Framework build with native tests enabled, build `umicom-uat-workflow-tests`. Run `ctest --test-dir <build-directory> --output-on-failure -R "^framework[.]uat[.]workflow[.]overflow-"`.
+3. Expect five data-only cases to pass. In each case, the later assertion remains not run and the cleanup fixture still runs. If the filter reports zero tests, check that you configured the same build directory where the workflow target was built.
+4. Find `UmiUatReportFinding` and compare the recorded status and output length. The test checks the case result and the captured evidence separately.
+
+Try this on paper. A browser driver times out during a synthetic navigation test. Its diagnostic buffer fills before it can add a terminating zero. Predict the state that should appear in the report and the status a maintainer should read first. Then change the driver outcome to success and compare the table. The difference describes what the runner can verify from the completed result and its evidence.
+
 ## Review and recover
 
 A missing header or symbol requires checking the installed SDK identity. Preserve the command and output for a failed lab expectation. Controlled callbacks do not qualify real compilers, repository publication or a native GUI.

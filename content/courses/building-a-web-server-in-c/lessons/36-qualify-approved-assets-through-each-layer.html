@@ -22,6 +22,65 @@ MIT
 <section><h2>Inspect without opening a port</h2><pre><code class="language-powershell">Set-Location &quot;C:\umicom\Umicom-Bits2Banking&quot;
 &amp; &quot;.\build\static-preview\btb-static-preview.exe&quot; &quot;C:\umicom\installed\applications\share\umicom\framework\resources\brand&quot; GET /umicom.ico --owned
 &amp; &quot;.\build\static-preview\btb-static-preview.exe&quot; &quot;C:\umicom\installed\applications\share\umicom\framework\resources\brand&quot; HEAD /umicom.ico --owned</code></pre><p>Run each command separately after the documented lab build and stop on an error. Substitute your actual installed prefix if it differs. Both inspections should report the same admitted representation length. HEAD should plan no body bytes. The historical body-sent label describes the selected serialization path; the added transport line explicitly says no bytes were sent to a peer. This tool does not prove a browser received the image.</p></section>
+<section id="check-static-media-types"><h2>Check static media types in memory</h2>
+<p>A media type tells a reader how to interpret the response bytes. In HTTP, it appears in the <code>Content-Type</code> header. For example, <code>text/css</code> identifies a style sheet and <code>image/svg+xml</code> identifies an SVG drawing.</p>
+<p>Framework checks the final filename extension and matches the ASCII letters A to Z with a to z. CSS, MjS and ICO can therefore use the same registered types as their lowercase forms. An unknown final extension or a filename without one gets the generic <code>application/octet-stream</code> value. A period in a parent directory does not give its child file an extension.</p>
+<p>The C23 program below classifies six path strings. It reports the first mismatch and exits with a failure status. The program runs in memory and opens no assets. The native preview uses this same classification when it prepares headers for a rooted file.</p>
+<pre><code class="language-c">#include &quot;umicom/web/mime.h&quot;
+#include &lt;stddef.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+int main(void)
+{
+    const struct
+    {
+        const char *path, *expected;
+    } examples[] = {
+        {&quot;assets/STYLE.CSS&quot;, &quot;text/css; charset=utf-8&quot;},
+        {&quot;assets/worker.MjS&quot;, &quot;text/javascript; charset=utf-8&quot;},
+        {&quot;assets/logo.sVg&quot;, &quot;image/svg+xml&quot;},
+        {&quot;assets/UMICOM.ICO&quot;, &quot;image/vnd.microsoft.icon&quot;},
+        {&quot;assets/logo.ICO.bIn&quot;, &quot;application/octet-stream&quot;},
+        {&quot;assets.css/worker&quot;, &quot;application/octet-stream&quot;}
+    };
+
+    /* Ask the Framework to classify each path string in memory. */
+    for (size_t i = 0U; i &lt; sizeof(examples) / sizeof(examples[0]); ++i)
+    {
+        const char *type = umi_web_mime_from_path(examples[i].path);
+        if (strcmp(type, examples[i].expected) != 0)
+        {
+            fprintf(stderr, &quot;%s: expected %s, got %s\n&quot;,
+                    examples[i].path, examples[i].expected, type);
+            return EXIT_FAILURE;
+        }
+        printf(&quot;%s -&gt; %s\n&quot;, examples[i].path, type);
+    }
+    return EXIT_SUCCESS;
+}</code></pre>
+<ol>
+  <li>Using a Framework source checkout and a C23-capable GCC, save the program as <code>check-mime.c</code> in a new exercise folder. Open PowerShell in that folder.</li>
+  <li>Set the Framework path for your checkout and compile. Stop if the command reports an error.
+    <pre><code class="language-powershell">$framework = 'C:\umicom\Umicom-Applications\framework'
+gcc -std=c23 -Wall -Wextra -Wpedantic -I &quot;$framework\include&quot; .\check-mime.c &quot;$framework\src\web\mime.c&quot; -o .\check-mime.exe</code></pre>
+  </li>
+  <li>Run the program and compare all six lines with the expected output.
+    <pre><code class="language-powershell">.\check-mime.exe</code></pre>
+  </li>
+</ol>
+<pre><code>assets/STYLE.CSS -&gt; text/css; charset=utf-8
+assets/worker.MjS -&gt; text/javascript; charset=utf-8
+assets/logo.sVg -&gt; image/svg+xml
+assets/UMICOM.ICO -&gt; image/vnd.microsoft.icon
+assets/logo.ICO.bIn -&gt; application/octet-stream
+assets.css/worker -&gt; application/octet-stream</code></pre>
+<p>If the test prints a different type for a known suffix, check that your header and MIME source come from the same current Framework checkout. For a surprising fallback, read the final extension of the filename and separate the directory name from the filename.</p>
+<p>To check the same behavior through the registered native tests, set the path below to your configured Framework build. The four cases cover direct classification and rooted CSS, JavaScript module and ICO response headers.</p>
+<pre><code class="language-powershell">ctest --test-dir 'C:\path\to\framework-build' --no-tests=error -R '^framework[.]web[.]static_preview[.]mime-' --output-on-failure</code></pre>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/mime.h">Framework MIME API</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/tests/web/test_static_preview.c">Native preview checks</a> · <a href="45-read-response-status-and-body.html">Read response status and body length</a></p>
+</section>
 <section><h2>Then observe the real transport</h2><p>Follow the native preview guide to start umicom preview with an explicit root and port. In another terminal, retrieve the ICO to a new temporary file and compare its SHA-256 with the installed source file. Request headers separately for HEAD and check the content length and media type. Finally inspect the actual page in a browser, including its logo proportions and local font fallback. Stop the listener when finished.</p>
 <p>Keep source-contract review, headless inspection, transport retrieval and browser appearance as separate rows in your evidence. A checksum match establishes byte identity for that retrieval. It does not establish correct font selection, layout at another display scale, authentication, TLS or production deployment. The preview remains a bounded, read-only local development service.</p></section>
 <section><h2>Recover from a mismatch</h2><p>For HTTP 413, compare file size with the selected API limit. For 404, confirm the URL is relative to the chosen root rather than the current shell directory. For 403, inspect path and browser admission without bypassing the gate. For an unknown API at link time, check that headers and libraries come from the same installed SDK.</p>

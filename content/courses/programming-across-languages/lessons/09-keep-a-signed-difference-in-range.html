@@ -1,0 +1,66 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/programming-across-languages/lessons/09-keep-a-signed-difference-in-range.html
+
+PURPOSE:
+Keep a signed difference in range
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep a signed difference in range | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep a signed difference in range</h1>
+<p>A signed 32-bit integer can describe values from −2,147,483,648 through 2,147,483,647. Two inputs may both fit while their difference falls outside that interval. For example, subtracting one from the lowest input needs a result one step below the minimum.</p>
+<h2>Keep the boundary visible in each language</h2>
+<p>C23 widens both inputs to 64 bits before subtracting. If the mathematical value fits the old width, the program can pass the original inputs to the assembly leaf and publish its result.</p>
+<pre><code class="language-c">const int64_t wide = (int64_t)received - (int64_t)booked;
+if (wide &lt; INT32_MIN || wide &gt; INT32_MAX) {
+    return false;
+}
+*out = UmiLessonBalanceDelta(received, booked);
+</code></pre>
+<p>D has a fixed 32-bit <code>int</code> and a 64-bit <code>long</code>. The following comparison can be placed inside a function that takes <code>int received</code> and <code>int booked</code> and returns <code>bool</code>.</p>
+<pre><code class="language-d">long wide = cast(long) received - cast(long) booked;
+if (wide &lt; int.min || wide &gt; int.max) {
+    return false;
+}
+</code></pre>
+<p>A D consumer can use <code>extern(C) int UmiLessonBalanceDelta(int received, int booked);</code> when it links with a compatible C ABI toolchain. This is a source-level comparison. The native lab below uses C and Assembly. <a href="https://dlang.org/spec/abi.html">D language ABI</a></p>
+<p>In FreeBASIC, choose <code>Long</code> for the 32-bit inputs and <code>LongInt</code> for the check. Expand the type before doing the arithmetic. <a href="https://www.freebasic.net/wiki/KeyPgLong">FreeBASIC Long</a></p>
+<pre><code class="language-basic">Dim received As Long = 120
+Dim booked As Long = 78
+Dim wide As LongInt = CLngInt(received) - CLngInt(booked)
+If wide &lt; -2147483648LL OrElse wide &gt; 2147483647LL Then
+    Print &quot;Outside the signed 32-bit range&quot;
+Else
+    Print CLng(wide)
+End If
+</code></pre>
+<p>The FreeBASIC example prints 42 for these two inputs. Other BASIC dialects can use different width names.</p>
+<pre><code class="language-text">WIDEN both counts to signed 64 bits
+SUBTRACT booked from received
+IF the result lies outside the 32-bit interval THEN refuse
+OTHERWISE publish the 32-bit result
+</code></pre>
+<h2>Check what a refusal leaves behind</h2>
+<ol>
+<li>Run the linked C and Assembly lab as shown in the previous lesson.</li>
+<li>Open <code>main.c</code>. Find the row with <code>INT32_MAX</code> and <code>-1</code>. Predict the mathematical difference, then compare it to the largest signed 32-bit result.</li>
+<li>Find the value 77 used for the output before each row. Confirm that both rejected rows expect 77 after the call. This checks that the old result remains available.</li>
+<li>Add a row with <code>received</code> equal to <code>INT32_MIN + 1</code> and <code>booked</code> equal to 1. Expect the exact bottom of the range to succeed.</li>
+</ol>
+<p>A Umicom Bank or Trader calculation can check a range at its Framework boundary before any native calculation publishes a result. Whole pennies make the exercise exact. An actual product must also decide which currency and scale each input uses.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="08-pass-two-integers-through-the-c-abi.html">Previous lesson · Pass two integers through the C ABI</a> · <a href="../../../lessons/03-native-code/programming-across-languages/09-keep-a-signed-difference-in-range.md">Markdown edition</a> · <a href="../../../labs/native/shared-signed-delta/main.c">Check a signed difference in C23</a> · <a href="../../../labs/native/shared-signed-delta/delta_win64.S">Subtract two signed inputs in Windows x64 Assembly</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

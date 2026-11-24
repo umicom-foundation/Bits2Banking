@@ -89,9 +89,9 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 
 | Course | Manifest path | Lessons |
 | --- | --- | --- |
-| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 94 |
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 114 |
 | Building a Text Editor in C | `learning-packs/building-a-text-editor.json` | 14 |
-| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 42 |
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 49 |
 | Building Bitcoin from Scratch Using Assembly and C | `learning-packs/building-bitcoin-in-c.json` | 3 |
 | Building Blockchain from Scratch | `learning-packs/building-blockchain-from-scratch.json` | 13 |
 | Building Linux from Scratch Using C Code | `learning-packs/building-linux-from-scratch.json` | 3 |
@@ -130,7 +130,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Introduction to Computers | `learning-packs/learning-computer-architecture.json` | 8 |
 | Learning C++ | `learning-packs/learning-cpp.json` | 6 |
 | Learning CSS | `learning-packs/learning-css.json` | 8 |
-| Learning Cyber Security | `learning-packs/learning-cyber-security.json` | 21 |
+| Learning Cyber Security | `learning-packs/learning-cyber-security.json` | 24 |
 | Learning D Language | `learning-packs/learning-d.json` | 51 |
 | Learning Data Structures | `learning-packs/learning-data-structures.json` | 25 |
 | Learning Flutter | `learning-packs/learning-flutter.json` | 20 |
@@ -145,19 +145,19 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning Linux Development | `learning-packs/learning-linux-development.json` | 3 |
 | Learning NoSQL and MongoDB | `learning-packs/learning-nosql.json` | 8 |
 | Learning Pascal | `learning-packs/learning-pascal.json` | 13 |
-| Learning PHP | `learning-packs/learning-php.json` | 3 |
+| Learning PHP | `learning-packs/learning-php.json` | 12 |
 | Learning Pine Script | `learning-packs/learning-pinescript.json` | 2 |
 | Learning Python | `learning-packs/learning-python.json` | 11 |
 | Learning Qt | `learning-packs/learning-qt.json` | 24 |
 | Learning RabbitMQ and Message Queues | `learning-packs/learning-rabbitmq.json` | 13 |
 | Learning React | `learning-packs/learning-react.json` | 2 |
 | Introduction to RISC-V | `learning-packs/learning-riscv.json` | 20 |
-| Learning RISC-V Assembly | `learning-packs/learning-riscv-assembly.json` | 16 |
+| Learning RISC-V Assembly | `learning-packs/learning-riscv-assembly.json` | 21 |
 | Learning Rust | `learning-packs/learning-rust.json` | 6 |
 | Learning Spring Framework | `learning-packs/learning-spring-framework.json` | 2 |
 | Learning SQL | `learning-packs/learning-sql.json` | 11 |
 | Learning Wt | `learning-packs/learning-wt.json` | 16 |
-| Learning x86 Assembly | `learning-packs/learning-x86-assembly.json` | 4 |
+| Learning x86 Assembly | `learning-packs/learning-x86-assembly.json` | 9 |
 | Learning Zend Framework | `learning-packs/learning-zend-framework.json` | 2 |
 | Learning Zig | `learning-packs/learning-zig.json` | 6 |
 | LLM from Scratch | `learning-packs/llm-from-scratch.json` | 144 |
@@ -165,10 +165,10 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Safer C Programming | `learning-packs/safer-c-programming.json` | 43 |
 | Learning Umicom Framework | `learning-packs/umicom-development.json` | 208 |
 | Learning Umicom Framework — Markdown manuscripts | `learning-packs/umicom-development-manuscripts.json` | 208 |
-| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 129 |
-| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 64 |
-| Learning Build Systems | `learning-packs/learning-build-systems.json` | 26 |
-| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 6 |
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 133 |
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 69 |
+| Learning Build Systems | `learning-packs/learning-build-systems.json` | 31 |
+| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 9 |
 | MINIX OS Foundations | `learning-packs/minix-os-foundations.json` | 12 |
 | Learning Maven | `learning-packs/learning-maven.json` | 4 |
 | Learning Gradle | `learning-packs/learning-gradle.json` | 4 |
@@ -178,8 +178,57 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning FreeBASIC | `learning-packs/learning-freebasic.json` | 45 |
 | Native languages through C and assembly | `learning-packs/native-language-interoperability.json` | 12 |
 | Preparing Data for LLM Training | `learning-packs/preparing-llm-training-data.json` | 34 |
-| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 129 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 133 |
+| Accessible Statement Review | `learning-packs/accessible-statement-review.json` | 2 |
+| AngularJS and Legacy Statement Screens | `learning-packs/angularjs-legacy-statements.json` | 3 |
+| Banking Technology Foundations | `learning-packs/banking-technology-foundations.json` | 4 |
+| Bookkeeping from Your First Entry | `learning-packs/bookkeeping-from-first-entry.json` | 4 |
+| Bootstrap and Native Statement Reports | `learning-packs/bootstrap-native-statements.json` | 3 |
+| Build a Banking Application in C | `learning-packs/build-a-bank-application-in-c.json` | 5 |
+| Build a Trading Application in C | `learning-packs/build-a-trading-application-in-c.json` | 5 |
+| C23 Keywords for Beginners | `learning-packs/c23-keyword-reference.json` | 7 |
+| C++20 Keyword and Token Reference | `learning-packs/cpp20-keyword-reference.json` | 8 |
+| D Keywords for Beginners | `learning-packs/d-keyword-reference.json` | 8 |
+| D Special Tokens for Beginners | `learning-packs/d-special-token-reference.json` | 4 |
+| First C# Statements | `learning-packs/first-csharp-statements.json` | 4 |
+| FpML for Treasury and Trade Confirmation | `learning-packs/fpml-for-treasury.json` | 3 |
+| Go Keywords for Beginners | `learning-packs/go-keyword-reference.json` | 4 |
+| Go Statement Tools | `learning-packs/go-statement-tools.json` | 2 |
+| Java SE 25 keyword reference | `learning-packs/java-keyword-reference.json` | 7 |
+| Mathematics for Application Builders | `learning-packs/mathematics-for-application-builders.json` | 7 |
+| MongoDB Receipt Documents in C23 | `learning-packs/mongodb-c23-documents.json` | 3 |
+| MySQL Ledger Practice in C23 | `learning-packs/mysql-c23-ledger.json` | 3 |
+| Native Statement Calculations | `learning-packs/native-statement-calculations.json` | 2 |
+| Node.js and Native Statement Reports | `learning-packs/nodejs-native-reporting.json` | 3 |
+| UK Open Banking Account Access | `learning-packs/open-banking-account-access.json` | 3 |
+| Oracle Database Ledger Practice in C23 | `learning-packs/oracle-database-c23-ledger.json` | 3 |
+| Practical Web and Data Foundations | `learning-packs/practical-web-and-data-foundations.json` | 6 |
+| Pricing Financial Instruments from Cash Flows | `learning-packs/pricing-from-cashflows.json` | 5 |
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 10 |
+| Programming across languages | `learning-packs/programming-across-languages.json` | 9 |
+| Python 3.14 keyword reference | `learning-packs/python-keyword-reference.json` | 8 |
+| RabbitMQ Outbox Practice in C23 | `learning-packs/rabbitmq-c23-outbox.json` | 3 |
+| React and Native Statement Data | `learning-packs/react-native-statements.json` | 3 |
+| Rust 2024 Keywords for Beginners | `learning-packs/rust-keyword-reference.json` | 7 |
+| Spring Boot with a Native C23 Service | `learning-packs/spring-boot-native-service.json` | 3 |
+| Spring Framework with a Native C23 Receipt Rule | `learning-packs/spring-framework-with-c23.json` | 3 |
+| SQL Statement Reconciliation | `learning-packs/sql-statement-reconciliation.json` | 2 |
+| Swift Payment Messages and ISO 20022 | `learning-packs/swift-payment-messages.json` | 3 |
+| Umicom C checked integer keywords and syntax | `learning-packs/umicom-c-keyword-reference.json` | 5 |
 
+<!-- Previous rows retained for review. The active table follows current course metadata.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 94 |
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 42 |
+| Learning Cyber Security | `learning-packs/learning-cyber-security.json` | 21 |
+| Learning PHP | `learning-packs/learning-php.json` | 3 |
+| Learning RISC-V Assembly | `learning-packs/learning-riscv-assembly.json` | 16 |
+| Learning x86 Assembly | `learning-packs/learning-x86-assembly.json` | 4 |
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 129 |
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 64 |
+| Learning Build Systems | `learning-packs/learning-build-systems.json` | 26 |
+| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 6 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 129 |
+-->
 <!-- Previous catalogue row retained after course continuation: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 46 | -->
 <!-- Earlier displayed compiler course count was64; the current course sequence has82 entries. -->
 <!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 82 | -->
@@ -198,6 +247,10 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 <!-- Previous catalogue row retained: 109 lessons before UDP admission. -->
 <!-- Previous displayed Kernel count was112; current manifest includes the continued VM and networking sequence. -->
 <!-- Prior count retained: | Learning Build Systems | `learning-packs/learning-build-systems.json` | 24 | -->
+
+<!-- The previous OS course count is kept for review. The active table includes the new dependency diagnostic lesson.
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 68 |
+-->
 
 ## Keep native packs stable during website publication
 
@@ -297,3 +350,91 @@ Start with the [applied course guide](../content/start/applied-native-courses.md
 | Swift Payment Messages and ISO 20022 | [swift-payment-messages.json](swift-payment-messages.json) |
 | FpML for Treasury and Trade Confirmation | [fpml-for-treasury.json](fpml-for-treasury.json) |
 | Build a Trading Application in C | [build-a-trading-application-in-c.json](build-a-trading-application-in-c.json) |
+
+<!-- The previous course count is retained for review after adding two ABI exercises.
+| Programming across languages | `learning-packs/programming-across-languages.json` | 7 |
+-->
+
+<!-- The previous count is retained for review. The counted progress lesson increases the catalogue to 28.
+| Learning Build Systems | `learning-packs/learning-build-systems.json` | 27 |
+-->
+
+<!-- The previous count is retained for review after adding the common-radix lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 104 |
+-->
+
+<!-- The previous count is retained for review after adding the local-update lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 105 |
+-->
+
+<!-- The previous count is retained for review after adding the reached-statement lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 106 |
+-->
+
+<!-- Retain the earlier lesson count after adding exact saved result selection.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 6 |
+-->
+
+<!-- The previous count is retained for review after adding the C and D lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 107 |
+-->
+
+<!-- The previous count remains for review. The link-rule lesson brings the total to 29.
+| Learning Build Systems | `learning-packs/learning-build-systems.json` | 28 |
+-->
+
+<!-- Keep the preceding course count for review after adding the counters lesson.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 45 |
+-->
+
+<!-- Retain the prior course count after adding the workflow summary lesson.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 7 |
+-->
+
+<!-- Retain the prior compiler course count after adding checked locals and paused slots.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 108 |
+-->
+
+<!-- Retain the earlier count after adding the running-log lesson.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 8 |
+-->
+
+<!-- Keep the preceding course count for review after adding the media type lesson.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 46 |
+-->
+
+<!-- Keep the previous course count for review after adding the recipe-digest lesson.
+| Learning Build Systems | `learning-packs/learning-build-systems.json` | 29 |
+-->
+
+<!-- Retain the prior compiler course count after adding checked shift translation.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 110 |
+-->
+
+<!-- Retain the earlier WebServer course count after adding the export-header lesson.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 47 |
+-->
+
+<!-- Retain the earlier compiler course count after adding the digit-grouping exercise.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 111 |
+-->
+
+<!-- Retain the earlier count after adding the HTTP status exercise.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 48 |
+-->
+
+<!-- Retain the earlier compiler course count after adding the signed-comparison exercise.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 112 |
+-->
+
+<!-- Retain the earlier count after adding the outer-run lesson.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 9 |
+-->
+
+<!-- Retain the earlier compiler course count after adding the slot-watch lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 113 |
+-->
+
+<!-- Keep the previous course count after adding the temporary-volume lesson.
+| Learning Build Systems | `learning-packs/learning-build-systems.json` | 30 |
+-->

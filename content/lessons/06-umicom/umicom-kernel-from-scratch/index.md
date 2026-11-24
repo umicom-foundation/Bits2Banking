@@ -404,3 +404,16 @@ Inspect a fixed TCP header and mandatory pseudo-header checksum while keeping pa
 1. [Observe the boot reservation plan](128-observe-the-boot-reservation-plan.md)
 
 1. [Set up the x64 Kernel stack](129-set-up-the-x64-kernel-stack.md)
+
+## Message readiness and rights
+
+Observe a queued message without consuming it, then check its header before publishing readiness.
+
+1. [Observe a message with query rights](130-observe-a-message-with-query-rights.md)
+1. [Check the front message header](131-check-the-front-message-header.md)
+
+## Kernel build evidence
+
+Read the scope of a saved build identity and connect it to separate test evidence.
+
+1. [Read the scope of a Kernel build identity](132-read-the-scope-of-a-kernel-build-identity.md)

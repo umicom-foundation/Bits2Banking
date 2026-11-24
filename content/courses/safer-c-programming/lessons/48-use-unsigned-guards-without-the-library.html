@@ -1,0 +1,81 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/48-use-unsigned-guards-without-the-library.html
+
+PURPOSE:
+Use unsigned guards without the library
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Use unsigned guards without the library | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Use unsigned guards without the library</h1>
+<p>A C compiler can recognize C23 syntax even when a freestanding target or older library lacks a particular header. A small C guard can express the same range decision for <code>size_t</code> using basic unsigned arithmetic.</p>
+<h2>Check before computing</h2>
+<p>For addition, compare <code>left</code> with <code>SIZE_MAX - right</code>. For multiplication, once the width is nonzero, compare <code>count</code> with <code>SIZE_MAX / width</code>. The result when the width is zero is zero. These formulas presume both operands already represent the intended nonnegative quantities.</p>
+<h2>Look at an x86-64 object</h2>
+<p>In the optional Assembly object, a 32-bit <code>addl</code> computes <code>0x7fffffff + 1</code>. It sets the signed overflow flag because the value crosses the signed 32-bit limit. It leaves carry clear because the sum fits the unsigned 32-bit width. <code>seto</code> and <code>setc</code> observe those flags. Some disassemblers display <code>setb</code> for the same carry instruction. The example produces an object for inspection and provides no callable interface.</p>
+<h2>Connect to the checked Umicom C profiles</h2>
+<p>These source files use ordinary C headers and a hosted C toolchain. A checked source-interpreter exercise can test an individual arithmetic operation, while a C application can expose a richer function and explicit output storage. A freestanding Umicom subsystem can adapt the unsigned guard where platform headers are unavailable.</p>
+<h2>Trace the logic</h2>
+<pre><code class="language-text">IF width IS ZERO, SAVE ZERO
+ELSE IF count EXCEEDS MAXIMUM DIVIDED BY width, REFUSE
+ELSE SAVE count TIMES width
+</code></pre>
+<pre><code class="language-c">static bool size_product(size_t count, size_t width, size_t *bytes)
+{
+    /* Check the largest safe count before multiplying; skip division by zero. */
+    if (width != 0U &amp;&amp; count &gt; SIZE_MAX / width) return false;
+    *bytes = count * width;
+    return true;
+}
+
+static bool size_sum(size_t left, size_t right, size_t *total)
+{
+    /* Subtraction is safe because right already has the destination type. */
+    if (left &gt; SIZE_MAX - right) return false;
+    *total = left + right;
+    return true;
+}
+</code></pre>
+<h2>Build and run one practice case</h2>
+<ol>
+<li>Open a PowerShell terminal with GCC, CMake and Ninja on the search path. To use Clang, select <code>clang</code> in the configure command and choose a separate build directory in all three commands. The selected target uses ordinary headers available before C23. The other targets additionally require <code>&lt;stdckdint.h&gt;</code>.</li>
+<li>Open <code>labs/native/checked-integers/fallback.c</code>. Read the successful case and at least one refusal case.</li>
+<li>Run the commands one at a time. Stop on the first error so an earlier executable cannot be mistaken for the latest build.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking&quot;
+cmake -S labs/native/checked-integers -B build/checked-integers -G Ninja -DCMAKE_C_COMPILER=gcc
+cmake --build build/checked-integers --target checked-integers-fallback
+ctest --test-dir build/checked-integers -R &quot;^lesson[.]checked-integers[.]fallback$&quot; -V --no-tests=error
+</code></pre>
+<p>Expect one passing test and this line of program output.</p>
+<pre><code class="language-text">The manual guards accepted 192 and kept it after overflow.
+</code></pre>
+<p>To inspect the optional x86-64 GNU-syntax Assembly sample, first create the build directory with the commands above. Use an x86-64 GCC or Clang toolchain and LLVM's object reader.</p>
+<pre><code class="language-powershell">gcc -c labs/native/checked-integers/inspect_add_flags.S -o build/checked-integers/add-flags.o
+llvm-objdump -d build/checked-integers/add-flags.o
+</code></pre>
+<p>Look for the addition and both flag instructions. The object is for inspection. Leave it unlinked.</p>
+<h2>Try a change</h2>
+<p>Before assembling the optional object, predict the encoded <code>add</code> and two flag-observation instructions. Think through what would change in the flags if the input register held <code>0xffffffff</code> before adding one.</p>
+<h2>If a result differs</h2>
+<p>If a guard itself causes division by zero, inspect the short-circuit <code>&amp;&amp;</code> condition. If the disassembler shows no such section, verify that it read the newly assembled x86-64 object.</p>
+<h2>Read the C language reference</h2>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf#page=326">WG14 N3220, section 7.20.1 on checked integer operations</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="47-publish-a-complete-record-size.html">Previous: Publish a complete record size</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,100 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-php/lessons/10-release-a-request-after-an-error.html
+
+PURPOSE:
+Release a request after an error
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Release a request after an error | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Release a request after an error</h1>
+<p>Errors leave a normal code path. Write down which facts are ready to publish, which actions are still open and where temporary resources are released.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Small PHP example</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>try</code></td>
+<td><code>try { process(); }</code></td>
+<td>Starts a protected block. Follow it with a catch, finally, or both.</td>
+</tr>
+<tr>
+<td><code>throw</code></td>
+<td><code>throw new InvalidArgumentException("negative");</code></td>
+<td>Raises an exception carrying information about the failure.</td>
+</tr>
+<tr>
+<td><code>catch</code></td>
+<td><code>catch (InvalidArgumentException $e) { echo $e-&gt;getMessage(); }</code></td>
+<td>Handles the specified failure type.</td>
+</tr>
+<tr>
+<td><code>finally</code></td>
+<td><code>finally { echo "checked"; }</code></td>
+<td>Runs when leaving the try and catch sequence in its normal language control flow.</td>
+</tr>
+<tr>
+<td><code>exit</code></td>
+<td><code>exit(2);</code></td>
+<td>Ends a PHP command-line program with status 2. Place this at the command boundary.</td>
+</tr>
+<tr>
+<td><code>die</code></td>
+<td><code>die("invalid input");</code></td>
+<td>Another spelling of exit. A string is printed and the default exit status remains zero. Choose a numeric failure code in a CLI when callers need it.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-php">&lt;?php
+try {
+    $cents = -1;
+    if ($cents &lt; 0) {
+        throw new InvalidArgumentException(&quot;negative&quot;);
+    }
+    echo &quot;saved\n&quot;;
+} catch (InvalidArgumentException $error) {
+    echo $error-&gt;getMessage(), &quot;\n&quot;;
+} finally {
+    echo &quot;checked\n&quot;;
+}
+</code></pre>
+<p>Expect <code>negative</code> followed by <code>checked</code>. Restore a nonnegative amount and expect <code>saved</code> followed by <code>checked</code>. Each path reports the same final observation.</p>
+<pre><code class="language-c">/* The function returns its status to the caller after normal cleanup. */
+int status = check_amount(cents);
+if (status == 0) status = save_amount(cents);
+release_request();
+return status;
+</code></pre>
+<pre><code class="language-text">CHECK the amount
+IF the amount is valid THEN try to save it
+RELEASE the request in either path
+RETURN the status
+</code></pre>
+<p>The C example uses project-specific helper names as placeholders. In a Umicom Bank or Trader CLI, return a failure status from the command boundary and keep native request handling callable. Test cleanup on a refused sample and on a saved sample. In PHP, a call to <code>exit</code> is a different control operation from returning or throwing. Check command termination rules before using it in reusable code. <a href="https://www.php.net/manual/en/language.exceptions.php">PHP exceptions</a> · <a href="https://www.php.net/manual/en/function.exit.php">PHP exit</a></p>
+<h2>Run the examples</h2>
+<ol>
+<li>Save the PHP example as <code>practice.php</code>. Keep the opening PHP tag. In a terminal with PHP available, run <code>php practice.php</code> and compare the output with the expected result above.</li>
+<li>Open the C23 lab linked below and save it as <code>main.c</code>. From a terminal with GCC, run <code>gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o native-keywords.exe</code>. In PowerShell run <code>.\native-keywords.exe</code> and find the <code>cleanup</code> row.</li>
+<li>If the shell cannot find a compiler or PHP, start with the pseudocode and compare your predicted result with the examples.</li>
+</ol>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="09-choose-between-named-implementations.html">Previous lesson · Choose between named implementations</a> · <a href="11-stream-values-and-read-source-markers.html">Next lesson · Stream values and read source markers</a> · <a href="../../../lessons/04-web/learning-php/10-release-a-request-after-an-error.md">Markdown edition</a> · <a href="../../../labs/native/php-keyword-comparison/main.c">Complete C23 lab</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -44,6 +44,26 @@ After a successful practice build, change a copied source input and run the iden
 
 The regression fixtures perform controlled source, image and receipt mutations in test-owned storage. Do not perform this exercise on your only working tree or an important disk image.
 
+## Choose evidence for a guest boot
+
+Read the two practice test lists below. Each name is one registered check.
+
+~~~text
+List A
+kernel.qualification.identity
+
+List B
+kernel.qualification.identity
+kernel.build.current
+kernel.riscv64.boot
+~~~
+
+On paper, mark which list includes a guest boot. Write down the two test results you would keep to document a boot of the current image.
+
+List B includes the guest test. The build fixture prepares the current image and the guest test observes its boot. If you qualify a boot, save the results of both checks with the build identity from that run.
+
+List A includes a build identity check. A broad test request can find that check even when the emulator test is absent. A list tells you which checks are registered. Read each test result to learn what ran and whether it passed.
+
 ## Recovery
 If identity verification fails, preserve the receipt and compare its listed inputs with current files. A missing header, edited source and corrupted receipt are different causes. Rebuild only after resolving the mismatch; do not hand-edit hashes to make verification succeed.
 

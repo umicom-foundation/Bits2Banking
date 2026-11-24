@@ -1,0 +1,152 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/rust-keyword-reference/lessons/03-define-data-and-share-modules.html
+
+PURPOSE:
+  Teach the selected strict words in the Rust 2024 edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Define data and share modules | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Define data and share modules</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="02-make-a-decision-and-repeat.html">Previous lesson</a> · <a rel="next" href="04-link-types-and-ownership.html">Next lesson</a></nav>
+<h2>Give related data and code a home</h2>
+<p>A practice event has five seats. A group has reserved three. The program records the reservation, checks the remaining capacity and prints the result. A module groups related names. A crate is the compilation unit that contains the module tree. The single source file in this example is enough to build one program crate.</p>
+<pre><code class="language-rust">fn seat_limit() -&gt; u32 {
+    5
+}
+
+mod seating {
+    pub type SeatCount = u32;
+
+    pub struct Group {
+        pub reserved: SeatCount,
+    }
+
+    pub enum Booking {
+        SpaceLeft(SeatCount),
+        Full,
+    }
+
+    pub mod counter {
+        use crate::seat_limit;
+        use super::{Booking, Group, SeatCount};
+
+        fn remaining(group: &amp;Group) -&gt; SeatCount {
+            let limit = seat_limit();
+            if group.reserved &gt;= limit {
+                0
+            } else {
+                limit - group.reserved
+            }
+        }
+
+        pub fn check(group: &amp;Group) -&gt; Booking {
+            match self::remaining(group) {
+                0 =&gt; Booking::Full,
+                count =&gt; Booking::SpaceLeft(count),
+            }
+        }
+    }
+}
+
+use crate::seating::{Booking, Group, counter};
+
+fn main() {
+    let group = Group { reserved: 3 };
+    match counter::check(&amp;group) {
+        Booking::SpaceLeft(count) =&gt; println!(&quot;{count} seats left&quot;),
+        Booking::Full =&gt; println!(&quot;Full&quot;),
+    }
+}
+</code></pre>
+<h2>Match each word to its job</h2>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Example</th>
+<th>What it tells Rust</th>
+</tr>
+</thead>
+<tbody>
+<tr id="kw-crate">
+<td><code>crate</code></td>
+<td><code>use crate::seat_limit;</code></td>
+<td>Start a path at the root of this crate. Here it locates the function above the modules.</td>
+</tr>
+<tr id="kw-enum">
+<td><code>enum</code></td>
+<td><code>pub enum Booking { SpaceLeft(SeatCount), Full }</code></td>
+<td>Define one type with several named possibilities. <code>Full</code> stands alone and <code>SpaceLeft</code> carries a count.</td>
+</tr>
+<tr id="kw-mod">
+<td><code>mod</code></td>
+<td><code>mod seating { /* items */ }</code></td>
+<td>Put the items inside a module named <code>seating</code>.</td>
+</tr>
+<tr id="kw-pub">
+<td><code>pub</code></td>
+<td><code>pub fn check(group: &amp;Group) -&gt; Booking</code></td>
+<td>Make this function available to callers that can reach the enclosing module. Use <code>pub(crate)</code> to limit visibility to the current crate.</td>
+</tr>
+<tr id="kw-self">
+<td><code>self</code></td>
+<td><code>self::remaining(group)</code></td>
+<td>Start the path in the current module. Here <code>self</code> refers to <code>counter</code>. In a method, the same spelling can refer to the value receiving the call.</td>
+</tr>
+<tr id="kw-struct">
+<td><code>struct</code></td>
+<td><code>pub struct Group { pub reserved: SeatCount }</code></td>
+<td>Define a type with a named field. This field stores the number of reserved seats.</td>
+</tr>
+<tr id="kw-super">
+<td><code>super</code></td>
+<td><code>use super::{Booking, Group, SeatCount};</code></td>
+<td>Start a path one module up. From <code>counter</code> that means <code>seating</code>.</td>
+</tr>
+<tr id="kw-type">
+<td><code>type</code></td>
+<td><code>pub type SeatCount = u32;</code></td>
+<td>Give the existing type <code>u32</code> another name for this purpose.</td>
+</tr>
+<tr id="kw-use">
+<td><code>use</code></td>
+<td><code>use crate::seating::{Booking, Group, counter};</code></td>
+<td>Bring these names into the current scope so they can be written without the full path.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>::</code> separator connects the pieces of a path. The braces in a <code>use</code> line let several names share the same starting path. Passing <code>&amp;group</code> gives <code>check</code> a shared reference to the group. The ownership chapter explains the reference in more detail. <a href="https://doc.rust-lang.org/reference/keywords.html#strict-keywords">Rust Reference, strict keywords</a> · <a href="https://doc.rust-lang.org/reference/paths.html">Rust Reference, paths</a> · <a href="https://doc.rust-lang.org/reference/items/modules.html">Rust Reference, modules</a></p>
+<h2>Predict a change and run it</h2>
+<ol>
+<li>Save the program as <code>seating.rs</code> in a practice folder. Check <code>rustc --version</code> in PowerShell and use a compiler that supports Rust 2024.</li>
+<li>Compile with <code>rustc --edition=2024 seating.rs -o seating.exe</code>. After compilation succeeds, run <code>.\seating.exe</code> and expect <code>2 seats left</code>.</li>
+<li>Set <code>reserved</code> to <code>5</code>, compile and run again. Expect <code>Full</code>. If a path fails to resolve, start at its first piece and trace it from the crate root, current module or parent module.</li>
+</ol>
+<h2>Compare with C and Umicom Framework</h2>
+<p>C groups data in a <code>struct</code> and uses <code>typedef</code> to give a type another name. Umicom Framework exposes named status values with the C enum <code>UmiStatus</code> in <code>umicom/base/status.h</code>. The seat example's Rust enum also keeps a count inside its <code>SpaceLeft</code> case. To represent that shape in C, a record can hold a status field and a count field, with a documented rule for when callers should read the count.</p>
+<p><a href="../../../lessons/03-native-code/rust-keyword-reference/03-define-data-and-share-modules.md">Markdown edition</a></p>
+  </article></main>
+</body>
+</html>

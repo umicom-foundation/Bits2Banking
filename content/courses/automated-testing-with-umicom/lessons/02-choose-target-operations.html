@@ -1,0 +1,78 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/02-choose-target-operations.html
+
+PURPOSE:
+Choose target operations before dispatch
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Choose target operations before dispatch | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Choose target operations before dispatch</h1>
+<p>An <strong>adapter</strong> connects a test runner to one kind of fixture. A desktop adapter and a device adapter can implement different operations. The runner checks the declared contract before requesting any work.</p>
+<h2>Read the mask one bit at a time</h2>
+<p>A bit mask stores multiple yes-or-no settings in one integer. In Framework’s test target header, the <code>UmiUatOperation</code> values are separate bits. The owner’s allowed mask and the adapter’s supported mask answer different questions.</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Question it answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protocol</td>
+<td>Do the request and adapter use the required contract version?</td>
+</tr>
+<tr>
+<td>Binding</td>
+<td>Do the target, session and platform identify the same fixture?</td>
+</tr>
+<tr>
+<td>Permission</td>
+<td>Has the owner allowed the operation?</td>
+</tr>
+<tr>
+<td>Capability</td>
+<td>Does the selected adapter implement that operation?</td>
+</tr>
+<tr>
+<td>Plan</td>
+<td>Are all workflow rows valid together?</td>
+</tr>
+</tbody>
+</table>
+<p>A capability can exist while the owner has excluded it from a given fixture. A permitted capability can still be unavailable in an adapter. Check both facts.</p>
+<pre><code class="language-c">const uint32_t allowed = UMI_UAT_UI_OBSERVE | UMI_UAT_WORKFLOW;
+const uint32_t supported = UMI_UAT_UI_OBSERVE;
+const bool agrees_on_workflow = (allowed &amp; supported &amp; UMI_UAT_WORKFLOW) != 0U;
+</code></pre>
+<p>Both <code>&amp;</code> and <code>|</code> operate on integer bits. Here <code>agrees_on_workflow</code> is false because the support mask excludes the workflow operation.</p>
+<pre><code class="language-asm"># An x86 test sets flags from the masked value without storing the result.
+testl $4, %eax
+</code></pre>
+<p>The bit value 4 models the workflow flag at bit position two. In actual C source, use the named Framework constant so the expression stays tied to the header.</p>
+<h2>Inspect the callback-free preview</h2>
+<p>Open <code>include/umicom/testing/uat_target.h</code> in Umicom Framework. Find <code>UmiUatCheckTargetAdmission</code> and <code>UmiUatTargetAdmission</code>. The latter stores the first blocking gate. When an operation row blocks the plan, it stores the row’s zero-based index and its observed operation. Other gates use <code>SIZE_MAX</code> as the absent row marker.</p>
+<ol>
+<li>Compare the request protocol to <code>UMI_UAT_TARGET_PROTOCOL</code>.</li>
+<li>For a workflow refusal, identify the row number in the plan. Index zero means the first row.</li>
+<li>Change the adapter's supported mask in an in-memory exercise and predict the new outcome before you rerun it.</li>
+<li>Check that the fixture operation count remains zero when you only request the preview.</li>
+</ol>
+<p>The preview tells you about the declared plan and adapter contract. A later test can collect environment readiness and execution results. Keep those records in separate columns so a successful preview does not become a passing test result.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="01-write-the-expected-result.html">Previous lesson · Write the expected result</a> · <a href="03-check-a-workflow-and-cleanup.html">Next lesson · Check a workflow and its cleanup</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/02-choose-target-operations.md">Markdown edition</a> · <a href="../../../labs/native/automated-testing-preview/main.c">Native C23 lab source</a> · <a href="../../../labs/native/automated-testing-preview/CMakeLists.txt">SDK build description</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

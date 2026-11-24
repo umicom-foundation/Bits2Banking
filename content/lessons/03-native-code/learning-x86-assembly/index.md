@@ -1,3 +1,5 @@
+![Umicom](../../../assets/branding/umicom-wordmark.svg) · [Umicom icon](../../../assets/branding/umicom-icon.svg) · [Windows icon](../../../assets/branding/umicom.ico)
+
 # Learning x86 Assembly
 
 Trace registers and a small x86-64 function before attempting platform-specific programs.
@@ -29,3 +31,13 @@ A C function call and an Assembly function must agree on where arguments and res
 
 - [Follow arguments through an Assembly function](04-follow-arguments-through-a-function.md)
 
+
+## NASM data and linkage
+
+Create a small practice record, inspect its byte layout, then follow a reference the assembler leaves for the linker. These five lessons cover NASM’s data pseudo-instructions, two position expressions and the directives used to describe the example sections and symbols. You can follow the byte traces with pencil and paper.
+
+1. [Write initialized data in NASM](05-write-initialized-data.md)
+2. [Reserve storage in NASM](06-reserve-storage.md)
+3. [Count and repeat bytes in NASM](07-count-and-repeat-bytes.md)
+4. [Include a known byte fixture in NASM](08-include-a-known-byte-fixture.md)
+5. [Name sections and link symbols in NASM](09-name-sections-and-link-symbols.md)

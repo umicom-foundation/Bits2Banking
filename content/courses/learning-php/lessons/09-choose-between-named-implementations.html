@@ -1,0 +1,105 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-php/lessons/09-choose-between-named-implementations.html
+
+PURPOSE:
+Choose between named implementations
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Choose between named implementations | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Choose between named implementations</h1>
+<p>Different pieces of a PHP program can supply the same named method. The program needs an explicit rule for choosing a method and assembling its own code.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Small PHP example</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>trait</code></td>
+<td><code>trait StableLabel { public function label(): string { return "stable"; } }</code></td>
+<td>Supplies members that another declaration can reuse.</td>
+</tr>
+<tr>
+<td><code>insteadof</code></td>
+<td><code>use StableLabel, DraftLabel { StableLabel::label insteadof DraftLabel; }</code></td>
+<td>Resolves one collision between two methods with the same name.</td>
+</tr>
+<tr>
+<td><code>enum</code></td>
+<td><code>enum State { case Ready; case Waiting; }</code></td>
+<td>Defines a closed set of cases. This PHP 8.1 contextual form is listed in the parser-token table.</td>
+</tr>
+<tr>
+<td><code>include</code></td>
+<td><code>include __DIR__ . "/labels.php";</code></td>
+<td>Loads a known local program file. A failed inclusion reports a warning.</td>
+</tr>
+<tr>
+<td><code>include_once</code></td>
+<td><code>include_once __DIR__ . "/labels.php";</code></td>
+<td>Loads the known file at most once during an execution.</td>
+</tr>
+<tr>
+<td><code>require</code></td>
+<td><code>require __DIR__ . "/labels.php";</code></td>
+<td>Loads a file required to proceed. A missing file produces an error.</td>
+</tr>
+<tr>
+<td><code>require_once</code></td>
+<td><code>require_once __DIR__ . "/labels.php";</code></td>
+<td>Requires the file while avoiding another inclusion of the same included file.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-php">&lt;?php
+trait StableLabel {
+    public function label(): string { return &quot;stable&quot;; }
+}
+trait DraftLabel {
+    public function label(): string { return &quot;draft&quot;; }
+}
+final class Report {
+    use StableLabel, DraftLabel {
+        StableLabel::label insteadof DraftLabel;
+        DraftLabel::label as draftLabel;
+    }
+}
+$report = new Report();
+echo $report-&gt;label(), &quot;/&quot;, $report-&gt;draftLabel(), &quot;\n&quot;;
+</code></pre>
+<p>Expect <code>stable/draft</code>. Swap the selected trait and alias the other method. If the two trait methods still collide, check that the <code>insteadof</code> clause names the exact same method on both traits.</p>
+<pre><code class="language-c">/* A closed choice can select one already compiled implementation. */
+enum LabelChoice { label_stable, label_draft };
+const char *text = choice == label_stable ? &quot;stable&quot; : &quot;draft&quot;;
+</code></pre>
+<pre><code class="language-text">REGISTER both known label providers
+SET the default provider to stable
+CALL the selected provider
+</code></pre>
+<p>The C fragment assumes <code>choice</code> holds an admitted <code>enum LabelChoice</code>. PHP includes execute source, so keep the examples' filenames fixed and reviewed. For a native Umicom WebServer application, select a compiled module through its declared route or handler contract. PHP includes and C headers serve different jobs. <a href="https://www.php.net/manual/en/language.oop5.traits.php">PHP traits</a> · <a href="https://www.php.net/manual/en/language.enumerations.php">PHP enumerations</a> · <a href="https://www.php.net/manual/en/function.include.php">PHP include</a></p>
+<h2>Run the examples</h2>
+<ol>
+<li>Save the PHP example as <code>practice.php</code>. Keep the opening PHP tag. In a terminal with PHP available, run <code>php practice.php</code> and compare the output with the expected result above.</li>
+<li>Open the C23 lab linked below and save it as <code>main.c</code>. From a terminal with GCC, run <code>gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o native-keywords.exe</code>. In PowerShell run <code>.\native-keywords.exe</code> and find the <code>composition</code> row.</li>
+<li>If the shell cannot find a compiler or PHP, start with the pseudocode and compare your predicted result with the examples.</li>
+</ol>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="08-describe-a-shared-object-operation.html">Previous lesson · Describe a shared object operation</a> · <a href="10-release-a-request-after-an-error.html">Next lesson · Release a request after an error</a> · <a href="../../../lessons/04-web/learning-php/09-choose-between-named-implementations.md">Markdown edition</a> · <a href="../../../labs/native/php-keyword-comparison/main.c">Complete C23 lab</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

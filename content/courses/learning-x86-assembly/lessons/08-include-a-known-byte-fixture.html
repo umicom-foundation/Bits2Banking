@@ -1,0 +1,88 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-x86-assembly/lessons/08-include-a-known-byte-fixture.html
+
+PURPOSE:
+  Teach a beginner to include a known byte fixture in NASM using object-only exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Include a known byte fixture in NASM | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Include a known byte fixture in NASM</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="07-count-and-repeat-bytes.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="09-name-sections-and-link-symbols.html">Next lesson</a> · <a href="../../../lessons/03-native-code/learning-x86-assembly/08-include-a-known-byte-fixture.md">Markdown edition</a></nav>
+<h2>Include three known bytes</h2>
+<p>A record can contain a small block that is kept in a separate file. NASM's <code>incbin</code> copies bytes into the assembly output at the current position. It does not parse them as instructions or change their encoding. In this practice record, one marker byte comes first, then the file contents, then the copied length.</p>
+<p>Prepare a fresh practice folder. Run these PowerShell statements from that folder to create a three-byte input.</p>
+<pre><code class="language-powershell">$path = Join-Path (Get-Location) 'practice-note.bin'
+if (Test-Path -LiteralPath $path) { throw 'Choose a fresh practice folder.' }
+[IO.File]::WriteAllBytes($path, [byte[]](0x31, 0x00, 0x32))
+</code></pre>
+<p>The file contains one digit byte, one zero byte, and another digit byte. Its size is three, even though the zero byte does not display as an ordinary character.</p>
+<pre><code class="language-nasm">section .rodata
+    db 0xa5
+included_start:
+    incbin &quot;practice-note.bin&quot;
+included_length equ $ - included_start
+    db included_length
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Spelling</th>
+<th>Example</th>
+<th>What it tells the assembler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>incbin</code></td>
+<td><code>incbin "practice-note.bin"</code></td>
+<td>Copy the binary file's bytes into the current assembly section.</td>
+</tr>
+<tr>
+<td><code>incbin</code> with two numbers</td>
+<td><code>incbin "practice-note.bin", 1, 2</code></td>
+<td>Start one byte into this specific input and copy two bytes. The output for this version would contain <code>00 32</code> at the labels.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://www.nasm.us/doc/nasm03.html#section-3.2.3">NASM manual, including external binary files</a></p>
+<h2>Inspect the object</h2>
+<ol>
+<li>Save the assembly as <code>include-note.asm</code> next to the input. Run <code>nasm -f elf64 include-note.asm -o include-note.o</code> from the practice folder.</li>
+<li>Run <code>llvm-objdump -s -j .rodata include-note.o</code>. Expect the five bytes <code>a5 31 00 32 03</code>.</li>
+<li>Add the offset and length shown in the table. The new output should be <code>a5 00 32 02</code>. If the file cannot be found, check the current practice folder and the source name before retrying.</li>
+</ol>
+<h2>Compare the same bytes with Clang</h2>
+<pre><code class="language-asm">.section .rodata,&quot;a&quot;,@progbits
+    .byte 0xa5
+included_start:
+    .incbin &quot;practice-note.bin&quot;
+.equ included_length, . - included_start
+    .byte included_length
+</code></pre>
+<p>Save as <code>include-note.s</code>. From the same practice folder run <code>clang --target=x86_64-unknown-linux-gnu -c include-note.s -o include-note-clang.o</code>. The same section inspection now uses the Clang object.</p>
+<p>For a real project, make the binary input part of the build's dependency list. Rebuilding the object after the input changes then becomes part of the ordinary build workflow.</p>
+  </article></main>
+</body>
+</html>

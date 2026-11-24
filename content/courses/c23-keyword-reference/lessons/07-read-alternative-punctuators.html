@@ -1,0 +1,124 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html
+
+PURPOSE:
+  Teach every alternate punctuation token in C using short independent examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Read alternative C punctuators | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Read alternative C punctuators</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="06-read-optional-and-older-forms.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="../../../lessons/03-native-code/c23-keyword-reference/07-read-alternative-punctuators.md">Markdown edition</a></nav>
+<p>A compiler reads your program in pieces called <strong>tokens</strong>. A punctuator is a token such as an opening brace or a bracket. C has alternate spellings for six punctuators. Some documentation calls them digraphs. Each spelling must stay together without a space.</p>
+<table>
+<thead>
+<tr>
+<th>Alternate</th>
+<th>Usual</th>
+<th>Where the example uses it</th>
+</tr>
+</thead>
+<tbody>
+<tr id="punct-open-brace">
+<td><code>&lt;%</code></td>
+<td><code>{</code></td>
+<td>Start a block or a list of initial values.</td>
+</tr>
+<tr id="punct-close-brace">
+<td><code>%&gt;</code></td>
+<td><code>}</code></td>
+<td>End the block or list.</td>
+</tr>
+<tr id="punct-open-bracket">
+<td><code>&lt;:</code></td>
+<td><code>[</code></td>
+<td>Begin an array size or index.</td>
+</tr>
+<tr id="punct-close-bracket">
+<td><code>:&gt;</code></td>
+<td><code>]</code></td>
+<td>End the size or index.</td>
+</tr>
+<tr id="punct-hash">
+<td><code>%:</code></td>
+<td><code>#</code></td>
+<td>Start a preprocessor directive or turn a macro argument into text.</td>
+</tr>
+<tr id="punct-double-hash">
+<td><code>%:%:</code></td>
+<td><code>##</code></td>
+<td>Join two tokens inside a macro.</td>
+</tr>
+</tbody>
+</table>
+<h2>Trace a short block</h2>
+<p>Save this first example as <code>brace-blocks.c</code>. Follow the variable named <code>checks</code> on paper.</p>
+<pre><code class="language-c">int main(void)
+&lt;%
+    int checks = 4;
+    if (checks &lt; 5)
+    &lt;%
+        checks = checks + 3;
+    %&gt;
+    return checks;
+%&gt;
+</code></pre>
+<p>Copy these steps into a notebook.</p>
+<pre><code class="language-text">Set checks to 4.
+If checks is less than 5:
+    Add 3 to checks.
+Return checks.
+</code></pre>
+<p>The final value is 7. In the source, the plain <code>&lt;</code> in the condition compares numbers. The following two characters <code>&lt;%</code> elsewhere in the source open a block. The next character helps the compiler identify the token.</p>
+<p>If a supported Umicom C interpreter is already on your path, use <code>umicom-c interpret brace-blocks.c</code>. The program should return 7. To practise using only the hosted C23 compiler, keep this example and the following ones in separate files, then run <code>gcc -std=c23 -Werror -fsyntax-only brace-blocks.c</code> or the same command with <code>clang</code>. A successful syntax check exits with status zero. It creates no executable.</p>
+<h2>Read an array with alternate brackets</h2>
+<p>Save this example as <code>three-values.c</code>.</p>
+<pre><code class="language-c">int samples&lt;:3:&gt; = &lt;% 3, 4, 5 %&gt;;
+static_assert(sizeof samples / sizeof samples&lt;:0:&gt; == 3U);
+</code></pre>
+<p>The declaration holds three integers. The first is numbered zero. The assertion divides the full array's size by the size of its first element and requires the answer to be three. Run the hosted C23 syntax check for this file, then try changing the asserted count to four. The assertion should fail at compile time. Restore three before the next step.</p>
+<h2>Follow the preprocessor</h2>
+<p>The <strong>preprocessor</strong> works on tokens before the compiler checks declarations and statements. A macro is a named replacement rule. The first macro below puts two tokens together to form one name. The second keeps the argument's spelling in a quoted string.</p>
+<p>Save the example as <code>what-the-preprocessor-sees.c</code>.</p>
+<pre><code class="language-c">%:define JOIN_NAMES(left, right) left %:%: right
+%:define SPELLING(token) %:token
+enum { sample_3 = 11 };
+
+static_assert(JOIN_NAMES(sample_, 3) == 11);
+static_assert(sizeof SPELLING(&lt;:) == 3U);
+static_assert(sizeof SPELLING([) == 2U);
+</code></pre>
+<p>Use <code>gcc -std=c23 -E -P what-the-preprocessor-sees.c</code> or replace <code>gcc</code> with <code>clang</code>. Look for <code>sample_3</code> in the first assertion. The next two assertions see <code>"&lt;:"</code> and <code>"["</code>. Each string also contains a terminating zero, so their sizes are three and two. The two spellings act like the same bracket during parsing, and the preprocessor can show which spelling you entered.</p>
+<h2>Diagnose a split token</h2>
+<p>Save this example separately as <code>separated-punctuators.c</code>. A hosted C23 compiler should refuse it.</p>
+<pre><code class="language-c">int main(void)
+&lt; %
+    return 7;
+% &gt;
+</code></pre>
+<p>The spaces split the block markers into separate tokens. Remove the spaces from the marked pairs, then run the syntax check again. If a diagnostic points to the first symbol, compare the spelling with <code>brace-blocks.c</code> one character at a time.</p>
+<p>The direct Umicom C source interpreter uses the brace pair in this lesson. Use a hosted C23 compiler for the array and preprocessing exercises. In Umicom Studio IDE, these examples also make a useful lexer exercise. A lexer recognises the token and tracks where the original characters appeared. A diagnostic can then highlight the correct source spelling.</p>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf#page=82">WG14 working draft N3220, section 6.4.6</a></p>
+    <p><a href="../../cpp20-keyword-reference/lessons/08-alternative-operator-tokens.html">Continue with the C++20 alternate token comparison</a></p>
+  </article></main>
+</body>
+</html>

@@ -15,7 +15,10 @@ MIT
 -->
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Register a route and its context | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
 <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
-</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-preserve-output-on-small-buffers.html">Previous lesson</a> · <a rel="next" href="15-handle-short-transfers.html">Next lesson</a></nav>
+</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><!-- Keep the previous offline artwork reference for review. The existing header now selects the approved dark wordmark directly, preserving the logo's dimensions and alternative text.
+<img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom">
+-->
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="13-preserve-output-on-small-buffers.html">Previous lesson</a> · <a rel="next" href="15-handle-short-transfers.html">Next lesson</a></nav>
 <h1>Register a route and its context</h1>
 <p>A route connects a request method and path to a C function. A context pointer lets that function use application state without relying on a global variable.</p>
 <h2>Prepare</h2>
@@ -29,6 +32,83 @@ MIT
 <li>Add the route to the service's router.</li>
 </ol>
 <p>The route stores a borrowed pointer to calls. The local counter remains alive until main finishes. The service is destroyed before main returns, so the borrower does not outlive that counter.</p>
+<h2 id="check-a-route-before-registering-it">Check a route before registering it</h2>
+<p>A descriptor is the C record that holds the route's method, path and callback. If you fill in that record yourself, the method and path can be ready while the callback is still missing. The router returns <code>UMI_STATUS_INVALID_ARGUMENT</code> and leaves the number of registered routes unchanged.</p>
+<ol>
+<li><p>Make a practice copy of the <code>labs/native/framework-http-contracts</code> folder. Keep the original lab for the earlier exercise.</p></li>
+<li><p>Save the following C23 program as <code>routes.c</code> in your copy. It checks registration in memory. The first attempt has no callback, so it only checks the result and the route count.</p>
+<pre><code class="language-c">/*-----------------------------------------------------------------------------
+ * Umicom Bits2Banking
+ * File: routes.c
+ *
+ * PURPOSE:
+ *   Check that a router accepts a descriptor only after its callback is assigned.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
+#include &quot;umicom/web/router.h&quot;
+
+#include &lt;stdio.h&gt;
+
+static UmiStatus Health(const UmiWebRequest *request, UmiWebResponse *response,
+    void *context)
+{
+    /* This handler needs no application state. */
+    (void)request;
+    (void)context;
+    return umi_web_response_set_text(response, 200, &quot;text/plain&quot;, &quot;ready&quot;);
+}
+
+static int CheckAdmission(UmiWebRouter *router)
+{
+    /* Omitted fields start at zero, so this route has no callback yet. */
+    UmiWebRoute route = {.method = UMI_HTTP_METHOD_GET, .pattern = &quot;/health&quot;};
+    const size_t before = umi_web_router_count(router);
+    const UmiStatus refused = umi_web_router_add(router, &amp;route);
+    if (refused != UMI_STATUS_INVALID_ARGUMENT || umi_web_router_count(router) != before) {
+        (void)fputs(&quot;Expected refusal with the same route count.\n&quot;, stderr);
+        return 1;
+    }
+    (void)printf(&quot;Incomplete route refused. Routes: %zu\n&quot;, before);
+
+    /* Complete the descriptor before asking the router to store its own copy. */
+    route.handler = Health;
+    if (umi_web_router_add(router, &amp;route) != UMI_STATUS_OK ||
+        umi_web_router_count(router) != before + 1U) {
+        (void)fputs(&quot;Expected one new route after assigning Health.\n&quot;, stderr);
+        return 1;
+    }
+    (void)printf(&quot;Completed route registered. Routes: %zu\n&quot;, umi_web_router_count(router));
+    return 0;
+}
+
+int main(void)
+{
+    /* main owns the router throughout the exercise and frees it in one place. */
+    UmiWebRouter *router = NULL;
+    if (umi_web_router_create(&amp;router) != UMI_STATUS_OK) {
+        (void)fputs(&quot;Could not create the router.\n&quot;, stderr);
+        return 1;
+    }
+    const int result = CheckAdmission(router);
+    umi_web_router_destroy(router);
+    return result;
+}</code></pre></li>
+<li><p>In your practice copy, build only the existing route target with a Framework SDK that includes the callback check. Use the same compiler and architecture as your SDK. Replace the example prefix with your own SDK location.</p>
+<pre><code class="language-powershell">cmake -S . -B build/route-admission -G Ninja -DCMAKE_PREFIX_PATH="C:/path/to/framework-sdk"
+cmake --build build/route-admission --target btb-http-routes
+&amp; "./build/route-admission/btb-http-routes.exe"</code></pre>
+<p>In Bash, use the same two CMake commands with your SDK path, then run <code>./build/route-admission/btb-http-routes</code>.</p></li>
+<li><p>Expect these two lines from an empty router.</p>
+<pre><code class="language-text">Incomplete route refused. Routes: 0
+Completed route registered. Routes: 1</code></pre></li>
+</ol>
+<p>The first count shows that the rejected descriptor used no slot. Assigning <code>Health</code> completes the record. The second count shows that the router stored one route. If the first check fails, verify which SDK the build found and use a version with the callback admission check. If CMake cannot find the package, point <code>CMAKE_PREFIX_PATH</code> at the SDK that provides the Framework web component.</p>
 <h2>Compare two requests</h2>
 <p>The first request targets /health. Expected: response status 200 and calls equal to one.</p>
 <p>The second targets /missing. Expected: response status 404 and calls still equal to one. The service handled a valid request, but it did not invoke the Health callback.</p>

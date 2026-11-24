@@ -1,3 +1,20 @@
+<!--
+Umicom Bits2Banking
+File: content/community/examples/notes-word-count/README.md
+
+PURPOSE:
+Help learners compile the word-count practice project from a source checkout.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+![Umicom](../../../assets/branding/umicom-wordmark.svg)
+
 # Notes word-count practice project
 
 This small C23 project counts words separated by ASCII whitespace. It is an independent teaching example. The console program and test share one implementation in a static library.

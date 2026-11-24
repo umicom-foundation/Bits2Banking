@@ -1,0 +1,72 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/45-separate-subtraction-from-a-debit-rule.html
+
+PURPOSE:
+Separate subtraction from a debit rule
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Separate subtraction from a debit rule | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Separate subtraction from a debit rule</h1>
+<p>You hold three practice tokens and someone asks for five. The number −2 is a valid result on paper. A policy can still forbid that transaction.</p>
+<h2>Choose a destination before interpreting the status</h2>
+<p>The mathematical operation is 3 minus 5. The checked macro accepts −2 in a signed <code>int</code>. It reports failure for the same numbers when the destination is <code>unsigned</code>. The macro still writes the wrapped unsigned value. The program checks it only to explain the language rule and never treats it as available tokens.</p>
+<h2>Apply the account rule explicitly</h2>
+<p>The practice account declines a negative requested debit and any amount above the balance. An exact debit of the whole balance succeeds with a result of zero. This domain rule belongs to the account and applies regardless of the machine integer limit. Real account records also need an explicit monetary unit and transaction policy.</p>
+<h2>Connect to Umicom</h2>
+<p>A banking interface can display “insufficient practice balance” after domain refusal and a different message after arithmetic refusal. Carry those outcomes through the Framework service. The lesson changes only local variables and connects to no banking system.</p>
+<h2>Trace the logic</h2>
+<pre><code class="language-text">IF debit IS NEGATIVE OR debit EXCEEDS balance
+    REFUSE THE PRACTICE DEBIT
+OTHERWISE
+    SUBTRACT debit FROM balance WITH A RANGE CHECK
+    SAVE ONLY A VALID RESULT
+</code></pre>
+<pre><code class="language-c">static bool reserve_units(int balance, int debit, int *remaining)
+{
+    /* This practice account does not permit overdrafts or negative debits. */
+    if (debit &lt; 0 || balance &lt; debit) return false;
+    int candidate;
+    if (ckd_sub(&amp;candidate, balance, debit)) return false;
+    *remaining = candidate;
+    return true;
+}
+</code></pre>
+<h2>Build and run one practice case</h2>
+<ol>
+<li>Open a PowerShell terminal with GCC, CMake and Ninja on the search path. To use Clang, select <code>clang</code> in the configure command and choose a separate build directory in all three commands. Check that the selected C compiler and its headers provide <code>&lt;stdckdint.h&gt;</code>. If that header is missing, the final lesson demonstrates <code>size_t</code> guards using only older headers.</li>
+<li>Open <code>labs/native/checked-integers/subtract.c</code>. Read the successful case and at least one refusal case.</li>
+<li>Run the commands one at a time. Stop on the first error so an earlier executable cannot be mistaken for the latest build.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking&quot;
+cmake -S labs/native/checked-integers -B build/checked-integers -G Ninja -DCMAKE_C_COMPILER=gcc
+cmake --build build/checked-integers --target checked-integers-subtract
+ctest --test-dir build/checked-integers -R &quot;^lesson[.]checked-integers[.]subtract$&quot; -V --no-tests=error
+</code></pre>
+<p>Expect one passing test and this line of program output.</p>
+<pre><code class="language-text">Signed difference: -2. The practice account refused the overdraft.
+</code></pre>
+<h2>Try a change</h2>
+<p>Add cases for a zero debit and a debit equal to the balance. Before running them, write down the correct post-operation balance and whether the call should succeed.</p>
+<h2>If a result differs</h2>
+<p>If a refused debit reports a huge positive balance, look for conversion to <code>unsigned</code> before the policy check or an output written from the failed macro result.</p>
+<h2>Read the C language reference</h2>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf#page=326">WG14 N3220, section 7.20.1 on checked integer operations</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="44-add-with-a-checked-result.html">Previous: Add with a checked result</a> · <a href="46-check-block-counts-before-using-bytes.html">Next: Check block counts before using bytes</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,2 +1,26 @@
+<!--
+Umicom Bits2Banking
+File: content/community/examples/notes-word-count/index.html
+
+PURPOSE:
+Provide the canonical web source and beginner build guide for the Community C project.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Notes word-count source | Umicom Bits2Banking</title><link rel="stylesheet" href="../../community.css"></head><body><main><h1>Notes word-count source</h1><p>Copy the complete project from the repository, or save each file below and recreate its subfolders. Keep the original filenames. This independent C23 example needs GCC, CMake and Ninja; it does not need a Framework build.</p><ul><li><a href="CMakeLists.txt">CMakeLists.txt</a></li><li><a href="include/note_words.h">include/note_words.h</a></li><li><a href="src/note_words.c">src/note_words.c</a></li><li><a href="src/main.c">src/main.c</a></li><li><a href="tests/test_note_words.c">tests/test_note_words.c</a></li></ul><p><a href="../../handouts/10-build-and-test-a-small-project.html">Build and test the project, one step at a time</a></p></main></body></html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Notes word-count source | Umicom Bits2Banking</title><link rel="stylesheet" href="../../community.css"><link rel="stylesheet" href="../../../assets/branding/umicom-brand.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg"><link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico"></head><body><header><a href="../../handouts/index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom" width="170"></a><span>Bits2Banking · Community learning</span></header><main><h1>Notes word-count source</h1><p>Copy the complete project from the repository, or save each file below and recreate its subfolders. Keep the original filenames. This independent C23 example needs GCC, CMake and Ninja; it does not need a Framework build.</p><ul><li><a href="CMakeLists.txt">CMakeLists.txt</a></li><li><a href="include/note_words.h">include/note_words.h</a></li><li><a href="src/note_words.c">src/note_words.c</a></li><li><a href="src/main.c">src/main.c</a></li><li><a href="tests/test_note_words.c">tests/test_note_words.c</a></li></ul><p><a href="../../handouts/10-build-and-test-a-small-project.html">Build and test the project, one step at a time</a></p><section><h2>Build the copy in your practice folder</h2>
+<ol><li>Open PowerShell in the copied project folder. It should contain CMakeLists.txt and the include, src and tests directories.</li>
+<li>Make the UCRT64 tools available on the command search path. Run each command separately. Stop at the first nonzero exit code.</li></ol>
+<pre><code class="language-powershell">$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+cmake -S . -B build -G Ninja
+cmake --build build
+ctest --test-dir build --output-on-failure --no-tests=error
+.\build\notes-word-count.exe</code></pre>
+<p>CTest should show two passing tests. The program should print <code>Words: 4</code>. On Linux, use the same configure, build and test commands with GCC, CMake and Ninja. Run <code>./build/notes-word-count</code> from the copied practice folder.</p></section>
+<section><h2>Read the counting rule</h2><p>The C function borrows a string. Space, tab, carriage return, line feed, form feed and vertical tab mark word boundaries. A null pointer returns zero. The unit test exercises that rule and the console test verifies the displayed result.</p></section>
+</main></body></html>

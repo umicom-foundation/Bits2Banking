@@ -1,0 +1,74 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-cyber-security/lessons/24-inspect-an-enrollment-uri-without-disclosing-it.html
+
+PURPOSE:
+Inspect an enrollment URI without disclosing it
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inspect an enrollment URI without disclosing it | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Inspect an enrollment URI without disclosing it</h1>
+<p>During enrollment, an authenticator and the account service learn the same seed. An enrollment URI is a small text address that contains that seed and also tells the app which algorithm, number of digits and time period to use. Treat the entire URI as secret when using a real account.</p>
+<h2>Read regular fields without displaying the seed</h2>
+<p>The practice C example uses a published seed and fictitious labels. <code>UmiTotpBuildEnrollmentUri</code> writes the issuer, account label and settings into the output only when the whole address fits. A space becomes <code>%20</code> and the at sign becomes <code>%40</code>. These encodings protect the field boundaries. The result’s size counts bytes before the final zero terminator.</p>
+<p>A program can check whether expected labels and settings appear in the result without printing it. The class example verifies those fields and then clears the entire temporary array with Framework’s <code>umi_secret_clear</code>. The same application should keep the URI out of test logs, status reports and screenshots when enrolling a real account.</p>
+<h2>Prove that an insufficient output stays usable</h2>
+<ol>
+<li>Open <code>labs/framework/totp-practice/enrollment.c</code>. Find the short prior string <code>keep</code> and its saved length of four.</li>
+<li>Follow the course’s source checkout build steps and select <code>enrollment</code>. The first attempt deliberately provides too little room. The function should report capacity and preserve the string and length.</li>
+<li>Watch the ordinary attempt use a buffer large enough for the complete result. The test checks the actual count and clears the result before printing <code>The full URI fit and was cleared. The undersized output stayed intact.</code></li>
+</ol>
+<p>The address is only one stage of enrollment. A real local profile should remain pending until the first code and account binding have been checked. Apply this rule in Umicom Bank, Studio, or a WebServer-backed interface through the shared Framework services. The practice case creates no credential or account. <a href="https://www.rfc-editor.org/rfc/rfc4648.html#section-6">RFC 4648 Base32</a></p>
+<h2>Build from a Framework source checkout</h2>
+<p>This exercise can use the shared URI formatter independently of the Windows authenticator provider. Open PowerShell with GCC, CMake and Ninja available. Confirm the Framework and course folders match the paths in these commands. Run the commands separately and stop if a command fails.</p>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking&quot;
+cmake -S labs/framework/totp-practice -B build/totp-practice -G Ninja -DCMAKE_C_COMPILER=gcc -DUMICOM_FRAMEWORK_SOURCE=C:/umicom/Umicom-Applications/framework
+cmake --build build/totp-practice --target totp-practice-enrollment
+ctest --test-dir build/totp-practice -R &quot;^lesson[.]totp[.]enrollment$&quot; -V --no-tests=error
+</code></pre>
+<p>Expect one passing test. Use a separate directory for Clang. For an existing installed SDK, omit the source option, point <code>CMAKE_PREFIX_PATH</code> to that SDK, and configure a fresh build directory. The exercise requests the shared <code>security</code> component.</p>
+<h2>Read the C entry point</h2>
+<pre><code class="language-c">int main(void)
+{
+    /* Use a public fixture and exercise capacity with a visibly prior value. */
+    static const uint8_t seed[] = &quot;12345678901234567890&quot;;
+    char old[8] = &quot;keep&quot;;
+    size_t old_size = 4U;
+    if (UmiTotpBuildEnrollmentUri(&quot;Practice Library&quot;, &quot;student@example.invalid&quot;, UMI_TOTP_SHA1,
+        8U, seed, sizeof seed - 1U, old, sizeof old, &amp;old_size) != UMI_STATUS_CAPACITY_EXCEEDED ||
+        strcmp(old, &quot;keep&quot;) != 0 || old_size != 4U) return 1;
+
+    char uri[UMI_TOTP_ENROLLMENT_URI_CAPACITY] = {0};
+    size_t written = 0U;
+    const UmiStatus status = UmiTotpBuildEnrollmentUri(&quot;Practice Library&quot;, &quot;student@example.invalid&quot;,
+        UMI_TOTP_SHA1, 8U, seed, sizeof seed - 1U, uri, sizeof uri, &amp;written);
+    /* Inspect the expected label and policy without printing the shared secret. */
+    const bool complete = status == UMI_STATUS_OK &amp;&amp; written == strlen(uri) &amp;&amp;
+        strstr(uri, &quot;otpauth://totp/Practice%20Library:student%40example.invalid?&quot;) == uri &amp;&amp;
+        strstr(uri, &quot;&amp;issuer=Practice%20Library&amp;algorithm=SHA1&amp;digits=8&amp;period=30&quot;) != NULL;
+    umi_secret_clear(uri, sizeof uri);
+    if (!complete) return 2;
+    /* Check the whole buffer, including storage past the formatted result. */
+    for (size_t i = 0U; i &lt; sizeof uri; ++i) {
+        if (uri[i] != '\0') return 3;
+    }
+    puts(&quot;The full URI fit and was cleared. The undersized output stayed intact.&quot;);
+    return 0;
+}
+</code></pre>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="23-preserve-replay-state-after-provider-failure.html">Previous: Preserve replay state after provider failure</a> · <a href="../../../lessons/05-engineering/learning-cyber-security/24-inspect-an-enrollment-uri-without-disclosing-it.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

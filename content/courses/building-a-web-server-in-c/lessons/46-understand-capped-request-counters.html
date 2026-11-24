@@ -1,0 +1,125 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/46-understand-capped-request-counters.html
+
+PURPOSE:
+Understand capped request counters
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Understand capped request counters | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Understand capped request counters</h1>
+<p>Each request gives a web service something to count. Umicom Framework keeps a request total, two byte totals, and separate totals for selected HTTP response groups. These values can help you explain what a service has handled since counting began.</p>
+<table>
+<thead>
+<tr>
+<th>Counter</th>
+<th>What it adds for each recorded request</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>requests</code></td>
+<td>One request</td>
+</tr>
+<tr>
+<td><code>bytes_in</code> and <code>bytes_out</code></td>
+<td>The input and output sizes supplied by the caller</td>
+</tr>
+<tr>
+<td><code>responses_2xx</code></td>
+<td>One response for a status in the 200s, such as 200</td>
+</tr>
+<tr>
+<td><code>responses_4xx</code></td>
+<td>One response for a status in the 400s, such as 404</td>
+</tr>
+<tr>
+<td><code>responses_5xx</code></td>
+<td>One response for a server error status, such as 503</td>
+</tr>
+</tbody>
+</table>
+<p>A redirect such as 302 adds to the request and byte totals. The three listed response groups stay unchanged. In the Framework web service, the byte inputs come from the request and response body lengths. Other traffic, such as headers, needs its own measurement.</p>
+<h2>What happens at the largest value?</h2>
+<p>The Framework stores each total in a <code>uint64_t</code>. It holds whole numbers from zero through <code>UINT64_MAX</code>, or 18,446,744,073,709,551,615. A regular unsigned addition can wrap to a small number after the limit. On a dashboard, that could look like an old, busy service suddenly handled almost nothing.</p>
+<p>A <strong>saturating counter</strong> keeps the highest representable value once the running total reaches it. The service first works out how much room remains. It adds the amount when there is enough room. A larger amount sets the counter to its maximum. Each counter has its own available room.</p>
+<pre><code class="language-text">ROOM = MAXIMUM minus CURRENT
+IF AMOUNT exceeds ROOM
+    STORE MAXIMUM
+ELSE
+    STORE CURRENT plus AMOUNT
+</code></pre>
+<p>When a total shows <code>UINT64_MAX</code>, the service has counted at least that much since initialization. The number alone cannot tell you how much additional activity occurred after the cap. Other totals can keep increasing.</p>
+<h2>Try the boundary with C23</h2>
+<ol>
+<li>Make a practice folder and save the code below as <code>metrics-lesson.c</code>. It uses the current Framework metrics implementation. The large starting values are practice data so you can reach the boundary on the first call and try to pass it on later calls.</li>
+<li>Read the checks after each recorded response. Pay particular attention to the byte counts and supported response groups. The example uses an ordinary structure in memory.</li>
+<li>Use <code>umi_web_metrics_init</code> on the practice record again. That clears all six counters. The final call records the first request of a new counting period.</li>
+</ol>
+<pre><code class="language-c">#include &quot;umicom/web/metrics.h&quot;
+
+#include &lt;assert.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    UmiWebMetrics totals;
+    umi_web_metrics_init(&amp;totals);
+
+    /* Start near the limit so one small input reaches both boundaries. */
+    totals.requests = UINT64_MAX - UINT64_C(1);
+    totals.bytes_in = UINT64_MAX - UINT64_C(2);
+
+    umi_web_metrics_record(&amp;totals, 2U, 200, 4U);
+    assert(totals.requests == UINT64_MAX);
+    assert(totals.bytes_in == UINT64_MAX);
+    assert(totals.bytes_out == 4U);
+    assert(totals.responses_2xx == 1U);
+
+    /* A capped total stays put while another response group grows. */
+    umi_web_metrics_record(&amp;totals, 8U, 404, 5U);
+    umi_web_metrics_record(&amp;totals, 1U, 302, 1U);
+    assert(totals.requests == UINT64_MAX);
+    assert(totals.bytes_in == UINT64_MAX);
+    assert(totals.bytes_out == 10U);
+    assert(totals.responses_2xx == 1U);
+    assert(totals.responses_4xx == 1U);
+    assert(totals.responses_5xx == 0U);
+
+    /* Begin a new counting period and check all six starting values. */
+    umi_web_metrics_init(&amp;totals);
+    assert(totals.requests == 0U &amp;&amp; totals.bytes_in == 0U &amp;&amp; totals.bytes_out == 0U);
+    assert(totals.responses_2xx == 0U &amp;&amp; totals.responses_4xx == 0U &amp;&amp; totals.responses_5xx == 0U);
+
+    umi_web_metrics_record(&amp;totals, 3U, 503, 1U);
+    assert(totals.requests == 1U &amp;&amp; totals.bytes_in == 3U &amp;&amp; totals.bytes_out == 1U);
+    assert(totals.responses_5xx == 1U);
+
+    puts(&quot;Boundary and reset checks passed.&quot;);
+    return 0;
+}
+</code></pre>
+<p>Use PowerShell in the practice folder with a recent GCC on your command path. Set <code>$framework</code> to the folder containing the current Framework <code>include</code> and <code>src</code> folders. In this command, <code>-I</code> gives the compiler the header folder. The second C file supplies the metrics functions. Run the program after the build succeeds.</p>
+<pre><code class="language-powershell">$framework = 'C:/path/to/umicom-framework'
+gcc -std=c23 -Wall -Wextra -Werror -I &quot;$framework/include&quot; ./metrics-lesson.c &quot;$framework/src/web/metrics.c&quot; -o ./metrics-lesson.exe
+if ($LASTEXITCODE -eq 0) { ./metrics-lesson.exe }
+</code></pre>
+<p>Expect the line <code>Boundary and reset checks passed.</code> If the compiler cannot find <code>umicom/web/metrics.h</code>, check the Framework folder. If a counter reaches zero before the call that clears the record, compare the Framework source with the implementation that caps additions, and confirm you ran the new executable after a successful build.</p>
+<p>For a real service, keep the start of the counting period alongside the totals. Keep different periods separate when comparing activity. A zero just after initialization is the start of a new observation.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="45-read-response-status-and-body.html">Previous lesson · Read response status and body length</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/46-understand-capped-request-counters.md">Markdown edition</a> · <a rel="next" href="47-read-media-types-from-filename-extensions.html">Next lesson · Read media types from filename extensions</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

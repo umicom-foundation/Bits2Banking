@@ -1,0 +1,142 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/rust-keyword-reference/lessons/07-words-reserved-for-later.html
+
+PURPOSE:
+  Teach the selected reserved words in the Rust 2024 edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Recognise reserved words | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Recognise reserved words</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="06-words-that-depend-on-context.html">Previous lesson</a></nav>
+<h2>Why the compiler rejects some names</h2>
+<p>Rust keeps certain words available for possible changes to the language. In the 2024 edition they cannot appear as plain variable names, even if you have never seen one used in a program. The compiler can tell you this before any statements run.</p>
+<p>Use a descriptive name when writing new code. If you must keep an existing identifier for compatibility, a raw identifier starts with <code>r#</code>. The prefix changes how Rust reads the spelling. It is part of the source notation and is excluded from the identifier name. <a href="https://doc.rust-lang.org/reference/keywords.html#reserved-keywords">Rust Reference, reserved keywords</a> · <a href="https://doc.rust-lang.org/reference/identifiers.html#raw-identifiers">Rust Reference, raw identifiers</a></p>
+<h2>Find a plain name or keep the existing spelling</h2>
+<p>Each left-hand fragment is expected to be refused in the body of a Rust 2024 function. The middle column offers a clearer name for new code. The last column preserves an existing name.</p>
+<table>
+<thead>
+<tr>
+<th>Reserved word example</th>
+<th>New name example</th>
+<th>Compatibility example</th>
+</tr>
+</thead>
+<tbody>
+<tr id="kw-abstract">
+<td><code>let abstract = 1;</code></td>
+<td><code>let summary = 1;</code></td>
+<td><code>let r#abstract = 1;</code></td>
+</tr>
+<tr id="kw-become">
+<td><code>let become = 1;</code></td>
+<td><code>let next_state = 1;</code></td>
+<td><code>let r#become = 1;</code></td>
+</tr>
+<tr id="kw-box">
+<td><code>let box = 1;</code></td>
+<td><code>let package_label = 1;</code></td>
+<td><code>let r#box = 1;</code></td>
+</tr>
+<tr id="kw-do">
+<td><code>let do = 1;</code></td>
+<td><code>let action = 1;</code></td>
+<td><code>let r#do = 1;</code></td>
+</tr>
+<tr id="kw-final">
+<td><code>let final = 1;</code></td>
+<td><code>let last_total = 1;</code></td>
+<td><code>let r#final = 1;</code></td>
+</tr>
+<tr id="kw-gen">
+<td><code>let gen = 1;</code></td>
+<td><code>let generation = 1;</code></td>
+<td><code>let r#gen = 1;</code></td>
+</tr>
+<tr id="kw-macro">
+<td><code>let macro = 1;</code></td>
+<td><code>let template_name = 1;</code></td>
+<td><code>let r#macro = 1;</code></td>
+</tr>
+<tr id="kw-override">
+<td><code>let override = 1;</code></td>
+<td><code>let replacement = 1;</code></td>
+<td><code>let r#override = 1;</code></td>
+</tr>
+<tr id="kw-priv">
+<td><code>let priv = 1;</code></td>
+<td><code>let private_note = 1;</code></td>
+<td><code>let r#priv = 1;</code></td>
+</tr>
+<tr id="kw-try">
+<td><code>let try = 1;</code></td>
+<td><code>let attempt = 1;</code></td>
+<td><code>let r#try = 1;</code></td>
+</tr>
+<tr id="kw-typeof">
+<td><code>let typeof = 1;</code></td>
+<td><code>let type_label = 1;</code></td>
+<td><code>let r#typeof = 1;</code></td>
+</tr>
+<tr id="kw-unsized">
+<td><code>let unsized = 1;</code></td>
+<td><code>let variable_width = 1;</code></td>
+<td><code>let r#unsized = 1;</code></td>
+</tr>
+<tr id="kw-virtual">
+<td><code>let virtual = 1;</code></td>
+<td><code>let model_name = 1;</code></td>
+<td><code>let r#virtual = 1;</code></td>
+</tr>
+<tr id="kw-yield">
+<td><code>let yield = 1;</code></td>
+<td><code>let harvest = 1;</code></td>
+<td><code>let r#yield = 1;</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Check a name when you update an edition</h2>
+<p>The 2024 edition added <code>gen</code> to the reserved list. The following definition and its use both retain the old identifier. <a href="https://doc.rust-lang.org/edition-guide/rust-2024/gen-keyword.html">Rust 2024 Edition Guide</a></p>
+<pre><code class="language-rust">fn main() {
+    let r#gen = 4;
+    println!(&quot;{}&quot;, r#gen + 8);
+}
+</code></pre>
+<ol>
+<li>Save as <code>names.rs</code>. Run <code>rustc --edition=2024 names.rs -o names.exe</code>. Once compilation succeeds, run <code>.\names.exe</code> and expect <code>12</code>.</li>
+<li>Remove both <code>r#</code> prefixes and repeat the compile. Read the diagnostic about the identifier. Restore both prefixes or rename both occurrences to <code>generation</code> to recover.</li>
+<li>If you already have a project using the prior edition, review all renamed declarations and calls together so the same name is used at both ends.</li>
+</ol>
+<h2>Compare with a C entry</h2>
+<p>The spelling <code>gen</code> is usable as a local name in this Umicom C example. A translator needs the target language's keyword rules before it chooses how to write a name.</p>
+<pre><code class="language-c">int main(void) {
+    int gen = 4;
+    return gen + 8;
+}
+</code></pre>
+<p>Save as <code>names.c</code> and run <code>umicom-c interpret names.c</code>. Expect <code>Result: 12</code>.</p>
+<p><a href="../../../lessons/03-native-code/rust-keyword-reference/07-words-reserved-for-later.md">Markdown edition</a></p>
+  </article></main>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/programming-across-languages/lessons/08-pass-two-integers-through-the-c-abi.html
+
+PURPOSE:
+Pass two integers through the C ABI
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pass two integers through the C ABI | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Pass two integers through the C ABI</h1>
+<p>A <strong>calling convention</strong> tells separately compiled functions where to find their inputs and where to leave a result. A compiler and an assembler can build different files into the same program when they agree on these rules. The larger set of rules is called an <strong>application binary interface</strong>, or ABI.</p>
+<h2>Read one call from both sides</h2>
+<p>The C declaration describes a function that takes two signed 32-bit numbers and returns a signed 32-bit number. The function receives completed amounts in whole pennies.</p>
+<pre><code class="language-c">extern int32_t UmiLessonBalanceDelta(int32_t received, int32_t booked);
+</code></pre>
+<p>In the Windows x64 ABI, these first two integer values occupy the low parts of RCX and RDX. The result uses EAX, the low part of the return register. This leaf function makes no other call and leaves the stack pointer alone. <a href="https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention">Microsoft x64 calling convention</a></p>
+<pre><code class="language-asm">UmiLessonBalanceDelta:
+    movl %ecx, %eax
+    subl %edx, %eax
+    ret
+</code></pre>
+<p>The assembler uses source-first notation. The move copies <code>received</code> to EAX. The subtraction removes <code>booked</code> from that value. The return hands the result back to the C caller.</p>
+<pre><code class="language-text">ACCEPT received and booked as two signed integers
+IF their mathematical difference fits 32 bits
+    RETURN received minus booked
+OTHERWISE report refusal
+</code></pre>
+<p>The compiled lesson puts the range check in C. The assembly leaf runs after that check.</p>
+<h2>Build the native example</h2>
+<ol>
+<li>Open both lab sources linked below. Save them together in a practice folder as <code>main.c</code> and <code>delta_win64.S</code>.</li>
+<li>Use a Windows x64 terminal with a 64-bit MinGW GCC or Clang toolchain set up. Run this GCC command in the practice folder.</li>
+</ol>
+<pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Wpedantic main.c delta_win64.S -o signed-delta.exe
+.\signed-delta.exe
+</code></pre>
+<ol>
+<li>Expect <code>Verified 7 signed delta rows and an absent output.</code> The first rows cover a positive difference, a negative difference and zero.</li>
+<li>If the compiler reports an undefined <code>UmiLessonBalanceDelta</code>, check that both source filenames appear on the command line and that the name is spelled exactly as shown.</li>
+</ol>
+<p>The register handoff is useful when reading Kernel or Framework assembly with a C interface. Keep the prototype and its width beside the call site so a reader can check the inputs before working through the instructions.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="07-plan-a-first-umicom-change.html">Previous lesson · Plan a first Umicom change</a> · <a href="09-keep-a-signed-difference-in-range.html">Next lesson · Keep a signed difference in range</a> · <a href="../../../lessons/03-native-code/programming-across-languages/08-pass-two-integers-through-the-c-abi.md">Markdown edition</a> · <a href="../../../labs/native/shared-signed-delta/main.c">Check a signed difference in C23</a> · <a href="../../../labs/native/shared-signed-delta/delta_win64.S">Subtract two signed inputs in Windows x64 Assembly</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -230,3 +230,13 @@ Six connected lessons use one native laboratory to explain token pairs, element 
 1. [Copy metadata with explicit pointer ownership](42-copy-metadata-with-explicit-pointer-ownership.md)
 
 1. [Admit resource labels without trusting their contents](43-admit-resource-labels-without-trusting-content.md)
+
+## Checked integer arithmetic in C23
+
+Start with a single checked sum. Then distinguish arithmetic from policy, plan bytes with independent units and preserve a complete result after refusal.
+
+1. [Add with a checked result](44-add-with-a-checked-result.md)
+1. [Separate subtraction from a debit rule](45-separate-subtraction-from-a-debit-rule.md)
+1. [Check block counts before using bytes](46-check-block-counts-before-using-bytes.md)
+1. [Publish a complete record size](47-publish-a-complete-record-size.md)
+1. [Use unsigned guards without the library](48-use-unsigned-guards-without-the-library.md)

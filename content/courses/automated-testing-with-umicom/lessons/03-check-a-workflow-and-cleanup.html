@@ -1,0 +1,52 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/03-check-a-workflow-and-cleanup.html
+
+PURPOSE:
+Check a workflow and its cleanup
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check a workflow and its cleanup | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Check a workflow and its cleanup</h1>
+<p>A workflow test checks more than one event in order. Give setup, observation and cleanup different responsibilities. A refusal in the work portion of a fixture should still leave you able to inspect what happened.</p>
+<h2>Use a deterministic ledger model</h2>
+<p>For a savings-club practice fixture, keep two integers in memory. One represents an existing total. The other represents a proposed replacement. An admitted replacement becomes visible only when you commit the model.</p>
+<pre><code class="language-c">struct LedgerFixture {
+    int committed;
+    int staged;
+    bool staged_valid;
+};
+</code></pre>
+<p>Start with <code>committed</code> equal to 42. Stage 45, check that a read still returns 42, commit the staged value and check that a later read returns 45. Then start from 42 again, stage a request that the model refuses, and check that a read remains 42.</p>
+<pre><code class="language-text">OPEN a fresh fixture with committed total 42
+STAGE a change
+OBSERVE the committed total
+IF the staged data is valid THEN commit it
+CHECK the committed total again
+RELEASE the fixture
+</code></pre>
+<p>A database adapter can later exercise the analogous transaction against a dedicated test database. Keep independent setup and cleanup. Use a fresh temporary fixture instead of an application’s working data.</p>
+<h2>Write the contract for both paths</h2>
+<ol>
+<li>Give the setup its own row. State how you know it finished.</li>
+<li>Create one success row where the staged value becomes visible.</li>
+<li>Create one refusal row where the previous output stays visible.</li>
+<li>Check cleanup in both paths. A leaked fixture can make the next test depend on earlier order.</li>
+</ol>
+<p>In Umicom Framework, <code>UMI_UAT_SETUP</code>, <code>UMI_UAT_ASSERT</code> and <code>UMI_UAT_CLEANUP</code> mark different workflow phases. A target may separately declare <code>UMI_UAT_DATABASE_READ</code> and <code>UMI_UAT_DATABASE_WRITE</code>. A read-only fixture can prove a query contract while a write experiment needs its own declared permission and isolated data.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="02-choose-target-operations.html">Previous lesson · Choose target operations before dispatch</a> · <a href="04-read-one-evidence-row.html">Next lesson · Read one test evidence row</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/03-check-a-workflow-and-cleanup.md">Markdown edition</a> · <a href="../../../labs/native/automated-testing-preview/main.c">Native C23 lab source</a> · <a href="../../../labs/native/automated-testing-preview/CMakeLists.txt">SDK build description</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,3 +1,5 @@
+![Umicom](../../../content/assets/branding/umicom-wordmark.svg) · [Umicom icon](../../../content/assets/branding/umicom-icon.svg) · [Windows icon](../../../content/assets/branding/umicom.ico)
+
 # Compare captured boot reports
 
 You need a text editor, a terminal, CMake 3.24 or newer, Ninja and a C23-capable C compiler. A terminal accepts commands as text. CMake describes how a program is assembled; Ninja carries out the necessary compilation commands. A compiler translates C source into machine instructions. This lab runs on the current computer; it does not install or boot an operating system.
@@ -34,3 +36,9 @@ The expected output includes state: starting -> ready, completed: 1 -> 2 and Mal
 The program uses src/platform/boot_report.c from Framework directly. It does not copy the parser into this repository. Read main.c from top to bottom: two captured text records are admitted, their fields are compared, then a deliberately unterminated reason is refused.
 
 The regression assertion checks the exact two changed fields. The final check ensures malformed input cannot overwrite a prior comparison. This is a host-side parser lab; it does not establish firmware compatibility, a successful guest boot or service health.
+
+## Compare exact capture bytes
+
+Use a current Framework source checkout and add `-DUMICOM_LEARNING_BOOT_CAPTURE=ON` to the configure command above. Rebuild and run CTest with `--verbose` to see the capture exercise output. The default configuration still builds the parser lab.
+
+The sample files contain the same field values in different line orders. Read `capture_identity.c` to see where the shared reader matches a digest and preserves a previous accepted observation when the byte check fails. Follow the [boot-report parser lesson](../../../content/lessons/06-umicom/umicom-os-from-scratch/20-follow-the-boot-report-parser.md) for exact commands and expected output.

@@ -1,0 +1,57 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/07-select-one-saved-test-result.html
+
+PURPOSE:
+Select one saved test result
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Select one saved test result | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Select one saved test result</h1>
+<p>A <strong>saved test report</strong> records what happened during an earlier run. It can contain several test results. Reading one result helps you investigate a specific check while keeping the overall run in view.</p>
+<h2>Start with two fictional results</h2>
+<p>Copy this sample into a new practice file called <code>sample-tests.xml</code>. XML uses named tags to mark each test. The whole report describes two checks. One passed and one recorded an assertion failure.</p>
+<pre><code class="language-xml">&lt;testsuite tests=&quot;2&quot; failures=&quot;1&quot;&gt;
+  &lt;testcase name=&quot;notes.pass&quot; status=&quot;run&quot; time=&quot;0&quot;/&gt;
+  &lt;testcase name=&quot;notes.failure&quot; status=&quot;fail&quot; time=&quot;0&quot;&gt;
+    &lt;failure message=&quot;The note count differed&quot;/&gt;
+  &lt;/testcase&gt;
+&lt;/testsuite&gt;
+</code></pre>
+<h2>Select a recorded name</h2>
+<ol>
+<li>Open PowerShell in the exercise folder and use the current <code>umicom</code> CLI. Run the first command. It shows the earlier passing test and reports exit code 0. The suite summary still counts two tests and one failure.</li>
+<li>Run the second command. It shows the saved failure and gives exit code 1. Open the XML and find the assertion message.</li>
+<li>Try the third command. It gives exit code 2 because the exact name is missing. Names are case-sensitive. Use the spelling in the report and keep quotes around a name that contains spaces.</li>
+</ol>
+<pre><code class="language-powershell">umicom test-report sample-tests.xml --test &quot;notes.pass&quot;
+$LASTEXITCODE
+umicom test-report sample-tests.xml --test &quot;notes.failure&quot;
+$LASTEXITCODE
+umicom test-report sample-tests.xml --test &quot;Notes.Pass&quot;
+$LASTEXITCODE
+</code></pre>
+<p>Read <code>$LASTEXITCODE</code> immediately after the corresponding command. If the CLI cannot read the file, verify the filename and its directory. Use the command help to check whether your installed version supports <code>--test</code>.</p>
+<pre><code class="language-text">READ the complete saved report
+KEEP the same suite totals
+FIND the exact decoded test name
+SHOW the selected earlier result
+REPORT its outcome
+</code></pre>
+<p>This operation reads the report without running its tests. For a failure on an actual project, compare the saved report to the source revision, target platform and environment recorded by that earlier run. Use the suite summary to understand the other checks. An automated testing tool can use the selected result for a narrow decision and retain the whole suite evidence for review.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="06-keep-the-fixture-permissions-small.html">Previous lesson · Keep the fixture permissions small</a> · <a rel="next" href="08-read-a-workflow-summary.html">Next lesson · Read a workflow summary</a> · <a href="04-read-one-evidence-row.html">Related lesson · Read one test evidence row</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/07-select-one-saved-test-result.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

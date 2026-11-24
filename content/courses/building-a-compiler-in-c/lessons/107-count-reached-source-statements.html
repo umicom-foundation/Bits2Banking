@@ -1,0 +1,52 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/107-count-reached-source-statements.html
+
+PURPOSE:
+Count reached source statements
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Count reached source statements | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Count reached source statements</h1>
+<p>A source <strong>statement</strong> is an instruction a programmer writes, such as setting a variable or returning a value. A statement can span several lines. One line can also contain two statements. The Umicom C pause console counts statements that execution reaches.</p>
+<h2>Predict where the next pause will be</h2>
+<p>Save the following complete program as <code>practice.c</code> in a fresh exercise folder. Count the source lines starting at one.</p>
+<pre><code class="language-c">int main(void) {
+  int x =
+    6; x *= 7;
+  return x;
+}
+</code></pre>
+<p>The declaration starts on line 2 and finishes on line 3 after <code>6;</code>. The multiplication starts later on line 3. The return is the third reached statement. On paper, write down the value of <code>x</code> after the first statement and after the second.</p>
+<pre><code class="language-text">START with the first reached statement ready
+REPEAT up to 2 times
+    RUN one reached statement
+    REPORT its source location and outcome
+    STOP if the program returns or reports an error
+PAUSE before the next reached statement
+</code></pre>
+<h2>Use the same pause controls on one or several statements</h2>
+<ol>
+<li>Open PowerShell in the practice folder. Start the current Umicom C tool with <code>umicom-c interpret practice.c --step</code>. The first prompt should start with <code>Next 2:3</code>. The two numbers identify the source line and column.</li>
+<li>Type <code>next 2</code> and press Enter. The tool reports the declaration and multiplication. The new prompt should start with <code>Next 4:3</code>. There is no prompt between the two reported statements.</li>
+<li>Type <code>show</code> to preview the pending return. Type <code>next</code> to execute it and expect <code>Result: 42</code>. Starting again and choosing <code>quit</code> at the same pause leaves the return unexecuted.</li>
+</ol>
+<p>Use a positive decimal after <code>next</code>. If <code>next 0</code> or <code>next -2</code> is refused, the console leaves the current statement pending. Try <code>next 99</code> at the first prompt. The program returns after its three statements, so the console finishes after printing the result.</p>
+<p>The same command works with the pseudocode profile. The instruction allowance, which counts the smaller operations used to run the source, still applies to every request. Use <code>until LINE</code> when you know the exact source line you want to reach. Use <code>--jsonl</code> if another tool reads the events. The same step records go to standard output and the prompts stay on the diagnostic stream.</p>
+<p>Studio can use counted steps to let a learner move through predictable parts of a program. It can still display each reached statement and show the pending location after the batch.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="106-translate-a-checked-local-update.html">Previous lesson · Translate a checked local update</a> · <a rel="next" href="108-translate-one-return-between-c-and-d.html">Next lesson · Translate one return between C and D</a> · <a href="95-pause-before-a-reached-line.html">Related lesson · Pause before a reached source line</a> · <a href="96-read-versioned-interpreter-reports.html">Earlier lesson · Read versioned interpreter reports</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/107-count-reached-source-statements.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

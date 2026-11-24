@@ -15,7 +15,7 @@ MIT
 -->
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Distinguish dispatch from delivery | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
 <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
-</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-handle-short-transfers.html">Previous lesson</a> · <a rel="next" href="17-own-an-incomplete-request.html">Next: Own an incomplete request</a></nav>
+</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><!-- Use the approved website wordmark to match the current branded lessons. Retain the original offline image markup for review. --><!-- <img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"> --><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="15-handle-short-transfers.html">Previous lesson</a> · <a rel="next" href="17-own-an-incomplete-request.html">Next: Own an incomplete request</a></nav>
 <h1>Distinguish dispatch from delivery</h1>
 <p>A server can finish an operation and still fail to deliver its reply. The caller then has an uncertain outcome, not proof that nothing happened.</p>
 <h2>Prepare</h2>
@@ -24,6 +24,153 @@ MIT
 <h2>Predict the result</h2>
 <div class="table-scroll"><table><thead><tr><th scope="col">Observation</th><th scope="col">Expected value</th></tr></thead><tbody><tr><td>Handler calls</td><td>1</td></tr><tr><td>dispatched</td><td>true</td></tr><tr><td>response_complete</td><td>false</td></tr><tr><td>bytes sent</td><td>0</td></tr><tr><td>Overall result</td><td>IO_ERROR</td></tr></tbody></table></div>
 <p>The two booleans answer different questions. Routing occurred; complete response delivery did not.</p>
+<section id="dispatch-counters"><h2>Compare dispatch counters with accepted bytes</h2>
+<p>The service counts the requests it handles and the bytes of the application body it selects. The counters for 2xx, 4xx and 5xx group successful replies, request refusals and server failures. The exchange separately reports <code>bytes_sent</code>, which counts all bytes accepted by its writer, including response headers.</p>
+<p>The three cases below use the same request and a fresh service each time. The numbers in the counters column appear in the order 2xx/4xx/5xx. The HTTP status is the one Framework prepares for the writer.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">HTTP status</th><th scope="col">Counters</th><th scope="col">Selected body bytes</th><th scope="col">Accepted bytes</th></tr></thead><tbody>
+<tr><td>Writer refuses a ready reply</td><td>200</td><td>1/0/0</td><td>5</td><td>Zero</td></tr>
+<tr><td>Gate supplies an intentional refusal</td><td>403</td><td>0/1/0</td><td>6</td><td>Nonzero</td></tr>
+<tr><td>Gate returns an operational error</td><td>500</td><td>0/0/1</td><td>0</td><td>Nonzero</td></tr>
+</tbody></table></div>
+<p>When the writer refuses the successful response, the five selected bytes stay in the service counter and the exchange reports zero accepted bytes. An intentional 403 selects its six-byte explanation. If dispatch itself fails, Framework counts a 500 with zero selected application bytes. The writer can still accept the separate generic error reply.</p>
+<h3>Try the three cases in memory</h3>
+<p>The C23 example supplies its request and writer in memory. Its writer makes the acceptance decision visible to the learner.</p>
+<pre><code class="language-c">#include &quot;umicom/web/connection.h&quot;
+#include &lt;inttypes.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+typedef enum Mode { WRITE_ERROR, REFUSE, DISPATCH_ERROR } Mode;
+typedef struct Memory { Mode mode; size_t offset; } Memory;
+typedef struct Example {
+    const char *name;
+    Mode mode;
+    int http;
+    uint64_t selected;
+    UmiStatus outcome;
+} Example;
+
+static UmiStatus ReadRequest(void *context, void *bytes, size_t capacity, size_t *count)
+{
+    /* Feed the same complete request in as many reads as the caller needs. */
+    static const char request[] = &quot;GET /demo HTTP/1.1\r\nHost: localhost\r\n\r\n&quot;;
+    Memory *memory = context;
+    size_t remaining = sizeof(request) - 1U - memory-&gt;offset;
+    *count = remaining &lt; capacity ? remaining : capacity;
+    memcpy(bytes, request + memory-&gt;offset, *count);
+    memory-&gt;offset += *count;
+    return *count == 0U ? UMI_STATUS_UNAVAILABLE : UMI_STATUS_OK;
+}
+
+static UmiStatus AcceptReply(void *context, const void *bytes, size_t length, size_t *count)
+{
+    /* Model acceptance by a writer without sending the bytes anywhere. */
+    const Memory *memory = context;
+    (void)bytes;
+    *count = memory-&gt;mode == WRITE_ERROR ? 0U : length;
+    return memory-&gt;mode == WRITE_ERROR ? UMI_STATUS_IO_ERROR : UMI_STATUS_OK;
+}
+
+static UmiStatus Gate(const UmiWebRequest *request, UmiWebResponse *response,
+    bool *accepted, void *context)
+{
+    const Memory *memory = context;
+    (void)request;
+    /* A completed 403 response is a different decision from a gate error. */
+    *accepted = memory-&gt;mode == WRITE_ERROR;
+    if (memory-&gt;mode == DISPATCH_ERROR) return UMI_STATUS_IO_ERROR;
+    if (*accepted) return UMI_STATUS_OK;
+    return umi_web_response_set_text(response, 403, &quot;text/plain&quot;, &quot;denied&quot;);
+}
+
+static UmiStatus Reply(const UmiWebRequest *request, UmiWebResponse *response, void *context)
+{
+    (void)request;
+    (void)context;
+    return umi_web_response_set_text(response, 200, &quot;text/plain&quot;, &quot;ready&quot;);
+}
+
+static bool CheckExample(const Example *example)
+{
+    Memory memory = {example-&gt;mode, 0U};
+    UmiWebService *service = NULL;
+    if (umi_web_service_create(&amp;service) != UMI_STATUS_OK) return false;
+    if (UmiWebServiceSetRequestGate(service, Gate, &amp;memory) != UMI_STATUS_OK ||
+        UmiWebRouterSetFallback(umi_web_service_router(service), Reply, NULL) != UMI_STATUS_OK) {
+        umi_web_service_destroy(service);
+        return false;
+    }
+
+    /* The service owns the counters and the exchange reports writer progress. */
+    const UmiWebConnectionIo io = {&amp;memory, ReadRequest, AcceptReply};
+    UmiWebExchangeResult exchange;
+    UmiStatus status = UmiWebConnectionProcess(service, &amp;io, 1024U, NULL, &amp;exchange);
+    const UmiWebMetrics *metrics = umi_web_service_metrics(service);
+    const bool complete = example-&gt;mode != WRITE_ERROR;
+    const UmiStatus dispatch = example-&gt;mode == DISPATCH_ERROR ? UMI_STATUS_IO_ERROR : UMI_STATUS_OK;
+    const bool counters_agree = metrics-&gt;requests == 1U &amp;&amp;
+        metrics-&gt;responses_2xx == (example-&gt;http == 200 ? 1U : 0U) &amp;&amp;
+        metrics-&gt;responses_4xx == (example-&gt;http == 403 ? 1U : 0U) &amp;&amp;
+        metrics-&gt;responses_5xx == (example-&gt;http == 500 ? 1U : 0U) &amp;&amp;
+        metrics-&gt;bytes_out == example-&gt;selected;
+    const bool writer_agrees = complete
+        ? exchange.bytes_sent &gt; example-&gt;selected
+        : exchange.bytes_sent == 0U;
+    const bool passed = counters_agree &amp;&amp; writer_agrees &amp;&amp; exchange.dispatched &amp;&amp;
+        exchange.dispatch_status == dispatch &amp;&amp; exchange.response_complete == complete &amp;&amp;
+        exchange.response_status == example-&gt;http &amp;&amp; status == example-&gt;outcome;
+
+    if (passed) {
+        printf(&quot;%s: HTTP %d, counters %&quot; PRIu64 &quot;/%&quot; PRIu64 &quot;/%&quot; PRIu64
+               &quot;, selected %&quot; PRIu64 &quot;, accepted %s\n&quot;,
+               example-&gt;name, exchange.response_status, metrics-&gt;responses_2xx,
+               metrics-&gt;responses_4xx, metrics-&gt;responses_5xx, metrics-&gt;bytes_out,
+               exchange.bytes_sent == 0U ? &quot;zero&quot; : &quot;nonzero&quot;);
+    }
+    umi_web_service_destroy(service);
+    return passed;
+}
+
+int main(void)
+{
+    const Example examples[] = {
+        {&quot;Writer refused&quot;, WRITE_ERROR, 200, 5U, UMI_STATUS_IO_ERROR},
+        {&quot;Intentional refusal&quot;, REFUSE, 403, 6U, UMI_STATUS_OK},
+        {&quot;Dispatch failed&quot;, DISPATCH_ERROR, 500, 0U, UMI_STATUS_IO_ERROR}
+    };
+    for (size_t i = 0U; i &lt; sizeof(examples) / sizeof(examples[0]); ++i) {
+        if (!CheckExample(&amp;examples[i])) {
+            fprintf(stderr, &quot;%s: observation differed from the prediction\n&quot;, examples[i].name);
+            return EXIT_FAILURE;
+        }
+    }
+    return EXIT_SUCCESS;
+}</code></pre>
+<h3>Build and compare the result</h3>
+<p>Save the C example as <code>observe-dispatch.c</code> in a new practice folder. Save the build file below as <code>CMakeLists.txt</code> in the same folder. Use a C23-capable compiler and a matching Framework SDK with the web component and current dispatch accounting.</p>
+<pre><code class="language-cmake">cmake_minimum_required(VERSION 3.24)
+project(ObserveDispatch LANGUAGES C)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+find_package(UmicomFramework CONFIG REQUIRED COMPONENTS web)
+add_executable(observe-dispatch observe-dispatch.c)
+target_link_libraries(observe-dispatch PRIVATE Umicom::web)</code></pre>
+<p>Open PowerShell in the practice folder. Replace the SDK path with your actual prefix. Run each command in order and stop on errors.</p>
+<pre><code class="language-powershell">$sdk = 'C:\umicom\installed\applications'
+cmake -S . -B build -G Ninja &quot;-DCMAKE_PREFIX_PATH=$sdk&quot;
+cmake --build build --target observe-dispatch
+.\build\observe-dispatch.exe</code></pre>
+<p>Compare the three lines with this output.</p>
+<pre><code>Writer refused: HTTP 200, counters 1/0/0, selected 5, accepted zero
+Intentional refusal: HTTP 403, counters 0/1/0, selected 6, accepted nonzero
+Dispatch failed: HTTP 500, counters 0/0/1, selected 0, accepted nonzero</code></pre>
+<p>If a counter differs, check the dispatch status and the writer's accepted bytes separately. If CMake reports that the package is missing, check the SDK prefix for <code>UmicomFrameworkConfig.cmake</code>.</p>
+<p>To compare the related cases in a configured Framework build, substitute its build path and run this selection.</p>
+<pre><code class="language-powershell">ctest --test-dir 'C:\path\to\framework-build' --no-tests=error -R '^framework[.]web[.](request_gate[.]gate-(accept|refuse|failure)|response_body[.](body-failure|body-conflict|invalid-header))$' --output-on-failure</code></pre>
+<p><a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/service.h">Service metrics API</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/web/connection.h">Connection exchange API</a> · <a href="45-read-response-status-and-body.html">Read response status and body length</a></p>
+</section>
 <h2>Apply the idea</h2>
 <p>Imagine a handler that records a payment or adds a media job. Blindly repeating it after a lost reply could duplicate the operation. A production design needs an explicit duplicate-request policy and a way to inspect an operation's outcome.</p>
 <p>This lab intentionally uses a counter so no external side effect occurs. It teaches the uncertainty before adding durable state.</p>

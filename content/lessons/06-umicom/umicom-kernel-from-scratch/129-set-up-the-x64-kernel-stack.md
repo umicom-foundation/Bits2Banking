@@ -49,3 +49,5 @@ llvm-readelf --file-header --program-headers --symbols build/x86_64-entry/umicom
 For example, subtract `0x203000` from `0x207000`. The first possible return-address slot is immediately below `0x207000`. Explain why the difference between these two symbols is the size of the stack even if a second build places it at different addresses.
 
 The file inspection checks the linked entry, segment permissions and stack placement. A real boot also needs a loader that supplies the mappings and a valid record, then transfers control on the chosen machine.
+
+[Next lesson · Observe a message with query rights](130-observe-a-message-with-query-rights.md)

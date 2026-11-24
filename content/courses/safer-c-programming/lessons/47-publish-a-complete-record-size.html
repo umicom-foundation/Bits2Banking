@@ -1,0 +1,77 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/47-publish-a-complete-record-size.html
+
+PURPOSE:
+Publish a complete record size
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Publish a complete record size | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Publish a complete record size</h1>
+<p>A summary record has a body and a header. A correct body length can still produce an invalid total when the header is added. Treat both results as a single plan that other code can safely read.</p>
+<h2>Separate the two operations</h2>
+<p>Eight entries of 16 bytes have a 128-byte body. Adding a 64-byte header produces a total of 192. First check the multiplication. Then check the addition using that candidate body size.</p>
+<h2>Exercise a late failure</h2>
+<p><code>SIZE_MAX / 16</code> gives an admissible body count. <code>SIZE_MAX % 16</code> is the leftover space. Add a header with one byte more than the leftover and only the second calculation will fail. Verify both fields of the prior output. This check would catch a premature write of the body.</p>
+<h2>Connect to Framework and WebServer</h2>
+<p>Framework can return complete sizing information to a WebServer caller that prepares a response. Each refusal keeps the previous answer available. File writes, network delivery and storage limits still belong to their own operations.</p>
+<h2>Trace the logic</h2>
+<pre><code class="language-text">MULTIPLY item count BY item size INTO candidate body
+IF BODY DOES NOT FIT, REFUSE
+ADD header size TO candidate body INTO candidate total
+IF TOTAL DOES NOT FIT, REFUSE
+COPY BOTH CHECKED FIELDS TO the caller
+</code></pre>
+<pre><code class="language-c">typedef struct RecordSize {
+    size_t body;
+    size_t total;
+} RecordSize;
+
+static bool plan_record(size_t items, size_t header, RecordSize *sizes)
+{
+    /* Either stage may fail. Copy the complete plan after both succeed. */
+    RecordSize candidate;
+    if (ckd_mul(&amp;candidate.body, items, (size_t)16)) return false;
+    if (ckd_add(&amp;candidate.total, candidate.body, header)) return false;
+    *sizes = candidate;
+    return true;
+}
+</code></pre>
+<h2>Build and run one practice case</h2>
+<ol>
+<li>Open a PowerShell terminal with GCC, CMake and Ninja on the search path. To use Clang, select <code>clang</code> in the configure command and choose a separate build directory in all three commands. Check that the selected C compiler and its headers provide <code>&lt;stdckdint.h&gt;</code>. If that header is missing, the final lesson demonstrates <code>size_t</code> guards using only older headers.</li>
+<li>Open <code>labs/native/checked-integers/record.c</code>. Read the successful case and at least one refusal case.</li>
+<li>Run the commands one at a time. Stop on the first error so an earlier executable cannot be mistaken for the latest build.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking&quot;
+cmake -S labs/native/checked-integers -B build/checked-integers -G Ninja -DCMAKE_C_COMPILER=gcc
+cmake --build build/checked-integers --target checked-integers-record
+ctest --test-dir build/checked-integers -R &quot;^lesson[.]checked-integers[.]record$&quot; -V --no-tests=error
+</code></pre>
+<p>Expect one passing test and this line of program output.</p>
+<pre><code class="language-text">Body: 128 bytes. Total: 192 bytes. Both refusals kept the original plan.
+</code></pre>
+<h2>Try a change</h2>
+<p>Try a 32-byte header. Update only the expected complete total. Leave one case that fails during multiplication and one that fails during addition.</p>
+<h2>If a result differs</h2>
+<p>If only the body changes after an overflow, step through the stores. Keep <code>candidate.body</code> and <code>candidate.total</code> temporary until both checks have succeeded.</p>
+<h2>Read the C language reference</h2>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf#page=326">WG14 N3220, section 7.20.1 on checked integer operations</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="46-check-block-counts-before-using-bytes.html">Previous: Check block counts before using bytes</a> · <a href="48-use-unsigned-guards-without-the-library.html">Next: Use unsigned guards without the library</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

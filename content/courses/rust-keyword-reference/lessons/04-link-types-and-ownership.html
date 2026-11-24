@@ -1,0 +1,145 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/rust-keyword-reference/lessons/04-link-types-and-ownership.html
+
+PURPOSE:
+  Teach the selected strict words in the Rust 2024 edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect types and ownership | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Connect types and ownership</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="03-define-data-and-share-modules.html">Previous lesson</a> · <a rel="next" href="05-external-and-asynchronous-boundaries.html">Next lesson</a></nav>
+<h2>Give different types a shared way to answer</h2>
+<p>A practice ticket stores a name and a quantity. Borrow its name long enough to print it. Then put the ticket into a small function value called a closure. The closure asks for the same quantity twice, first through a generic function and then through a trait object.</p>
+<pre><code class="language-rust">trait Quantity {
+    fn units(&amp;self) -&gt; u32;
+}
+
+struct Ticket {
+    label: String,
+    units: u32,
+}
+
+impl Ticket {
+    fn new(label: String, units: u32) -&gt; Self {
+        Self { label, units }
+    }
+}
+
+impl Quantity for Ticket {
+    fn units(&amp;self) -&gt; u32 {
+        self.units
+    }
+}
+
+fn quantity_of&lt;T&gt;(value: &amp;T) -&gt; u32
+where
+    T: Quantity,
+{
+    value.units()
+}
+
+fn main() {
+    let ticket = Ticket::new(String::from(&quot;Day pass&quot;), 3);
+    let Ticket { ref label, .. } = ticket;
+    println!(&quot;Label: {label}&quot;);
+
+    // The closure keeps the ticket it will read when called.
+    let report = move || {
+        let source: &amp;dyn Quantity = &amp;ticket;
+        println!(&quot;Generic quantity: {}&quot;, quantity_of(&amp;ticket));
+        println!(&quot;Dynamic quantity: {}&quot;, source.units());
+    };
+    report();
+}
+</code></pre>
+<h2>Match each word to its job</h2>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Example</th>
+<th>What it tells Rust</th>
+</tr>
+</thead>
+<tbody>
+<tr id="kw-dyn">
+<td><code>dyn</code></td>
+<td><code>let source: &amp;dyn Quantity = &amp;ticket;</code></td>
+<td>Borrow a trait object. The method used for <code>source.units()</code> is selected at runtime from the stored implementation for the underlying type.</td>
+</tr>
+<tr id="kw-impl">
+<td><code>impl</code></td>
+<td><code>impl Quantity for Ticket { /* methods */ }</code></td>
+<td>Supply the methods required by <code>Quantity</code> for <code>Ticket</code>. The separate <code>impl Ticket</code> associates <code>new</code> directly with the type.</td>
+</tr>
+<tr id="kw-move">
+<td><code>move</code></td>
+<td><code>let report = move \|\| { /* body */ };</code></td>
+<td>Capture the values used by the closure by value. In this example the closure takes ownership of the ticket. A <code>move</code> closure can be called later.</td>
+</tr>
+<tr id="kw-ref">
+<td><code>ref</code></td>
+<td><code>let Ticket { ref label, .. } = ticket;</code></td>
+<td>Bind <code>label</code> by shared reference while leaving the original field in the ticket. The <code>..</code> pattern skips the other field.</td>
+</tr>
+<tr id="kw-Self">
+<td><code>Self</code></td>
+<td><code>fn new(label: String, units: u32) -&gt; Self</code></td>
+<td>Refer to the implementing type. Here <code>Self</code> is a name for <code>Ticket</code>. Lowercase <code>self</code> in <code>units</code> refers to the current ticket value.</td>
+</tr>
+<tr id="kw-trait">
+<td><code>trait</code></td>
+<td><code>trait Quantity { fn units(&amp;self) -&gt; u32; }</code></td>
+<td>Name a contract that several types can implement. Each implementation supplies how a value reports its units.</td>
+</tr>
+<tr id="kw-where">
+<td><code>where</code></td>
+<td><code>where T: Quantity</code></td>
+<td>Add a condition on a generic type. The generic function accepts a reference to a type that implements <code>Quantity</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>&amp;self</code> is the method's shared reference to the value receiving the call. <code>ref</code> affects a binding inside a pattern. In the example, the pattern reads an owned <code>Ticket</code> and makes a shared reference to its label. Rust 2024 requires an explicit pattern when writing <code>ref</code>. If you change the expression being matched to <code>&amp;ticket</code>, write <code>let Ticket { label, .. } = &amp;ticket;</code> so Rust infers the borrowed binding. <a href="https://doc.rust-lang.org/reference/keywords.html#strict-keywords">Rust Reference, strict keywords</a> · <a href="https://doc.rust-lang.org/edition-guide/rust-2024/match-ergonomics.html">Rust 2024 Edition Guide, matching references</a></p>
+<p>The generic version uses a type parameter. The trait-object version uses a reference to a value through the <code>Quantity</code> interface. In the example both use <code>Ticket</code>'s method and produce the same result. <a href="https://doc.rust-lang.org/reference/items/generics.html">Rust Reference, generic parameters</a> · <a href="https://doc.rust-lang.org/reference/types/trait-object.html">Rust Reference, trait objects</a> · <a href="https://doc.rust-lang.org/reference/expressions/closure-expr.html">Rust Reference, closure expressions</a></p>
+<h2>Predict a change and run it</h2>
+<ol>
+<li>Save the program as <code>ticket.rs</code>. In PowerShell run <code>rustc --edition=2024 ticket.rs -o ticket.exe</code>. Continue only after compilation succeeds.</li>
+<li>Run <code>.\ticket.exe</code>. Expect these three lines.</li>
+</ol>
+<p>~~~text
+   Label: Day pass
+   Generic quantity: 3
+   Dynamic quantity: 3
+   ~~~</p>
+<ol>
+<li>Change the last argument to <code>Ticket::new</code> from <code>3</code> to <code>5</code>. Compile and run again. Both quantities should now be <code>5</code>.</li>
+<li>To see ownership checking, add <code>println!("{}", ticket.label);</code> between the closure definition and <code>report();</code> and compile. The compiler should report that the ticket has moved into the closure. Remove that added line and compile again to recover.</li>
+</ol>
+<h2>Compare with C and Umicom Framework</h2>
+<p>In C, a small interface can pair a function pointer with a context pointer. The caller passes the context and the receiver documents who keeps it alive. Umicom Framework uses this pattern in C callbacks. Rust's trait object connects the value to its implementation, and Rust checks borrowing and ownership at compile time. Trace those responsibilities when you translate a callback between the languages.</p>
+<p><a href="../../../lessons/03-native-code/rust-keyword-reference/04-link-types-and-ownership.md">Markdown edition</a></p>
+  </article></main>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/105-translate-hexadecimal-and-binary.html
+
+PURPOSE:
+Translate hexadecimal and binary
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Translate hexadecimal and binary | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Translate hexadecimal and binary</h1>
+<p>The same whole number can be written in different ways. Decimal uses ten digits. Binary uses two, and hexadecimal uses sixteen. Each place to the left is worth one more power of that base. A <strong>literal</strong> is the written number in a program.</p>
+<table>
+<thead>
+<tr>
+<th>Spelling</th>
+<th>How to read it</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>42</code></td>
+<td>Four tens and two ones</td>
+<td>42</td>
+</tr>
+<tr>
+<td><code>0x2A</code></td>
+<td>Two sixteens and ten ones. The letter A stands for ten.</td>
+<td>42</td>
+</tr>
+<tr>
+<td><code>0b101010</code></td>
+<td>32 + 8 + 2</td>
+<td>42</td>
+</tr>
+</tbody>
+</table>
+<h2>Predict which bits survive a mask</h2>
+<p>The AND operator keeps a bit when it is set in both values. The mask <code>0B111111</code> sets the six lowest bits. It keeps every bit used to represent 42.</p>
+<pre><code class="language-text">VALUE ← READ hexadecimal 2A
+LOW_SIX ← READ binary 111111
+RETURN the bits set in both VALUE and LOW_SIX
+</code></pre>
+<p>In C23, an empty parameter list in a function definition means it takes no arguments. Save the function as <code>answer.c</code>.</p>
+<pre><code class="language-c">int answer() { return 0x2A &amp; 0B111111; }
+</code></pre>
+<p>In Java, the method belongs to a class. The prefix letters and digits express the same two values.</p>
+<pre><code class="language-java">public final class UmicomAnswer {
+    public static int answer() {
+        return 0x2A &amp; 0B111111;
+    }
+}
+</code></pre>
+<h2>Translate in both directions</h2>
+<ol>
+<li>Open PowerShell in a new practice folder and save the C source above as <code>answer.c</code>. Use the current Umicom C CLI on your <code>PATH</code>. Save the Java listing in your notes so the translation can create its own output file.</li>
+<li>Ask the checked Umicom translator to generate Java. Open <code>UmicomAnswer.java</code> and locate the two prefixes. Compare the function body with your notes.</li>
+<li>Translate the result back to C. Compare the body of <code>answer-roundtrip.c</code> with the original. Expect the same digits and AND operator. The returned C function uses the explicit <code>(void)</code> convention.</li>
+</ol>
+<pre><code class="language-powershell">umicom-c translate c-to-java answer.c UmicomAnswer.java
+umicom-c translate java-to-c UmicomAnswer.java answer-roundtrip.c
+</code></pre>
+<p>For an additional check, add <code>int main(void) { return answer() == 42 ? 0 : 1; }</code> to a practice copy of the result. Compile that copy with a C23 compiler and expect exit code zero. A Java caller can make the same comparison using <code>UmicomAnswer.answer()</code>.</p>
+<h2>Explore a refusal without losing your answer</h2>
+<p>Change the returned value in a separate C source file to <code>0x80000000</code>. Use a fresh output name. Expect a diagnostic from the translator because the common positive range ends at <code>0x7FFFFFFF</code>. With 32-bit <code>int</code>, Java gives that high-bit spelling a negative signed value and C can give it an unsigned type. The checked translation keeps the smaller range so callers get the same meaning.</p>
+<p>C23 can put an apostrophe between digits. Java uses an underscore. Use unseparated digits in this common spelling profile. A missing tool or an existing destination also produces an error. Check the command and its diagnostic, then choose a fresh result filename before repeating the valid exercise.</p>
+<p>The Umicom C lexer already owns the digit and range rules. Translation uses that same lexer and adds a spelling check for both targets. A Studio translation view can use the public compiler service and show the same refusal alongside the original source.</p>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf">C23 integer constants</a> · <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-3.html#jls-3.10.1">Java integer literals</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="104-keep-the-exact-filename-on-windows.html">Previous lesson · Keep the exact filename on Windows</a> · <a rel="next" href="106-translate-a-checked-local-update.html">Next lesson · Translate a checked local update</a> · <a href="103-translate-whitespace-that-both-languages-admit.html">Related lesson · Translate whitespace that both languages admit</a> · <a href="14-admit-decimal-literals-without-overflow.html">Earlier lesson · Admit decimal literals without overflow</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/105-translate-hexadecimal-and-binary.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,146 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-php/lessons/12-use-types-and-contextual-words.html
+
+PURPOSE:
+Use types and contextual words
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Use types and contextual words | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Use types and contextual words</h1>
+<p>A type tells a reader what a name may hold. PHP also reserves some names that refer to the current class, an older class, or values built into the language.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Small PHP example</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int</code></td>
+<td><code>function pennies(int $amount): int { return $amount; }</code></td>
+<td>Requires a whole number under the applicable type rules.</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td><code>function ratio(float $value): float { return $value; }</code></td>
+<td>Describes floating-point data. Use whole pennies for exact monetary inputs in this course.</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td><code>function ready(bool $condition): bool { return $condition; }</code></td>
+<td>Describes either true or false.</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td><code>function label(string $name): string { return $name; }</code></td>
+<td>Describes a byte string. Use the earlier text lesson to distinguish bytes and characters.</td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td><code>$ready = true;</code></td>
+<td>Records that a condition holds. It can also appear as a literal type in supported versions.</td>
+</tr>
+<tr>
+<td><code>false</code></td>
+<td><code>$ready = false;</code></td>
+<td>Records that a condition does not hold. It can also appear in supported type declarations.</td>
+</tr>
+<tr>
+<td><code>null</code></td>
+<td><code>$unknown = null;</code></td>
+<td>Records the null value. A type such as <code>?int</code> admits either an integer or null.</td>
+</tr>
+<tr>
+<td><code>void</code></td>
+<td><code>function announce(): void { echo "saved"; }</code></td>
+<td>Declares a function that returns without a supplied result.</td>
+</tr>
+<tr>
+<td><code>iterable</code></td>
+<td><code>function countRows(iterable $rows): int { /* use foreach */ }</code></td>
+<td>Accepts arrays and objects that implement the traversal contract. The body must supply the promised count.</td>
+</tr>
+<tr>
+<td><code>object</code></td>
+<td><code>function sameObject(object $input): object { return $input; }</code></td>
+<td>Accepts an object regardless of its class.</td>
+</tr>
+<tr>
+<td><code>mixed</code></td>
+<td><code>function keep(mixed $input): mixed { return $input; }</code></td>
+<td>Declares that any PHP value is admitted. A condition may still be needed before using it as a number.</td>
+</tr>
+<tr>
+<td><code>never</code></td>
+<td><code>function fail(): never { throw new LogicException("stop"); }</code></td>
+<td>Declares that control never returns from the call normally.</td>
+</tr>
+<tr>
+<td><code>self</code></td>
+<td>Inside a class, <code>return self::LIMIT;</code></td>
+<td>Resolves a member in the class where the method is declared.</td>
+</tr>
+<tr>
+<td><code>parent</code></td>
+<td>Inside a subclass, <code>return parent::total();</code></td>
+<td>Calls or reads a member through the parent class scope.</td>
+</tr>
+<tr>
+<td><code>resource</code></td>
+<td><code>if (is_resource($handle)) { /* use the resource */ }</code></td>
+<td>Names a PHP value category through a predicate. PHP has no native resource parameter type declaration.</td>
+</tr>
+<tr>
+<td><code>numeric</code></td>
+<td><code>if (is_numeric($value)) { /* inspect the number */ }</code></td>
+<td>Describes a number or an accepted numeric string through a predicate. Validate the range and form separately.</td>
+</tr>
+</tbody>
+</table>
+<p>The PHP manual lists <code>resource</code> and <code>numeric</code> as soft reservations. The classes lesson explains <code>readonly</code>, and the composition lesson explains <code>enum</code> in its declaration context. <code>array</code> and <code>callable</code> have both language roles and type contexts. Pick clear domain names such as <code>TotalReader</code> instead of names that the language reserves.</p>
+<pre><code class="language-php">&lt;?php
+declare(strict_types=1);
+function decide(?int $amount): string {
+    if ($amount === null) {
+        return &quot;missing&quot;;
+    }
+    return $amount === 0 ? &quot;zero&quot; : &quot;present&quot;;
+}
+echo decide(null), &quot;/&quot;, decide(0), &quot;/&quot;, decide(42), &quot;\n&quot;;
+</code></pre>
+<p>Expect <code>missing/zero/present</code>. The caller sends three different facts. A literal zero stays a valid number throughout the exercise.</p>
+<pre><code class="language-c">/* A small C23 record represents the same optional integer explicitly. */
+struct Amount { bool has_value; int pennies; };
+const char *label = !input.has_value ? &quot;missing&quot; :
+    input.pennies == 0 ? &quot;zero&quot; : &quot;present&quot;;
+</code></pre>
+<pre><code class="language-text">IF the amount is missing THEN label it missing
+ELSE IF the amount equals zero THEN label it zero
+ELSE label it present
+</code></pre>
+<p>In the C fragment <code>input</code> is a <code>struct Amount</code>. The native lab runs all three cases. A Umicom Bank report can decide how to display missing values separately from valid zero balances. <a href="https://www.php.net/manual/en/language.types.declarations.php">PHP type syntax</a> · <a href="https://www.php.net/manual/en/reserved.other-reserved-words.php">PHP other reserved words</a></p>
+<h2>Run the examples</h2>
+<ol>
+<li>Save the PHP example as <code>practice.php</code>. Keep the opening PHP tag. In a terminal with PHP available, run <code>php practice.php</code> and compare the output with the expected result above.</li>
+<li>Open the C23 lab linked below and save it as <code>main.c</code>. From a terminal with GCC, run <code>gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o native-keywords.exe</code>. In PowerShell run <code>.\native-keywords.exe</code> and find the <code>types</code> row.</li>
+<li>If the shell cannot find a compiler or PHP, start with the pseudocode and compare your predicted result with the examples.</li>
+</ol>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="11-stream-values-and-read-source-markers.html">Previous lesson · Stream values and read source markers</a> · <a href="../../../lessons/04-web/learning-php/12-use-types-and-contextual-words.md">Markdown edition</a> · <a href="../../../labs/native/php-keyword-comparison/main.c">Complete C23 lab</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,50 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/04-read-one-evidence-row.html
+
+PURPOSE:
+Read one test evidence row
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read one test evidence row | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read one test evidence row</h1>
+<p>A test result describes what one observed run reported. A summary counts the rows reported by a particular file. Compare the summary and the detailed rows before treating the total as pass evidence.</p>
+<h2>Compare a complete record and a refusal</h2>
+<p>Suppose a saved report describes two tests. One passes and one fails.</p>
+<pre><code class="language-xml">&lt;testsuite tests=&quot;2&quot; failures=&quot;1&quot; disabled=&quot;0&quot; skipped=&quot;0&quot;&gt;
+  &lt;testcase name=&quot;positive&quot; status=&quot;run&quot; /&gt;
+  &lt;testcase name=&quot;negative&quot; status=&quot;run&quot;&gt;&lt;failure /&gt;&lt;/testcase&gt;
+&lt;/testsuite&gt;
+</code></pre>
+<p>Each row carries its own evidence. The word <code>run</code> describes an attempted run in this report dialect. The <code>failure</code> element supplies the failed outcome. A skipped case remains separate from passed and failed cases.</p>
+<p>A saved report can also claim an error in its summary without carrying one of the error records that the selected parser understands. Preserve that file for review. A refusal means the parser cannot establish a valid set of outcomes from it.</p>
+<pre><code class="language-text">COUNT the admitted rows
+COUNT failures and skips in those rows
+COMPARE the known summary fields to the recorded rows
+IF the report claims unsupported results THEN report incomplete evidence
+OTHERWISE publish the qualified counts
+</code></pre>
+<h2>Keep source, runner and scope with the count</h2>
+<ol>
+<li>Record the selected test name and product build revision.</li>
+<li>Record the host or model that actually ran the test.</li>
+<li>Keep a path to the produced result data and the original status.</li>
+<li>Retain skipped and unexecuted work in separate rows. A command that was never launched cannot supply a passing outcome.</li>
+</ol>
+<p>Umicom’s passive CTest report reader is suitable for checking the saved data format. A fixture that parses ordinary sample text can run without a GUI, device or external process under test. Use a later target-specific run to learn what the actual application did.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="03-check-a-workflow-and-cleanup.html">Previous lesson · Check a workflow and its cleanup</a> · <a href="05-qualify-each-platform-separately.html">Next lesson · Qualify each platform separately</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/04-read-one-evidence-row.md">Markdown edition</a> · <a href="../../../labs/native/automated-testing-preview/main.c">Native C23 lab source</a> · <a href="../../../labs/native/automated-testing-preview/CMakeLists.txt">SDK build description</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

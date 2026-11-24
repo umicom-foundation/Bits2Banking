@@ -164,3 +164,12 @@ Use the existing installed C23 media client to distinguish creation, payload wri
 ## Read filesystem headers through Framework
 
 - [Read a filesystem header within its partition](65-read-a-filesystem-header-within-its-partition.md)
+
+## Saved disk and startup evidence
+
+Check an impossible geometry claim and follow the boundary of a complete boot argument.
+
+- [Check the minimum space for a FAT32 volume](66-check-the-minimum-space-for-fat32.md)
+- [Keep boot option text in its argument](67-keep-boot-option-text-in-its-argument.md)
+- [Count the slots both GPT tables need](68-count-the-slots-both-gpt-tables-need.md)
+- [Follow the first blocked boot service](69-follow-the-first-blocked-boot-service.md)

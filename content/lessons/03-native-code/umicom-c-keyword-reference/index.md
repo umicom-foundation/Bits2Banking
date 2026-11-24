@@ -32,6 +32,7 @@ Start with paper. For the optional practical run, use an Umicom C build that imp
 - [Choose with if, else, true, and false](02-choose-with-if-and-literals.md)
 - [Repeat, skip and stop a counted loop](03-repeat-skip-and-stop.md)
 - [Read the checked input entry and its limits](04-call-the-checked-input-profile.md)
+- [Guard calculations with AND and OR](05-guard-calculations-with-and-or.md)
 
 ## Continue in another course
 

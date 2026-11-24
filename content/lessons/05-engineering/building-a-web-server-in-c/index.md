@@ -153,3 +153,9 @@ Encode bounded requests, retain one worker reply and examine completion before c
 1. [Check native routes before listening](43-check-native-routes-before-listening.md).
 
 1. [Request a single byte range](44-request-a-single-byte-range.md).
+
+1. [Read response status and body length](45-read-response-status-and-body.md).
+1. [Understand capped request counters](46-understand-capped-request-counters.md).
+1. [Read media types from filename extensions](47-read-media-types-from-filename-extensions.md).
+1. [Check export and download headers](48-check-export-and-download-headers.md).
+1. [Read status codes before deciding what to do](49-read-status-codes-before-deciding.md).

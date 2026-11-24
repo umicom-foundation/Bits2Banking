@@ -1,0 +1,103 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-x86-assembly/lessons/09-name-sections-and-link-symbols.html
+
+PURPOSE:
+  Teach a beginner to name sections and link symbols in NASM using object-only exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Name sections and link symbols in NASM | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Name sections and link symbols in NASM</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="08-include-a-known-byte-fixture.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="../../../lessons/03-native-code/learning-x86-assembly/09-name-sections-and-link-symbols.md">Markdown edition</a></nav>
+<h2>Separate the data and its reference</h2>
+<p>An object file can publish a symbol for another object to use. It can also refer to a name whose definition will come from another object. The assembler writes a relocation record so the linker knows which bytes will need the final address.</p>
+<p>This example publishes one 64-bit slot named <code>count_pointer</code>. The slot will eventually contain the address of <code>source_count</code>, which is supplied elsewhere. The exercise stops at the object file.</p>
+<pre><code class="language-nasm">bits 64
+section .rodata
+global count_pointer
+extern source_count
+count_pointer:
+    dq source_count
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Spelling</th>
+<th>Example</th>
+<th>What it tells the assembler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bits</code></td>
+<td><code>bits 64</code></td>
+<td>Select the instruction encoding mode. It does not switch a running processor, and an ELF64 data-only object still needs an appropriate output format.</td>
+</tr>
+<tr>
+<td><code>section</code></td>
+<td><code>section .rodata</code></td>
+<td>Place new declarations in the named section. Here it is read-only data in the ELF object.</td>
+</tr>
+<tr>
+<td><code>segment</code></td>
+<td><code>segment .rodata</code></td>
+<td>Use NASM's alternate spelling of the same section directive.</td>
+</tr>
+<tr>
+<td><code>global</code></td>
+<td><code>global count_pointer</code></td>
+<td>Make this definition visible to a linker outside the current assembly unit.</td>
+</tr>
+<tr>
+<td><code>extern</code></td>
+<td><code>extern source_count</code></td>
+<td>Declare a name that another object will define. The relocation records the use of the unresolved name.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://www.nasm.us/doc/nasm08.html">NASM manual, assembler directives</a> · <a href="https://www.nasm.us/doc/nasm03.html#section-3.2.1">NASM manual, declaring data</a></p>
+<h2>Inspect the symbol and relocation</h2>
+<ol>
+<li>Save as <code>count-reference.asm</code>. Assemble with <code>nasm -f elf64 count-reference.asm -o count-reference.o</code>.</li>
+<li>Run <code>llvm-objdump -t -r count-reference.o</code>. Look for <code>count_pointer</code> defined in <code>.rodata</code>, <code>source_count</code> marked undefined, and an <code>R_X86_64_64</code> relocation at offset zero that names <code>source_count</code>.</li>
+<li>Change <code>section</code> to <code>segment</code> and assemble again. Compare the same three observations. If the symbol is still undefined, that is the expected state before linking. A missing relocation usually means the source did not refer to that name in the stored data.</li>
+</ol>
+<h2>Compare with GNU-style assembly</h2>
+<pre><code class="language-asm">.section .rodata,&quot;a&quot;,@progbits
+.globl count_pointer
+.extern source_count
+count_pointer:
+    .quad source_count
+</code></pre>
+<p>Save as <code>count-reference.s</code>. Run <code>clang --target=x86_64-unknown-linux-gnu -c count-reference.s -o count-reference-clang.o</code> and use the same object inspection command. Here the selected Clang target supplies the object format and target architecture.</p>
+<h2>Compare with a C declaration</h2>
+<pre><code class="language-c">#include &lt;stdint.h&gt;
+
+extern const uint32_t source_count;
+const uint32_t *const count_pointer = &amp;source_count;
+</code></pre>
+<p>The C declaration also says that another unit defines <code>source_count</code>. Its compiled object can put the pointer in a relocation-bearing data section chosen by the compiler. That section name and exact relocation representation depend on the target. The external name still has to match the definition. This is one small version of the agreement that lets an Umicom C file refer to separately compiled assembly.</p>
+  </article></main>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/safer-c-programming/lessons/44-add-with-a-checked-result.html
+
+PURPOSE:
+Add with a checked result
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Add with a checked result | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Add with a checked result</h1>
+<p>A calculator can keep adding digits. A C integer has a finite range. Overflow means the result cannot be represented in the type you chose. Use a checked operation before handing the result to another part of your program.</p>
+<h2>Read the meaning of the return value</h2>
+<p><code>ckd_add(&amp;candidate, left, right)</code> attempts the mathematical sum. It returns <code>false</code> when the sum fits in the type of <code>candidate</code>. It returns <code>true</code> when the sum is outside that range. The macro writes a wrapped value into <code>candidate</code> in that case; the example discards it. The wrapper <code>add_int</code> returns <code>true</code> on success because it reports whether the application should use the result. Follow the two names when reading the branches.</p>
+<h2>Preserve the last valid value</h2>
+<p>A <strong>candidate</strong> is temporary storage for a result you are still checking. The output <code>*result</code> belongs to the caller. Copy the candidate after success. <code>INT_MAX</code> is the greatest <code>int</code> on the selected compiler. Adding one to it cannot fit. A previous answer of 42 should remain available when a new sum is refused.</p>
+<h2>Connect to Umicom</h2>
+<p>Use this pattern when an Umicom application accumulates counts for display. A shared Framework service owns the arithmetic and outcome. The display keeps its last valid count and reports refusal. In exercise code, boundary tests make that contract visible without launching an application.</p>
+<h2>Trace the logic</h2>
+<pre><code class="language-text">TRY ADD left AND right INTO temporary
+IF THE SUM DOES NOT FIT
+    REPORT REFUSAL
+OTHERWISE
+    COPY temporary TO the caller
+    REPORT SUCCESS
+</code></pre>
+<pre><code class="language-c">static bool add_int(int left, int right, int *result)
+{
+    /* The macro may write a wrapped value even when it reports overflow. */
+    int candidate;
+    if (ckd_add(&amp;candidate, left, right)) return false;
+    *result = candidate;
+    return true;
+}
+</code></pre>
+<h2>Build and run one practice case</h2>
+<ol>
+<li>Open a PowerShell terminal with GCC, CMake and Ninja on the search path. To use Clang, select <code>clang</code> in the configure command and choose a separate build directory in all three commands. Check that the selected C compiler and its headers provide <code>&lt;stdckdint.h&gt;</code>. If that header is missing, the final lesson demonstrates <code>size_t</code> guards using only older headers.</li>
+<li>Open <code>labs/native/checked-integers/add.c</code>. Read the successful case and at least one refusal case.</li>
+<li>Run the commands one at a time. Stop on the first error so an earlier executable cannot be mistaken for the latest build.</li>
+</ol>
+<pre><code class="language-powershell">Set-Location &quot;C:/umicom/Umicom-Bits2Banking&quot;
+cmake -S labs/native/checked-integers -B build/checked-integers -G Ninja -DCMAKE_C_COMPILER=gcc
+cmake --build build/checked-integers --target checked-integers-add
+ctest --test-dir build/checked-integers -R &quot;^lesson[.]checked-integers[.]add$&quot; -V --no-tests=error
+</code></pre>
+<p>Expect one passing test and this line of program output.</p>
+<pre><code class="language-text">The total is 42. The refused sum kept it unchanged.
+</code></pre>
+<h2>Try a change</h2>
+<p>Change <code>(19, 23)</code> to <code>(20, 23)</code> and predict which case fails. Update the expected sum and the initial valid value deliberately. Keep the <code>INT_MAX + 1</code> overflow case as two separate macro arguments; do not use a regular overflowing expression.</p>
+<h2>If a result differs</h2>
+<p>If exact-limit addition fails, compare the type of the temporary with the type of the output. If the old value changed on refusal, check whether the macro received the caller’s address instead of the temporary address.</p>
+<h2>Read the C language reference</h2>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf#page=326">WG14 N3220, section 7.20.1 on checked integer operations</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="43-admit-resource-labels-without-trusting-content.html">Previous: Admit resource labels without trusting their contents</a> · <a href="45-separate-subtraction-from-a-debit-rule.html">Next: Separate subtraction from a debit rule</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

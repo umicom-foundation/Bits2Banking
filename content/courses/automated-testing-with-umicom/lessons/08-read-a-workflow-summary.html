@@ -1,0 +1,76 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/08-read-a-workflow-summary.html
+
+PURPOSE:
+Read a workflow summary
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a workflow summary | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read a workflow summary</h1>
+<p>A test run can produce a long report with one row for each check. For a
+status meeting, start with its totals. For diagnosis, open the relevant row
+of the detailed report. Both views can describe the same run.</p>
+<h2>Read a finished workflow</h2>
+<p>A Framework application can ask for a compact JSON summary from a report
+it already owns. JSON is a text format that names each value. A reader can
+look up a name such as <code>attempted</code> without counting the detailed rows.</p>
+<pre><code class="language-c">#include &quot;umicom/testing/uat_workflow.h&quot;
+
+/* The caller owns the finished report and lends it for this read. */
+UmiStatus ReadWorkflowTotals(const UmiUatReport *report, char *buffer,
+    size_t capacity)
+{
+    return UmiUatReportSummaryJson(report, buffer, capacity);
+}
+</code></pre>
+<ol>
+<li>In an existing Framework application, borrow a finished workflow
+   report before the application releases it. Supply a separate writable
+   buffer. Include room for the terminating zero byte after the JSON text.</li>
+<li>Check the returned status before parsing or displaying the buffer.
+   <code>UMI_STATUS_OK</code> says the text was serialized successfully. Read the
+   JSON field <code>accepted</code> to tell whether the workflow passed.</li>
+<li>If the buffer is too small, supply more room and try the same read again.
+   A writable buffer with positive capacity is cleared on failure. A retry
+   views the same report and starts no new test.</li>
+</ol>
+<h2>Explain the totals</h2>
+<p>Here is one synthetic report with a cancellation. The counts belong to the
+rows of the workflow. Each row represents a planned step.</p>
+<pre><code class="language-json">{&quot;schema&quot;:1,&quot;product&quot;:&quot;Umicom Automated Testing&quot;,&quot;kind&quot;:&quot;uat-summary&quot;,&quot;accepted&quot;:false,&quot;cancellation_requested&quot;:true,&quot;planned&quot;:64,&quot;attempted&quot;:59,&quot;passed&quot;:41,&quot;failed&quot;:11,&quot;skipped&quot;:7,&quot;not_run&quot;:5,&quot;cleanup_failed&quot;:2}
+</code></pre>
+<ol>
+<li>Add the 59 attempted and 5 unrun rows to get the 64 planned rows in
+   this example. Inspect the detailed report to learn why a specific row
+   was skipped or left unrun.</li>
+<li>Within the attempted rows, add the 41 passes, 11 failures, and 7 skips.
+   The 2 failed cleanup rows are included in the 11 failures.</li>
+<li>Read <code>accepted</code>. A cancelled workflow can still produce a complete
+   report with useful evidence, and cleanup can report its own failures.</li>
+<li>In your copy of the example, make a separate two-row passing report.
+   Set planned, attempted, and passed to 2. Set the other counts to zero,
+   set accepted to true, and set cancellation requested to false. Read
+   each number back before comparing it with the first example.</li>
+</ol>
+<p>The aggregate includes acceptance, cancellation and counts. Keep target
+names, individual steps and adapter output in the separately reviewed detail
+record. The compact report cannot identify which row failed. Use the detailed
+workflow report for that question, or select a saved JUnit row using the
+previous lesson if your evidence was exported in that format.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="07-select-one-saved-test-result.html">Previous lesson · Select one saved test result</a> · <a rel="next" href="09-read-counted-results-from-a-running-test-log.html">Next lesson · Read counted results from a running test log</a> · <a href="04-read-one-evidence-row.html">Related lesson · Read one test evidence row</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/08-read-a-workflow-summary.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,65 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/109-translate-an-initialized-local-between-c-and-d.html
+
+PURPOSE:
+Translate an initialized local between C and D
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Translate an initialized local between C and D | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Translate an initialized local between C and D</h1>
+<p>A local variable holds a value while a function runs. This exercise adds
+an initialized integer and a checked update to the earlier example. In
+both programs, the computer starts at 32 and adds 10. Write down the
+expected answer before translating.</p>
+<pre><code class="language-text">SET total TO 32
+ADD 10 TO total
+RETURN total
+</code></pre>
+<h2>Follow the same value through C and D</h2>
+<p>Save this as <code>with-local.c</code> in a fresh practice folder.</p>
+<pre><code class="language-c">int answer(void) {
+    int total = 0x20;
+    total += 0b1010;
+    return total;
+}
+</code></pre>
+<ol>
+<li>In PowerShell, run the two translations with the current Umicom C CLI.
+   Choose fresh output names if a file already exists.</li>
+<li>Check that the D output uses <code>int answer()</code> and keeps all three body
+   statements. The C file regenerated from D uses <code>int answer(void)</code>.</li>
+<li>Use the earlier C caller to check the regenerated function. Its value
+   is 42, so the caller should exit with code 0.</li>
+</ol>
+<pre><code class="language-powershell">umicom-c translate c-to-d with-local.c with-local.d
+umicom-c translate d-to-c with-local.d with-local-roundtrip.c
+</code></pre>
+<h2>Check a name before choosing it</h2>
+<p>Some words have a special meaning in one language. Rename <code>total</code> to
+<code>alias</code> at all three places in another copy. Try translating it to a
+fresh D file. Expect a syntax diagnostic from the translation and check
+that a new output was not created. D reserves that word for declarations.</p>
+<p>Choose <code>aliasCount</code> instead and try again. The longer name is a
+complete, different word. The expected value remains 42. Repeat the C
+caller check to verify it.</p>
+<p>The exercise uses one function, initialized integer locals and checked
+assignments. Keep the body free of comments during this C and D exercise.
+An editor can show both outputs and surface the diagnostic before a
+learner opens the generated file. <a href="https://dlang.org/spec/declaration.html#VariableDeclarations">D declarations</a> · <a href="https://dlang.org/spec/lex.html#keywords">D keywords</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="108-translate-one-return-between-c-and-d.html">Previous lesson · Translate one return between C and D</a> · <a href="110-inspect-paused-integer-slots.html">Next lesson · Inspect paused integer slots</a> · <a href="107-count-reached-source-statements.html">Related lesson · Count reached source statements</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/109-translate-an-initialized-local-between-c-and-d.md">Markdown edition</a> · <a href="../../d-keyword-reference/index.html">D keyword reference</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -88,3 +88,5 @@ Record inputs, expected outputs and refusal cases before extending the example. 
 
 [Previous lesson](03-inspect-object-code.md) · [Course contents](index.md)
 
+[Next lesson: Write initialized data in NASM](05-write-initialized-data.md)
+

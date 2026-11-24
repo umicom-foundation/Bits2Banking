@@ -1,0 +1,133 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-php/lessons/11-stream-values-and-read-source-markers.html
+
+PURPOSE:
+Stream values and read source markers
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stream values and read source markers | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Stream values and read source markers</h1>
+<p>Some PHP words belong to a specialised workflow. Generators stream values as the caller asks for them. Another group of spellings exposes the location of source or changes how a file is handled.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Small PHP example</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yield</code></td>
+<td><code>function one(): Generator { yield 42; }</code></td>
+<td>Suspends the function and provides a value to its iterator.</td>
+</tr>
+<tr>
+<td><code>yield from</code></td>
+<td><code>function three(): Generator { yield from [1, 2, 3]; }</code></td>
+<td>Relays values from another iterable.</td>
+</tr>
+<tr>
+<td><code>eval</code></td>
+<td><code>eval('return 40 + 2;')</code></td>
+<td>Evaluates a string as PHP. This fixed teaching string shows the syntax. Keep data as data in real request handling.</td>
+</tr>
+<tr>
+<td><code>__halt_compiler</code></td>
+<td>At file scope, <code>__halt_compiler();</code> followed by literal data</td>
+<td>Ends PHP compilation of that file and leaves a byte offset for the trailing data. It belongs in specialised archive formats.</td>
+</tr>
+<tr>
+<td><code>__FILE__</code></td>
+<td><code>echo basename(__FILE__);</code></td>
+<td>Describes the current source file.</td>
+</tr>
+<tr>
+<td><code>__DIR__</code></td>
+<td><code>$local = __DIR__;</code></td>
+<td>Describes the directory containing that file.</td>
+</tr>
+<tr>
+<td><code>__LINE__</code></td>
+<td><code>$position = __LINE__;</code></td>
+<td>Supplies the use site's line number.</td>
+</tr>
+<tr>
+<td><code>__FUNCTION__</code></td>
+<td><code>function sample(): string { return __FUNCTION__; }</code></td>
+<td>Supplies the function name in its source context.</td>
+</tr>
+<tr>
+<td><code>__CLASS__</code></td>
+<td>In a class method, <code>return __CLASS__;</code></td>
+<td>Supplies the class name for that location.</td>
+</tr>
+<tr>
+<td><code>__METHOD__</code></td>
+<td>In a method, <code>return __METHOD__;</code></td>
+<td>Supplies the method's qualified name.</td>
+</tr>
+<tr>
+<td><code>__NAMESPACE__</code></td>
+<td>After a namespace declaration, <code>echo __NAMESPACE__;</code></td>
+<td>Supplies the current namespace name.</td>
+</tr>
+<tr>
+<td><code>__TRAIT__</code></td>
+<td>Inside a trait method, <code>return __TRAIT__;</code></td>
+<td>Supplies the trait name for its defining location.</td>
+</tr>
+<tr>
+<td><code>__PROPERTY__</code></td>
+<td>Inside a property hook, <code>get { return __PROPERTY__; }</code></td>
+<td>Supplies the property name in the hook context. This form requires PHP 8.4 or later.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-php">&lt;?php
+function amounts(): Generator {
+    yield 12;
+    yield from [15, 15];
+}
+$total = 0;
+foreach (amounts() as $amount) {
+    $total += $amount;
+}
+echo $total, &quot;\n&quot;;
+</code></pre>
+<p>Expect <code>42</code>. Remove one amount to see the total change while the generator continues to use the values written in the program.</p>
+<pre><code class="language-c">/* A native iterator keeps its progress and uses a separate end state. */
+while (next_amount(&amp;iterator, &amp;pennies)) {
+    total += pennies;
+}
+</code></pre>
+<pre><code class="language-text">ASK the source for its next number
+WHILE a next number exists
+    ADD it to the total
+    ASK for the next number
+RETURN the total
+</code></pre>
+<p>The C example passes the iterator state explicitly. Umicom Framework source steps also preserve a source location separately from the value they report. Test an empty iterator, one item and three items. Keep private source paths out of externally visible web responses. <a href="https://www.php.net/manual/en/language.generators.syntax.php">PHP generators</a> · <a href="https://www.php.net/manual/en/language.constants.magic.php">PHP magic constants</a> · <a href="https://www.php.net/manual/en/function.halt-compiler.php">PHP halt compiler</a></p>
+<h2>Run the examples</h2>
+<ol>
+<li>Save the PHP example as <code>practice.php</code>. Keep the opening PHP tag. In a terminal with PHP available, run <code>php practice.php</code> and compare the output with the expected result above.</li>
+<li>Open the C23 lab linked below and save it as <code>main.c</code>. From a terminal with GCC, run <code>gcc -std=c23 -Wall -Wextra -Wpedantic main.c -o native-keywords.exe</code>. In PowerShell run <code>.\native-keywords.exe</code> and find the <code>generators</code> row.</li>
+<li>If the shell cannot find a compiler or PHP, start with the pseudocode and compare your predicted result with the examples.</li>
+</ol>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="10-release-a-request-after-an-error.html">Previous lesson · Release a request after an error</a> · <a href="12-use-types-and-contextual-words.html">Next lesson · Use types and contextual words</a> · <a href="../../../lessons/04-web/learning-php/11-stream-values-and-read-source-markers.md">Markdown edition</a> · <a href="../../../labs/native/php-keyword-comparison/main.c">Complete C23 lab</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

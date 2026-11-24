@@ -83,3 +83,4 @@ Record inputs, expected outputs and refusal cases before extending the example. 
 
 [Previous lesson](02-validation-and-html-output.md) · [Course contents](index.md)
 
+[Next lesson · Choose a payment state](04-choose-a-payment-state.md)

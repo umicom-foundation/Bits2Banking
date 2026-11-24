@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/99-count-bytes-from-an-admitted-type.html
+
+PURPOSE:
+Practise converting a count of fixed-width C fields to a checked byte count.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Count bytes from an admitted type | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="98-name-values-before-the-entry.html">Previous lesson</a></nav>
+    <h1>Count bytes from an admitted type</h1>
+    <p>A record can carry several fields, such as the number of books borrowed, returned and still on loan. If you encode three signed 32-bit fields consecutively, each one uses four bytes. Find that width from the compiler profile before calculating the size of the record.</p>
+    <pre><code class="language-c">constexpr int BYTES_PER_FIELD = sizeof(const int);
+enum { FIELDS = 3, RECORD_BYTES = FIELDS * BYTES_PER_FIELD };
+static_assert(RECORD_BYTES == 12, "Expect three four-byte fields");
+
+int main(void) {
+    return RECORD_BYTES;
+}</code></pre>
+    <p><code>sizeof</code> tells the compiler to measure the admitted type. Adding <code>const</code> keeps the same representation and limits how an object can be changed. The operator accepts a parenthesized integer type in this profile. Other C compilers can choose a different width for <code>int</code>. <a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf">WG14 C23 working draft, section 6.5.3.4</a></p>
+    <h2>Run and check the units</h2>
+    <ol>
+      <li>Save the program as <code>record-size.c</code>. Run <code>umicom-c interpret record-size.c</code> and look for <code>Result: 12</code>.</li>
+      <li>Change <code>FIELDS</code> to 5. Run <code>umicom-c interpret record-size.c --check-only</code> and read the assertion message. The field count is now five, so the byte count is 20. Update the assertion to check 20 and describe five fields, then expect <code>Result: 20</code> when you run the program.</li>
+      <li>Replace <code>sizeof(const int)</code> with <code>sizeof(void)</code> and repeat the check. This profile expects an integer type after the opening parenthesis. Restore the original type to recover.</li>
+    </ol>
+    <p>A native structure can include alignment padding and a real binary format also defines byte order. This exercise counts consecutive fixed-width fields. It is the first arithmetic check you can make before designing a file or message format.</p>
+<h2>Measure a type before its value is ready</h2>
+<p>Consider an integer whose first value should be the size of its own type. In the practice file <code>labs/native/compiler-source-boundaries/own_declarator.c</code>, <code>const int byte_count = sizeof byte_count;</code> already establishes the name and its integer type before the initializer is checked. Measuring the type requires no stored value from <code>byte_count</code>. The compiler can place the result into that new variable once the measurement succeeds.</p>
+<p>Run <code>umicom-c interpret labs/native/compiler-source-boundaries/own_declarator.c</code> from the Bits2Banking checkout. The final comparison returns <code>Result: 1</code> when the stored count matches <code>sizeof(int)</code>. In a copy, add parentheses to make <code>sizeof(byte_count)</code> and expect the same result. Changing the initializer to the name <code>byte_count</code> on its own requests an actual value from a variable still being initialized. Check that copy with <code>--check-only</code> and expect refusal.</p>
+<p>When reading compiler code, follow the name and its value separately. The declared type can be known while its storage is waiting for initialization. The interpreter uses the same distinction when it prepares source steps. Its source check does not need to reach into uninitialized storage.</p>
+<pre><code class="language-c">int main(void)
+{
+    /* The operand names its type while byte_count is being initialized. */
+    const int byte_count = sizeof byte_count;
+    /* A normalized comparison gives the same answer at different int widths. */
+    return byte_count == sizeof(int);
+}
+</code></pre>
+    <p><a rel="next" href="100-align-record-fields.html">Next lesson on aligning a field</a></p>
+  </article></main>
+</body>
+</html>

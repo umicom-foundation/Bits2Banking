@@ -48,3 +48,5 @@ The fixture reports a 4096-byte **filesystem block** even though its disk **logi
 3. Explain why the unchanged result after a refusal still belongs to the previous inspection. If a test disagrees, check the supplied last block, requested offset and byte count before editing the expected outcome.
 
 For a final experiment, use a last block of 2051 and keep the original superblock. Predict how many reads occur, then run `volume-too-large`. Four logical blocks cover the complete header, so one read can occur. Its claimed 16,777,216-byte volume exceeds the 2048-byte partition, so Framework still refuses the observation. Header bounds, volume bounds and a boot test answer three separate questions.
+
+[Next: Check the minimum space for a FAT32 volume](66-check-the-minimum-space-for-fat32.md)

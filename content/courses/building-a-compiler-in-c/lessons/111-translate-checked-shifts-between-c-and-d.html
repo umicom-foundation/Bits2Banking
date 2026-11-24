@@ -1,0 +1,129 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/111-translate-checked-shifts-between-c-and-d.html
+
+PURPOSE:
+Translate checked shifts between C and D
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Translate checked shifts between C and D | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Translate checked shifts between C and D</h1>
+<p>Start with four pieces of paper. Write <code>1</code>, <code>32</code>, <code>42</code> and <code>21</code> on them. They are the values stored in one variable as the program runs. Follow the changes before reading the syntax. The final calculation returns <code>42</code> to the caller.</p>
+<h2>Move a bit one place at a time</h2>
+<p>A bit is a digit that can be zero or one. A whole number written in binary uses bits in places worth 1, 2, 4, 8 and so on, starting at the right. The binary digits <code>000001</code> represent 1. Moving that one bit five places left gives <code>100000</code>, which represents 32. The operator <code>&lt;&lt;</code> moves left and <code>&gt;&gt;</code> moves right. The number on the right of the operator is the number of places to move.</p>
+<p>In this exercise, the input to a shift is nonnegative and the result fits in a signed 32-bit integer. Each left move doubles the value. Each right move halves it and discards any remainder. For example, <code>43 &gt;&gt; 1</code> gives 21. The assignment forms <code>&lt;&lt;=</code> and <code>&gt;&gt;=</code> store the new result in the same variable.</p>
+<pre><code class="language-text">SET total TO 1
+SHIFT total LEFT BY 5 AND STORE IT    total is 32
+ADD 10 TO total                       total is 42
+SHIFT total RIGHT BY 1 AND STORE IT   total is 21
+RETURN total TIMES 2                  answer is 42
+</code></pre>
+<p>This pseudocode describes the steps in plain language. The column on the right is a paper trace of the value. The final line calculates the returned value. At that line the local <code>total</code> still contains 21.</p>
+<h2>Translate the C23 function and read the D output</h2>
+<h3>1. Save the C23 source</h3>
+<p>Open a fresh practice folder. Save the example as <code>with-shifts.c</code>. Use a version of the Umicom C CLI that supports checked shifts in both translation directions.</p>
+<pre><code class="language-c">int answer(void) {
+    int total = 1;
+    total &lt;&lt;= 5;
+    total += 10;
+    total &gt;&gt;= 1;
+    return total * 2;
+}
+</code></pre>
+<h3>2. Translate in both directions</h3>
+<p>Open PowerShell in the practice folder. Run these commands with fresh output names. Stop if the first command reports an error.</p>
+<pre><code class="language-powershell">umicom-c translate c-to-d with-shifts.c with-shifts.d
+umicom-c translate d-to-c with-shifts.d with-shifts-roundtrip.c
+</code></pre>
+<h3>3. Read the generated D file</h3>
+<p>Open <code>with-shifts.d</code>. Compare it with the expected D output below. The two function headers both describe a function with no parameters. The C example spells it with <code>(void)</code>. The D output has empty parentheses. Each statement inside the braces is the same.</p>
+<pre><code class="language-d">int answer() {
+    int total = 1;
+    total &lt;&lt;= 5;
+    total += 10;
+    total &gt;&gt;= 1;
+    return total * 2;
+}
+</code></pre>
+<h3>4. Compare the regenerated C file</h3>
+<p>Open <code>with-shifts-roundtrip.c</code>. Check that the function header uses <code>(void)</code> again and that all five statements match the first example. A round trip means translating to D and back to C. The generated file can have a different line-ending convention from a file saved in your editor.</p>
+<h2>Check the regenerated C function</h2>
+<p>A caller is a small program that asks the function for its result. If you have GCC with C23 support, save this caller as <code>verify-shifts.c</code> in the same practice folder. It prints the result and uses exit code 0 for a match.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+int answer(void);
+int main(void) { const int value=answer(); printf(&quot;%d\n&quot;,value); return value==42?0:1; }
+</code></pre>
+<pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Werror verify-shifts.c with-shifts-roundtrip.c -o verify-shifts.exe
+if ($LASTEXITCODE -ne 0) { throw 'C compilation failed.' }
+.\verify-shifts.exe
+$LASTEXITCODE
+</code></pre>
+<p>Expect <code>42</code> on the first line, followed by exit code <code>0</code>. If the compiler cannot find <code>answer</code>, check that both source files appear in the command. The comparison here verifies the generated D text, then compiles and runs the C copy made from it. Executing the D program requires a separate D compiler check.</p>
+<h2>Predict which shifts the translator refuses</h2>
+<p>Use this paper check before trying a new shift. A signed 32-bit integer stores whole numbers through <code>2147483647</code> on the positive side. The checked translator accepts a count from 0 through 31, including both endpoints.</p>
+<pre><code class="language-text">IF the left value is below zero, REFUSE
+IF the count is below zero or above 31, REFUSE
+FIND the exact result of the move before storing it
+IF the result exceeds 2147483647, REFUSE
+RETURN the result
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>D return expression</th>
+<th>Expected result from this translation profile</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-1 &gt;&gt; 1</code></td>
+<td>Arithmetic refusal</td>
+<td>The checked profile requires a nonnegative left value.</td>
+</tr>
+<tr>
+<td><code>1 &lt;&lt; -1</code></td>
+<td>Arithmetic refusal</td>
+<td>A shift count cannot be negative here.</td>
+</tr>
+<tr>
+<td><code>1 &lt;&lt; 32</code></td>
+<td>Arithmetic refusal</td>
+<td>The largest allowed count is 31.</td>
+</tr>
+<tr>
+<td><code>1 &lt;&lt; 31</code></td>
+<td>Arithmetic refusal</td>
+<td>The count fits, and the result <code>2147483648</code> exceeds the positive limit.</td>
+</tr>
+<tr>
+<td><code>42 &gt;&gt;&gt; 1</code></td>
+<td>Syntax refusal</td>
+<td>D has an unsigned right shift, and this checked profile accepts <code>&lt;&lt;</code> and <code>&gt;&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>1 &lt; &lt; 5</code></td>
+<td>Syntax refusal</td>
+<td>A space inside <code>&lt;&lt;</code> splits the shift into two tokens. A token is one meaningful piece of source text.</td>
+</tr>
+</tbody>
+</table>
+<p>For a refusal you can try, save <code>int answer() { return 1 &lt;&lt; 31; }</code> as <code>too-large.d</code> and run <code>umicom-c translate d-to-c too-large.d refused.c</code>. Expect an arithmetic diagnostic. With a fresh destination name, check that <code>refused.c</code> was left absent. Restore <code>with-shifts.d</code> as your input when checking the original example again.</p>
+<p>These are the rules of Umicom C’s checked C and D translation profile. D has other valid expressions and can be used outside this exercise. An editor such as Umicom Studio IDE can present the two translated files side by side and show a diagnostic for a refused expression. Compare the earlier shift lesson for more practice checking the arithmetic one step at a time.</p>
+<p><a href="https://dlang.org/spec/expression.html#shiftexpression">D shift expressions</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="110-inspect-paused-integer-slots.html">Previous lesson · Inspect paused integer slots</a> · <a rel="next" href="112-translate-grouped-integer-literals-between-c-and-d.html">Next lesson · Translate grouped integer literals between C and D</a> · <a href="86-check-bit-shifts-before-publishing-a-result.html">Related lesson · Check bit shifts before publishing a result</a> · <a href="109-translate-an-initialized-local-between-c-and-d.html">Related lesson · Translate an initialized local between C and D</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/111-translate-checked-shifts-between-c-and-d.md">Markdown edition</a> · <a href="../../d-keyword-reference/index.html">D keyword reference</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

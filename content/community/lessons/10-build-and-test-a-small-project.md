@@ -1,3 +1,20 @@
+<!--
+Umicom Bits2Banking
+File: content/community/lessons/10-build-and-test-a-small-project.md
+
+PURPOSE:
+Guide learners through a complete beginner C project and its tests.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+
+![Umicom](../../assets/branding/umicom-wordmark.svg)
+
 # Build and test a small notes project
 
 Separate reusable C behaviour from its caller and test the boundary.
@@ -12,7 +29,10 @@ Our small program counts words separated by spaces, tabs and new lines. It does 
 
 This is the same ownership principle used in Umicom: reusable behaviour belongs in a shared component. A window or command-line caller asks that component to do the work. The teaching example is independent and does not need the full Framework build.
 
+<!-- The repository README remains available in a source checkout. The website index owns its URL and offers the same files and build steps.
 [Open the complete project and file list](../examples/notes-word-count/README.md).
+-->
+[Open the complete project and file list](../examples/notes-word-count/index.html).
 
 ## 1. Find the files
 

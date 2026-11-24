@@ -1,0 +1,95 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/09-read-counted-results-from-a-running-test-log.html
+
+PURPOSE:
+Read counted results from a running test log
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read counted results from a running test log | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read counted results from a running test log</h1>
+<p>A test report may still be growing while you read it. CTest prints a
+line when it starts a test and a separate line when it records an
+outcome. Start by finding the latest complete outcome line.</p>
+<h2>Identify the information in a line</h2>
+<p>In <code>2/4 Test #7: exercise.paused ....***Timeout 3.00 sec</code>, CTest
+has recorded outcome 2 of 4. The configured test number is 7. These
+numbers answer different questions. In the same way, a skipped or timed
+out row can increase the observed count without adding a pass.</p>
+<p>This small C23 exercise borrows the Framework reader used by the
+developer tools. Save it as <code>count-test-rows.c</code> in a tutorial
+project linked with the Framework developer productivity library.</p>
+<pre><code class="language-c">#include &quot;umicom/developer_productivity/diagnostic_parsers/ctest.h&quot;
+#include &lt;inttypes.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const char *const lines[] = {
+        &quot; 1/4 Test #5: exercise.read .... Passed 0.03 sec&quot;,
+        &quot; 2/4 Test #7: exercise.paused ....***Timeout 3.00 sec&quot;,
+        &quot;Start 11: exercise.waiting&quot;
+    };
+    for (size_t index = 0U; index &lt; sizeof lines / sizeof lines[0]; ++index) {
+        UmiDeveloperCtestResultRow row;
+        const UmiStatus status = UmiDeveloperCtestResultParse(lines[index], &amp;row);
+        if (status == UMI_STATUS_NOT_FOUND) {
+            puts(&quot;No completed result in this line.&quot;);
+            continue;
+        }
+        if (status != UMI_STATUS_OK) return 1;
+
+        /* The counted result and the registered test number serve different needs. */
+        const char *label = row.kind == UMI_DEVELOPER_CTEST_PASSED
+            ? &quot;passed&quot; : &quot;timed out&quot;;
+        printf(&quot;%&quot; PRIu64 &quot;/%&quot; PRIu64 &quot; #%&quot; PRIu64 &quot; %s\n&quot;,
+            row.observedResults, row.plannedTests, row.testNumber, label);
+    }
+    return 0;
+}
+</code></pre>
+<p>With a current GCC on your PowerShell path, point the compiler at the
+Framework source checkout containing the reader. Run these commands from
+the folder where you saved the example.</p>
+<pre><code class="language-powershell">$Framework = Read-Host 'Enter the path to the Umicom Framework checkout'
+gcc -std=c23 -I &quot;$Framework/include&quot; count-test-rows.c &quot;$Framework/src/developer_productivity/diagnostic_parsers/ctest.c&quot; -o count-test-rows.exe
+if ($LASTEXITCODE -eq 0) { &amp; .\count-test-rows.exe }
+</code></pre>
+<p>The example supplies three fixed lines with two possible result kinds.
+An application that accepts other outcomes can check the full
+<code>UmiDeveloperCtestResultKind</code> enumeration.</p>
+<pre><code class="language-text">1/4 #5 passed
+2/4 #7 timed out
+No completed result in this line.
+</code></pre>
+<h2>Use the partial result</h2>
+<ol>
+<li>Count the observed outcomes and write down how many passed. In this
+   example, two outcomes are visible and one passed.</li>
+<li>Keep the latest start line separately. It shows that test number 11
+   started, with its result still absent from this capture.</li>
+<li>Read the final summary and the command exit status after the run
+   finishes. For a real project, compare the report with the configured
+   target and build before using it as qualification evidence.</li>
+</ol>
+<p>The SDK reader expects one complete, bounded line at a time. If a capture
+ends in the middle of a line, keep the bytes until the rest arrives.
+The parser leaves its output unchanged when a line is unsupported.
+An Umicom Studio IDE test panel can update its progress label while the
+final test report is still being produced.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="08-read-a-workflow-summary.html">Previous lesson · Read a workflow summary</a> · <a rel="next" href="10-keep-the-outer-test-total.html">Next lesson · Keep the outer test total</a> · <a href="07-select-one-saved-test-result.html">Related lesson · Select one saved test result</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/09-read-counted-results-from-a-running-test-log.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,64 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/108-translate-one-return-between-c-and-d.html
+
+PURPOSE:
+Translate one return between C and D
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Translate one return between C and D | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Translate one return between C and D</h1>
+<p>A <strong>function</strong> groups steps that can be called from another part of a program. The two functions in this exercise return one integer. You can compare their punctuation and verify the same arithmetic after translation.</p>
+<h2>Read the number before translating</h2>
+<p>Hexadecimal <code>0x20</code> means 32. Binary <code>0b1010</code> means 10. These two numbers have separate bits set. The OR operator <code>|</code> keeps a bit when either number contains it, so the answer is 42.</p>
+<pre><code class="language-text">START a function with no parameters
+RETURN the bits set in 32 OR 10
+</code></pre>
+<p>Save this C23 function as <code>answer.c</code> in a fresh practice folder.</p>
+<pre><code class="language-c">int answer(void) { return 0x20 | 0b1010; }
+</code></pre>
+<p>The generated D function keeps the same expression and uses an empty parameter list.</p>
+<pre><code class="language-d">int answer() {
+    return 0x20 | 0b1010;
+}
+</code></pre>
+<h2>Compare two outputs and use a caller</h2>
+<ol>
+<li>Open PowerShell in the practice folder. Use a current Umicom C CLI with both D directions available in its help.</li>
+<li>Run the two commands. Open both new files. Verify the expression and the difference between empty parentheses in D and the explicit C <code>(void)</code> convention.</li>
+<li>Add a separate C caller containing <code>int answer(void);</code> and <code>int main(void) { return answer() == 42 ? 0 : 1; }</code>. Build it with the regenerated C file. Expect the caller to exit with code 0.</li>
+</ol>
+<pre><code class="language-powershell">umicom-c translate c-to-d answer.c answer.d
+umicom-c translate d-to-c answer.d answer-roundtrip.c
+</code></pre>
+<p>If you already have DMD for Windows, save this optional caller as <code>verify.d</code>. The file <code>answer.d</code> supplies the default module name <code>answer</code>.</p>
+<pre><code class="language-d">import answer : answer;
+
+int main() {
+    return answer() == 42 ? 0 : 1;
+}
+</code></pre>
+<pre><code class="language-powershell">dmd verify.d answer.d -of=verify-d.exe
+.\verify-d.exe
+$LASTEXITCODE
+</code></pre>
+<p>Expect exit code 0 after a successful build. If DMD cannot find the module, confirm both files are together and the generated file is named <code>answer.d</code>. If the translator refuses a module header or a local variable, restore the earlier one-return example and choose a fresh output name.</p>
+<p>This checked profile accepts one signed integer return expression. The example connects the Umicom C translation service with the D language reference. An editor can show each emitted file and keep the original source available.</p>
+<p><a href="https://dlang.org/spec/function.html">D function declarations</a> · <a href="https://dlang.org/spec/module.html">D module names</a> · <a href="https://dlang.org/dmd-windows.html">DMD on Windows</a></p>
+<p>The following exercise shows the checked function entry with initialized integer locals and an update.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="107-count-reached-source-statements.html">Previous lesson · Count reached source statements</a> · <a rel="next" href="109-translate-an-initialized-local-between-c-and-d.html">Next lesson · Translate an initialized local between C and D</a> · <a href="105-translate-hexadecimal-and-binary.html">Related lesson · Translate hexadecimal and binary</a> · <a href="106-translate-a-checked-local-update.html">Earlier lesson · Translate a checked local update</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/108-translate-one-return-between-c-and-d.md">Markdown edition</a> · <a href="../../d-keyword-reference/index.html">D keyword reference</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

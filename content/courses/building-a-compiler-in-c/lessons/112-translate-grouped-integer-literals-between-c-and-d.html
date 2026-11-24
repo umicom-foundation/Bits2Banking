@@ -1,0 +1,152 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/112-translate-grouped-integer-literals-between-c-and-d.html
+
+PURPOSE:
+Translate grouped integer literals between C and D
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Translate grouped integer literals between C and D | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Translate grouped integer literals between C and D</h1>
+<p>A long number can be hard to read when all its digits run together. A <strong>digit separator</strong> makes groups easier to see. The group marks change the spelling. The number keeps its value as it moves between C23 and D.</p>
+<h2>Read the parts of a number</h2>
+<p>A <strong>literal</strong> is a value written directly in source code. A <strong>radix</strong>, also called a base, tells you what each position means. Decimal is base ten. The digits in <code>1042</code> stand for one thousand, four tens and two ones. Hexadecimal is base sixteen. Its letter <code>A</code> represents ten, so <code>2A</code> is two sixteens plus ten. Binary is base two. Its places are worth 1, 2, 4, 8, 16 and 32, starting at the right.</p>
+<table>
+<thead>
+<tr>
+<th>Radix</th>
+<th>C23 spelling</th>
+<th>D spelling</th>
+<th>Decimal value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Decimal</td>
+<td><code>1'042</code></td>
+<td><code>1_042</code></td>
+<td>1042</td>
+</tr>
+<tr>
+<td>Hexadecimal</td>
+<td><code>0x2'A</code></td>
+<td><code>0x2_A</code></td>
+<td>42</td>
+</tr>
+<tr>
+<td>Binary</td>
+<td><code>0b10'1010</code></td>
+<td><code>0b10_1010</code></td>
+<td>42</td>
+</tr>
+</tbody>
+</table>
+<p>The prefixes <code>0x</code> and <code>0b</code> choose hexadecimal and binary. Cover the separator with a pencil and read the remaining digits. In the binary example, the ones are in the 32, 8 and 2 places.</p>
+<h2>Trace the value before running anything</h2>
+<p>The name <code>total_2</code> identifies a local variable, which stores a number during a function call. The underscore in this name is part of the identifier. It stays exactly where it is when the program is translated.</p>
+<pre><code class="language-text">STORE 1042 in total_2
+SUBTRACT 1000 from total_2       total_2 is 42
+ADD the hexadecimal value 42    total_2 is 84
+RETURN total_2 minus the binary value 42
+</code></pre>
+<p>The returned value is 42. The local still contains 84 at the last line because that line calculates a result without assigning it back to the local.</p>
+<h2>Translate the checked function</h2>
+<h3>1. Save the C23 version</h3>
+<p>Save the following in a new practice folder as <code>grouped.c</code>. Use an Umicom C compiler that supports grouped integers in both C and D translation directions.</p>
+<pre><code class="language-c">int answer(void) {
+    int total_2 = 1'042;
+    total_2 -= 1'000;
+    total_2 += 0x2'A;
+    return total_2 - 0b10'1010;
+}
+</code></pre>
+<h3>2. Read the D result</h3>
+<p>Run these commands in PowerShell. Use new output names if either destination already exists. Stop if the first command reports an error.</p>
+<pre><code class="language-powershell">umicom-c translate c-to-d grouped.c grouped.d
+umicom-c translate d-to-c grouped.d grouped-roundtrip.c
+</code></pre>
+<p>Here is the expected D text. In each number, one D underscore stands in the same place as one C apostrophe. The name <code>total_2</code> uses the same spelling in both files.</p>
+<pre><code class="language-d">int answer() {
+    int total_2 = 1_042;
+    total_2 -= 1_000;
+    total_2 += 0x2_A;
+    return total_2 - 0b10_1010;
+}
+</code></pre>
+<h3>3. Check the result in the regenerated C file</h3>
+<p>Open <code>grouped-roundtrip.c</code>. The C function header and its digit groups should match the original example. The editor and the translator can use different line endings.</p>
+<p>If you have GCC with C23 support, save this caller in the practice folder as <code>verify-grouped.c</code>. It prints the result of the regenerated function and returns exit code zero for a match.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+int answer(void);
+int main(void) { const int value=answer(); printf(&quot;%d\n&quot;,value); return value==42?0:1; }
+</code></pre>
+<pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Werror verify-grouped.c grouped-roundtrip.c -o verify-grouped.exe
+if ($LASTEXITCODE -ne 0) { throw 'C compilation failed.' }
+.\verify-grouped.exe
+$LASTEXITCODE
+</code></pre>
+<p>Expect 42 followed by exit code 0. If the compiler cannot find the function, confirm that the command names both source files. This check runs the regenerated C program. Running the D program calls for a separate D compiler check.</p>
+<h2>Find the same byte after checking a number</h2>
+<p>A processor can count the position of each character in the ASCII source file as a <strong>byte offset</strong>. It starts counting at zero. In the small expression <code>1_000 + 4/0</code>, the slash is at offset 9 within the expression. If the checker changes the underscore to an apostrophe in its private copy, the slash is still at offset 9.</p>
+<pre><code class="language-text">READ a decimal, hexadecimal or binary number
+CHECK that each separator is between two digits of that base
+MAKE a private copy for arithmetic checking
+CHANGE each admitted D separator to one apostrophe in the copy
+USE the original source offsets when reporting a problem
+PUBLISH the complete translation after the checked result and output fit
+</code></pre>
+<p>Copy the one-line expression on paper and number its characters. Changing a separator to another single byte preserves the later positions. In a full file, the diagnostic also counts the bytes before that expression.</p>
+<h2>Try a spelling outside the shared rules</h2>
+<p>The shared profile accepts one separator between adjacent digits of the same radix. Try these predictions before running the translator.</p>
+<table>
+<thead>
+<tr>
+<th>Source expression</th>
+<th>Reason for refusal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D <code>1__042</code></td>
+<td>A second separator follows the first, where a digit is needed.</td>
+</tr>
+<tr>
+<td>D <code>0x_2A</code></td>
+<td>A separator occupies the first digit position after the prefix.</td>
+</tr>
+<tr>
+<td>D <code>1_</code></td>
+<td>The separator has no following digit.</td>
+</tr>
+<tr>
+<td>D <code>0b1_2</code></td>
+<td>Binary uses the digits 0 and 1.</td>
+</tr>
+<tr>
+<td>C <code>0'17</code></td>
+<td>A leading zero begins an octal constant in C23. The shared profile refuses this spelling.</td>
+</tr>
+</tbody>
+</table>
+<p>Save <code>int answer() { return 0x_2A; }</code> as <code>grouped-refusal.d</code>. Run the next command with a fresh destination.</p>
+<pre><code class="language-powershell">umicom-c translate d-to-c grouped-refusal.d refused.c
+</code></pre>
+<p>Expect a syntax diagnostic identifying the underscore and check that the fresh output remains absent. D’s full grammar has additional placements for underscores. The current feature covers the shared checked C and D profile. C and Java translations continue to use their earlier integer spelling rules.</p>
+<p>A Studio translation view can use the original byte offset to highlight the relevant character in the source file. The learner can compare both successful outputs and return to the original file when a spelling is refused.</p>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf">C23 integer constants, section 6.4.4.2</a> · <a href="https://dlang.org/spec/lex.html">D integer literal grammar</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="111-translate-checked-shifts-between-c-and-d.html">Previous lesson · Translate checked shifts between C and D</a> · <a rel="next" href="113-compare-signed-integers-between-c-and-d.html">Next lesson · Compare signed integers between C and D</a> · <a href="105-translate-hexadecimal-and-binary.html">Related lesson · Translate hexadecimal and binary</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/112-translate-grouped-integer-literals-between-c-and-d.md">Markdown edition</a> · <a href="../../c23-keyword-reference/index.html">C23 keyword reference</a> · <a href="../../d-keyword-reference/index.html">D keyword reference</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

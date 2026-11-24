@@ -15,7 +15,10 @@ MIT
 -->
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preserve output when a buffer is too small | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
 <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
-</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-format-get-and-head-responses.html">Previous lesson</a> · <a rel="next" href="14-register-a-route-and-context.html">Next lesson</a></nav>
+</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><!-- Keep the previous offline artwork reference for review. The existing header now selects the approved dark wordmark directly, preserving the logo's dimensions and alternative text.
+<img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom">
+-->
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-format-get-and-head-responses.html">Previous lesson</a> · <a rel="next" href="14-register-a-route-and-context.html">Next lesson</a></nav>
 <h1>Preserve output when a buffer is too small</h1>
 <p>A buffer is a region of memory with a fixed capacity. A formatter must not write beyond that capacity, even when the desired output is much larger.</p>
 <h2>Prepare</h2>
@@ -31,6 +34,71 @@ MIT
 <li>Confirm that the reported length was reset.</li>
 </ol>
 <p>This pattern is useful for file names, serialized records and generated messages as well as HTTP.</p>
+<h2 id="replace-text-in-a-saved-response">Replace text in a saved response</h2>
+<p>The formatter exercise checks the output buffer that would hold HTTP bytes. Before formatting, the response itself can hold a status, headers and text. A text replacement that exceeds capacity should leave that response available for a corrected attempt.</p>
+<ol>
+<li><p>Make a practice copy of the <code>labs/native/framework-http-contracts</code> folder. Keep the original serialization example for the earlier exercise.</p></li>
+<li><p>Save this C23 program as <code>response.c</code> in your copy. It saves the response bytes, then attempts to replace the text with a string that exceeds the body capacity. After checking the refusal, it takes a pointer to the short suffix of the existing text and uses it for a successful replacement.</p>
+<pre><code class="language-c">/*-----------------------------------------------------------------------------
+ * Umicom Bits2Banking
+ * File: response.c
+ *
+ * PURPOSE:
+ *   Check that a refused text update preserves the previous response.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
+#include &quot;umicom/web/response.h&quot;
+
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main(void)
+{
+    /* Keep the larger exercise buffers in static storage. */
+    static UmiWebResponse response;
+    static unsigned char saved[sizeof response];
+    static char oversized[UMI_WEB_BODY_CAPACITY + 1U];
+    if (umi_web_response_set_text(&amp;response, 200, &quot;text/plain&quot;, &quot;keep this&quot;) != UMI_STATUS_OK)
+        return 1;
+
+    /* Save all response bytes so the comparison checks more than its status. */
+    memcpy(saved, &amp;response, sizeof saved);
+    memset(oversized, &#39;x&#39;, sizeof oversized - 1U);
+    oversized[sizeof oversized - 1U] = &#39;\0&#39;;
+    if (umi_web_response_set_text(&amp;response, 201, &quot;text/plain&quot;, oversized) !=
+            UMI_STATUS_CAPACITY_EXCEEDED ||
+        memcmp(saved, &amp;response, sizeof saved) != 0) {
+        (void)fputs(&quot;Expected a capacity refusal with the same response.\n&quot;, stderr);
+        return 1;
+    }
+    (void)puts(&quot;Oversize refused. Prior reply unchanged.&quot;);
+
+    /* Skip &#39;keep &#39; to borrow the short suffix from the current response. */
+    const char *suffix = response.body + 5U;
+    if (umi_web_response_set_text(&amp;response, 201, NULL, suffix) != UMI_STATUS_OK ||
+        response.body_length != 4U || strcmp(response.body, &quot;this&quot;) != 0) {
+        (void)fputs(&quot;Expected the borrowed suffix to become the new body.\n&quot;, stderr);
+        return 1;
+    }
+    (void)printf(&quot;Borrowed text saved. Body: %s\n&quot;, response.body);
+    return 0;
+}</code></pre></li>
+<li><p>In your practice copy, build only the response target with a Framework SDK that preserves the prior reply on a failed replacement. Use the same compiler and architecture as your SDK. Replace the example prefix with your own SDK location.</p>
+<pre><code class="language-powershell">cmake -S . -B build/response-replacement -G Ninja -DCMAKE_PREFIX_PATH="C:/path/to/framework-sdk"
+cmake --build build/response-replacement --target btb-http-response
+&amp; "./build/response-replacement/btb-http-response.exe"</code></pre>
+<p>In Bash, use the same two CMake commands with your SDK path, then run <code>./build/response-replacement/btb-http-response</code>.</p></li>
+<li><p>Expect these two lines.</p>
+<pre><code class="language-text">Oversize refused. Prior reply unchanged.
+Borrowed text saved. Body: this</code></pre></li>
+</ol>
+<p>A borrowed pointer points into storage a caller already owns. Keep it valid until the function returns. Here the function copies the suffix before replacing the response. Use the new <code>response.body</code> to read the result. If a check fails, verify which Framework SDK the build found. If CMake cannot find the package, point <code>CMAKE_PREFIX_PATH</code> at the SDK that provides the Framework web component.</p>
 <h2>Exercise</h2>
 <p>Try capacities of one, four and a comfortably large value in separate cases. Predict which should succeed. Never increase the capacity argument beyond the actual array size; that would lie to the function about available memory.</p>
 <h2>Recovery</h2>

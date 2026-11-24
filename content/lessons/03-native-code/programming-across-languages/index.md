@@ -36,6 +36,11 @@ Start with pencil and paper or a notes app. You can read every example before ch
 - [Give a task a name and a result](06-give-a-task-a-name-and-a-result.md)
 - [Plan a first Umicom change](07-plan-a-first-umicom-change.md)
 
+## Native function boundaries
+
+- [Pass two integers through the C ABI](08-pass-two-integers-through-the-c-abi.md)
+- [Keep a signed difference in range](09-keep-a-signed-difference-in-range.md)
+
 ## Continue in another course
 
 - [Computing from the Beginning](../../../courses/computing-from-the-beginning/index.html)

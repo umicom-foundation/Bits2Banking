@@ -1,0 +1,85 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/114-watch-one-integer-slot.html
+
+PURPOSE:
+Watch one integer slot
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Watch one integer slot | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Watch one integer slot</h1>
+<p>Use a <strong>watch</strong> when you want the interpreter to pause after a value changes. In this lesson, you will follow one integer from its first value to the number the program returns. Keep a pencil and paper nearby. You can make every prediction before opening a terminal.</p>
+<h2>1. Follow the first slot</h2>
+<p>A <strong>slot</strong> is a numbered place where the interpreter keeps an integer. The checked interpreter starts numbering at 0 and accepts slot numbers through 31. Before a slot has a value, it is <strong>uninitialized</strong>. Giving a slot the value 0 initializes it just as giving it the value 6 does. A slot number can hold values from different declarations at different points in a larger program. Here there is one variable, <code>x</code>, in slot 0.</p>
+<p>Save this complete C program as <code>watch-practice.c</code>.</p>
+<pre><code class="language-c">int main(void) {
+  int x = 6;
+  x = 6;
+  x += 36;
+  return x;
+}
+</code></pre>
+<p>Read each line inside the braces. The declaration gives <code>x</code> its first value, 6. The next assignment writes 6 again. The addition on the following line makes 42. The return reports that value. Before you run it, write down two moments when a watch should stop and one moment when it should keep going.</p>
+<h2>2. Watch, pause and ask again</h2>
+<p>In a terminal in the practice file’s folder, start the checked interpreter with the pause option. If the command is unavailable, use the location of your built Umicom C executable and verify that you are in the folder with the practice file.</p>
+<pre><code class="language-powershell">umicom-c interpret watch-practice.c --step
+</code></pre>
+<p>Enter these commands one at a time at the interpreter prompt. Wait for the next prompt after each of the first two commands.</p>
+<pre><code class="language-text">watch 0
+watch 0
+run
+</code></pre>
+<ol>
+<li>The first <code>watch 0</code> resumes execution and pauses after the declaration gives slot 0 the value 6. The next prompt points at line 3.</li>
+<li>The second <code>watch 0</code> arms a fresh watch. Writing 6 again keeps the value equal, so execution continues. Adding 36 changes the value, so the next prompt points at line 5, where the return is waiting.</li>
+<li>Enter <code>run</code> to finish. If you enter <code>quit</code> at that prompt instead, the earlier step records remain and the program reports cancellation before return.</li>
+</ol>
+<p>The watch is <strong>one shot</strong>. It turns off after its first hit. During a pause, you can use <code>slots</code> to check the values or <code>show</code> to read the waiting source line. The watch observes completed successful source steps. A write that leaves the observed value equal has no watch notice.</p>
+<h2>3. Keep the two output streams separate</h2>
+<p><strong>Standard output</strong>, also called <strong>stdout</strong>, carries the normal trace and returned value. This is the complete standard output for the example. The two numbers around each colon give a source line and a column, starting at 1. For example, <code>4:3</code> means line 4, column 3.</p>
+<pre><code class="language-text">Step 1: statement 2:3-2:13, 2 instructions, success
+Step 2: statement 3:3-3:9, 2 instructions, success
+Step 3: statement 4:3-4:11, 4 instructions, success
+Step 4: return 5:3-5:12, 2 instructions, success
+Result: 42
+Instructions: 10
+</code></pre>
+<p><strong>Standard error</strong>, also called <strong>stderr</strong> or the diagnostic stream, carries the prompts and watch notices. It can carry useful information about a successful run. The two messages below appear alongside the prompts.</p>
+<pre><code class="language-text">Slot 0 initialized to 6.
+Slot 0 changed from 6 to 42.
+</code></pre>
+<p>The assignment of 6 still appears as Step 2 in standard output. The watch continued through it. That separation lets a person use the prompts while a tool reads the ordinary step and result records. If another tool needs one JSON record per output line, the interpreter also supports <code>--jsonl</code>.</p>
+<h2>4. Make two predictions</h2>
+<ul>
+<li><strong>Try an unused slot.</strong> Start a fresh session and type <code>watch 31</code>. This program never uses that slot. Expect <code>Slot 31 did not initialize or change before return.</code> on the diagnostic stream and <code>Result: 42</code> on standard output.</li>
+<li><strong>Try less fuel.</strong> Add <code>--max-steps 1</code> to the command and type <code>watch 0</code> at the first prompt. <strong>Fuel</strong> is the limit on the interpreter’s smaller instructions. The first declaration needs two instructions, so this run stops with <code>instruction budget exhausted</code> before it can finish the declaration. Expect a failed first step, no watch hit and no returned value. The watch does not increase the budget.</li>
+</ul>
+<p>If you enter <code>watch 32</code>, check the slot range message and try a number from 0 through 31. The invalid command leaves the interpreter at its current pause.</p>
+<h2>5. Trace the same idea in Umicom pseudocode</h2>
+<p>The Umicom pseudocode form starts at 6 and goes straight to the addition. Read it aloud or save it as <code>watch-practice.txt</code>.</p>
+<pre><code class="language-text">BEGIN
+  LET x = 6;
+  x = x + 36;
+  RETURN x;
+END
+</code></pre>
+<p>Use <code>umicom-c pseudocode watch-practice.txt --step --jsonl</code> with the same two watches and <code>run</code>. You should see both watch notices on the diagnostic stream. Predict the returned value before you read the last standard-output record. This version has no separate assignment of 6 a second time, so it reports three completed steps and eight instructions.</p>
+<pre><code class="language-json">{&quot;schema&quot;:1,&quot;event&quot;:&quot;result&quot;,&quot;value&quot;:42,&quot;instructions&quot;:8}
+</code></pre>
+<p>The same habit helps when reading results for Umicom Studio IDE. Keep the trace of what ran separate from the paused view of what the program is about to do.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="113-compare-signed-integers-between-c-and-d.html">Previous lesson · Compare signed integers between C and D</a> · <a href="110-inspect-paused-integer-slots.html">Related lesson · Inspect paused integer slots</a> · <a href="59-separate-instruction-fuel-from-wall-clock-time.html">Related lesson · Separate instruction fuel from wall-clock time</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/114-watch-one-integer-slot.md">Markdown edition</a> · <a href="../../c23-keyword-reference/index.html">C23 keyword reference</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -244,3 +244,21 @@ Inspect resource requirements without executing a program, trace stack behavior,
 1. [Check a constant before running C](97-check-a-constant-before-running.md)
 
 1. [Name values before the entry](98-name-values-before-the-entry.md)
+
+1. [Count bytes from an admitted type](99-count-bytes-from-an-admitted-type.md)
+
+1. [Align the fields in a record](100-align-record-fields.md)
+1. [Read adjacent assertion messages](101-read-adjacent-assertion-messages.md)
+1. [Require a complete debugger command](102-require-a-complete-debugger-command.md)
+1. [Translate whitespace that both languages admit](103-translate-whitespace-that-both-languages-admit.md)
+1. [Keep the exact filename on Windows](104-keep-the-exact-filename-on-windows.md)
+1. [Translate hexadecimal and binary](105-translate-hexadecimal-and-binary.md)
+1. [Translate a checked local update](106-translate-a-checked-local-update.md)
+1. [Count reached source statements](107-count-reached-source-statements.md)
+1. [Translate one return between C and D](108-translate-one-return-between-c-and-d.md)
+1. [Translate an initialized local between C and D](109-translate-an-initialized-local-between-c-and-d.md)
+1. [Inspect paused integer slots](110-inspect-paused-integer-slots.md)
+1. [Translate checked shifts between C and D](111-translate-checked-shifts-between-c-and-d.md)
+1. [Translate grouped integer literals between C and D](112-translate-grouped-integer-literals-between-c-and-d.md)
+1. [Compare signed integers between C and D](113-compare-signed-integers-between-c-and-d.md)
+1. [Watch one integer slot](114-watch-one-integer-slot.md)

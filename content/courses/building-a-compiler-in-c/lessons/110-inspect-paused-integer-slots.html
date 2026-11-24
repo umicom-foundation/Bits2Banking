@@ -1,0 +1,69 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/110-inspect-paused-integer-slots.html
+
+PURPOSE:
+Inspect paused integer slots
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inspect paused integer slots | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Inspect paused integer slots</h1>
+<p>An interpreter can pause before it runs a statement. At that moment,
+the machine may already have stored values from earlier statements.
+A <strong>slot</strong> is a numbered place used by the checked machine to keep an
+integer. Reading a slot lets you see the value that exists now.</p>
+<h2>Inspect before each change</h2>
+<p>Save this as <code>pause.c</code> in a fresh practice folder.</p>
+<pre><code class="language-c">int main(void) {
+    int total = 40;
+    total += 2;
+    return total;
+}
+</code></pre>
+<ol>
+<li>Run <code>umicom-c interpret pause.c --step</code> in PowerShell.</li>
+<li>Type <code>slots</code> at the first pause. Expect
+   <code>No initialized integer slots.</code> The declaration is still pending.</li>
+<li>Type <code>next</code>, then <code>slots</code>. Expect <code>local[0]=40</code>.</li>
+<li>Type <code>next</code>, then <code>slots</code> again. Expect <code>local[0]=42</code>.
+   Type <code>run</code> to finish and look for <code>Result: 42</code>.</li>
+</ol>
+<p>Try <code>slots</code> twice at one pause. The values and the next source
+position stay the same. Type <code>show</code> to see the pending source statement.
+Slot numbers describe the machine storage. Use the source preview to
+identify which declaration or update you are studying.</p>
+<h2>Repeat with pseudocode</h2>
+<p>Save this example as <code>pause.txt</code>.</p>
+<pre><code class="language-text">BEGIN
+    LET total = 40;
+    total = total + 2;
+    RETURN total;
+END
+</code></pre>
+<p>Run <code>umicom-c pseudocode pause.txt --step --jsonl</code>. Use the same
+commands and expect the same slot values beside the prompts. JSON Lines
+means each standard-output line contains one complete record. The three
+step records and the result record still go to standard output. Slot
+values go to the diagnostic stream with the prompts.</p>
+<pre><code class="language-json">{&quot;schema&quot;:1,&quot;event&quot;:&quot;result&quot;,&quot;value&quot;:42,&quot;instructions&quot;:8}
+</code></pre>
+<p>The example shows how a client such as Umicom Studio IDE can use the
+compiler’s read-only snapshot service to inspect a paused program. A
+different client can read the completed trace without having to parse the
+human-readable pause messages.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="109-translate-an-initialized-local-between-c-and-d.html">Previous lesson · Translate an initialized local between C and D</a> · <a rel="next" href="111-translate-checked-shifts-between-c-and-d.html">Next lesson · Translate checked shifts between C and D</a> · <a href="107-count-reached-source-statements.html">Related lesson · Count reached source statements</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/110-inspect-paused-integer-slots.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

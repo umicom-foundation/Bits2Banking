@@ -1,0 +1,148 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/rust-keyword-reference/lessons/02-make-a-decision-and-repeat.html
+
+PURPOSE:
+  Teach the selected strict words in the Rust 2024 edition.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Make a decision and repeat | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Make a decision and repeat</h1>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="01-name-values-and-functions.html">Previous lesson</a> · <a rel="next" href="03-define-data-and-share-modules.html">Next lesson</a></nav>
+<h2>Count only the rows that belong</h2>
+<p>A practice list contains counts 2, 0, 3 and 9. Skip an empty row and stop at the first value greater than 5. The counted total is 5. Then advance a separate check value to 7 and turn that last number into a yes-or-no result.</p>
+<pre><code class="language-rust">fn main() {
+    let mut total = 0;
+    for count in [2, 0, 3, 9] {
+        if count == 0 {
+            continue;
+        } else if count &gt; 5 {
+            break;
+        }
+        total += count;
+    }
+
+    let mut check = total;
+    while check &lt; 7 {
+        check += 1;
+    }
+    let accepted = loop {
+        break match check {
+            7 =&gt; true,
+            _ =&gt; false,
+        };
+    };
+    println!(&quot;{total} {check} {accepted}&quot;);
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Example</th>
+<th>What it tells Rust</th>
+</tr>
+</thead>
+<tbody>
+<tr id="kw-break">
+<td><code>break</code></td>
+<td><code>if count &gt; 5 { break; }</code></td>
+<td>Leave the current loop. In a <code>loop</code> expression, a value after <code>break</code> can become its result.</td>
+</tr>
+<tr id="kw-continue">
+<td><code>continue</code></td>
+<td><code>if count == 0 { continue; }</code></td>
+<td>Skip the rest of this turn of the loop and move to the next one.</td>
+</tr>
+<tr id="kw-else">
+<td><code>else</code></td>
+<td><code>if count == 0 { continue; } else { total += count; }</code></td>
+<td>Choose the second block when the first condition is false.</td>
+</tr>
+<tr id="kw-false">
+<td><code>false</code></td>
+<td><code>let accepted = false;</code></td>
+<td>Store the Boolean value for a condition that is false.</td>
+</tr>
+<tr id="kw-for">
+<td><code>for</code></td>
+<td><code>for count in [2, 3] { total += count; }</code></td>
+<td>Repeat once for each value the collection supplies.</td>
+</tr>
+<tr id="kw-if">
+<td><code>if</code></td>
+<td><code>if total == 5 { println!("Five"); }</code></td>
+<td>Run the block when its condition is true.</td>
+</tr>
+<tr id="kw-in">
+<td><code>in</code></td>
+<td><code>count in [2, 3]</code></td>
+<td>Connect the name assigned on each turn to the values supplied by the following expression. Use it as part of a <code>for</code> loop.</td>
+</tr>
+<tr id="kw-loop">
+<td><code>loop</code></td>
+<td><code>let result = loop { break 7; };</code></td>
+<td>Enter a loop with no fixed stopping test. Here <code>break 7</code> ends it and supplies its value.</td>
+</tr>
+<tr id="kw-match">
+<td><code>match</code></td>
+<td><code>match check { 7 =&gt; true, _ =&gt; false }</code></td>
+<td>Choose the first pattern that fits. The wildcard arm handles every other number.</td>
+</tr>
+<tr id="kw-true">
+<td><code>true</code></td>
+<td><code>let accepted = true;</code></td>
+<td>Store the Boolean value for a condition that is true.</td>
+</tr>
+<tr id="kw-while">
+<td><code>while</code></td>
+<td><code>while check &lt; 7 { check += 1; }</code></td>
+<td>Check the condition before each turn, including the first one.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://doc.rust-lang.org/reference/expressions.html">Rust Reference, control-flow expressions</a> · <a href="https://doc.rust-lang.org/reference/keywords.html#strict-keywords">Rust Reference, strict keywords</a></p>
+<h2>Predict a change and run it</h2>
+<ol>
+<li>Save as <code>practice-counts.rs</code>. In PowerShell run <code>rustc --edition=2024 practice-counts.rs -o practice-counts.exe</code>. Start <code>.\practice-counts.exe</code> only after compilation succeeds. Expect <code>5 7 true</code>.</li>
+<li>Replace <code>9</code> with <code>4</code> and compile and run it again. The total is now 9. The <code>while</code> condition is initially false, so the result should be <code>9 9 false</code>.</li>
+<li>If the <code>match</code> expression is rejected after you remove the wildcard arm, restore it. The compiler needs a route for every possible value of <code>check</code>.</li>
+</ol>
+<h2>Compare the decision in Umicom C</h2>
+<p>The C exercise below starts with the total already counted. It uses the same decision with a numeric result, where 1 stands for true and 0 stands for false. It leaves the Rust list iteration to the Rust example.</p>
+<pre><code class="language-c">int main(void) {
+    int check = 5;
+    for (int i = 0; i &lt; 2; ++i) {
+        if (check &lt; 7) { check += 1; }
+    }
+    int accepted = 0;
+    if (check == 7) { accepted = 1; }
+    return accepted;
+}
+</code></pre>
+<p>Save as <code>practice-counts.c</code>. Run <code>umicom-c interpret practice-counts.c</code> and expect <code>Result: 1</code>. Change the initial <code>check</code> to 9 and expect <code>Result: 0</code>.</p>
+<p><a href="../../../lessons/03-native-code/rust-keyword-reference/02-make-a-decision-and-repeat.md">Markdown edition</a></p>
+  </article></main>
+</body>
+</html>

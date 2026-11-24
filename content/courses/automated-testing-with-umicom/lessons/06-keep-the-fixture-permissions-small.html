@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/06-keep-the-fixture-permissions-small.html
+
+PURPOSE:
+Keep the fixture permissions small
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep the fixture permissions small | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep the fixture permissions small</h1>
+<p>A test fixture should have the access it needs for its own experiment. Narrow access makes it easier to verify what the test changed and where it can safely run.</p>
+<h2>Read one example permission</h2>
+<p>A read-only exercise asks for an account summary from a synthetic data set. Its plan permits a database read. A proposed write belongs to a different exercise with its own fixture.</p>
+<pre><code class="language-c">const uint32_t fixtureScope = UMI_UAT_DATABASE_READ;
+const UmiUatOperation request = UMI_UAT_DATABASE_WRITE;
+const bool inScope = (fixtureScope &amp; (uint32_t)request) != 0U;
+</code></pre>
+<p>Expect <code>inScope</code> to be false. The preview stores a permission gate if a row is outside the owner's scope. It can also report that an allowed operation has no adapter support.</p>
+<h2>Keep security evidence defensive</h2>
+<p>A security assertion can check a normal expected refusal. For example, a practice report screen shows a summary only when the synthetic user has its read permission. Compare a fixture with the read permission and one without it. The test records the observable denial and confirms that a previous display value remains usable. Use fictional identities and sample amounts.</p>
+<ol>
+<li>Write down the intended permissions for the fixture.</li>
+<li>Observe the ordinary allowed and refused cases.</li>
+<li>Check that the refused case preserves both the fixture’s data and its visible state.</li>
+<li>Keep session labels simple. Treat produced log files as evidence for the approved test environment.</li>
+</ol>
+<p>For larger automated testing, the Framework target binding identifies a platform, target and session. The trusted adapter still owns its real permissions. Evidence can record that the declared plan was ready and separately record what the target actually did.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="05-qualify-each-platform-separately.html">Previous lesson · Qualify each platform separately</a> · <a rel="next" href="07-select-one-saved-test-result.html">Next lesson · Select one saved test result</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/06-keep-the-fixture-permissions-small.md">Markdown edition</a> · <a href="../../../labs/native/automated-testing-preview/main.c">Native C23 lab source</a> · <a href="../../../labs/native/automated-testing-preview/CMakeLists.txt">SDK build description</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

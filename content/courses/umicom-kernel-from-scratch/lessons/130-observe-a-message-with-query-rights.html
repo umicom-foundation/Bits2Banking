@@ -1,0 +1,72 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/130-observe-a-message-with-query-rights.html
+
+PURPOSE:
+Observe a message with query rights
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Observe a message with query rights | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Observe a message with query rights</h1>
+<p>A kernel <strong>message channel</strong> lets two endpoints exchange bounded pieces of data. An endpoint capability records which operations its holder may request. A program can ask whether data is ready without asking the kernel to deliver that data.</p>
+<h2>Read the rights one at a time</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>What the caller asks</th>
+<th>Effect on a queued message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Query</td>
+<td>Report allowed readiness and the next message length</td>
+<td>Keep it queued</td>
+</tr>
+<tr>
+<td>Peek</td>
+<td>Inspect the front message through an allowed read operation</td>
+<td>Keep it queued</td>
+</tr>
+<tr>
+<td>Receive</td>
+<td>Deliver the front message through an allowed read operation</td>
+<td>Remove it on successful delivery</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>query-only</strong> capability admits a metadata request. The hosted <code>query-only-front</code> fixture calls <code>UmicomKernelMessageQuery</code> and observes one queued message, one payload byte and clear readiness flags. The flags describe the operations allowed by the endpoint’s rights. The same fixture then checks that peeking with this capability returns <code>UMICOM_MESSAGE_ACCESS_DENIED</code>.</p>
+<h2>Follow the result without consuming anything</h2>
+<ol>
+<li>Open <code>tests/message_channels/message_tests.c</code> in the Umicom Kernel source and find the query-only case.</li>
+<li>Find the code that makes a message available at the other endpoint. Read the length the test expects.</li>
+<li>Trace the query call and the later peek. Note which rights the endpoint owns at both steps.</li>
+<li>Point CTest at your existing hosted Kernel build. Replace <code>build/hosted</code> with the directory that contains the configured tests. Expect one passing test, with the allowed metadata request and the refused peek checked together.</li>
+</ol>
+<pre><code class="language-powershell">ctest --test-dir build/hosted -R '^kernel\.message_channels\.query-only-front$' --output-on-failure
+</code></pre>
+<p>If CTest reports no tests, check the directory with <code>ctest --test-dir build/hosted -N</code>. The hosted Kernel configuration contains the message-channel suite.</p>
+<pre><code class="language-text">LOOK UP the endpoint and its admitted query capability
+CHECK the queued metadata before reporting readiness
+RETURN the allowed readiness and length
+LEAVE the message and its receive permission unchanged
+</code></pre>
+<h2>Connect it to multikernel work</h2>
+<p>A service can use query metadata to schedule its own next action. A separate capability decides whether that service may consume the message. Keep this separation when a future transport moves messages across processor-local services. The hosted queue case exercises one local kernel contract with synthetic endpoints.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="129-set-up-the-x64-kernel-stack.html">Previous lesson · Set up the x64 Kernel stack</a> · <a href="131-check-the-front-message-header.html">Next lesson · Check the front message header</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/130-observe-a-message-with-query-rights.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

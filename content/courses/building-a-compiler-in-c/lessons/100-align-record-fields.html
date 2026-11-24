@@ -1,0 +1,94 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/100-align-record-fields.html
+
+PURPOSE:
+  Practise finding a valid starting byte for an aligned integer in a small record.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Align the fields in a record | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="99-count-bytes-from-an-admitted-type.html">Previous lesson</a></nav>
+    <h1>Align the fields in a record</h1>
+    <p>A record has a five-byte label followed by a four-byte signed count. The label takes bytes 0 through 4. If the count starts at a multiple of four, the first suitable starting byte is 8. Bytes 5, 6 and 7 are padding, which is space set aside between fields.</p>
+    <h2>Find the first suitable byte</h2>
+    <p>For small nonnegative lengths, add one less than the alignment, use integer division by the alignment, then multiply back. Integer division discards the remainder. Starting at 5, add 3 to get 8, divide by 4 to get 2, then multiply by 4 to get 8 again.</p>
+    <pre><code class="language-c">constexpr int ALIGNMENT = alignof(const int);
+enum { LABEL_BYTES = 5 };
+enum { COUNT_OFFSET = ((LABEL_BYTES + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT };
+static_assert(COUNT_OFFSET == 8, "Expect the count to start at byte eight");
+
+int main(void) {
+    return COUNT_OFFSET + sizeof(int);
+}</code></pre>
+    <ol>
+      <li>Save as <code>alignment.c</code>. Run <code>umicom-c interpret alignment.c</code> and look for <code>Result: 12</code>, the byte just after the last byte used.</li>
+      <li>Change <code>LABEL_BYTES</code> to 8. The result stays at 12 and the label ends exactly where the count starts.</li>
+      <li>Change the length to 9 and run <code>umicom-c interpret alignment.c --check-only</code>. Read the assertion message. Update the assertion to check 12 and describe the new start. Run again and expect <code>Result: 16</code>.</li>
+    </ol>
+    <h2>Write the calculation in pseudocode</h2>
+    <pre><code>BEGIN
+    LET alignment = 4;
+    LET label_bytes = 5;
+    LET count_offset = ((label_bytes + alignment - 1) / alignment) * alignment;
+    RETURN count_offset + 4;
+END</code></pre>
+    <p>Save as <code>alignment.ump</code> and run <code>umicom-c pseudocode alignment.ump</code>. Expect <code>Result: 12</code>. Pseudocode supplies both fours explicitly. The C example gets alignment and size from separate operators, and other types can give different values.</p>
+    <p>A real file format also specifies padding values and byte order. Before using the formula with larger inputs, check that alignment is positive and the addition fits. <a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf">WG14 C23 working draft</a></p>
+    <p><a href="../../../lessons/05-engineering/building-a-compiler-in-c/100-align-record-fields.md">Markdown edition</a></p>
+<h2>Find the next admitted offset</h2>
+<p>The <code>%</code> operator gives the remainder after division. Offset one leaves remainder one when divided by four, so three more bytes reach the next multiple. Offset four leaves remainder zero and stays at four.</p>
+<pre><code class="language-text">GET the chosen type alignment
+FIND the remainder of the current offset divided by the alignment
+IF that remainder is nonzero
+    ADVANCE by alignment minus remainder
+RETURN the resulting offset
+</code></pre>
+<pre><code class="language-c">int main(void)
+{
+    /* Leave one byte for a practice kind field before the first int. */
+    int alignment = alignof(int);
+    int offset = 1;
+    int remainder = offset % alignment;
+    /* Move only when the present offset violates the type's requirement. */
+    if (remainder != 0) {
+        offset = offset + alignment - remainder;
+    }
+    return offset;
+}
+</code></pre>
+<h2>Run the C practice program</h2>
+<ol>
+<li>Open <code>labs/native/compiler-source-boundaries/align_field.c</code> in your Bits2Banking checkout. Read the declared alignment and predict the offset before running it.</li>
+<li>In that checkout’s terminal, use the <code>umicom-c</code> executable from your checked compiler build. Run <code>umicom-c interpret labs/native/compiler-source-boundaries/align_field.c</code>.</li>
+<li>With the checked integer profile used here, expect <code>Result: 4</code> from the starting offset of one. A hosted compiler may choose a different integer alignment. You can build the same source with its C23 mode to check the result on that target.</li>
+<li>Try starting offsets four and five. Predict which one stays put. Run each copy separately and write down the starting and returned offsets.</li>
+</ol>
+<p>The expression keeps all values small. In a reusable loader, verify the field width, check the addition against the destination capacity and keep any existing output when an invalid field is refused. An integer alignment is positive. A receiver should separately validate any alignment number read from another source.</p>
+<h2>When a type spelling is refused</h2>
+<p>Keep the admitted type inside <code>alignof(int)</code>. In C23, <code>alignof</code> measures a type name. The local-name exercise in the previous lesson uses <code>sizeof</code>, which can measure an admitted expression’s type. A normal <code>sizeof</code> on an already admitted fixed-width integer does not read its current value.</p>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf#page=95">C23 working draft, size and alignment operators</a></p>
+    <p><a rel="next" href="101-read-adjacent-assertion-messages.html">Next: Read adjacent assertion messages</a></p>
+  </article></main>
+</body>
+</html>

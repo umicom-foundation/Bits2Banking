@@ -1,0 +1,67 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/67-keep-boot-option-text-in-its-argument.html
+
+PURPOSE:
+Keep boot option text in its argument
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep boot option text in its argument | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep boot option text in its argument</h1>
+<p>A <strong>boot argument</strong> is a piece of text passed to the kernel at startup. It can name a feature or give it a value. The parser needs to know where one argument ends before deciding whether it describes an Umicom boot option.</p>
+<h2>Read the argument before looking at its value</h2>
+<p>Double quotes keep spaces within the same argument. In <code>module.note="example umicom.recovery=1 sample"</code>, the name is <code>module.note</code>. The text <code>umicom.recovery=1</code> is part of that value. The value leaves recovery at the parser's default. A top-level <code>umicom.recovery=1</code> outside that value is a different input.</p>
+<p>Linux also uses a standalone <code>--</code> to finish kernel options and leave the rest for the initial user-space program. The Umicom OS boot parser recognizes that boundary. A value such as <code>module.note="--"</code> still belongs to <code>module.note</code>. It does not finish the kernel argument list. <a href="https://docs.kernel.org/admin-guide/kernel-parameters.html">Linux kernel parameters</a></p>
+<table>
+<thead>
+<tr>
+<th>Text supplied to a parser fixture</th>
+<th>Expected recovery state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>module.note="example umicom.recovery=1 sample"</code></td>
+<td>Preserve the default state</td>
+</tr>
+<tr>
+<td><code>module.note="two words" umicom.recovery=1</code></td>
+<td>Read the top-level option</td>
+</tr>
+<tr>
+<td><code>-- umicom.recovery=1</code></td>
+<td>Preserve the default state</td>
+</tr>
+<tr>
+<td><code>module.note="--" umicom.recovery=1</code></td>
+<td>Read the top-level option</td>
+</tr>
+</tbody>
+</table>
+<h2>Trace a safe parser exercise</h2>
+<p>Use these strings as data in <code>umicomOS/tests/foundation/test_config.c</code>. The cases call <code>UmiOsBootOptionsParse</code> and examine its returned data. They exercise no power control. Find the case with a quote that never closes. The normal result is a parse refusal with earlier caller output preserved.</p>
+<pre><code class="language-text">SCAN from the first character of an argument
+KEEP spaces inside a double-quoted value in that argument
+IF the argument is the standalone boundary, finish reading boot options
+IF the complete argument is an admitted Umicom option, record its value
+PUBLISH the new options after the input passes validation
+</code></pre>
+<p>From the Umicom OS checkout, use the directory of your configured foundation-test build. If that directory is <code>build/native-foundation</code>, run <code>ctest --test-dir build/native-foundation -R 'options-(quoted-data|init-divider|quoted-init-divider|open-quote|directive-spelling)' --output-on-failure --no-tests=error</code>. Expect five named cases with the current test registrations. If CTest finds none, confirm the build directory and its source revision.</p>
+<p>This exercise distinguishes parser evidence from startup evidence. A parser returning a valid flag establishes how it read the string. A separate operating-system test establishes what a launched system does with an admitted flag.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="66-check-the-minimum-space-for-fat32.html">Previous: Check the minimum space for a FAT32 volume</a> · <a href="../../../lessons/06-umicom/umicom-os-from-scratch/67-keep-boot-option-text-in-its-argument.md">Markdown edition</a></nav>
+<p><a rel="next" href="68-count-the-slots-both-gpt-tables-need.html">Next lesson · Count the slots both GPT tables need</a></p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

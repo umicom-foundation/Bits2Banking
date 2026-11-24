@@ -1,0 +1,115 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-build-systems/lessons/30-match-a-dry-plan-to-its-recipe-digest.html
+
+PURPOSE:
+Match a dry plan to its recipe digest
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Match a dry plan to its recipe digest | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Match a dry plan to its recipe digest</h1>
+<p>A <strong>recipe</strong> is a JSON file that describes sources, tools and stages. A <strong>dry plan</strong> lists the stages the planner would select and puts their prerequisites first. A <strong>digest</strong> is a short, fixed-length value calculated from the exact file bytes. Keep the digest with a saved plan so you can check which recipe produced it.</p>
+<p>In this exercise you will preview a label-making project, compare the plan's digest with an independent hash, and see how an extra space changes the digest while the stage order stays the same.</p>
+<h2>1. Save a small recipe</h2>
+<p>Open PowerShell in a folder for this exercise. Save the following text as <code>labels-recipe.json</code> using UTF-8 without a byte-order mark (BOM). You need a current <code>umicom</code> command that lists <code>--recipe-digest</code> in <code>umicom recipe --help</code>.</p>
+<pre><code class="language-json">{
+  &quot;schema&quot;: 1,
+  &quot;id&quot;: &quot;labels-plan&quot;,
+  &quot;build&quot;: &quot;x86_64-w64-mingw32&quot;,
+  &quot;host&quot;: &quot;x86_64-w64-mingw32&quot;,
+  &quot;target&quot;: &quot;x86_64-w64-mingw32&quot;,
+  &quot;toolchain&quot;: {
+    &quot;id&quot;: &quot;lesson-c&quot;,
+    &quot;compiler&quot;: &quot;tools/bin/lesson-cc&quot;,
+    &quot;manifest&quot;: &quot;tools/toolchain.json&quot;,
+    &quot;sha256&quot;: &quot;0000000000000000000000000000000000000000000000000000000000000000&quot;
+  },
+  &quot;inputs&quot;: [
+    {
+      &quot;id&quot;: &quot;label-source&quot;,
+      &quot;path&quot;: &quot;src/labels.c&quot;,
+      &quot;sha256&quot;: &quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,
+      &quot;bytes&quot;: 0
+    }
+  ],
+  &quot;stages&quot;: [
+    {
+      &quot;id&quot;: &quot;pack-labels&quot;,
+      &quot;label&quot;: &quot;Pack labels&quot;,
+      &quot;phase&quot;: &quot;package&quot;,
+      &quot;dependencies&quot;: [&quot;check-labels&quot;],
+      &quot;inputs&quot;: [],
+      &quot;outputs&quot;: [&quot;out/labels.zip&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;check-labels&quot;,
+      &quot;label&quot;: &quot;Check labels&quot;,
+      &quot;phase&quot;: &quot;test&quot;,
+      &quot;dependencies&quot;: [&quot;make-labels&quot;],
+      &quot;inputs&quot;: [],
+      &quot;outputs&quot;: [&quot;out/labels-check.txt&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;make-labels&quot;,
+      &quot;label&quot;: &quot;Make labels&quot;,
+      &quot;phase&quot;: &quot;build&quot;,
+      &quot;dependencies&quot;: [],
+      &quot;inputs&quot;: [&quot;label-source&quot;],
+      &quot;outputs&quot;: [&quot;out/labels.o&quot;]
+    }
+  ]
+}
+</code></pre>
+<p>The all-zero hashes are placeholders for the source file and toolchain manifest. This plan only reads the JSON recipe. You can leave the declared sources, tools and output files absent for this exercise.</p>
+<h2>2. Preview one stage</h2>
+<p>Resolve the recipe to its full path. Ask for <code>check-labels</code> and keep <code>--recipe-digest</code> at the end. Stop and check the message if the plan command returns a nonzero exit status.</p>
+<pre><code class="language-powershell">$recipe = (Resolve-Path -LiteralPath './labels-recipe.json').Path
+umicom recipe plan --file $recipe --target check-labels --recipe-digest
+$LASTEXITCODE
+</code></pre>
+<p>Expect exit 0. Find <code>Recipe ID: labels-plan</code>, a 64-digit hexadecimal value after <code>Recipe SHA-256:</code>, and <code>Plan scope: check-labels</code>. The stage list should read as follows.</p>
+<pre><code class="language-text">Plan: 2 stages
+1. make-labels
+2. check-labels
+</code></pre>
+<p>The recipe lists the packaging stage first. The planner follows dependencies and puts <code>make-labels</code> before its check. Selecting the check leaves packaging outside this plan. The final CLI line says the plan executed no stages and source and toolchain claims remain unverified.</p>
+<h2>3. Check the digest independently</h2>
+<p>Measure the saved file with PowerShell. Compare the printed value with the line labelled <code>Recipe SHA-256</code> in the plan. Hexadecimal letters may appear in either case.</p>
+<pre><code class="language-powershell">(Get-FileHash -LiteralPath $recipe -Algorithm SHA256).Hash.ToLowerInvariant()
+</code></pre>
+<p>Compare results from the same saved file version. A different digest means the bytes differ. Confirm the file path and check whether your editor changed its encoding, spaces or line endings.</p>
+<h2>4. Change only the file bytes</h2>
+<p>Make a copy in your practice folder. Append one UTF-8 space to the end. JSON allows whitespace after the final brace.</p>
+<pre><code class="language-powershell">$copy = Join-Path (Get-Location).Path 'labels-recipe-spaced.json'
+if (Test-Path -LiteralPath $copy) { throw 'Choose a fresh name for the spaced copy.' }
+Copy-Item -LiteralPath $recipe -Destination $copy
+[System.IO.File]::AppendAllText($copy, ' ', [System.Text.UTF8Encoding]::new($false))
+umicom recipe plan --file $copy --target check-labels --recipe-digest
+if ($LASTEXITCODE -ne 0) { throw 'Review the plan refusal before comparing hashes.' }
+(Get-FileHash -LiteralPath $copy -Algorithm SHA256).Hash.ToLowerInvariant()
+</code></pre>
+<p>The copy should produce the same recipe ID and stage order. Its digest should differ from the original and match the independent hash of the copy.</p>
+<h2>Questions and answer key</h2>
+<ol>
+<li><strong>What happens if you omit <code>--target check-labels</code>?</strong> The scope becomes <code>all stages</code>. The order is <code>make-labels</code>, <code>check-labels</code> and <code>pack-labels</code>.</li>
+<li><strong>Why do the original and spaced copy have different digests?</strong> The digest covers the full byte sequence. The extra space changes those bytes while leaving the recipe's instructions and dependency order the same.</li>
+<li><strong>What happens if you ask for a stage called <code>ship-labels</code>?</strong> The planner reports an unknown target and returns exit 1. It prints no plan or recipe digest because the requested scope could not be planned.</li>
+<li><strong>What evidence would support a claim that the source file matches its recipe entry?</strong> Use a separate <code>umicom recipe verify</code> check with the actual source and toolchain directories. Retain the verified results with the recipe. The dry plan records the recipe's byte identity and proposed stage order.</li>
+</ol>
+<p>Save the plan text, recipe ID, scope and digest together. That gives another learner enough information to check the same preview against a copy of the recipe.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="29-see-which-library-ninja-will-link.html">Previous lesson · See which library Ninja will link</a> · <a href="26-recognize-stale-tests-after-a-failed-build.html">Related lesson · Recognize stale tests after a failed build</a> · <a href="../../../lessons/05-engineering/learning-build-systems/30-match-a-dry-plan-to-its-recipe-digest.md">Markdown edition</a> · <a rel="next" href="31-measure-the-process-temporary-volume.html">Next lesson · Measure the process temporary volume</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

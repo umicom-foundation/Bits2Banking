@@ -1,0 +1,109 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/45-read-response-status-and-body.html
+
+PURPOSE:
+Teach beginners to check HTTP status, Content-Length and sent bytes independently with a native C23 exercise.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Read response status and body length | Umicom Bits2Banking</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="44-request-a-single-byte-range.html">Previous lesson</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/45-read-response-status-and-body.md">Markdown edition</a> · <a rel="next" href="46-understand-capped-request-counters.html">Next lesson · Understand capped request counters</a></nav>
+    <h1>Read response status and body length</h1>
+    <p>An HTTP reply begins with a status line. Header fields follow it, then a blank line marks the end of the headers. Any body bytes come after that line. If you count the body bytes and read the length field separately, you can tell an intentionally empty reply from one that stops early.</p>
+
+    <h2>Predict the reply</h2>
+    <p>The table uses the same three offered bytes, <code>abc</code>, in every row. <code>GET</code> asks for the selected response. <code>HEAD</code> asks for its metadata without sending its body. Compare the two 200 rows to see how their length field can agree even though one body is empty. <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2">RFC 9110 on HEAD</a></p>
+    <table>
+      <thead><tr><th scope="col">Method and status</th><th scope="col"><code>Content-Length</code> in this exercise</th><th scope="col">Bytes after the blank line</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">GET 200 OK</th><td>3</td><td>3</td></tr>
+        <tr><th scope="row">HEAD 200 OK</th><td>3</td><td>0</td></tr>
+        <tr><th scope="row">GET 204 No Content</th><td>Field omitted</td><td>0</td></tr>
+        <tr><th scope="row">GET 205 Reset Content</th><td>0</td><td>0</td></tr>
+        <tr><th scope="row">HEAD 205 Reset Content</th><td>0</td><td>0</td></tr>
+      </tbody>
+    </table>
+    <p>A 204 reports success without returning content. A 205 also asks the client to reset the input view, which can be useful after a form is submitted. Both statuses forbid body content. A 204 omits <code>Content-Length</code>. The Framework formatter sends an explicit zero for 205. <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6">RFC 9110 on Content-Length</a> · <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-15.3.6">RFC 9110 on Reset Content</a></p>
+
+    <h2>Check the numbers in C23</h2>
+    <p>The exercise calls the public Framework formatter and inspects the resulting bytes in an array. The blank line is encoded as <code>\r\n\r\n</code>. Removing that separator and everything before it from the byte count leaves the body length. The test deliberately offers content for every status so a missing suppression rule is visible.</p>
+    <pre><code class="language-c">#include "umicom/web/connection.h"
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+static bool check_response(int code, bool head, const char *expected_length,
+                           size_t expected_bytes)
+{
+    /* The formatter borrows the response. Offer three bytes in every case. */
+    static UmiWebResponse response;
+    char wire[256], status_prefix[32];
+    size_t written = 0U;
+    if (umi_web_response_set_text(&amp;response, code, "text/plain", "abc") != UMI_STATUS_OK ||
+        UmiWebResponseFormatClosed(&amp;response, head, wire, sizeof wire - 1U,
+                                  &amp;written) != UMI_STATUS_OK) {
+        return false;
+    }
+
+    /* Leave room for the terminator. The blank line divides headers and body. */
+    wire[written] = '\0';
+    const char *gap = strstr(wire, "\r\n\r\n");
+    if (gap == NULL) return false;
+    const size_t body_bytes = written - (size_t)(gap + 4 - wire);
+    const char *length = strstr(wire, "Content-Length: ");
+    const bool length_matches = expected_length == NULL ? length == NULL
+        : length != NULL &amp;&amp; strncmp(length, expected_length, strlen(expected_length)) == 0;
+
+    /* Check the status number, the length field and the bytes separately. */
+    const int prefix_bytes = snprintf(status_prefix, sizeof status_prefix, "HTTP/1.1 %d ", code);
+    const bool passed = prefix_bytes &gt; 0 &amp;&amp; (size_t)prefix_bytes &lt; sizeof status_prefix
+        &amp;&amp; strncmp(wire, status_prefix, (size_t)prefix_bytes) == 0
+        &amp;&amp; length_matches &amp;&amp; body_bytes == expected_bytes
+        &amp;&amp; (body_bytes == 0U || memcmp(gap + 4, "abc", expected_bytes) == 0);
+    printf("%s %d %s\n", head ? "HEAD" : "GET", code, passed ? "PASS" : "FAIL");
+    return passed;
+}
+
+int main(void)
+{
+    const char *three = "Content-Length: 3\r\n";
+    const char *zero = "Content-Length: 0\r\n";
+    /* Run every case so an unexpected result does not hide later checks. */
+    const bool get_ok = check_response(200, false, three, 3U);
+    const bool head_ok = check_response(200, true, three, 0U);
+    const bool no_content = check_response(204, false, NULL, 0U);
+    const bool reset_get = check_response(205, false, zero, 0U);
+    const bool reset_head = check_response(205, true, zero, 0U);
+    return get_ok &amp;&amp; head_ok &amp;&amp; no_content &amp;&amp; reset_get &amp;&amp; reset_head
+        ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+</code></pre>
+    <p>Each of the five lines should end in <code>PASS</code>. If a check fails, compare the status number, the length field and the bytes after the blank line with the table. The formatter borrows the response storage for the call and keeps ownership with the caller.</p>
+    <p>To repeat the checks in a Framework build with the web tests enabled, substitute its directory for <code>C:\path\to\framework-build</code>. The registered fixture also tests the original response bytes after serialization.</p>
+    <pre><code class="language-powershell">ctest --test-dir 'C:\path\to\framework-build' --no-tests=error -R '^framework[.]web[.]closed_response[.](get|head|no-content|reset-content|reset-content-head)$' --output-on-failure</code></pre>
+    <p>Use a separate integration test when you need to verify a running listener. The exercise above runs the formatter in memory.</p>
+  </article></main>
+  <footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

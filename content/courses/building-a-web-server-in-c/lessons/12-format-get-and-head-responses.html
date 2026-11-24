@@ -15,7 +15,8 @@ MIT
 -->
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Format GET and HEAD responses | Bits2Banking</title><link rel="stylesheet" href="../../assets/umicom-learning.css"><link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
 <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
-</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-reject-ambiguous-framing.html">Previous lesson</a> · <a rel="next" href="13-preserve-output-on-small-buffers.html">Next lesson</a></nav>
+</head><body><a class="skip" href="#main">Skip to content</a><header class="site"><div class="topbar"><a class="logo" href="../../index.html"><!-- Preserve the previous offline artwork reference while the approved wordmark supplies the active identity. <img src="../../../assets/branding/umicom-logo-on-dark.svg" width="159" height="40" alt="Umicom"> -->
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header><main id="main" class="simple-page"><article class="article-content"><nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-reject-ambiguous-framing.html">Previous lesson</a> · <a rel="next" href="13-preserve-output-on-small-buffers.html">Next lesson</a></nav>
 <h1>Format GET and HEAD responses</h1>
 <p>A response consists of headers and sometimes a body. GET normally asks for the representation. HEAD asks for its metadata without transferring the body.</p>
 <h2>Prepare</h2>
@@ -36,6 +37,45 @@ MIT
 <h2>Exercise</h2>
 <p>Change ready to waiting in a personal copy. Predict the new declared length and the difference between GET and HEAD. Update every expectation that depends on the body length.</p>
 <p>If the HEAD test fails, examine the length and body rules before altering the route. A request method, response content and transmission format have related but separate responsibilities.</p>
+<h2>Retry a refused response header</h2>
+<p>The response stores a bounded list of fields in memory before it formats the HTTP message. Each field has a name and a value. An application can pull a value from its settings, check the status returned by the response service, and supply a corrected value when the first attempt is refused.</p>
+<p>Save this exercise as <code>retry-response-field.c</code>. The string named <code>too_long</code> contains one more byte than a header value can store when you include the terminating zero. The tool can refuse that value while keeping the current header count and the field that the application already set.</p>
+<pre><code class="language-c">#include &quot;umicom/web/response.h&quot;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main(void)
+{
+    UmiWebResponse reply;
+    umi_web_response_init(&amp;reply);
+
+    if (umi_web_response_set_header(&amp;reply, &quot;X-Preview&quot;, &quot;current&quot;) != UMI_STATUS_OK)
+        return 1;
+
+    /* Use the public capacity so the example follows the current field size. */
+    char too_long[UMI_WEB_HEADER_VALUE_CAPACITY + 1U];
+    memset(too_long, 'x', sizeof too_long - 1U);
+    too_long[sizeof too_long - 1U] = '\0';
+
+    if (umi_web_response_set_header(&amp;reply, &quot;X-Preview&quot;, too_long) != UMI_STATUS_CAPACITY_EXCEEDED ||
+        umi_web_response_set_header(&amp;reply, &quot;X-Preview&quot;, NULL) != UMI_STATUS_INVALID_ARGUMENT ||
+        reply.header_count != 1U || strcmp(reply.headers[0].value, &quot;current&quot;) != 0)
+        return 1;
+    puts(&quot;Both refused values left one existing field.&quot;);
+
+    /* A successful retry takes the next slot. This response API appends
+     * repeated names and keeps them in the order the caller supplied. */
+    if (umi_web_response_set_header(&amp;reply, &quot;X-Preview&quot;, &quot;next&quot;) != UMI_STATUS_OK ||
+        reply.header_count != 2U || strcmp(reply.headers[0].value, &quot;current&quot;) != 0 ||
+        strcmp(reply.headers[1].value, &quot;next&quot;) != 0)
+        return 1;
+    puts(&quot;The valid retry used the next slot.&quot;);
+    return ferror(stdout) || fflush(stdout) ? 1 : 0;
+}
+</code></pre>
+<p>On paper, trace the field count after each call. It should be 1 after the first append, stay at 1 after the long and missing values, and reach 2 after the corrected append. This is the same distinction as preparing a candidate copy and publishing it only after the input passes its check. The application can still show the previous state if it has to ask for a corrected setting.</p>
+<p>In a configured Framework build, run <code>ctest --test-dir &lt;build-directory&gt; --output-on-failure -R "^framework[.]web_response$"</code> after building its <code>umicom-web-response-tests</code> target. Open <code>tests/test_web_response.c</code> in Framework and find the field append checks. They cover the preserved count, the corrected append, and a case where all field slots are full.</p>
+<p>If a test reports that CTest found zero tests, check that the Framework build has its native tests enabled. If the test executable is missing, build the named target in the same build directory. Keep the exercise in memory while you work through the count and recovery steps.</p>
 <h2>Source for this lesson</h2>
 <p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-http-contracts/response.c">Open the example source</a>. Keep the source revision with your exercise notes so later changes can be compared.</p>
 <nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="11-reject-ambiguous-framing.html">Previous lesson</a> · <a rel="next" href="13-preserve-output-on-small-buffers.html">Next lesson</a></nav><p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/05-engineering/building-a-web-server-in-c/12-format-get-and-head-responses.md">Markdown edition</a></p></article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

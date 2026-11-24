@@ -1,0 +1,92 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-riscv-assembly/lessons/21-choose-a-local-or-imported-address.html
+
+PURPOSE:
+  Teach a beginner to choose a local or imported address using object-only exercises.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Choose a local or imported address | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar">
+    <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a>
+  </div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Choose a local or imported address</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="20-find-a-linker-relaxation-hint.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="../../../lessons/03-native-code/learning-riscv-assembly/21-choose-a-local-or-imported-address.md">Markdown edition</a></nav>
+<p>The assembler shorthand <code>la</code> asks for the address of a named object. Options can tell the assembler whether to use a direct relative pair or consult a table of addresses. The results become clearer when you inspect the real instructions and relocations.</p>
+<h2>Compare local and imported address forms</h2>
+<p>Save this as <code>address-macros.s</code>. It refers to <code>course_seed</code>, which another object would define. The file has no definition for that name. The exercise stops before linking.</p>
+<pre><code class="language-asm">.text
+.globl inspect_address_macros
+inspect_address_macros:
+    .option push
+    .option nopic
+    la a0, course_seed
+    .option pic
+    la a1, course_seed
+    lla a2, course_seed
+    .option pop
+    ret
+</code></pre>
+<pre><code class="language-text">clang --target=riscv64-unknown-elf -march=rv64i -mabi=lp64 -mno-relax -c address-macros.s -o address-macros.o
+llvm-objdump -dr -M no-aliases address-macros.o
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Source choice</th>
+<th>Typical expansion in this object</th>
+<th>Upper relocation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>la a0, course_seed</code> after <code>.option nopic</code></td>
+<td><code>auipc</code>, then <code>addi</code></td>
+<td><code>R_RISCV_PCREL_HI20</code></td>
+</tr>
+<tr>
+<td><code>la a1, course_seed</code> after <code>.option pic</code></td>
+<td><code>auipc</code>, then <code>ld</code></td>
+<td><code>R_RISCV_GOT_HI20</code></td>
+</tr>
+<tr>
+<td><code>lla a2, course_seed</code></td>
+<td><code>auipc</code>, then <code>addi</code></td>
+<td><code>R_RISCV_PCREL_HI20</code></td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>global offset table</strong>, or GOT, is a table of addresses. Here the <code>ld</code> loads an address from such a table slot. It does not read the integer stored at <code>course_seed</code>. The <code>lla</code> shorthand requests the direct local-address form. Use it when that addressing choice fits the symbol and link configuration. The <code>.option push</code> and <code>.option pop</code> pair saves and restores the surrounding assembler choices.</p>
+<p>In C, a declaration introduces the name of an object whose storage can be provided elsewhere. This companion shows which value the address operation returns. Save it as <code>declared-address.c</code>.</p>
+<pre><code class="language-c">#include &lt;stdint.h&gt;
+
+extern int32_t course_seed;
+
+const int32_t *seed_location(void)
+{
+    return &amp;course_seed;
+}
+</code></pre>
+<p>Use <code>gcc -std=c23 -Werror -fsyntax-only declared-address.c</code> to check the declaration and return types. The two languages can share a named object once their types, target and link arrangement agree. In Umicom Kernel work, record the exact target and confirm the intended references before writing an entry-point or loading example.</p>
+<p><a href="https://docs.riscv.org/reference/abi/riscv-elf-object-files.html">RISC-V ELF GOT and PC-relative relocations</a></p>
+  </article></main>
+</body>
+</html>

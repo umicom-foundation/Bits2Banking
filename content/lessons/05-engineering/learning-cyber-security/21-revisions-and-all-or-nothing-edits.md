@@ -79,3 +79,5 @@ Why not increment the directory counter first, then check the row counter? If th
 ## Continue learning
 
 [Course contents](../../../courses/learning-cyber-security/index.html) · [Previous: Compare a borrowed profile with a saved observation](20-borrowed-profiles-and-observation-copies.md)
+
+[Next: Verify an unused authenticator step](22-verify-an-unused-authenticator-step.md)
