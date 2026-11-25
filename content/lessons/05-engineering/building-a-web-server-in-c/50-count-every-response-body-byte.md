@@ -82,3 +82,5 @@ For a WebServer or Framework application response, write down which object owns 
 [HTTP Semantics on Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6) · [HTTP Semantics on HEAD](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2)
 
 [Course contents](index.md) · [Previous lesson · Read status codes before deciding what to do](49-read-status-codes-before-deciding.md) · [Related lesson · Check export and download headers](48-check-export-and-download-headers.md) · [Related lesson · Read a FastCGI reply before forwarding](41-read-a-fastcgi-reply-before-forwarding.md) · [HTML edition](../../../courses/building-a-web-server-in-c/lessons/50-count-every-response-body-byte.html)
+
+[Next lesson · Follow a HEAD request through the in-memory router](51-follow-head-through-the-in-memory-router.md)

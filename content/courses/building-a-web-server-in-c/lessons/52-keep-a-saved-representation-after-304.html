@@ -1,0 +1,66 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/52-keep-a-saved-representation-after-304.html
+
+PURPOSE:
+Keep a saved representation after a 304 response
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep a saved representation after a 304 response | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep a saved representation after a 304 response</h1>
+<p>Imagine your browser has a saved copy of a Bits2Banking course timetable. A saved copy kept for reuse is called a <strong>cached copy</strong>. Later the browser makes a conditional GET asking for the timetable if its saved version has changed. If the server responds with <code>304 Not Modified</code>, the browser uses its matching saved copy. The timetable still appears even though the reply ends after the headers. This is a paper example of HTTP revalidation, which means checking whether a saved copy is still current. <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-15.4.5">HTTP Semantics on 304</a> · <a href="https://www.rfc-editor.org/rfc/rfc9111.html#section-4.3.4">HTTP Caching on updating stored responses</a></p>
+<h2>Match the status to the user’s next action</h2>
+<ol>
+<li>The timetable is unchanged. For <code>304</code>, keep displaying the matching saved timetable.</li>
+<li>A learner saves a setting and receives <code>204 No Content</code>. Record the successful save. The reply supplies no body.</li>
+<li>A learner submits a practice form and receives <code>205 Reset Content</code>. The server asks the client to reset the form view for another entry. The reply supplies no body. <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-15.3.6">HTTP Semantics on 205</a></li>
+</ol>
+<h2>Compare the two formatter outputs</h2>
+<p>The Framework test supplies the same response header, <code>X-Example: retained</code>, and the same three body bytes for every row. Its counted C array is <code>{'a', 0U, 'c'}</code>. The test sets each status explicitly and checks the output in memory. A formatter turns the response into bytes in HTTP message order. <code>umi_web_response_format</code> writes the compatibility format. <code>UmiWebResponseFormatClosed</code> writes the closed-connection format.</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Generated <code>Content-Length</code> in either format</th>
+<th>Bytes after the blank line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>204 No Content</code></td>
+<td>Omitted</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>205 Reset Content</code></td>
+<td><code>0</code></td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>304 Not Modified</code></td>
+<td>Omitted</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Both formats include <code>X-Example: retained</code>. The closed-connection format also includes <code>Connection: close</code>. All three source bytes remain in the response object after formatting. The test checks the emitted message and the stored body separately.</p>
+<p>For a 304 reply to a conditional GET, HTTP allows a <code>Content-Length</code> field when its value equals the number of content bytes a <code>200 OK</code> reply to the same request would send. These Framework formatters omit the field for 304. <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6">HTTP Semantics on Content-Length</a></p>
+<h2>Try the timetable trace on paper</h2>
+<p>Draw a card for the browser’s saved timetable and a second card for the newly received reply. Put three example bytes on the saved card. Write <code>304 Not Modified</code>, <code>X-Example: retained</code>, and a blank line on the reply card. Add <code>Connection: close</code> when you draw the closed-connection version.</p>
+<p>Which card supplies the bytes you display? Read the saved card. It still holds all three bytes. Now change the reply card to <code>205 Reset Content</code> and add <code>Content-Length: 0</code>. The reply still ends at the blank line. The new status asks the client to reset the submitted view.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="51-follow-head-through-the-in-memory-router.html">Previous lesson · Follow a HEAD request through the in-memory router</a> · <a href="53-validate-an-empty-response-before-publishing.html">Next lesson · Validate an empty response before publishing it</a> · <a href="35-finish-headers-and-partial-body-writes.html">Finish headers and partial body writes</a> · <a href="45-read-response-status-and-body.html">Read response status and body length</a> · <a href="50-count-every-response-body-byte.html">Count every response body byte</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/52-keep-a-saved-representation-after-304.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

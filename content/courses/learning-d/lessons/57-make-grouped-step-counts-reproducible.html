@@ -1,0 +1,89 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/57-make-grouped-step-counts-reproducible.html
+
+PURPOSE:
+Make grouped step counts reproducible
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Make grouped step counts reproducible | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Make grouped step counts reproducible</h1>
+<p>A review preserves the order in which the interpreter recorded its steps. A short summary serves a different purpose. It groups steps that have the same kind. Give that summary a fixed key order so two readers can compare it line by line.</p>
+<h2>Count by kind and sort the keys</h2>
+<p>A D associative array maps a key to a value. In <code>size_t[string] counts</code>, a step kind such as <code>"statement"</code> is the string key and its count has type <code>size_t</code>. The <code>get</code> call supplies zero when the group is first seen. The assignment then records the incremented count.</p>
+<pre><code class="language-d">import std.algorithm.sorting : sort;
+import std.conv : to;
+
+string[] summaryKinds(Review review)
+{
+    // Group the admitted steps without changing the execution sequence.
+    size_t[string] counts;
+    foreach (step; review.steps)
+        counts[step.stepKind] = counts.get(step.stepKind, 0) + 1;
+
+    // Sort the copied keys so the summary always uses the same order.
+    auto keys = counts.keys;
+    sort(keys);
+
+    string[] entries;
+    foreach (key; keys)
+        entries ~= key ~ &quot;=&quot; ~ to!string(counts[key]);
+    return entries;
+}
+</code></pre>
+<p>D does not specify associative-array iteration order. The <code>keys</code> property gives the lesson a separate array to sort. Reading the counts back by key keeps each label attached to its own count. <a href="https://dlang.org/spec/hash-map.html">D associative-array keys and iteration</a> · <a href="https://dlang.org/library/std/algorithm/sorting/sort.html">Phobos sort</a></p>
+<h2>Trace the saved review</h2>
+<table>
+<thead>
+<tr>
+<th>Step ordinal</th>
+<th>Kind</th>
+<th>Count after this step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>statement</code></td>
+<td><code>statement</code> has 1</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>statement</code></td>
+<td><code>statement</code> has 2</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>statement</code></td>
+<td><code>statement</code> has 3</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>return</code></td>
+<td><code>return</code> has 1</td>
+</tr>
+</tbody>
+</table>
+<p>Before sorting, either key can appear first in <code>counts.keys</code>. After sorting by the characters in each key, <code>return</code> comes before <code>statement</code> because <code>r</code> comes before <code>s</code>. For the saved four-step review, the expected D array is <code>["return=1", "statement=3"]</code>.</p>
+<ol>
+<li>Write two possible key arrays on paper, one with <code>statement</code> first and one with <code>return</code> first. Sort each and look up the two counts. Both yield the same pair of entries.</li>
+<li>Compare the first and last steps in the original review. They still show statement 1 and return 4. Sorting the copied keys preserves those source observations in order.</li>
+<li>Check that 1 plus 3 matches the four steps. Each entry counts a kind of step. The instruction total of 10 comes from the count carried by each step and checked in the previous lesson.</li>
+</ol>
+<p>When a preview shows only its first two step details, use the full accepted review for these summary counts. Display limits belong to the presentation. The grouped numbers still describe the entire admitted trace.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="56-match-a-final-result-with-its-producer-status.html">Previous lesson · Match a final result with its producer status</a> · <a href="58-send-summary-and-diagnostics-to-their-own-streams.html">Next lesson · Send the summary and diagnostics to their own streams</a> · <a href="28-look-up-records-with-associative-arrays.html">Related lesson · Look up records without confusing storage with learning</a> · <a href="../../../lessons/03-native-code/learning-d/57-make-grouped-step-counts-reproducible.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

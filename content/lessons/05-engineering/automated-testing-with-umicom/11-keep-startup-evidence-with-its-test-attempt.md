@@ -61,3 +61,5 @@ Try one more paper case. A completes successfully and `exit.txt` says 0. B fails
 The fixture checks hosted startup evidence with a mock process. A boot or guest outcome comes from its own run and record.
 
 [Course contents](index.md) · [Previous lesson · Keep the outer test total](10-keep-the-outer-test-total.md) · [Related lesson · Read a workflow summary](08-read-a-workflow-summary.md) · [Related lesson · Follow the first blocked boot service](../../06-umicom/umicom-os-from-scratch/69-follow-the-first-blocked-boot-service.md) · [Related lesson · Plan startup before executing it](../../06-umicom/umicom-os-from-scratch/03-service-dependencies.md) · [HTML edition](../../../courses/automated-testing-with-umicom/lessons/11-keep-startup-evidence-with-its-test-attempt.html)
+
+[Next lesson · Check the link inputs of a fixture](12-check-the-link-inputs-of-a-fixture.md)

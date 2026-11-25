@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/127-submit-a-typed-script-as-one-block.html
+
+PURPOSE:
+Submit a typed script as one block
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Submit a typed script as one block | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Submit a typed script as one block</h1>
+<p>Imagine checking a short practice checklist before accepting its final value. In the typed console, <code>--block</code> makes the lines one submission. A usable block can return a value. If a line fails, the block is refused as a whole. This all-or-nothing rule is called <strong>atomic submission</strong>.</p>
+<h2>1. Follow one complete block</h2>
+<p>Save these lines as <code>typed-block.ucs</code>. The fixed Boolean named <code>admitted</code> holds <code>1</code> because <code>42</code> is nonzero. The local <code>flag</code> begins at <code>1</code> too. The <code>if</code> body sets it to <code>0</code>, so the last line calculates <code>41 + 0 + 1</code>.</p>
+<pre><code class="language-c">const bool admitted=42;
+bool flag=-7;
+if (admitted) {
+flag=0;
+}
+return 41+flag+sizeof(flag);</code></pre>
+<pre><code class="language-text">umicom-c script --typed --block typed-block.ucs</code></pre>
+<p>The checked command succeeded with one output line, <code>42</code>. The <code>--typed</code> option comes before <code>--block</code>. The filename supplies the whole block.</p>
+<pre><code class="language-text">READ the supplied lines as one typed block
+EVALUATE the block as a single submission
+IF the submission succeeds, publish its value
+IF it fails, publish its diagnostic and refuse the submission</code></pre>
+<h2>2. Locate a refusal</h2>
+<p>Save this second block as <code>refused-block.ucs</code> and feed the file through standard input. The second line asks for division by zero.</p>
+<pre><code class="language-c">bool flag=1;
+flag=1/0;
+return flag;</code></pre>
+<pre><code class="language-powershell">Get-Content -Raw -LiteralPath &#39;./refused-block.ucs&#39; | umicom-c script --typed --block --stdin</code></pre>
+<p>The checked command exits with status <code>1</code>. Standard output stays empty. Standard error, the stream used for the diagnostic, contains this line.</p>
+<pre><code class="language-text">2:7: division by zero or signed arithmetic overflow</code></pre>
+<p>Read <code>2:7</code> as line two, column seven. On <code>flag=1/0;</code>, count <code>f</code>, <code>l</code>, <code>a</code>, <code>g</code>, <code>=</code> and <code>1</code> first. The slash is seventh. This example reaches the division-by-zero case of the diagnostic. The initial declaration produces no separate <code>ok</code> here because the whole block was the submission.</p>
+<h2>3. Compare two paper runs</h2>
+<p>For the accepted block, predict what happens if <code>admitted</code> starts at <code>0</code>. The <code>if</code> body is skipped, leaving <code>flag</code> equal to <code>1</code>. The predicted block value is <code>43</code>. For the refused block, mark where the diagnostic starts and write “empty” under expected standard output. Keep the expected exit and the two output streams on separate lines in your test notes.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="126-keep-the-accepted-value-during-a-console-preview.html">Previous lesson · Keep the accepted value during a console preview</a> · <a href="../../automated-testing-with-umicom/lessons/15-group-console-checks-by-what-they-submit.html">Group console checks by what they submit</a> · <a href="128-read-a-signed-cast-in-complete-c.html">Next lesson · Read a signed cast in complete C</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/127-submit-a-typed-script-as-one-block.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,63 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/124-store-a-value-in-an-unsigned-byte.html
+
+PURPOSE:
+Store a value in an unsigned byte
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Store a value in an unsigned byte | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Store a value in an unsigned byte</h1>
+<p>Imagine a tiny counter in a message sent by a practice trading application. The counter occupies eight <strong>bits</strong>. A bit is a value that can be either 0 or 1. Eight bits give 256 possible patterns. Umicom C stores the patterns for an <code>unsigned char</code> local as the values 0 through 255. This lesson uses a fictional counter and ordinary integers.</p>
+<h2>1. Work out what fits</h2>
+<ol>
+<li>Write down 255 as the starting value. It is the largest value in the counter.</li>
+<li>Add 1 to obtain 256. When the program stores the answer in the byte, a complete group of 256 is removed. The stored result is 0.</li>
+<li>Add 298 to the stored 0. Remove a complete group of 256 from 298. The byte now holds 42.</li>
+</ol>
+<p>The remaining part is called the <strong>remainder</strong>. Keeping the remainder in this range is also called working <strong>modulo 256</strong>. On paper, try starting from 254. After the increment the counter holds 255. Adding 298 gives 553. Removing two groups of 256 leaves 41.</p>
+<h2>2. Translate the steps into C</h2>
+<pre><code>Store 255 in the counter.
+Add 1 and store its equivalent value between 0 and 255.
+Add 298 to that stored value.
+Store its equivalent value between 0 and 255.
+Return the counter.</code></pre>
+<p>Save the corresponding program as <code>byte-local.c</code>.</p>
+<pre><code class="language-c">int main(void)
+{
+    unsigned char counter = 255;
+    counter++;
+    counter = counter + 298;
+    return counter;
+}</code></pre>
+<p>The type tells Umicom C how to store the variable. The operator <code>++</code> means “add one”. The addition on the right of <code>=</code> is evaluated before the result is stored on the left. Umicom C checks its supported integer arithmetic before doing the byte conversion. When an arithmetic operation exceeds its checked integer range, the program reports an error before that attempted store.</p>
+<h2>3. Check, compile and run the file</h2>
+<p>Use an existing Umicom C build with support for checked <code>unsigned char</code> locals. Replace the path with your own compiler executable. From the directory holding <code>byte-local.c</code>, choose a fresh name for the compiled bytecode.</p>
+<pre><code class="language-powershell">$Tool = 'C:/umicom/umicom-c/build/windows-ucrt64-debug/bin/umicom-c.exe'
+if (Test-Path -LiteralPath './byte-local.umc') { throw 'Choose a fresh bytecode filename.' }
+&amp; $Tool check './byte-local.c'
+if ($LASTEXITCODE -ne 0) { throw 'Read the source check before compiling.' }
+&amp; $Tool compile './byte-local.c' './byte-local.umc'
+if ($LASTEXITCODE -ne 0) { throw 'Read the compile diagnostic.' }
+&amp; $Tool exec './byte-local.umc'
+if ($LASTEXITCODE -ne 0) { throw 'Read the bytecode runtime diagnostic.' }</code></pre>
+<p>The expected result is <code>Result: 42</code>. The focused compiler checks also recorded 18 executed instructions for this exact source. If the check stops at the declaration with “assignment requires a declared local integer”, check which compiler executable you selected. An earlier release may reach that message on the same input.</p>
+<h2>4. Change one input</h2>
+<p>Try the counter with 0 as its initial value. Predict the result before running the file with <code>umicom-c run byte-local.c</code>. The first stored answer is 1. Adding 298 gives 299, so the remaining value is 43. In an application test, use an ordinary value, the largest byte value and the transition back to zero.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="123-measure-a-boolean-literal-without-reading-its-value.html">Previous lesson · Measure a Boolean literal without reading its value</a> · <a href="../../automated-testing-with-umicom/lessons/15-group-console-checks-by-what-they-submit.html">Group console checks by what they submit</a> · <a href="125-choose-typed-values-in-the-c-console.html">Next lesson · Choose typed values in the C console</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/124-store-a-value-in-an-unsigned-byte.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

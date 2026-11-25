@@ -173,3 +173,17 @@ Check an impossible geometry claim and follow the boundary of a complete boot ar
 - [Keep boot option text in its argument](67-keep-boot-option-text-in-its-argument.md)
 - [Count the slots both GPT tables need](68-count-the-slots-both-gpt-tables-need.md)
 - [Follow the first blocked boot service](69-follow-the-first-blocked-boot-service.md)
+- [Keep the first boot failure when a report cannot be saved](70-keep-the-first-boot-failure.md)
+
+## Publish a complete boot report
+
+Claim a temporary name, follow the checked save stages and read what a replacement establishes.
+
+- [Claim a temporary name for a boot report](71-claim-a-temporary-boot-report-name.md)
+- [Keep a complete report through replacement](72-keep-a-complete-report-through-replacement.md)
+
+## Review an executable for an OS image
+
+Compare a standalone executable with reviewed bytes and record packaging and boot evidence separately.
+
+- [Review an executable before OS packaging](73-review-an-executable-before-os-packaging.md)

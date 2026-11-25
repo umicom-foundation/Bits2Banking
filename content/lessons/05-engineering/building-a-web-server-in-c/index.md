@@ -160,3 +160,25 @@ Encode bounded requests, retain one worker reply and examine completion before c
 1. [Check export and download headers](48-check-export-and-download-headers.md).
 1. [Read status codes before deciding what to do](49-read-status-codes-before-deciding.md).
 1. [Count every response body byte](50-count-every-response-body-byte.md).
+
+## Follow HTTP response decisions in memory
+
+Trace a HEAD route, read a cache response and check what the formatter can publish.
+
+1. [Follow a HEAD request through the in-memory router](51-follow-head-through-the-in-memory-router.md).
+1. [Keep a saved representation after a 304 response](52-keep-a-saved-representation-after-304.md).
+1. [Validate an empty response before publishing it](53-validate-an-empty-response-before-publishing.md).
+1. [Add metadata to a counted response](54-add-metadata-to-a-counted-response.md).
+1. [Keep the exact name of a web event](55-keep-the-exact-name-of-a-web-event.md).
+
+## Own managed FastCGI connections
+
+Keep the backend connector available and return each accepted connection to its owner.
+
+1. [Keep a FastCGI connector and its backend separate](56-keep-a-fastcgi-connector-and-its-backend-separate.md).
+
+## Embed a compiled application
+
+Count the bytes actually read before turning a selected artifact into C.
+
+1. [Limit compiled bytes before embedding](57-limit-compiled-bytes-before-embedding.md).

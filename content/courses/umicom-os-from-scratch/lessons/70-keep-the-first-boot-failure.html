@@ -1,0 +1,79 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/70-keep-the-first-boot-failure.html
+
+PURPOSE:
+Keep the first boot failure when a report cannot be saved
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep the first boot failure when a report cannot be saved | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep the first boot failure when a report cannot be saved</h1>
+<p>In the previous lesson you traced a blocked service to its first dependency problem. Now imagine that the OS also cannot save its report. There are two facts to keep: the reason the boot entered recovery and the stage at which the report file could not be saved.</p>
+<h2>Read the serial evidence</h2>
+<p>A serial transcript is a separate text record from the boot console. Keep the entire transcript when the report file is missing or might be older than the last serial record.</p>
+<ol>
+<li>Look for <code>UMICOM_BOOT_REPORT_SAVE_FAILED</code>. The phase <code>initial</code> belongs to the first report save. <code>progress</code> belongs to a save after a service succeeds. <code>final</code> belongs to the last save. Each marker tells you about one save attempt. A later save can succeed. If storage was unavailable and the OS skipped a save attempt, there is no failure marker for that attempt.</li>
+<li>Read the version 1 report between <code>UMICOM_REPORT_BEGIN</code> and <code>UMICOM_REPORT_END</code>. The <code>mode</code> records the startup path selected during admission. The <code>state</code> can change to <code>recovery</code> later. The reason tells you why it entered recovery.</li>
+<li>Put the reason and the failed phase in separate notes. An earlier service failure can still be the primary reason when the last file save fails. When the save is itself the first failure, the primary reason is <code>report-write</code>. A reason of <code>requested</code> records a choice to enter recovery, so an actual save failure can replace it with <code>report-write</code>.</li>
+</ol>
+<h2>Work through three cases</h2>
+<p>Use the following paper model for a failed save. <code>none</code> means the boot has recorded no primary failure at this point.</p>
+<pre><code class="language-text">IF a report save fails
+    Record the phase in the serial save marker
+    IF the boot reason is none OR requested
+        Set the boot reason to report-write
+    END IF
+    Enter or continue recovery
+END IF
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Boot reason before the save</th>
+<th>Failed save phase</th>
+<th>Primary reason you should record</th>
+<th>Separate note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>service-timeout</code></td>
+<td><code>final</code></td>
+<td><code>service-timeout</code></td>
+<td>The final report save failed.</td>
+</tr>
+<tr>
+<td><code>none</code></td>
+<td><code>initial</code></td>
+<td><code>report-write</code></td>
+<td>The first report save failed. The normal service loop is skipped.</td>
+</tr>
+<tr>
+<td><code>requested</code></td>
+<td><code>final</code></td>
+<td><code>report-write</code></td>
+<td>Recovery was requested and the final report save failed.</td>
+</tr>
+</tbody>
+</table>
+<p>A timeout can explain why the boot left the normal path. The final save marker explains why the saved report may be missing or stale. The marker by itself cannot tell you which reason came first.</p>
+<h2>Check your understanding</h2>
+<p>On paper, plan two services. The first service succeeds and the OS counts it as completed. Its <code>progress</code> save fails. Then let the <code>final</code> save succeed. Write down the completed count, the primary reason, the one failed phase and whether the second service runs.</p>
+<p><strong>Expected result.</strong> One service completed. The failure selects <code>report-write</code> and stops the service loop before the second service. Keep the <code>progress</code> failure marker even though the final save succeeded. The report can still describe recovery because the earlier failure already changed the boot state.</p>
+<p>Use the same two columns when reviewing Umicom OS. The hosted admission fixture checks the C function <code>UmiOsBootReasonAfterReportWriteFailure</code> with fixed inputs. The phase traces above follow the boot source in <code>boot/foundation/init.c</code>. A boot that actually writes a report and emits a marker needs separate evidence from the running OS. The sequence is explained in <code>docs/foundation/service-supervision.md</code> in the Umicom OS source tree.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="69-follow-the-first-blocked-boot-service.html">Previous lesson · Follow the first blocked boot service</a> · <a href="07-boot-admission.html">Make recovery decisions testable</a> · <a href="19-read-a-captured-boot-observation.html">Read a captured boot observation</a> · <a href="06-read-qualification-evidence.html">Read qualification evidence</a> · <a href="../../../lessons/06-umicom/umicom-os-from-scratch/70-keep-the-first-boot-failure.md">Markdown edition</a></nav><nav aria-label="Next lesson"><a rel="next" href="71-claim-a-temporary-boot-report-name.html">Next lesson · Claim a temporary name for a boot report</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

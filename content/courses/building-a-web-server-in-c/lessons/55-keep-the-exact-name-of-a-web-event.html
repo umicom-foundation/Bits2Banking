@@ -1,0 +1,81 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/55-keep-the-exact-name-of-a-web-event.html
+
+PURPOSE:
+Keep the exact name of a web event
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep the exact name of a web event | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Keep the exact name of a web event</h1>
+<p>Imagine a Bits2Banking class where a teacher sends a short update to everyone watching a page. A server can use <strong>Server-Sent Events</strong>, or SSE, to send updates over one HTTP connection. The <code>event</code> field names the type of update so the page can decide what to do. The <code>data</code> field holds the update itself.</p>
+<h2>1. Count the spaces</h2>
+<p>Read the example as text. There are <strong>two</strong> spaces between the first colon and the word <code>update</code>.</p>
+<pre><code>event:  update
+data: the next lesson is ready
+
+</code></pre>
+<p>The colon separates the field name from its value. The receiver removes the first space after the colon if there is one. The second space stays, so the stored name begins with a space. A later <code>event:</code> or <code>event</code> field has an empty value and restores the default name <code>message</code>. A tab is a different character and stays in the stored name. <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation">HTML Standard on interpreting event streams</a></p>
+<p>In the table, each <code>·</code> stands for one space. Check your prediction before reading the right column.</p>
+<table><thead><tr><th scope="col">Event fields in reading order</th><th scope="col">Stored name</th></tr></thead><tbody>
+<tr><td><code>event:·update</code></td><td><code>update</code></td></tr>
+<tr><td><code>event:··update</code></td><td><code>·update</code></td></tr>
+<tr><td><code>event:·update</code>, then <code>event:</code></td><td><code>message</code></td></tr>
+<tr><td><code>event:·update</code>, then <code>event</code></td><td><code>message</code></td></tr>
+</tbody></table>
+<h2>2. Describe the logic before writing C</h2>
+<pre><code>Set the event name to "message".
+For each event field:
+    Remove one leading space from its value if present.
+    If the remaining value will not fit, refuse the event.
+    If the remaining value is empty, use "message".
+    Otherwise, use the exact value as the event name.
+Store the event after the input has been checked.</code></pre>
+<p>This is <strong>pseudocode</strong>. It explains the decisions in plain language. The C implementation uses a fixed array with one byte reserved to mark the end of the name. An oversized value is refused before the session adds an event. Compare the event count and exact stored bytes when testing. An onscreen label can hide a leading space.</p>
+<h2>3. Read one saved event through Framework</h2>
+<p>This C23 example submits one string to an in-memory Web Workbench session. The example address labels the session. All event bytes come from the quoted text.</p>
+<pre><code class="language-c">#include &lt;string.h&gt;
+#include "umicom/web/workbench/stream.h"
+
+static bool check_exact_event_type(void)
+{
+    UmiWebWorkbenchStreamSession session;
+    /* Use an empty session so the first event occupies slot zero. */
+    umi_web_workbench_stream_init(&amp;session, "class", "Class updates",
+        UMI_WEB_WORKBENCH_STREAM_SSE, "https://example.test/class");
+    if (umi_web_workbench_stream_set_phase(&amp;session,
+        UMI_WEB_WORKBENCH_RUNNING) != UMI_STATUS_OK)
+        return false;
+
+    /* Read the stored event only after checking the import result. */
+    const UmiStatus result = umi_web_workbench_stream_ingest_sse(&amp;session,
+        "event:  update\r\ndata: the next lesson is ready\r\n\r\n", 1U);
+    return result == UMI_STATUS_OK &amp;&amp; session.message_count == 1U &amp;&amp;
+        strcmp(session.messages[0].event_name, " update") == 0;
+}</code></pre>
+<p>The expected result is <code>true</code>. Insert <code>event:\r\n</code> between the event and data fields as a paper exercise. Predict the new name before comparing it with <code>"message"</code>. In C, <code>\r\n</code> writes a carriage return followed by a line feed, which is one common line ending. The blank line after the data completes the example event.</p>
+<h2>4. Run the Framework check</h2>
+<p>Use an existing configured Framework build directory that includes the Web API Workbench tests. Replace the example path with your build directory.</p>
+<pre><code class="language-powershell">$Build = 'C:/umicom/Umicom-Applications/framework/build/windows-ucrt64-debug'
+cmake --build $Build --target umicom-web-workbench-stream-test
+if ($LASTEXITCODE -ne 0) { throw 'Read the build output before continuing.' }
+ctest --test-dir $Build -R '^framework\.web_api_workbench\.stream$' --output-on-failure --no-tests=error
+if ($LASTEXITCODE -ne 0) { throw 'Read the result for the saved-event fixture.' }</code></pre>
+<p>Expect one named test to report <code>Passed</code> on a matching build. If CTest finds no case, check the build directory and its Workbench configuration. If an assertion fails, compare the exact input, its expected stored name and the reported assertion. Repeat one input at a time.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="54-add-metadata-to-a-counted-response.html">Previous lesson · Add metadata to a counted response</a> · <a href="../../automated-testing-with-umicom/lessons/15-group-console-checks-by-what-they-submit.html">Group console checks by what they submit</a> · <a href="56-keep-a-fastcgi-connector-and-its-backend-separate.html">Next lesson · Keep a FastCGI connector and its backend separate</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/55-keep-the-exact-name-of-a-web-event.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -89,9 +89,9 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 
 | Course | Manifest path | Lessons |
 | --- | --- | --- |
-| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 116 |
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 128 |
 | Building a Text Editor in C | `learning-packs/building-a-text-editor.json` | 14 |
-| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 50 |
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 57 |
 | Building Bitcoin from Scratch Using Assembly and C | `learning-packs/building-bitcoin-in-c.json` | 3 |
 | Building Blockchain from Scratch | `learning-packs/building-blockchain-from-scratch.json` | 13 |
 | Building Linux from Scratch Using C Code | `learning-packs/building-linux-from-scratch.json` | 3 |
@@ -131,7 +131,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning C++ | `learning-packs/learning-cpp.json` | 6 |
 | Learning CSS | `learning-packs/learning-css.json` | 8 |
 | Learning Cyber Security | `learning-packs/learning-cyber-security.json` | 24 |
-| Learning D Language | `learning-packs/learning-d.json` | 51 |
+| Learning D Language | `learning-packs/learning-d.json` | 59 |
 | Learning Data Structures | `learning-packs/learning-data-structures.json` | 25 |
 | Learning Flutter | `learning-packs/learning-flutter.json` | 20 |
 | Learning GTK4 | `learning-packs/learning-gtk4.json` | 26 |
@@ -165,8 +165,8 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Safer C Programming | `learning-packs/safer-c-programming.json` | 43 |
 | Learning Umicom Framework | `learning-packs/umicom-development.json` | 208 |
 | Learning Umicom Framework — Markdown manuscripts | `learning-packs/umicom-development-manuscripts.json` | 208 |
-| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 134 |
-| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 69 |
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 141 |
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 73 |
 | Learning Build Systems | `learning-packs/learning-build-systems.json` | 32 |
 | Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 9 |
 | MINIX OS Foundations | `learning-packs/minix-os-foundations.json` | 12 |
@@ -178,7 +178,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning FreeBASIC | `learning-packs/learning-freebasic.json` | 45 |
 | Native languages through C and assembly | `learning-packs/native-language-interoperability.json` | 12 |
 | Preparing Data for LLM Training | `learning-packs/preparing-llm-training-data.json` | 34 |
-| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 134 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 141 |
 | Accessible Statement Review | `learning-packs/accessible-statement-review.json` | 2 |
 | AngularJS and Legacy Statement Screens | `learning-packs/angularjs-legacy-statements.json` | 3 |
 | Banking Technology Foundations | `learning-packs/banking-technology-foundations.json` | 4 |
@@ -204,7 +204,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Oracle Database Ledger Practice in C23 | `learning-packs/oracle-database-c23-ledger.json` | 3 |
 | Practical Web and Data Foundations | `learning-packs/practical-web-and-data-foundations.json` | 6 |
 | Pricing Financial Instruments from Cash Flows | `learning-packs/pricing-from-cashflows.json` | 5 |
-| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 11 |
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 18 |
 | Programming across languages | `learning-packs/programming-across-languages.json` | 9 |
 | Python 3.14 keyword reference | `learning-packs/python-keyword-reference.json` | 8 |
 | RabbitMQ Outbox Practice in C23 | `learning-packs/rabbitmq-c23-outbox.json` | 3 |
@@ -456,4 +456,120 @@ Start with the [applied course guide](../content/start/applied-native-courses.md
 | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 115 |
 | Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 10 |
 | Learning Build Systems | `learning-packs/learning-build-systems.json` | 31 |
+-->
+
+<!-- Retain the earlier D course count after adding the report review module.
+| Learning D Language | `learning-packs/learning-d.json` | 51 |
+-->
+
+<!-- Retain the previous OS course count after linking the new boot report lesson.
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 69 |
+-->
+
+<!-- Retain the earlier web server course count after adding three response lessons.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 50 |
+-->
+
+<!-- Retain the earlier compiler course count after linking three fixed-name lessons.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 116 |
+-->
+
+<!-- Retain the earlier OS course count after adding two report publication lessons.
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 70 |
+-->
+
+<!-- Retain both earlier Kernel course counts after linking two transcript lessons.
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 134 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 134 |
+-->
+
+<!-- Retain the prior compiler course count after adding the signed-local lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 119 |
+-->
+
+<!-- Retain the earlier compiler course count after adding script session practice.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 120 |
+-->
+
+<!-- Retain the earlier course count after adding the metadata exercise.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 53 |
+-->
+
+<!-- Retain the earlier course count after linking the build and test evidence lessons.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 11 |
+-->
+
+<!-- Retain the earlier compiler course count after linking the Boolean-local lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 121 |
+-->
+
+<!-- Retain the earlier Kernel counts before adding the saved-build lesson.
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 136 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 136 |
+-->
+
+<!-- Retain the earlier compiler lesson count after adding the Boolean literal size lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 122 |
+-->
+
+<!-- Retain both earlier Kernel counts before adding the host evidence lesson.
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 137 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 137 |
+-->
+
+<!-- Retain the earlier Automated Testing course count after adding the console fixture lesson.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 14 |
+-->
+
+<!-- Retain both earlier Kernel pack counts for review after adding the finished artifact lesson.
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 138 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 138 |
+-->
+
+<!-- Retain the earlier Automated Testing pack count for review after adding the build path lesson.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 15 |
+-->
+
+<!-- Retain the earlier Web Server pack count for review after adding the named-event lesson.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 54 |
+-->
+
+<!-- Retain the earlier Compiler pack count for review after the unsigned byte lesson.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 123 |
+-->
+
+<!-- Retain the earlier course count for review after adding the build storage lesson.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 16 |
+-->
+
+<!-- The earlier catalogue row counted 124 Compiler lessons. The active row includes the three typed console lessons. The preceding row stays here for review.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 124 |
+-->
+
+<!-- The earlier catalogue row counted 72 lessons. The active row includes the executable review lesson, and this earlier row remains for review.
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 72 |
+-->
+
+<!-- The previous row counted 55 lessons. The new total includes the managed FastCGI binding lesson. The earlier row remains for review.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 55 |
+-->
+
+<!-- The earlier catalogue counted 127 lessons. The current row includes the signed cast exercise.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 127 |
+-->
+
+<!-- The earlier catalogue counted 17 lessons before the execution outcome chapter.
+| Automated Testing with Umicom Framework | `learning-packs/automated-testing-with-umicom.json` | 17 |
+-->
+
+<!-- Preserve the previous catalogue count. The active row now includes both device discovery lessons.
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 139 |
+-->
+
+<!-- Preserve the previous catalogue count. The active row now includes both device discovery lessons.
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 139 |
+-->
+
+<!-- Retain the earlier WebServer catalogue count after adding a compiled resource lesson.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 56 |
 -->

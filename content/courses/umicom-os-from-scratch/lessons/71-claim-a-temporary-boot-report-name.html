@@ -1,0 +1,84 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/71-claim-a-temporary-boot-report-name.html
+
+PURPOSE:
+Claim a temporary name for a boot report
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claim a temporary name for a boot report | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Claim a temporary name for a boot report</h1>
+<p>Lesson 70 followed a boot failure and a separate report-save problem. This lesson follows the writer before it can put any bytes in a new report. A <strong>temporary file</strong> gives the writer a place to prepare the next version while the last complete report keeps its published name.</p>
+<h2>Claim a name for this attempt</h2>
+<p>In the saved Umicom OS test, the published name is <code>report</code>. The writer tries <code>report.tmp</code> first. If that name is occupied, it tries <code>report.tmp.1</code> and continues in order through <code>report.tmp.7</code>. There are eight choices in total. An occupied name may belong to another writer or an earlier attempt.</p>
+<p>The writer uses exclusive creation. On Linux, <code>O_CREAT</code> with <code>O_EXCL</code> asks the operating system to create a new file and refuse an existing name in the same call. The successful call returns a file descriptor, the handle for writing to that newly opened file. In this exercise, an attempt owns a temporary name only after its exclusive creation succeeds. <a href="https://man7.org/linux/man-pages/man2/open.2.html">Linux <code>open(2)</code></a></p>
+<p>The error <code>EEXIST</code> means the name is taken. That is the one open error that advances the writer to another slot. An error such as <code>EACCES</code>, which can mean access is denied, stops the attempt.</p>
+<pre><code class="language-text">FOR each temporary name in the allowed order
+    TRY to create the name exclusively
+    IF creation succeeds
+        RECORD the new file as owned by this attempt
+        CONTINUE to the report-writing stage
+    END IF
+    IF the error is other than EEXIST
+        STOP the attempt
+    END IF
+END FOR
+STOP when all eight names are occupied
+</code></pre>
+<h2>Follow the names on paper</h2>
+<p>Draw eight boxes. Label the first <code>report.tmp</code> and the rest <code>.1</code> through <code>.7</code>. Before looking at the answers, mark the occupied boxes and trace where the writer stops.</p>
+<table>
+<thead>
+<tr>
+<th>Starting condition</th>
+<th style="text-align: right;">Open attempts</th>
+<th>Acquired name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All names free</td>
+<td style="text-align: right;">1</td>
+<td><code>report.tmp</code></td>
+</tr>
+<tr>
+<td>First name occupied</td>
+<td style="text-align: right;">2</td>
+<td><code>report.tmp.1</code></td>
+</tr>
+<tr>
+<td>First seven names occupied</td>
+<td style="text-align: right;">8</td>
+<td><code>report.tmp.7</code></td>
+</tr>
+<tr>
+<td>All eight names occupied</td>
+<td style="text-align: right;">8</td>
+<td>None</td>
+</tr>
+<tr>
+<td>First name occupied, next open gives <code>EACCES</code></td>
+<td style="text-align: right;">2</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>Now let the first two names be occupied and assume the third opens successfully. The predicted acquired name is <code>report.tmp.2</code>. The first two names stay outside this attempt's cleanup. If all opens fail, the writer has no new file to write, close, rename or remove.</p>
+<p>This Umicom OS report writer chooses its own bounded temporary names. In the media exercise, the learner chooses the final destination; an occupied user-selected destination calls for a new reviewed choice. Keeping those two kinds of names separate makes it easier to decide who may retry.</p>
+<p>The saved tests injected the open results and checked the attempted names, flags and recorded operations of <code>UmiOsWriteReport</code>. Real Linux filesystem behavior and a guest boot publish remain separate checks. The next lesson follows the file once the writer has acquired it.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="70-keep-the-first-boot-failure.html">Previous lesson · Keep the first boot failure when a report cannot be saved</a> · <a href="72-keep-a-complete-report-through-replacement.html">Next lesson · Keep a complete report through replacement</a> · <a href="57-read-file-effects-separately-from-status.html">Read file effects separately from status</a> · <a href="62-retain-failed-media-artifacts-for-recovery.html">Retain failed media artifacts for recovery</a> · <a href="../../../lessons/06-umicom/umicom-os-from-scratch/71-claim-a-temporary-boot-report-name.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

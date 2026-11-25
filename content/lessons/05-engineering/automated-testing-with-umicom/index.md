@@ -32,6 +32,13 @@ Define a passing result, preview a small native test plan and keep evidence for 
 - [Read counted results from a running test log](09-read-counted-results-from-a-running-test-log.md)
 - [Keep the outer test total](10-keep-the-outer-test-total.md)
 - [Keep startup evidence with its test attempt](11-keep-startup-evidence-with-its-test-attempt.md)
+- [Check the link inputs of a fixture](12-check-the-link-inputs-of-a-fixture.md)
+- [Match the selector to the test executable](13-match-the-selector-to-the-test-executable.md)
+- [Check complete rows in a saved prefix](14-check-complete-rows-in-a-saved-prefix.md)
+- [Group console checks by what they submit](15-group-console-checks-by-what-they-submit.md)
+- [Check a shorter Windows build path](16-check-a-shorter-windows-build-path.md)
+- [Check available build and temporary space](17-check-available-build-and-temporary-space.md)
+- [Separate a skip from a test that could not start](18-separate-a-skip-from-a-test-that-could-not-start.md)
 
 ## Try the optional native lab
 

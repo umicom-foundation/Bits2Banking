@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/126-keep-the-accepted-value-during-a-console-preview.html
+
+PURPOSE:
+Keep the accepted value during a console preview
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep the accepted value during a console preview | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Keep the accepted value during a console preview</h1>
+<p>Imagine a classroom timer with an accepted setting and a trial setting. You want to try turning the flag off, then look at the accepted setting again. The Umicom C console gives a line beginning with <code>:preview </code> a detached copy of the accepted session. A detached copy starts with the same values and can be changed separately.</p>
+<h2>1. Trace the accepted and trial values</h2>
+<p>Save the following four lines as <code>typed-preview.ucs</code>. The first declaration stores <code>1</code>, because <code>-7</code> is nonzero. The next two lines begin with the console directive <code>:preview</code>. Keep the space immediately after the directive.</p>
+<pre><code class="language-text">bool flag=-7;
+:preview flag=0;
+:preview return 40+flag+sizeof(bool);
+return 40+flag+sizeof(bool);</code></pre>
+<pre><code class="language-powershell">Get-Content -Raw -LiteralPath &#39;./typed-preview.ucs&#39; | umicom-c script --typed --stdin</code></pre>
+<p>The corrected console check matched this exact output.</p>
+<pre><code class="language-text">ok
+preview ok
+preview 42
+42</code></pre>
+<ol>
+<li><code>ok</code> means the declaration was accepted. The live <code>flag</code> is <code>1</code>.</li>
+<li><code>preview ok</code> means the trial assignment succeeded. It set the copy to <code>0</code>. The accepted <code>flag</code> is still <code>1</code>.</li>
+<li>The next preview starts from the accepted session again. It reads <code>1</code>, adds the one-byte size of <code>bool</code>, and displays <code>preview 42</code>.</li>
+<li>The ordinary return also reads the accepted flag. Its result is <code>42</code>.</li>
+</ol>
+<h2>2. Model a preview on paper</h2>
+<pre><code class="language-text">MAKE a copy of the accepted local values and their types
+APPLY the preview line to that copy
+SHOW the preview reply
+DISCARD the copy
+BEGIN the next line with the accepted session</code></pre>
+<h2>3. Change what is accepted</h2>
+<p>For a paper exercise, change the second line to <code>flag=0;</code>. This time the assignment is submitted to the live session. Predict both final replies. The calculation becomes <code>40 + 0 + 1</code>, so the predicted final replies are <code>preview 41</code> and <code>41</code>. When writing a console test, keep both the preview reply and the later live reply. Together they show which value stayed in the session.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="125-choose-typed-values-in-the-c-console.html">Previous lesson · Choose typed values in the C console</a> · <a href="127-submit-a-typed-script-as-one-block.html">Next lesson · Submit a typed script as one block</a> · <a href="121-keep-the-last-accepted-script-value.html">Keep the last accepted script value</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/126-keep-the-accepted-value-during-a-console-preview.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

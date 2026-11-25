@@ -1,0 +1,114 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/54-read-a-versioned-field-after-checking-its-type.html
+
+PURPOSE:
+Read a versioned field after checking its type
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a versioned field after checking its type | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read a versioned field after checking its type</h1>
+<p>A complete line can still hold the wrong kind of value. JSON can store a number, a string such as <code>"1"</code>, or a Boolean such as <code>true</code>. In this exercise, you will check the kind before letting a value into the reader's small D record.</p>
+<h2>1. Meet the practice report</h2>
+<p>These records are the saved synthetic output of the Umicom C console exercise that watches slot zero. The four <code>step</code> records describe completed source steps. The fifth record gives the value returned by the practice program. The stored C fixture produced these records in both of its checked compiler lanes. This exercise concerns a D reader for those saved bytes.</p>
+<pre><code class="language-json">{&quot;schema&quot;:1,&quot;event&quot;:&quot;step&quot;,&quot;number&quot;:1,&quot;stepKind&quot;:&quot;statement&quot;,&quot;firstLine&quot;:2,&quot;firstColumn&quot;:3,&quot;endLine&quot;:2,&quot;endColumn&quot;:13,&quot;instructions&quot;:2,&quot;ok&quot;:true}
+{&quot;schema&quot;:1,&quot;event&quot;:&quot;step&quot;,&quot;number&quot;:2,&quot;stepKind&quot;:&quot;statement&quot;,&quot;firstLine&quot;:3,&quot;firstColumn&quot;:3,&quot;endLine&quot;:3,&quot;endColumn&quot;:9,&quot;instructions&quot;:2,&quot;ok&quot;:true}
+{&quot;schema&quot;:1,&quot;event&quot;:&quot;step&quot;,&quot;number&quot;:3,&quot;stepKind&quot;:&quot;statement&quot;,&quot;firstLine&quot;:4,&quot;firstColumn&quot;:3,&quot;endLine&quot;:4,&quot;endColumn&quot;:11,&quot;instructions&quot;:4,&quot;ok&quot;:true}
+{&quot;schema&quot;:1,&quot;event&quot;:&quot;step&quot;,&quot;number&quot;:4,&quot;stepKind&quot;:&quot;return&quot;,&quot;firstLine&quot;:5,&quot;firstColumn&quot;:3,&quot;endLine&quot;:5,&quot;endColumn&quot;:12,&quot;instructions&quot;:2,&quot;ok&quot;:true}
+{&quot;schema&quot;:1,&quot;event&quot;:&quot;result&quot;,&quot;value&quot;:42,&quot;instructions&quot;:10}
+</code></pre>
+<p>Look first at <code>schema</code>. A schema is the agreed set of fields and their meanings. All five records give it the number 1. Change a copy to <code>"schema":"1"</code> and circle the quotation marks. The string and the number have different types, so the reader will refuse the copy. A missing <code>schema</code> field also produces a refusal.</p>
+<h2>2. Keep the checked fields</h2>
+<p>The following helper reads one bounded line from the preceding lesson. It uses <code>JSONType</code> to inspect the values produced by <code>parseJSON</code>. Each step has a number, kind, instruction count and Boolean outcome. Each result has a signed return value and a total instruction count. Other fields in the saved report, such as source positions, remain available for a later reader that needs them.</p>
+<pre><code class="language-d">import std.json : JSONType, JSONValue, parseJSON;
+
+struct ReportRecord
+{
+    string event;
+    long number;
+    string stepKind;
+    long instructions;
+    bool ok;
+    long value;
+}
+
+JSONValue reportField(JSONValue node, string key)
+{
+    // Look up a present key before reading its value.
+    auto fields = node.object;
+    auto found = key in fields;
+    if (found is null)
+        throw new Exception(&quot;Missing field: &quot; ~ key);
+    return *found;
+}
+
+long reportInteger(JSONValue field)
+{
+    // Admit integers representable by the signed type the reader uses.
+    if (field.type == JSONType.integer)
+        return field.integer;
+    if (field.type == JSONType.uinteger &amp;&amp; field.uinteger &lt;= cast(ulong) long.max)
+        return cast(long) field.uinteger;
+    throw new Exception(&quot;Expected a signed-range integer.&quot;);
+}
+
+string reportString(JSONValue field)
+{
+    // Read the string accessor only after checking the value kind.
+    if (field.type != JSONType.string)
+        throw new Exception(&quot;Expected a string.&quot;);
+    return field.str;
+}
+
+ReportRecord decodeRecord(string line)
+{
+    auto node = parseJSON(line);
+    if (node.type != JSONType.object || reportInteger(reportField(node, &quot;schema&quot;)) != 1)
+        throw new Exception(&quot;Expected a version 1 report object.&quot;);
+
+    ReportRecord record;
+    record.event = reportString(reportField(node, &quot;event&quot;));
+    record.instructions = reportInteger(reportField(node, &quot;instructions&quot;));
+    if (record.instructions &lt; 0 || record.instructions &gt; 1000000)
+        throw new Exception(&quot;Instructions outside the practice range.&quot;);
+
+    // Keep the required fields for the selected event.
+    if (record.event == &quot;step&quot;)
+    {
+        record.number = reportInteger(reportField(node, &quot;number&quot;));
+        record.stepKind = reportString(reportField(node, &quot;stepKind&quot;));
+        auto outcome = reportField(node, &quot;ok&quot;);
+        if (record.number &lt; 1 || record.number &gt; 32 ||
+            (record.stepKind != &quot;statement&quot; &amp;&amp; record.stepKind != &quot;condition&quot; &amp;&amp;
+             record.stepKind != &quot;iteration&quot; &amp;&amp; record.stepKind != &quot;return&quot;) ||
+            (outcome.type != JSONType.true_ &amp;&amp; outcome.type != JSONType.false_))
+            throw new Exception(&quot;Unexpected step fields.&quot;);
+        record.ok = outcome.boolean;
+    }
+    else if (record.event == &quot;result&quot;)
+        record.value = reportInteger(reportField(node, &quot;value&quot;));
+    else
+        throw new Exception(&quot;Unknown report event.&quot;);
+    return record;
+}
+</code></pre>
+<h2>3. Compare three small changes</h2>
+<p>The first saved line gives a <code>step</code> with number 1, kind <code>statement</code>, 2 instructions, and a true outcome. The last line gives a <code>result</code> with value 42 and 10 instructions. A step with <code>"ok":"true"</code> now refuses because the word in quotation marks is a string. A step with an event name your reader has never seen also refuses. Keep each modified line separate so you can say which rule caught it.</p>
+<p>The next lesson checks how several records become one complete preview.</p>
+<p><a href="https://dlang.org/library/std/json/parse_json.html">Phobos parseJSON</a> · <a href="https://dlang.org/library/std/json/json_value.html">D JSONValue fields</a> · <a href="https://dlang.org/library/std/json/json_type.html">D JSONType values</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="53-count-complete-report-lines-within-a-byte-limit.html">Previous lesson · Count complete report lines within a byte limit</a> · <a href="55-keep-the-previous-preview-when-a-record-fails.html">Next lesson · Keep the previous preview when a new record fails</a> · <a href="../../building-a-compiler-in-c/lessons/96-read-versioned-interpreter-reports.html">Related lesson · Read versioned interpreter reports</a> · <a href="51-admit-values-before-exhaustive-state-dispatch.html">Related lesson · Admit values before exhaustive state dispatch</a> · <a href="../../../lessons/03-native-code/learning-d/54-read-a-versioned-field-after-checking-its-type.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

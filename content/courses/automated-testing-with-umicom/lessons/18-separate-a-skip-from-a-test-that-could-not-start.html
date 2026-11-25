@@ -1,0 +1,83 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/18-separate-a-skip-from-a-test-that-could-not-start.html
+
+PURPOSE:
+Separate a skip from a test that could not start
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Separate a skip from a test that could not start | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Separate a skip from a test that could not start</h1>
+<p>Three learners turn up for a practical exercise. One finishes, one cannot use an optional piece of equipment, and one cannot start because their worksheet is missing. A test report can record these situations separately. Look for the result and the reason before counting what was checked.</p>
+<h2>1. Run a three-case practice project</h2>
+<p>Use a developer terminal with CMake and Ninja available. In an empty practice folder, save this file as <code>CMakeLists.txt</code>. A <strong>fixture</strong> is the small program or command that performs a test. Here the first two fixtures use built-in CMake commands. The third points to a file you have deliberately left absent.</p>
+<pre><code class="language-cmake">cmake_minimum_required(VERSION 3.24)
+project(PracticeCoverage LANGUAGES NONE)
+enable_testing()
+
+add_test(NAME practice.pass COMMAND &quot;${CMAKE_COMMAND}&quot; -E echo &quot;checked&quot;)
+add_test(NAME practice.optional COMMAND &quot;${CMAKE_COMMAND}&quot; -E false)
+# In this teaching fixture alone, exit 1 models an unavailable capability.
+set_tests_properties(practice.optional PROPERTIES SKIP_RETURN_CODE 1)
+
+add_test(NAME practice.missing COMMAND &quot;${CMAKE_CURRENT_BINARY_DIR}/absent-check&quot;)
+</code></pre>
+<pre><code class="language-powershell">cmake -S . -B build -G Ninja
+ctest --test-dir build --output-on-failure
+$LASTEXITCODE
+</code></pre>
+<p>The checked run reported one <code>Passed</code>, one <code>Skipped</code> and one <code>Not Run</code>. It also printed that the third executable could not be found. Expect a nonzero exit code from this exercise. The optional fixture ran and returned the configured signal. The missing fixture never started.</p>
+<h2>2. Read the evidence before choosing what to do</h2>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>What to check next</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Passed</td>
+<td>Record which test version ran and which condition it verified.</td>
+</tr>
+<tr>
+<td>Skipped</td>
+<td>Record the unavailable capability. Arrange a later run where that capability is available if the coverage matters.</td>
+</tr>
+<tr>
+<td>Not Run with a missing executable</td>
+<td>Check the configured target and the last build's link step. Confirm the expected program exists before repeating the test.</td>
+</tr>
+</tbody>
+</table>
+<p>To list the registered cases, run <code>ctest --test-dir build -N</code>. A listed case describes the plan. Use the result lines from the real run to record execution. Keep the full output with your notes so another person can find the reason for the third result.</p>
+<pre><code class="language-c">static int FixtureOutcome(int optionalCapability, int checkPassed)
+{
+    /* This fixture reserves one distinct code for a missing capability. */
+    if (!optionalCapability)
+        return 77;
+    return checkPassed ? 0 : 1;
+}
+</code></pre>
+<p>Read the C function as a model for your own fixture. The caller supplies what it observed. A real CTest registration for this function's fixture can reserve 77 as its skip code. Keep the check failure code separate so a failed check remains visible. Platform checks in Umicom can use this pattern for optional test capabilities.</p>
+<pre><code class="language-text">IF the fixture could not start, record the launch reason
+OTHERWISE IF its optional capability is unavailable, record the skip reason
+OTHERWISE record the check's actual outcome
+</code></pre>
+<p>For practice, change <code>practice.optional</code> to use the same echo command as <code>practice.pass</code>, then configure and run again. The optional row should now pass. The missing row should still report that its program could not start. <a href="https://cmake.org/cmake/help/latest/prop_test/SKIP_RETURN_CODE.html">CTest skip return codes and limits</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="17-check-available-build-and-temporary-space.html">Previous lesson · Check available build and temporary space</a> · <a href="13-match-the-selector-to-the-test-executable.html">Check the selected executable</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/18-separate-a-skip-from-a-test-that-could-not-start.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

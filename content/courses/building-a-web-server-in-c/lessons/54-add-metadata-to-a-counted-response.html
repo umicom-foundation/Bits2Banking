@@ -1,0 +1,69 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/54-add-metadata-to-a-counted-response.html
+
+PURPOSE:
+Add metadata to a counted response
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Add metadata to a counted response | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Add metadata to a counted response</h1>
+<p>Imagine a WebServer practice route that returns the three characters <code>abc</code>. Its handler wants to attach a short label for a reader. The label is <strong>metadata</strong>, which describes the reply. <strong>Framing</strong> gives the recipient the rules for finding the end of the reply. The Framework formatter counts the body bytes and supplies <code>Content-Length: 3</code> for this ordinary 200 response.</p>
+<h2>1. Add an ordinary field with the public helpers</h2>
+<p>The saved C23 fixture prepares a 200 reply as plain text. It adds <code>X-Range-Label</code> through the public header helper. That name uses letters and hyphens. The value contains an internal tab. The tab is one character even when an editor displays it as a wide gap.</p>
+<pre><code class="language-c">#include &quot;umicom/web/response.h&quot;
+
+static UmiStatus prepare_labelled_reply(UmiWebResponse *response)
+{
+    /* Prepare the body and its media type before appending the extra field. */
+    UmiStatus status = umi_web_response_set_text(response, 200, &quot;text/plain&quot;, &quot;abc&quot;);
+    if (status != UMI_STATUS_OK)
+        return status;
+
+    /* Add an application label. The formatter manages the body length. */
+    return umi_web_response_set_header(response, &quot;X-Range-Label&quot;, &quot;one\ttwo&quot;);
+}
+</code></pre>
+<p>After both calls succeed, pass the response to a formatter and check its result. Both <code>umi_web_response_format</code> and <code>UmiWebResponseFormatClosed</code> preserve the internal tab in <code>X-Range-Label: one\ttwo</code>. A field name follows a different rule. It must have at least one character, and an embedded space makes it invalid.</p>
+<h2>2. Predict what changes in the destination</h2>
+<p>Draw a response object and a separate output buffer. Give the buffer 256 bytes, fill every byte with <code>z</code> and set its result count to <code>79</code>. For each row, start with a fresh 200 reply containing <code>abc</code>. Attach just the listed extra field. Restore the original buffer and count before each trial.</p>
+<table>
+<thead>
+<tr>
+<th>Extra field</th>
+<th>Why the formatters refuse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Empty name with the value <code>example</code></td>
+<td>A field needs a name.</td>
+</tr>
+<tr>
+<td><code>Invalid Name: example</code></td>
+<td>A space breaks the name.</td>
+</tr>
+<tr>
+<td><code>cOnTeNt-LeNgTh: 3</code></td>
+<td>Framework supplies the framing length. The mixed letter case still names the same reserved field.</td>
+</tr>
+</tbody>
+</table>
+<p>In the fixture, the header helper stores each of those pairs. Both formatters then return <code>UMI_STATUS_INVALID_ARGUMENT</code>. For each failure, compare all 256 destination bytes with the original. They stay <code>z</code>. The compatibility formatter leaves the count at <code>79</code>. The closed formatter resets the count to <code>0</code>. Read the status before treating an output count as the length of a new reply.</p>
+<p>Use the same paper trace for a fictional Bits2Banking export label. Sketch a valid metadata field name, then identify where to check the formatter's result. Keep the data bytes, metadata and framing count in separate boxes. The stored Framework fixture checks these operations in memory.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="53-validate-an-empty-response-before-publishing.html">Previous lesson · Validate an empty response before publishing it</a> · <a href="12-format-get-and-head-responses.html">Format GET and HEAD responses</a> · <a href="48-check-export-and-download-headers.html">Check export and download headers</a> · <a href="50-count-every-response-body-byte.html">Count every response body byte</a> · <a href="55-keep-the-exact-name-of-a-web-event.html">Next lesson · Keep the exact name of a web event</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/54-add-metadata-to-a-counted-response.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

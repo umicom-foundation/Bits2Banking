@@ -1,0 +1,67 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/13-match-the-selector-to-the-test-executable.html
+
+PURPOSE:
+Match the selector to the test executable
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Match the selector to the test executable | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Match the selector to the test executable</h1>
+<p>A <strong>selector</strong> is a word a test program reads to decide which practice case to run. CTest can register several test names that call the same executable with different selectors. This makes small cases easier to run and report separately.</p>
+<h2>1. Follow the registered command</h2>
+<p>Imagine a Bank CSV test called <code>practice.csv.header-quote</code>. The registration tells CTest to run a program called <code>csv-issue-check</code> and give it the selector <code>header-quote</code>. The program starts by looking for that word in its list. It builds the practice input and calls the CSV parser after it recognizes the case.</p>
+<pre><code class="language-text">START the executable named by the registration
+LOOK UP the selector in that executable's case list
+IF the case is missing, REPORT a selection failure and stop
+BUILD the practice input and call the subject being tested
+</code></pre>
+<p>The <strong>subject</strong> is the code whose behavior the test intends to check. A selection failure tells us that the executable started and could not choose a case. The subject has yet to receive that practice input.</p>
+<h2>2. Compare four pieces of evidence</h2>
+<p>In the saved Umicom Bank example, four CSV issue-location selectors were present in the configured registrations. The source and freshly compiled object also contained them. An <strong>object file</strong> holds the translated code from one source file before the linker combines it with other code. The executable recorded for the run was from an earlier build and contained none of the four selectors.</p>
+<table>
+<thead>
+<tr>
+<th>Evidence to check</th>
+<th>In the saved example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registered command</td>
+<td>Names the test executable and each current selector.</td>
+</tr>
+<tr>
+<td>Fixture source</td>
+<td>Lists the selectors before it constructs a CSV sample.</td>
+</tr>
+<tr>
+<td>Fresh object file</td>
+<td>Contains the four selector names.</td>
+</tr>
+<tr>
+<td>Executable used in the run</td>
+<td>Contains none of those selectors. The selection check fails before CSV processing.</td>
+</tr>
+</tbody>
+</table>
+<p>Draw these four cards. Beside the object card, write “compiled”. Beside the executable card, write “older link output”. Then put the actual failure next to the executable card. The object file cannot tell you what happened inside a different executable.</p>
+<h2>3. Write the conclusion and the missing check</h2>
+<p>On paper, record that the four tests failed at selection and that the configured tests still need to run with the intended executable. Keep the original failure with the earlier executable's identity. After a successful link, check which executable the registration points to and compare its identity with the built file before rerunning the four cases.</p>
+<p>If the new executable selects a case and a CSV check then fails, keep that new result under its own run. It now gives evidence from a later stage. The recorded selector comparison identified the earlier mismatch. The current native rerun is still pending in that record.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="12-check-the-link-inputs-of-a-fixture.html">Previous lesson · Check the link inputs of a fixture</a> · <a href="14-check-complete-rows-in-a-saved-prefix.html">Next lesson · Check complete rows in a saved prefix</a> · <a href="../../learning-build-systems/lessons/26-recognize-stale-tests-after-a-failed-build.html">Recognize stale tests after a failed build</a> · <a href="07-select-one-saved-test-result.html">Select one saved test result</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/13-match-the-selector-to-the-test-executable.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

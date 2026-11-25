@@ -1,0 +1,123 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/51-follow-head-through-the-in-memory-router.html
+
+PURPOSE:
+Follow a HEAD request through the in-memory router
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Follow a HEAD request through the in-memory router | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Follow a HEAD request through the in-memory router</h1>
+<p>Lesson 50 started with a response that already contained three bytes. This time, start with the request. The Framework runtime can process a complete HTTP request stored in memory, choose the route and format the response into a second buffer. A test can check this sequence without opening a listening socket.</p>
+<h2>Match the method and path</h2>
+<p>Read <code>HEAD /report</code> as two pieces of information. <code>HEAD</code> is the method, and <code>/report</code> is the path. A route associates both with a handler, the function that prepares a response.</p>
+<p>The in-memory fixture registers these routes. The two report routes use the same handler. The handler prepares status <code>202 Accepted</code>, <code>X-Report: summary</code>, and the three bytes <code>41 00 42</code> in hexadecimal. The middle byte has value zero.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Handler prepares</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/report</code></td>
+<td>The counted report</td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>/report</code></td>
+<td>The counted report</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/hello</code></td>
+<td>The text <code>hello</code></td>
+</tr>
+</tbody>
+</table>
+<p>The compatibility runtime looks for a route with the requested method and path. In this fixture, a <code>HEAD /hello</code> request has no matching HEAD route. Its GET route remains available for <code>GET /hello</code>.</p>
+<pre><code class="language-text">READ the method and path from the complete request
+FIND the exact method and path in the route table
+PREPARE the route response or the not-found response
+FORMAT the response headers
+IF the request is HEAD
+    END the response after its headers
+END IF
+</code></pre>
+<h2>Trace one request into a C buffer</h2>
+<p>The following fragment assumes <code>service</code> has the listed routes. <code>sizeof request - 1U</code> counts the request bytes and leaves out the zero that ends the C string. The <code>\r\n</code> escapes write HTTP's line ending. The empty line completes this request.</p>
+<pre><code class="language-c">static const char request[] = &quot;HEAD /report HTTP/1.1\r\nHost: localhost\r\n\r\n&quot;;
+char reply[256];
+size_t used = 0U;
+
+// Run the counted request through routing and formatting in memory.
+UmiStatus result = umi_web_runtime_process(service, request, sizeof request - 1U,
+                                           reply, sizeof reply, &amp;used);
+// Read reply[0] through reply[used - 1] only when result is UMI_STATUS_OK.
+</code></pre>
+<p>The <code>Host</code> value is text in the test input. This operation reads the bytes passed by the caller and returns a result in the caller's buffer. Its declaration is in <code>include/umicom/web/runtime.h</code> in Framework.</p>
+<h2>Predict the four results</h2>
+<p>Write the API result, HTTP status, declared length and body bytes for each request before uncovering the answer.</p>
+<table>
+<thead>
+<tr>
+<th>Request</th>
+<th>API result</th>
+<th>HTTP status</th>
+<th>Declared length</th>
+<th>Body bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /report</code></td>
+<td><code>UMI_STATUS_OK</code></td>
+<td>202</td>
+<td>3</td>
+<td><code>41 00 42</code></td>
+</tr>
+<tr>
+<td><code>HEAD /report</code></td>
+<td><code>UMI_STATUS_OK</code></td>
+<td>202</td>
+<td>3</td>
+<td>0 bytes</td>
+</tr>
+<tr>
+<td><code>GET /hello</code></td>
+<td><code>UMI_STATUS_OK</code></td>
+<td>200</td>
+<td>5</td>
+<td><code>hello</code></td>
+</tr>
+<tr>
+<td><code>HEAD /hello</code></td>
+<td><code>UMI_STATUS_OK</code></td>
+<td>404</td>
+<td>9</td>
+<td>0 bytes</td>
+</tr>
+</tbody>
+</table>
+<p>The report HEAD reply keeps <code>X-Report: summary</code>. Both <code>/report</code> replies declare length 3 for the shared representation, the form the handler prepared. HTTP requires a supplied HEAD <code>Content-Length</code> to equal the content length of the corresponding GET. Check that rule with the two <code>/report</code> rows. <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6">HTTP Semantics on Content-Length</a></p>
+<p>The two <code>/hello</code> rows show how this compatibility runtime handles an exact route match. Its GET route returns five bytes. With no HEAD route, the runtime selects a 404 and declares the nine-byte not-found representation, a different length from that GET. The 404 row is still a successful API call because the runtime produced a complete response. Keep the API result and the HTTP status in separate columns when reviewing a synthetic Umicom TMS report route.</p>
+<p>The stored Framework routing fixture checks these complete byte buffers. Actual HTTP delivery requires separate evidence. <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2">HTTP HEAD semantics</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="50-count-every-response-body-byte.html">Previous lesson · Count every response body byte</a> · <a href="52-keep-a-saved-representation-after-304.html">Next lesson · Keep a saved representation after a 304 response</a> · <a href="14-register-a-route-and-context.html">Register a route and its context</a> · <a href="28-separate-http-status-from-operation-status.html">Separate an HTTP refusal from an operation failure</a> · <a href="43-check-native-routes-before-listening.html">Check native routes before listening</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/51-follow-head-through-the-in-memory-router.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

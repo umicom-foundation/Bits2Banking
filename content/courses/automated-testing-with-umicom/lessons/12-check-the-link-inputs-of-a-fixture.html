@@ -1,0 +1,38 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/12-check-the-link-inputs-of-a-fixture.html
+
+PURPOSE:
+Check the link inputs of a fixture
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check the link inputs of a fixture | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Check the link inputs of a fixture</h1>
+<p>A fixture is a small program built to check one part of a product. Its executable has its own list of link inputs. The linker combines compiled pieces into a program and needs a definition for every function the fixture calls. A working application gives evidence for its own executable. The fixture still needs a successful link before its checks can run.</p>
+<h2>Trace two executables on paper</h2>
+<ol>
+<li>Draw two boxes labelled <strong>Reader</strong>, the application, and <strong>Probe</strong>, the test fixture. Each uses a decoder that reads a small structured message. Draw a <strong>Trees</strong> library card containing the definition of <code>open_tree</code>, a function the decoder calls.</li>
+<li>Connect Reader to Trees. In Probe, draw the decoder inside the box because the fixture includes the real decoder source. Probe can then make a selected memory request fail and observe how the decoder responds. Give Probe a link list with only its support library.</li>
+<li>Follow Probe’s call to <code>open_tree</code>. Its linker cannot find the definition in the inputs it received. Write <strong>link failed</strong> on Probe’s new executable card. The decoder check has no result from that attempted build.</li>
+<li>Add Trees to Probe’s link list and draw a fresh build-plan card. Predict what changes. The linker can now find the definition. To record a test pass, you still need a successful link and an observed test result for the resulting executable.</li>
+</ol>
+<h2>Follow the same boundary in Umicom Framework</h2>
+<p>The local chat allocation fixture includes the production codec directly and substitutes its own memory allocation functions. This lets the fixture check what happens when a chosen allocation fails. The health decoder calls shared JSON tree functions such as <code>UmiJsonTreeCreate</code>, whose definition comes from <code>Umicom::protocol</code>. The fixture therefore names Protocol in its own link inputs.</p>
+<p>In the saved owner case, the working build instructions already listed Protocol. The earlier generated plan and the failed link command still omitted it. Keep both observations with their build identities. A source edit and the command an earlier build actually used describe different points in time.</p>
+<p>A separate focused mirror build used the corrected link inputs and passed all six fixture checks. It covered the chat, health and delta cases at each of two allocation failure positions. The owner rerun was still pending in the saved evidence. For each attempt, write down which executable linked successfully and which tests actually produced outcomes.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="11-keep-startup-evidence-with-its-test-attempt.html">Previous lesson · Keep startup evidence with its test attempt</a> · <a href="13-match-the-selector-to-the-test-executable.html">Next lesson · Match the selector to the test executable</a> · <a href="../../learning-build-systems/lessons/29-see-which-library-ninja-will-link.html">See which library Ninja will link</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/12-check-the-link-inputs-of-a-fixture.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

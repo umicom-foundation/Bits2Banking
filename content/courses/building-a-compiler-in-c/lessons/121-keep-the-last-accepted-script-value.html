@@ -1,0 +1,91 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/121-keep-the-last-accepted-script-value.html
+
+PURPOSE:
+Keep the last accepted script value
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep the last accepted script value | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep the last accepted script value</h1>
+<p>Imagine keeping a tally on paper. You write down a value after checking it. When a proposed change fails, your last checked value is still on the page. The <code>umicom-c script</code> command lets you try the same idea with a signed integer.</p>
+<h2>Build up a value one line at a time</h2>
+<p>Open a terminal with the current Umicom C tool and run <code>umicom-c script</code>. Enter each line and press Enter.</p>
+<pre><code class="language-c">signed total = 2;
+total *= 21;
+return total;
+</code></pre>
+<p>Expect <code>ok</code>, <code>ok</code>, then <code>42</code>. <code>*=</code> multiplies the current value by 21 and stores the answer back under <code>total</code>. In a script session, <code>return total;</code> displays the value and leaves the session open. A <strong>session</strong> is one run of the command. It remembers the names and values accepted in that run. When you finish, send end of input. In many Unix terminals this is Ctrl+D. In a Windows console use Ctrl+Z followed by Enter.</p>
+<h2>Predict what happens on a bad line</h2>
+<p>Start a fresh session for this example. Keep both assignments and their braces together on the second physical line. The braces group them into one submission.</p>
+<pre><code class="language-c">int total = 42;
+{ total = 0; total = 1 / 0; }
+return total;
+</code></pre>
+<ol>
+<li>After line 1, write <code>42</code> in a box labelled <strong>last accepted total</strong>. The command shows <code>ok</code>.</li>
+<li>On a separate piece of paper, write the proposed value <code>0</code> from the first assignment on line 2. The next assignment asks for division by zero, so the submission fails as a whole. Cross out the proposed value on the separate paper. The accepted box still holds <code>42</code>.</li>
+<li>For terminal input, line 3 still runs. It reads the accepted box and shows <code>42</code>. This is a new read of the existing value. When the input ends, the command still reports failure because line 2 was refused.</li>
+</ol>
+<p><strong>Rollback</strong> means discarding the changes attempted by the failed submission. The script engine keeps completed lines and publishes a new value only after the entire current line succeeds. The virtual machine slice from the earlier course lesson uses a different unit of work: it can report the instructions completed before a fault. Here the contract covers the script session's saved locals.</p>
+<pre><code class="language-text">FOR each input line
+  try the line using the last accepted values
+  IF the line succeeds
+    keep its completed changes and show its reply
+  ELSE
+    keep the last accepted values and show a diagnostic
+    IF reading a named file, finish with status 1
+  END IF
+END FOR
+finish with status 1 if any line failed, otherwise status 0
+</code></pre>
+<h2>Send the same lines by two routes</h2>
+<p>Save the second example as a plain-text file named <code>total.ucs</code> in your working folder. In PowerShell, run the following commands one pair at a time. <code>Get-Content</code> reads the file and the pipe sends its lines as <strong>standard input</strong>, the stream the terminal normally supplies. The second command passes the filename itself. <code>$LASTEXITCODE</code> shows the program's exit status.</p>
+<pre><code class="language-powershell">Get-Content -LiteralPath .\total.ucs | umicom-c script --stdin
+$LASTEXITCODE
+
+umicom-c script .\total.ucs
+$LASTEXITCODE
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>How the same text reaches the command</th>
+<th>Ordinary output</th>
+<th>Diagnostic</th>
+<th>Exit status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard input</td>
+<td><code>ok</code>, then <code>42</code></td>
+<td>Line 2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Named file</td>
+<td><code>ok</code></td>
+<td>Line 2</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>The ordinary output column lists the command's successful replies. The diagnostic goes to the separate error stream. Both streams can appear in one terminal. The named file stops at its first error, so its final <code>return</code> is never reached. This is <strong>fail-fast</strong> behavior. Change <code>1 / 0</code> to <code>1 / 1</code> in your paper trace. Predict the replies for both routes. Each should now give <code>ok</code>, <code>ok</code>, then <code>1</code> and exit with status 0 because the whole second line succeeds.</p>
+<p>If you are writing a complete program with <code>main</code>, use <code>umicom-c interpret source.c --step</code> to follow its statements. You can use Umicom Studio to edit the practice file and compare the two script runs in a terminal. The <code>script</code> command uses the checked integer language profile, with one complete submission on each line.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="120-read-equivalent-signed-local-types.html">Previous lesson · Read equivalent signed local types</a> · <a href="80-preserve-progress-when-a-slice-fails.html">Related lesson · Preserve progress when a slice fails</a> · <a href="119-separate-admission-checks-from-source-steps.html">Related lesson · Separate admission checks from source steps</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/121-keep-the-last-accepted-script-value.md">Markdown edition</a></nav><nav aria-label="Next lesson"><a rel="next" href="122-store-a-true-or-false-value-in-a-local.html">Next lesson · Store a true-or-false value in a local</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

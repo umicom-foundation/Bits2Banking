@@ -1,0 +1,60 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/137-run-kernel-evidence-checks-on-the-host.html
+
+PURPOSE:
+Run Kernel evidence checks on the host
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Run Kernel evidence checks on the host | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Run Kernel evidence checks on the host</h1>
+<p><a href="136-review-one-kernel-elf-from-a-partial-build.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="138-match-elf-files-to-a-finished-kernel-build.html">Next lesson · Match ELF files to a finished Kernel build</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/137-run-kernel-evidence-checks-on-the-host.md">Markdown edition</a></p>
+<p>The <strong>host</strong> is the computer running your tools. A <strong>guest</strong> is the system started inside an emulator. A host test can check that a boot report contains the expected records even when you have no emulator available. In this lesson, you will run tests that use synthetic files and transcripts, then identify the evidence their results provide.</p>
+<h2>Find the tests first</h2>
+<ol>
+<li><p>Use a Kernel build directory already configured with <code>BUILD_TESTING=ON</code>. Set <code>$Build</code> to that directory. The example uses a separate build folder that you can replace with yours.</p>
+<pre><code>$Build = "C:/umicom/umicom-kernel/build/riscv64-clang"
+$EvidenceCases = '^kernel\.(evidence\.|boot_handoff\.records\.)'
+ctest --test-dir $Build -N -R $EvidenceCases
+if ($LASTEXITCODE -ne 0) { throw 'Could not list the selected Kernel tests.' }</code></pre>
+</li>
+<li><p>Read the result before continuing. In the configuration used in this lesson, it lists <strong>43 tests</strong>. The 24 <code>kernel.evidence.*</code> tests check identity records against controlled source and image files. The 19 <code>kernel.boot_handoff.records.*</code> tests check sample startup and recovery messages. On a different Kernel revision, your recorded number may change.</p></li>
+<li><p>To see exactly which programs the test runner would use, ask it for structured output.</p>
+<pre><code>$Listing = ctest --test-dir $Build --show-only=json-v1 -R $EvidenceCases
+if ($LASTEXITCODE -ne 0) { throw 'Could not read the Kernel test commands.' }
+($Listing -join "`n" | ConvertFrom-Json).tests |
+    Select-Object name, @{Name='Program'; Expression={$_.command[0]}}</code></pre>
+<p>The selected fixtures use CMake on the host to evaluate files or strings. In the configuration checked for this lesson, they have no required fixtures or test dependencies. A required fixture is an extra action the runner can add to prepare for a test.</p></li>
+</ol>
+<h2>Run and read the result</h2>
+<ol start="4">
+<li><p>Run the selected cases and retain the result in a JUnit file. JUnit is a structured test report, so you can open it in another test tool or compare it with a later run.</p>
+<pre><code>$Report = Join-Path (Resolve-Path $Build) 'kernel-host-evidence.xml'
+ctest --test-dir $Build -R $EvidenceCases --parallel 2 --output-on-failure --no-tests=error --output-junit $Report
+if ($LASTEXITCODE -ne 0) { throw 'A Kernel host evidence check failed.' }</code></pre>
+<p>In the recorded exercise, the summary was <code>100% tests passed out of 43</code> and the structured report recorded zero failures and zero skips. One test intentionally supplied conflicting boot mode records. Its pass means the checker correctly refused that input.</p>
+</li>
+<li><p>Record the scope with the result. <strong>43 host evidence checks passed.</strong> The test list, command, and report explain what was exercised. Booting a real Kernel image, detecting physical hardware, and completing an installation each require separate evidence. The separately named <code>kernel.qualification.identity</code> also has its own preparation requirement. Selecting only the two prefixes above keeps those additional actions out of this exercise.</p></li>
+</ol>
+<h2>If the result differs</h2>
+<ul>
+<li>If the directory or tests are missing, check the configured build path and <code>BUILD_TESTING</code>. An empty test selection means there is no evidence for this exercise.</li>
+<li>If a test fails, keep its complete name and output. First ask whether it supplied a synthetic source file, an image digest, or a boot transcript. Open the corresponding test source before changing the Kernel, so you can distinguish a checker defect from a correctly refused sample.</li>
+<li>If you need evidence about an actual linked image, use the preceding lesson to inspect its executable header. Then use an approved guest or hardware workflow to collect a fresh real boot transcript.</li>
+</ul>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

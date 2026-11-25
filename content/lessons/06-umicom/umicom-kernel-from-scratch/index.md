@@ -418,3 +418,25 @@ Read the scope of a saved build identity and connect it to separate test evidenc
 
 1. [Read the scope of a Kernel build identity](132-read-the-scope-of-a-kernel-build-identity.md)
 1. [Check the configured Kernel platform](133-check-the-configured-kernel-platform.md)
+
+## Read complete startup transcripts
+
+Count complete boot records and match one terminal path to its independent process result.
+
+1. [Count complete boot handoff records](134-count-complete-boot-handoff-records.md)
+1. [Check boot mode and process exit separately](135-check-boot-mode-and-process-exit.md)
+
+## Review build and artifact evidence
+
+Inspect one Kernel output and decide which claims the saved build and test records support.
+
+1. [Review one Kernel ELF from a partial build record](136-review-one-kernel-elf-from-a-partial-build.md)
+1. [Run Kernel evidence checks on the host](137-run-kernel-evidence-checks-on-the-host.md)
+1. [Match ELF files to a finished Kernel build](138-match-elf-files-to-a-finished-kernel-build.md)
+
+## Check device-tree discovery on the host
+
+Follow exact node paths and observe which hardware values were declared.
+
+1. [Find a short device-tree path after a long branch](139-find-a-short-device-tree-path-after-a-long-branch.md)
+1. [Read a declared hardware timebase](140-read-a-declared-hardware-timebase.md)

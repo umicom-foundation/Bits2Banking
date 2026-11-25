@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/136-review-one-kernel-elf-from-a-partial-build.html
+
+PURPOSE:
+Review one Kernel ELF from a partial build record
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review one Kernel ELF from a partial build record | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Review one Kernel ELF from a partial build record</h1>
+<p>A build can produce one image while other steps are still pending. In this saved Umicom Kernel example, you can read an image header and a build transcript on paper. Put one question beside each observation.</p>
+<h2>1. Follow the named link step</h2>
+<p>CMake finished configuration and generation for a Debug build with Clang targeting 64-bit RISC-V. Those steps wrote the build plan. Ninja then worked through that plan. The saved transcript shows this step for the interactive console image:</p>
+<pre><code>[305/6173] Linking C executable bin\umicom-console.elf</code></pre>
+<p>The CMake target <code>umicom-console-image</code> produces this file. The last retained line at <code>[1558/6173]</code> records compilation of one object for a different image. The saved prefix has no final process result for the full build command. Record that result as unconfirmed for this snapshot.</p>
+<h2>2. Read the saved ELF header</h2>
+<p>An ELF is an Executable and Linkable Format file. A tool can read its header to identify the file format and machine. The saved <code>llvm-readobj</code> output for <code>umicom-console.elf</code> includes these fields:</p>
+<pre><code>Format: elf64-littleriscv
+Arch: riscv64
+AddressSize: 64bit
+Type: Executable (0x2)
+Machine: EM_RISCV (0xF3)
+Entry: 0x80200000</code></pre>
+<p>The header describes a little-endian 64-bit RISC-V executable. Little-endian describes the order of bytes in numbers stored in the file. The entry address is where a suitable loader would hand control to the program. Reading that address tells you what the file declares.</p>
+<h2>3. Match each claim to its evidence</h2>
+<p>CTest listed 244 registered checks. The list includes <code>kernel.qualification.identity</code>. That check requires <code>kernel_current_image</code>, a setup step that first builds the wider <code>umicom-kernel-evidence</code> target. A setup step that prepares inputs for other checks is called a fixture. In this snapshot the setup fixture and QEMU guest were unexecuted.</p>
+<p>Cover the right column and fill it from the observations above. Then check your answers.</p>
+<table>
+<thead><tr><th scope="col">Question</th><th scope="col">Answer from this snapshot</th></tr></thead>
+<tbody>
+<tr><th scope="row">Did CMake write a build plan?</th><td>Yes. The configure transcript records configuration and generation.</td></tr>
+<tr><th scope="row">Which ELF was inspected?</th><td>The interactive console image, with RISC-V entry address <code>0x80200000</code>.</td></tr>
+<tr><th scope="row">Did the full build complete?</th><td>Unconfirmed in the saved prefix. Its last retained progress line describes another image.</td></tr>
+<tr><th scope="row">Did the identity check run?</th><td>The registry lists the check. The artifact fixture was unexecuted and there is no verification result in this record.</td></tr>
+<tr><th scope="row">What did the running guest do?</th><td>Guest behavior is unobserved in this snapshot.</td></tr>
+</tbody></table>
+<p>When someone asks whether the full build succeeded, ask for the final exit status of the same build command. A zero exit answers that question for the targets the command requested. Keep the identity check result and any guest transcript with their matching build evidence.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a rel="prev" href="135-check-boot-mode-and-process-exit.html">Previous lesson · Check boot mode and process exit separately</a> · <a href="133-check-the-configured-kernel-platform.html">Check the configured Kernel platform</a> · <a href="../../learning-build-systems/lessons/28-read-a-ninja-progress-record.html">Read a Ninja progress record</a> · <a href="../../../lessons/05-engineering/74-read-elf-pe-coff-with-c23.md">Read ELF and PE/COFF headers</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/136-review-one-kernel-elf-from-a-partial-build.md">Markdown edition</a></nav><nav aria-label="Next lesson"><a rel="next" href="137-run-kernel-evidence-checks-on-the-host.html">Next lesson · Run Kernel evidence checks on the host</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

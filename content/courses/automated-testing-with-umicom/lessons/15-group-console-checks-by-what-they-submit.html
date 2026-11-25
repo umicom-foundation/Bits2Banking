@@ -1,0 +1,60 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/automated-testing-with-umicom/lessons/15-group-console-checks-by-what-they-submit.html
+
+PURPOSE:
+Group console checks by what they submit
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Group console checks by what they submit | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Group console checks by what they submit</h1>
+<p>A <strong>test fixture</strong> prepares an input, runs a program, and compares what happened with what you expected. The Umicom C script console accepts individual lines or a whole block. A single file lets us see why each mode deserves its own test result.</p>
+<h2>1. Predict two results from one file</h2>
+<p>Save the following three lines in a plain text file named <code>boxes.ucs</code>. A <strong>physical line</strong> is a row of text ending at a line break or at the end of the file. A <strong>block</strong> is all the text submitted as one unit.</p>
+<pre><code class="language-c">int boxes = 4;
+boxes += 3;
+return boxes;
+</code></pre>
+<p><code>int</code> makes a place for a whole number, <code>+= 3</code> adds three to the saved number, and <code>return boxes</code> gives back the result. Start from an empty session each time. Predict the output on paper, or run these commands with the hosted Umicom C tool from the folder holding the file. Run one command at a time.</p>
+<pre><code class="language-text">umicom-c script boxes.ucs
+umicom-c script --block boxes.ucs
+</code></pre>
+<table>
+<thead><tr><th>Command mode</th><th>Expected ordinary output, in order</th><th>Expected error output</th><th>Expected exit code</th></tr></thead>
+<tbody>
+<tr><td>Lines, one at a time</td><td><code>ok</code>, <code>ok</code>, <code>7</code>, each on its own line</td><td>Empty</td><td><code>0</code></td></tr>
+<tr><td>One block</td><td><code>7</code> on one line</td><td>Empty</td><td><code>0</code></td></tr>
+</tbody></table>
+<p>The line case checks each acknowledgement. The block case checks the single result of the submission. In both cases the fixture can compare the output bytes, including the final line break. The <strong>exit code</strong> is the number the tool gives the shell when it finishes. Here <code>0</code> means the command succeeded.</p>
+<h2>2. Keep the assertions when splitting a fixture</h2>
+<p>Make two test cards on paper. Give each card its own attempt and working folder so it cannot pick up a file left by the other. Write the command, expected ordinary output, expected error output, and exit code on each card.</p>
+<pre><code class="language-text">FOR each card in a fresh work folder
+    RUN the command with that card's input
+    CHECK the exit code and both outputs against that card
+    RECORD the result with that card's test name
+</code></pre>
+<p>Copy the line card's expected output onto the block card. Predict the test results before you check the table. The line card passes. The block command can still exit with <code>0</code>, but its fixture fails the output comparison. Restore the one-line expectation and both cards agree with the table. The same idea applies to a refused input. Keep its expected error text and nonzero exit code when you move its check to another fixture.</p>
+<h2>3. Read the Umicom C evidence</h2>
+<p>The earlier <code>umicom.c.script.console</code> registration grouped 15 line checks and 9 block checks under one 60-second CTest deadline. Two runs reported a timeout for that registration, at 61.30 and 65.27 seconds. A timeout shows where the runner stopped waiting. In the saved output, look for completed checks. Record an unknown outcome for any check with no result.</p>
+<p>The split gives <code>umicom.c.script.console</code> the line checks and <code>umicom.c.script.console-block</code> the block checks. They share the fixture script and use separate folders for the files they create. Each has a 60-second CTest deadline. The input, output and exit assertions travel with their groups. Direct fixture runs completed the line group in 59.811 seconds and the block group in 35.592 seconds, both with exit code <code>0</code>. The line group was close to its limit. Use those figures as observations from those runs and record the two registered CTest results separately. <a href="https://cmake.org/cmake/help/latest/prop_test/TIMEOUT.html">CTest <code>TIMEOUT</code> property</a></p>
+<p>A later Release run selected the two registered CTest cases. Both passed. The line case took 31.12 seconds, the block case took 15.49 seconds, and CTest reported 46.64 seconds of total elapsed time. Keep the measured time and the result with each test name and configuration.</p>
+<p>If you already have an Umicom C build configured with both registrations, open PowerShell or a Unix shell. Replace <code>path-to-build</code> with its build folder and keep the quotes. List the two names first, then run them and keep both result rows. If a name is missing, check that you selected a build generated with the split registrations. If a test stops early, check its own printed failure and deadline. <a href="https://cmake.org/cmake/help/latest/manual/ctest.1.html#run-tests">CTest test selection</a></p>
+<pre><code class="language-text">ctest --test-dir "path-to-build" -N -R '^umicom[.]c[.]script[.]console(-block)?$'
+ctest --test-dir "path-to-build" -R '^umicom[.]c[.]script[.]console(-block)?$' --output-on-failure --no-tests=error
+</code></pre>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="14-check-complete-rows-in-a-saved-prefix.html">Previous lesson · Check complete rows in a saved prefix</a> · <a href="../../learning-build-systems/lessons/32-read-child-and-fixture-deadlines.html">Read child and fixture deadlines</a> · <a href="../../building-a-compiler-in-c/lessons/121-keep-the-last-accepted-script-value.html">Keep the last accepted script value</a> · <a href="16-check-a-shorter-windows-build-path.html">Next lesson · Check a shorter Windows build path</a> · <a href="../../../lessons/05-engineering/automated-testing-with-umicom/15-group-console-checks-by-what-they-submit.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

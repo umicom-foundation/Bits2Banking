@@ -1,0 +1,51 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/56-keep-a-fastcgi-connector-and-its-backend-separate.html
+
+PURPOSE:
+Keep a FastCGI connector and its backend separate
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep a FastCGI connector and its backend separate | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep a FastCGI connector and its backend separate</h1>
+<p>A FastCGI connector is a small record that says how to open and close a connection to the program that serves a request. In Umicom Framework, a managed connector checks whether one worker job is ready before passing a request to the backend. The backend is the connector that does the actual opening and closing. We can model that handoff with paper labels and two counters.</p>
+<h2>1. Give each record its own place</h2>
+<ol>
+<li>Draw three boxes labelled Mock backend, Gate and Route connector. Inside Gate draw a Saved backend slot. The mock backend has an Open function, a Close function and two counters.</li>
+<li>Draw an arrow from the Route connector to Gate, then from Gate’s Saved backend to the mock Open and Close functions. Framework’s <code>UmiWebManagedFastCgiBind</code> creates this arrangement for one current job. It copies the backend connector record into the gate and publishes the route connector in separate output storage.</li>
+<li>Next, point to the Saved backend slot as the proposed route output. Publishing there would overwrite the connector that handles opens and closes. Then try passing the same gate’s existing Route connector as its backend. That would send the gate’s work back to itself. With an otherwise valid job, the binding refuses either proposal with <code>UMI_STATUS_INVALID_ARGUMENT</code> and leaves both existing records in place.</li>
+</ol>
+<pre><code class="language-text">if proposed output is the gate's saved backend slot
+    refuse the binding and keep both existing records
+if proposed backend is the connector for this same gate
+    refuse the binding and keep both existing records
+save the real backend in the gate
+publish the route connector in separate storage</code></pre>
+<h2>2. Count the lifetime of one loan</h2>
+<p>A successful open hands the caller a connection to use temporarily. This temporary ownership is called a lease. Start the mock counters at zero and label the first job <code>A</code>. Cover the counter column first and explain which record does the work at each step.</p>
+<table><thead><tr><th>Action</th><th>Mock opens / closes</th><th>What to observe</th></tr></thead><tbody>
+<tr><td>Try to open while job <code>A</code> is running and readiness is still unconfirmed.</td><td>0 / 0</td><td>The gate reports <code>UMI_STATUS_BUSY</code>.</td></tr>
+<tr><td>Mark <code>A</code> ready and let the mock open succeed.</td><td>1 / 0</td><td>Keep the returned lease beside the original gate.</td></tr>
+<tr><td>Request a stop and try a second open before the child finishes.</td><td>1 / 0</td><td>Readiness has been withdrawn. The mock sees no new open.</td></tr>
+<tr><td>Return the first lease through the original gate.</td><td>1 / 1</td><td>The gate calls the backend that issued that lease.</td></tr>
+<tr><td>Collect <code>A</code>, then replace it with a different job <code>B</code>. Try the connector still bound to <code>A</code>.</td><td>1 / 1</td><td>The old job identifier is stale. The gate reports <code>UMI_STATUS_NOT_FOUND</code>.</td></tr>
+</tbody></table>
+<p>Keep the gate, worker and backend storage available while the connector is registered. Remove the route registration and finish its leases before reusing the gate or releasing the worker. A new job needs its own binding and readiness check.</p>
+<h2>3. Check your explanation</h2>
+<p>Reset the counters. Suppose the mock open returns <code>UMI_STATUS_TIMEOUT</code> after readiness is confirmed. Predict the counters and what the caller owns. The backend was called once, so the counters are <code>1 / 0</code>. The open failed, so the caller’s output stays as it was and there is no new lease to close. This paper exercise follows the Framework source and its authored managed-worker fixtures.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="55-keep-the-exact-name-of-a-web-event.html">Previous lesson · Keep the exact name of a web event</a> · <a href="03-own-the-server-lifetime.html">Start and stop a local service safely</a> · <a href="40-encode-a-fastcgi-request-with-bounded-bytes.html">Encode a FastCGI request with bounded bytes</a> · <a href="41-read-a-fastcgi-reply-before-forwarding.html">Read a FastCGI reply before forwarding</a> · <a href="57-limit-compiled-bytes-before-embedding.html">Next lesson · Limit compiled bytes before embedding</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/56-keep-a-fastcgi-connector-and-its-backend-separate.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,81 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/119-separate-admission-checks-from-source-steps.html
+
+PURPOSE:
+Separate admission checks from source steps
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Separate admission checks from source steps | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Separate admission checks from source steps</h1>
+<p>Lesson 97, <em>Check a constant before running C</em>, introduced a <code>static_assert</code> that can stop compilation. Here you will distinguish those checks from the work the interpreter does after the compiler accepts the source. <strong>Admission</strong> is the compiler phase that reads and checks the source before handing a program to the interpreter.</p>
+<p>Think of a practice stock count with six packs of seven items. <code>PACKS</code> names a fixed value before the entry function. <code>ANSWER</code> belongs to the main block. The assertion checks the calculation during admission.</p>
+<pre><code class="language-c">constexpr int PACKS = 6;
+int main(void) {
+  constexpr int ANSWER = PACKS * 7;
+  static_assert(ANSWER == 42);
+  return ANSWER;
+}
+</code></pre>
+<h2>Keep two counts on paper</h2>
+<ol>
+<li>Write <code>PACKS = 6</code> and <code>ANSWER = 42</code> in an admission column. Mark the assertion as passed.</li>
+<li>In a source-step column, write one action, the return on line 5. The fixed declarations and the assertion have already been checked.</li>
+<li>In a virtual machine column, write <code>PUSH 42</code> and then <code>RETURN</code>. A virtual machine runs the compiler's smaller instructions. The first instruction puts 42 on the machine's stack, where it keeps working values. The second finishes the function with that value.</li>
+<li>Repeat the two counts for the previous lesson's enumeration. <code>BASE + 1</code> gives <code>FIRST = 40</code>, so <code>SECOND = 41</code> and <code>THIRD = 42</code>. The assertion and the numbers are checked before the interpreter reaches the return.</li>
+</ol>
+<p>A source step follows a piece of the written program. An instruction budget limits how many of the machine's smaller instructions the interpreter may execute. For these two examples, the fixture checks that the next source step is the return on line 5 and that the compiler emits exactly two instructions. It initializes the interpreter with a budget of two.</p>
+<h2>Check a branch that would be skipped</h2>
+<p>Trace these as separate programs. At runtime the condition <code>0</code> would skip the block. During admission the compiler still checks the constant declarations inside it.</p>
+<pre><code class="language-c">int main(void) { if(0) { constexpr int A=1/0; } return 42; }
+</code></pre>
+<pre><code class="language-c">int main(void) { if(0) { enum { VALUE=1/0 }; } return 42; }
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Admission result</th>
+<th>What the fixture checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>constexpr</code> stock count</td>
+<td>Accepted with value 42 available to the return</td>
+<td>The first source step is the return. The two instructions are <code>PUSH 42</code> and <code>RETURN</code>.</td>
+</tr>
+<tr>
+<td>Enumeration from the previous lesson</td>
+<td>Accepted with value 42 available to the return</td>
+<td>The same first step and the same two instructions.</td>
+</tr>
+<tr>
+<td><code>constexpr</code> with division by zero</td>
+<td><code>UMC_ARITHMETIC_ERROR</code></td>
+<td>The diagnostic contains <code>division by zero</code>. The reported instruction count is zero.</td>
+</tr>
+<tr>
+<td>Enumeration with division by zero</td>
+<td><code>UMC_ARITHMETIC_ERROR</code></td>
+<td>The same diagnostic text and zero reported instruction count.</td>
+</tr>
+</tbody>
+</table>
+<p>Explain why <code>return 42</code> cannot repair either invalid declaration. Then change <code>1/0</code> to <code>1/1</code> on paper and predict which admission error disappears. Base the prediction on valid arithmetic and keep it separate from the four outcomes checked in the compiler fixtures.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="118-number-enumeration-members-inside-a-block.html">Previous lesson · Number enumeration members inside a block</a> · <a href="97-check-a-constant-before-running.html">Check a constant before running C</a> · <a href="107-count-reached-source-statements.html">Count reached source statements</a> · <a href="116-read-the-instruction-budget-at-a-pause.html">Read the instruction budget at a pause</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/119-separate-admission-checks-from-source-steps.md">Markdown edition</a></nav><nav aria-label="Next lesson"><a rel="next" href="120-read-equivalent-signed-local-types.html">Next lesson · Read equivalent signed local types</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

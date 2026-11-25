@@ -1,0 +1,65 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/122-store-a-true-or-false-value-in-a-local.html
+
+PURPOSE:
+Store a true-or-false value in a local
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Store a true-or-false value in a local | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Store a true-or-false value in a local</h1>
+<p>Imagine a door sensor that reports <code>0</code> when a door is closed and a nonzero number when it is open. The original number serves the sensor. The rest of the program can keep just the answer to “Is the door open?” A local variable belongs to the part of the program where you declare it. When you declare that local as <code>bool</code> in checked Umicom C, each successful store leaves it with either <code>0</code> (false) or <code>1</code> (true).</p>
+<h2>Trace a declaration from left to right</h2>
+<p>This program comes from the compiler's Boolean-local regression. The test compiled it and checked that execution returned <code>42</code>.</p>
+<pre><code class="language-c">int main(void) {
+    bool off=0,on=-2,later=on+6;
+    const bool left=3;
+    bool const right=false;
+    return 39+off+on+later+left+right;
+}
+</code></pre>
+<ol>
+<li><code>off</code> starts from <code>0</code> and stores <code>0</code>.</li>
+<li><code>on</code> starts from <code>-2</code>. Since <code>-2</code> is nonzero, <code>on</code> stores <code>1</code>.</li>
+<li>The next initializer reads that stored <code>1</code>. It adds <code>6</code> to get <code>7</code>, and <code>later</code> stores <code>1</code>.</li>
+<li><code>left</code> stores <code>1</code> from <code>3</code>. <code>right</code> stores <code>0</code> from <code>false</code>. <code>const bool</code> and <code>bool const</code> both make the local read-only after initialization.</li>
+<li>The returned number is <code>39 + 0 + 1 + 1 + 1 + 0 = 42</code>.</li>
+</ol>
+<p>Write those five stored numbers on paper. If you have the current Umicom C tool, save the same source as <code>bool-locals.uc</code>. Check the source before trying to run it.</p>
+<pre><code class="language-text">umicom-c check bool-locals.uc
+umicom-c run bool-locals.uc
+</code></pre>
+<p>Expect the run to report <code>Result: 42</code>. If <code>check</code> rejects <code>bool</code>, verify which Umicom C build the command starts.</p>
+<h2>Do the arithmetic before updating the flag</h2>
+<p>Try tracing <code>bool n=1; n/=2;</code> on paper. The abbreviated <code>/=</code> operator divides the stored value and writes the answer back. The arithmetic uses whole numbers, so <code>1 / 2</code> gives <code>0</code>. The successful store keeps <code>0</code>. This is the order the checked execution follows.</p>
+<pre><code class="language-text">FUNCTION store_bool(value)
+    IF value equals zero
+        RETURN 0
+    RETURN 1
+
+n ← store_bool(1)
+answer ← checked integer division of n by 2
+IF division fails
+    REPORT the arithmetic error and stop
+n ← store_bool(answer)
+</code></pre>
+<p>Change the divisor on paper to <code>0</code>. Division fails before any new value can be written. The Umicom C regression checks for an arithmetic error at <code>/=</code> and checks that the failed program leaves the caller's prior result record untouched. If you declare <code>n</code> with <code>const</code>, a later update is a source error discovered during <code>check</code>.</p>
+<h2>Measure the type separately from its value</h2>
+<p><code>sizeof(n)</code> asks how many bytes the source type of <code>n</code> uses. It gives <code>1</code> in the checked Umicom C profile, even when <code>n</code> holds <code>0</code>. <code>sizeof</code> on this local needs its declared type. It does not run an arithmetic operation or fetch the stored value. The virtual machine still carries the value in its existing integer slot.</p>
+<p>For an integer converted to <code>bool</code>, C23 defines the same zero-versus-nonzero rule. A one-byte <code>bool</code> is Umicom C's choice for this profile. The profile shown here requires initialization and covers scalar locals in complete C source. The separate <code>script</code> and pseudocode modes retain their integer declarations. <a href="https://www9.open-std.org/JTC1/SC22/WG14/www/docs/n3220.pdf">WG14 N3220, sections 6.3.1.2 and 6.5.4.4</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="121-keep-the-last-accepted-script-value.html">Previous lesson · Keep the last accepted script value</a> · <a href="93-lower-boolean-words-without-changing-the-vm.html">Lower Boolean words without changing the VM</a> · <a href="99-count-bytes-from-an-admitted-type.html">Count bytes from an admitted type</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/122-store-a-true-or-false-value-in-a-local.md">Markdown edition</a></nav><nav aria-label="Next lesson"><a rel="next" href="123-measure-a-boolean-literal-without-reading-its-value.html">Next lesson · Measure a Boolean literal without reading its value</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

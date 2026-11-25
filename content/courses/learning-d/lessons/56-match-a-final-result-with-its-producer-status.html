@@ -1,0 +1,107 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/56-match-a-final-result-with-its-producer-status.html
+
+PURPOSE:
+Match a final result with its producer status
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Match a final result with its producer status | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Match a final result with its producer status</h1>
+<p>The file contains typed records. To accept a completed report, check their order, the final result, and the producer's recorded exit status. An exit status belongs to the process that wrote the report. The value in the last record belongs to the program that process interpreted.</p>
+<h2>Check the whole sequence</h2>
+<p>This reader accepts 1 to 31 step records followed by one result, for up to 32 records in all. A valid step has the next sequence number, also called its ordinal, starting at 1. It has <code>ok</code> set to true. The reader checks that the final count equals the sum of the step counts. The limit of 1,000,000 instructions is a rule for this exercise.</p>
+<pre><code class="language-d">struct Review
+{
+    ReportRecord[] steps;
+    long value;
+    long instructions;
+}
+
+Review completeReport(ReportRecord[] records, int producerExit)
+{
+    // The recorded process status and the stored result both matter.
+    if (producerExit != 0)
+        throw new Exception(&quot;Producer exit must be zero&quot;);
+    if (records.length &lt; 2 || records.length &gt; 32)
+        throw new Exception(&quot;Expected 2 to 32 records&quot;);
+
+    const result = records[$ - 1];
+    if (result.event != &quot;result&quot;)
+        throw new Exception(&quot;The final record must be a result&quot;);
+
+    // Keep the final result outside the step checks.
+    auto steps = records[0 .. $ - 1];
+    enum maxInstructions = 1_000_000L;
+    long total = 0;
+    foreach (offset, step; steps)
+    {
+        if (step.event != &quot;step&quot; || !step.ok
+            || step.number != cast(long) offset + 1)
+            throw new Exception(&quot;Expected the next successful step&quot;);
+
+        // Compare against the remaining allowance before adding.
+        if (step.instructions &lt; 0 || step.instructions &gt; maxInstructions - total)
+            throw new Exception(&quot;Step instructions exceed the report bound&quot;);
+        total += step.instructions;
+    }
+    if (result.instructions != total)
+        throw new Exception(&quot;Result instruction count differs from the steps&quot;);
+
+    // Give the accepted review its own array of step records.
+    return Review(steps.dup, result.value, total);
+}
+</code></pre>
+<p>In a D slice, <code>$</code> means the array length. <code>records[0 .. $ - 1]</code> starts at position 0 and stops before the last record. With five records, it contains positions 0 through 3. <a href="https://dlang.org/spec/arrays.html">D array slices and properties</a> · <a href="https://dlang.org/spec/statement.html">D statements</a></p>
+<h2>Predict acceptance</h2>
+<p>The saved Umicom C example has step counts 2, 2, 4 and 2. The sum is 10. With a final result of value 42 and count 10, and a recorded producer exit of 0, the expected review has four steps.</p>
+<table>
+<thead>
+<tr>
+<th>Practice change</th>
+<th>Expected decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Remove the final result or append a step after it</td>
+<td>Refuse because the last record is a step</td>
+</tr>
+<tr>
+<td>Add a second result to the end</td>
+<td>Refuse when the first result appears among the steps</td>
+</tr>
+<tr>
+<td>Set the third step's <code>ok</code> to false</td>
+<td>Refuse the failed step</td>
+</tr>
+<tr>
+<td>Change the final count to 9</td>
+<td>Refuse the count mismatch</td>
+</tr>
+<tr>
+<td>Record producer exit 1</td>
+<td>Refuse the completed review</td>
+</tr>
+<tr>
+<td>Use a separate synthetic success with returned value 0 and exit 0</td>
+<td>Accept if the sequence and counts agree</td>
+</tr>
+</tbody>
+</table>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="55-keep-the-previous-preview-when-a-record-fails.html">Previous lesson · Keep the previous preview when a new record fails</a> · <a href="57-make-grouped-step-counts-reproducible.html">Next lesson · Make grouped step counts reproducible</a> · <a href="../../building-a-compiler-in-c/lessons/114-watch-one-integer-slot.html">Related lesson · Watch one integer slot</a> · <a href="../../building-a-compiler-in-c/lessons/116-read-the-instruction-budget-at-a-pause.html">Related lesson · Read the instruction budget at a pause</a> · <a href="../../../lessons/03-native-code/learning-d/56-match-a-final-result-with-its-producer-status.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

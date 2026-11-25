@@ -1,0 +1,73 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/52-choose-a-saved-report-from-command-line-tokens.html
+
+PURPOSE:
+Choose a saved report from command-line tokens
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Choose a saved report from command-line tokens | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Choose a saved report from command-line tokens</h1>
+<p>An editor can give a little tool the name of a saved report. The name might contain spaces. In this lesson, you will follow each command-line argument as a separate value and decide whether the tool has enough information to begin. You can start with four slips of paper.</p>
+<h2>1. Follow the argument list</h2>
+<p>D can give the entry function the signature <code>int main(string[] args)</code>. Read <code>string[]</code> as “a list of strings.” Usually the first item names the executable. The following items are the arguments the operating system handed to the program.</p>
+<p>Place these four items on the desk.</p>
+<pre><code class="language-text">Position 0  review
+Position 1  --limit
+Position 2  2
+Position 3  Example Run.jsonl
+</code></pre>
+<p>Keep the last item on one slip. It is one report name. In a terminal, quotation marks around a path with spaces help the shell pass it as one argument. The program receives the path as a single string. Compare that with C's argument count and array of pointers. D's array already carries its length.</p>
+<h2>2. Ask Phobos to read options</h2>
+<p><strong>Phobos</strong> is the D standard library. Its <code>getopt</code> function recognizes named options and sets the values you give it. With <code>uint limit = 8;</code>, the expression <code>getopt(args, "limit", &amp;limit)</code> sets the limit to 2. The ampersand passes the address of the variable so the library can update it. The recognized option and its value leave the list. Here the two remaining strings are the executable name and the report path.</p>
+<p>The reader also needs the separately observed producer exit. A <strong>producer</strong> is the program that wrote the report. For this offline exercise, the caller supplies its recorded code as <code>--producer-exit 0</code>. Add those two tokens before the file name. Keep the report and exit observation together in your notes.</p>
+<pre><code class="language-d">import std.getopt : getopt;
+
+struct Options
+{
+    string path;
+    uint detailLimit = 8;
+    int producerExit = -1;
+    bool showDetails;
+    bool helpWanted;
+}
+
+Options readOptions(string[] args)
+{
+    Options options;
+    // Bind only the options this small reader handles.
+    auto parsed = getopt(args, &quot;limit&quot;, &amp;options.detailLimit,
+        &quot;producer-exit&quot;, &amp;options.producerExit, &quot;details&quot;, &amp;options.showDetails);
+    options.helpWanted = parsed.helpWanted;
+    if (options.helpWanted)
+        return options;
+
+    // Admit one remaining path and the separate producer evidence before reading.
+    if (args.length != 2 || args[1].length == 0 ||
+        options.detailLimit &lt; 1 || options.detailLimit &gt; 32 ||
+        options.producerExit &lt; 0 || options.producerExit &gt; 255)
+        throw new Exception(&quot;Provide one report, a limit from 1 to 32, and a producer exit from 0 to 255.&quot;);
+    options.path = args[1];
+    return options;
+}
+</code></pre>
+<h2>3. Predict a useful refusal</h2>
+<p>The successful paper case leaves one path, detail limit 2, and producer exit 0. Add a second path and predict what happens. Three remaining items include the executable, so the reader will stop before opening a file. If you omit <code>--producer-exit</code>, the initial value of -1 stays in place and the same admission check refuses it. Help can be requested without a report.</p>
+<p>The optional <code>--details</code> view shows up to the selected number of steps. The reader checks every record before it shows any details. Keep the difference in mind when a Studio project gives a report path to a tool.</p>
+<p><a href="https://dlang.org/spec/function.html#main">D console entry point and arguments</a> · <a href="https://dlang.org/library/std/getopt/getopt.html">Phobos getopt</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="51-admit-values-before-exhaustive-state-dispatch.html">Previous lesson · Admit values before exhaustive state dispatch</a> · <a href="53-count-complete-report-lines-within-a-byte-limit.html">Next lesson · Count complete report lines within a byte limit</a> · <a href="01-install-and-run.html">Related lesson · Install D and compile a first program</a> · <a href="../../../lessons/03-native-code/learning-d/52-choose-a-saved-report-from-command-line-tokens.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

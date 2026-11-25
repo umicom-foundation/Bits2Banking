@@ -53,6 +53,10 @@ END
 
 Save this as `grid.pseudo` and run `umicom-c pseudocode grid.pseudo`. It also returns 43. Here the calculation is an executed statement, so the interpreter can report it as a step. The C example resolves the named constants during admission and executes the return.
 
-Use one signed integer per `constexpr int` declaration in this Umicom C profile. The file-scope table holds up to 32 combined enumeration and fixed integer names. It supports reading those values in calculations. Address operations and block-scope `constexpr` require a wider profile.
+Use one signed integer per `constexpr int` declaration in this Umicom C profile. The file-scope table holds up to 32 combined enumeration and fixed integer names. It supports reading those values in calculations. Address operations require a wider profile. To use a fixed integer inside a block, see [Resolve a fixed name in its block](117-resolve-a-fixed-name-in-its-block.md).
+
+<!-- The current compiler admits a fixed integer declaration inside a block. Retain the earlier limitation for review.
+Address operations and block-scope `constexpr` require a wider profile.
+-->
 
 [Next lesson on counting bytes](99-count-bytes-from-an-admitted-type.md)

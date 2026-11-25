@@ -123,3 +123,5 @@ service=
 Each rejected plan leaves the previous accepted configuration intact. Record the field and the physical line number together when you review a saved plan.
 
 [Course contents](index.md) · [Previous lesson · Count the slots both GPT tables need](68-count-the-slots-both-gpt-tables-need.md) · [Plan startup before executing it](03-service-dependencies.md) · [Keep rejected state separate from recovery](04-failure-and-recovery.md) · [HTML edition](../../../courses/umicom-os-from-scratch/lessons/69-follow-the-first-blocked-boot-service.html)
+
+[Next lesson · Keep the first boot failure when a report cannot be saved](70-keep-the-first-boot-failure.md)

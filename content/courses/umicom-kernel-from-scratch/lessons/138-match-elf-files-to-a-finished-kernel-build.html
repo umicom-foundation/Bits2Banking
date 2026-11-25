@@ -1,0 +1,66 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/138-match-elf-files-to-a-finished-kernel-build.html
+
+PURPOSE:
+Match ELF files to a finished Kernel build
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Match ELF files to a finished Kernel build | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Match ELF files to a finished Kernel build</h1>
+<p>You have two files from an Umicom Kernel build. Both are prepared for the same kind of processor. Before handing either file to the next person, check which build finished and which saved identity belongs to each file.</p>
+<h2>1. Read the end of the build</h2>
+<p>In the completed RISC-V Debug build, Ninja recorded all <strong>6,173</strong> planned build actions. The final action linked <code>bin/umicom-kernel.elf</code> and the build command returned exit code <code>0</code>. The action count describes work such as compiling and linking. The exit code is the final number the build tool gives the shell. Here it confirms that the requested build finished successfully.</p>
+<h2>2. Read what the two headers declare</h2>
+<p>An <strong>ELF</strong> is an Executable and Linkable Format file. Its header tells a tool how to read it. The entry address is where a suitable loader would hand control to the program. In the saved build, the two headers gave the same format, machine, file type, and entry address. <a href="https://gabi.xinuos.com/elf/02-eheader.html">ELF header reference</a></p>
+<table>
+<thead><tr><th>Built file</th><th>Header format and machine</th><th>Type and entry</th><th>File length</th></tr></thead>
+<tbody>
+<tr><td><code>bin/umicom-kernel.elf</code></td><td><code>elf64-littleriscv</code>, <code>EM_RISCV</code></td><td>Executable, <code>0x80200000</code></td><td>2,220,176 bytes</td></tr>
+<tr><td><code>bin/umicom-console.elf</code></td><td><code>elf64-littleriscv</code>, <code>EM_RISCV</code></td><td>Executable, <code>0x80200000</code></td><td>2,220,184 bytes</td></tr>
+</tbody></table>
+<p><code>elf64-littleriscv</code> describes 64-bit RISC-V ELF with little-endian byte order. Their different lengths already show that the files differ. A <strong>digest</strong> is a value calculated from all the bytes of a file. The SHA-256 digest lets you check a saved file even when two files have the same length and the same visible header fields.</p>
+<h2>3. Match each name to its saved digest</h2>
+<p>Draw two cards. On the Kernel card write <code>bin/umicom-kernel.elf</code> and <code>K</code>. On the console card write <code>bin/umicom-console.elf</code> and <code>C</code>. The letters stand for the two different full digests. First match both cards to this list.</p>
+<pre><code class="language-text">Saved image record
+bin/umicom-kernel.elf  -&gt; K
+bin/umicom-console.elf -&gt; C
+</code></pre>
+<p>Now swap the letters on your two cards. Both files can still show the expected header, and both name-to-digest comparisons fail. Put the letters back and check the cards again. In a real review, compare the full digests by filename.</p>
+<p>The saved <code>qualification/identity.json</code> recorded a digest for the selected source inventory and individual SHA-256 values for the ELF files, including this pair. It was captured after the build. A separate host verification compared the current source and ELF identities with that saved record and reported agreement. The field <code>sourceStableDuringBuildVerified</code> was <code>false</code>, so record source stability during the build as unverified. Keep the registered <code>kernel.qualification.identity</code> CTest result and any QEMU guest result separate from this artifact check. Both are unobserved here.</p>
+<h2>4. Try a read-only check on an existing build</h2>
+<p>If you have a completed build and its saved identity file, open PowerShell. Replace the example folder with its location. Use <code>llvm-readobj</code> from your LLVM tools to read both headers, then compare the full digests by their two names. <a href="https://llvm.org/docs/CommandGuide/llvm-readobj.html">LLVM object reader</a></p>
+<pre><code class="language-powershell">$Build = (Resolve-Path 'path-to-your-completed-build').Path
+$KernelElf = Join-Path $Build 'bin/umicom-kernel.elf'
+$ConsoleElf = Join-Path $Build 'bin/umicom-console.elf'
+llvm-readobj --file-header $KernelElf $ConsoleElf
+if ($LASTEXITCODE -ne 0) { throw 'Could not read the ELF headers.' }
+Get-FileHash -Algorithm SHA256 -LiteralPath $KernelElf, $ConsoleElf
+$Record = Join-Path $Build 'qualification/identity.json'
+$Saved = Get-Content -LiteralPath $Record -Raw -ErrorAction Stop | ConvertFrom-Json
+"Saved Kernel digest $($Saved.images.'bin/umicom-kernel.elf')"
+"Saved console digest $($Saved.images.'bin/umicom-console.elf')"
+</code></pre>
+<p>Match the printed digests by filename. The letters in a hexadecimal digest can be displayed in uppercase or lowercase. For the separate source and artifact check, choose the source checkout that belongs with that build. This example uses the recorded RISC-V configuration. The Kernel guide <code>docs/BUILD_IDENTITY.md</code> describes the verify mode and how to compare other configurations.</p>
+<pre><code class="language-powershell">$Source = (Resolve-Path 'path-to-your-kernel-source').Path
+$Check = Join-Path $Source 'cmake/QualificationEvidence.cmake'
+cmake "-DSOURCE=$Source" "-DBINARY=$Build" -DMODE=verify -DVERIFY_CONFIGURED_CONTEXT=ON -DARCHITECTURE=riscv64 -DABI=lp64 '-DMACHINE=virt,aclint=off' -P $Check
+if ($LASTEXITCODE -ne 0) { throw 'The Kernel identity could not be verified.' }
+</code></pre>
+<p>Look for <code>Kernel source and ELF identities agree</code>. If the record is missing or different, retain it and confirm which build and source folders you selected. Record the build exit, the file comparisons, and any guest result as separate observations. For this completed build example, guest behaviour remains unobserved.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="137-run-kernel-evidence-checks-on-the-host.html">Previous lesson · Run Kernel evidence checks on the host</a> · <a href="136-review-one-kernel-elf-from-a-partial-build.html">Review one Kernel ELF from a partial build record</a> · <a href="133-check-the-configured-kernel-platform.html">Check the configured Kernel platform</a> · <a href="139-find-a-short-device-tree-path-after-a-long-branch.html">Next lesson · Find a short device-tree path after a long branch</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/138-match-elf-files-to-a-finished-kernel-build.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

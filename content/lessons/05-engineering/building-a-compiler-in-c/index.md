@@ -264,3 +264,50 @@ Inspect resource requirements without executing a program, trace stack behavior,
 1. [Watch one integer slot](114-watch-one-integer-slot.md)
 1. [Translate short-circuit conditions across C23 and D](115-translate-short-circuit-conditions-across-c-and-d.md)
 1. [Read the instruction budget at a pause](116-read-the-instruction-budget-at-a-pause.md)
+
+## Check fixed names inside a block
+
+Resolve named integers through braces and observe which work the interpreter executes.
+
+1. [Resolve a fixed name in its block](117-resolve-a-fixed-name-in-its-block.md)
+1. [Number enumeration members inside a block](118-number-enumeration-members-inside-a-block.md)
+1. [Separate admission checks from source steps](119-separate-admission-checks-from-source-steps.md)
+
+## Read local declarations
+
+Read equivalent signed types and check which local values can change.
+
+1. [Read equivalent signed local types](120-read-equivalent-signed-local-types.md)
+
+## Use a script session
+
+Try one line at a time and preserve the last accepted value when a line fails.
+
+1. [Keep the last accepted script value](121-keep-the-last-accepted-script-value.md)
+
+## Store Boolean locals
+
+Trace zero and nonzero values through a local declaration, a checked update and a source-size query.
+
+1. [Store a true-or-false value in a local](122-store-a-true-or-false-value-in-a-local.md)
+1. [Measure a Boolean literal without reading its value](123-measure-a-boolean-literal-without-reading-its-value.md)
+
+## Store unsigned byte locals
+
+Trace how an unsigned byte stores the remainder after groups of 256 are removed.
+
+1. [Store a value in an unsigned byte](124-store-a-value-in-an-unsigned-byte.md)
+
+## Use the typed C console
+
+Choose an input mode, preview a change and submit one complete block.
+
+1. [Choose typed values in the C console](125-choose-typed-values-in-the-c-console.md)
+1. [Keep the accepted value during a console preview](126-keep-the-accepted-value-during-a-console-preview.md)
+1. [Submit a typed script as one block](127-submit-a-typed-script-as-one-block.md)
+
+## Read casts in complete C
+
+Predict the value of a cast and compare checked instruction files.
+
+1. [Read a signed cast in complete C](128-read-a-signed-cast-in-complete-c.md)

@@ -157,3 +157,16 @@ Install a supported D compiler and record its version. The C boundary needs a co
 1. [Follow comment and string boundaries](50-follow-comment-and-string-boundaries.md)
 
 1. [Admit values before exhaustive state dispatch](51-admit-values-before-exhaustive-state-dispatch.md)
+
+## Review a saved Umicom C report in D
+
+Read a small saved report, check each record and summarize its completed steps in a D console exercise.
+
+1. [Choose a saved report from command-line tokens](52-choose-a-saved-report-from-command-line-tokens.md)
+1. [Count complete report lines within a byte limit](53-count-complete-report-lines-within-a-byte-limit.md)
+1. [Read a versioned field after checking its type](54-read-a-versioned-field-after-checking-its-type.md)
+1. [Keep the previous preview when a new record fails](55-keep-the-previous-preview-when-a-record-fails.md)
+1. [Match a final result with its producer status](56-match-a-final-result-with-its-producer-status.md)
+1. [Make grouped step counts reproducible](57-make-grouped-step-counts-reproducible.md)
+1. [Send the summary and diagnostics to their own streams](58-send-summary-and-diagnostics-to-their-own-streams.md)
+1. [Review a saved report in a Studio D starter](59-review-a-saved-report-in-a-studio-d-starter.md)

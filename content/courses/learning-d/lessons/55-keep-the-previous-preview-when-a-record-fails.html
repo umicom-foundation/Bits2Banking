@@ -1,0 +1,64 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/55-keep-the-previous-preview-when-a-record-fails.html
+
+PURPOSE:
+Keep the previous preview when a new record fails
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep the previous preview when a new record fails | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep the previous preview when a new record fails</h1>
+<p>A preview already shows a completed report with the value 42. You open another saved report. Its first two records decode and the third ends halfway through a JSON field. Practise reporting the third line while keeping the earlier preview available.</p>
+<h2>Decode into a local array</h2>
+<p>The framing function has already split the input into individual lines. Each line can still contain malformed JSON. Build a local array from the lines. The caller receives that array only when the whole decoding loop finishes.</p>
+<pre><code class="language-d">import std.conv : to;
+
+ReportRecord[] decodeReport(string[] lines)
+{
+    // Publish the array only after every line has decoded.
+    ReportRecord[] candidate;
+    foreach (offset, line; lines)
+    {
+        try
+        {
+            candidate ~= decodeRecord(line);
+        }
+        catch (Exception problem)
+        {
+            // Convert the zero-based array offset to a report line number.
+            throw new Exception(&quot;Line &quot; ~ to!string(offset + 1)
+                ~ &quot;: &quot; ~ problem.msg);
+        }
+    }
+    return candidate;
+}
+</code></pre>
+<p>The operator <code>~=</code> appends one decoded record. The <code>catch</code> block adds the report line number to the original message and passes the failure to the caller. Phobos documents <code>JSONException</code> for malformed JSON and <code>ConvException</code> for input numbers outside the parser's native types. A quoted schema such as <code>"1"</code> can parse successfully and still fail the field check in <code>decodeRecord</code>. <a href="https://dlang.org/spec/statement.html#try-statement">D try statements</a> · <a href="https://dlang.org/library/std/json/parse_json.html">Phobos JSON parsing</a></p>
+<h2>Trace a refusal</h2>
+<p>Treat the following as three newline-terminated records in a practice file. The newline after the third record completes the frame. The JSON on that line is incomplete.</p>
+<pre><code class="language-json">{&quot;schema&quot;:1,&quot;event&quot;:&quot;step&quot;,&quot;number&quot;:1,&quot;stepKind&quot;:&quot;statement&quot;,&quot;firstLine&quot;:2,&quot;firstColumn&quot;:3,&quot;endLine&quot;:2,&quot;endColumn&quot;:13,&quot;instructions&quot;:2,&quot;ok&quot;:true}
+{&quot;schema&quot;:1,&quot;event&quot;:&quot;step&quot;,&quot;number&quot;:2,&quot;stepKind&quot;:&quot;statement&quot;,&quot;firstLine&quot;:3,&quot;firstColumn&quot;:3,&quot;endLine&quot;:3,&quot;endColumn&quot;:9,&quot;instructions&quot;:2,&quot;ok&quot;:true}
+{&quot;schema&quot;:1,&quot;event&quot;:
+</code></pre>
+<ol>
+<li>Line 1 gives the candidate one record.</li>
+<li>Line 2 gives the candidate two records.</li>
+<li>At line 3, the caller receives an exception whose message starts with <code>Line 3:</code>. Keep the earlier preview showing 42 and publish no summary for this attempted report.</li>
+</ol>
+<p>On paper, replace the third line with <code>{"schema":1,"event":"result","value":42,"instructions":4}</code>. Decoding now produces three typed records. Pass them to the next lesson's checks before replacing the preview. In a saved report, the caller uses both the decoded records and the separately recorded producer exit status.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="54-read-a-versioned-field-after-checking-its-type.html">Previous lesson · Read a versioned field after checking its type</a> · <a href="56-match-a-final-result-with-its-producer-status.html">Next lesson · Match a final result with its producer status</a> · <a href="10-trace-an-exception-partway-through-a-batch.html">Related lesson · Trace an exception partway through a batch</a> · <a href="../../../lessons/03-native-code/learning-d/55-keep-the-previous-preview-when-a-record-fails.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

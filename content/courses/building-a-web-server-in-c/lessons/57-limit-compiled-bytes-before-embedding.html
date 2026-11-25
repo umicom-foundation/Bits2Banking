@@ -1,0 +1,77 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/57-limit-compiled-bytes-before-embedding.html
+
+PURPOSE:
+Limit compiled bytes before embedding
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Limit compiled bytes before embedding | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Limit compiled bytes before embedding</h1>
+<p>Imagine putting a stack of cards into a box that holds 4,096 cards. Count only until you know whether the stack fits. Looking at one more card than the box can hold gives you enough information to refuse a longer stack.</p>
+<h2>1. Find the two checks in the WebServer build</h2>
+<p>The local Umicom WebServer can embed a compiled Umicom C application into its own executable. <strong>Embedding</strong> means putting those bytes in a generated C header so the server and browser route can use the same contents. During configuration, the current browser example accepts a file from one byte through 4096 bytes.</p>
+<p>First the configure step checks the selected file and its reported size. The shared initializer then reads the file and produces the C bytes. A file can change after the first size check. The initializer therefore reads at most 4097 bytes and compares the number it actually received with the 4096-byte budget.</p>
+<table>
+<thead>
+<tr>
+<th>Bytes seen by the bounded read</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Refuse an empty compiled application resource.</td>
+</tr>
+<tr>
+<td>1 through 4096</td>
+<td>The byte buffer fits. Continue preparing the C initializer.</td>
+</tr>
+<tr>
+<td>4097</td>
+<td>The budget has been exceeded. Refuse the resource.</td>
+</tr>
+</tbody>
+</table>
+<p>The configure check concerns the resource size. The Umicom C runtime separately checks whether the content is a valid application before the service starts.</p>
+<h2>2. Read the same rule in C</h2>
+<pre><code class="language-c">#include &lt;stdbool.h&gt;
+#include &lt;stddef.h&gt;
+
+static bool ResourceFits(size_t observed_bytes, size_t limit)
+{
+    /* A configured application needs at least one byte and must fit its budget. */
+    return observed_bytes != 0U &amp;&amp; observed_bytes &lt;= limit;
+}
+</code></pre>
+<pre><code class="language-text">READ at most the limit plus one byte
+IF no bytes arrived, refuse the resource
+IF the extra byte is present, refuse the resource
+OTHERWISE turn the admitted bytes into a C initializer
+</code></pre>
+<p>Work out the decisions for 0, 4, 5 and 6 bytes when the limit is 5. An input of six bytes already exceeds the limit. The program can decide without reading any more.</p>
+<h2>3. Try the configure-only evidence</h2>
+<p>From the Framework source directory, set <code>$framework</code> to its absolute path. Choose a new practice directory for each case. The fixture supplies its own small ordinary input.</p>
+<pre><code class="language-powershell">$framework = (Get-Location).Path
+cmake &quot;-DROOT=$framework&quot; &quot;-DDEST=$framework/build/resource-exact&quot; -DCASE=exact -P &quot;$framework/tests/build_configuration/check_embedded_resource_limit.cmake&quot;
+cmake &quot;-DROOT=$framework&quot; &quot;-DDEST=$framework/build/resource-too-large&quot; -DCASE=too-large -P &quot;$framework/tests/build_configuration/check_embedded_resource_limit.cmake&quot;
+</code></pre>
+<p>Both fixture commands should succeed. The first checks the exact initializer for 4096 bytes. The second checks that its child command refused 4097 bytes. A successful test of a refusal means the refusal happened as expected. Existing artwork and SDK resources still use their earlier shared initializer call.</p>
+<p>The configure step uses CMake's counted binary read because the C header must exist before the native executable is compiled. <a href="https://cmake.org/cmake/help/latest/command/file.html#reading">CMake file reading</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="56-keep-a-fastcgi-connector-and-its-backend-separate.html">Previous lesson · Keep a FastCGI connector and its backend separate</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/57-limit-compiled-bytes-before-embedding.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -13,11 +13,13 @@ LICENCE:
 MIT
 -->
 
-![Umicom](../../../assets/branding/umicom-wordmark.svg)
+![Umicom](../../../assets/branding/umicom-wordmark.svg) · [Umicom icon](../../../assets/branding/umicom-icon.svg) · [Windows icon](../../../assets/branding/umicom.ico)
 
 # Lower Boolean words without changing the VM
 
 [Course contents](index.md)
+
+This lesson follows the earlier literal-only implementation. For initialized `bool` locals in current checked C source, continue to [Store a true-or-false value in a local](122-store-a-true-or-false-value-in-a-local.md).
 
 ## Begin with a decision that has two answers
 

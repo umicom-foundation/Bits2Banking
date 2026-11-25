@@ -1,0 +1,56 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/128-read-a-signed-cast-in-complete-c.html
+
+PURPOSE:
+Read a signed cast in complete C
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a signed cast in complete C | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read a signed cast in complete C</h1>
+<p>Imagine that a shelf held 45 books and you handed out three. The expression <code>onShelf - handedOut</code> calculates how many remain. A <strong>cast</strong> asks the language to treat the result as a particular type. A <strong>signed integer</strong> can represent negative numbers as well as zero and positive numbers.</p>
+<h2>1. Say which type you intend</h2>
+<p>Save the program as <code>signed-cast.c</code>. The first pair of parentheses after <code>return</code> names a type. The second pair groups the subtraction. The cast applies to the value of the whole group.</p>
+<pre><code class="language-c">int main(void)
+{
+    int onShelf = 45;
+    int handedOut = 3;
+    return (signed int)(onShelf - handedOut);
+}
+</code></pre>
+<pre><code class="language-text">umicom-c interpret signed-cast.c
+</code></pre>
+<p>The result is <code>42</code>. Make a copy named <code>reordered-cast.c</code> and change only <code>(signed int)</code> to <code>(int signed)</code>. The value stays <code>42</code>. In this checked complete-C program, both spellings choose the same signed integer type as <code>(int)</code>. This example uses the compiler's bounded integer profile.</p>
+<pre><code class="language-text">SUBTRACT the number handed out from the shelf count
+TREAT the result as a signed integer
+RETURN the result
+</code></pre>
+<h2>2. Compare generated instructions</h2>
+<p>The interpreter gives immediate feedback. To keep files for later use, compile both versions to different output names. Run these commands in a practice directory where those two output files are absent.</p>
+<pre><code class="language-powershell">umicom-c compile signed-cast.c signed-cast.umcb
+umicom-c compile reordered-cast.c reordered-cast.umcb
+umicom-c exec signed-cast.umcb
+umicom-c exec reordered-cast.umcb
+Get-FileHash -Algorithm SHA256 signed-cast.umcb,reordered-cast.umcb
+</code></pre>
+<p>Both output files return <code>42</code>. Their hashes also match in this exercise. The casts have the same length and type, so swapping the two words keeps the source positions aligned and generates the same checked instructions. A hash summarizes the exact bytes of a file. A matching result alone only tells you the outcome of one run.</p>
+<p>If a command refuses to write an existing output file, choose a new filename. If the interpreter diagnoses the type words, check that the command is using the intended Umicom C release and that the two type words are inside their own parentheses. Read the reported line and column before changing the arithmetic.</p>
+<h2>3. Put parentheses around the intended value</h2>
+<p>Compare <code>(onShelf - handedOut)</code> with <code>(signed int)(onShelf - handedOut)</code>. The first only groups the expression. The second also says which type to use. Try setting <code>handedOut</code> to 50 in a new copy. Predict the result before running it. Because the result is signed, <code>45 - 50</code> gives <code>-5</code> in this profile.</p>
+<p>In Umicom Studio, try inspecting the expression first and then building a separate artifact. Keep the source, expected value and generated file name together so someone else can repeat the check. The related signed local types lesson shows where the same type words appear in a declaration.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="127-submit-a-typed-script-as-one-block.html">Previous lesson · Submit a typed script as one block</a> · <a href="120-read-equivalent-signed-local-types.html">Related lesson · Read equivalent signed local types</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/128-read-a-signed-cast-in-complete-c.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

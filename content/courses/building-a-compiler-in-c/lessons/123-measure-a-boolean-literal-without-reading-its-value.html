@@ -1,0 +1,74 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/123-measure-a-boolean-literal-without-reading-its-value.html
+
+PURPOSE:
+Measure a Boolean literal without reading its value
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Measure a Boolean literal without reading its value | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Measure a Boolean literal without reading its value</h1>
+<p>Two labels on the same model of light switch can read “on” and “off.” The labels describe different states, and the switches still have the same dimensions. In C23, <code>true</code> and <code>false</code> are constants of the same type, <code>bool</code>. Their values are <code>1</code> and <code>0</code>. A <code>sizeof</code> query asks how many bytes their type occupies. The checked Umicom C profile uses one byte for that type. <a href="https://www9.open-std.org/JTC1/SC22/WG14/www/docs/n3220.pdf">WG14 N3220, sections 6.4.4.6 and 6.5.4.4</a></p>
+<h2>Ask for the size in two ways</h2>
+<p>Here is the complete example used by the compiler regression. An assertion asks the compiler to check a fact before the program runs. The named constant <code>WIDTH</code> records the size of <code>false</code> for use in source.</p>
+<pre><code class="language-c">static_assert(sizeof(true) == sizeof(bool));
+constexpr int WIDTH = sizeof false;
+int main(void) { return 40 + sizeof true + sizeof(false); }
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Value or number of bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>true</code></td>
+<td>Value <code>1</code></td>
+</tr>
+<tr>
+<td><code>false</code></td>
+<td>Value <code>0</code></td>
+</tr>
+<tr>
+<td><code>sizeof true</code> or <code>sizeof(false)</code></td>
+<td><code>1</code> byte each</td>
+</tr>
+<tr>
+<td><code>sizeof(17)</code> or <code>sizeof('A')</code></td>
+<td><code>4</code> bytes each in this profile</td>
+</tr>
+</tbody>
+</table>
+<p>The parentheses in <code>sizeof(false)</code> surround one literal. The spelling <code>sizeof(bool)</code> surrounds a type name. Write the type name with parentheses. The compiler puts the numeric size into the program directly.</p>
+<pre><code class="language-text">Recognize true as a Boolean constant
+Look up the size of its source type and use 1
+Recognize false as a Boolean constant
+Look up the same source type size and use 1
+Return 40 + 1 + 1
+</code></pre>
+<h2>Predict what a change will do</h2>
+<ol>
+<li>Work out the sum on paper. To try it with a build that includes this feature, save the program as <code>literal-size.c</code> and run <code>umicom-c interpret literal-size.c</code>. Expect <code>Result: 42</code>.</li>
+<li>In a copy, change <code>sizeof(false)</code> to <code>sizeof(true)</code>. Predict <code>42</code> again because the type stays <code>bool</code>. Then change it to plain <code>false</code>. This time you add the literal’s value and expect <code>41</code>.</li>
+<li>In another copy, change <code>sizeof(false)</code> to <code>sizeof(false + 1)</code>. Run <code>umicom-c interpret literal-size.c --check-only</code> on that copy. This checked profile still refuses a compound expression in this position. Restore the single literal and repeat the check.</li>
+</ol>
+<p>Older Umicom C builds accepted <code>true</code> and <code>false</code> in ordinary arithmetic but refused these size queries. The earlier compiler also passed the ordinary size check. If the complete example is refused, check that you are invoking a build with Boolean literal sizing. <code>alignof(bool)</code> remains a type query in this profile. <code>alignof(true)</code> is still refused. The separate <code>script</code> command keeps its previous rules, so it accepts <code>return sizeof(17);</code> and refuses <code>return sizeof(true);</code>.</p>
+<p>To follow the same distinction in Umicom C’s API, start with <code>docs/language.md</code> in the compiler checkout. <code>include/umicom_c/umicom_c.h</code> describes <code>umc_compile</code> and <code>umc_execute</code>. <code>include/umicom_c/interpreter.h</code> describes the source-step API used to run the same example.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="122-store-a-true-or-false-value-in-a-local.html">Previous lesson · Store a true-or-false value in a local</a> · <a href="99-count-bytes-from-an-admitted-type.html">Count bytes from an admitted type</a> · <a href="93-lower-boolean-words-without-changing-the-vm.html">Lower Boolean words without changing the VM</a> · <a href="124-store-a-value-in-an-unsigned-byte.html">Next lesson · Store a value in an unsigned byte</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/123-measure-a-boolean-literal-without-reading-its-value.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

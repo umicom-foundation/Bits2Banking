@@ -213,3 +213,5 @@ The primary Framework services remain C23. A D teaching client can decode its ow
 
 
 [Previous: Follow comment and string boundaries](50-follow-comment-and-string-boundaries.md)
+
+[Next lesson · Choose a saved report from command-line tokens](52-choose-a-saved-report-from-command-line-tokens.md)

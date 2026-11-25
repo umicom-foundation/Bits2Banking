@@ -1,0 +1,102 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/53-count-complete-report-lines-within-a-byte-limit.html
+
+PURPOSE:
+Count complete report lines within a byte limit
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Count complete report lines within a byte limit | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Count complete report lines within a byte limit</h1>
+<p>A file contains bytes. A line in a saved report has an ending you can recognize. This lesson takes a small array of bytes and returns a list of complete lines. It gives the reader a firm place to stop before it starts interpreting the fields.</p>
+<h2>1. Write down the three limits</h2>
+<p>Our practice reader accepts at most 4,096 file bytes, 256 bytes in a line before its ending, and 32 lines. Its fixtures use plain ASCII, the familiar byte codes for characters such as digits and braces. They use line feed, written <code>\n</code>, or carriage return followed by line feed, written <code>\r\n</code>. Both endings separate one record from the next. The local exercise requires a final line feed so you can recognize the last boundary.</p>
+<p>When the completed reader opens a practice file, it will ask <code>std.file.read</code> for up to 4,097 bytes. A length of 4,097 is enough to detect an input above the cap. The example below works with an already supplied array to let you trace it on paper.</p>
+<h2>2. Count bytes, then keep each line</h2>
+<p>An <strong>offset</strong> is the number of bytes from the start of the array. <code>start</code> holds the offset of the current line. When the loop reaches a line feed, it finds the end of the record and copies the bytes between the two offsets. The slice includes its first offset and stops before its last. <code>.idup</code> makes a separate immutable copy.</p>
+<pre><code class="language-d">enum size_t reportByteLimit = 4096;
+enum size_t reportLineLimit = 256;
+enum size_t reportRecordLimit = 32;
+
+string[] frameReport(const(void)[] raw)
+{
+    const bytes = cast(const(ubyte)[]) raw;
+    // Check the file boundary before looking at its final byte.
+    if (bytes.length == 0 || bytes.length &gt; reportByteLimit || bytes[$ - 1] != '\n')
+        throw new Exception(&quot;Expected a bounded report ending in a line feed.&quot;);
+
+    string[] lines;
+    size_t start = 0;
+    foreach (offset, byteValue; bytes)
+    {
+        // Only LF and CRLF end lines in these ASCII practice reports.
+        if (byteValue == '\r')
+        {
+            if (offset + 1 &gt;= bytes.length || bytes[offset + 1] != '\n')
+                throw new Exception(&quot;Expected a line feed after carriage return.&quot;);
+        }
+        else if (byteValue == '\n')
+        {
+            size_t end = offset;
+            if (end &gt; start &amp;&amp; bytes[end - 1] == '\r')
+                --end;
+            if (end == start || end - start &gt; reportLineLimit ||
+                lines.length == reportRecordLimit)
+                throw new Exception(&quot;Blank line or report limit exceeded.&quot;);
+            // Retain an owned line so later parsing can read it independently.
+            auto text = cast(const(char)[]) bytes[start .. end];
+            lines ~= text.idup;
+            start = offset + 1;
+        }
+        else if (byteValue != '\t' &amp;&amp; (byteValue &lt; 0x20 || byteValue &gt; 0x7E))
+            throw new Exception(&quot;Expected ASCII report text.&quot;);
+    }
+    return lines;
+}
+</code></pre>
+<h2>3. Test the boundaries on paper</h2>
+<p>Take the two lines <code>{"schema":1}</code> and <code>{"schema":1}</code>. Each has twelve bytes before its ending.</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Expected result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add LF after each line</td>
+<td>26 input bytes and two returned lines, each twelve bytes</td>
+</tr>
+<tr>
+<td>Use CRLF after each line</td>
+<td>28 input bytes and the same two returned lines</td>
+</tr>
+<tr>
+<td>Remove the last LF</td>
+<td>Refuse the unfinished final record</td>
+</tr>
+<tr>
+<td>Add a blank line between records</td>
+<td>Refuse the empty record</td>
+</tr>
+</tbody>
+</table>
+<p>These are framing examples. The next exercise decides whether the fields in a complete line describe an accepted event. Keep the same input caps when those checks are added.</p>
+<p><a href="https://dlang.org/spec/arrays.html">D arrays and slices</a> · <a href="https://dlang.org/library/std/file/read.html">Phobos bounded file read</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="52-choose-a-saved-report-from-command-line-tokens.html">Previous lesson · Choose a saved report from command-line tokens</a> · <a href="54-read-a-versioned-field-after-checking-its-type.html">Next lesson · Read a versioned field after checking its type</a> · <a href="31-follow-the-lifetime-of-input-range-data.html">Related lesson · Follow the lifetime of input-range data</a> · <a href="39-separate-text-bytes-code-points-and-display.html">Related lesson · Separate text bytes, code points and display</a> · <a href="../../../lessons/03-native-code/learning-d/53-count-complete-report-lines-within-a-byte-limit.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

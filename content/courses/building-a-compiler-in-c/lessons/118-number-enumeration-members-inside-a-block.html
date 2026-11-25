@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/118-number-enumeration-members-inside-a-block.html
+
+PURPOSE:
+Number enumeration members inside a block
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Number enumeration members inside a block | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Number enumeration members inside a block</h1>
+<p>Suppose a Studio IDE practice program uses three numbered check stages. The previous lesson gave one fixed value a name with <code>constexpr int</code>. An <strong>enumeration</strong> groups several named constants in one declaration. In this exercise the opening brace follows <code>enum</code> immediately. This form is called an <strong>anonymous enumeration</strong>. The member names describe the stages.</p>
+<h2>1. Fill in the numbers before the program runs</h2>
+<p>Read this program from top to bottom and write a number beside each member.</p>
+<pre><code class="language-c">constexpr int BASE=39;
+int main(void) {
+    enum { FIRST=BASE+1, SECOND, THIRD, };
+    static_assert(THIRD == 42);
+    return THIRD;
+}
+</code></pre>
+<p><code>BASE</code> is already visible when the compiler checks the block. The member <code>FIRST</code> gets 40 from its explicit calculation. With no value written for <code>SECOND</code> or <code>THIRD</code>, each takes the preceding member’s value plus one. The final comma is permitted. Your list should read 40, 41, 42. Lesson 98 uses the same numbering rule before the function. This example declares the member names inside the function body. <a href="https://www9.open-std.org/JTC1/SC22/WG14/www/docs/n3220.pdf">WG14 N3220, enumeration specifiers</a></p>
+<p>The static assertion checks 42 during source admission, when the compiler decides whether it can prepare the program. Lesson 119 follows the first reached line and the two instructions the compiler prepares for this example.</p>
+<h2>2. Follow a name through two blocks</h2>
+<p>Draw a box around the function body and another for the smaller block inside it. Mark the lines where <code>FIRST</code> and <code>LAST</code> are available.</p>
+<pre><code class="language-c">int main(void) {
+    enum { FIRST=40 };
+    {
+        // The inner group can use a constant from the enclosing block.
+        enum { LAST=FIRST+2 };
+        return LAST;
+    }
+    return 0;
+}
+</code></pre>
+<p><code>FIRST</code> is visible in the smaller box, so <code>LAST</code> receives 42 and the inner return can read it. Move that return to the outer block on paper, replacing <code>return 0;</code>. The inner braces close before the new return. That use of <code>LAST</code> is out of scope, so admission refuses it.</p>
+<p>This Umicom C profile counts up to 32 visible enumeration members and <code>constexpr</code> names together. Try writing <code>constexpr int VALUE=42;</code> followed by <code>enum { VALUE };</code> in the same block. The second declaration is refused because the first name is still visible. The two declaration forms share the same space for names.</p>
+<h2>3. Stop when the next value exceeds the range</h2>
+<p>Replace the member list with <code>enum { LAST=2147483647, OVER };</code> and predict <code>OVER</code> on paper. It would be 2,147,483,648. The checked Umicom C profile stores these values as signed 32-bit integers, whose largest value is 2,147,483,647. The compiler refuses the declaration during source admission and reports an output instruction count of zero. A full C23 implementation can select a wider type under the enumeration rules. <a href="https://www9.open-std.org/JTC1/SC22/WG14/www/docs/n3220.pdf">WG14 N3220, enumeration specifiers</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="117-resolve-a-fixed-name-in-its-block.html">Previous lesson · Resolve a fixed name in its block</a> · <a href="119-separate-admission-checks-from-source-steps.html">Next lesson · Separate admission checks from source steps</a> · <a href="98-name-values-before-the-entry.html">Name values before the entry</a> · <a href="82-give-branch-locals-a-lexical-scope.html">Give branch locals a lexical scope</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/118-number-enumeration-members-inside-a-block.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

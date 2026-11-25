@@ -104,3 +104,5 @@ In the Umicom Kernel checkout, `docs/BUILD_IDENTITY.md` describes the review. Th
 [RISC-V ABI specification](https://riscv-non-isa.github.io/riscv-elf-psabi-doc/) · [QEMU virtual board settings](https://www.qemu.org/docs/master/system/riscv/virt.html#machine-specific-options)
 
 [Course contents](index.md) · [Previous lesson · Read the scope of a Kernel build identity](132-read-the-scope-of-a-kernel-build-identity.md) · [Related lesson · Distinguish input identity from guest evidence](108-distinguish-input-identity-from-guest-evidence.md) · [Umicom OS · Qualify produced images in stages](../umicom-os-from-scratch/48-qualify-produced-images-in-stages.md) · [HTML edition](../../../courses/umicom-kernel-from-scratch/lessons/133-check-the-configured-kernel-platform.html)
+
+[Next lesson · Count complete boot handoff records](134-count-complete-boot-handoff-records.md)

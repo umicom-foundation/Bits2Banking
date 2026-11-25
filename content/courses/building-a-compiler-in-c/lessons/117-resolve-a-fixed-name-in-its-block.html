@@ -1,0 +1,84 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-compiler-in-c/lessons/117-resolve-a-fixed-name-in-its-block.html
+
+PURPOSE:
+Resolve a fixed name in its block
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resolve a fixed name in its block | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Resolve a fixed name in its block</h1>
+<p>In lesson 98 you named a fixed number before the entry function. The supported Umicom C profile also accepts <code>constexpr int</code> inside a block, a group of statements between braces. Choose a block when a fixed number belongs to that part of a calculation.</p>
+<h2>Give each calculation its own name</h2>
+<p>Trace the two blocks below as parts of a practice stock count. The saved compiler fixture uses the same declarations and additions.</p>
+<pre><code class="language-c">int main(void) {
+    int sum = 0;
+    if (1) {
+        // The first part is a fixed number for this block.
+        constexpr int PART = 20;
+        sum += PART;
+    }
+    {
+        // The earlier PART is out of scope, so this block can reuse the name.
+        constexpr int PART = 22;
+        sum += PART;
+    }
+    return sum;
+}
+</code></pre>
+<ol>
+<li>Draw a box for each pair of inner braces. Put <code>PART = 20</code> in the first and <code>PART = 22</code> in the second. Each box says where that name is available.</li>
+<li>Start the running <code>sum</code> at zero. In the first box the addition makes it 20. In the second box the addition makes it 42. The return reads <code>sum</code> from the outer block.</li>
+<li>Change the return to <code>return PART;</code> on paper. The lookup is refused because both <code>PART</code> declarations finished their scope. To use a fixed number after a block, declare it in a scope that includes that later use.</li>
+</ol>
+<p>The <code>constexpr int</code> initializer is checked while the compiler prepares the source. The additions to <code>sum</code> happen during execution. In this profile, the fixed name has no mutable interpreter slot. The compiler can use its integer value directly where the name is allowed.</p>
+<h2>Read the name that is visible at each line</h2>
+<p>Here an earlier source assertion reads a fixed file-scope value. The declaration inside <code>main</code> then introduces an ordinary local with the same spelling. Use the three marked lines to follow the lookup.</p>
+<pre><code class="language-c">constexpr int VALUE = 1;
+
+int main(void) {
+    static_assert(VALUE == 1);
+    int VALUE = 42;
+    return VALUE;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Line you are reading</th>
+<th>What <code>VALUE</code> means here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>static_assert(VALUE == 1);</code></td>
+<td>The earlier file-scope constant, so the assertion passes.</td>
+</tr>
+<tr>
+<td><code>int VALUE = 42;</code></td>
+<td>This declaration introduces an ordinary local.</td>
+</tr>
+<tr>
+<td><code>return VALUE;</code></td>
+<td>The ordinary local, so the result is 42.</td>
+</tr>
+</tbody>
+</table>
+<p>Now insert <code>constexpr int COPY = VALUE;</code> after <code>int VALUE = 42;</code>. Predict whether <code>COPY</code> can use the file-scope <code>VALUE</code>. The compiler finds the visible ordinary local first, and the fixed-value initializer is refused. The earlier file-level value stays hidden at that line. Insert the new declaration before the local instead and <code>COPY</code> can hold 1.</p>
+<p>Use this distinction when reading a fixed setting and an adjustable count in an Umicom Studio source example. Mark the braces, then identify the visible declaration at the line reading the name. The checked profile admits a single signed integer initializer per <code>constexpr int</code> declaration. The full language defines additional declaration forms. <a href="https://open-std.org/jtc1/sc22/wg14/www/docs/n3018.htm">C23 object definitions with <code>constexpr</code></a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="116-read-the-instruction-budget-at-a-pause.html">Previous lesson · Read the instruction budget at a pause</a> · <a href="118-number-enumeration-members-inside-a-block.html">Next lesson · Number enumeration members inside a block</a> · <a href="98-name-values-before-the-entry.html">Name values before the entry</a> · <a href="83-parse-standalone-blocks-with-one-scope-owner.html">Parse standalone blocks with one scope owner</a> · <a href="../../../lessons/05-engineering/building-a-compiler-in-c/117-resolve-a-fixed-name-in-its-block.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

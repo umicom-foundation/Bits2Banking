@@ -1,0 +1,96 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/135-check-boot-mode-and-process-exit.html
+
+PURPOSE:
+Check boot mode and process exit separately
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check boot mode and process exit separately | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Check boot mode and process exit separately</h1>
+<p>The previous lesson counted complete handoff records. An automated boot check also needs to know which boot path ran and how the process ended. On your worksheet, ask whether the expected boot path reported readiness and whether the process exited successfully. Each answer needs its own evidence.</p>
+<h2>Choose the expected path before reading the output</h2>
+<p>The Umicom Kernel handoff runner checks three separately selected RISC-V images. A <strong>terminal path</strong> is the path that finishes that automated boot. Use the expected image to choose which complete readiness line belongs in its serial output.</p>
+<table>
+<thead>
+<tr>
+<th>Expected image</th>
+<th>Complete readiness record</th>
+<th>Extra recovery evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normal startup</td>
+<td><code>UMICOM_KERNEL_NORMAL_STARTUP_READY</code></td>
+<td>The expected path finishes normal startup.</td>
+</tr>
+<tr>
+<td>Required-service recovery</td>
+<td><code>UMICOM_KERNEL_RECOVERY_SELECTION_READY</code></td>
+<td><code>recovery.reason=required-startup-service</code></td>
+</tr>
+<tr>
+<td>Forced recovery</td>
+<td><code>UMICOM_KERNEL_RECOVERY_SELECTION_READY</code></td>
+<td><code>recovery.reason=forced-recovery</code>. This image makes no memory reservation, handoff or placement claim.</td>
+</tr>
+</tbody>
+</table>
+<p>Two opposing readiness records make the path ambiguous. A service-recovery transcript with both recovery reasons also fails the selected-mode check. The two admitted-memory paths still need the memory and handoff evidence from the previous lesson.</p>
+<h2>Keep the answers in separate columns</h2>
+<p>The runner asks CMake to save three observations. It receives the process result, the captured serial standard output and the host diagnostic standard error separately. The two streams are separate channels of bytes. A process result can be an exit code or an error description. The runner checks for exit code <code>0</code> and looks for the expected boot records in the serial output. <a href="https://cmake.org/cmake/help/latest/command/execute_process.html#command:execute_process">CMake process results and streams</a></p>
+<p>Draw a table on paper with one column for each observation. Predict what the runner can conclude from the following saved synthetic cases.</p>
+<table>
+<thead>
+<tr>
+<th>Practice case</th>
+<th>Process result</th>
+<th>Readiness evidence</th>
+<th>Expected check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Canonical run of each selected image</td>
+<td><code>0</code></td>
+<td>Each image has its own complete readiness on serial output.</td>
+<td>Accept each expected path.</td>
+</tr>
+<tr>
+<td>Status failure</td>
+<td><code>3</code></td>
+<td>Serial output looks like a normal startup.</td>
+<td>Refuse because the process ended with an error.</td>
+</tr>
+<tr>
+<td>Readiness on the diagnostic stream</td>
+<td><code>0</code></td>
+<td>The normal readiness line is only in host standard error.</td>
+<td>Refuse because serial output lacks the required record.</td>
+</tr>
+<tr>
+<td>Placement totals disagree</td>
+<td><code>0</code></td>
+<td>A normal readiness line is on serial output.</td>
+<td>Refuse because the reported memory totals do not agree.</td>
+</tr>
+</tbody>
+</table>
+<p>The host integration fixture supplied those process and stream values to the runner. It checked the original exit and placement guards alongside the revised record checks. Keep a copy of the inputs and the selected mode together when you repeat the worksheet for a future boot check. A live QEMU run and physical target qualification give separate evidence about what the Kernel actually did.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="134-count-complete-boot-handoff-records.html">Previous lesson · Count complete boot handoff records</a> · <a href="99-qualify-normal-boot-at-separate-boundaries.html">Qualify normal boot at separate boundaries</a> · <a href="97-preserve-startup-stream-identity.html">Preserve startup stream identity</a> · <a href="../../umicom-os-from-scratch/lessons/19-read-a-captured-boot-observation.html">Umicom OS · Read a captured boot observation</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/135-check-boot-mode-and-process-exit.md">Markdown edition</a></nav><nav aria-label="Next lesson"><a rel="next" href="136-review-one-kernel-elf-from-a-partial-build.html">Next lesson · Review one Kernel ELF from a partial build record</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

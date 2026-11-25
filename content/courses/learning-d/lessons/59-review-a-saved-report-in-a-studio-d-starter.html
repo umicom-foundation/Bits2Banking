@@ -1,0 +1,170 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-d/lessons/59-review-a-saved-report-in-a-studio-d-starter.html
+
+PURPOSE:
+Review a saved report in a Studio D starter
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review a saved report in a Studio D starter | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Review a saved report in a Studio D starter</h1>
+<p>Bring the earlier parts together in one learner-owned <code>src/main.d</code>. Keep your paper predictions beside the saved report. The predictions give you something precise to compare with an observed result when the D toolchain is available.</p>
+<p>Copy the D blocks from lessons 52 through 58 in order. Keep one import for each symbol. Then add the saved fixture and test block below to the same file.</p>
+<h2>Prepare independent inputs</h2>
+<p>Copy the five saved JSON Lines records from lesson 54 into <code>Example Run.jsonl</code> as ASCII with a final newline. Above the test block, type <code>enum goodReport =</code> followed by an opening backtick. Paste the first record immediately after the backtick. Put a closing backtick and semicolon on the line after the final record. Use the seven cases to predict what the reader should accept.</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Change from the saved report</th>
+<th>Expected review</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Saved success</td>
+<td>Use the original report and producer exit 0</td>
+<td>Complete, value 42</td>
+</tr>
+<tr>
+<td>Synthetic zero</td>
+<td>Change the final value to 0 and keep producer exit 0</td>
+<td>Complete, value 0</td>
+</tr>
+<tr>
+<td>Quoted schema</td>
+<td>Change the first numeric schema to a string</td>
+<td>Refused</td>
+</tr>
+<tr>
+<td>Missing result</td>
+<td>Remove the final row and keep the preceding newline</td>
+<td>Refused</td>
+</tr>
+<tr>
+<td>Extra result</td>
+<td>Repeat the final row</td>
+<td>Refused</td>
+</tr>
+<tr>
+<td>Over the byte limit</td>
+<td>Supply 4,097 bytes</td>
+<td>Refused</td>
+</tr>
+<tr>
+<td>Producer error</td>
+<td>Use the original report with producer exit 1</td>
+<td>Refused</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-d">import std.array : replaceFirst;
+
+unittest
+{
+    struct ReportCase
+    {
+        string name;
+        string input;
+        int producerExit;
+        bool accepted = false;
+        long value;
+    }
+
+    // Change one input at a time so each refusal has a clear cause.
+    auto rows = frameReport(cast(const(void)[]) goodReport);
+    assert(rows.length == 5);
+    string missing = join(rows[0 .. $ - 1], &quot;\n&quot;).idup ~ &quot;\n&quot;;
+    char[reportByteLimit + 1] oversized;
+    oversized[] = 'x';
+    oversized[$ - 1] = '\n';
+    // A final LF isolates the first-stage byte-cap refusal from the end check.
+    bool byteLimitRejected;
+    try
+        frameReport(cast(const(void)[]) oversized[]);
+    catch (Exception problem)
+        byteLimitRejected = problem.msg == &quot;Expected a bounded report ending in a line feed.&quot;;
+    assert(byteLimitRejected);
+
+    auto cases = [
+        ReportCase(&quot;saved&quot;, goodReport, 0, true, 42),
+        ReportCase(&quot;zero&quot;, replaceFirst(goodReport, `&quot;value&quot;:42`, `&quot;value&quot;:0`), 0, true, 0),
+        ReportCase(&quot;quoted schema&quot;, replaceFirst(goodReport, `&quot;schema&quot;:1`, `&quot;schema&quot;:&quot;1&quot;`), 0, false, 0),
+        ReportCase(&quot;missing result&quot;, missing, 0, false, 0),
+        ReportCase(&quot;extra result&quot;, goodReport ~ rows[$ - 1] ~ &quot;\n&quot;, 0, false, 0),
+        ReportCase(&quot;oversized&quot;, oversized[].idup, 0, false, 0),
+        ReportCase(&quot;producer error&quot;, goodReport, 1, false, 0),
+    ];
+
+    foreach (testCase; cases)
+    {
+        bool accepted;
+        Review review;
+        try
+        {
+            auto lines = frameReport(cast(const(void)[]) testCase.input);
+            review = completeReport(decodeReport(lines), testCase.producerExit);
+            accepted = true;
+        }
+        catch (Exception problem)
+        {
+            // A refused candidate leaves the acceptance flag false.
+        }
+        assert(accepted == testCase.accepted, testCase.name);
+        if (accepted)
+        {
+            assert(review.value == testCase.value, testCase.name);
+            string expected = &quot;return=1 statement=3 steps=4 instructions=10 value=&quot;
+                ~ to!string(testCase.value);
+            assert(formatSummary(review) == expected, testCase.name);
+            assert(formatStepDetails(review, 2) == &quot;\nstep 1 statement\nstep 2 statement&quot;,
+                testCase.name);
+        }
+    }
+}
+</code></pre>
+<h2>Check the starter, then check the reader</h2>
+<p>In a fresh Studio <strong>D Console Application</strong> starter with CMake, Ninja, and a supported LDC installation, run these PowerShell commands one at a time. Stop if a command fails.</p>
+<pre><code class="language-powershell">Get-Command cmake, ninja, ldc2 -ErrorAction Stop
+cmake --preset windows-ucrt64-debug
+cmake --build --preset windows-ucrt64-debug --parallel 2
+ctest --preset windows-ucrt64-debug -R '^console\.result$' --output-on-failure --no-tests=error
+</code></pre>
+<p>The stock check starts its program without arguments and expects <code>Result: 42</code>. If your existing starter built its result executable with <code>-unittest</code>, the D runtime's default <code>test-or-main</code> mode can finish after running the tests and skip <code>main</code>. If CTest reports missing application output, check that explanation by building the stock source into a separate executable with an explicit runtime mode.</p>
+<pre><code class="language-powershell">ldc2 -g -O0 -unittest -of=starter-control.exe .\src\main.d
+.\starter-control.exe --DRT-testmode=run-main
+</code></pre>
+<p>Look for <code>Result: 42</code> and record the direct command separately from the CTest outcome. This check helps locate the missing output because <code>run-main</code> lets a passing unit test be followed by the application's entry point. <a href="https://dlang.org/phobos/core_runtime.html#runModuleUnitTests">D runtime test modes</a></p>
+<p>In a separate learner folder, place the assembled reader and its unit test in <code>src/main.d</code>. First build and run the test executable. <code>test-only</code> runs the assertions without opening the saved report file because the test cases have their own input strings. Check the exit value immediately and stop on a failure.</p>
+<pre><code class="language-powershell">ldc2 -g -O0 -unittest -of=report-tests.exe .\src\main.d
+.\report-tests.exe --DRT-testmode=test-only
+$LASTEXITCODE
+</code></pre>
+<p>Then build the reader without the unit test switch. Use it to capture the application's streams and exit separately.</p>
+<pre><code class="language-powershell">ldc2 -g -O0 -of=review.exe .\src\main.d
+.\review.exe --producer-exit 0 'Example Run.jsonl' 1&gt;stdout.txt 2&gt;stderr.txt
+$reviewExit = $LASTEXITCODE
+Get-Content -LiteralPath .\stdout.txt
+Get-Content -LiteralPath .\stderr.txt
+$reviewExit
+Get-FileHash -LiteralPath '.\Example Run.jsonl' -Algorithm SHA256
+ldc2 --version
+</code></pre>
+<p>Expect the exact summary from lesson 58 and exit 0. Record the LDC version, the input file's SHA-256, both streams and the observed reader exit. The saved Umicom C producer evidence establishes the sample data. A learner's successful D check would establish a separate observation for the reader and its tested inputs.</p>
+<p><a href="https://dlang.org/spec/unittest.html">D unit tests</a> · <a href="https://dlang.org/spec/function.html#main">D console entry point</a> · <a href="https://dlang.org/library/std/array/replace_first.html">D first replacement</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="58-send-summary-and-diagnostics-to-their-own-streams.html">Previous lesson · Send the summary and diagnostics to their own streams</a> · <a href="02-contracts-and-unit-tests.html">Related lesson · Describe a contract and run D unit tests</a> · <a href="../../learning-build-systems/lessons/31-measure-the-process-temporary-volume.html">Related lesson · Measure the process temporary volume</a> · <a href="../../learning-build-systems/lessons/32-read-child-and-fixture-deadlines.html">Related lesson · Read child and fixture deadlines</a> · <a href="../../../lessons/03-native-code/learning-d/59-review-a-saved-report-in-a-studio-d-starter.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

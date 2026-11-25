@@ -1,0 +1,65 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/72-keep-a-complete-report-through-replacement.html
+
+PURPOSE:
+Keep a complete report through replacement
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep a complete report through replacement | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep a complete report through replacement</h1>
+<p>The previous lesson stopped when the report writer acquired a temporary name. Continue from that point. The existing <code>report</code> contains the last finished boot record. The writer has acquired <code>report.tmp.1</code>. The occupied <code>report.tmp</code> belongs to someone else and stays outside this save.</p>
+<h2>Follow the save after the open</h2>
+<ol>
+<li>The writer sends the version 1 report bytes to the temporary file. A write can accept fewer bytes than requested and return that smaller count. The code advances by the count it received and attempts to write the rest. An interrupted write can be retried. Other write errors end the write loop.</li>
+<li>The writer closes the file descriptor, the integer handle it received when it opened the file. It attempts that close even if writing failed. A close error makes the save fail.</li>
+<li>After all bytes are written and the close succeeds, the writer calls <code>rename</code> to put the finished file at <code>report</code>. On failure it attempts to remove only the temporary name it acquired. The writer never deletes an occupied name to make room for its next attempt.</li>
+</ol>
+<p>Start each row with a complete old <code>report</code> and with <code>report.tmp</code> occupied. Count what happens after the writer acquires <code>report.tmp.1</code>. Assume no other writer changes <code>report</code> during your trace.</p>
+<table>
+<thead>
+<tr>
+<th>Paper case</th>
+<th>Operations after the open</th>
+<th>State of the named report</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All operations succeed</td>
+<td>Write, close, rename</td>
+<td>The new complete report has the name <code>report</code>.</td>
+</tr>
+<tr>
+<td>The write returns <code>EIO</code>, an input/output error</td>
+<td>Attempt write, close, attempt to remove <code>report.tmp.1</code></td>
+<td>The old report stays in place. The writer skips rename.</td>
+</tr>
+<tr>
+<td>The rename returns <code>EIO</code></td>
+<td>Write, close, attempt rename, attempt to remove <code>report.tmp.1</code></td>
+<td>The old report stays in place. The save reports failure.</td>
+</tr>
+</tbody>
+</table>
+<p>The saved unit test substitutes controlled functions for file operations. It checks the written bytes, call order and exact names. Its write either accepts the entire report or returns an error, and its close always succeeds. The short-write loop and close-error branch can be read in the source. Native Linux filesystem behavior, a guest boot and power-loss behavior on a device still need separate verification.</p>
+<h2>Separate replacement from durability</h2>
+<p>On a successful Linux rename over an existing file, a reader opening the destination name can find the old or new file around the switch, with no gap in which the destination name is absent. This is <strong>atomic name replacement</strong>. Keeping data after a crash is <strong>durability</strong>. On persistent storage, saving the file's contents and saving the containing directory's entry are separate synchronization steps. <a href="https://man7.org/linux/man-pages/man2/rename.2.html">Linux rename(2)</a> · <a href="https://man7.org/linux/man-pages/man2/fsync.2.html">Linux fsync(2)</a></p>
+<p>Umicom OS writes <code>/run/umicom/boot.report</code> on the temporary <code>tmpfs</code> it mounts at <code>/run</code>. The current writer has no <code>fsync</code> step, and a fresh boot starts with a new mount. Read the report as evidence for the current boot. <a href="https://docs.kernel.org/filesystems/tmpfs.html">Linux kernel documentation on tmpfs</a></p>
+<p>On paper, suppose the first write accepts five of twelve bytes. Mark the next offset and the number of bytes still due. Then suppose the remainder is written and close fails. The next write starts at offset five with seven bytes due. A failed close prevents rename and the writer attempts to remove its own temporary name.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="71-claim-a-temporary-boot-report-name.html">Previous lesson · Claim a temporary name for a boot report</a> · <a href="70-keep-the-first-boot-failure.html">Keep the first boot failure when a report cannot be saved</a> · <a href="19-read-a-captured-boot-observation.html">Read a captured boot observation</a> · <a href="61-check-native-release-without-retrying-handles.html">Check native release without retrying handles</a> · <a href="73-review-an-executable-before-os-packaging.html">Next lesson · Review an executable before OS packaging</a> · <a href="../../../lessons/06-umicom/umicom-os-from-scratch/72-keep-a-complete-report-through-replacement.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

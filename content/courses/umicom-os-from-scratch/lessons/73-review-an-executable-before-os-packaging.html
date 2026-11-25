@@ -1,0 +1,54 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-os-from-scratch/lessons/73-review-an-executable-before-os-packaging.html
+
+PURPOSE:
+Review an executable before OS packaging
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review an executable before OS packaging | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Review an executable before OS packaging</h1>
+<p>Your team has received a standalone executable named <code>umicom-cvm-probe</code>. It is a small program that checks part of Umicom’s C runtime when somebody runs it. Before discussing whether it belongs in an OS image, compare the file you received with the one the team reviewed. Start by writing down the file’s target processor, exact length in bytes and SHA-256 digest. A digest is a fixed-length value calculated from the file’s bytes.</p>
+<h2>1. Separate the compiler target from the file</h2>
+<p>The optional Umicom OS setting <code>UMICOM_OS_CVM_STATIC</code> first checks CMake’s configured system name. The C source then checks the compiler’s <code>__linux__</code> and <code>_WIN32</code> definitions. If the configuration says Linux and the compiler targets Windows, the source check stops the build. A Linux-target compiler can reach the static link, which still needs a static C library for that target.</p>
+<p>An ELF file holds machine code and directions for loading it. Umicom’s file check expects a selected static ELF executable profile. It compares the requested processor with the file header and rejects an ELF that declares a program interpreter or a dynamic program header. Keep a separate review for the intended Linux application binary interface (ABI), the rules the executable uses to interact with its system, and for its actual dependency and link requirements.</p>
+<h2>2. Compare the file with an independent review</h2>
+<ol>
+<li>Use an existing build of Umicom Framework’s <code>umicom-os-image</code> that supports both identity arguments. In a shell, set <code>BUILD</code> to its absolute build directory and <code>CVM_PROBE</code> to the absolute file path. This example expects <code>x86_64</code>. Use <code>riscv64</code> only when the reviewed file targets that processor.</li>
+<li>Copy the full SHA-256 and exact byte count from the reviewed record into <code>EXPECTED_SHA256</code> and <code>EXPECTED_BYTES</code>. Computing both values from a newly received file would only compare it with itself.</li>
+<li>Ask the tool to inspect the file. Supply the digest and count together so the command checks identity as well as structure.</li>
+</ol>
+<pre><code class="language-sh">"$BUILD/bin/umicom-os-image" elf --file "$CVM_PROBE" --arch x86_64 \
+  --sha256 "$EXPECTED_SHA256" --bytes "$EXPECTED_BYTES"</code></pre>
+<p>A match reports <code>ELF structure and reviewed bytes agree</code> with exit status <code>0</code>. Look for <code>process-launched=0</code> in the report. The tool reads the file without starting it. If a comparison fails, record the failure and check the selected file, processor and review record. With both identity options omitted, the command checks the structure alone. With only one supplied, it refuses the request.</p>
+<p>Think of the tool holding one copy of the bytes in memory. All three checks use that same copy, so the hash describes the bytes whose structure was inspected.</p>
+<pre><code class="language-text">read one bounded buffer from the existing file
+require the buffer to match the requested static ELF profile
+require the byte count to match the reviewed count
+require the SHA-256 of that buffer to match the reviewed digest
+record a reviewed file match</code></pre>
+<h2>3. Trace a handoff on paper</h2>
+<p>Start with a review card for <code>x86_64</code>, <code>4096</code> bytes and digest <code>A</code>. In this exercise, <code>A</code> and <code>B</code> stand for different full SHA-256 values. Cover the last column, predict the earliest stopping point, then uncover it.</p>
+<table><thead><tr><th>Artifact observation</th><th>Expected result</th></tr></thead><tbody>
+<tr><td><code>x86_64</code>, 4096 bytes, digest <code>A</code></td><td>The reviewed file matches.</td></tr>
+<tr><td><code>x86_64</code>, 4096 bytes, digest <code>B</code> after changing the last byte</td><td>The digest check refuses it. The unchanged count and parsed headers cannot establish identity.</td></tr>
+<tr><td><code>riscv64</code> requested for the original <code>x86_64</code> file</td><td>The selected ELF profile rejects the processor before the digest comparison.</td></tr>
+<tr><td>Original file, expected count mistyped as <code>4095</code></td><td>The byte-count check refuses it before hashing.</td></tr>
+</tbody></table>
+<p>The source includes a small inert ELF fixture for these comparisons. The exercise uses paper predictions. After a file match, review image enrollment and runtime behaviour separately. The current OS image inventory and first Linux process do not enroll this probe. Record package membership, normal boot and recovery boot as separate observations.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="72-keep-a-complete-report-through-replacement.html">Previous lesson · Keep a complete report through replacement</a> · <a href="39-inspect-an-image-without-booting-it.html">Inspect an image without booting it</a> · <a href="44-plan-boot-and-distribution-evidence.html">Plan boot and distribution evidence</a> · <a href="19-read-a-captured-boot-observation.html">Read a captured boot observation</a> · <a href="../../umicom-kernel-from-scratch/lessons/138-match-elf-files-to-a-finished-kernel-build.html">Match ELF files to a finished Kernel build</a> · <a href="../../../lessons/06-umicom/umicom-os-from-scratch/73-review-an-executable-before-os-packaging.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

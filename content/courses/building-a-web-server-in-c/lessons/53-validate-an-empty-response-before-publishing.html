@@ -1,0 +1,75 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/53-validate-an-empty-response-before-publishing.html
+
+PURPOSE:
+Validate an empty response before publishing it
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Validate an empty response before publishing it | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Validate an empty response before publishing it</h1>
+<p>A response builder can hold a status, header fields and body bytes in memory before it formats them. Formatting decides which bytes appear in the output. An HTTP 204 response has no body, but the formatter still needs to check the header fields it is about to copy.</p>
+<p>In <em>Preserve output when a buffer is too small</em>, you checked the return status, buffer and reported length separately. Use the same idea here for a formatting refusal caused by a header field. The earlier small-buffer lab resets its length on refusal. The compatibility formatter in this lesson leaves the caller's existing length in place.</p>
+<h2>Trace the checks on paper</h2>
+<ol>
+<li>Draw a response object beside an output buffer. The output buffer is where the formatter writes a complete reply. Mark its first byte <code>q</code> and the caller's output count <code>71</code>. These recognizable starting values help you spot changes.</li>
+<li>Set the response to <code>204 No Content</code>. Add <code>X-Example: retained</code> and store the three body bytes <code>a</code>, zero and <code>c</code> in the response object. This produces 48 counted header bytes, including the blank line. The compatibility formatter also needs one byte of space for its C string terminator. That terminator is outside the count.</li>
+<li>For the last two rows, start with a fresh 204 response and add only the indicated header with the value <code>0</code>. The header-setting step accepts it. Check which step refuses the finished reply.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Paper case</th>
+<th>Compatibility formatter result</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ordinary metadata, 48 bytes of capacity</td>
+<td><code>UMI_STATUS_CAPACITY_EXCEEDED</code></td>
+<td>First byte stays <code>q</code>. Count stays <code>71</code>.</td>
+</tr>
+<tr>
+<td>Ordinary metadata, 49 bytes of capacity</td>
+<td><code>UMI_STATUS_OK</code></td>
+<td>Count becomes <code>48</code>. The blank line ends the response. The output contains the ordinary header and zero body bytes. The generated <code>Content-Length</code> is omitted. All three stored body bytes are still present in the response object.</td>
+</tr>
+<tr>
+<td><code>CoNtEnT-LeNgTh: 0</code>, ample capacity</td>
+<td><code>UMI_STATUS_INVALID_ARGUMENT</code></td>
+<td>First byte stays <code>q</code>. Count stays <code>71</code>.</td>
+</tr>
+<tr>
+<td><code>Transfer-Encoding: 0</code>, ample capacity</td>
+<td><code>UMI_STATUS_INVALID_ARGUMENT</code></td>
+<td>First byte stays <code>q</code>. Count stays <code>71</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>HTTP field names are compared without regard to letter case. The compatibility formatter manages framing, which tells a reader where a response ends. The fields in the last two rows are reserved for that decision when the body is empty.</p>
+<pre><code class="language-text">PLAN the response bytes and the required capacity
+CHECK every header before copying the reply
+IF a check refuses the response
+    RETURN its status with the output buffer and count unchanged
+COPY the complete reply
+SET the count to the number of response bytes
+RETURN success
+</code></pre>
+<p>Explain why adding more capacity fixes the first row and leaves the last two outcomes unchanged. You can compare the same four results in an in-memory test. Keep the status, buffer observation and count as three separate checks.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="52-keep-a-saved-representation-after-304.html">Previous lesson · Keep a saved representation after a 304 response</a> · <a href="12-format-get-and-head-responses.html">Format GET and HEAD responses</a> · <a href="13-preserve-output-on-small-buffers.html">Preserve output when a buffer is too small</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/53-validate-an-empty-response-before-publishing.md">Markdown edition</a> · <a rel="next" href="54-add-metadata-to-a-counted-response.html">Next lesson · Add metadata to a counted response</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>
