@@ -44,20 +44,28 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      - name: Check out canonical Framework branding
-        uses: actions/checkout@v4
-        with:
-          repository: umicom-foundation/umicom-framework
-          path: .site-brand-framework
-          sparse-checkout: |
-            resources/brand
-          sparse-checkout-cone-mode: false
+      # The runner could not read the separate Framework repository.
+      # Site preparation uses the reviewed artwork from this checkout.
+      # Preserve the earlier cross-repository checkout for review.
+      # - name: Check out canonical Framework branding
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: umicom-foundation/umicom-framework
+      #     path: .site-brand-framework
+      #     sparse-checkout: |
+      #       resources/brand
+      #     sparse-checkout-cone-mode: false
       - name: Install site dependencies
         run: |
           python -m pip install -r requirements-docs.txt
           python -m pip install pytest
-      - name: Prepare preserved book chapters and Umicom brand
-        run: python tools/prepare_learning_site.py --brand-source .site-brand-framework/resources/brand
+      # Use the same approved artwork in validation and publication.
+      # The preparer checks required files and leaves matching artwork in place.
+      # The earlier source path depended on the retired checkout.
+      # - name: Prepare preserved book chapters and Umicom brand
+      #   run: python tools/prepare_learning_site.py --brand-source .site-brand-framework/resources/brand
+      - name: Prepare historical books and verify checked-in Umicom branding
+        run: python tools/prepare_learning_site.py --brand-source content/assets/branding
       - name: Validate MkDocs YAML and complete navigation before rendering
         run: |
           python tools/check_mkdocs_config.py
