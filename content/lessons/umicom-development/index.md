@@ -404,6 +404,13 @@ A button becomes useful when its event reaches a rule and the result reaches the
 - [Forward only options with defined meaning](workflow-adapters-and-option-scope.md)
 - [Qualify a workflow through distinct layers](workflow-qualify-the-integration-layers.md)
 
+## Test database values and process outcomes
+
+Use Framework acceptance fixtures to check typed query results, independent process streams and cleanup.
+
+- [Compare typed database results](uat-compare-typed-query-results.md)
+- [Assert data output and diagnostics separately](uat-assert-independent-process-output.md)
+
 ## Deployment state and evidence
 
 Rehearse the actual Framework plan and controller, including bounded admission, content-specific approval, cancellation, rollback and revision limits.

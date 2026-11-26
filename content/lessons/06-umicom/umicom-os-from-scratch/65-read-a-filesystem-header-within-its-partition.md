@@ -21,6 +21,10 @@ MIT
 
 A partition table describes where a part of a disk begins and ends. An ext-family superblock records details such as how many filesystem blocks the volume contains. In this exercise you give Framework a simulated partition and one real byte window in memory. You will predict when the C program may request the header. [Linux kernel superblock format](https://docs.kernel.org/filesystems/ext4/super.html)
 
+## Before you begin
+
+Have paper ready to draw the byte window. To run the example, follow the [lab setup guide](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-filesystem-header/README.md) for a C23 toolchain and an installed Umicom Framework SDK. The client reads sample bytes supplied by the exercise.
+
 ## Draw the byte window
 
 1. The partition starts at logical block 2048. Each logical block has 512 bytes, so the partition starts at byte 1,048,576.

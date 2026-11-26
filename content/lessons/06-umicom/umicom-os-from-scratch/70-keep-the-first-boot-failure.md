@@ -19,6 +19,10 @@ MIT
 
 In the previous lesson you traced a blocked service to its first dependency problem. Now imagine that the OS also cannot save its report. There are two facts to keep: the reason the boot entered recovery and the stage at which the report file could not be saved.
 
+## Before you begin
+
+Draw two columns, one for the first reason the boot entered recovery and one for the phase of each attempted report save. Use the lesson’s sample serial evidence to fill them in.
+
 ## Read the serial evidence
 
 A serial transcript is a separate text record from the boot console. Keep the entire transcript when the report file is missing or might be older than the last serial record.

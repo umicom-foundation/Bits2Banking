@@ -23,6 +23,10 @@ prerequisite, which means the prerequisite must finish successfully before
 the service can start. In this lesson you will read a plan on paper and
 follow its dependency lines.
 
+## Before you begin
+
+Copy the sample service declarations into a text editor with line numbers, or number them on paper. Leave room beside each service to write which other service must start first.
+
 ## 1. Read a service declaration
 
 A declaration has a service ID, executable path, prerequisite and timeout,

@@ -19,6 +19,10 @@ MIT
 
 Your team has received a standalone executable named `umicom-cvm-probe`. It is a small program that checks part of Umicom’s C runtime when somebody runs it. Before discussing whether it belongs in an OS image, compare the file you received with the one the team reviewed. Start by writing down the file’s target processor, exact length in bytes and SHA-256 digest. A digest is a fixed-length value calculated from the file’s bytes.
 
+## Before you begin
+
+Start with the sample values and write down the expected processor type and the independently recorded file identity. The optional command uses an existing Framework image tool and a reviewed executable file it can inspect without running it.
+
 ## 1. Separate the compiler target from the file
 
 The optional Umicom OS setting `UMICOM_OS_CVM_STATIC` first checks CMake’s configured system name. The C source then checks the compiler’s `__linux__` and `_WIN32` definitions. If the configuration says Linux and the compiler targets Windows, the source check stops the build. A Linux-target compiler can reach the static link, which still needs a static C library for that target.

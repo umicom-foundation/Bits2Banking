@@ -21,6 +21,10 @@ An Umicom OS saved disk receipt describes where a disk image could hold partitio
 
 If you are new to disk layouts, start with the lesson that explains why even a small GPT table needs reserved space. The FAT32 lesson shows another calculation that uses a lower bound.
 
+## Before you begin
+
+Have paper and a calculator ready. Write down the logical block size and leave space for two tables, one at each end of the image. Use the sample values from this lesson for the exercise.
+
 ## 1. Tell a slot from a partition
 
 GPT stands for GUID Partition Table. A partition is an area set aside for a purpose, such as holding startup files. A GPT slot is a row in the table where that partition can be described. The row numbers start at zero. Slot `128` is the 129th row. Empty rows still occupy space in the table.

@@ -56,4 +56,8 @@ Inspect the selected SDK, compiler identity and failing output before changing e
 
 [Read the C exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-deployment/main.c) · [Full setup and native commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-deployment/README.md) · [Shared contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/build/deployment_controller.h)
 
+<!-- Earlier reading links retained for review. The adjacent route follows the Framework course sequence after the UAT lessons were added.
 [Course contents](index.md) · [Previous lesson](workflow-qualify-the-integration-layers.md) · [Next lesson](deployment-bounded-public-values.md)
+-->
+
+[Course contents](index.md) · [Previous lesson](uat-assert-independent-process-output.md) · [Next lesson](deployment-bounded-public-values.md)

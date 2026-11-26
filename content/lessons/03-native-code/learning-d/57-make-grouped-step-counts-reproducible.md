@@ -19,6 +19,10 @@ MIT
 
 A review preserves the order in which the interpreter recorded its steps. A short summary serves a different purpose. It groups steps that have the same kind. Give that summary a fixed key order so two readers can compare it line by line.
 
+## Prepare
+
+Make a tally sheet with one row for each kind of step. Copy the example step kinds in their original order first. Use a second list for the sorted summary so you can compare both views.
+
 ## Count by kind and sort the keys
 
 A D associative array maps a key to a value. In `size_t[string] counts`, a step kind such as `"statement"` is the string key and its count has type `size_t`. The `get` call supplies zero when the group is first seen. The assignment then records the incremented count.

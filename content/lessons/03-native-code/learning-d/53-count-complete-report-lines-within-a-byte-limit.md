@@ -19,6 +19,10 @@ MIT
 
 A file contains bytes. A line in a saved report has an ending you can recognize. This lesson takes a small array of bytes and returns a list of complete lines. It gives the reader a firm place to stop before it starts interpreting the fields.
 
+## Prepare
+
+Draw one box for each byte on a strip of paper. Give the line ending its own box or pair of boxes. Use the small text examples below to count bytes and mark where the reader must stop.
+
 ## 1. Write down the three limits
 
 Our practice reader accepts at most 4,096 file bytes, 256 bytes in a line before its ending, and 32 lines. Its fixtures use plain ASCII, the familiar byte codes for characters such as digits and braces. They use line feed, written `\n`, or carriage return followed by line feed, written `\r\n`. Both endings separate one record from the next. The local exercise requires a final line feed so you can recognize the last boundary.

@@ -19,6 +19,10 @@ MIT
 
 The file contains typed records. To accept a completed report, check their order, the final result, and the producer's recorded exit status. An exit status belongs to the process that wrote the report. The value in the last record belongs to the program that process interpreted.
 
+## Prepare
+
+Use the stored sample from the preceding report exercise or copy the sequence and result into a small table. Give the producer exit status its own cell so you can change it without changing a record.
+
 ## Check the whole sequence
 
 This reader accepts 1 to 31 step records followed by one result, for up to 32 records in all. A valid step has the next sequence number, also called its ordinal, starting at 1. It has `ok` set to true. The reader checks that the final count equals the sum of the step counts. The limit of 1,000,000 instructions is a rule for this exercise.

@@ -19,6 +19,10 @@ MIT
 
 A **boot argument** is a piece of text passed to the kernel at startup. It can name a feature or give it a value. The parser needs to know where one argument ends before deciding whether it describes an Umicom boot option.
 
+## Before you begin
+
+Have a text editor or a sheet of paper ready. Copy the sample command line and mark its spaces and quotation marks before splitting it into arguments. To run the optional checks, use an existing Umicom OS foundation-test build.
+
 ## Read the argument before looking at its value
 
 Double quotes keep spaces within the same argument. In `module.note="example umicom.recovery=1 sample"`, the name is `module.note`. The text `umicom.recovery=1` is part of that value. The value leaves recovery at the parser's default. A top-level `umicom.recovery=1` outside that value is a different input.

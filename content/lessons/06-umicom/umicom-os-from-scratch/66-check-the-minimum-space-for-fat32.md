@@ -19,6 +19,10 @@ MIT
 
 A **receipt** can record information inspected earlier. The saved version-4 disk review in Umicom OS checks whether its claims agree with known geometry. A label saying FAT32 needs enough room for a FAT32 layout. A claimed 512-byte volume has room for only one sector and cannot hold that layout.
 
+## Before you begin
+
+Have paper and a calculator ready. Copy the sample block size, sectors per cluster and volume size into separate columns so you can follow the arithmetic. If you want to inspect the saved test inputs, open the `tools/persistent-receipt-review` directory in an Umicom OS checkout.
+
 ## Count the required pieces
 
 The supported receipt grammar in this exercise uses 512-byte sectors. A **cluster** groups one or more sectors into an allocation unit. The Framework filesystem inspector classifies FAT32 using at least 65,525 data clusters. The file allocation table also needs a four-byte entry for each of those clusters and two reserved entries. There must be space for at least one reserved sector and one table before the data area.

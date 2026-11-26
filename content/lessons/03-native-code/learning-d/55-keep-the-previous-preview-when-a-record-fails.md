@@ -19,6 +19,10 @@ MIT
 
 A preview already shows a completed report with the value 42. You open another saved report. Its first two records decode and the third ends halfway through a JSON field. Practise reporting the third line while keeping the earlier preview available.
 
+## Prepare
+
+Draw two boxes on paper. Label the first box Saved preview and write 42 in it. Label the second box Candidate and leave it empty for the records that pass before the refusal.
+
 ## Decode into a local array
 
 The framing function has already split the input into individual lines. Each line can still contain malformed JSON. Build a local array from the lines. The caller receives that array only when the whole decoding loop finishes.

@@ -19,6 +19,10 @@ MIT
 
 The previous lesson stopped when the report writer acquired a temporary name. Continue from that point. The existing `report` contains the last finished boot record. The writer has acquired `report.tmp.1`. The occupied `report.tmp` belongs to someone else and stays outside this save.
 
+## Before you begin
+
+Draw two columns for the existing report name and the temporary name. In each example, record which name still points to a complete report after the next operation.
+
 ## Follow the save after the open
 
 1. The writer sends the version 1 report bytes to the temporary file. A write can accept fewer bytes than requested and return that smaller count. The code advances by the count it received and attempts to write the rest. An interrupted write can be retried. Other write errors end the write loop.

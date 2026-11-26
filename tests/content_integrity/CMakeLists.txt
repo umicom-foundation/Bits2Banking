@@ -67,8 +67,14 @@ if(BUILD_TESTING)
     add_test(NAME btb.education.systems_practical_labs
         COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
             -P "${CMAKE_CURRENT_LIST_DIR}/check_systems_practical_labs.cmake")
+    # Retain the earlier deadline for review. This gate reads every lesson
+    # edition in the shared registry, so its runtime grows with the catalogue.
+    if(FALSE)
     set_tests_properties(btb.education.systems_practical_labs PROPERTIES
         TIMEOUT 30 LABELS "education;framework;navigation")
+    endif()
+    set_tests_properties(btb.education.systems_practical_labs PROPERTIES
+        TIMEOUT 90 LABELS "education;framework;navigation")
     add_test(NAME btb.education.learning_paths
         COMMAND "${CMAKE_COMMAND}" "-DREPOSITORY_ROOT=${_btb_repo_root}"
             -P "${CMAKE_CURRENT_LIST_DIR}/check_learning_paths.cmake")

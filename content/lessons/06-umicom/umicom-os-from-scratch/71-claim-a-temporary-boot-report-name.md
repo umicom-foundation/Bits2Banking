@@ -19,6 +19,10 @@ MIT
 
 Lesson 70 followed a boot failure and a separate report-save problem. This lesson follows the writer before it can put any bytes in a new report. A **temporary file** gives the writer a place to prepare the next version while the last complete report keeps its published name.
 
+## Before you begin
+
+Use paper for this exercise. Leave room to list the published name and the temporary names. Mark which names are occupied before following each attempt.
+
 ## Claim a name for this attempt
 
 In the saved Umicom OS test, the published name is `report`. The writer tries `report.tmp` first. If that name is occupied, it tries `report.tmp.1` and continues in order through `report.tmp.7`. There are eight choices in total. An occupied name may belong to another writer or an earlier attempt.

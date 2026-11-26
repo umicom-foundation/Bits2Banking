@@ -120,6 +120,10 @@ A missing header or symbol requires checking the installed SDK identity. Preserv
 
 [Read the C exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/lifecycle-execution/main.c) · [Shared contract](https://github.com/umicom-foundation/umicom-framework/blob/main/include/umicom/developer/lifecycle_execution.h)
 
+<!-- Earlier reading links retained for review. The adjacent route follows the Framework course sequence after the UAT lessons were added.
 [Course contents](index.md) · [Previous lesson](workflow-adapters-and-option-scope.md) · [Next lesson](deployment-models-and-real-providers.md)
+-->
+
+[Course contents](index.md) · [Previous lesson](workflow-adapters-and-option-scope.md) · [Next lesson](uat-compare-typed-query-results.md)
 
 For a practical follow-up with disposable fixtures, read [Compare typed database results](uat-compare-typed-query-results.md).

@@ -19,6 +19,10 @@ MIT
 
 A command-line tool can send a result, an explanation, and an exit status. **Standard output**, or stdout, carries data another program may read. **Standard error**, or stderr, carries messages for the person diagnosing a problem. The **exit status** is the integer returned by `main` to the operating system.
 
+## Prepare
+
+Draw three columns for standard output, standard error and exit status. Use the saved report and the refusal examples below to fill one row for each case.
+
 ## Decide what each exit status means
 
 This teaching tool returns 0 after writing its summary, 2 when the arguments are invalid, and 3 when the saved report cannot be read or accepted. If writing stdout fails and stderr is usable, it reports the write error and returns 4. A failed write can leave part of a summary in stdout. The caller checks the status before using that output. An explicit `--help` request writes usage text and returns 0.

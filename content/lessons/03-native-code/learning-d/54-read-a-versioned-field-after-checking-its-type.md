@@ -19,6 +19,10 @@ MIT
 
 A complete line can still hold the wrong kind of value. JSON can store a number, a string such as `"1"`, or a Boolean such as `true`. In this exercise, you will check the kind before letting a value into the reader's small D record.
 
+## Prepare
+
+Keep the five sample lines below where you can see them. On paper, write the number 1, that number in quotation marks, and true. Keep those three values separate when you check the field types.
+
 ## 1. Meet the practice report
 
 These records are the saved synthetic output of the Umicom C console exercise that watches slot zero. The four `step` records describe completed source steps. The fifth record gives the value returned by the practice program. The stored C fixture produced these records in both of its checked compiler lanes. This exercise concerns a D reader for those saved bytes.

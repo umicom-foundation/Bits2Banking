@@ -19,6 +19,10 @@ MIT
 
 An editor can give a little tool the name of a saved report. The name might contain spaces. In this lesson, you will follow each command-line argument as a separate value and decide whether the tool has enough information to begin. You can start with four slips of paper.
 
+## Prepare
+
+Set out four slips of paper. Leave room on the last slip for the full file name, including its space. The saved example below is enough for this paper exercise.
+
 ## 1. Follow the argument list
 
 D can give the entry function the signature `int main(string[] args)`. Read `string[]` as “a list of strings.” Usually the first item names the executable. The following items are the arguments the operating system handed to the program.
