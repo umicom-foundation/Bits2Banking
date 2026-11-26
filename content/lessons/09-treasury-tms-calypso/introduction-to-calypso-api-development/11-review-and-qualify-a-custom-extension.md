@@ -1,5 +1,7 @@
 # Review and qualify a custom extension
 
+[Previous lesson](10-kotlin-and-native-integration-boundaries.md)
+
 ## Assemble an evidence package
 
 A useful extension review identifies what was built and what was actually exercised. A source listing without its SDK identity is difficult to reproduce. A green unit test without a server environment says little about integration.

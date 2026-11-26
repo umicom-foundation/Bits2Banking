@@ -1,5 +1,7 @@
 # Lesson 31 — Sign Windows Releases Without Bypassing Security
 
+[Next lesson](32-gradient-norms-and-stable-measurement.md)
+
 **Author:** Sammy Hegab · **Organisation:** Umicom Foundation · **Licence:** MIT  
 **Level:** Beginner to intermediate · **Reading:** 35–45 minutes  
 **Prerequisites:** [Lesson 29 — SHA-256 Identities](29-identify-model-and-benchmark-with-sha256.md), [Lesson 30 — Review Evidence](30-export-and-review-benchmark-evidence.md)

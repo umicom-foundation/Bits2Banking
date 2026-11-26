@@ -1,5 +1,7 @@
 # Lesson 72 — Test Learned-Position Rollover and Checkpoint Compatibility
 
+[Previous lesson](71-qualify-canonical-decoder-kv-parity.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Existing Umicom Framework native KV-cache qualification  

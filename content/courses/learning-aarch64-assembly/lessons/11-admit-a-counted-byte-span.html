@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-aarch64-assembly/lessons/11-admit-a-counted-byte-span.html
+
+PURPOSE:
+Check a byte span before reading it
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check a byte span before reading it | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Check a byte span before reading it</h1>
+<p>A span describes a beginning and a count. The Assembly example receives a pointer in X0 and a byte count in X1. It returns the sum of up to four bytes. For an oversized span or an absent pointer with a positive count, it returns <code>UINT32_MAX</code>.</p>
+<pre><code class="language-text">if count &gt; 4 then refuse
+if count = 0 then return 0
+if pointer is absent then refuse
+read exactly count bytes and return their sum
+</code></pre>
+<p>Read the guard branches before you trace the load. <code>ldrb w3, [x0], #1</code> reads a byte and advances the pointer by one. The register used as the loop count is different from the byte value. Without the initial guard, an empty span would reach an unwanted first read.</p>
+<pre><code class="language-powershell">clang --target=aarch64-none-elf -c sum-checked-bytes.S -o sum-checked-bytes.o
+llvm-objdump -d sum-checked-bytes.o
+</code></pre>
+<p>Identify both returns and the first possible load. The caller still owns the live byte storage and tells the truth about its available length. A numeric cap controls work under that caller contract.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="10-check-a-native-record-offset.html">Previous lesson</a> · <a href="12-describe-a-frame-to-the-debugger.html">Next lesson</a> · <a href="../examples/sum-checked-bytes.S">Source · sum-checked-bytes.S</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

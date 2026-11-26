@@ -1,0 +1,179 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-c-keyword-reference/lessons/06-choose-an-action-and-classify-source.html
+
+PURPOSE:
+Choose an action and classify source
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Choose an action and classify source | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Choose an action and classify source</h1>
+<h2>Make a choice, then decide what to do</h2>
+<p>A condition asks a question with two possible answers. In a practice version
+of Umicom Bank, imagine that a reviewer flags entries numbered 3 and higher.
+The question is whether the entry number is at least 3. The action might
+increase a counter or display a message. Use each language's own words for
+the action.</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Start a choice</th>
+<th>Display the word Review</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hosted C23</td>
+<td><code>if (entry &gt;= 3)</code></td>
+<td><code>puts("Review");</code> from <code>&lt;stdio.h&gt;</code></td>
+</tr>
+<tr>
+<td>D</td>
+<td><code>if (entry &gt;= 3)</code></td>
+<td><code>writeln("Review");</code> from <code>std.stdio</code></td>
+</tr>
+<tr>
+<td>Java</td>
+<td><code>if (entry &gt;= 3)</code></td>
+<td><code>System.out.println("Review");</code></td>
+</tr>
+<tr>
+<td>FreeBASIC</td>
+<td><code>If entry &gt;= 3 Then</code></td>
+<td><code>Print "Review"</code></td>
+</tr>
+<tr>
+<td>Python</td>
+<td><code>if entry &gt;= 3:</code></td>
+<td><code>print("Review")</code> on an indented line</td>
+</tr>
+<tr>
+<td>PHP</td>
+<td><code>if ($entry &gt;= 3)</code></td>
+<td><code>echo "Review";</code></td>
+</tr>
+</tbody>
+</table>
+<p>These are fragments for reading. A complete example needs to define the
+entry and place the action in the body of the choice. PHP's <code>echo</code> writes
+the given text without adding a line break. Printing or displaying text
+uses an output operation. Returning a number gives a result to a caller.</p>
+<h2>Count four entries in Umicom C</h2>
+<p>Write down 1, 2, 3 and 4. Start this exercise at 40. Add one for each entry
+that meets the condition. For example, entry 2 leaves the total at 40.
+Entry 3 increases it to 41. In everyday pseudocode the plan reads like this.</p>
+<pre><code class="language-text">SET review total to 40
+FOR each entry from 1 through 4
+    IF entry is at least 3
+        ADD 1 to review total
+RETURN review total
+</code></pre>
+<p>The pseudocode describes the steps on paper. Save the following program as
+<code>review-entries.uc</code> in a fresh directory for the practical exercise.</p>
+<pre><code class="language-c">int main(void) {
+    int review_total = 40;
+    /* The stop value is exclusive. This loop visits entries 1 through 4. */
+    for (int entry = 1; entry &lt; 5; ++entry) {
+        if (entry &gt;= 3) {
+            ++review_total;
+        }
+    }
+    return review_total;
+}
+</code></pre>
+<ol>
+<li>Go to that directory in a terminal. Use an Umicom C build that lists
+   <code>interpret</code>, <code>compile</code>, <code>exec</code> and <code>regions</code> in <code>umicom-c --help</code>.</li>
+<li>Run the first command below. Look for <code>Result: 42</code> in the trace. The
+   command reports the number returned by the program.</li>
+<li>Run the next two commands. The compiler creates <code>review-entries.umcb</code>,
+   a file of instructions for the Umicom bytecode runner. Use <code>exec</code> for
+   this file to see the result 42 again.</li>
+<li>Change the stop condition to <code>entry &lt; 4</code> and run <code>interpret</code> again.
+   Predict which entries count and check your prediction against 41.
+   Restore <code>entry &lt; 5</code> before continuing.</li>
+</ol>
+<pre><code class="language-text">umicom-c interpret review-entries.uc
+umicom-c compile review-entries.uc review-entries.umcb
+umicom-c exec review-entries.umcb
+</code></pre>
+<p>If the result differs, trace the entry values first. The less-than sign makes
+the stop value exclusive. The expression <code>++entry</code> adds one after each visit,
+even when the condition inside the loop is false. If the terminal cannot find
+<code>umicom-c</code>, use the full path to your tool and keep the working directory
+where you saved the exercise.</p>
+<h2>Print the result and return it</h2>
+<p>Keep the file name <code>review-entries.uc</code>. In the same program, add
+these two statements just above <code>return review_total;</code>. Keep that
+return statement so the caller still receives the result.</p>
+<pre><code class="language-c">    /* Display the checked total and a Boolean before returning. */
+    print(review_total);
+    print(true);</code></pre>
+<ol>
+<li>Run <code>umicom-c run review-entries.uc</code>. The program writes the two
+lines <code>42</code> and <code>true</code>. The command then reports
+<code>Result: 42</code>.</li>
+<li>Run <code>umicom-c interpret review-entries.uc --jsonl</code>. Find the two
+records whose <code>event</code> is <code>print</code>. Their
+<code>valueType</code> fields are <code>integer</code> and <code>boolean</code>.
+Their <code>value</code> fields hold the same two results. A reader can use
+those types without guessing from the text.</li>
+<li>Run the original <code>compile</code> and <code>exec</code> commands again.
+Expect the same two displayed lines and final result from the new bytecode.</li>
+</ol>
+<p><code>print</code> displays a value at that point in the program.
+<code>return</code> completes the function and passes the result back. This
+exercise uses integer and Boolean values. Keep the <code>.uc</code> extension
+when using this output feature.</p>
+<h2>Find seven tagged source regions</h2>
+<p>Save this second sample as <code>review-regions.umc</code>. A tag starts with <code>&lt;?</code>,
+an exact lowercase language name and whitespace. Close each region with
+<code>?&gt;</code>. A region describes the language and byte span of one piece of text.</p>
+<pre><code class="language-text">&lt;?umicom return 42; ?&gt;
+&lt;?c23 puts(&quot;Review&quot;); ?&gt;
+&lt;?d writeln(&quot;Review&quot;); ?&gt;
+&lt;?java System.out.println(&quot;Review&quot;); ?&gt;
+&lt;?basic Print &quot;Review&quot; ?&gt;
+&lt;?python print(&quot;Review&quot;) ?&gt;
+&lt;?php echo &quot;Review&quot;; ?&gt;
+</code></pre>
+<ol>
+<li>Run <code>umicom-c regions review-regions.umc</code>. The first three tagged languages
+   are <code>umicom</code>, <code>c23</code> and <code>d</code>. Next come <code>java</code>, <code>basic</code>, <code>python</code>
+   and <code>php</code>. Line breaks between tags appear as separate <code>umicom</code> rows.</li>
+<li>Look at the <code>offset</code> and <code>bytes</code> columns. These values locate the text in
+   the original file for a tool such as Umicom Studio IDE. Line endings
+   affect the number of bytes in the rows between tags.</li>
+<li>Temporarily remove the last <code>?&gt;</code> and run the same command. Expect a
+   diagnostic about the missing closing delimiter and an empty region list.
+   Restore the delimiter.</li>
+</ol>
+<!-- Retain the earlier design marker for review. The native .uc exercise
+above now has checked scalar output. The .uf manifest is still a proposal.
+<p>The command only classifies source. To check syntax and execute a complete
+program, save it in a separate source file and use that language's compiler
+or interpreter. A checked Umicom C display operation and a shared <code>.uf</code>
+project manifest are design ideas for later lessons.</p>
+-->
+<p>The regions command classifies source spans. Save complete programs in
+their own language files and use their compiler or interpreter to check
+and execute them. A shared <code>.uf</code> project manifest remains a design
+idea.</p>
+<p><a rel="next" href="07-compare-negative-division.html">Next lesson</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="05-guard-calculations-with-and-or.html">Previous lesson</a> · <a href="../../../lessons/03-native-code/umicom-c-keyword-reference/06-choose-an-action-and-classify-source.md">Markdown edition</a> · <a href="../../programming-across-languages/index.html">Programming across languages</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

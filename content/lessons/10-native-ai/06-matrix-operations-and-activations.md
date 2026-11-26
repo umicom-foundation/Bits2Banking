@@ -1,5 +1,7 @@
 # Lesson 06 — Matrix Operations, Activations and Numerical Stability
 
+[Previous lesson](05-tensor-shapes-and-ownership.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Laboratory:** `framework/src/ai/training/tape.c`  

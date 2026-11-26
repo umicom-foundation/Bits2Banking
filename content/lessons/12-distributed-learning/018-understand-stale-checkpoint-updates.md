@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 018: Understand what makes an update stale
 
+[Previous lesson](017-recover-from-cancellation-and-lost-acknowledgements.md) · [Next lesson](019-inspect-secure-aggregation-assumptions.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

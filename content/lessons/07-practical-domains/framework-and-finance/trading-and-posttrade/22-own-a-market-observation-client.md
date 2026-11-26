@@ -16,6 +16,8 @@ MIT
 
 # Build a market-observation client around one Framework owner
 
+[Previous lesson](21-display-revision-digits-exactly.md) · [Next lesson](23-validate-depth-before-lookup.md)
+
 ## Start with the state you need
 
 A market monitor needs instrument metadata, quotes, public prints, depth and alerts. An account execution changes an order or position; a public print only describes activity reported by a market-data provider. Keeping those concepts separate prevents a display feed from accidentally becoming an account ledger. The new market_observation.c laboratory demonstrates the distinction with synthetic values.

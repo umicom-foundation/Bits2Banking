@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 013: Bind one worker to one training round
 
+[Previous lesson](012-research-capstone-verifiable-federation-proposal.md) · [Next lesson](014-inspect-data-rights-and-source-lineage.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

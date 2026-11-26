@@ -1,5 +1,7 @@
 # Supplement 19H — Build a Native AdamW Optimiser for Our Language Model
 
+[Previous lesson](19g-reproducible-effective-batch-experiments.md)
+
 **Bits to Banking · Umicom Foundation · Sammy Hegab**  
 **Implementation:** C23 in Umicom Framework  
 **Prerequisites:** gradients, SGD, memory ownership and the existing decoder trainer

@@ -16,6 +16,8 @@ MIT
 
 # Respect small quantities and represented arithmetic
 
+[Previous lesson](15-cancel-the-unfilled-remainder.md) · [Next lesson](17-admit-the-final-owner-revision.md)
+
 ## A tolerance has units
 
 A fixed allowance such as one billionth may appear small for a large order, yet exceed an entire tiny order. Adding that allowance to the requested quantity can accept an overfill. Adding it to the filled quantity can mark an incomplete request as complete. The fill owner now uses the actual represented remaining quantity.

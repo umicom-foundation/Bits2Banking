@@ -1,5 +1,7 @@
 # Lesson 36 — Bind a Clipping Policy to a Checkpoint and Resume Safely
 
+[Previous lesson](35-configure-gradient-clipping-in-a-training-plan.md) · [Next lesson](37-bind-dataset-and-schedule-to-an-adamw-run.md)
+
 **Course:** Build an LLM from Scratch  
 **Level:** Developing  
 **Focus:** checkpoint identity, configuration continuity, SHA-256 and reproducible resume

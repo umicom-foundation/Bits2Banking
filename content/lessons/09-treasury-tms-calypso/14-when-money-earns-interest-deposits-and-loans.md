@@ -1,5 +1,7 @@
 # 14. When money earns interest: deposits, loans and the calendar
 
+[Previous lesson](13-build-your-first-seven-day-cash-forecast.md) · [Next lesson](15-spotting-a-funding-gap-before-it-becomes-a-crisis.md)
+
 *Treasury Management, TMS and Calypso — From Zero · Practical foundations*
 
 Harbour Supplies has survived a busy week. A larger customer then makes an early payment, leaving the business with spare cash that it does not expect to need for a month. The owner asks whether some of it could earn interest. The finance team must answer a second question before arranging anything: **“Exactly when do we need this money back?”**

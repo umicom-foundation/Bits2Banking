@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 015: Carry out the three-worker FedAvg classroom exercise
 
+[Previous lesson](014-inspect-data-rights-and-source-lineage.md) · [Next lesson](016-calculate-communication-before-a-worker-starts.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

@@ -1,5 +1,7 @@
 # 15. Spot the funding gap before it becomes a crisis
 
+[Previous lesson](14-when-money-earns-interest-deposits-and-loans.md) · [Next lesson](16-two-currencies-two-dates-understanding-fx-swaps.md)
+
 *Treasury Management, TMS and Calypso — From Zero · Practical foundations*
 
 In Chapter 13, Harbour Supplies had £12,000 on Monday morning and several payments to make. The original forecast suggested that it could make the payments, but it would fall below its preferred £5,000 cash buffer on Thursday. If one customer paid late, the forecast even turned negative.

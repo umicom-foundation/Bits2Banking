@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 43: Treat expired assignments and revoked workers as distinct failures
 
+[Previous lesson](042-handle-retries-without-duplicating-samples.md) · [Next lesson](044-compare-secure-aggregation-with-individual-verification.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

@@ -1,5 +1,7 @@
 # Lesson 41 — Publish a Complete Native Training Bundle
 
+[Previous lesson](40-verify-source-locked-adamw-resume.md) · [Next lesson](42-verify-training-publication-before-resume.md)
+
 **Course:** Build an LLM from Scratch  
 **Level:** Developing  
 **Focus:** Five-file checkpoint publication, SHA-256 integrity and incomplete-run recovery

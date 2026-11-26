@@ -1,5 +1,7 @@
 # 3. Why a treasury department needs a system
 
+[Previous lesson](02-what-treasury-departments-actually-do.md) · [Next lesson](04-accounts-balances-currencies-and-dates.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 A spreadsheet can be a good way to begin. The kitchen in our example has one bank account and a handful of payments. Imagine, however, that it grows into a charity with branches in three countries. Each branch keeps a spreadsheet, and nobody knows which version is the latest.

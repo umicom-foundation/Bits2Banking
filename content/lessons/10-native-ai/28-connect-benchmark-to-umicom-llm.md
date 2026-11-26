@@ -1,5 +1,7 @@
 # Lesson 28 — Connect the Framework Benchmark to Umicom LLM
 
+[Previous lesson](27-interpret-model-completion-metrics.md) · [Next lesson](29-identify-model-and-benchmark-with-sha256.md)
+
 **Level:** intermediate | **Time:** 30 minutes | **Prerequisites:** Lessons 23–27, basic C23 and CMake
 
 ## Two repositories, one authoritative implementation

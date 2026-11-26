@@ -1,5 +1,7 @@
 # Lesson 70 — Test Growing-Prefix Reuse Against Decoder Logits
 
+[Previous lesson](69-reuse-kv-cache-within-a-growing-prefix.md) · [Next lesson](71-qualify-canonical-decoder-kv-parity.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Existing Umicom Framework C23 cache-comparison service  

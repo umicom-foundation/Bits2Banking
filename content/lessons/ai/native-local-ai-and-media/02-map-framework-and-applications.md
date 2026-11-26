@@ -60,4 +60,4 @@ Umicom's native training and generation code lives under ai/training. A transpor
 
 **Recovery:** if installed headers and libraries disagree, fix the SDK selection. Copying a new header into an old installation can make compilation appear possible while linkage or ABI behavior remains incompatible.
 
-[Course contents](index.md) · [Next lesson](03-select-capabilities-and-budget-context.md)
+[Course contents](index.md) · [Next lesson](03-select-capabilities-and-budget-context.md) · [Previous lesson](01-read-a-local-ai-project.md)

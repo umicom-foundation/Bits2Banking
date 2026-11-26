@@ -1,5 +1,7 @@
 # Read each stage of a build
 
+[Next lesson](window-lifetime.md)
+
 Distinguish configure, compile, link and runtime evidence, then investigate shared dependency failures.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

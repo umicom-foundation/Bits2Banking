@@ -85,4 +85,4 @@ The domain model and transition rules belong in shared Framework services; a Ban
 
 [Terminal and editor setup guide](../../learning-c/terminal-to-visual-studio.md)
 
-[Previous lesson](02-status-approval-and-evidence.md) · [Course contents](index.md)
+[Previous lesson](02-status-approval-and-evidence.md) · [Course contents](index.md) · [Next lesson](19-turn-a-cash-forecast-into-a-contract.md)

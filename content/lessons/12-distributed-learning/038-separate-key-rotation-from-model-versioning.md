@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 38: Separate key rotation from model versioning
 
+[Previous lesson](037-explain-shared-secret-worker-authentication.md) · [Next lesson](039-use-authenticated-frames-with-owned-message-envelopes.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

@@ -1,5 +1,7 @@
 # Lesson 44 — Verify an Ed25519 Publisher Signature and Reject Tampering
 
+[Previous lesson](43-sign-training-publications-with-ed25519.md) · [Next lesson](45-build-an-offline-publisher-trust-policy.md)
+
 Signing is useful only when recipients verify the signature **against a public
 key they trust for an independent reason**. In this lesson we build the
 verification procedure around the existing native checkpoint integrity checks,

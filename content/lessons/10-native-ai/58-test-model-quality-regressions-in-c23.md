@@ -1,5 +1,7 @@
 # Lesson 58 — Test Native C23 Model Quality Gates and Reject Incomparable Evidence
 
+[Previous lesson](57-compare-two-models-on-identical-held-out-windows.md) · [Next lesson](59-repair-model-quality-build-and-test-abi.md)
+
 ## Learning objectives
 
 Use regression tests to check that a model quality decision is based on comparable metrics, explicit thresholds and real held-out evaluation. Learn the difference between a valid comparison that does not pass and an invalid comparison that must return an error without modifying the caller's output.

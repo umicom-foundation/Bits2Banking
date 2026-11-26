@@ -1,5 +1,7 @@
 # C interfaces and ownership across languages
 
+[Previous lesson](shared-services.md)
+
 Follow a request from a window to a shared service, and learn how C interfaces connect native components.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 05: LoRA and the factor-averaging trap
 
+[Previous lesson](004-understand-model-merging-and-non-iid-data.md) · [Next lesson](006-network-latency-bandwidth-and-compression.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

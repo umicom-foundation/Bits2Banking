@@ -1,5 +1,7 @@
 # Lesson 37 — Bind Your Dataset and Training Schedule to an AdamW Checkpoint
 
+[Previous lesson](36-checkpoint-clipping-policy-and-safe-resume.md) · [Next lesson](38-test-on-disk-adamw-continuation.md)
+
 **Course:** Build an LLM from Scratch  
 **Level:** Developing  
 **Focus:** reproducible training, ordered datasets, schedules, numerical configuration and run-lock records

@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 11: Design a LAN/WAN learning experiment
 
+[Previous lesson](010-proof-of-useful-learning-and-verification-cost.md) · [Next lesson](012-research-capstone-verifiable-federation-proposal.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

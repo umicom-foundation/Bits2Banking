@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 39: Use authenticated frames with owned message envelopes
 
+[Previous lesson](038-separate-key-rotation-from-model-versioning.md) · [Next lesson](040-authorise-a-dataset-shard-independently-of-its-digest.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

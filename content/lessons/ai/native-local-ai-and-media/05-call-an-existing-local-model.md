@@ -48,4 +48,4 @@ Try the offline invalid-port check before the live exercise. It must reject 7000
 
 **Answer:** test these layers separately. Do not install Conda to repair an absent C SDK component. Conda can support separate Python experiments, but this native client does not require a Python environment.
 
-[Course contents](index.md) · [Next lesson](06-stream-cancel-and-display-text.md)
+[Course contents](index.md) · [Next lesson](06-stream-cancel-and-display-text.md) · [Previous lesson](04-own-providers-and-requests-in-c.md)

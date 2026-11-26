@@ -1,5 +1,7 @@
 # Lesson 69 — Reuse the KV Cache Within a Growing Prefix
 
+[Previous lesson](68-qualify-native-generation-performance.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Existing Umicom Framework C23 prefix experiment  

@@ -1,5 +1,7 @@
 # Lesson 21 — Construct and Check Next-Token Windows
 
+[Previous lesson](20-from-banking-source-to-training-data.md) · [Next lesson](22-prevent-training-data-leakage.md)
+
 **Level:** beginner to intermediate • **Estimated time:** 16 minutes • **Language:** C23
 
 ## Learning objectives

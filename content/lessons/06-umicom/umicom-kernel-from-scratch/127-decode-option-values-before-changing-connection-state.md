@@ -17,6 +17,8 @@ MIT
 
 # Decode option values before changing connection state
 
+[Next lesson](128-observe-the-boot-reservation-plan.md)
+
 [Course contents](index.md)
 
 ## An option can fit without having the right meaning

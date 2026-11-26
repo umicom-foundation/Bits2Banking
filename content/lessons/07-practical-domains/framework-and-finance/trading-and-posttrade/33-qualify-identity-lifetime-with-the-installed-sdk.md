@@ -19,6 +19,8 @@ New website manuscripts use the preferred supplied wordmark. -->
 
 # Qualify the identity and lifetime client against one SDK
 
+[Previous lesson](32-move-chart-state-with-instrument-identity.md)
+
 ## Source, installation and execution are different evidence
 
 The complete identity_lifetime.c client calls exported Framework services. Reading its source can establish which API it intends to use. Compilation checks declarations and types; linking checks that libraries provide the referenced symbols; execution checks the selected behavior in that environment. None substitutes for the others.

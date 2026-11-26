@@ -1,5 +1,7 @@
 # Follow a payment from instruction to evidence
 
+[Previous lesson](money-and-available-balance.md) · [Next lesson](../../framework-and-finance/banking-and-payments/03-follow-customer-account-and-currency.md)
+
 Work with currency amounts, balances, reservations and payment states using fictional data.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

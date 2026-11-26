@@ -1,5 +1,7 @@
 # Lesson 48 — Test Native LLM Verification Before a Release
 
+[Previous lesson](47-read-a-machine-verifiable-training-receipt.md) · [Next lesson](49-verify-an-ordered-group-of-signed-training-checkpoints.md)
+
 **Umicom Foundation · Bits to Banking · Build Your Own LLM from Scratch**  
 **Prerequisites:** Lessons 41–47, including strict checkpoint publication, Ed25519 signatures, trust-policy verification and JSON receipts.  
 **Environment:** ISO C23; CMake, CTest and a C23 compiler. Windows examples use PowerShell and the MSYS2 UCRT64 development toolchain.

@@ -1,5 +1,7 @@
 # Design scheduled tasks and reports with control totals
 
+[Previous lesson](08-events-acknowledgements-and-replay.md) · [Next lesson](10-kotlin-and-native-integration-boundaries.md)
+
 ## Start with a report contract
 
 A scheduled task automates an operation at a configured time. A report turns selected data into an interpretable result. Neither should hide the selection criteria, time basis or rejected records. The later Calypso refresher discusses these extension families; its examples are starting points, not a replacement for your release's SDK.

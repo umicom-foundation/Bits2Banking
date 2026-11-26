@@ -1,5 +1,7 @@
 # Supplement 19K — Reproducible AdamW Training Experiments and Verified Resume
 
+[Previous lesson](19j-resume-adamw-with-persistent-native-checkpoints.md) · [Next lesson](19l-adamw-effective-batches-and-checkpoint-continuation.md)
+
 **Bits2Banking · Native Language Models from First Principles**  
 **Author:** Sammy Hegab · **Umicom Foundation · MIT**  
 **Language:** C23 · **Prerequisites:** The decoder, gradients, AdamW and

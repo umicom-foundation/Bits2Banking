@@ -1,5 +1,7 @@
 # Build a form from a shared document model
 
+[Previous lesson](documents-and-saving.md)
+
 Understand editing, saving and visual components through the same Framework state model.
 
 Lesson 2 of 3. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

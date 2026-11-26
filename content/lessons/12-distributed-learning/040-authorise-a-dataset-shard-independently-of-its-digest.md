@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 40: Authorise a dataset shard independently of its digest
 
+[Previous lesson](039-use-authenticated-frames-with-owned-message-envelopes.md) · [Next lesson](041-compare-hmac-with-mutual-tls-for-future-wan-workers.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

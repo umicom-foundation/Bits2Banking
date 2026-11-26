@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 09: Hash chains, signed audit logs and blockchain consensus
 
+[Previous lesson](008-experiment-with-adversarial-workers-and-receipts.md) · [Next lesson](010-proof-of-useful-learning-and-verification-cost.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

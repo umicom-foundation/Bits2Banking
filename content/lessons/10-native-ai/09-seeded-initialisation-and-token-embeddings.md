@@ -1,5 +1,7 @@
 # Lesson 09 — Seeded Initialisation and Token Embeddings in C23
 
+[Previous lesson](08-optimisers-and-first-training-run.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · Umicom Foundation  
 **Framework implementation:** `include/umicom/ai/training/initialisation.h`, `src/ai/training/initialisation.c`, `include/umicom/ai/training/tape.h` and `src/ai/training/tape.c`  

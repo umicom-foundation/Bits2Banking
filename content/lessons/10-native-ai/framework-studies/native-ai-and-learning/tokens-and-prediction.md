@@ -1,5 +1,7 @@
 # From text to a next-token prediction
 
+[Next lesson](retrieval-and-citations.md)
+
 Connect simple prediction, evidence-based answers and human-reviewed actions to Umicom AI.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

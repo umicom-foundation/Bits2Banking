@@ -17,6 +17,8 @@ MIT
 
 # Check context fit before training a byte model
 
+[Previous lesson](28-find-repeated-pairs-across-training-and-evaluation.md)
+
 [Course contents](index.md)
 
 ## What this lesson answers

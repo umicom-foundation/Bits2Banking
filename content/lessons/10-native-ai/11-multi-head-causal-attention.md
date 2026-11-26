@@ -1,5 +1,7 @@
 # Lesson 11 — Multi-Head Causal Attention: Several Views of the Same Sequence
 
+[Previous lesson](10-causal-self-attention-and-context.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author and project originator:** Sammy Hegab · Umicom Foundation  
 **Implementation language:** C23  

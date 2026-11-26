@@ -1,5 +1,7 @@
 # Knowing who asked and what they may do
 
+[Next lesson](reviewable-automation.md)
+
 Understand permissions, boundaries and reviewable automation before joining applications to external systems.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

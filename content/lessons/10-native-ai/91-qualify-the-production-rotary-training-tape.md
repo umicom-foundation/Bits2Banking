@@ -1,5 +1,7 @@
 # Lesson 91 — Qualify the Real Native Rotary Training Tape
 
+[Previous lesson](90-test-real-tape-positions-and-lifetimes.md)
+
 **Umicom Foundation · Bits to Banking · Sammy Hegab**  
 **Implementation:** existing Umicom Framework C23 training tape  
 **Companion:** [Illustrated Lesson 91](../../courses/llm-from-scratch/lessons/91-qualify-the-production-rotary-training-tape.html)

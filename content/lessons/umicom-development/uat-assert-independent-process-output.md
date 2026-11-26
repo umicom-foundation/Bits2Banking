@@ -15,6 +15,8 @@ MIT
 
 # Assert data output and diagnostics separately
 
+[Previous lesson](uat-compare-typed-query-results.md) · [Next lesson](deployment-models-and-real-providers.md)
+
 ![Umicom](../../assets/branding/umicom-wordmark.svg)
 
 [![Umicom icon](../../assets/branding/umicom-icon.svg)](../../assets/branding/umicom.ico)

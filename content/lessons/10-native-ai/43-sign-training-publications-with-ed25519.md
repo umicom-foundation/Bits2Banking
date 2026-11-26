@@ -1,5 +1,7 @@
 # Lesson 43 — Sign a Native Training Publication with Ed25519
 
+[Previous lesson](42-verify-training-publication-before-resume.md) · [Next lesson](44-verify-publisher-keys-and-detect-tampering.md)
+
 A SHA-256 checksum answers **whether bytes match** an expected digest. It does
 not tell us who published that digest. In this lesson we strengthen our native
 Umicom training evidence with a digital signature tied to an independently

@@ -1,5 +1,7 @@
 # Separate workflow checks from updates
 
+[Previous lesson](06-bound-a-query-and-preserve-failure.md) · [Next lesson](08-events-acknowledgements-and-replay.md)
+
 ## A workflow transition
 
 A workflow describes which state changes are allowed. A trade may be captured before another role approves it. A rule can refuse a transition, but a rule that secretly changes data during validation creates surprising outcomes when another rule rejects the same transition.

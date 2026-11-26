@@ -14,6 +14,8 @@ MIT
 -->
 # Inspect a checkpoint before loading a model
 
+[Previous lesson](plan-finetuning-and-distributed-training.md)
+
 This module explains how a native learning program checks saved model bytes before using them. Each lesson includes its own setup summary and follows the same small Umicom Framework example.
 
 ## Set up the laboratory

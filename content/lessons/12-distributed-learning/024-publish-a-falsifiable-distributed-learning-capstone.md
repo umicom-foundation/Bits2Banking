@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 024: Publish a reproducible three-worker research capstone
 
+[Previous lesson](023-simulate-one-malicious-worker-and-measure-outcomes.md) · [Next lesson](025-identify-coordinator-worker-and-verifier-responsibilities.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

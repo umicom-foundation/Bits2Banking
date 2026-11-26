@@ -194,6 +194,14 @@ def test_course_links_resolve_to_declared_resources():
                     assert not link.fragment and source.startswith(("include/umicom/", "src/", "tests/"))
                     assert ".." not in source.split("/") and source.endswith((".c", ".h"))
                     continue
+            # The debugger lesson cites the upstream NTSTATUS definition for
+            # readers using the web edition. Match the exact lesson and URL
+            # so every local course route still reaches a declared resource.
+            if current == "studio-workflows/lessons/read-a-32-bit-debugger-status.html" and href == (
+                "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/"
+                "596a1078-e883-4972-9bbc-49e60bebca55"
+            ):
+                continue
             assert not link.scheme and not link.netloc and not link.query
             target = posixpath.normpath(posixpath.join(posixpath.dirname(current), link.path)) if link.path else current
             if target.startswith("../"):

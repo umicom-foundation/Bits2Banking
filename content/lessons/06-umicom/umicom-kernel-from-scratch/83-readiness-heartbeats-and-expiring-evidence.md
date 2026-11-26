@@ -1,5 +1,7 @@
 # Treat readiness and heartbeats as expiring evidence
 
+[Previous lesson](82-boot-is-the-start-of-service-lifetime.md) · [Next lesson](84-restart-a-provider-without-stale-consumers.md)
+
 ## A lease on a fact
 
 A readiness report says that one process instance reached its own ready condition. A heartbeat renews evidence that the same instance is still participating. Neither should grant unlimited execution or permanent trust.

@@ -1,5 +1,7 @@
 # Match the guide to your licensed SDK
 
+[Previous lesson](03-timeouts-retries-and-control-totals.md) · [Next lesson](05-borrow-a-connection-and-read-a-trade.md)
+
 ## What you will learn
 
 An API is a contract between your program and a library. A class name that looks familiar is not enough: parameter types, return types, exceptions and execution context matter. The Treasury developer guide describes classic Calypso services, while later training documents also contain illustrative examples. Treat those two kinds of evidence separately.

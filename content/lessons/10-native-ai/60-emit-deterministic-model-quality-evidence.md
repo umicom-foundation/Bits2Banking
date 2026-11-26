@@ -1,5 +1,7 @@
 # Lesson 60 — Export Deterministic C23 Model-Quality Evidence
 
+[Previous lesson](59-repair-model-quality-build-and-test-abi.md) · [Next lesson](61-top-p-nucleus-sampling.md)
+
 ## Learning objectives
 
 Export a held-out baseline-versus-candidate comparison in machine-readable JSON without creating another model evaluator. Understand why exact binary64 bit strings are useful for reproducibility, how to interpret a non-passing quality decision, and why neither an unsigned JSON receipt nor a small next-token sample is release authorisation.

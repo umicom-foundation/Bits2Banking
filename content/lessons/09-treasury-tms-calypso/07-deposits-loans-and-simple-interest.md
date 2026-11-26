@@ -1,5 +1,7 @@
 # 7. Deposits, loans and simple interest
 
+[Previous lesson](06-products-trades-books-and-legal-entities.md) · [Next lesson](08-foreign-exchange-spot-and-forwards.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 A business sometimes has extra money for a short period. At other times, it needs to borrow. Treasury teams manage both situations using instruments such as deposits and loans.

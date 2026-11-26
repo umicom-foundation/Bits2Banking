@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-aarch64-assembly/lessons/10-check-a-native-record-offset.html
+
+PURPOSE:
+Check a C record offset before using it in Assembly
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check a C record offset before using it in Assembly | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Check a C record offset before using it in Assembly</h1>
+<p>The practice record has a one-byte <code>present</code> field followed by a four-byte <code>units</code> field. The C compiler may insert padding between fields to align the second field. In this target layout, <code>units</code> begins four bytes from the record start. The Assembly instruction reads from <code>[x0, #4]</code>.</p>
+<p>The C example uses <code>offsetof</code> and <code>static_assert</code>, checks the record's full size and refers to the Assembly function. These checks make assumptions visible before either object is used.</p>
+<pre><code class="language-powershell">clang --target=aarch64-none-elf -std=c23 -ffreestanding -c record-layout.c -o record-layout.o
+clang --target=aarch64-none-elf -c read-record.S -o read-record.o
+ld.lld --entry=btb_record_layout_probe -o record-inspection.elf record-layout.o read-record.o
+llvm-objdump -d record-inspection.elf
+</code></pre>
+<p>Expect a resolved call and a word load at offset four. In a private copy, put <code>units</code> first. The old static assertions should fail. Native records follow the target's calling and layout conventions. If a file supplies its own fixed format, read that format's defined byte offsets independently. <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst">Arm procedure call standard</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="09-load-a-stored-byte.html">Previous lesson</a> · <a href="11-admit-a-counted-byte-span.html">Next lesson</a> · <a href="../examples/read-record.S">Source · read-record.S</a> · <a href="../examples/record-layout.c">Source · record-layout.c</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

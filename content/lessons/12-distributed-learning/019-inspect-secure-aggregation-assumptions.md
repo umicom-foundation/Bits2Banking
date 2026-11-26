@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 019: Compare secure aggregation and inspecting individual updates
 
+[Previous lesson](018-understand-stale-checkpoint-updates.md) · [Next lesson](020-separate-signatures-hashes-and-training-proofs.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

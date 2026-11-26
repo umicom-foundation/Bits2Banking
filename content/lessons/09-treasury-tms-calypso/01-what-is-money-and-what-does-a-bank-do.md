@@ -1,5 +1,7 @@
 # 1. Money, banks and the first question in treasury
 
+[Next lesson](02-what-treasury-departments-actually-do.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 Imagine a small community kitchen. It buys food, pays electricity bills and receives donations. The kitchen may have a useful purpose and careful volunteers, but it cannot pay a supplier using a promise that somebody might donate next week. It needs money available **when the bill is due**.

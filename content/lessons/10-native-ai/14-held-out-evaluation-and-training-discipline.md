@@ -1,5 +1,7 @@
 # Lesson 14 — Train/Evaluation Splits and What a Falling Loss Really Means
 
+[Previous lesson](13-from-transformer-block-to-decoder.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Umicom Framework C23, lessons 13–14  

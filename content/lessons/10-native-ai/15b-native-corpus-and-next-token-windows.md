@@ -1,5 +1,7 @@
 # Supplement 15B — Native Corpus Import and Next-Token Windows
 
+[Previous lesson](15a-byte-tokenisation-and-corpus-import.md) · [Next lesson](16-source-code-training-with-file-level-evaluation.md)
+
 **Bits to Banking · Native AI laboratory · Sammy Hegab · Umicom Foundation**
 
 ## What a training corpus is

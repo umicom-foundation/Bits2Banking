@@ -16,6 +16,8 @@ MIT
 
 # Separate a valid request from a supported capability
 
+[Previous lesson](18-qualify-the-client-and-product-separately.md) · [Next lesson](20-observe-denial-without-an-order.md)
+
 ## Validation answers a narrower question
 
 A time-in-force enum can be valid even when a particular service cannot implement its behavior. Framework declares DAY, GTC, IOC and FOK because requests and external providers need that vocabulary. The local retained-order service has no immediate matching transaction. Accepting an IOC or FOK request as an ordinary resting order would silently change its meaning.

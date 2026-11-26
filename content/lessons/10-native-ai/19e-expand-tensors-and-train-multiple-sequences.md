@@ -1,5 +1,7 @@
 # Supplement 19E — Train Multiple Source-Code Sequences with Wider Native Tensors
 
+[Previous lesson](19d-training-memory-capacity-and-budgets.md) · [Next lesson](19f-accumulate-gradients-across-microbatches.md)
+
 **Bits to Banking · Building an LLM from Scratch**  
 **Author:** Sammy Hegab · **Umicom Foundation**  
 **Implementation:** C23 in Umicom Framework

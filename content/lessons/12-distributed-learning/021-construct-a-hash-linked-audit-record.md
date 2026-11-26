@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 021: Build an understandable tamper-evident record chain
 
+[Previous lesson](020-separate-signatures-hashes-and-training-proofs.md) · [Next lesson](022-decide-when-a-blockchain-adds-real-value.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

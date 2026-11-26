@@ -1,5 +1,7 @@
 # Lesson 90 — Test Real Tape Positions, Lifetimes and Repeatability
 
+[Next lesson](91-qualify-the-production-rotary-training-tape.md)
+
 **Bits to Banking · Native AI · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework (C23)

@@ -1,5 +1,7 @@
 # Lesson 39 — Identify the Actual Training Bytes with SHA-256
 
+[Previous lesson](38-test-on-disk-adamw-continuation.md) · [Next lesson](40-verify-source-locked-adamw-resume.md)
+
 **Course:** Build an LLM from Scratch  
 **Level:** Developing  
 **Focus:** Immutable training datasets, cryptographic digests, byte ownership and reproducible identity

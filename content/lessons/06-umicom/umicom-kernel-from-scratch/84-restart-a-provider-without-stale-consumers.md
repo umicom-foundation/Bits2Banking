@@ -1,5 +1,7 @@
 # Restart a provider without stale consumers
 
+[Previous lesson](83-readiness-heartbeats-and-expiring-evidence.md) · [Next lesson](85-copy-one-owned-service-observation.md)
+
 ## Dependencies refer to live instances
 
 A consumer depends on a healthy provider instance, not merely a familiar service name. When the provider is revoked, consumers must lose eligibility before another user quantum is selected. Otherwise they may continue with a stale assumption.

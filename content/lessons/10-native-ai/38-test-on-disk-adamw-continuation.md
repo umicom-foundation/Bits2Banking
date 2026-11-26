@@ -1,5 +1,7 @@
 # Lesson 38 — Test On-Disk AdamW Continuation and Detect Invalid Resumes
 
+[Previous lesson](37-bind-dataset-and-schedule-to-an-adamw-run.md) · [Next lesson](39-hash-immutable-training-data-with-sha256.md)
+
 **Course:** Build an LLM from Scratch  
 **Level:** Developing  
 **Focus:** C23 regression testing, on-disk checkpoints, no-clobber evidence, byte identity and failure-atomic training

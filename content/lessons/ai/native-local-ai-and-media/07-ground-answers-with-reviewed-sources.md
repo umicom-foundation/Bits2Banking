@@ -50,4 +50,4 @@ Continue with [the installed retrieval ownership lab](../../../../labs/native/fr
 
 When a citation is wrong, inspect source revision and captured evidence before changing the model. When an embedding dimension is incompatible, select a supported provider or extend the shared contract with explicit bounds and regression coverage.
 
-[Course contents](index.md) · [Next lesson](08-design-local-image-generation.md)
+[Course contents](index.md) · [Next lesson](08-design-local-image-generation.md) · [Previous lesson](06-stream-cancel-and-display-text.md)

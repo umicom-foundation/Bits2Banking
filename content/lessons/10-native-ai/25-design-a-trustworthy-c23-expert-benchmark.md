@@ -1,5 +1,7 @@
 # Lesson 25 — Design a Trustworthy C23 Expert Benchmark
 
+[Previous lesson](24-checkpoint-recovery-and-evidence.md) · [Next lesson](26-build-a-native-completion-benchmark.md)
+
 **Level:** intermediate • **Estimated time:** 19 minutes • **Goal:** turn progress claims into verifiable evidence
 
 ## What does it mean to learn to write C23?

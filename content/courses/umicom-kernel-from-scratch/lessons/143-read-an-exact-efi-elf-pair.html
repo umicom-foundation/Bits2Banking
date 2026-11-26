@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/143-read-an-exact-efi-elf-pair.html
+
+PURPOSE:
+Read an exact EFI and ELF pair
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read an exact EFI and ELF pair | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read an exact EFI and ELF pair</h1>
+<p>The Umicom Kernel preflight workflow produces two linked artifacts. The EFI application is the diagnostic program the firmware can load. The ELF file is the Kernel entry payload embedded inside it. The current EFI application checks specific prerequisites and returns to firmware. Its manifest records the role <code>diagnostic-preflight</code>.</p>
+<h3>Read the same pair that the build verified</h3>
+<p>Open PowerShell. Set <code>$EfiBuild</code> to the existing x64 preflight build directory. Stop on any error.</p>
+<pre><code class="language-powershell">$manifest = Join-Path $EfiBuild 'uefi-preflight-pair-Release.json'
+$pair = Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json
+$pair.role
+$pair.efi | Format-List sha256,bytes,entryRva
+$pair.elf | Format-List sha256,bytes,fileOffset,rva
+$pair.embeddedPointerRelocationRva
+</code></pre>
+<p>A file offset counts bytes from the beginning of a file stored on disk. A relative virtual address, or RVA, counts bytes from the base where the loader places the image. The two values can differ. Use the manifest’s <code>fileOffset</code> when thinking about the saved EFI bytes. Use <code>rva</code> when following the loader's address calculation.</p>
+<h3>Compare two real file identities</h3>
+<p>Set <code>$EfiFile</code> and <code>$ElfFile</code> to the files recorded by the checker. Compare sizes and full hashes without modifying either file.</p>
+<pre><code class="language-powershell">((Get-Item -LiteralPath $EfiFile).Length -eq $pair.efi.bytes)
+((Get-FileHash -LiteralPath $EfiFile -Algorithm SHA256).Hash -ieq $pair.efi.sha256)
+((Get-Item -LiteralPath $ElfFile).Length -eq $pair.elf.bytes)
+((Get-FileHash -LiteralPath $ElfFile -Algorithm SHA256).Hash -ieq $pair.elf.sha256)
+</code></pre>
+<p>All four comparisons should produce <code>True</code>. The Kernel verifier also checks every embedded payload byte and the linker's pointer relocation before it writes the manifest. If an independently rebuilt EFI has a different hash or offset, it needs its own manifest even when it embeds the same ELF. Keep the previous build and evidence available for review.</p>
+<h3>Decide what the result establishes</h3>
+<p>The pair is evidence of which output files were linked together. The <code>diagnostic-preflight</code> role tells readers which behavior this build contains. Save a separate firmware observation when a real boot is later authorized and tested.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="142-read-a-partial-permission-transition.html">Previous lesson · Read a partial permission transition</a> · <a href="144-admit-a-verified-optical-input.html">Next lesson · Admit a verified optical input</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/143-read-an-exact-efi-elf-pair.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

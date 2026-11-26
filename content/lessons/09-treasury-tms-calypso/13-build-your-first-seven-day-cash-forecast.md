@@ -1,5 +1,7 @@
 # 13. Can we pay Friday's bills? Build a seven-day cash forecast
 
+[Previous lesson](12-calypso-for-absolute-beginners-and-first-capstone.md) · [Next lesson](14-when-money-earns-interest-deposits-and-loans.md)
+
 *Treasury Management, TMS and Calypso — From Zero · Practical foundations*
 
 Imagine that you manage the money for a small business called Harbour Supplies. It sells equipment to local shops, pays staff every week and keeps its money in a bank account. The business appears healthy: orders are arriving, invoices are being issued and customers have promised to pay. Yet on Wednesday afternoon, the owner asks a worrying question: **“Will there be enough money in the account to pay our supplier tomorrow?”**

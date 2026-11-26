@@ -1,5 +1,7 @@
 # Follow a message and its reply
 
+[Previous lesson](02-draw-the-kernel-and-server-boundaries.md) · [Next lesson](04-understand-sef-startup-and-restart.md)
+
 ## Sending is not completing
 
 IPC means inter-process communication. In a request/reply protocol, delivery of a request and completion of the requested operation are separate events. A caller waiting for a reply must distinguish a valid result from failure or a service that never responds.

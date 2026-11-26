@@ -182,3 +182,10 @@ Keep the backend connector available and return each accepted connection to its 
 Count the bytes actually read before turning a selected artifact into C.
 
 1. [Limit compiled bytes before embedding](57-limit-compiled-bytes-before-embedding.md).
+
+## Review HEAD through a FastCGI worker
+
+Track the reported representation length and check the exact response bytes.
+
+1. [Keep HEAD metadata separate from content](58-keep-head-metadata-separate-from-content.md).
+1. [Check HEAD responses byte by byte](59-check-head-responses-byte-by-byte.md).

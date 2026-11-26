@@ -1,5 +1,7 @@
 # Supplement 18A — Repeatable Checkpoint Comparisons and Evidence Boundaries
 
+[Previous lesson](18-model-evaluation-and-provenance.md) · [Next lesson](19-incremental-inference-and-kv-caching.md)
+
 **Bits to Banking · Native AI course · Sammy Hegab · Umicom Foundation**
 
 ## The problem of comparing different experiments

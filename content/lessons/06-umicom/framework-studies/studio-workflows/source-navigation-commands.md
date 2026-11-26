@@ -2,6 +2,8 @@
 
 # Connect source navigation menus to shared document services
 
+[Next lesson](trace-a-native-library-link.md)
+
 Lesson 3 of the Studio documents course. You need the ideas of a saved file and an in-memory draft from the first lesson. Reading requires no compiler or language server. The optional native exercise uses a locally built Studio and a language server you choose.
 
 ## A menu label is only the beginning

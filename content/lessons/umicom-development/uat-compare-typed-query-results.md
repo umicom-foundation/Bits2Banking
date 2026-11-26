@@ -15,6 +15,8 @@ MIT
 
 # Compare typed database results
 
+[Previous lesson](workflow-qualify-the-integration-layers.md) · [Next lesson](uat-assert-independent-process-output.md)
+
 ![Umicom](../../assets/branding/umicom-wordmark.svg)
 
 [![Umicom icon](../../assets/branding/umicom-icon.svg)](../../assets/branding/umicom.ico)

@@ -16,6 +16,8 @@ MIT
 
 # Cancel the remainder while preserving completed fills
 
+[Previous lesson](14-replay-without-new-economics.md) · [Next lesson](16-respect-represented-fill-quantities.md)
+
 ## Cancellation does not reverse a fill
 
 A two-unit request with one unit already filled still has a one-unit position after cancellation. Cancellation ends the remaining local order lifecycle. Erasing the fill quantity or position would rewrite history and hide exposure. The shared UmiOrderCancel operation changes only order status and revision.

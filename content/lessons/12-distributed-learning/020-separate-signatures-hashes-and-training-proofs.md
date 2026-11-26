@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 020: Read signed receipts without overclaiming what they prove
 
+[Previous lesson](019-inspect-secure-aggregation-assumptions.md) · [Next lesson](021-construct-a-hash-linked-audit-record.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

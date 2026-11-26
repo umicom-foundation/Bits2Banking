@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 01: What a distributed training worker actually computes
 
+[Next lesson](002-understand-gradients-and-checkpoints.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

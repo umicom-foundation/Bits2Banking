@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 12: Research capstone: a verifiable federation proposal
 
+[Previous lesson](011-test-on-a-realistic-lan-or-wan.md) · [Next lesson](013-bind-one-worker-to-one-round.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

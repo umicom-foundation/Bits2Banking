@@ -1,5 +1,7 @@
 # Understand SEF startup and restart
 
+[Previous lesson](03-follow-a-message-and-a-reply.md) · [Next lesson](05-keep-pm-vfs-and-vm-responsibilities-clear.md)
+
 ## A service has a managed lifecycle
 
 A normal command-line program starts at main and may immediately perform work. A managed operating-system service must coordinate its initialization with the system that starts or replaces it.

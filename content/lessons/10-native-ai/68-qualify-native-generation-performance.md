@@ -1,5 +1,7 @@
 # Lesson 68 — Benchmark Native Generation Using Reproducible Evidence
 
+[Previous lesson](67-measure-decoder-and-kv-cache-work.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Existing Umicom Framework C23 performance comparison  

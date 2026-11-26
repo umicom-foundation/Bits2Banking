@@ -1,5 +1,7 @@
 # Lesson 35 — Configure Gradient Clipping in a Reproducible Training Plan
 
+[Previous lesson](34-test-gradient-clipping-and-training-stability.md) · [Next lesson](36-checkpoint-clipping-policy-and-safe-resume.md)
+
 **Course:** Build an LLM from Scratch  
 **Level:** Developing  
 **Focus:** reviewed configuration, global gradient clipping, AdamW and effective-batch semantics

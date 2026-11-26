@@ -1,0 +1,61 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/c23-keyword-reference/lessons/09-ask-for-a-declared-type.html
+
+PURPOSE:
+  Compare const and unqualified C23 type queries with a deliberate compiler refusal.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ask for a declared type | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Ask for a declared type</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="08-initialize-scalar-and-record-values.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a rel="next" href="10-check-an-integer-field-width.html">Next lesson</a> · <a href="../../../lessons/03-native-code/c23-keyword-reference/09-ask-for-a-declared-type.md">Markdown edition</a></nav>
+    <p>A type tells C what values a variable can hold. A qualifier adds a rule to that type. The qualifier const means you cannot assign another value through that variable. Two declarations can use the same base type and still have different permissions.</p>
+    <h2>Read the C23 declaration</h2>
+    <pre><code>const unsigned char channel = {6};
+typeof(channel) original = {channel};
+typeof_unqual(channel) next = {};
+next = original * 7;</code></pre>
+    <p>Both type queries use the type of the earlier channel. Their initializers choose their own starting values. The first declaration retains const, while the second makes next an editable unsigned char. Its new value is 42.</p>
+    <h2>Trace the steps in plain language</h2>
+    <pre><code>Read the type of channel without changing channel.
+Make a read-only original initialized to 6.
+Make an editable next initialized to zero.
+Calculate original times seven and save 42 in next.
+Check that original is still 6.</code></pre>
+    <h2>Compare a type query with a function call</h2>
+    <p>The hosted expression example asks for the type of Sample(). The function returns an int and its type is fixed, so the query leaves the call count zero. The later ordinary call changes the count to one. This exercise uses the fixed-type case. C has a separate evaluation rule for operands of variably modified type.</p>
+    <ul><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/native/c23-type-and-value/named_type.c">Named scalar source</a></li><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/native/c23-type-and-value/const_assignment.c">Assignment refusal source</a></li><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/native/c23-type-and-value/expression_type.c">Hosted expression source</a></li></ul>
+    <h2>Run the focused lab</h2>
+    <p>Use a terminal in the Bits2Banking checkout with a recent GCC or Clang that supports C23. Run each command separately. A failed command stops the exercise until you resolve the diagnostic.</p>
+    <pre><code>cmake -S content/labs/native/c23-type-and-value -B build/c23-type-and-value -G Ninja -DBUILD_TESTING=ON
+cmake --build build/c23-type-and-value
+ctest --test-dir build/c23-type-and-value --output-on-failure --no-tests=error -R '^btb[.]education[.]c23[.](named_type|const_assignment|expression_type)$'</code></pre>
+    <p>CTest should report every selected check passed. Each passing native example verifies its result and exits with status zero.</p>
+    <h2>Try the checked interpreter</h2>
+<p>If a current Umicom C interpreter with the checked scalar features is on your path, try the same source. Look for the Result: 0 line followed by the instruction count.</p>
+<pre><code>umicom-c interpret content/labs/native/c23-type-and-value/named_type.c</code></pre>
+    <h2>Predict a change</h2>
+    <p>Read the refusal source first. Predict which variable the compiler will identify. Run the syntax-only check with CTest. A passing check means the compiler reported the forbidden assignment to original. The checked Umicom C example queries an already declared scalar, while the hosted compiler can also inspect the function expression.</p>
+    <p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf">C23 working draft, section 6.7.2.5 on typeof specifiers</a></p>
+  </article></main>
+</body>
+</html>

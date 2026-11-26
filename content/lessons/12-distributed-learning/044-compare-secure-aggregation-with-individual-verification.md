@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 44: Compare secure aggregation with individual verification
 
+[Previous lesson](043-treat-expired-assignments-and-revoked-workers-as-distinct-failures.md) · [Next lesson](045-explain-why-a-mac-is-not-proof-of-useful-training.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

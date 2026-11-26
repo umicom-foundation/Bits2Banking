@@ -16,6 +16,8 @@ MIT
 
 # Retain a useful denial without creating an order
 
+[Previous lesson](19-separate-validity-from-capability.md) · [Next lesson](21-display-revision-digits-exactly.md)
+
 ## A refusal can still be an observation
 
 A user needs to know why a command was refused. The workspace can retain a denied preview while leaving its order book unchanged. These are different effects: publishing a local explanation is not accepting an order. The policy scenarios check both the returned status and the resulting owner state.

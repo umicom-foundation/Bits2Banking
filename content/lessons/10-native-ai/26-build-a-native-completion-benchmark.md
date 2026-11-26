@@ -1,5 +1,7 @@
 # Lesson 26 — Build a Native C23 Completion Benchmark
 
+[Previous lesson](25-design-a-trustworthy-c23-expert-benchmark.md) · [Next lesson](27-interpret-model-completion-metrics.md)
+
 **Level:** developing | **Time:** 25 minutes | **Prerequisites:** Lessons 17, 18 and 25
 
 ## Our goal: ask a question that the model can actually answer

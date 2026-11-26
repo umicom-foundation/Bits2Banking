@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/studio-workflows/lessons/read-incomplete-ctest-console-results.html
+
+PURPOSE:
+Distinguish incomplete and observed outcomes in a saved CTest console transcript.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Read incomplete CTest console results — Bits2Banking</title>
+<link rel="stylesheet" href="../../course.css">
+<link rel="stylesheet" href="../../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg">
+<link rel="icon" href="../../../../assets/branding/umicom.ico">
+</head><body><header class="site">
+<img class="umicom-wordmark" src="../../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom">
+<h1>Read incomplete CTest console results</h1><nav aria-label="Course"><a href="../index.html">Course contents</a> · <a href="read-a-32-bit-debugger-status.html">Previous lesson</a></nav></header>
+<main><p>A saved test console can end while its parent job still has work to do. Use the selected run’s planned count and its complete result rows to work out which coverage is present. A registration number, marked Test # in the output, identifies a configured test. It can be larger than the planned count when a test filter selects a few cases from a larger project.</p>
+<h2>Classify a short saved transcript</h2>
+<p>Build <code>umicom-build-review</code> in the full Framework configuration. Open PowerShell and choose a disposable directory. Create a two-test transcript with one observed row.</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Path ./console-evidence -Force | Out-Null
+Set-Content -LiteralPath ./console-evidence/partial.log -Value &quot;1/2 Test #17: sample.first ........ Passed 0.01 sec&quot;
+$log = (Resolve-Path -LiteralPath ./console-evidence/partial.log).Path
+umicom-build-review ctest-summary &quot;$log&quot; 2
+$LASTEXITCODE
+</code></pre>
+<p>The report shows two planned and one observed. Exit 3 records incomplete coverage. The one observed pass still tells you something useful about the file.</p>
+<p>Add the second row and inspect the same snapshot again.</p>
+<pre><code class="language-powershell">Add-Content -LiteralPath ./console-evidence/partial.log -Value &quot;2/2 Test #31: sample.second ........***Skipped 0.00 sec&quot;
+umicom-build-review ctest-summary &quot;$log&quot; 2
+$LASTEXITCODE
+</code></pre>
+<p>The report now has two observed results with one pass and one skip. Exit 4 marks complete observed rows with an adverse or unexecuted result. The selected product still needs a run that exercises the skipped case.</p>
+<h2>Make your own checks</h2>
+<ol>
+<li>Change the last outcome to Passed and run the inspection. The saved rows should now give exit 0.</li>
+<li>Try a separate empty log with the same planned count. Record exit 3 and the unrecorded coverage before comparing it with the partial file.</li>
+<li>Locate <code>tests/build_review/ctest_console_cli.cmake</code> in Framework. Explain how the fixture preserves the original file bytes and checks an exact outcome.</li>
+</ol>
+<p>If the command rejects a transcript, check for missing or repeated numbered rows and compare its planned count with the selected run. Keep the original CTest process exit, log and exact build identity alongside your report.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="read-a-32-bit-debugger-status.html">Previous lesson</a></nav></main>
+<footer>Umicom Foundation</footer></body></html>

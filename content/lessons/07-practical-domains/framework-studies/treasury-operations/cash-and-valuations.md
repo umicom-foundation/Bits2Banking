@@ -1,5 +1,7 @@
 # Separate cash forecasts from valuations
 
+[Previous lesson](trade-to-settlement.md)
+
 Trace a fictional foreign-exchange obligation through dates, valuation, cash and settlement.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

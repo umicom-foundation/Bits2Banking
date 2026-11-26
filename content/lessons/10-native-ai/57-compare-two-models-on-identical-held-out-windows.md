@@ -1,5 +1,7 @@
 # Lesson 57 — Compare Two Native LLM Models on the Same Held-Out Data
 
+[Previous lesson](56-verify-signed-release-approval-and-reject-tampering.md) · [Next lesson](58-test-model-quality-regressions-in-c23.md)
+
 ## Learning objectives
 
 Understand why a baseline model and a candidate model must answer **the same prediction questions** before their scores can be compared. Learn to interpret cross-entropy, perplexity and top-one/top-five accuracy; then use a Framework-owned C23 quality gate to inspect real model evidence.

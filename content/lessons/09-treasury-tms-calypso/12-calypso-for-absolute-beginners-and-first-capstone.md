@@ -1,5 +1,7 @@
 # 12. Your first guided tour of Calypso—and a complete practice trade
 
+[Previous lesson](11-transfers-payment-messages-and-accounting.md) · [Next lesson](13-build-your-first-seven-day-cash-forecast.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 We have travelled from a small kitchen's cash balance to a bank's financial contracts. You now understand why an organisation needs treasury, what a TMS records and why a completed trade has more than one status.

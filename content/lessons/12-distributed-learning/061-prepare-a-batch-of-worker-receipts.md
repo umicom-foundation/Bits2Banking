@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 061: Prepare a batch of worker receipts without exposing gradients
 
+[Previous lesson](060-design-an-end-to-end-independently-verified-research-lab.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Language:** UK English · **Licence:** MIT  
 **Study level:** Intermediate; review earlier foundational course units as needed.

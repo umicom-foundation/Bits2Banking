@@ -1,5 +1,7 @@
 # One service, several applications
 
+[Next lesson](native-boundaries.md)
+
 Follow a request from a window to a shared service, and learn how C interfaces connect native components.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

@@ -1,5 +1,7 @@
 # Turn an observation into a reviewed change
 
+[Previous lesson](identity-and-authority.md)
+
 Understand permissions, boundaries and reviewable automation before joining applications to external systems.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

@@ -1,0 +1,48 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/145-trace-efi-through-a-diagnostic-iso.html
+
+PURPOSE:
+Trace an EFI file through a diagnostic ISO
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trace an EFI file through a diagnostic ISO | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Trace an EFI file through a diagnostic ISO</h1>
+<p>The file-only native producer takes the staged <code>BOOTX64.EFI</code> and writes a small FAT image and an optical ISO. The EFI application is stored at <code>EFI/BOOT/BOOTX64.EFI</code> inside the FAT image. An El Torito catalogue entry tells firmware where it can find that FAT image within the ISO.</p>
+<h3>Draw the path taken by the bytes</h3>
+<pre><code class="language-text">diagnostic EFI + separately verified manifest
+    -&gt; verified staging directory holding BOOTX64.EFI
+    -&gt; FAT image holding EFI/BOOT/BOOTX64.EFI
+    -&gt; optical ISO with a catalogue pointing to that FAT image
+</code></pre>
+<p>Build the existing optical producer in the same <code>$StageBuild</code> directory as the previous lesson. The following program operates on files in the staging directory. Use a fresh directory for a production exercise and leave USB drives and discs outside this exercise.</p>
+<pre><code class="language-powershell">cmake --build &quot;$StageBuild&quot; --target umicom-kernel-x64-preflight-optical --parallel 1
+Push-Location (Join-Path $StageBuild 'verified-preflight-input')
+try {
+    &amp; &quot;$StageBuild/umicom-kernel-x64-preflight-optical.exe&quot;
+    if ($LASTEXITCODE -ne 0) { throw 'The file-only producer failed.' }
+    Get-ChildItem -File | Select-Object Name,Length
+} finally {
+    Pop-Location
+}
+</code></pre>
+<p>The command should create an ordinary FAT image and ISO alongside the staged input. Keep the earlier manifest and the reported file names. Record separate SHA-256 hashes for the staged EFI, the FAT file and the complete ISO. Each file has a distinct role and byte count.</p>
+<h3>Explain the independent comparisons</h3>
+<p>An ISO catalogue check locates the referenced image. A byte comparison against the separate FAT file checks that its exact bytes appear in the ISO at that location. A FAT directory check finds the EFI file inside its expected directory chain and compares its content to the staged EFI. A readable outer ISO header by itself leaves the two inner comparisons unverified.</p>
+<p>As a review exercise, explain what each of these checks would observe if the producer put the EFI under another path while keeping the ISO and FAT structures valid. The original EFI digest can still be correct for its input. The directory comparison supplies separate evidence that firmware can find the expected filename. Boot and installation outcomes require their own qualification.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="144-admit-a-verified-optical-input.html">Previous lesson · Admit a verified optical input</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/145-trace-efi-through-a-diagnostic-iso.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

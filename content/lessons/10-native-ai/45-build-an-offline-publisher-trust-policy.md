@@ -1,5 +1,7 @@
 # Lesson 45 — Build an Offline Publisher Trust Policy
 
+[Previous lesson](44-verify-publisher-keys-and-detect-tampering.md) · [Next lesson](46-rotate-and-revoke-training-signing-keys.md)
+
 An Ed25519 signature proves that a particular private key signed a message.
 It does **not** establish whether the signer is authorised to publish an LLM
 checkpoint. In this lesson, we make that second decision explicit and

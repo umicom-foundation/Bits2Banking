@@ -1,5 +1,7 @@
 # 18. Follow one trade from booking to settlement
 
+[Previous lesson](17-borrowing-against-securities-repo-and-collateral.md) · [Next lesson](introduction-to-treasury-management-systems/01-cash-timing-and-a-system.md)
+
 *Treasury Management, TMS and Calypso — From Zero · Practical foundations*
 
 A financial trade is not finished when a trader clicks **Save**. That action may record a contract, but other people and systems still need to verify its terms, prepare settlement instructions, exchange messages, move money and record accounting effects.

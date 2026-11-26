@@ -1,5 +1,7 @@
 # Lesson 025 — Identify coordinator, worker and verifier responsibilities
 
+[Previous lesson](024-publish-a-falsifiable-distributed-learning-capstone.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation context:** C23 and Assembly where justified; Framework is the reusable owner.  

@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/studio-workflows/lessons/read-a-32-bit-debugger-status.html
+
+PURPOSE:
+Compare signed, unsigned and hexadecimal views of one debugger startup status.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Read a 32-bit debugger status — Bits2Banking</title>
+<link rel="stylesheet" href="../../course.css">
+<link rel="stylesheet" href="../../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg">
+<link rel="icon" href="../../../../assets/branding/umicom.ico">
+</head><body><header class="site">
+<img class="umicom-wordmark" src="../../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom">
+<h1>Read a 32-bit debugger status</h1><nav aria-label="Course"><a href="../index.html">Course contents</a> · <a href="compare-a-recorded-artifact-identity.html">Previous lesson</a></nav></header>
+<main><p>The same 32 bits can appear three different ways in build evidence. A Windows debugger startup log can show hexadecimal, a signed decimal number, or an unsigned decimal number. The bits underneath the spelling stay the same.</p>
+<p>In the lab, the hexadecimal word 0xc0000135 appears as 3221225781 unsigned and -1073741515 signed. Windows names this status STATUS_DLL_NOT_FOUND. It indicates that the loader could not locate a required component. The number does not name the specific DLL. Compare the saved startup output and the executable’s dependencies before changing the toolchain.</p>
+<h2>Reproduce the number in C23</h2>
+<ol>
+<li>Open PowerShell in the Bits2Banking repository and configure <code>labs/framework/studio-build-evidence</code> as shown in the lab README.</li>
+<li>Build the <code>umicom-lab-status32</code> target. Run the named <code>bits.studio.status32</code> tests.</li>
+<li>Read <code>status32.c</code>. When the unsigned value is higher than the largest signed 32-bit integer, it subtracts 2^32 in a wider signed variable. Explain why the calculation gives a negative result.</li>
+<li>Compare the zero and overflow cases. Zero is a valid status word. A decimal value above 4294967295 exceeds the width and produces the exact refusal.</li>
+</ol>
+<p>The three equivalent examples print the same line. A bad number yields exit 3 and no numeric report. An output failure yields exit 1. The lab performs arithmetic on text you supply and does not start a debugger.</p>
+<p>If your result has a different width, confirm that you are comparing a 32-bit status and remove any extra characters before entering it. If a real debugger probe recorded this status, use its saved transcript to find the selected executable and its runtime requirements.</p>
+<p><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/596a1078-e883-4972-9bbc-49e60bebca55">Windows NTSTATUS values</a></p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="compare-a-recorded-artifact-identity.html">Previous lesson</a> · <a href="read-incomplete-ctest-console-results.html">Next lesson</a></nav></main>
+<footer>Umicom Foundation</footer></body></html>

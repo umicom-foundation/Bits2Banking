@@ -1,5 +1,7 @@
 # Supplement 19D — How Much Memory Does Training Our Language Model Need?
 
+[Previous lesson](19c-compact-inference-memory-and-ownership.md) · [Next lesson](19e-expand-tensors-and-train-multiple-sequences.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · **Umicom Foundation**  
 **Languages:** C23 for implementation, PowerShell for interactive build and tests

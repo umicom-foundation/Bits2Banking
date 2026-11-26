@@ -1,5 +1,7 @@
 # Lesson 66 — Verify Chunked Generation, Cancellation and Decoder Invalidation
 
+[Next lesson](67-measure-decoder-and-kv-cache-work.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework C23

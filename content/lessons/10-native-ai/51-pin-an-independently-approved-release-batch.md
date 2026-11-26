@@ -1,5 +1,7 @@
 # Lesson 51 — Pin an Independently Approved Native LLM Release
 
+[Previous lesson](50-test-atomic-release-gates-and-ordered-digests.md) · [Next lesson](52-test-independent-release-approval-and-rejection.md)
+
 **Umicom Foundation · Bits to Banking · Build Your Own LLM from Scratch**  
 **Prerequisites:** Lessons 43–50, SHA-256 basics, Ed25519 publisher trust and ordered release verification.  
 **Environment:** Native C23, CMake, CTest and optional OpenSSL 3 for signing verification.

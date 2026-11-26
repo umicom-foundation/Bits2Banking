@@ -1,5 +1,7 @@
 # Explain where a report's numbers came from
 
+[Previous lesson](balanced-journals.md)
+
 Understand balanced entries, reconciliation and traceable reports using small worked examples.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

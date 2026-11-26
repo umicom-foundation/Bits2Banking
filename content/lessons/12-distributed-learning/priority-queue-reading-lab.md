@@ -83,4 +83,4 @@ The inspected queue is a shared Framework component, not a new learning-network 
 
 [Terminal and editor setup guide](../learning-c/terminal-to-visual-studio.md)
 
-[Previous lesson](084-design-a-reproducible-three-worker-experiment.md) · [Course contents](index.md)
+[Previous lesson](084-design-a-reproducible-three-worker-experiment.md) · [Course contents](index.md) · [Next lesson](distributed-learning/085-read-the-microbatch-laboratory.md)

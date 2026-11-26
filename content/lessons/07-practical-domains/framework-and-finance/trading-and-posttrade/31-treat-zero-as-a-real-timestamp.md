@@ -19,6 +19,8 @@ New website manuscripts use the preferred supplied wordmark. -->
 
 # Treat zero as a real timestamp in an attempt quota
 
+[Previous lesson](30-admit-every-active-record.md) · [Next lesson](32-move-chart-state-with-instrument-identity.md)
+
 ## An unused state needs its own meaning
 
 Timestamp zero is a valid point in a local monotonic clock domain. If a throttle interprets window_start_ms equal to zero as unused on every call, repeated calls at zero keep restarting the window. The counter can fail to enforce its intended limit.

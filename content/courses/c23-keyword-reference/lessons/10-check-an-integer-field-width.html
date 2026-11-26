@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/c23-keyword-reference/lessons/10-check-an-integer-field-width.html
+
+PURPOSE:
+  Find the range of a nine-bit number and test deliberate unsigned conversion.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Check an integer field width | Umicom Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="1064" height="261" style="width:159px;height:auto" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+  <main id="main" class="simple-page"><article class="article-content">
+    <h1>Check an integer field width</h1>
+    <nav aria-label="Lesson sequence"><a rel="prev" href="09-ask-for-a-declared-type.html">Previous lesson</a> · <a href="../index.html">Course contents</a> · <a href="../../../lessons/03-native-code/c23-keyword-reference/10-check-an-integer-field-width.md">Markdown edition</a></nav>
+    <p>Some device fields and file formats specify a number of bits. A bit is one position with two possible values. A nine-bit unsigned field holds integers from zero through 511.</p>
+    <h2>Read the C23 declaration</h2>
+    <pre><code>typedef unsigned _BitInt(9) ChannelBits;
+const ChannelBits lastChannel = 511;
+const unsigned int nextValue = (unsigned int)lastChannel + 1U;
+const ChannelBits wrapped = (ChannelBits)nextValue;</code></pre>
+    <p>The wider variable can hold 512. Converting it to the nine-bit unsigned type reduces it modulo 512, giving zero. Keep the wider value when a program needs to reject overflow before conversion.</p>
+    <h2>Trace the steps in plain language</h2>
+    <pre><code>Write 511 as the largest nine-bit channel.
+Add one in a wider type to obtain 512.
+Convert 512 to the nine-bit unsigned type.
+Check that the converted value is zero.</code></pre>
+    <h2>Keep numeric width separate from storage</h2>
+    <p>The source checks that enough storage bits exist to hold the value. A wider storage size can still represent a nine-bit value type. When talking to Kernel device code or writing a binary record, define byte order and range checks explicitly. The example imposes no fixed storage size or byte order.</p>
+    <ul><li><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/native/c23-type-and-value/bit_width.c">Nine-bit conversion source</a></li></ul>
+    <h2>Run the focused lab</h2>
+    <p>Use a terminal in the Bits2Banking checkout with a recent GCC or Clang that supports C23. Run each command separately. A failed command stops the exercise until you resolve the diagnostic.</p>
+    <pre><code>cmake -S content/labs/native/c23-type-and-value -B build/c23-type-and-value -G Ninja -DBUILD_TESTING=ON
+cmake --build build/c23-type-and-value
+ctest --test-dir build/c23-type-and-value --output-on-failure --no-tests=error -R '^btb[.]education[.]c23[.]bit_width$'</code></pre>
+    <p>CTest should report every selected check passed. Each passing native example verifies its result and exits with status zero.</p>
+    
+    <h2>Predict a change</h2>
+    <p>Predict the output values if you use 510 instead of 511. The wider result is 511 and conversion can still hold it. Restore the source before running the original test again. If the compiler does not recognise _BitInt in C23 mode, use a hosted compiler with that support and confirm the selected compiler in the CMake output.</p>
+    <p><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf">C23 working draft, sections 6.2.5 and 6.3.1.3 on integer types and conversions</a></p>
+  </article></main>
+</body>
+</html>

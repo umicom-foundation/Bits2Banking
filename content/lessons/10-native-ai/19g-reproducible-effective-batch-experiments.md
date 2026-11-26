@@ -1,5 +1,7 @@
 # Supplement 19G — Reproducible Effective-Batch Training Experiments
 
+[Previous lesson](19f-accumulate-gradients-across-microbatches.md) · [Next lesson](19h-adamw-and-native-optimisation.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · **Organisation:** Umicom Foundation  
 **Implementation:** ISO C23 · **Source of truth:** Umicom Framework

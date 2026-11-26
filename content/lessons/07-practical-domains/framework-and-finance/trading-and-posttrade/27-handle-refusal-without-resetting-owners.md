@@ -16,6 +16,8 @@ MIT
 
 # Handle refusal without resetting the owner in place
 
+[Previous lesson](26-preserve-protective-actions-and-status.md)
+
 ## An error result describes a boundary
 
 A client should distinguish malformed input, unsupported local behavior and exhausted observation capacity. These results call for different responses. Silently replacing an invalid value, changing a requested policy or resetting a revision counter can make a screen appear successful while changing the meaning of the command.

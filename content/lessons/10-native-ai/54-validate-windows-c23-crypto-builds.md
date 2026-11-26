@@ -1,5 +1,7 @@
 # Lesson 54 — Validate C23 Signing and Release Approval on Windows
 
+[Previous lesson](53-windows-api-names-and-native-c23-symbols.md) · [Next lesson](55-sign-an-independent-release-approval.md)
+
 A reproducible build is not only a command that generates project files. It
 is a sequence of checks that proves the compiler, linker and tests all work
 with the same reviewed source. This lesson uses **Umicom Framework's native

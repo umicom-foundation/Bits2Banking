@@ -1,5 +1,7 @@
 # Lesson 56 — Verify Signed Release Approval and Reject Tampering
 
+[Previous lesson](55-sign-an-independent-release-approval.md) · [Next lesson](57-compare-two-models-on-identical-held-out-windows.md)
+
 ## Learning objectives
 
 You will learn how the Framework checks the approver's detached Ed25519 signature, re-verifies publishers and checkpoints, emits a machine-readable release receipt only on complete success, and tests common attempts to bypass an approval gate.

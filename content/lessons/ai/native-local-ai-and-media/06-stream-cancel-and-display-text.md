@@ -48,4 +48,4 @@ Study the [native generation and UTF-8 sequence](../../../courses/llm-from-scrat
 
 **Recovery:** when text appears in the wrong chat, capture request and operation identity first. A faster refresh timer cannot correct ownership of late events.
 
-[Course contents](index.md) · [Next lesson](07-ground-answers-with-reviewed-sources.md)
+[Course contents](index.md) · [Next lesson](07-ground-answers-with-reviewed-sources.md) · [Previous lesson](05-call-an-existing-local-model.md)

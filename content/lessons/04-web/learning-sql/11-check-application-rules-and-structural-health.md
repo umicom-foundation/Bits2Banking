@@ -51,5 +51,5 @@ These exercises do not test simultaneous writers, backups or migration recovery.
 
 [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/database/course-progress/integrity.sql). Keep the source revision with your exercise notes so later changes can be compared.
 
-[Course contents](index.md) · [Previous lesson](10-diagnose-a-constraint-failure.md)
+[Course contents](index.md) · [Previous lesson](10-diagnose-a-constraint-failure.md) · [Next lesson](12-read-one-committed-database-view.md)
 

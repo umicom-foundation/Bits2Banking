@@ -1,0 +1,37 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-aarch64-assembly/lessons/05-preserve-a-return-address.html
+
+PURPOSE:
+Preserve the return address across a nested call
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preserve the return address across a nested call | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Preserve the return address across a nested call</h1>
+<p><code>bl</code> branches to a function and stores the return address in X30, also called the link register. A leaf function such as the earlier example can return straight through X30. A nested call replaces it, so this function stores both X30 and the previous frame pointer X29 first.</p>
+<ol>
+<li><code>stp</code> subtracts 16 from SP and stores two 8-byte registers on the stack.</li>
+<li><code>mov x29, sp</code> gives the current frame a stable reference.</li>
+<li><code>bl</code> installs the return address for the inner call. The saved outer address stays in the frame.</li>
+<li><code>ldp</code> reloads both registers and adds 16 back to SP. <code>ret</code> can now use the original address.</li>
+</ol>
+<pre><code class="language-powershell">clang --target=aarch64-none-elf -c call-an-external.S -o call-an-external.o
+llvm-objdump -dr call-an-external.o
+</code></pre>
+<p>Check that the stack adjustment is −16 on entry and +16 on exit. If you remove the restoring instruction in a private copy, the assembler can still encode it. A successful assembly gives no evidence that stack ownership is balanced. This ELF teaching source omits platform unwinding declarations and is used for offline inspection. <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst">Arm AAPCS64 calling convention</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="04-trace-a-bounded-loop.html">Previous lesson</a> · <a href="06-link-an-elf-call.html">Next lesson</a> · <a href="../examples/call-an-external.S">Source · call-an-external.S</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

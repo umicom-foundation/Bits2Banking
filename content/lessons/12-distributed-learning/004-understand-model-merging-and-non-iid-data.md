@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 04: Understand model merging and non-IID data
 
+[Previous lesson](003-average-three-workers-by-hand.md) · [Next lesson](005-lora-adapters-and-the-factor-averaging-trap.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

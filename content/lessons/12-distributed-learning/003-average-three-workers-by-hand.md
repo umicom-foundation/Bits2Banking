@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 03: Average three workers by hand
 
+[Previous lesson](002-understand-gradients-and-checkpoints.md) · [Next lesson](004-understand-model-merging-and-non-iid-data.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

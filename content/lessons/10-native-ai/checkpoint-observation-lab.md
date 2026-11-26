@@ -85,4 +85,4 @@ Record inputs, expected outputs and refusal cases before extending the example. 
 
 [Terminal and editor setup guide](../learning-c/terminal-to-visual-studio.md)
 
-[Previous lesson](sequence-split-contract-lab.md) · [Course contents](index.md)
+[Previous lesson](sequence-split-contract-lab.md) · [Course contents](index.md) · [Next lesson](llm-from-scratch/prepare-reviewed-documents.md)

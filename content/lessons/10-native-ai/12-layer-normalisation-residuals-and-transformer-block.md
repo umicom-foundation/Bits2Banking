@@ -1,5 +1,7 @@
 # Lesson 12 — Layer Normalisation, Residual Paths and a Complete Transformer Block
 
+[Previous lesson](11-multi-head-causal-attention.md) · [Next lesson](13-from-transformer-block-to-decoder.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author and project originator:** Sammy Hegab · Umicom Foundation  
 **Primary language:** C23 (CPU teaching backend)  

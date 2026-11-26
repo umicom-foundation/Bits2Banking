@@ -48,4 +48,4 @@ Write a contract table for “512×512 RGB, fixed seed, 20 steps.” Mark every 
 ## Recovery
 Keep partial output separate from accepted assets. Never retry an unknown remote operation automatically. Local cancellation also needs cleanup: release buffers and report whether any newly created partial file remains. Actual quality, GPU compatibility and watermark appearance require separate executed checks.
 
-[Course contents](index.md) · [Next lesson](09-plan-video-jobs-and-exports.md)
+[Course contents](index.md) · [Next lesson](09-plan-video-jobs-and-exports.md) · [Previous lesson](07-ground-answers-with-reviewed-sources.md)

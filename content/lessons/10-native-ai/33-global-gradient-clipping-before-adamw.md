@@ -1,5 +1,7 @@
 # Lesson 33 — Clip Global Gradients Before an AdamW Update
 
+[Previous lesson](32-gradient-norms-and-stable-measurement.md) · [Next lesson](34-test-gradient-clipping-and-training-stability.md)
+
 **Course:** Build an LLM from Scratch · **Level:** Developing · **Focus:** AdamW, microbatches and atomic updates
 
 ## Why clipping exists

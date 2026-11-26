@@ -1,5 +1,7 @@
 # 5. Who does what? Front office, middle office and back office
 
+[Previous lesson](04-accounts-balances-currencies-and-dates.md) · [Next lesson](06-products-trades-books-and-legal-entities.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 Imagine that a company must pay a supplier in US dollars in three months. The company keeps most of its money in pounds, so it agrees with a bank to exchange pounds for dollars on a future date.

@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 06: Network latency, bandwidth and compressed updates
 
+[Previous lesson](005-lora-adapters-and-the-factor-averaging-trap.md) · [Next lesson](007-design-a-bounded-native-c23-learning-job.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

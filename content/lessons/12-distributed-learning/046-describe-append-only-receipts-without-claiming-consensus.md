@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 46: Describe append-only receipts without claiming consensus
 
+[Previous lesson](045-explain-why-a-mac-is-not-proof-of-useful-training.md) · [Next lesson](047-design-a-two-host-failure-and-recovery-experiment.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

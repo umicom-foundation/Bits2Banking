@@ -1,5 +1,7 @@
 # Recognise the same message twice
 
+[Previous lesson](transactions.md)
+
 Connect storage, message identity, retries and recovery without confusing a request with completion.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

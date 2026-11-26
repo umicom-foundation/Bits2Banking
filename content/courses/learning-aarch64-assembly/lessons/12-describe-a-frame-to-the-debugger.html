@@ -1,0 +1,33 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-aarch64-assembly/lessons/12-describe-a-frame-to-the-debugger.html
+
+PURPOSE:
+Describe a saved stack frame to debugging tools
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Describe a saved stack frame to debugging tools | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Describe a saved stack frame to debugging tools</h1>
+<p>The earlier nested-call example saved X29 and X30. A debugger needs enough information to reconstruct the previous frame when execution is interrupted inside this function. Call-frame information, or CFI, describes where the frame and saved registers are at each instruction range.</p>
+<p>The <code>stp</code> instruction changes the stack. <code>.cfi_def_cfa_offset 16</code> describes that change. The following CFI entries locate the saved registers relative to the canonical frame address. Later directives describe the restoration after <code>ldp</code>.</p>
+<pre><code class="language-powershell">clang --target=aarch64-none-elf -c call-with-cfi.S -o call-with-cfi.o
+llvm-readobj --sections call-with-cfi.o
+llvm-dwarfdump --eh-frame call-with-cfi.o
+</code></pre>
+<p>Look for <code>.eh_frame</code> and a frame description with the 16-byte adjustment. Compare the offset rules for the two saved registers. A machine can still assemble the instructions if the metadata is omitted, but tools then have less evidence about the saved state. This is an ELF example. A Windows binary uses its own unwind format. <a href="https://learn.microsoft.com/en-us/cpp/build/arm64-exception-handling">Microsoft ARM64 exception handling</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="11-admit-a-counted-byte-span.html">Previous lesson</a> · <a href="13-check-the-byte-contract-in-host-c.html">Next lesson</a> · <a href="../examples/call-with-cfi.S">Source · call-with-cfi.S</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

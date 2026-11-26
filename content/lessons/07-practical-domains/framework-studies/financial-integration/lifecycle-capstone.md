@@ -1,5 +1,7 @@
 # Trace a controlled payment from request to report
 
+[Previous lesson](mapping-boundaries.md)
+
 Translate data without losing meaning and trace one controlled lifecycle across services.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

@@ -1,5 +1,7 @@
 # 9. What happens after a trade is agreed?
 
+[Previous lesson](08-foreign-exchange-spot-and-forwards.md) · [Next lesson](10-risk-market-data-and-valuation.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 We have agreed a forward contract to buy USD 125,000 and sell GBP 100,000. The trader has entered its terms in the system. Can everybody now go home and assume the dollars will arrive in three months?

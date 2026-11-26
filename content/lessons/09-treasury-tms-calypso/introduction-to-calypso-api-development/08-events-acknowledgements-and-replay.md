@@ -1,5 +1,7 @@
 # Process events without losing work
 
+[Previous lesson](07-workflow-checks-and-transactions.md) · [Next lesson](09-scheduled-tasks-reports-and-control-totals.md)
+
 ## Delivery and completion are different
 
 An event tells an engine that something occurred. Receiving it does not mean your custom work has completed. The supplied classic guide describes custom engines derived from com.calypso.engine.Engine, an EngineContext initialization hook, processing of PSEvent and the RemoteTrade eventProcessed acknowledgement boundary.

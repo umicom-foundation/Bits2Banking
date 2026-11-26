@@ -1,5 +1,7 @@
 # Lesson 76 — Qualify Benchmark Evidence and Protect Checkpoints
 
+[Next lesson](77-bind-positions-to-checkpoint-identity.md)
+
 **Bits to Banking · Umicom Foundation · Sammy Hegab**  
 **Implementation:** existing Umicom Framework C23 services
 

@@ -69,4 +69,4 @@ Both fixture commands should succeed. The first checks the exact initializer for
 
 The configure step uses CMake's counted binary read because the C header must exist before the native executable is compiled. [CMake file reading](https://cmake.org/cmake/help/latest/command/file.html#reading)
 
-[Course contents](index.md) · [Previous lesson · Keep a FastCGI connector and its backend separate](56-keep-a-fastcgi-connector-and-its-backend-separate.md) · [HTML edition](../../../courses/building-a-web-server-in-c/lessons/57-limit-compiled-bytes-before-embedding.html)
+[Course contents](index.md) · [Previous lesson · Keep a FastCGI connector and its backend separate](56-keep-a-fastcgi-connector-and-its-backend-separate.md) · [Next lesson · Keep HEAD metadata separate from content](58-keep-head-metadata-separate-from-content.md) · [HTML edition](../../../courses/building-a-web-server-in-c/lessons/57-limit-compiled-bytes-before-embedding.html)

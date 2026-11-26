@@ -1,5 +1,7 @@
 # Lesson 85 — Build Rotary Attention on the Existing Training Tape
 
+[Previous lesson](84-qualify-batched-rotary-gradients.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework (C23)

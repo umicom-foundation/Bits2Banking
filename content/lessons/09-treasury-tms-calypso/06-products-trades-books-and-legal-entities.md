@@ -1,5 +1,7 @@
 # 6. Products, trades, books and legal entities
 
+[Previous lesson](05-front-middle-and-back-office.md) · [Next lesson](07-deposits-loans-and-simple-interest.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 Financial software uses words that sound familiar but have precise meanings. A **product** is not a carton on a shop shelf; in this context it is a type of financial instrument. A **book** is not something you read; it is an organisational place where a bank groups trading activity.

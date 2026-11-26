@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 10: Proof of useful learning and verification economics
 
+[Previous lesson](009-hash-chains-and-blockchain-consensus.md) · [Next lesson](011-test-on-a-realistic-lan-or-wan.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

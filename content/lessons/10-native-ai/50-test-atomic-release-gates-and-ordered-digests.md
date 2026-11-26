@@ -1,5 +1,7 @@
 # Lesson 50 — Test Failure-Atomic Release Gates and Ordered SHA-256 Digests
 
+[Previous lesson](49-verify-an-ordered-group-of-signed-training-checkpoints.md) · [Next lesson](51-pin-an-independently-approved-release-batch.md)
+
 **Umicom Foundation · Bits to Banking · Build Your Own LLM from Scratch**  
 **Prerequisites:** Lesson 49, basic SHA-256 and Ed25519 verification, and the C23 test workflow.  
 **Environment:** ISO C23, CMake, CTest and compatible OpenSSL 3 for optional signing tests.

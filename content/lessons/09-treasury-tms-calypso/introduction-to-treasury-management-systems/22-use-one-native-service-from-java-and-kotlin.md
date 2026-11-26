@@ -1,5 +1,7 @@
 # Use one native treasury service from Java and Kotlin
 
+[Previous lesson](21-call-framework-from-c-and-cpp.md)
+
 ## Reuse through a process
 
 Java and Kotlin run on the JVM in this lab. Both call NativeForecast.net, which launches the same trusted C executable. The native service owns the financial calculation. The JVM adapter owns argument conversion, waiting and response validation.

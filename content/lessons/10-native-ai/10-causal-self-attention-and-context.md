@@ -1,5 +1,7 @@
 # Lesson 10 — Causal Self-Attention and Context-Sensitive Training
 
+[Next lesson](11-multi-head-causal-attention.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · Umicom Foundation  
 **Framework implementation:** `src/ai/training/tape.c`, `src/ai/training/sequence_shape.c`  

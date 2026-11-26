@@ -1,0 +1,44 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/141-order-page-permission-changes.html
+
+PURPOSE:
+Order page permission changes
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order page permission changes | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Order page permission changes</h1>
+<p>Kernel preparation assigns each reserved memory range a job. Instructions belong on code pages. Constants and the handoff record hold data. A stack holds temporary data as the program runs. Each role needs a different combination of two switches.</p>
+<p>The RO switch makes a range read-only. The XP switch prevents instruction execution. In this x86-64 boot profile, the planner expects code to become RO with XP cleared. Constants and the handoff page need RO and XP. The writable stack needs XP with RO cleared.</p>
+<h2>Order the changes with paper first</h2>
+<ol>
+<li>Start with a code page that is writable and has XP set. Write its initial and final switch states.</li>
+<li>Add RO before clearing XP. The intermediate page has both switches set. That order keeps the page from becoming writable and executable at the same time.</li>
+<li>Repeat with a stack that has RO set and XP cleared. Set XP before clearing RO.</li>
+<li>Compare a page that already matches its role. The plan contains no operation for its two switches.</li>
+</ol>
+<p>Umicom builds one checked plan for all four roles. It verifies the captured ranges and existing observations before it lists changes. Setting all required restrictions first creates a simple rule a test can check across roles. Flags outside RO and XP belong to their existing owners.</p>
+<h2>Verify the planner with the linked image fixture</h2>
+<p>At the Kernel repository root, set the CMake option <code>UMICOM_TEST_ELF</code> to the absolute path of the verified x64 Kernel ELF you intend to study. Use the same file for configure and test.</p>
+<pre><code class="language-powershell">cmake -S tests/x86_uefi_permission_transition -B build/permission-transition -G Ninja &quot;-DUMICOM_TEST_ELF=C:/path/to/verified/umicom-kernel-x64-entry.elf&quot;
+cmake --build build/permission-transition
+ctest --test-dir build/permission-transition --output-on-failure --no-tests=error
+</code></pre>
+<p>Expect the ordered case to pass. The exhaustive case considers all 256 combinations of the two input switches across four roles. If configuration refuses the file, check that the path points to the linked x64 image and that it stayed unchanged. The harness reads the ELF as fixture data. Its test host uses no firmware.</p>
+<p><a href="https://uefi.org/specs/UEFI/2.11/37_Secure_Technologies.html#memory-protection">UEFI memory attribute protocol</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="140-read-a-declared-hardware-timebase.html">Previous lesson · Read a declared hardware timebase</a> · <a href="142-read-a-partial-permission-transition.html">Next lesson · Read a partial permission transition</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/141-order-page-permission-changes.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

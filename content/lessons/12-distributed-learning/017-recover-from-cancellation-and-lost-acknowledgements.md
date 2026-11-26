@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 017: Recover safely from dropout and repeated messages
 
+[Previous lesson](016-calculate-communication-before-a-worker-starts.md) · [Next lesson](018-understand-stale-checkpoint-updates.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

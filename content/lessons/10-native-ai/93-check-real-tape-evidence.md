@@ -1,5 +1,7 @@
 # Lesson 93 — Prove Real-Tape Results Before Optimisation
 
+[Previous lesson](92-measure-tape-memory-and-rewind.md) · [Next lesson](94-plan-a-fused-rotary-tape-operator.md)
+
 **Series:** Bits2Banking · Building an LLM from Scratch · C23 · **Author:** Sammy Hegab, Umicom Foundation
 
 ## Learning outcome

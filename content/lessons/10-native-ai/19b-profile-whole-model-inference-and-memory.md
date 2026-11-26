@@ -1,5 +1,7 @@
 # Supplement 19B — Profile Whole-Model Inference and Memory in C23
 
+[Next lesson](19c-compact-inference-memory-and-ownership.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · Umicom Foundation  
 **Code owner:** Umicom Framework · C23

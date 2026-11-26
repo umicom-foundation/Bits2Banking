@@ -1,5 +1,7 @@
 # Lesson 42 — Verify a Published AdamW Run Before Resume
 
+[Previous lesson](41-publish-a-complete-training-bundle.md) · [Next lesson](43-sign-training-publications-with-ed25519.md)
+
 **Course:** Build an LLM from Scratch  
 **Level:** Developing  
 **Focus:** Independent read-only verification, fail-closed resume and evidence limits

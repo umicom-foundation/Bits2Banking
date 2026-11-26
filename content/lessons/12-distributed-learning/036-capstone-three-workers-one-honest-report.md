@@ -1,5 +1,7 @@
 # Lesson 036 — Capstone: three workers, one honest report
 
+[Next lesson](037-explain-shared-secret-worker-authentication.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation context:** C23 and Assembly where justified; Framework is the reusable owner.  

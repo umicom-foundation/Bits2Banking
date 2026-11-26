@@ -1,5 +1,7 @@
 # 17. Borrowing against securities: repos and collateral
 
+[Previous lesson](16-two-currencies-two-dates-understanding-fx-swaps.md) · [Next lesson](18-follow-one-trade-from-booking-to-settlement.md)
+
 *Treasury Management, TMS and Calypso — From Zero · Practical foundations*
 
 Imagine a financial institution needs cash for one week. It owns government bonds that have a market value, but it does not necessarily want to dispose of them permanently. One way to obtain short-term funding is through a **repurchase agreement**, usually called a **repo**.

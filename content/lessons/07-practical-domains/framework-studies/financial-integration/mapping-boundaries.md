@@ -1,5 +1,7 @@
 # Translate meaning, not just field names
 
+[Next lesson](lifecycle-capstone.md)
+
 Translate data without losing meaning and trace one controlled lifecycle across services.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

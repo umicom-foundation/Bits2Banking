@@ -1,5 +1,7 @@
 # Lesson 05 — Tensor Shapes, Memory and Ownership in C23
 
+[Previous lesson](04-logits-softmax-and-cross-entropy.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Laboratory:** Umicom Framework native AI training tape  

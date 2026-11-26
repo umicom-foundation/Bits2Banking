@@ -40,5 +40,5 @@ If no checks seem to run, confirm both modules were compiled and -unittest was p
 
 [Open the example source](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/languages/d-first-program/batches.d). Keep the source revision with your exercise notes so later changes can be compared.
 
-[Course contents](index.md) · [Previous lesson](11-test-empty-input-as-a-valid-case.md)
+[Course contents](index.md) · [Previous lesson](11-test-empty-input-as-a-valid-case.md) · [Next lesson](13-values-types-and-expressions.md)
 

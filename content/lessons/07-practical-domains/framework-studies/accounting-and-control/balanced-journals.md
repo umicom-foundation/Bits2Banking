@@ -1,5 +1,7 @@
 # Read a balanced journal
 
+[Next lesson](reconciliation-and-lineage.md)
+
 Understand balanced entries, reconciliation and traceable reports using small worked examples.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

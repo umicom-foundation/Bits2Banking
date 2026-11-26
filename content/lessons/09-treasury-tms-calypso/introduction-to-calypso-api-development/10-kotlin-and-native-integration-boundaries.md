@@ -1,5 +1,7 @@
 # Connect Kotlin and native code through explicit boundaries
 
+[Previous lesson](09-scheduled-tasks-reports-and-control-totals.md) · [Next lesson](11-review-and-qualify-a-custom-extension.md)
+
 ## Choose a language for a reason
 
 Calypso's documented classic application API is Java. Kotlin can call JVM classes, so it can reuse the same Java adapter. C and C++ serve a different purpose: they consume Umicom Framework's native C treasury contracts. There is no invented Calypso C API in this course.

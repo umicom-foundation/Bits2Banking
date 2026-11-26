@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 41: Compare HMAC with mutual TLS for future WAN workers
 
+[Previous lesson](040-authorise-a-dataset-shard-independently-of-its-digest.md) · [Next lesson](042-handle-retries-without-duplicating-samples.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

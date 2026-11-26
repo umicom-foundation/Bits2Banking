@@ -1,5 +1,7 @@
 # Boot is the start of a service lifetime
 
+[Previous lesson](81-qualify-host-and-freestanding-boundaries.md) · [Next lesson](83-readiness-heartbeats-and-expiring-evidence.md)
+
 ## Connect the earlier lessons
 
 The earlier course traces native startup, physical memory, user address spaces and bounded IPC. A boot message proves that execution reached a point. It does not prove that a service remains alive, answers requests or can be replaced safely.

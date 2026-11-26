@@ -1,5 +1,7 @@
 # Lesson 88 — Verify Rotary Training Results Without Overstating Them
 
+[Previous lesson](87-train-rotary-attention-projections.md) · [Next lesson](89-audit-rotary-gradients-against-an-oracle.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework, C23

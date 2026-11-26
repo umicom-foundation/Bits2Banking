@@ -1,5 +1,7 @@
 # Lesson 17 — Generate Text with Our Own Native Transformer
 
+[Previous lesson](16c-resume-checkpoints-and-training-evidence.md) · [Next lesson](18-model-evaluation-and-provenance.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · **Organisation:** Umicom Foundation  
 **Implementation:** Umicom Framework, C23

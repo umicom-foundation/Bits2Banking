@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 023: Measure a malicious worker without real victim data
 
+[Previous lesson](022-decide-when-a-blockchain-adds-real-value.md) · [Next lesson](024-publish-a-falsifiable-distributed-learning-capstone.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

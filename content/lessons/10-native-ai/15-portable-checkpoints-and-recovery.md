@@ -1,5 +1,7 @@
 # Lesson 15 — Portable Model Checkpoints and Exact Resume
 
+[Previous lesson](14-held-out-evaluation-and-training-discipline.md) · [Next lesson](15a-byte-tokenisation-and-corpus-import.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Native C23 checkpoint codec and file publisher in Umicom Framework  

@@ -37,6 +37,10 @@ Paper and pencil are enough to start. To run a program, save it as a plain text 
 
 1. [Read alternative C punctuators](07-read-alternative-punctuators.md) Track the original spelling of six alternate tokens across blocks, arrays and preprocessing.
 
+1. [Initialize a value before reading it](08-initialize-scalar-and-record-values.md) Use C23 empty braces for a scalar or a record, then verify the individual values.
+1. [Ask for a declared type](09-ask-for-a-declared-type.md) Compare const and unqualified C23 type queries with a deliberate compiler refusal.
+1. [Check an integer field width](10-check-an-integer-field-width.md) Find the range of a nine-bit number and test deliberate unsigned conversion.
+
 ## Find alternate punctuation
 
 - [`<%`](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html#punct-open-brace)

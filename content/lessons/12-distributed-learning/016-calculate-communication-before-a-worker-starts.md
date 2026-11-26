@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 016: Budget model-update communication
 
+[Previous lesson](015-run-a-tiny-three-worker-update-by-hand.md) · [Next lesson](017-recover-from-cancellation-and-lost-acknowledgements.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

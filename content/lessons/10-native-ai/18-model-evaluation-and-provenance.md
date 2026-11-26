@@ -1,5 +1,7 @@
 # Lesson 18 — Evaluate Our Native Language Model and Preserve its Provenance
 
+[Previous lesson](17-autoregressive-generation-and-sampling.md) · [Next lesson](18a-checkpoint-identity-and-repeatable-comparisons.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Implementation:** reusable Umicom Framework C23; thin native console consumer

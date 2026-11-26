@@ -1,5 +1,7 @@
 # Supplement 15A — Reversible Byte Tokenisation in C23
 
+[Previous lesson](15-portable-checkpoints-and-recovery.md)
+
 **Bits to Banking · Native AI laboratory · Sammy Hegab · Umicom Foundation**
 
 ## Learning objective

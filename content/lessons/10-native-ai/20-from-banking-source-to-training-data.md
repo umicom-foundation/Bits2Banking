@@ -1,5 +1,7 @@
 # Lesson 20 — From a Banking Source File to Training Data
 
+[Previous lesson](19l-adamw-effective-batches-and-checkpoint-continuation.md) · [Next lesson](21-build-next-token-windows.md)
+
 **Level:** beginner • **Estimated time:** 14 minutes • **Language:** C23
 
 ## What you will learn

@@ -16,6 +16,8 @@ MIT
 
 # Give orders and executions different identities
 
+[Previous lesson](11-own-a-workspace-execution-session.md) · [Next lesson](13-publish-fill-state-together.md)
+
 ## Two records answer two questions
 
 An order identifier answers which request this fill belongs to. An execution identifier answers which event is being reported. Two partial fills can belong to one order while remaining different events. Reusing the order identifier as every execution identifier would make the second fill look like a replay or a conflict.

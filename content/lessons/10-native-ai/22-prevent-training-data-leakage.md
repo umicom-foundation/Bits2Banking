@@ -1,5 +1,7 @@
 # Lesson 22 — Separate Training Evidence from Evaluation Evidence
 
+[Previous lesson](21-build-next-token-windows.md) · [Next lesson](23-plan-a-reproducible-training-run.md)
+
 **Level:** beginner • **Estimated time:** 15 minutes • **Domain:** C23 source-code learning
 
 ## The question a training score cannot answer

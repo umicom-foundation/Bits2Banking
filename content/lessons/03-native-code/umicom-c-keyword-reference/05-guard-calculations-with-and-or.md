@@ -94,3 +94,5 @@ Save that example as `group-the-checks.ump`. Run it as written. Then add the par
 In an application, identify the required data check before evaluating values that depend on it. Follow that rule in paper examples and in the corresponding C tests. These exercises use synthetic integer counts and pass no real banking data to the interpreter.
 
 [HTML edition](../../../courses/umicom-c-keyword-reference/lessons/05-guard-calculations-with-and-or.html) · [Related C23 keywords](../c23-keyword-reference/index.md)
+
+[Next lesson](06-choose-an-action-and-classify-source.md)

@@ -1,5 +1,7 @@
 # 16. Two currencies, two dates: understand an FX swap
 
+[Previous lesson](15-spotting-a-funding-gap-before-it-becomes-a-crisis.md) · [Next lesson](17-borrowing-against-securities-repo-and-collateral.md)
+
 *Treasury Management, TMS and Calypso — From Zero · Practical foundations*
 
 In Chapter 8, we met a simple **foreign-exchange (FX) forward**: an agreement made today to exchange two currencies on a future date. It had two contractual currency movements, but they took place on the **same** future value date.

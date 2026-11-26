@@ -14,6 +14,8 @@ MIT
 -->
 # Choose a database location before opening a workspace
 
+[Previous lesson](18-qualify-the-statement-client.md)
+
 Build a small desktop host around Framework banking services, then follow how an explicit filename becomes an owned workspace.
 
 ## Start here

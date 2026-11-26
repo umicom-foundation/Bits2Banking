@@ -16,6 +16,8 @@ MIT
 
 # Admit a revision before publishing a new event
 
+[Previous lesson](16-respect-represented-fill-quantities.md) · [Next lesson](18-qualify-the-client-and-product-separately.md)
+
 ## A revision is an observation identity
 
 Readers use a revision to distinguish earlier and later owner state. Wrapping the counter from its maximum back to zero can make a changed session resemble an old observation. The workspace must therefore reserve publication capacity before changing orders, positions or evidence.

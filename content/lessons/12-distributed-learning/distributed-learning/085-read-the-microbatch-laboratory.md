@@ -14,6 +14,8 @@ MIT
 -->
 # Read the microbatch laboratory from input to result
 
+[Previous lesson](../priority-queue-reading-lab.md)
+
 Training adjusts numbers called model parameters so that predictions better match examples. A batch is a group of examples used for one adjustment. This module follows a small, local Framework experiment. It assumes no previous machine-learning course and introduces each term before using it. A local experiment is the first measurement needed when designing work for several computers.
 
 ## Set up this laboratory

@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 02: Understand gradients and immutable checkpoints
 
+[Previous lesson](001-what-a-distributed-training-worker-computes.md) · [Next lesson](003-average-three-workers-by-hand.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

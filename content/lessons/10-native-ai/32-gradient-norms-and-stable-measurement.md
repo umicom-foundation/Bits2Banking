@@ -1,5 +1,7 @@
 # Lesson 32 — Gradient Norms: Measuring the Size of a Learning Update
 
+[Previous lesson](31-sign-windows-releases-and-protect-trust.md) · [Next lesson](33-global-gradient-clipping-before-adamw.md)
+
 **Course:** Build an LLM from Scratch · **Level:** Developing · **Focus:** C23, numerical stability and optimisation
 
 ## What will we learn?

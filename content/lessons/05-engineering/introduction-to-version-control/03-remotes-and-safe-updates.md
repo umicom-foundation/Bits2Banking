@@ -1,5 +1,7 @@
 # Remotes and safe updates
 
+[Previous lesson](02-review-and-record-a-change.md) · [Next lesson](04-submodules-and-application-dependencies.md)
+
 A remote is another repository you can communicate with. Updating a remote and changing your local working files are separate operations.
 
 ## Understand four names

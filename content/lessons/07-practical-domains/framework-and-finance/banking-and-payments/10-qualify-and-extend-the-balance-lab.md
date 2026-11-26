@@ -14,6 +14,8 @@ MIT
 -->
 # Qualify and extend the account-balance laboratory
 
+[Next lesson](11-read-a-statement-as-observations.md)
+
 A bank application presents records about customers, accounts and money. This module builds one small part: a reliable balance view. A customer identifies whose records are selected; an account holds amounts and a state; a currency identifies the unit of money. All examples use invented records kept in the program's memory. No real bank connection or transfer is made.
 
 ## Prepare this laboratory

@@ -14,6 +14,8 @@ MIT
 -->
 # Plan fine-tuning and distributed training experiments
 
+[Next lesson](inspect-checkpoint-before-loading.md)
+
 This practical module starts with ordinary text files. You will learn what a dataset, token, training step and evaluation result mean by following the existing native Framework laboratory.
 
 ## Setup recap

@@ -1,5 +1,7 @@
 # 2. Treasury: making sure payments can be made on time
 
+[Previous lesson](01-what-is-money-and-what-does-a-bank-do.md) · [Next lesson](03-how-a-treasury-management-system-helps.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 The community kitchen from Chapter 1 is now organising a week's worth of meals. Its manager has an encouraging problem: donations are expected, but the food supplier wants payment before some donations arrive.

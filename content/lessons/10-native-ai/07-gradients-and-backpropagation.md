@@ -1,5 +1,7 @@
 # Lesson 07 — Gradients, the Chain Rule and Automatic Differentiation
 
+[Previous lesson](06-matrix-operations-and-activations.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Laboratory:** `framework/tests/ai_training/test_training_gradients.c` and `test_training_numerical_gradients.c`.

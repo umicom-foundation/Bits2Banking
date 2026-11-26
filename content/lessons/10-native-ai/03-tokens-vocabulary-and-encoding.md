@@ -1,5 +1,7 @@
 # Lesson 03 — Tokens, Vocabulary and Text Encoding
 
+[Previous lesson](02-training-data-and-evaluation.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Level:** introductory · **Implementation status:** a fixed three-token teaching vocabulary; general-purpose tokenisation remains future work.

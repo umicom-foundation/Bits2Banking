@@ -2,6 +2,8 @@
 
 # Observe a bank account at a retained revision
 
+[Previous lesson](24-test-events-without-touching-user-data.md)
+
 Two revisions of a practice ledger can show the same amount available to spend for different reasons. A **revision** counts accepted operations in one selected database. Write that number beside each balance you quote.
 
 ## Calculate the three amounts

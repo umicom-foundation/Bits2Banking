@@ -61,4 +61,4 @@ If resident memory remains high after responses finish, inspect outstanding owne
 Exercise: write two separate statements for an engineering report. One can say that the transfer regression found no second 4096-byte payload allocation. The other should report measured peak process memory only if that experiment was actually run. Do not merge those statements into an unsupported claim that all application memory problems are fixed.
 
 
-[Previous lesson](38-release-response-bodies-on-every-exit.md)
+[Previous lesson](38-release-response-bodies-on-every-exit.md) · [Next lesson](40-encode-a-fastcgi-request-with-bounded-bytes.md)

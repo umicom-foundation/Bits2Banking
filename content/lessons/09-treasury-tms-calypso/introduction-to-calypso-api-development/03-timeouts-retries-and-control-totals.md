@@ -1,5 +1,7 @@
 # Timeouts, retries and control totals
 
+[Next lesson](04-match-the-guide-to-your-sdk.md)
+
 [Course contents](index.md) · [Previous: A Java port and a fake repository](02-a-java-port-and-a-fake-repository.md)
 
 ## A missing reply is an unknown outcome

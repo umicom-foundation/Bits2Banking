@@ -1,0 +1,42 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/59-check-head-responses-byte-by-byte.html
+
+PURPOSE:
+Check HEAD responses byte by byte
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check HEAD responses byte by byte | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Check HEAD responses byte by byte</h1>
+<p>Receiving a line with a length value tells you what the worker reported. To confirm what the HTTP client actually received, examine the bytes after the blank line following the headers. In a HEAD response that blank line is the end of the response.</p>
+<h2>Run the offline C23 lab</h2>
+<p>Open PowerShell in the Bits2Banking repository. Use a C23-capable compiler already configured for CMake. The lab builds an offline fixture and uses no listener or worker.</p>
+<pre><code class="language-powershell">cmake -S .\labs\framework\fastcgi-head-review -B .\build\fastcgi-head-review -G Ninja
+cmake --build .\build\fastcgi-head-review
+ctest --test-dir .\build\fastcgi-head-review --no-tests=error --output-on-failure
+</code></pre>
+<p>The fixtures compare whole byte sequences. One explicitly reports zero, one reports 42, and another has only the common headers. A fourth supplies a discarded worker document. The final two cases check refusal of an oversized length and an undersized destination with no partial output.</p>
+<h2>Make a prediction before changing the example</h2>
+<ol>
+<li>In the test file, find the fixture with an unspecified length. Predict what happens if you make it a known length of zero while keeping the expected response unchanged.</li>
+<li>Change only the input and run the focused test again. It should fail because a zero length header is now present.</li>
+<li>Keep your change in a practice copy. Update its expected response to show the zero length, rerun the test, and compare the two outputs.</li>
+</ol>
+<p>If CMake cannot detect a C23 compiler, check which C compiler your configured toolchain selects. If only the exact-byte test fails, display the expected and actual strings side by side. Check the CR and LF line endings and stop at the blank line.</p>
+<p>The full Framework service checks worker reply framing and handles transport separately. In your own project, use the Framework FastCGI bridge and inspect the HTTP response through the existing native connector fixture. The exercise above isolates the difference between representation length and transmitted bytes.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="58-keep-head-metadata-separate-from-content.html">Previous lesson · Keep HEAD metadata separate from content</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/59-check-head-responses-byte-by-byte.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

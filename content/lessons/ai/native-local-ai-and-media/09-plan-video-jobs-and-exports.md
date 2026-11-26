@@ -48,4 +48,4 @@ A request times out after a server accepted it. Should the application submit th
 ## Recovery
 After a crash, inspect recorded operation identity and partial files before resuming. A successful encoder exit is useful evidence but does not prove correct duration, audio, visual content or playback. Validate those properties independently.
 
-[Course contents](index.md) · [Next lesson](10-manage-personas-and-conversations.md)
+[Course contents](index.md) · [Next lesson](10-manage-personas-and-conversations.md) · [Previous lesson](08-design-local-image-generation.md)

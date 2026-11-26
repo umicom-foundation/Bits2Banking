@@ -1,5 +1,7 @@
 # Keep process, filesystem and memory responsibilities clear
 
+[Previous lesson](04-understand-sef-startup-and-restart.md) · [Next lesson](06-use-grants-for-bounded-data-transfer.md)
+
 ## Separate the questions
 
 A process needs an identity and lifecycle, access to named files, and memory mappings. These concerns interact, but they are not the same owner. The MINIX architecture uses distinct services to coordinate them.

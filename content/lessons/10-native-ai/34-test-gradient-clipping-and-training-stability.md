@@ -1,5 +1,7 @@
 # Lesson 34 — Test Gradient Clipping and Interpret Training Stability
 
+[Previous lesson](33-global-gradient-clipping-before-adamw.md) · [Next lesson](35-configure-gradient-clipping-in-a-training-plan.md)
+
 **Course:** Build an LLM from Scratch · **Level:** Developing · **Focus:** reproducibility, evidence and testing
 
 ## Why a passing program is not enough

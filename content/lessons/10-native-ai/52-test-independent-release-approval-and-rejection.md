@@ -1,5 +1,7 @@
 # Lesson 52 — Test Independent Release Approval and Rejection
 
+[Previous lesson](51-pin-an-independently-approved-release-batch.md) · [Next lesson](53-windows-api-names-and-native-c23-symbols.md)
+
 **Umicom Foundation · Bits to Banking · Build Your Own LLM from Scratch**  
 **Prerequisites:** Lesson 51, basic C23 unit testing, signed checkpoints and offline publisher trust.  
 **Environment:** Native C23, CMake, CTest and optional OpenSSL 3.

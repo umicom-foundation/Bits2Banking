@@ -1,5 +1,7 @@
 # Lesson 75 — Benchmark Native Prefix Inference
 
+[Next lesson](76-qualify-benchmark-evidence.md)
+
 **Bits to Banking · Umicom Foundation · Sammy Hegab**  
 **Language:** C23 · **Runtime owner:** Umicom Framework
 

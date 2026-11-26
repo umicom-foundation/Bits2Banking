@@ -16,6 +16,8 @@ MIT
 
 # Observe crossings and remove dependent alerts together
 
+[Previous lesson](24-observe-public-prints-without-fills.md) · [Next lesson](26-preserve-protective-actions-and-status.md)
+
 ## Seed a rule before observing a crossing
 
 An alert compares successive observations against a threshold. Creating a rule should not invent a crossing from an unknown starting value. The workspace seeds a new rule from its current quote midpoint. The alerts scenario begins at midpoint 100, creates an above-101 rule, then publishes midpoint 102 at a later event time.

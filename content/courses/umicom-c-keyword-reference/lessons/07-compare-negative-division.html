@@ -1,0 +1,140 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-c-keyword-reference/lessons/07-compare-negative-division.html
+
+PURPOSE:
+Compare negative division and remainder
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compare negative division and remainder | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Compare negative division and remainder</h1>
+<p>When a number is divided into whole groups, the <strong>quotient</strong> is the
+number of groups and the <strong>remainder</strong> is the part left over. A negative
+quantity can represent a missing number of items. Imagine an inventory
+exercise using a shortage of seven items and groups of three.</p>
+<h2>Decide which whole number to use</h2>
+<p>On a number line, the exact result of dividing minus seven by three lies
+between minus three and minus two. Moving towards zero gives minus two.
+Moving down to the next whole number gives minus three. That second rule
+is called <strong>floor division</strong>. The remainder changes when the quotient
+changes.</p>
+<table>
+<thead>
+<tr>
+<th>Whole-number rule</th>
+<th>Quotient</th>
+<th>Remainder</th>
+<th>Check with multiplication and addition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Move towards zero</td>
+<td>-2</td>
+<td>-1</td>
+<td><code>(-2 × 3) + (-1) = -7</code></td>
+</tr>
+<tr>
+<td>Move down</td>
+<td>-3</td>
+<td>2</td>
+<td><code>(-3 × 3) + 2 = -7</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use the same steps when reading unfamiliar source.</p>
+<pre><code class="language-text">START with signed quantity -7 and group size 3
+CHOOSE the language's whole-number division rule
+FIND the quotient using that rule
+SUBTRACT quotient times group size from the original quantity
+CHECK that the product plus the remainder gives the original quantity
+</code></pre>
+<h2>Run the checked Umicom C program</h2>
+<p>Save the following as <code>split-shortage.uc</code>.</p>
+<pre><code class="language-c">int main(void) {
+    /* Keep both inputs signed so the example uses checked integer rules. */
+    int quantity = -7;
+    int group_size = 3;
+    print(quantity / group_size);
+    print(quantity % group_size);
+    return 0;
+}
+</code></pre>
+<ol>
+<li>Run <code>umicom-c run split-shortage.uc</code>. Expect <code>-2</code> and then <code>-1</code>.
+   The command reports <code>Result: 0</code> after the displayed values.</li>
+<li>Run <code>umicom-c compile split-shortage.uc split-shortage.umcb</code> and
+   <code>umicom-c exec split-shortage.umcb</code>. Expect the same output and result.</li>
+<li>Replace <code>-7</code> with <code>7</code> and run the source again. Predict the values
+   first, then check for <code>2</code> and <code>1</code>. Restore the original quantity.</li>
+</ol>
+<p>The file extension selects the Umicom C display operation. Keep the
+group size positive and nonzero in this exercise. If the compiler
+refuses the program, use a build that supports <code>print</code> in <code>.uc</code> files
+and check the spelling and semicolons on the indicated line.</p>
+<h2>Compare the spelling in other languages</h2>
+<p>These are expressions for small, signed integer quantities. The table
+shows the language rules for the inputs used in the exercise.</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Quotient expression</th>
+<th>Remainder expression</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Umicom C, C23, D and Java</td>
+<td><code>(-7) / 3</code></td>
+<td><code>(-7) % 3</code></td>
+<td><code>-2</code>, <code>-1</code></td>
+</tr>
+<tr>
+<td>Python</td>
+<td><code>(-7) // 3</code></td>
+<td><code>(-7) % 3</code></td>
+<td><code>-3</code>, <code>2</code></td>
+</tr>
+</tbody>
+</table>
+<p>Python uses <code>/</code> for a division that can keep a fractional part. Its
+<code>//</code> operator chooses the floor for these integers. The <code>%</code> symbol
+looks the same in the table, so make a habit of checking the chosen
+quotient rule before you copy an expression.</p>
+<p>To run the same two calculations in C23, save this complete example as
+<code>split-shortage.c</code>.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    /* Use C's standard output library to display the same two values. */
+    const int quantity = -7;
+    const int group_size = 3;
+    printf(&quot;%d\n%d\n&quot;, quantity / group_size, quantity % group_size);
+    return 0;
+}
+</code></pre>
+<p>In PowerShell run <code>clang -std=c23 -Wall -Wextra -Werror split-shortage.c -o split-shortage.exe</code>
+and then <code>.\split-shortage.exe</code>. Expect the same first two lines shown
+in the Umicom C exercise. The two programs use their own output spelling.</p>
+<p>When building a small inventory exercise for an Umicom application,
+decide how to represent a negative quantity. Include a negative case
+and a positive case in the test data. Give both cases an expected
+quotient and remainder before running the program.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="06-choose-an-action-and-classify-source.html">Previous lesson</a> · <a href="../../../lessons/03-native-code/umicom-c-keyword-reference/07-compare-negative-division.md">Markdown edition</a> · <a href="../../programming-across-languages/index.html">Programming across languages</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

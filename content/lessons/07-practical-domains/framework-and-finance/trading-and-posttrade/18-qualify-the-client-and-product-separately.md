@@ -16,6 +16,8 @@ MIT
 
 # Qualify the example, SDK and product at separate boundaries
 
+[Previous lesson](17-admit-the-final-owner-revision.md)
+
 ## A source file is not a test result
 
 This module supplies a real C23 client, owner commands and expected outcomes. The client has not been compiled or run during authoring. Static review can find missing local includes, broken lesson links or inconsistent package hashes; it cannot establish that the exported SDK links or the example behaves correctly.

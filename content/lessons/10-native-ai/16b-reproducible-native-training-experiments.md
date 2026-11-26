@@ -1,5 +1,7 @@
 # Supplement 16B — Reproducible Native Training Experiments in C23
 
+[Previous lesson](16a-reviewing-training-manifests-and-provenance.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch · Umicom Foundation**  
 **Author and project originator:** Sammy Hegab  
 **Implementation:** Umicom Framework, native C23  

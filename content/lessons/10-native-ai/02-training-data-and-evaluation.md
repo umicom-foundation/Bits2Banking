@@ -1,5 +1,7 @@
 # Lesson 02 — Training Data, Provenance and Evaluation Splits
 
+[Previous lesson](01-from-source-text-to-learning.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Level:** introductory · **Implementation status:** curriculum and dataset-design exercise; no corpus ingestion is claimed in Batch 01.

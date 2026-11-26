@@ -1,5 +1,7 @@
 # Lesson 40 — Verify Source-Locked AdamW Checkpoint Continuation
 
+[Previous lesson](39-hash-immutable-training-data-with-sha256.md) · [Next lesson](41-publish-a-complete-training-bundle.md)
+
 **Course:** Build an LLM from Scratch  
 **Level:** Developing  
 **Focus:** Three complementary checkpoint records, strict resume and failure-atomic verification

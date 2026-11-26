@@ -91,7 +91,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | --- | --- | --- |
 | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 128 |
 | Building a Text Editor in C | `learning-packs/building-a-text-editor.json` | 14 |
-| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 57 |
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 59 |
 | Building Bitcoin from Scratch Using Assembly and C | `learning-packs/building-bitcoin-in-c.json` | 3 |
 | Building Blockchain from Scratch | `learning-packs/building-blockchain-from-scratch.json` | 13 |
 | Building Linux from Scratch Using C Code | `learning-packs/building-linux-from-scratch.json` | 3 |
@@ -155,7 +155,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning RISC-V Assembly | `learning-packs/learning-riscv-assembly.json` | 21 |
 | Learning Rust | `learning-packs/learning-rust.json` | 6 |
 | Learning Spring Framework | `learning-packs/learning-spring-framework.json` | 2 |
-| Learning SQL | `learning-packs/learning-sql.json` | 11 |
+| Learning SQL | `learning-packs/learning-sql.json` | 14 |
 | Learning Wt | `learning-packs/learning-wt.json` | 16 |
 | Learning x86 Assembly | `learning-packs/learning-x86-assembly.json` | 9 |
 | Learning Zend Framework | `learning-packs/learning-zend-framework.json` | 2 |
@@ -165,10 +165,13 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Safer C Programming | `learning-packs/safer-c-programming.json` | 43 |
 | Learning Umicom Framework | `learning-packs/umicom-development.json` | 208 |
 | Learning Umicom Framework — Markdown manuscripts | `learning-packs/umicom-development-manuscripts.json` | 208 |
-| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 141 |
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 146 |
 | Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 73 |
 | Learning Build Systems | `learning-packs/learning-build-systems.json` | 32 |
+<!-- Earlier count retained. Inactive mapping and ELF evidence add two lessons.
 | Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 9 |
+-->
+| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 11 |
 | MINIX OS Foundations | `learning-packs/minix-os-foundations.json` | 12 |
 | Learning Maven | `learning-packs/learning-maven.json` | 4 |
 | Learning Gradle | `learning-packs/learning-gradle.json` | 4 |
@@ -178,7 +181,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning FreeBASIC | `learning-packs/learning-freebasic.json` | 45 |
 | Native languages through C and assembly | `learning-packs/native-language-interoperability.json` | 12 |
 | Preparing Data for LLM Training | `learning-packs/preparing-llm-training-data.json` | 34 |
-| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 141 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 146 |
 | Accessible Statement Review | `learning-packs/accessible-statement-review.json` | 2 |
 | AngularJS and Legacy Statement Screens | `learning-packs/angularjs-legacy-statements.json` | 3 |
 | Banking Technology Foundations | `learning-packs/banking-technology-foundations.json` | 4 |
@@ -186,7 +189,10 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Bootstrap and Native Statement Reports | `learning-packs/bootstrap-native-statements.json` | 3 |
 | Build a Banking Application in C | `learning-packs/build-a-bank-application-in-c.json` | 5 |
 | Build a Trading Application in C | `learning-packs/build-a-trading-application-in-c.json` | 5 |
+<!-- Prior count retained for review. The C23 lab adds three lessons.
 | C23 Keywords for Beginners | `learning-packs/c23-keyword-reference.json` | 7 |
+-->
+| C23 Keywords for Beginners | `learning-packs/c23-keyword-reference.json` | 10 |
 | C++20 Keyword and Token Reference | `learning-packs/cpp20-keyword-reference.json` | 8 |
 | D Keywords for Beginners | `learning-packs/d-keyword-reference.json` | 8 |
 | D Special Tokens for Beginners | `learning-packs/d-special-token-reference.json` | 4 |
@@ -250,6 +256,14 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 
 <!-- The previous OS course count is kept for review. The active table includes the new dependency diagnostic lesson.
 | Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 68 |
+-->
+
+<!-- Earlier count retained. The observed-edit lesson extends Learning SQL by one lesson.
+| Learning SQL | `learning-packs/learning-sql.json` | 13 |
+-->
+
+<!-- Earlier count retained. The native snapshot lessons extend Learning SQL by two lessons.
+| Learning SQL | `learning-packs/learning-sql.json` | 11 |
 -->
 
 ## Keep native packs stable during website publication
@@ -572,4 +586,24 @@ Start with the [applied course guide](../content/start/applied-native-courses.md
 
 <!-- Retain the earlier WebServer catalogue count after adding a compiled resource lesson.
 | Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 56 |
+-->
+
+<!-- Retain the earlier WebServer count after linking worker HEAD lessons.
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 57 |
+-->
+
+<!-- Retain the earlier Kernel course count after adding permissions lessons.
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 141 |
+-->
+
+<!-- Retain the earlier Kernel course count after adding permissions lessons.
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 141 |
+-->
+
+<!-- Retain the earlier Kernel course count after adding optical evidence lessons.
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 143 |
+-->
+
+<!-- Retain the earlier Kernel course count after adding optical evidence lessons.
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 143 |
 -->

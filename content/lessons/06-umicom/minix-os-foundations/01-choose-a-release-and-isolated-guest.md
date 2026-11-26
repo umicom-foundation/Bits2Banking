@@ -1,5 +1,7 @@
 # Choose a release and an isolated guest
 
+[Next lesson](02-draw-the-kernel-and-server-boundaries.md)
+
 ## Begin with an identifiable system
 
 An operating-system lesson needs a reproducible target. This course studies MINIX 3.3.0 and the matching v3.3.0 source tag. It does not silently combine stable headers with later development snapshots.

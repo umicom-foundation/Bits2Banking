@@ -1,5 +1,7 @@
 # Lesson 08 — Optimisers and Our First Native Training Run
 
+[Previous lesson](07-gradients-and-backpropagation.md) · [Next lesson](09-seeded-initialisation-and-token-embeddings.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Laboratory:** `framework/learning/native-llm/train_bigram.c`  

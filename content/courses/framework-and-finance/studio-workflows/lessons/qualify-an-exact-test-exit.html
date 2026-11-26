@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/studio-workflows/lessons/qualify-an-exact-test-exit.html
+
+PURPOSE:
+A process returns an exit code when it finishes. A test for a deliberate refusal must distinguish that refusal from an unrelated launch error, timeout or output failure.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test an exact process result — Bits2Banking</title>
+<link rel="stylesheet" href="../../course.css">
+<link rel="stylesheet" href="../../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg">
+<link rel="icon" href="../../../../assets/branding/umicom.ico">
+</head><body><header class="site">
+<img class="umicom-wordmark" src="../../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom">
+<h1>Test an exact process result</h1><nav aria-label="Course"><a href="../index.html">Course contents</a> · <a href="trace-a-native-library-link.html">Previous lesson</a> · <a href="compare-a-recorded-artifact-identity.html">Next lesson</a></nav></header>
+<main><p>A process returns an exit code when it finishes. A test for a deliberate refusal must distinguish that refusal from an unrelated launch error, timeout or output failure.</p><h2>Practice</h2><ol>
+<li>Run the tests in the normal build directory from the first practice lesson.</li>
+<li>Compare the six test results with the C23 enum in evidence.h. Zero means matching evidence, two means changed evidence and three means a malformed record or incorrect usage.</li>
+<li>Open check_evidence.cmake and find where the test compares the exit code and both output streams. Notice that each case starts with its own expectation.</li>
+</ol>
+<pre><code>ctest --test-dir build/studio-evidence --output-on-failure --no-tests=error
+ctest --test-dir build/studio-evidence --output-on-failure -R &quot;^bits[.]studio[.]evidence[.](different|malformed|usage)$&quot;</code></pre>
+<h2>Expected result</h2><p>The refusal cases pass when the program gives the precise expected status and message. A run that cannot find the executable stops separately. A failure test passes because the expected refusal occurred.</p>
+<h2>If the result differs</h2><p>If CTest reports no tests, check the build directory and confirm BUILD_TESTING is enabled. If the executable cannot be launched, build the named target successfully before interpreting test assertions.</p>
+<h2>Inspect the source</h2><p>In the repository, open <code>labs/framework/studio-build-evidence/check_evidence.cmake</code>. The laboratory requires a C23 compiler, CMake and Ninja.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="trace-a-native-library-link.html">Previous lesson</a> · <a href="compare-a-recorded-artifact-identity.html">Next lesson</a></nav></main>
+<footer>Umicom Foundation</footer></body></html>

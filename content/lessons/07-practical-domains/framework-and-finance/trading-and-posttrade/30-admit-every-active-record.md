@@ -19,6 +19,8 @@ New website manuscripts use the preferred supplied wordmark. -->
 
 # Admit every active record before returning a match
 
+[Previous lesson](29-bound-queries-and-protect-output.md) · [Next lesson](31-treat-zero-as-a-real-timestamp.md)
+
 ## A successful comparison is not complete admission
 
 Suppose the first row is LAB.A and the second row has a symbol with no terminating zero. An early-return search can find LAB.A and report success while the retained catalogue is malformed. A later consumer may inspect the damaged row and encounter a different result. Shared admission checks the complete active catalogue first.

@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/studio-workflows/lessons/compare-a-recorded-artifact-identity.html
+
+PURPOSE:
+A SHA-256 digest is a fixed-length text representation derived from file bytes. It helps decide which artifact a previous observation describes.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare a recorded artifact with current bytes — Bits2Banking</title>
+<link rel="stylesheet" href="../../course.css">
+<link rel="stylesheet" href="../../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg">
+<link rel="icon" href="../../../../assets/branding/umicom.ico">
+</head><body><header class="site">
+<img class="umicom-wordmark" src="../../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom">
+<h1>Compare a recorded artifact with current bytes</h1><nav aria-label="Course"><a href="../index.html">Course contents</a> · <a href="qualify-an-exact-test-exit.html">Previous lesson</a></nav></header>
+<main><p>A SHA-256 digest is a fixed-length text representation derived from file bytes. It helps decide which artifact a previous observation describes.</p><h2>Practice</h2><ol>
+<li>Run the rebuilt case. Its fixture writes one version of a build-local classroom file and records its digest.</li>
+<li>Read the next write in check_evidence.cmake. The fixture changes the bytes at the same path and recomputes the observed digest.</li>
+<li>Follow that pair of values into the C comparator. The original digest is still a useful record for the earlier bytes. It does not describe the updated file.</li>
+</ol>
+<pre><code>ctest --test-dir build/studio-evidence --output-on-failure -V -R &quot;^bits[.]studio[.]evidence[.]rebuilt$&quot;
+Get-FileHash -Algorithm SHA256 build/studio-evidence/fixtures/rebuilt-artifact.txt</code></pre>
+<h2>Expected result</h2><p>The test observes exit 2 and the message evidence differs. The PowerShell command prints the current file digest. PowerShell normally displays uppercase hex while this practice program expects lowercase text.</p>
+<h2>If the result differs</h2><p>The rebuilt case owns that fixture inside its build directory. If it has not run, invoke the named test first. Do not replace a stored digest merely to make a comparison pass. Review the new bytes independently before recording a new baseline.</p>
+<h2>Inspect the source</h2><p>In the repository, open <code>labs/framework/studio-build-evidence/evidence.c</code>. The laboratory requires a C23 compiler, CMake and Ninja.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="qualify-an-exact-test-exit.html">Previous lesson</a> · <a href="read-a-32-bit-debugger-status.html">Next lesson</a></nav></main>
+<footer>Umicom Foundation</footer></body></html>

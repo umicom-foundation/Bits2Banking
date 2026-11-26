@@ -1,5 +1,7 @@
 # Reconcile counts, gross totals and status
 
+[Previous lesson](19-turn-a-cash-forecast-into-a-contract.md) · [Next lesson](21-call-framework-from-c-and-cpp.md)
+
 ## What reconciliation means
 
 Reconciliation compares two independently produced views of the same business activity. It should explain differences, not merely force totals to match. A trade list, payment instruction list and bank statement represent different lifecycle stages.

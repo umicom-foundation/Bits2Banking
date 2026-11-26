@@ -1,5 +1,7 @@
 # 4. Accounts, balances, currencies and dates
 
+[Previous lesson](03-how-a-treasury-management-system-helps.md) · [Next lesson](05-front-middle-and-back-office.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 One of the easiest ways to make a serious financial mistake is to write down a number without saying *what it measures*. A treasurer needs more than an amount. They need the currency, account, date and current status.

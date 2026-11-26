@@ -16,6 +16,8 @@ MIT
 
 # Own a workspace for a local execution session
 
+[Previous lesson](10-connect-a-trading-command-to-framework.md) · [Next lesson](12-separate-order-and-execution-identities.md)
+
 ## Start with one owner
 
 The earlier laboratory used a simulated broker table to retain and cancel requests. A fill needs more context: an order, a position and execution history must agree. The Framework trading workspace owns that combined local state. The application receives an opaque pointer, which means it uses public functions instead of editing the private structure.

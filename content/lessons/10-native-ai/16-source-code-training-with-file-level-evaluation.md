@@ -1,5 +1,7 @@
 # Lesson 16 — Train an Umicom Decoder on C23 Source Code
 
+[Previous lesson](15b-native-corpus-and-next-token-windows.md) · [Next lesson](16a-reviewing-training-manifests-and-provenance.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · Umicom Foundation  
 **Implementation:** Umicom Framework, C23 · **Batch:** Native AI 06

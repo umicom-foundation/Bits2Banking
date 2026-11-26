@@ -1,5 +1,7 @@
 # Review and record a change
 
+[Previous lesson](01-files-snapshots-and-history.md) · [Next lesson](03-remotes-and-safe-updates.md)
+
 Use a separate practice folder to learn staging and commits before publishing changes to an application.
 
 ## Create a small practice repository

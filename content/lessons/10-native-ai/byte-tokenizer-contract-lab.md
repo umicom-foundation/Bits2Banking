@@ -1,5 +1,7 @@
 # Lab: turn bytes into tokens and recover them
 
+[Previous lesson](94-plan-a-fused-rotary-tape-operator.md)
+
 A language model processes numbers. A tokeniser converts input into those numbers using a defined vocabulary. Framework's byte tokeniser is deliberately simple: each possible byte has one token. This lab studies its exact input/output contract before attempting training.
 
 ## Setup recap

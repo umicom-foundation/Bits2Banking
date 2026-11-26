@@ -1,5 +1,7 @@
 # Build and review the read-only driver
 
+[Previous lesson](06-use-grants-for-bounded-data-transfer.md) · [Next lesson](08-compare-recovery-with-umicom-kernel.md)
+
 ## Two builds answer different questions
 
 The lab contains a portable range helper and a MINIX-specific driver adapter. A host CMake build checks the helper only. A guest Makefile uses MINIX service rules and links the system's character-driver and system libraries.

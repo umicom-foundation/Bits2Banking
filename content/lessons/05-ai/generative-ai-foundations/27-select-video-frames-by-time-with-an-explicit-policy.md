@@ -17,6 +17,8 @@ MIT
 
 # Select video frames by time with an explicit policy
 
+[Previous lesson](26-place-an-image-on-a-canvas-without-confusing-padding-and-masks.md)
+
 [Course contents](index.md)
 
 ## Why a video is more than a pile of images

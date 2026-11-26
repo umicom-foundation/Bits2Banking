@@ -19,6 +19,8 @@ New website manuscripts use the preferred supplied wordmark. -->
 
 # Move chart state with the instrument identity
 
+[Previous lesson](31-treat-zero-as-a-real-timestamp.md) · [Next lesson](33-qualify-identity-lifetime-with-the-installed-sdk.md)
+
 ## Several arrays describe one logical row
 
 The workspace retains market records, candle histories, watchlist instruments and chart navigation in parallel arrays. Each index must refer to the same instrument across all of them. Navigation includes visible bar count, pinned timestamp, pin state and selected interval.

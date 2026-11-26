@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 47: Design a two-host failure-and-recovery experiment
 
+[Previous lesson](046-describe-append-only-receipts-without-claiming-consensus.md) · [Next lesson](048-complete-a-permissioned-worker-authentication-capstone.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

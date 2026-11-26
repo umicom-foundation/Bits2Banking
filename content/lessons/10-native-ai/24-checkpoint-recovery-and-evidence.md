@@ -1,5 +1,7 @@
 # Lesson 24 — Understand Checkpoints, Recovery and Evidence
 
+[Previous lesson](23-plan-a-reproducible-training-run.md) · [Next lesson](25-design-a-trustworthy-c23-expert-benchmark.md)
+
 **Level:** intermediate • **Estimated time:** 18 minutes • **Theme:** preserving evidence in a native training workflow
 
 ## A checkpoint is more than a file with a `.umi` extension

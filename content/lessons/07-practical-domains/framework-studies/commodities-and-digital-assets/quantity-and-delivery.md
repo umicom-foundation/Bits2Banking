@@ -1,5 +1,7 @@
 # A quantity needs a unit and a delivery context
 
+[Next lesson](confirmations-and-finality.md)
+
 Learn why units, delivery evidence and finality matter across different asset types.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

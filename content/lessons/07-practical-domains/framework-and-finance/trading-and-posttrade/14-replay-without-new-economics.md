@@ -16,6 +16,8 @@ MIT
 
 # Replay an execution without adding its economics twice
 
+[Previous lesson](13-publish-fill-state-together.md) · [Next lesson](15-cancel-the-unfilled-remainder.md)
+
 ## A repeated message can be normal
 
 A sender may retry because it did not observe an acknowledgement. The receiver cannot conclude that every repeated message represents a new trade. The workspace first checks whether the execution identity is already retained. Exact supported field equality returns success without changing the owner.

@@ -1,5 +1,7 @@
 # Lesson 46 — Rotate and Revoke Training Signing Keys
 
+[Previous lesson](45-build-an-offline-publisher-trust-policy.md) · [Next lesson](47-read-a-machine-verifiable-training-receipt.md)
+
 A trustworthy training-evidence system needs a way to retire an old signer
 without deleting historical checkpoints or silently pretending that its
 signatures remain approved. In this lesson, we apply **key rotation** and

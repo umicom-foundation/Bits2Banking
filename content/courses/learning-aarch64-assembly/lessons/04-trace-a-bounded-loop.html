@@ -1,0 +1,40 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-aarch64-assembly/lessons/04-trace-a-bounded-loop.html
+
+PURPOSE:
+Trace a loop with an explicit maximum
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trace a loop with an explicit maximum | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Trace a loop with an explicit maximum</h1>
+<p>This function sums an unsigned count down to one. Its caller can supply any 32-bit value. The function allows at most 16 iterations and returns zero if the value exceeds that limit.</p>
+<pre><code class="language-text">sum = 0
+if count &gt; 16 or count = 0 then return sum
+repeat
+    sum = sum + count
+    count = count - 1
+until count = 0
+return sum
+</code></pre>
+<p>Trace inputs 0, 3, 16 and 17. The results are 0, 6, 136 and 0. For 3, make three rows with the value of W0 before <code>subs</code>, the value of W1, and whether the next branch is taken. The final <code>subs</code> makes W0 zero and the branch falls through. The <code>cbz</code> before the loop protects the zero-iteration case.</p>
+<pre><code class="language-powershell">clang --target=aarch64-none-elf -c sum-under-limit.S -o sum-under-limit.o
+llvm-objdump -d sum-under-limit.o
+</code></pre>
+<p>Look for the unsigned <code>b.hi</code> limit, the zero check and the backwards branch. Layout addresses can change between builds. The condition and target relationship are the important observations. Apply the same bounded-work habit when designing Framework readers and bytecode exercises.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="03-compare-signed-and-unsigned.html">Previous lesson</a> · <a href="05-preserve-a-return-address.html">Next lesson</a> · <a href="../examples/sum-under-limit.S">Source · sum-under-limit.S</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

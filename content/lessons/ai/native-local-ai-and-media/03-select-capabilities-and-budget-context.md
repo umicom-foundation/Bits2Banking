@@ -49,4 +49,4 @@ Why should a model with a large context limit not always win? A larger limit is 
 ## Diagnose refusals
 When selection returns NOT_FOUND, inspect configured state, health, capability bits, context and local_only separately. Do not clear all constraints until something runs. Display the missing requirement and allow the user to change it deliberately.
 
-[Course contents](index.md) · [Next lesson](04-own-providers-and-requests-in-c.md)
+[Course contents](index.md) · [Next lesson](04-own-providers-and-requests-in-c.md) · [Previous lesson](02-map-framework-and-applications.md)

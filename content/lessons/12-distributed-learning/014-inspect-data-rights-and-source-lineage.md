@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 014: Understand why a data hash is not a licence
 
+[Previous lesson](013-bind-one-worker-to-one-round.md) · [Next lesson](015-run-a-tiny-three-worker-update-by-hand.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

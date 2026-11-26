@@ -1,5 +1,7 @@
 # Keep related changes together
 
+[Next lesson](retries-and-envelopes.md)
+
 Connect storage, message identity, retries and recovery without confusing a request with completion.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

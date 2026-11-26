@@ -1,5 +1,7 @@
 # Lesson 27 — Interpret Model Completion Metrics
 
+[Previous lesson](26-build-a-native-completion-benchmark.md) · [Next lesson](28-connect-benchmark-to-umicom-llm.md)
+
 **Level:** developing | **Time:** 25 minutes | **Prerequisites:** Lessons 18, 25 and 26
 
 ## One model result, three different numbers

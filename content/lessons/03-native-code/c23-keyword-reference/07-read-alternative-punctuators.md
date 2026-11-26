@@ -17,7 +17,7 @@ MIT
 
 # Read alternative C punctuators
 
-[Previous lesson](06-read-optional-and-older-forms.md) · [Course contents](index.md) · [HTML edition](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html)
+[Previous lesson](06-read-optional-and-older-forms.md) · [Course contents](index.md) · [HTML edition](../../../courses/c23-keyword-reference/lessons/07-read-alternative-punctuators.html) · [Next lesson](08-initialize-scalar-and-record-values.md)
 
 A compiler reads your program in pieces called **tokens**. A punctuator is a token such as an opening brace or a bracket. C has alternate spellings for six punctuators. Some documentation calls them digraphs. Each spelling must stay together without a space.
 

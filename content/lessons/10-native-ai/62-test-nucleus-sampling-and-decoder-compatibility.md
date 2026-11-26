@@ -1,5 +1,7 @@
 # Lesson 62 — Test top-p sampling and decoder compatibility in C23
 
+[Previous lesson](61-top-p-nucleus-sampling.md) · [Next lesson](63-qualify-kv-cached-nucleus-generation.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author and project originator:** Sammy Hegab  
 **Implementation:** Umicom Framework C23

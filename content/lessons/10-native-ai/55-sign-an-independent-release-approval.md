@@ -1,5 +1,7 @@
 # Lesson 55 — Sign an Independent Native LLM Release Approval
 
+[Previous lesson](54-validate-windows-c23-crypto-builds.md) · [Next lesson](56-verify-signed-release-approval-and-reject-tampering.md)
+
 ## Learning objectives
 
 By the end of this lesson you should be able to distinguish a **publisher's signature** from a **release approver's authorisation**, explain exactly which bytes an Ed25519 signature covers, build the opt-in C23 signing executable and identify the trust boundary of a separately distributed approval key.

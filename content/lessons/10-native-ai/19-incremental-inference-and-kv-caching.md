@@ -1,5 +1,7 @@
 # Lesson 19 — Incremental Native Inference and Key/Value Caching
 
+[Previous lesson](18a-checkpoint-identity-and-repeatable-comparisons.md) · [Next lesson](19a-native-cpu-matrix-optimisation-and-benchmarking.md)
+
 **Bits to Banking — Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · **Organisation:** Umicom Foundation  
 **Language:** ISO C23 · **Runtime owner:** Umicom Framework

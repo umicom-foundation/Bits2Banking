@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 48: Complete a permissioned worker-authentication capstone
 
+[Previous lesson](047-design-a-two-host-failure-and-recovery-experiment.md) · [Next lesson](049-connect-federated-jobs-to-immutable-research-decisions.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

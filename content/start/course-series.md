@@ -155,6 +155,16 @@ Trace registers and a small x86-64 function before attempting platform-specific 
 
 **Next topics:** Memory addressing, branches, stack frames, debugging and C calling conventions.
 
+### [Learning AArch64 Assembly](../lessons/03-native-code/learning-aarch64-assembly/index.md)
+
+Trace Arm registers and branches, then inspect and link AArch64 ELF and Windows ARM64 COFF objects.
+
+**Available:** 13 lessons in this course.
+
+<!-- Keep the original eight-lesson inventory for review.
+**Available:** 8 lessons in this course.
+-->
+
 ### [Learning RISC-V Assembly](../lessons/03-native-code/learning-riscv-assembly/index.md)
 
 Relate RISC-V instructions and register conventions to real Kernel and Framework sources.

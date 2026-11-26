@@ -17,7 +17,7 @@ MIT for original learning material.
 
 <p class="umicom-course-artwork"><span class="umicom-brand-mark"><img src="../../../assets/branding/umicom-wordmark.svg" alt="Umicom" width="180"></span> <a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" alt="Umicom icon" width="30"></a></p>
 
-[Course contents](index.md) · [Previous lesson](08-qualify-a-bootable-release-in-stages.md)
+[Course contents](index.md) · [Previous lesson](08-qualify-a-bootable-release-in-stages.md) · [Next lesson](10-change-inactive-private-pages.md)
 
 A **hart** is a RISC-V hardware thread. Firmware describes harts in a device tree. The Kernel records a separate fact when a hart reaches its C startup code.
 

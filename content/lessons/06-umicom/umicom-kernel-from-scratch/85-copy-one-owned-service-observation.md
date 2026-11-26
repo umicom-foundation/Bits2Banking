@@ -34,4 +34,4 @@ The authored owned-snapshot and snapshot-refusal cases check independent copies,
 
 [Course contents](index.md)
 
-[Next lesson](86-encode-a-boot-handoff-through-the-kernel.md)
+[Next lesson](86-encode-a-boot-handoff-through-the-kernel.md) · [Previous lesson](84-restart-a-provider-without-stale-consumers.md)

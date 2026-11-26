@@ -1,5 +1,7 @@
 # Cash, timing and a treasury system
 
+[Previous lesson](../18-follow-one-trade-from-booking-to-settlement.md)
+
 [Course contents](index.md) · [Next: Status, approval and evidence](02-status-approval-and-evidence.md)
 
 ## The question this course answers

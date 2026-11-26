@@ -1,5 +1,7 @@
 # Compare MINIX recovery with Umicom Kernel
 
+[Previous lesson](07-build-and-review-the-read-only-driver.md)
+
 ## Compare invariants, not names
 
 Both systems invite questions about service lifetime: who owns resources, when may a replacement run, and what happens to in-flight work? Their implementations and ABIs remain independent.

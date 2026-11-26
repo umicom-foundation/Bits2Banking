@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 07: Design a bounded native C23 learning job
 
+[Previous lesson](006-network-latency-bandwidth-and-compression.md) · [Next lesson](008-experiment-with-adversarial-workers-and-receipts.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

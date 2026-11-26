@@ -17,6 +17,8 @@ MIT
 
 # Compose scene instructions into a creation document
 
+[Previous lesson](recovery-draft-and-readiness.md) · [Next lesson](recovery-owned-serialized-bytes.md)
+
 ## Prepare the exercise
 
 Use the installed-SDK lab linked below after the earlier Framework ownership lessons. Configure and build once, then run this lesson’s scenario. Commands and expected results are instructions for qualification, not a claim that this revision has been executed.

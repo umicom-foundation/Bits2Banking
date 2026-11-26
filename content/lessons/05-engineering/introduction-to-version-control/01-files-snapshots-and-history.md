@@ -1,5 +1,7 @@
 # Files, snapshots and history
 
+[Next lesson](02-review-and-record-a-change.md)
+
 A file contains the text you are working on now. Version control keeps named snapshots so you can explain what changed and compare earlier work.
 
 ## Start with one real example

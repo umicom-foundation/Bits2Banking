@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/framework-and-finance/studio-workflows/lessons/trace-a-native-library-link.html
+
+PURPOSE:
+A source file can compile while its executable still fails to link. Use the exact archive and symbol in a small C23 practice project to find which build stage stopped.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trace a missing native library symbol — Bits2Banking</title>
+<link rel="stylesheet" href="../../course.css">
+<link rel="stylesheet" href="../../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../../assets/branding/umicom-icon.svg">
+<link rel="icon" href="../../../../assets/branding/umicom.ico">
+</head><body><header class="site">
+<img class="umicom-wordmark" src="../../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom">
+<h1>Trace a missing native library symbol</h1><nav aria-label="Course"><a href="../index.html">Course contents</a> · <a href="source-navigation-commands.html">Previous lesson</a> · <a href="qualify-an-exact-test-exit.html">Next lesson</a></nav></header>
+<main><p>A source file can compile while its executable still fails to link. Use the exact archive and symbol in a small C23 practice project to find which build stage stopped.</p><h2>Practice</h2><ol>
+<li>From the Bits2Banking checkout, configure and build the normal version with the native compiler active in your shell.</li>
+<li>Build the same executable in a separate practice directory with its provider omitted. The header is still visible, so the caller can compile.</li>
+<li>Read the first message naming UmicomLabCompareEvidence. Find the declaration in evidence.h, the definition in evidence.c and the connection in target_link_libraries.</li>
+</ol>
+<pre><code>cmake -S labs/framework/studio-build-evidence -B build/studio-evidence -G Ninja
+cmake --build build/studio-evidence --target umicom-lab-evidence --verbose
+cmake -S labs/framework/studio-build-evidence -B build/studio-evidence-omit -G Ninja -DUMICOM_LAB_OMIT_PROVIDER=ON
+cmake --build build/studio-evidence-omit --target umicom-lab-evidence --verbose</code></pre>
+<h2>Expected result</h2><p>The normal executable links. The disposable build stops at the link step and identifies UmicomLabCompareEvidence as unresolved. The linker wording depends on the compiler. In Studio, inspect the first relevant link line before moving to tests.</p>
+<h2>If the result differs</h2><p>If the compiler cannot find evidence.h, the exercise has stopped earlier than intended. Confirm that the checkout has all six laboratory files and both build directories point to the same source folder.</p>
+<h2>Inspect the source</h2><p>In the repository, open <code>labs/framework/studio-build-evidence/CMakeLists.txt</code>. The laboratory requires a C23 compiler, CMake and Ninja.</p>
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a href="source-navigation-commands.html">Previous lesson</a> · <a href="qualify-an-exact-test-exit.html">Next lesson</a></nav></main>
+<footer>Umicom Foundation</footer></body></html>

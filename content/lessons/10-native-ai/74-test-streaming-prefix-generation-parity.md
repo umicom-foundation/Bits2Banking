@@ -1,5 +1,7 @@
 # Lesson 74 — Verify Streaming Prefix Generation and Observed Work
 
+[Previous lesson](73-stream-growing-prefix-generation-in-c23.md) · [Next lesson](75-benchmark-native-prefix-inference.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Existing Umicom Framework native prefix-generation tests  

@@ -16,6 +16,8 @@ MIT
 
 # Validate depth before looking up its instrument
 
+[Previous lesson](22-own-a-market-observation-client.md) · [Next lesson](24-observe-public-prints-without-fills.md)
+
 ## Treat a snapshot as structured input
 
 A depth value contains fixed-size identity fields, array counts and numeric levels. Checking only the counts leaves important questions unanswered: does each identity field terminate inside its storage, is the contract multiplier usable, and are the active prices and sizes finite? Framework answers these questions in the shared depth validator before the workspace performs identity lookup.

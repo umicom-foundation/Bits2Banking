@@ -19,6 +19,8 @@ New website manuscripts use the preferred supplied wordmark. -->
 
 # Bound a query and protect the caller output
 
+[Previous lesson](28-distinguish-identity-from-array-position.md) · [Next lesson](30-admit-every-active-record.md)
+
 ## A C string needs a terminator
 
 A fixed array of characters is not automatically a C string. The terminating zero byte must occur inside readable storage. A direct string comparison can continue looking for that byte beyond the intended field. The watchlist query contract limits inspection to the financial identifier capacity.

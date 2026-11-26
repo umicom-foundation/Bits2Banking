@@ -56,4 +56,4 @@ ctest --test-dir $hardwareBuild --output-on-failure -R '^hardware[.](zero_timeba
 
 The mirror's selected host run passed all three controls. Do the same exercise on paper for an optional sampling frequency in an Umicom application. Decide how your interface would display absence, a valid number and a value the reader refused. Record the observed frequency separately when you later test real firmware.
 
-[Course contents](index.md) · [Previous lesson · Find a short device-tree path after a long branch](139-find-a-short-device-tree-path-after-a-long-branch.md) · [HTML edition](../../../courses/umicom-kernel-from-scratch/lessons/140-read-a-declared-hardware-timebase.html)
+[Course contents](index.md) · [Previous lesson · Find a short device-tree path after a long branch](139-find-a-short-device-tree-path-after-a-long-branch.md) · [Next lesson · Order page permission changes](141-order-page-permission-changes.md) · [HTML edition](../../../courses/umicom-kernel-from-scratch/lessons/140-read-a-declared-hardware-timebase.html)

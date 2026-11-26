@@ -1,0 +1,45 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/144-admit-a-verified-optical-input.html
+
+PURPOSE:
+Admit a verified optical input
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admit a verified optical input | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Admit a verified optical input</h1>
+<p>The file-only optical producer opens <code>BOOTX64.EFI</code> in its current directory. A verified staging target lets you prepare that directory with an EFI file whose hash matches the selected diagnostic manifest. It also compares the exact manifest bytes to the pin you saved with the producer evidence.</p>
+<h3>Configure one fresh staging directory</h3>
+<p>Set <code>$Kernel</code> to your Umicom Kernel source path, <code>$StageBuild</code> to a new writable build directory, <code>$Manifest</code> and <code>$EfiFile</code> to the previously verified paths, and <code>$ManifestPin</code> to the saved 64-digit SHA-256 string. Keep a trusted copy of the pin with the earlier evidence. Recomputing the pin from an unexplained replacement would discard that earlier comparison.</p>
+<pre><code class="language-powershell">cmake -S &quot;$Kernel/tools/x64-uefi-preflight-optical&quot; -B &quot;$StageBuild&quot; -G Ninja `
+  -DUMICOM_X64_OPTICAL_VERIFIED_INPUT=ON `
+  &quot;-DUMICOM_X64_OPTICAL_PAIR_MANIFEST=$Manifest&quot; `
+  &quot;-DUMICOM_X64_OPTICAL_PAIR_SHA256=$ManifestPin&quot; `
+  &quot;-DUMICOM_X64_OPTICAL_PAIR_EFI=$EfiFile&quot;
+cmake --build &quot;$StageBuild&quot; --target umicom-kernel-x64-preflight-optical-verified-input
+</code></pre>
+<p>Use the C compiler and Ninja settings from the preflight guide for your host. Stop before the build if configuration reports an error. This explicit target prepares an ordinary file in the build directory.</p>
+<h3>Check what was staged</h3>
+<pre><code class="language-powershell">$staged = Join-Path $StageBuild 'verified-preflight-input/BOOTX64.EFI'
+$pair = Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
+(Get-FileHash -LiteralPath $staged -Algorithm SHA256).Hash -ieq $pair.efi.sha256
+</code></pre>
+<p>Expect <code>True</code>. Run the staging target again with the same inputs. The existing matching staged file remains usable. If a previously staged file has different bytes, keep the directory for review and configure a fresh one. The verified target refuses to replace the conflict.</p>
+<h3>Predict refusals</h3>
+<p>Write down which boundary would fail for a different manifest pin, a valid manifest with the wrong role, or a selected EFI file with another digest. The first checks the saved report identity. The second checks the allowed purpose. The third checks the selected bytes. Keeping these checks separate makes the first failure easier to diagnose.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="143-read-an-exact-efi-elf-pair.html">Previous lesson · Read an exact EFI and ELF pair</a> · <a href="145-trace-efi-through-a-diagnostic-iso.html">Next lesson · Trace an EFI file through a diagnostic ISO</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/144-admit-a-verified-optical-input.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,5 +1,7 @@
 # 10. Why the value of a trade can change
 
+[Previous lesson](09-trade-lifecycle-workflow-and-approvals.md) · [Next lesson](11-transfers-payment-messages-and-accounting.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 Imagine that the kitchen's financial adviser checks a foreign-currency position on two different days. The amount of dollars has not changed, yet the reported value in pounds is different. Is somebody's calculation necessarily wrong?

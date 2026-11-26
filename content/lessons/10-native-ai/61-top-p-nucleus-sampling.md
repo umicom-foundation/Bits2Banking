@@ -1,5 +1,7 @@
 # Lesson 61 — Top-p nucleus sampling for native language models
 
+[Previous lesson](60-emit-deterministic-model-quality-evidence.md) · [Next lesson](62-test-nucleus-sampling-and-decoder-compatibility.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author and project originator:** Sammy Hegab  
 **Implementation:** Umicom Framework C23

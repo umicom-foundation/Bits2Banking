@@ -1,5 +1,7 @@
 # Supplement 16A — Training Manifests, Corpus Provenance and Leakage
 
+[Next lesson](16b-reproducible-native-training-experiments.md)
+
 **Bits to Banking · Umicom Foundation · Sammy Hegab**  
 **Companion:** [Lesson 16 — Train an Umicom Decoder on C23 Source Code](16-source-code-training-with-file-level-evaluation.md)
 

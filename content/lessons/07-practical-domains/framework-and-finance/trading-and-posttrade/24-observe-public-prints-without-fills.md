@@ -16,6 +16,8 @@ MIT
 
 # Pause public prints without inventing account fills
 
+[Previous lesson](23-validate-depth-before-lookup.md) · [Next lesson](25-publish-alert-changes-together.md)
+
 ## Give each sequence a clear meaning
 
 The public trade tape orders records by a provider-supplied sequence. This sequence is different from an execution identifier and from the workspace revision. A sequence gap records missing provider evidence; it does not create a synthetic account fill to compensate. The tape scenario publishes sequence 1 followed by sequence 3 so the distinction is visible.

@@ -17,6 +17,8 @@ MIT
 
 # Qualify storage, SDK clients and native workflows separately
 
+[Previous lesson](recovery-reference-and-prompt-review.md) · [Next lesson](project-select-a-catalogue-recipe.md)
+
 ## Prepare the exercise
 
 Use the installed-SDK lab linked below after the earlier Framework ownership lessons. Configure and build once, then run this lesson’s scenario. Commands and expected results are instructions for qualification, not a claim that this revision has been executed.

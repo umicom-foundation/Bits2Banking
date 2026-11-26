@@ -1,5 +1,7 @@
 # Call the Framework treasury contract from C and C++
 
+[Previous lesson](20-reconcile-counts-gross-totals-and-status.md) · [Next lesson](22-use-one-native-service-from-java-and-kotlin.md)
+
 ## Read the boundary
 
 C is the primary implementation language of Umicom Framework. Its public cash-forecast header has a C linkage guard so a C++ consumer can call the same functions. C++ is used here to demonstrate integration, not to replace the service.

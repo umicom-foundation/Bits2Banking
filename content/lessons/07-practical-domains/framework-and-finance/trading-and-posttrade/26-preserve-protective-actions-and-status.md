@@ -16,6 +16,8 @@ MIT
 
 # Keep protective actions available and report their status
 
+[Previous lesson](25-publish-alert-changes-together.md) · [Next lesson](27-handle-refusal-without-resetting-owners.md)
+
 ## A display counter must not block protection
 
 Most edits need a new observation number before changing state. A kill switch and live disarming have a different responsibility: they must still take effect when the counter cannot advance. Framework retains those protective effects and saturates the revision at its maximum. Resetting the switch or arming live mode releases a gate and therefore requires representable capacity.

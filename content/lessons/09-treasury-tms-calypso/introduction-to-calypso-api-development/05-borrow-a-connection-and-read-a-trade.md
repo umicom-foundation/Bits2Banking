@@ -1,5 +1,7 @@
 # Borrow a connection and read one trade
 
+[Previous lesson](04-match-the-guide-to-your-sdk.md) · [Next lesson](06-bound-a-query-and-preserve-failure.md)
+
 ## Connection ownership
 
 DSConnection gives a client access to remote services. The supplied guide demonstrates ConnectionUtil for applications that establish their own session. An extension inside an existing application often receives a session instead. That difference determines who may disconnect it.

@@ -1,5 +1,7 @@
 # Lesson 92 — Measure Training-Tape Memory and Verify Safe Rewind
 
+[Previous lesson](91-qualify-the-production-rotary-training-tape.md) · [Next lesson](93-check-real-tape-evidence.md)
+
 **Umicom Foundation · Bits to Banking · Sammy Hegab**  
 **Implementation:** existing Umicom Framework C23 tape memory and rollback APIs  
 **Companion:** [Illustrated Lesson 92](../../courses/llm-from-scratch/lessons/92-measure-tape-memory-and-rewind.html)

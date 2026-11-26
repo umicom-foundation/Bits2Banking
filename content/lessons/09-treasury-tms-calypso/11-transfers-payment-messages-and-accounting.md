@@ -1,5 +1,7 @@
 # 11. From a financial agreement to a completed payment
 
+[Previous lesson](10-risk-market-data-and-valuation.md) · [Next lesson](12-calypso-for-absolute-beginners-and-first-capstone.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 A trader agrees to exchange currencies. A back-office team checks the settlement instructions. An engine prepares a payment message. The bank sends or receives funds. Accounting records the financial effects.

@@ -1,5 +1,7 @@
 # Lesson 04 — Logits, Softmax and Cross-Entropy
 
+[Previous lesson](03-tokens-vocabulary-and-encoding.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Level:** introductory mathematics · **Implementation:** `UmiAiTrainingCrossEntropy` in the new C23 training tape.

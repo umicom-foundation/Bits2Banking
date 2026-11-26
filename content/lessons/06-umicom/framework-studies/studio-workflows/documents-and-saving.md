@@ -1,5 +1,7 @@
 # A file, a draft and a saved document
 
+[Next lesson](designer-model.md)
+
 Understand editing, saving and visual components through the same Framework state model.
 
 Lesson 1 of 3. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

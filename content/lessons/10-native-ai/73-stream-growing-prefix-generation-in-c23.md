@@ -1,5 +1,7 @@
 # Lesson 73 — Stream a Growing Prefix with Native C23
 
+[Previous lesson](72-test-learned-position-rollover.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Existing Umicom Framework `prefix_generation` services  

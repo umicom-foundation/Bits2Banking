@@ -1,0 +1,35 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-aarch64-assembly/lessons/07-compare-an-elf-and-coff-object.html
+
+PURPOSE:
+Compare ELF64 and Windows ARM64 COFF
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compare ELF64 and Windows ARM64 COFF | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Compare ELF64 and Windows ARM64 COFF</h1>
+<p>An instruction set describes what the CPU executes. An object format describes how tools store the instructions, names, sections and relocation records. The same short ARM64 answer can be packaged for the two linkers.</p>
+<p>Use a built Umicom C on PATH with the two native constant commands. Work in a new folder with a local copy of the examples. Both commands require a new output path. Their bounded input reads the integer return from <code>main</code> in <code>answer.c</code> and emits a function named <code>umc_constant_return</code> for the caller to link.</p>
+<pre><code class="language-powershell">umicom-c emit-constant-aarch64-elf answer.c answer-umicom.o
+umicom-c emit-constant-arm64-coff answer.c answer-umicom.obj
+llvm-readobj --file-headers --sections --symbols answer-umicom.o answer-umicom.obj
+llvm-objdump -d answer-umicom.o answer-umicom.obj
+</code></pre>
+<p>Find <code>EM_AARCH64</code> in ELF and <code>IMAGE_FILE_MACHINE_ARM64</code> in COFF. Both define <code>umc_constant_return</code>. In the ELF symbols, find <code>$x</code>, the local mapping symbol that marks this Arm section as instructions. COFF uses its own section and symbol rules.</p>
+<p>Compare the two disassemblies with the hand-written <code>return-constant.S</code> object. The three instruction words should agree. The complete object files differ because their headers and tables describe different formats. <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">Arm ELF64 ABI</a> · <a href="https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#arm64-processors">Microsoft PE and COFF format</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="06-link-an-elf-call.html">Previous lesson</a> · <a href="08-link-a-windows-arm64-caller.html">Next lesson</a> · <a href="../examples/answer.c">Source · answer.c</a> · <a href="../examples/return-constant.S">Source · return-constant.S</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -46,6 +46,6 @@ The expected-tip verification must fail, even when the sole supplied record is i
 
 ## Continue learning
 
-[Previous](059-plan-a-privacy-aware-model-history.md) | [Course route](../../courses/distributed-learning/ledger-coordination-and-evidence.html)
+[Previous](059-plan-a-privacy-aware-model-history.md) | [Course route](../../courses/distributed-learning/ledger-coordination-and-evidence.html) · [Next lesson](061-prepare-a-batch-of-worker-receipts.md)
 
 *Service to Many Leads to Greatness.*

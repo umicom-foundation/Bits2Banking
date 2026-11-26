@@ -1,5 +1,7 @@
 # Lesson 89 — Audit Rotary Gradients Against an Independent Numerical Oracle
 
+[Previous lesson](88-verify-rope-optimisation-and-results.md) · [Next lesson](90-test-real-tape-positions-and-lifetimes.md)
+
 **Bits to Banking · Native AI · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework (C23)

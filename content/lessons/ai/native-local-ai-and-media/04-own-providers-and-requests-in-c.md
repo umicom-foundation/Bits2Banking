@@ -59,4 +59,4 @@ Run offline dispatch and offline policy. The first expects exactly one callback;
 ## Recovery
 If a callback sees an unexpected model ID, inspect the complete request and selected provider. Do not substitute a hard-coded answer in the live path. Preserve the error and report the failing layer.
 
-[Course contents](index.md) · [Next lesson](05-call-an-existing-local-model.md)
+[Course contents](index.md) · [Next lesson](05-call-an-existing-local-model.md) · [Previous lesson](03-select-capabilities-and-budget-context.md)

@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 072: Complete an audited three-worker experiment specification
 
+[Next lesson](073-separate-update-admission-from-ledger-inclusion.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Language:** UK English · **Licence:** MIT  
 **Study level:** Intermediate; review earlier foundational course units as needed.

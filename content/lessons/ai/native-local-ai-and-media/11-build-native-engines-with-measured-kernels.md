@@ -50,4 +50,4 @@ The [LLM from scratch course](../../../courses/llm-from-scratch/index.html) cove
 
 When optimized and reference outputs disagree, isolate the smallest failing shape. Keep the original reference implementation. Do not widen tolerances until a test passes without understanding the numerical difference.
 
-[Course contents](index.md) · [Next lesson](12-qualify-a-complete-ai-workflow.md)
+[Course contents](index.md) · [Next lesson](12-qualify-a-complete-ai-workflow.md) · [Previous lesson](10-manage-personas-and-conversations.md)

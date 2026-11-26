@@ -1,5 +1,7 @@
 # Lesson 86 — Learn the Mathematics Behind Rotary Training Tests
 
+[Previous lesson](85-build-rotary-attention-on-the-training-tape.md) · [Next lesson](87-train-rotary-attention-projections.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework (C23)

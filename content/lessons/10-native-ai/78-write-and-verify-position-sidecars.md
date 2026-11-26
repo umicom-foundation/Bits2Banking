@@ -1,5 +1,7 @@
 # Lesson 78 — Encode and Verify Position Sidecars
 
+[Next lesson](79-admit-model-checkpoints-before-inference.md)
+
 **Bits to Banking · Umicom Foundation · Sammy Hegab**  
 **Source of truth:** Umicom Framework
 

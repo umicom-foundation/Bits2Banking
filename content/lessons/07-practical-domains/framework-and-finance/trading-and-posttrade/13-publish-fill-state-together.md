@@ -16,6 +16,8 @@ MIT
 
 # Publish the order, position and fill evidence together
 
+[Previous lesson](12-separate-order-and-execution-identities.md) · [Next lesson](14-replay-without-new-economics.md)
+
 ## One event changes several views
 
 A partial fill changes how much of an order remains open. It also changes the instrument position and adds evidence to the execution history. If an application updates only the displayed order, the position can disagree. Framework therefore prepares the combined change inside the workspace rather than asking each screen to perform its own arithmetic.

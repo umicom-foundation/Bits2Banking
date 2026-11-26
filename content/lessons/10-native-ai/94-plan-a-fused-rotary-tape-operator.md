@@ -1,5 +1,7 @@
 # Lesson 94 — Plan a Correct Fused Rotary Operator
 
+[Previous lesson](93-check-real-tape-evidence.md) · [Next lesson](byte-tokenizer-contract-lab.md)
+
 **Series:** Bits2Banking · Building an LLM from Scratch · C23 · **Author:** Sammy Hegab, Umicom Foundation
 
 ## Learning outcome

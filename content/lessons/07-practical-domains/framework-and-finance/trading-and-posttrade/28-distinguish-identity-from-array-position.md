@@ -19,6 +19,8 @@ New website manuscripts use the preferred supplied wordmark. -->
 
 # Distinguish an instrument identity from its array position
 
+[Previous lesson](27-handle-refusal-without-resetting-owners.md) · [Next lesson](29-bound-queries-and-protect-output.md)
+
 ## Begin with two different questions
 
 Which instrument is this? asks for identity. Where is its record stored right now? asks for position. A watchlist index answers the second question. Removing an earlier row can change that position without changing the instrument. A pointer into the array has the same lifetime problem.

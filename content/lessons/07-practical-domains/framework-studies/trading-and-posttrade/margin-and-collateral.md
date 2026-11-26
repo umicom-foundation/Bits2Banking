@@ -2,6 +2,8 @@
 
 # Understand exposure and collateral
 
+[Previous lesson](orders-and-executions.md) · [Next lesson](../../framework-and-finance/trading-and-posttrade/03-read-a-local-order-request.md)
+
 Distinguish market data, orders, executions, positions and collateral.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

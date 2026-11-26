@@ -1,5 +1,7 @@
 # Lesson 49 — Verify an Ordered Group of Signed Training Checkpoints
 
+[Previous lesson](48-test-native-llm-verification-before-release.md) · [Next lesson](50-test-atomic-release-gates-and-ordered-digests.md)
+
 **Umicom Foundation · Bits to Banking · Build Your Own LLM from Scratch**  
 **Prerequisites:** Lessons 41–48 on training publications, Ed25519 signatures, offline trust policies and single-publication JSON receipts.  
 **Environment:** ISO C23, CMake, CTest and a C23 toolchain. The optional cryptographic build requires compatible OpenSSL 3 libraries.

@@ -1,5 +1,7 @@
 # Submodules and application dependencies
 
+[Previous lesson](03-remotes-and-safe-updates.md)
+
 Umicom Applications uses separate repositories for shared Framework and application modules. The parent records which child commits belong together.
 
 ## Read the real registration

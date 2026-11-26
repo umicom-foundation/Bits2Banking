@@ -1,5 +1,7 @@
 # Lesson 01 — From Source Text to Learned Predictions
 
+[Next lesson](02-training-data-and-evaluation.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Sammy Hegab · Umicom Foundation**  
 **Level:** introductory; no neural-network experience required  

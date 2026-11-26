@@ -1,5 +1,7 @@
 # Lesson 53 — Understand Windows API Name Collisions in Native C23
 
+[Previous lesson](52-test-independent-release-approval-and-rejection.md) · [Next lesson](54-validate-windows-c23-crypto-builds.md)
+
 A project can compile correctly on Linux and still fail when the same C23
 source includes the Windows platform headers. The cause may be a **name
 collision**, not an incompatible OpenSSL version or an incorrect CMake setting.

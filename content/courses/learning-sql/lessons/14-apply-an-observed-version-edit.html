@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-sql/lessons/14-apply-an-observed-version-edit.html
+
+PURPOSE:
+  Explain bounded UTF-8 titles and observed-version edits with the native SQLite lab.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apply an edit to the version you observed | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page">
+<article class="article-content">
+<nav aria-label="Lesson sequence"> <a href="../index.html">Course contents</a> · <a rel="prev" href="13-refresh-a-consistent-outbox-report.html">Previous lesson</a></nav>
+<h1>Apply an edit to the version you observed</h1>
+<p>Two learners open the same note. Each sees the word <code>Ready</code> and revision 1. One saves a new title. When the second learner sends an edit based on revision 1, the note has already changed. A <strong>revision</strong> labels the version read by each learner. An <strong>optimistic edit</strong> lets both learners prepare a draft, then checks the old revision at the moment of writing.</p>
+<h2>Build and run the native exercise</h2>
+<p>Use the <a href="12-read-one-committed-database-view.html">setup from lesson 12</a>. The exercise uses the same C23 target and SQLite library. It opens a fresh in-memory database and writes no files. Run this separate mode from the Bits2Banking checkout after building.</p>
+<pre><code>ctest --test-dir .\.build\sqlite-outbox-snapshot -V -R '^btb\.education\.sqlite_outbox_observed_edit$'</code></pre>
+<pre><code>ctest --test-dir ./.build/sqlite-outbox-snapshot -V -R '^btb\.education\.sqlite_outbox_observed_edit$'</code></pre>
+<h2>Count the bytes before choosing a limit</h2>
+<p>The first editor uses the letter <code>e</code>, a separate combining acute accent, and a rocket. A <a href="https://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries">grapheme cluster</a> is a unit a reader tends to see as one character. The accented letter is one cluster here even though the lab stores it as two code points. The rocket is a second cluster.</p>
+<ol>
+<li>The letter <code>e</code> is one UTF-8 byte.</li>
+<li>The combining accent U+0301 is two UTF-8 bytes. Codes like <code>U+0301</code> name Unicode code points.</li>
+<li>The rocket U+1F680 is four UTF-8 bytes. Together they occupy seven bytes and three code points.</li>
+</ol>
+<p>In this UTF-8 database, <code>length(title)</code> counts code points for the lab's text. <code>length(CAST(title AS BLOB))</code> counts bytes. A BLOB is a byte sequence. Adding the one-byte letter <code>X</code> makes the same proposal eight bytes, above this lab's seven-byte cap. SQLite does not count grapheme clusters for either expression. The lab uses fixed valid UTF-8 examples. <a href="https://www.sqlite.org/lang_corefunc.html#length">SQLite length rules</a></p>
+<h2>Keep the version check inside the write</h2>
+<pre><code>UPDATE note
+SET title = ?1, revision = revision + 1
+WHERE id = 1 AND revision = ?2
+  AND length(CAST(?1 AS BLOB)) &lt;= ?3;</code></pre>
+<p>The question-mark placeholders bind the draft, the revision observed by that editor, and the byte limit. SQL decides whether the same row still matches both predicates. The lab uses <code>sqlite3_changes()</code> immediately after completing that statement. One row means the edit was accepted. Zero rows means the predicates selected nothing. The lab changes only one input per failed attempt to identify the cause. <a href="https://www.sqlite.org/c3ref/changes.html">SQLite row-change count</a></p>
+<pre><code>Both editors observed revision 1.
+First edit: 1 row, revision 2, 3 code points, 7 UTF-8 bytes.
+Stale short edit: 0 rows changed; revision 2 kept.
+Current 8-byte edit: 0 rows changed; revision 2 kept.</code></pre>
+<h2>Check a refused edit and keep the draft</h2>
+<p>The second editor sends the valid short word <code>Draft</code> with revision 1. The lab checks the accepted title and revision again. It then sends the 8-byte title with revision 2 to test the byte limit on its own. Both rejected attempts leave the accepted text exactly as the first editor saved it.</p>
+<p>If two editors disagree, show the latest saved version and keep the rejected draft available for review. The editor can decide whether to resubmit after reading the newer revision. In a separate exercise copy, remove the revision predicate and predict which check fails. Restore the predicate, then explain what a stale editor can safely do next.</p>
+<p>The Framework uses an authorized, serialized web handler for a configured string. Its host decides edit permission, and its handler validates the submitted UTF-8 line before publishing. The lab illustrates the write-boundary principle with SQLite, using fixed local data. If the test cannot find SQLite, return to the compiler and library setup in lesson 12. If the displayed code-point or byte counts differ, inspect the C fixture's hex bytes before changing the expected values. <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/native/sqlite-outbox-snapshot/main.c">Lab source</a> · <a href="https://github.com/umicom-foundation/umicom-framework/blob/main/docs/development/reactive-value-admission.md">Framework reactive value admission</a></p>
+<nav aria-label="Continue learning"> <a href="../index.html">Course contents</a> · <a rel="prev" href="13-refresh-a-consistent-outbox-report.html">Previous lesson</a></nav>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/04-web/learning-sql/14-apply-an-observed-version-edit.md">Markdown edition</a></p>
+</article>
+</main>
+<footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer>
+</body>
+</html>

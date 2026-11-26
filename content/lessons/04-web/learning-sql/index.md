@@ -28,6 +28,14 @@ Practise rollback, savepoints, constraint failures and structural checks.
 1. [Diagnose a constraint failure](10-diagnose-a-constraint-failure.md)
 1. [Check application rules and structural health](11-check-application-rules-and-structural-health.md)
 
+## Read snapshots in a native application
+
+Follow a saved report across a separate SQLite write, then test visibility after refresh.
+
+1. [Read one committed database view](12-read-one-committed-database-view.md)
+1. [Refresh a consistent outbox report](13-refresh-a-consistent-outbox-report.md)
+1. [Apply an edit to the version you observed](14-apply-an-observed-version-edit.md)
+
 <!-- The module guide above owns the reading order. Earlier explanations and reference links remain available for readers following existing material. -->
 
 <details markdown="1">

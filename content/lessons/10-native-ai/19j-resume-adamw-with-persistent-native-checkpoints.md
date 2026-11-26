@@ -1,5 +1,7 @@
 # Supplement 19J — Resume AdamW Training with a Portable Native Checkpoint
 
+[Previous lesson](19i-learning-rate-schedules-and-reproducible-resume.md) · [Next lesson](19k-native-adamw-experiments-and-verifiable-resume.md)
+
 **Author:** Sammy Hegab · **Organisation:** Umicom Foundation · **Licence:** MIT  
 **Level:** Intermediate native AI engineering · **Implementation language:** C23
 

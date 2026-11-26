@@ -1,0 +1,34 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-aarch64-assembly/lessons/08-link-a-windows-arm64-caller.html
+
+PURPOSE:
+Link a Windows ARM64 call without executing the image
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Link a Windows ARM64 call without executing the image | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Link a Windows ARM64 call without executing the image</h1>
+<p>Build the independent C caller for Windows ARM64 and link it against the Umicom C COFF output from the previous lesson. The files are read and written as development artifacts. No Arm runtime is required for this link experiment.</p>
+<pre><code class="language-powershell">clang --target=aarch64-pc-windows-msvc -O0 -std=c23 -ffreestanding -fno-stack-protector -c caller.c -o caller-arm64.obj
+llvm-readobj --relocations caller-arm64.obj
+lld-link /machine:arm64 /subsystem:console /entry:btb_arm_entry /nodefaultlib /out:linked-arm64.exe caller-arm64.obj answer-umicom.obj
+llvm-readobj --file-headers --coff-imports linked-arm64.exe
+</code></pre>
+<p>Look for <code>IMAGE_REL_ARM64_BRANCH26</code> against <code>umc_constant_return</code> in the caller and an ARM64 PE image from the linker. The image's minimal entry is intended for object inspection. Make a separate link without the Umicom C object and check that it refuses the unresolved function. Do not open or run either image during this lab.</p>
+<p>If <code>lld-link</code> refuses the file's machine type, inspect each object header before altering the linker flags. Windows x64, Windows ARM64, AArch64 ELF and Arm64EC are different link targets. Preserve the first linker diagnostic for review in Umicom Studio. <a href="https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions">Microsoft ARM64 ABI</a> · <a href="https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#arm64-processors">Microsoft PE and COFF format</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="07-compare-an-elf-and-coff-object.html">Previous lesson</a> · <a href="../examples/caller.c">Source · caller.c</a> · <a href="../examples/answer.c">Source · answer.c</a> · <a href="09-load-a-stored-byte.html">Next lesson</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

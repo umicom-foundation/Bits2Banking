@@ -17,6 +17,8 @@ MIT
 
 # Keep serialized bytes alive for every reader
 
+[Previous lesson](recovery-scene-to-creation.md) · [Next lesson](recovery-transactional-import.md)
+
 ## Prepare the exercise
 
 Use the installed-SDK lab linked below after the earlier Framework ownership lessons. Configure and build once, then run this lesson’s scenario. Commands and expected results are instructions for qualification, not a claim that this revision has been executed.

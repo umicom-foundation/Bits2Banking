@@ -1,5 +1,7 @@
 # Represent money and available funds
 
+[Next lesson](payment-states.md)
+
 Work with currency amounts, balances, reservations and payment states using fictional data.
 
 Lesson 1 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

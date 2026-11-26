@@ -1,5 +1,7 @@
 # Use grants for bounded data transfer
 
+[Previous lesson](05-keep-pm-vfs-and-vm-responsibilities-clear.md) · [Next lesson](07-build-and-review-the-read-only-driver.md)
+
 ## Authority to copy bytes
 
 Large data should not be moved by pretending a small IPC message is an arbitrary shared-memory buffer. MINIX memory grants describe controlled access to another process's data. The [official grants guide](https://wiki.minix3.org/doku.php?id=developersguide:memorygrants) explains the model and its service privilege requirements.

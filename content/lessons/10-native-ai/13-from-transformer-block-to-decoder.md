@@ -1,5 +1,7 @@
 # Lesson 13 — From a Transformer Block to a Trainable Decoder
 
+[Previous lesson](12-layer-normalisation-residuals-and-transformer-block.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Umicom Framework, native C23  

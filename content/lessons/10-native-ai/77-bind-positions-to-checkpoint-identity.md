@@ -1,5 +1,7 @@
 # Lesson 77 — Bind Position Policies to Checkpoint Identity
 
+[Previous lesson](76-qualify-benchmark-evidence.md) · [Next lesson](78-write-and-verify-position-sidecars.md)
+
 **Bits to Banking · Umicom Foundation · Sammy Hegab**
 
 ## Learning objectives

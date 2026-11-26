@@ -16,6 +16,8 @@ MIT for original material; cited sources retain their own terms.
 
 # Qualify a complete AI workflow
 
+[Previous lesson](11-build-native-engines-with-measured-kernels.md)
+
 ## What you will learn
 Build an evidence-based acceptance plan for chat, retrieval and media without collapsing them into one “AI works” checkbox.
 

@@ -44,5 +44,5 @@ Draw a free range next to a reserved one. Label the exclusive end and predict th
 
 Umicom Kernel can use allocator admission observations when it describes startup memory. Umicom Framework can carry workload identity and requested resources to the owner. Umicom OS selects the supported execution and recovery path. This example models one already-recorded authority, without memory mapping or cross-core enforcement.
 
-[C23 lab source](../../../labs/native/multikernel-memory-owner/main.c) · [Barrelfish architecture overview](https://barrelfish-test.systems.ethz.ch/publications/TN-000-Overview.pdf)
+<!-- Earlier course-relative source link retained for review. [C23 lab source](../../../labs/native/multikernel-memory-owner/main.c) -->[C23 lab source](https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/native/multikernel-memory-owner/main.c) · [Barrelfish architecture overview](https://barrelfish-test.systems.ethz.ch/publications/TN-000-Overview.pdf)
 

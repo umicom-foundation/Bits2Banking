@@ -1,5 +1,7 @@
 # Supplement 19L — AdamW Effective Batches and Exact Checkpoint Continuation
 
+[Previous lesson](19k-native-adamw-experiments-and-verifiable-resume.md) · [Next lesson](20-from-banking-source-to-training-data.md)
+
 **Author:** Sammy Hegab · **Organisation:** Umicom Foundation · **Licence:** MIT  
 **Implementation:** native C23 · **Source of truth:** Umicom Framework
 

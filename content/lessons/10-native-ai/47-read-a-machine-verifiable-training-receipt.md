@@ -1,5 +1,7 @@
 # Lesson 47 — Read a Machine-Readable Training Verification Receipt
 
+[Previous lesson](46-rotate-and-revoke-training-signing-keys.md) · [Next lesson](48-test-native-llm-verification-before-release.md)
+
 **Umicom Foundation · Bits to Banking · Build Your Own LLM from Scratch**  
 **Prerequisites:** Lessons 41–46 (publication integrity, Ed25519 signing and offline publisher trust).  
 **Language:** ISO C23. The executable and verifier use native Framework services; no runtime scripting interpreter is required.

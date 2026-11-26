@@ -1,0 +1,43 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/umicom-kernel-from-scratch/lessons/142-read-a-partial-permission-transition.html
+
+PURPOSE:
+Read a partial permission transition
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a partial permission transition | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read a partial permission transition</h1>
+<p>A permission plan describes proposed changes for each range. An applicator calls the selected operation and receives a status. In the Kernel’s hosted exercise, a function pointer connects that applicator to a small in-memory model of the pages.</p>
+<h2>Read the three counters</h2>
+<ul>
+<li><code>plannedCount</code> is the number of operations the reviewed plan requires.</li>
+<li><code>attemptedCount</code> includes every operation the applicator tried, including the one that returned the refusal.</li>
+<li><code>completedCount</code> advances only when the callback returns exact <code>EFI_SUCCESS</code>.</li>
+</ul>
+<p>Imagine a plan with six steps. The first two report success and step three reports a refusal. The result records six planned, three attempted and two reported complete. The remaining calls stay unopened. The failed action and status let a reviewer locate the point that stopped the plan.</p>
+<p>A callback’s success is a report about its own operation. The next admission stage needs a fresh query of all four ranges to establish their current attributes. Treat a partial sequence as an interrupted transition. Recheck the attributes before deciding whether another plan is appropriate.</p>
+<h2>Run the simulated refusal cases</h2>
+<p>From the Kernel repository root, choose the same exact x64 ELF as in the previous exercise.</p>
+<pre><code class="language-powershell">cmake -S tests/x86_uefi_permission_apply -B build/permission-apply -G Ninja &quot;-DUMICOM_TEST_ELF=C:/path/to/verified/umicom-kernel-x64-entry.elf&quot;
+cmake --build build/permission-apply
+ctest --test-dir build/permission-apply --output-on-failure --no-tests=error
+</code></pre>
+<p>Find the <code>protective-refused</code> and <code>relax-refused</code> cases in <code>tests/x86_uefi_permission_apply/permission_apply_tests.c</code>. Tell a classmate where each case stops and which evidence shows the later calls were left untouched. Then check the <code>empty</code> case. An already-correct set of ranges has no planned calls and needs no callback ports.</p>
+<p>If a test reports a refusal earlier than expected, compare the selected callback and captured ranges with the fixture. These tests use the in-memory model. Testing actual firmware is a separate workflow.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="141-order-page-permission-changes.html">Previous lesson · Order page permission changes</a> · <a href="143-read-an-exact-efi-elf-pair.html">Next lesson · Read an exact EFI and ELF pair</a> · <a href="../../../lessons/06-umicom/umicom-kernel-from-scratch/142-read-a-partial-permission-transition.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

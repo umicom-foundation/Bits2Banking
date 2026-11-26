@@ -1,0 +1,53 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-aarch64-assembly/lessons/09-load-a-stored-byte.html
+
+PURPOSE:
+Read one stored byte in two integer forms
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read one stored byte in two integer forms | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read one stored byte in two integer forms</h1>
+<p>Imagine a box in memory holding the byte <code>0xfe</code>. A pointer tells the CPU where that box is. The practice functions both load the same byte through X0. They describe the upper bits of their returned integer differently.</p>
+<table>
+<thead>
+<tr>
+<th>Load</th>
+<th>32-bit result</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ldrb w0, [x0]</code></td>
+<td><code>0x000000fe</code></td>
+<td>254 when read as an unsigned integer</td>
+</tr>
+<tr>
+<td><code>ldrsb w0, [x0]</code></td>
+<td><code>0xfffffffe</code></td>
+<td>−2 when read as a signed integer</td>
+</tr>
+</tbody>
+</table>
+<p>Predict the results for <code>0x7f</code> and <code>0x80</code>. The top bit matters to the signed load. Because both instructions read exactly one byte, neither consumes the next byte in the source.</p>
+<pre><code class="language-powershell">clang --target=aarch64-none-elf -c load-byte-views.S -o load-byte-views.o
+llvm-objdump -d load-byte-views.o
+</code></pre>
+<p>Find the two named functions and compare their operand sizes. In a Framework file reader, decide whether a field is an unsigned encoded byte or a signed value before choosing its load and conversion.</p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="08-link-a-windows-arm64-caller.html">Previous lesson</a> · <a href="10-check-a-native-record-offset.html">Next lesson</a> · <a href="../examples/load-byte-views.S">Source · load-byte-views.S</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

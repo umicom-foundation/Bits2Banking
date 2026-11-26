@@ -1,5 +1,7 @@
 # A ledger observation is not always final
 
+[Previous lesson](quantity-and-delivery.md)
+
 Learn why units, delivery evidence and finality matter across different asset types.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

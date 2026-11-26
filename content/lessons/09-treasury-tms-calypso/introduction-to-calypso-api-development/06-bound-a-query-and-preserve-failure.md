@@ -1,5 +1,7 @@
 # Bound a query and preserve its failure
 
+[Previous lesson](05-borrow-a-connection-and-read-a-trade.md) · [Next lesson](07-workflow-checks-and-transactions.md)
+
 ## Why a limit matters
 
 A small result in a demonstration says little about a production query. An unrestricted filter can consume server resources even if the client later discards most results. The supplied guide shows TradeArray queries using a TradeFilter and time; it does not establish a portable pagination interface for every release.

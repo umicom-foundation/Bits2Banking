@@ -1,5 +1,7 @@
 # Supplement 19A — Make Our Native Model's Mathematics Measurable
 
+[Previous lesson](19-incremental-inference-and-kv-caching.md) · [Next lesson](19b-profile-whole-model-inference-and-memory.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** C23; Assembly becomes an optional later optimisation  

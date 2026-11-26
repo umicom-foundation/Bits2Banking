@@ -14,6 +14,8 @@ MIT
 -->
 # Qualify host and freestanding boot boundaries
 
+[Next lesson](82-boot-is-the-start-of-service-lifetime.md)
+
 This lesson explains one boundary between startup software and a kernel. It begins with a small hosted C program, uses synthetic addresses, and links the real Umicom Kernel reader. No previous operating-system course is required.
 
 ## Prepare a small host laboratory

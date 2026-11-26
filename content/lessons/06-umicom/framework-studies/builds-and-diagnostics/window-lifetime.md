@@ -1,5 +1,7 @@
 # Investigate callbacks and window lifetime
 
+[Previous lesson](build-evidence.md)
+
 Distinguish configure, compile, link and runtime evidence, then investigate shared dependency failures.
 
 Lesson 2 of 2. Read [Start here](../../../../courses/framework-and-finance/start.html) first. No banking account or live connection is needed.

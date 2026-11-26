@@ -1,5 +1,7 @@
 # Lesson 83 — Differentiate Rotary Position Mathematics in Native C23
 
+[Previous lesson](82-prove-single-block-rotary-kv-reuse.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework (C23)

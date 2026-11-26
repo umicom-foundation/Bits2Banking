@@ -1,0 +1,47 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/building-a-web-server-in-c/lessons/58-keep-head-metadata-separate-from-content.html
+
+PURPOSE:
+Keep HEAD metadata separate from content
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep HEAD metadata separate from content | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Keep HEAD metadata separate from content</h1>
+<p>A colleague wants to check whether a published report is available. They can ask for HEAD, which asks for response headers. GET usually returns those headers and the report itself. A report server can use HEAD to avoid preparing or transferring a large document.</p>
+<p>Think of a representation as the particular version of a response selected for a request. For example, one route might return a plain-text report. Its Content-Length for HEAD is the number of bytes that would be in the relevant GET response. It can be zero when that representation is empty. If the worker cannot determine the length without producing the report, it can omit the value.</p>
+<h2>Learn where each decision belongs</h2>
+<ol>
+<li>The web service admits a request without a body and forwards the actual HEAD method to the FastCGI worker. FastCGI is the protocol the web server uses to communicate with that separate application.</li>
+<li>The worker reports the headers it knows. A reported length and the bytes the worker might have generated are separate facts.</li>
+<li>The web gateway reads the bounded worker reply. It prepares the selected headers and discards any worker document bytes for HEAD.</li>
+</ol>
+<p>The following C model describes the two possible length states. The boolean records whether a worker supplied a length. The integer can then represent a reported empty document without being confused with an unknown length.</p>
+<pre><code class="language-c">typedef struct HeadMetadata {
+    bool length_known;
+    size_t length;
+} HeadMetadata;
+
+const HeadMetadata empty_report = {.length_known = true, .length = 0U};
+const HeadMetadata pending_report = {.length_known = false, .length = 0U};
+</code></pre>
+<h2>Practice</h2>
+<p>Write a three-column table with worker header, bytes sent to the HTTP client, and meaning. Fill it in for a reported length of 42, a reported length of 0, and no reported length. All three send zero document bytes. The first two include a length header and the third omits it.</p>
+<p>If your table makes a missing length look like an empty report, revisit the boolean. The next lesson checks these cases on the wire with an offline C23 exercise.</p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2">HTTP HEAD semantics</a> · <a href="https://www.rfc-editor.org/rfc/rfc3875.html#section-4.3.3">CGI worker behavior</a></p>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="57-limit-compiled-bytes-before-embedding.html">Previous lesson · Limit compiled bytes before embedding</a> · <a href="59-check-head-responses-byte-by-byte.html">Next lesson · Check HEAD responses byte by byte</a> · <a href="../../../lessons/05-engineering/building-a-web-server-in-c/58-keep-head-metadata-separate-from-content.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

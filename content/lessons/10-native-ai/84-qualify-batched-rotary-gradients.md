@@ -1,5 +1,7 @@
 # Lesson 84 — Qualify Batched Rotary Gradients
 
+[Previous lesson](83-differentiate-rotary-position-in-c23.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework (C23)

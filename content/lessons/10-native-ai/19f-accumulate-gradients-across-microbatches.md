@@ -1,5 +1,7 @@
 # Accumulate Gradients Across Smaller Native Training Batches
 
+[Previous lesson](19e-expand-tensors-and-train-multiple-sequences.md) · [Next lesson](19g-reproducible-effective-batch-experiments.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch · Umicom Foundation**  
 **Author and project originator:** Sammy Hegab  
 **Implementation language:** C23  

@@ -15,6 +15,8 @@ MIT
 
 # Observe the boot reservation plan
 
+[Previous lesson](127-decode-option-values-before-changing-connection-state.md)
+
 ![Umicom](../../../assets/branding/umicom-wordmark-on-dark.svg)
 
 ## Read the exact image and its reserved pages

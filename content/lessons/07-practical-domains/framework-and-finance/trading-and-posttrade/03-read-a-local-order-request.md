@@ -16,6 +16,8 @@ MIT
 
 # Read the fields of a local order request
 
+[Previous lesson](../../framework-studies/trading-and-posttrade/margin-and-collateral.md)
+
 This module starts with a local program and synthetic orders. No trading knowledge, broker account or market subscription is required. You will learn how a request becomes a retained order and how a caller checks each result.
 
 ## Start here

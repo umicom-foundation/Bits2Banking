@@ -440,3 +440,18 @@ Follow exact node paths and observe which hardware values were declared.
 
 1. [Find a short device-tree path after a long branch](139-find-a-short-device-tree-path-after-a-long-branch.md)
 1. [Read a declared hardware timebase](140-read-a-declared-hardware-timebase.md)
+
+## Plan and verify page permissions
+
+Set restrictions first and interpret exact progress from an interrupted callback sequence.
+
+1. [Order page permission changes](141-order-page-permission-changes.md)
+1. [Read a partial permission transition](142-read-a-partial-permission-transition.md)
+
+## Verify each optical input
+
+Track the exact diagnostic EFI from its linked ELF to the staged file, FAT image and optical catalogue.
+
+1. [Read an exact EFI and ELF pair](143-read-an-exact-efi-elf-pair.md)
+1. [Admit a verified optical input](144-admit-a-verified-optical-input.md)
+1. [Trace an EFI file through a diagnostic ISO](145-trace-efi-through-a-diagnostic-iso.md)

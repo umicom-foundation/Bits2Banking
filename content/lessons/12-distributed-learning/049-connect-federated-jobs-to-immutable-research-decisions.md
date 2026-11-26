@@ -46,6 +46,6 @@ After numeric, policy, evaluation and authorised release checks, not merely afte
 
 ## Continue learning
 
-[Next](050-preserve-a-trusted-reference-tip-across-process-restarts.md) | [Course route](../../courses/distributed-learning/ledger-coordination-and-evidence.html)
+[Next](050-preserve-a-trusted-reference-tip-across-process-restarts.md) | [Course route](../../courses/distributed-learning/ledger-coordination-and-evidence.html) · [Previous lesson](048-complete-a-permissioned-worker-authentication-capstone.md)
 
 *Service to Many Leads to Greatness.*

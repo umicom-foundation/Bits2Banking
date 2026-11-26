@@ -1,5 +1,7 @@
 # 8. Foreign exchange: spot and forward agreements
 
+[Previous lesson](07-deposits-loans-and-simple-interest.md) · [Next lesson](09-trade-lifecycle-workflow-and-approvals.md)
+
 *Bits to Banking · Treasury Management, TMS and Calypso From Zero · Umicom Foundation*
 
 A charity in Britain must buy equipment from an American supplier. The invoice is for **USD 125,000**, payable in three months. The charity keeps most of its cash in pounds. How many pounds should it set aside?

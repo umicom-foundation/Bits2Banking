@@ -1,5 +1,7 @@
 # Supplement 19C — Compact Inference Memory and Ownership in C23
 
+[Previous lesson](19b-profile-whole-model-inference-and-memory.md) · [Next lesson](19d-training-memory-capacity-and-budgets.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch**  
 **Author:** Sammy Hegab · **Organisation:** Umicom Foundation  
 **Language:** ISO C23 · **Implementation:** Umicom Framework

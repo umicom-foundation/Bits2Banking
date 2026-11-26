@@ -1,5 +1,7 @@
 # Lesson 29 — Identify a Trained Model and Reviewed Benchmark with SHA-256
 
+[Previous lesson](28-connect-benchmark-to-umicom-llm.md)
+
 **Author:** Sammy Hegab · **Organisation:** Umicom Foundation · **Licence:** MIT  
 **Level:** Beginner to intermediate · **Reading:** 25–35 minutes  
 **Prerequisites:** [Lesson 24 — Checkpoint Recovery](24-checkpoint-recovery-and-evidence.md), [Lesson 26 — Native Completion Benchmark](26-build-a-native-completion-benchmark.md)

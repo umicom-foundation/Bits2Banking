@@ -1,5 +1,7 @@
 # Lesson 23 — Plan a Reproducible Native Training Experiment
 
+[Previous lesson](22-prevent-training-data-leakage.md) · [Next lesson](24-checkpoint-recovery-and-evidence.md)
+
 **Level:** intermediate • **Estimated time:** 18 minutes • **Tools:** PowerShell, CMake and the existing C23 training laboratory
 
 ## What makes an experiment reproducible?

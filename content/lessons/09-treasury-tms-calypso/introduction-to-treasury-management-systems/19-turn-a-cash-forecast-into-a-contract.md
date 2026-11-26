@@ -1,5 +1,7 @@
 # Turn a cash forecast into a data contract
 
+[Previous lesson](03-follow-evidence-through-a-payment.md) · [Next lesson](20-reconcile-counts-gross-totals-and-status.md)
+
 ## From a business question to a program
 
 Treasury asks whether cash will be available when obligations fall due. A program needs a more precise question: which account or scope, currency, date horizon, statuses and data cutoff? Without those fields, a number may be arithmetically correct but operationally misleading.

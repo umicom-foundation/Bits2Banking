@@ -57,4 +57,4 @@ Increase the window capacity to **eight** for twelve appends. The full recomputa
 
 **Takeaway:** cache reuse must be proven for the precise computation and model history it preserves.
 
-[Illustrated lesson](../../courses/llm-from-scratch/lessons/82-prove-single-block-rotary-kv-reuse.html) · [Previous](81-introduce-rotary-position-mathematics.md)
+[Illustrated lesson](../../courses/llm-from-scratch/lessons/82-prove-single-block-rotary-kv-reuse.html) · [Previous](81-introduce-rotary-position-mathematics.md) · [Next lesson](83-differentiate-rotary-position-in-c23.md)

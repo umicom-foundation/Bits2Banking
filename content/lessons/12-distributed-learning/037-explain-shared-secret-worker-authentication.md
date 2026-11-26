@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 37: Explain shared-secret worker authentication
 
+[Previous lesson](036-capstone-three-workers-one-honest-report.md) · [Next lesson](038-separate-key-rotation-from-model-versioning.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

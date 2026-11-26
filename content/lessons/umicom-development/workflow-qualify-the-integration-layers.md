@@ -70,6 +70,50 @@ The shared Umicom Automated Testing runner keeps a bounded prefix of an overlong
 
 Try this on paper. A browser driver times out during a synthetic navigation test. Its diagnostic buffer fills before it can add a terminating zero. Predict the state that should appear in the report and the status a maintainer should read first. Then change the driver outcome to success and compare the table. The difference describes what the runner can verify from the completed result and its evidence.
 
+## Calculate a child deadline and a workflow deadline
+
+A **child deadline** limits one command. The **workflow deadline** limits
+the whole sequence, including report collection and cleanup. For example,
+a cold build starts without existing object files and can take longer than
+a rebuild that can reuse them. Use the same kind of build when comparing
+elapsed times.
+
+Try this on paper. One workflow runs these stages in order. The numbers
+are fictional seconds. A stage may finish exactly at its limit in this model.
+
+| Stage | Allowed seconds | Seconds needed |
+| --- | ---: | ---: |
+| Configure | 5 | 4 |
+| Build | 13 | 12 |
+| Test | 8 | 7 |
+| Collect report | 3 | 2 |
+| Clean up | 3 | 2 |
+
+1. **A child reaches its limit.** Set the workflow limit to 32 seconds
+   and change the build to need 15 seconds. Find when the controller stops
+   the build. In this exercise it skips the tests and report collection,
+   then cleans up if enough workflow time remains.
+2. **The workflow reaches its limit.** Restore the build to 12 seconds
+   and set the workflow limit to 22 seconds. Every stage needs less time
+   than its own limit. Find the stage interrupted by the combined limit
+   and calculate how much time remains for cleanup.
+3. **The workflow finishes.** Set the workflow limit back to 32 seconds.
+   Add the time used before cleanup and find the remaining time both
+   before and after cleanup.
+
+The build in case 1 stops at 17 seconds, because configure used 4 and the
+build reached its 13-second cap. Cleanup ends at 19 seconds, leaving
+13 seconds of workflow time. In case 2, configure and build use 16 seconds.
+Only 6 seconds remain for a 7-second test stage. The workflow ends during
+that stage, with zero seconds left for cleanup. In case 3, the stages
+before cleanup use 25 seconds. Seven seconds remain when cleanup starts,
+the cleanup cap is 3 seconds, and 5 seconds remain after it finishes.
+
+Add the allowed values to check the plan. The 32 seconds include three
+for cleanup. If you must guarantee those three seconds with the shorter
+22-second workflow limit, stop ordinary work by second 19. Read the stage
+outcomes and the remaining workflow time together when deciding what ran.
+
 ## Review and recover
 
 A missing header or symbol requires checking the installed SDK identity. Preserve the command and output for a failed lab expectation. Controlled callbacks do not qualify real compilers, repository publication or a native GUI.

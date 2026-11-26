@@ -1,5 +1,7 @@
 # Supplement 19I — Learning-Rate Schedules and Reproducible Resume
 
+[Previous lesson](19h-adamw-and-native-optimisation.md) · [Next lesson](19j-resume-adamw-with-persistent-native-checkpoints.md)
+
 **Bits to Banking · Umicom Foundation · Sammy Hegab**  
 **Implementation:** Native C23, Umicom Framework
 

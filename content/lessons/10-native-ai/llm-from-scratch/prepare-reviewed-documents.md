@@ -14,6 +14,8 @@ MIT
 -->
 # Prepare documents for a first training dataset
 
+[Previous lesson](../checkpoint-observation-lab.md)
+
 This practical module starts with ordinary text files. You will learn what a dataset, token, training step and evaluation result mean by following the existing native Framework laboratory.
 
 ## Setup recap

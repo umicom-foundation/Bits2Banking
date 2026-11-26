@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 45: Explain why a MAC is not proof of useful training
 
+[Previous lesson](044-compare-secure-aggregation-with-individual-verification.md) · [Next lesson](046-describe-append-only-receipts-without-claiming-consensus.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

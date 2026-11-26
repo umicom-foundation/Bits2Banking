@@ -33,6 +33,8 @@ Start with paper. For the optional practical run, use an Umicom C build that imp
 - [Repeat, skip and stop a counted loop](03-repeat-skip-and-stop.md)
 - [Read the checked input entry and its limits](04-call-the-checked-input-profile.md)
 - [Guard calculations with AND and OR](05-guard-calculations-with-and-or.md)
+- [Choose an action and classify source](06-choose-an-action-and-classify-source.md)
+- [Compare negative division and remainder](07-compare-negative-division.md)
 
 ## Continue in another course
 

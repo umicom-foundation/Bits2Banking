@@ -1,5 +1,7 @@
 # Lesson 59 — Diagnose a C23 Type Error Before Running Model-Quality Tests
 
+[Previous lesson](58-test-model-quality-regressions-in-c23.md) · [Next lesson](60-emit-deterministic-model-quality-evidence.md)
+
 ## Learning objectives
 
 Learn to distinguish configuration, compilation, linking and test execution. Diagnose an incompatible pointer argument using a function declaration rather than guesswork. Apply the correct C23 type without changing the public decoder API, and use CMake and CTest in an order that preserves meaningful test results.

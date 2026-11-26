@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 42: Handle retries without duplicating samples
 
+[Previous lesson](041-compare-hmac-with-mutual-tls-for-future-wan-workers.md) · [Next lesson](043-treat-expired-assignments-and-revoked-workers-as-distinct-failures.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Language:** UK English · **Native implementation:** C23/Assembly where technically justified

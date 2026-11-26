@@ -17,6 +17,8 @@ MIT
 
 # Read D values, types and expressions
 
+[Previous lesson](12-keep-checks-enabled-during-learning.md)
+
 [Course contents](index.md)
 
 ## Before you begin

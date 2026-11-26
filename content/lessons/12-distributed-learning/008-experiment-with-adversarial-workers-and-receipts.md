@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 08: Experiment with adversarial workers and receipts
 
+[Previous lesson](007-design-a-bounded-native-c23-learning-job.md) · [Next lesson](009-hash-chains-and-blockchain-consensus.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Track:** Introduction to Distributed Learning and Verifiable AI
 

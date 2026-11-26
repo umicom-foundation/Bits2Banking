@@ -16,6 +16,8 @@ MIT
 
 # Display revision digits without signed casts or rounding
 
+[Previous lesson](20-observe-denial-without-an-order.md)
+
 ## The display type has a range too
 
 An owner revision can use all 64 unsigned bits. A signed 64-bit UI integer cannot represent the upper half of that range. Casting does not extend the destination type, and using a floating-point value can lose individual integer digits. An identity must remain exact even when it is shown rather than calculated.

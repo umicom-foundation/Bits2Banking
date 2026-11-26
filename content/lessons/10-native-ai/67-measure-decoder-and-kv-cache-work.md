@@ -1,5 +1,7 @@
 # Lesson 67 — Measure Decoder and KV-Cache Work Correctly
 
+[Previous lesson](66-test-streamed-generation-parity-and-cancellation.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation:** Existing Umicom Framework C23 inference modules  

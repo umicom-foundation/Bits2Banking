@@ -1,5 +1,7 @@
 # Draw the kernel and server boundaries
 
+[Previous lesson](01-choose-a-release-and-isolated-guest.md) · [Next lesson](03-follow-a-message-and-a-reply.md)
+
 ## A small kernel still needs a system
 
 An operating system includes more than its kernel. MINIX separates mechanisms and services across protection boundaries. The kernel provides low-level facilities including IPC, while user-space servers perform major operating-system roles.

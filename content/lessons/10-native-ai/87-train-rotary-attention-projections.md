@@ -1,5 +1,7 @@
 # Lesson 87 — Train Query and Key Projections in Native Rotary Attention
 
+[Previous lesson](86-learn-maths-alongside-rope-training.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab  
 **Implementation authority:** Umicom Framework, C23

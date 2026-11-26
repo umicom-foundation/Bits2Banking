@@ -1,5 +1,7 @@
 # Supplement 16C — Resume Native Training and Verify Its Evidence
 
+[Next lesson](17-autoregressive-generation-and-sampling.md)
+
 **Bits to Banking · Build Your Own LLM from Scratch · Umicom Foundation**  
 **Author and project originator:** Sammy Hegab  
 **Primary implementation:** C23 in Umicom Framework

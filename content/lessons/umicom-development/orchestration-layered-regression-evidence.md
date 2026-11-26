@@ -48,4 +48,4 @@ Verify installed headers, archive and compiler when a contract differs. Keep the
 
 [Read the C exercise](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-orchestration/main.c) · [Full setup and native commands](https://github.com/umicom-foundation/Bits2Banking/blob/main/labs/native/framework-task-orchestration/README.md) · [Shared contract](https://github.com/umicom-foundation/umicom-framework/blob/main/docs/learning/task-orchestration.md)
 
-[Course contents](index.md) · [Previous lesson](orchestration-stop-retry-and-finish.md)
+[Course contents](index.md) · [Previous lesson](orchestration-stop-retry-and-finish.md) · [Next lesson](recovery-draft-and-readiness.md)

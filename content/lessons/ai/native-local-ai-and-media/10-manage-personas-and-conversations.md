@@ -49,4 +49,4 @@ Create a “concise C tutor” persona and a “detailed C tutor” draft. Cance
 ## Recovery
 If a changed persona seems ignored, inspect the effective request, not just the stored settings page. If an old chat changes appearance after customization, distinguish intentional display settings from immutable generation metadata.
 
-[Course contents](index.md) · [Next lesson](11-build-native-engines-with-measured-kernels.md)
+[Course contents](index.md) · [Next lesson](11-build-native-engines-with-measured-kernels.md) · [Previous lesson](09-plan-video-jobs-and-exports.md)

@@ -1,5 +1,7 @@
 # Distributed Learning — Lesson 022: Decide whether a blockchain is justified
 
+[Previous lesson](021-construct-a-hash-linked-audit-record.md) · [Next lesson](023-simulate-one-malicious-worker-and-measure-outcomes.md)
+
 **Bits to Banking · Umicom Foundation**  
 **Author:** Sammy Hegab · **Level:** Beginner–intermediate · **Prerequisites:** Distributed Learning Lessons 001–012.
 

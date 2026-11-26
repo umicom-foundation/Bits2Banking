@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/multikernel-systems/lessons/11-trace-a-file-backed-entry.html
+
+PURPOSE:
+Separate the ELF file offset, virtual entry address and physical mapping before loading code.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Trace an executable entry to its file bytes | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom"><span>Bits2Banking</span></a><nav class="site-nav" aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav></div></header>
+  <main id="main" class="simple-page"><article>
+    <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="10-change-inactive-private-pages.html" rel="prev">Previous lesson</a> · <a href="../../../lessons/06-umicom/multikernel-systems/11-trace-a-file-backed-entry.md">Markdown manuscript</a></nav>
+    <h1>Trace an executable entry to its file bytes</h1>
+    <p>An ELF executable places groups of bytes into loadable segments. A segment describes where its file bytes begin, how many file bytes it has and where those bytes belong in the memory view. The entry point names the virtual address where a prepared program would start.</p>
+    <h2>Trace the check</h2>
+    <p>Find the entry’s offset within its segment. Add that offset to the segment’s file offset to locate the exact first entry byte in the file. Use the prepared page table separately to find the physical byte. The three coordinates describe different spaces.</p>
+    <pre><code>Choose the loadable segment containing the entry address.
+Subtract the segment's virtual start from the entry address.
+Check that the difference is inside the file-backed part.
+Add the difference to the file offset and to the mapped physical start.
+Record the coordinates without writing or starting the target.</code></pre>
+    <h2>Run the Kernel’s hosted layout checks</h2>
+    <p>In the sibling Umicom Kernel checkout use the focused hosted test project. Run each command separately and stop on errors. These cases use synthetic files and a memory model.</p>
+    <pre><code>cmake -S tests/riscv_domain_address_space -B build/domain-layout-host -G Ninja -DBUILD_TESTING=ON
+cmake --build build/domain-layout-host
+ctest --test-dir build/domain-layout-host --output-on-failure --no-tests=error -R '^kernel[.]riscv_domain_address[.]image-(layout-exact|entry-in-bss|late-rights)$'</code></pre>
+    <p>Expect three cases to pass. The exact layout case locates a byte 44 positions into a segment whose file data starts at offset 4096. That locates file offset 4140. The entry-in-BSS case rejects an entry in the zero-fill part. The late-rights case refuses a range with incompatible page permissions.</p>
+    <h2>Predict a result</h2>
+    <p>Assume a segment has 48 file bytes and 64 memory bytes. Decide whether offset 40 or offset 52 identifies a byte in the file. Then explain why the valid file location alone does not establish that the same byte is already resident in the prepared RAM.</p>
+    <p>The layout test checks the coordinates and required page permissions with the existing ELF inspector. A successfully verified layout can still contain different bytes at the physical address. The Kernel must separately verify the installed data and instruction visibility before beginning execution.</p>
+    <ul><li><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/include/umicom/kernel/riscv64/domain_image.h">Kernel layout receipt declaration</a></li><li><a href="https://github.com/umicom-foundation/umicom-kernel/blob/main/tests/riscv_domain_address_space/domain_address_tests.c">Kernel hosted source fixture</a></li><li><a href="https://gabi.xinuos.com/elf/07-pheader.html">ELF program loading specification</a></li></ul>
+  </article></main>
+</body>
+</html>

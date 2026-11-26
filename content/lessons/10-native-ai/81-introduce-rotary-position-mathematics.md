@@ -50,4 +50,4 @@ Rotate the pair `(0, 1)` by **π/2** radians. Because `cos(π/2) = 0` and `sin(�
 
 **Takeaway:** a new position encoding requires its own model identity, independently trained or qualified parameters and explicit checkpoint compatibility rules.
 
-[Illustrated lesson](../../courses/llm-from-scratch/lessons/81-introduce-rotary-position-mathematics.html) · [Mathematics for AI: rotary position](../11-maths-for-ai/07-angles-and-rotary-position.md) · [Next](82-prove-single-block-rotary-kv-reuse.md)
+[Illustrated lesson](../../courses/llm-from-scratch/lessons/81-introduce-rotary-position-mathematics.html) · [Mathematics for AI: rotary position](../11-maths-for-ai/07-angles-and-rotary-position.md) · [Next](82-prove-single-block-rotary-kv-reuse.md) · [Previous lesson](80-qualify-policy-bound-generation-and-benchmarks.md)

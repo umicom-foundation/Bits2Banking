@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-sql/lessons/13-refresh-a-consistent-outbox-report.html
+
+PURPOSE:
+  Use the C23 snapshot lab to verify refresh and failure boundaries.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refresh a consistent outbox report | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page">
+<article class="article-content">
+<nav aria-label="Lesson sequence"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-read-one-committed-database-view.html">Previous lesson</a> · <a rel="next" href="14-apply-an-observed-version-edit.html">Next lesson</a></nav>
+<h1>Refresh a consistent outbox report</h1>
+<p>A useful outbox report answers two questions. Which outgoing records belong on the page, and what was the state of each of those records when the page was read? Build on the <a href="12-read-one-committed-database-view.html">previous lesson</a> and use the same C23 snapshot lab to check the boundary between a page and a refresh.</p>
+<h2>Trace the selected-file workflow</h2>
+<p>Umicom Trader, Umicom Bank, and Umicom TMS use the shared Umicom Framework to review a selected outbox. In a review, the program reads saved delivery information. It does not send anything. The review obtains the ordered identifiers, then reads each selected row. One read-only transaction covers both stages.</p>
+<pre><code>OPEN the selected database in read-only mode
+BEGIN one read transaction
+READ the ordered entry identifiers for one page
+READ the saved details of those same entries
+END the read transaction and CLOSE the database
+IF every step succeeded, DISPLAY the page</code></pre>
+<p>The lab reads two known IDs to keep the exercise small. A real page may use a <strong>cursor</strong>, which is the last identifier from the previous page. A later page may start another transaction after a writer has committed; a snapshot belongs to one page. To request a later action on a row, a caller still needs the revision it observed.</p>
+<h2>Predict what will change</h2>
+<ol>
+<li>Keep the original lab unchanged. In a separate exercise copy, change the writer's <code>amount + 10</code> to <code>amount + 20</code>.</li>
+<li>Before you build, write down which lines should still show amounts 100 and 250. Predict the new amounts after ending the snapshot.</li>
+<li>Change the two refreshed amount checks in <code>main</code> to your predictions. Build in a new folder, then run <code>ctest -V</code> in that build folder.</li>
+<li>The first two lines should still show 100 and 250. The refreshed pair should be 120 and 270, with revision 2 on both entries.</li>
+</ol>
+<h2>See what happens when a boundary is missing</h2>
+<p>Use another copy of the original lab. Remove only the first reader <code>BEGIN</code> call and keep the assertions. The first <code>SELECT</code> ends when its statement is finalized. Predict which assertion fails when the second <code>SELECT</code> starts after the writer commit. Rebuild and run the test. Expect the second-entry check to report revision 2 and amount 260, then exit with a failure result. Restore the read transaction before repeating the test.</p>
+<h2>Refuse unsafe or incomplete output</h2>
+<p>An inspection can fail before any page is ready. In the product, keep the previous report visible until a new observation succeeds. In the lab, the success lines are printed only after the sample values are checked, both connections are closed, and the scratch database is removed.</p>
+<p>The final write test should return <code>SQLITE_READONLY</code> because the reader was opened for inspection. If a run reports a scratch-folder conflict, build in a new folder and leave the existing folder unmodified. If the observed amount differs from your prediction, compare the amended <code>UPDATE</code> and expected checks before changing anything else.</p>
+<p>Read <a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/labs/native/sqlite-outbox-snapshot/main.c">the lab's C23 source</a> and <a href="https://www.sqlite.org/isolation.html">SQLite's isolation explanation</a>. Identify where the lab finalizes a statement, ends a snapshot, and closes a connection. Explain how those three lifetimes differ.</p>
+<nav aria-label="Continue learning"><a href="../index.html">Course contents</a> · <a rel="prev" href="12-read-one-committed-database-view.html">Previous lesson</a> · <a rel="next" href="14-apply-an-observed-version-edit.html">Next lesson</a></nav>
+<p><a href="https://github.com/umicom-foundation/Bits2Banking/blob/main/content/lessons/04-web/learning-sql/13-refresh-a-consistent-outbox-report.md">Markdown edition</a></p>
+</article>
+</main>
+<footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer>
+</body>
+</html>
