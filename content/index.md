@@ -2,6 +2,8 @@
 
 ## A starting point for every learner
 
+Follow [Learning in Simple Steps](simple-steps/index.md) to set up PowerShell, check your computer and run your first C program. Then choose a [step-by-step course guide](simple-steps/course-guides/index.md).
+
 Begin with [Introduction to Computers](lessons/00-getting-started/index.md) if files, programs or commands are unfamiliar. No installation or previous coding is required. Use the [learning sequence](start/learning-sequence.md) to continue into existing chapters and courses.
 
 

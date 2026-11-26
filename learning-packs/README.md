@@ -87,7 +87,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 
 ## Course manifest paths
 
-| Course | Manifest path | Lessons |
+| Course or collection | Manifest path | Lessons or exercises |
 | --- | --- | --- |
 | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 128 |
 | Building a Text Editor in C | `learning-packs/building-a-text-editor.json` | 14 |
@@ -108,7 +108,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Introduction to Umicom Framework Architecture | `learning-packs/framework-and-finance-framework-boundaries.json` | 2 |
 | Introduction to Native AI and Retrieval | `learning-packs/framework-and-finance-native-ai-and-learning.json` | 2 |
 | Introduction to Secure Connected Services | `learning-packs/framework-and-finance-secure-connected-services.json` | 2 |
-| Learning Studio Documents and Visual Design | `learning-packs/framework-and-finance-studio-workflows.json` | 3 |
+| Learning Studio Documents and Visual Design | `learning-packs/framework-and-finance-studio-workflows.json` | 8 |
 | Introduction to Trading and Post-Trade Systems | `learning-packs/framework-and-finance-trading-and-posttrade.json` | 33 |
 | Introduction to Treasury Management Systems | `learning-packs/framework-and-finance-treasury-operations.json` | 2 |
 | Introduction to Bitcoin | `learning-packs/introduction-to-bitcoin.json` | 3 |
@@ -168,9 +168,6 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 146 |
 | Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 73 |
 | Learning Build Systems | `learning-packs/learning-build-systems.json` | 32 |
-<!-- Earlier count retained. Inactive mapping and ELF evidence add two lessons.
-| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 9 |
--->
 | Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 11 |
 | MINIX OS Foundations | `learning-packs/minix-os-foundations.json` | 12 |
 | Learning Maven | `learning-packs/learning-maven.json` | 4 |
@@ -189,9 +186,6 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Bootstrap and Native Statement Reports | `learning-packs/bootstrap-native-statements.json` | 3 |
 | Build a Banking Application in C | `learning-packs/build-a-bank-application-in-c.json` | 5 |
 | Build a Trading Application in C | `learning-packs/build-a-trading-application-in-c.json` | 5 |
-<!-- Prior count retained for review. The C23 lab adds three lessons.
-| C23 Keywords for Beginners | `learning-packs/c23-keyword-reference.json` | 7 |
--->
 | C23 Keywords for Beginners | `learning-packs/c23-keyword-reference.json` | 10 |
 | C++20 Keyword and Token Reference | `learning-packs/cpp20-keyword-reference.json` | 8 |
 | D Keywords for Beginners | `learning-packs/d-keyword-reference.json` | 8 |
@@ -220,51 +214,9 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Spring Framework with a Native C23 Receipt Rule | `learning-packs/spring-framework-with-c23.json` | 3 |
 | SQL Statement Reconciliation | `learning-packs/sql-statement-reconciliation.json` | 2 |
 | Swift Payment Messages and ISO 20022 | `learning-packs/swift-payment-messages.json` | 3 |
-| Umicom C checked integer keywords and syntax | `learning-packs/umicom-c-keyword-reference.json` | 5 |
-
-<!-- Previous rows retained for review. The active table follows current course metadata.
-| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 94 |
-| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 42 |
-| Learning Cyber Security | `learning-packs/learning-cyber-security.json` | 21 |
-| Learning PHP | `learning-packs/learning-php.json` | 3 |
-| Learning RISC-V Assembly | `learning-packs/learning-riscv-assembly.json` | 16 |
-| Learning x86 Assembly | `learning-packs/learning-x86-assembly.json` | 4 |
-| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 129 |
-| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 64 |
-| Learning Build Systems | `learning-packs/learning-build-systems.json` | 26 |
-| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 6 |
-| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 129 |
--->
-<!-- Previous catalogue row retained after course continuation: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 46 | -->
-<!-- Earlier displayed compiler course count was64; the current course sequence has82 entries. -->
-<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 82 | -->
-<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 83 | -->
-<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 84 | -->
-<!-- Prior catalogue row retained: compiler course had 85 lessons before checked shifts. -->
-<!-- Previous count retained: 12 D lessons before the reflection sequence. -->
-<!-- Previous D table count was24 before field metadata. -->
-<!-- Previous D table count was25 before compile-time type admission. -->
-<!-- Previous catalogue row retained after course continuation: | Learning HTML | `learning-packs/learning-html.json` | 10 | -->
-<!-- Previous course count retained for review; eight model lessons extend this course.
-| Learning Qt | `learning-packs/learning-qt.json` | 16 |
--->
-<!-- Prior catalogue row retained: | Safer C Programming | `learning-packs/safer-c-programming.json` | 41 | -->
-<!-- Previous catalogue row retained after course continuation: | Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 94 | -->
-<!-- Previous catalogue row retained: 109 lessons before UDP admission. -->
-<!-- Previous displayed Kernel count was112; current manifest includes the continued VM and networking sequence. -->
-<!-- Prior count retained: | Learning Build Systems | `learning-packs/learning-build-systems.json` | 24 | -->
-
-<!-- The previous OS course count is kept for review. The active table includes the new dependency diagnostic lesson.
-| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 68 |
--->
-
-<!-- Earlier count retained. The observed-edit lesson extends Learning SQL by one lesson.
-| Learning SQL | `learning-packs/learning-sql.json` | 13 |
--->
-
-<!-- Earlier count retained. The native snapshot lessons extend Learning SQL by two lessons.
-| Learning SQL | `learning-packs/learning-sql.json` | 11 |
--->
+| Umicom C checked integer keywords and syntax | `learning-packs/umicom-c-keyword-reference.json` | 7 |
+| Practice by course (exercise collection) | `learning-packs/course-practice-catalogue.json` | 134 |
+| Learning AArch64 Assembly | `learning-packs/learning-aarch64-assembly.json` | 13 |
 
 ## Keep native packs stable during website publication
 
@@ -606,4 +558,82 @@ Start with the [applied course guide](../content/start/applied-native-courses.md
 
 <!-- Retain the earlier Kernel course count after adding optical evidence lessons.
 | Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 143 |
+-->
+
+The Practice by course collection reports the number of exercises. Open its guide to choose a course.
+
+<!-- Earlier count retained. Inactive mapping and ELF evidence add two lessons.
+| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 9 |
+-->
+
+<!-- Prior count retained for review. The C23 lab adds three lessons.
+| C23 Keywords for Beginners | `learning-packs/c23-keyword-reference.json` | 7 |
+-->
+
+<!-- Previous rows retained for review. The active table follows current course metadata.
+| Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 94 |
+| Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 42 |
+| Learning Cyber Security | `learning-packs/learning-cyber-security.json` | 21 |
+| Learning PHP | `learning-packs/learning-php.json` | 3 |
+| Learning RISC-V Assembly | `learning-packs/learning-riscv-assembly.json` | 16 |
+| Learning x86 Assembly | `learning-packs/learning-x86-assembly.json` | 4 |
+| Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 129 |
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 64 |
+| Learning Build Systems | `learning-packs/learning-build-systems.json` | 26 |
+| Multikernel systems and workload isolation | `learning-packs/multikernel-systems.json` | 6 |
+| Umicom Kernel from Scratch — Markdown manuscripts | `learning-packs/umicom-kernel-from-scratch-manuscripts.json` | 129 |
+-->
+
+<!-- Previous catalogue row retained after course continuation: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 46 | -->
+
+<!-- Earlier displayed compiler course count was64; the current course sequence has82 entries. -->
+
+<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 82 | -->
+
+<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 83 | -->
+
+<!-- Prior catalogue row retained: | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 84 | -->
+
+<!-- Prior catalogue row retained: compiler course had 85 lessons before checked shifts. -->
+
+<!-- Previous count retained: 12 D lessons before the reflection sequence. -->
+
+<!-- Previous D table count was24 before field metadata. -->
+
+<!-- Previous D table count was25 before compile-time type admission. -->
+
+<!-- Previous catalogue row retained after course continuation: | Learning HTML | `learning-packs/learning-html.json` | 10 | -->
+
+<!-- Previous course count retained for review; eight model lessons extend this course.
+| Learning Qt | `learning-packs/learning-qt.json` | 16 |
+-->
+
+<!-- Prior catalogue row retained: | Safer C Programming | `learning-packs/safer-c-programming.json` | 41 | -->
+
+<!-- Previous catalogue row retained after course continuation: | Umicom Kernel from Scratch | `learning-packs/umicom-kernel-from-scratch.json` | 94 | -->
+
+<!-- Previous catalogue row retained: 109 lessons before UDP admission. -->
+
+<!-- Previous displayed Kernel count was112; current manifest includes the continued VM and networking sequence. -->
+
+<!-- Prior count retained: | Learning Build Systems | `learning-packs/learning-build-systems.json` | 24 | -->
+
+<!-- The previous OS course count is kept for review. The active table includes the new dependency diagnostic lesson.
+| Umicom OS from Scratch | `learning-packs/umicom-os-from-scratch.json` | 68 |
+-->
+
+<!-- Earlier count retained. The observed-edit lesson extends Learning SQL by one lesson.
+| Learning SQL | `learning-packs/learning-sql.json` | 13 |
+-->
+
+<!-- Earlier count retained. The native snapshot lessons extend Learning SQL by two lessons.
+| Learning SQL | `learning-packs/learning-sql.json` | 11 |
+-->
+
+<!-- The previous count is retained here. The active table follows the course manifest.
+| Learning Studio Documents and Visual Design | `learning-packs/framework-and-finance-studio-workflows.json` | 3 |
+-->
+
+<!-- The previous count is retained here. The active table follows the course manifest.
+| Umicom C checked integer keywords and syntax | `learning-packs/umicom-c-keyword-reference.json` | 5 |
 -->

@@ -3,7 +3,7 @@ Umicom Bits2Banking
 File: content/simple-steps/first-command.md
 
 PURPOSE:
-Help a Windows learner find their current folder using one command.
+Help readers identify the current PowerShell folder.
 
 AUTHOR AND ORGANISATION:
 Sammy Hegab
@@ -13,34 +13,27 @@ LICENCE:
 MIT
 -->
 
-# Find your current folder
+# Check your current folder
 
 ![Umicom Foundation](../assets/branding/umicom-wordmark.svg){ .umicom-wordmark .umicom-wordmark-light width="215" }
 ![Umicom Foundation](../assets/branding/umicom-wordmark-on-dark.svg){ .umicom-wordmark .umicom-wordmark-dark width="215" }
 
-A folder holds files and other folders. Let’s find the folder PowerShell is looking at.
+1. Open **PowerShell 7** from Windows Start.
+2. Type this command and press **Enter**.
 
-1. On Windows, open **Start**. Type **PowerShell**, then open it.
-2. Type this line. Press **Enter**.
+   ```powershell
+   Get-Location
+   ```
+
+3. Read the folder name under `Path`. Type the command again after moving to a new folder to confirm where you are.
+
+Use this check before building or using Git. It tells you which folder your next command will work in.
+
+[Install PowerShell 7](powershell-setup.md) · [Make a practice folder](work-folder.md) · [Full terminal lesson](../community/lessons/01-open-your-terminal.md)
+
+<!-- Earlier demonstration code is retained for comparison. The active steps use an everyday task and check its result.
 
 ```powershell
 Get-Location
 ```
-
-Look under `Path`. That is the name of the folder PowerShell is using. It might look like `C:\Users\Alex`. Your computer will show its own folder name.
-
-**Try it.** Run the same command again. Did you see the same folder?
-
-If Windows says it doesn’t know `Get-Location`, open **PowerShell** from Start and try again.
-
-## Copy to WhatsApp
-
-```text
-Bits2Banking • Find your folder
-1. On Windows, open Start and search for PowerShell. Open it.
-2. Type Get-Location and press Enter.
-3. Look under Path. That is your current folder.
-Reply “found it” or tell us which step you got stuck on.
-```
-
-[Make a practice folder next](../community/lessons/02-make-a-practice-folder.md) · [Learning in Simple Steps](index.md)
+-->

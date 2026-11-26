@@ -280,6 +280,17 @@ def test_checked_in_pack_identities_are_unique():
 
 
 def _course_lesson_count(manifest_name):
+    # The cross-course pack collects checked activity guides from the practice
+    # directory. Ordinary packs use the ordered lesson list in their course manifest.
+    if manifest_name == "course-practice-catalogue.json":
+        manifest = json.loads((ROOT / "learning-packs" / manifest_name).read_text(encoding="utf-8"))
+        directory = ROOT / "content/simple-steps/practice"
+        expected = {path.relative_to(ROOT).as_posix() for path in directory.glob("*.md")
+                    if path.name != "index.md"}
+        practice = [entry["path"] for entry in manifest["resources"]
+                    if entry["kind"] == "guide" and entry["path"] in expected]
+        assert expected and len(practice) == len(expected) and set(practice) == expected
+        return len(practice)
     slug = manifest_name.removesuffix(".json").removesuffix("-manuscripts")
     course = ("framework-and-finance/" + slug.removeprefix("framework-and-finance-")
               if slug.startswith("framework-and-finance-") else slug)
@@ -340,7 +351,12 @@ def test_offline_markdown_catalogue_remains_one_current_table():
     # Retained historical rows must stay outside the active Markdown table:
     # a comment or blank line between rows terminates the table in Markdown.
     active = re.sub(r"<!--[\s\S]*?-->", "", text)
-    start = active.index("| Course | Manifest path | Lessons |")
+    # Keep the previous marker usable for course-only copies of the catalogue.
+    table = "| Course or collection | Manifest path | Lessons or exercises |"
+    if table in active:
+        start = active.index(table)
+    else:
+        start = active.index("| Course | Manifest path | Lessons |")
     end = active.index("## Keep native packs stable", start)
     lines = active[start:end].strip().splitlines()
     assert all(line.startswith("|") for line in lines)

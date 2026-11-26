@@ -17,6 +17,8 @@ MIT
 
 # Community learning: your first development steps
 
+The [Learning in Simple Steps](../simple-steps/index.md) guide puts PowerShell, system checks, C tools and Git in order. Use the full lessons below whenever you want a closer look.
+
 Let us start with one small task at a time. You do not need programming experience. The first step is opening a terminal and finding your current folder. Each lesson explains what to type, what the command means and what you should see.
 
 Work in a practice folder you choose. Stop and check the result before moving on. If something is unfamiliar, use the explanation on the same page; the related courses are there when you want more detail. Existing courses and lessons remain available.

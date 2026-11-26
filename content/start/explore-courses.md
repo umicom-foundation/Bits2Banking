@@ -19,6 +19,8 @@ MIT for original learning material.
 
 # Choose a course
 
+Use the [step-by-step course guides](../simple-steps/course-guides/index.md) if you want a short exercise and a result to check before opening the full course.
+
 1. [Open the browser course catalogue](../courses/index.html) to find a subject and move between linked lessons and exercises.
 2. [Read the written courses in order](written-courses.md) to follow a sequence with the background each course assumes.
 3. [Start with Introduction to Computers](../courses/learning-computer-architecture/index.html) if files, programs or terminal commands are unfamiliar.

@@ -3,7 +3,7 @@ Umicom Bits2Banking
 File: content/simple-steps/basic.md
 
 PURPOSE:
-Show the sum in FreeBASIC and name the dialect used in the example.
+Run the same coffee time calculation in FreeBASIC.
 
 AUTHOR AND ORGANISATION:
 Sammy Hegab
@@ -13,37 +13,39 @@ LICENCE:
 MIT
 -->
 
-# Show the total in BASIC
+# Convert brew time in FreeBASIC
 
 ![Umicom Foundation](../assets/branding/umicom-wordmark.svg){ .umicom-wordmark .umicom-wordmark-light width="215" }
 ![Umicom Foundation](../assets/branding/umicom-wordmark-on-dark.svg){ .umicom-wordmark .umicom-wordmark-dark width="215" }
 
-Start with two apples. Add one more. Here is how to ask **FreeBASIC**, one version of BASIC, to show the total.
+1. Save these two lines as `coffee.bas` in a practice folder.
+
+   ```basic
+   Dim minutes As Integer = 4
+   Print minutes * 60
+   ```
+
+   `Dim` creates a named whole number. `Print` evaluates the expression and displays its result. The result is in seconds.
+
+2. With FreeBASIC installed, open PowerShell in that folder and type the two lines separately.
+
+   ```powershell
+   fbc coffee.bas -x coffee-basic.exe
+   .\coffee-basic.exe
+   ```
+
+3. Check that the result is `240`. Change `4` to `3`, save and repeat the two commands. The new result is `180`. FreeBASIC may pad the number with a space.
+
+[Compare with C](c.md) · [Full FreeBASIC course](../courses/learning-freebasic/index.html) · [Guide to the FreeBASIC course](course-guides/learning-freebasic.md)
+
+<!-- Earlier demonstration code is retained for comparison. The active steps use an everyday task and check its result.
 
 ```basic
 Print 2 + 1
 ```
 
-1. FreeBASIC works out `2 + 1`.
-2. `Print` shows the answer on the screen.
-
-The answer is **3**. Change `2` to `4`. What will the screen show now?
-
-## Run it if you have FreeBASIC
-
-Save the line as `apples.bas`. In PowerShell, go to that folder. Run these commands one at a time. The first makes the program. The second runs it.
-
 ```powershell
 fbc apples.bas
 .\apples.exe
 ```
-
-FreeBASIC may put a little space next to the answer. After you change a number, save the file and run both commands again. The answer with `4 + 1` is **5**.
-
-## Copy to WhatsApp
-
-```text
-In FreeBASIC, write Print 2 + 1. It shows 3. Change 2 to 4. What do you think it will show now?
-```
-
-[All simple steps](index.md) · [Go further with FreeBASIC](../lessons/03-native-code/learning-freebasic/index.md)
+-->

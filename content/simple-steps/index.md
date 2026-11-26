@@ -3,7 +3,7 @@ Umicom Bits2Banking
 File: content/simple-steps/index.md
 
 PURPOSE:
-Give readers a short path from a paper exercise to a first program.
+Lead learners through the hands-on sequence and the full set of course guides.
 
 AUTHOR AND ORGANISATION:
 Sammy Hegab
@@ -18,28 +18,40 @@ MIT
 ![Umicom Foundation](../assets/branding/umicom-wordmark.svg){ .umicom-wordmark .umicom-wordmark-light width="215" }
 ![Umicom Foundation](../assets/branding/umicom-wordmark-on-dark.svg){ .umicom-wordmark .umicom-wordmark-dark width="215" }
 
-Try one small thing today. Start with the paper exercise. You can do it with a pencil, with your fingers, or on a phone.
+Start with a Windows computer. Work through the steps in order. Type the commands shown, check the result, then move on. Each step links to the full lesson if you want more explanation.
 
-## Start here
+1. [Install and open PowerShell 7](powershell-setup.md). Check that version 7 opens.
+2. [Check your computer](system-checks.md). Find Windows version, processor, memory and free disk space.
+3. [Create your practice folder](work-folder.md). Check that PowerShell is in the new folder.
+4. [Set up your C development tools](toolchain.md). Check that GCC, CMake and Ninja report their versions.
+5. [Write a C program](c.md#5-write-the-program). Save `coffee.c`.
+6. [Compile the program](c.md#6-build-the-program). Check for `coffee.exe`.
+7. [Run it and change one thing](c.md#7-run-it-and-change-one-thing). See the change from 240 to 180 seconds.
+8. [Create a local Git repository](git-local.md). Save the first version of your source and notes.
+9. [Create a private GitHub repository](git-publish.md). Check the files in your account.
+10. [Clone your repository](git-clone.md). Confirm the new folder has the same first commit.
+11. [Build and test with CMake](build-project.md). Run the project from a clean build folder.
+12. [Plan a robot’s route through a maze](maze.md). Check each move against the grid.
 
-1. [Add one more apple](paper.md). Write the steps in your own words.
-2. Pick one language below. Read the code, guess the answer, and check it.
+## Choose what to learn next
 
-## Pick one language
+Use [student help](../community/student-help/index.md) for a short answer and a link to the full guide.
 
-- [C](c.md)
-- [D](d.md)
-- [BASIC](basic.md)
-- [Python](python.md)
-- [Java](java.md)
+Try [reflection across seven languages](../lessons/03-native-code/reflection-workshop/index.md) or use the
+[contributor wiki](../wiki/index.md) to start a change in an Umicom project.
 
-Once you have seen a C program, [see what Umicom Framework adds](framework.md).
+Try [Practice by course](practice/index.md) to apply what you learned to a new case and check the result.
 
-## Try another small task
+- [Troubleshoot by course](trouble/index.md)
+- [Extend a skill by course](extension/index.md)
+- [Small projects by course](apply/index.md)
+- [Compare two approaches by course](compare/index.md)
+- [Acceptance checks by course](check/index.md)
 
-- [Find your current folder in Windows](first-command.md).
-- [Write down three coins](three-coins.md).
+Open the [step-by-step course guides](course-guides/index.md). Choose a subject and follow its short set of tasks into the full course.
 
-Each page has a short message you can copy into a group chat. Send one exercise at a time and ask what people got.
+- [Plan the coffee program on paper](paper.md).
+- Compare the same calculation in [D](d.md), [FreeBASIC](basic.md), [Python](python.md), [Java](java.md) and [Umicom Framework](framework.md).
+- [Record money in and out](three-coins.md) for a first bookkeeping exercise.
 
-[Start here for the full learning sequence](../start/index.md) · [Community practice with files and Git](../community/index.md)
+[Course library](../courses/index.html) · [Find other learning routes](../start/course-series.md)

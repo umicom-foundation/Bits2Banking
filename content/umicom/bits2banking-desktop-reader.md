@@ -18,6 +18,8 @@ The Bits2Banking desktop reader uses the same Umicom Framework Learning Catalogu
 | [Accessible web development](../courses/accessible-statement-review/index.html) | `learning-packs/accessible-statement-review.json` |
 | [Go](../courses/go-statement-tools/index.html) | `learning-packs/go-statement-tools.json` |
 
+For one extra exercise from any course, load `learning-packs/course-practice-catalogue.json` from the same library folder. Open **Practice by course**, choose an exercise, and compare your work with its result check.
+
 With `umicom-bits2banking.exe` on `PATH`, you can also select a pack at startup from PowerShell. Replace the library path with your own checkout path.
 
 ```powershell

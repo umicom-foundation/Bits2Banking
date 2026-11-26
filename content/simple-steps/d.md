@@ -3,7 +3,7 @@ Umicom Bits2Banking
 File: content/simple-steps/d.md
 
 PURPOSE:
-Show how a short D program calculates and displays the same total.
+Run the same coffee time calculation in D.
 
 AUTHOR AND ORGANISATION:
 Sammy Hegab
@@ -13,12 +13,37 @@ LICENCE:
 MIT
 -->
 
-# Show the total in D
+# Convert brew time in D
 
 ![Umicom Foundation](../assets/branding/umicom-wordmark.svg){ .umicom-wordmark .umicom-wordmark-light width="215" }
 ![Umicom Foundation](../assets/branding/umicom-wordmark-on-dark.svg){ .umicom-wordmark .umicom-wordmark-dark width="215" }
 
-Start with two apples and add one. `writeln` (say **write line**) shows the answer on the screen.
+1. Save the code as `coffee.d` in a practice folder.
+
+   ```d
+   import std.stdio;
+
+   void main()
+   {
+       const int minutes = 4;
+       writeln(minutes * 60, " seconds");
+   }
+   ```
+
+   `import` makes `writeln` available. `main` starts the program. `minutes * 60` converts the time. `writeln` displays the number followed by its unit.
+
+2. If you already have the LDC compiler, open PowerShell in that folder and type these commands one at a time.
+
+   ```powershell
+   ldc2 coffee.d -of=coffee-d.exe
+   .\coffee-d.exe
+   ```
+
+3. Look for `240 seconds`. Change `4` to `3`, save, compile again, and confirm `180 seconds`.
+
+[Compare with C](c.md) · [Full D course](../courses/learning-d/index.html) · [Guide to the D course](course-guides/learning-d.md)
+
+<!-- Earlier demonstration code is retained for comparison. The active steps use an everyday task and check its result.
 
 ```d
 import std.stdio;
@@ -29,27 +54,8 @@ void main()
 }
 ```
 
-1. `import std.stdio;` makes `writeln` available.
-2. `main` is where the program starts. Its instruction goes between the curly braces.
-3. `writeln(2 + 1);` adds the numbers, shows the answer and ends the line.
-
-The program shows **3**. Change `2` to `4`. What will it show now?
-
-## Run it if you have LDC
-
-LDC is a tool that makes a program you can run from D code. Save the code as `apples.d`. In PowerShell, go to that folder and run these commands one at a time.
-
 ```powershell
 ldc2 apples.d -of=apples.exe
 .\apples.exe
 ```
-
-After you change a number, save the file and run both commands again. The answer with `4 + 1` is **5**.
-
-## Copy to WhatsApp
-
-```text
-D uses writeln(2 + 1); to show 3. Change 2 to 4. Can you guess the new answer before you run it?
-```
-
-[All simple steps](index.md) · [Go further with D](../lessons/03-native-code/learning-d/index.md)
+-->

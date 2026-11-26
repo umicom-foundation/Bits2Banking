@@ -3,7 +3,7 @@ Umicom Bits2Banking
 File: content/simple-steps/paper.md
 
 PURPOSE:
-Teach pseudocode with three instructions a reader can try on paper.
+Write the coffee recipe calculation in plain instructions before coding.
 
 AUTHOR AND ORGANISATION:
 Sammy Hegab
@@ -13,33 +13,34 @@ LICENCE:
 MIT
 -->
 
-# Count apples on paper
+# Write a coffee recipe as instructions
 
 ![Umicom Foundation](../assets/branding/umicom-wordmark.svg){ .umicom-wordmark .umicom-wordmark-light width="215" }
 ![Umicom Foundation](../assets/branding/umicom-wordmark-on-dark.svg){ .umicom-wordmark .umicom-wordmark-dark width="215" }
 
-Draw two apples. Draw one more next to them. Point to each apple and count out loud. How many did you draw?
+Suppose a coffee recipe calls for four minutes of brewing and your timer takes seconds. Write down what a person would do.
 
-## Tell someone what to do
+1. Find the brew time on the recipe. Write **4 minutes**.
+2. Multiply the minutes by 60. Write **240 seconds**.
+3. Enter **240** if the timer asks for seconds. Check the timer display before starting it.
 
-1. Ask them to start with two apples.
-2. Ask them to add one apple.
-3. Ask them to say the total. They should say **3**.
+When you write plain instructions to plan a program, that plan is called *pseudocode*.
 
-These are instructions someone else can follow. When you write simple instructions to plan a program, that plan is called *pseudocode* (say **SOO-doh-code**).
+```text
+READ the brew time in minutes
+MULTIPLY the minutes by 60
+SHOW the result in seconds
+```
+
+Try a three-minute recipe. You should get 180 seconds. The calculation gives you a number to enter in a timer. The example itself has no wait.
+
+[Write and run the C program](c.md) · [Plan another sequence with a maze](maze.md) · [Full introductory programming course](../courses/introduction-to-programming/index.html)
+
+<!-- Earlier demonstration code is retained for comparison. The active steps use an everyday task and check its result.
 
 ```text
 START WITH 2 APPLES
 ADD 1 APPLE
 SHOW THE TOTAL
 ```
-
-Try one change. Start with **4** apples instead of **2**. Say what you expect before you count. Did you get **5**?
-
-## Copy to WhatsApp
-
-```text
-Try this with me. Draw 2 apples, then draw 1 more. Count them out loud. Did you get 3? Now start with 4 and add 1. What do you get?
-```
-
-Choose [C](c.md), [D](d.md), [BASIC](basic.md), [Python](python.md) or [Java](java.md) to see the same idea in code. [All simple steps](index.md)
+-->

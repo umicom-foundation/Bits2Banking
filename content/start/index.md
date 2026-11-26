@@ -1,6 +1,6 @@
 # Start here
 
-[Learning in Simple Steps](../simple-steps/index.md) starts with a short paper exercise. Pick one programming language when you want to see the same idea in code.
+[Learning in Simple Steps](../simple-steps/index.md) takes you from installing PowerShell to building a C program and saving it in Git. The [course guides](../simple-steps/course-guides/index.md) help you continue into any subject.
 
 Begin with [Your learning sequence](learning-sequence.md). It starts with computer basics and leads to a small C program, a Framework application and a GTK4 window. Each stage explains what you need to know before continuing.
 

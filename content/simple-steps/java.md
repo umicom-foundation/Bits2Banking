@@ -3,7 +3,7 @@ Umicom Bits2Banking
 File: content/simple-steps/java.md
 
 PURPOSE:
-Introduce the Java program entry and output line around one small sum.
+Run the same coffee time calculation in Java.
 
 AUTHOR AND ORGANISATION:
 Sammy Hegab
@@ -13,12 +13,35 @@ LICENCE:
 MIT
 -->
 
-# Show the total in Java
+# Convert brew time in Java
 
 ![Umicom Foundation](../assets/branding/umicom-wordmark.svg){ .umicom-wordmark .umicom-wordmark-light width="215" }
 ![Umicom Foundation](../assets/branding/umicom-wordmark-on-dark.svg){ .umicom-wordmark .umicom-wordmark-dark width="215" }
 
-Look for `2 + 1` in the middle. This is where Java adds the apples.
+1. Save this code as `Coffee.java`. Use the capital `C` so the file name matches the class name.
+
+   ```java
+   public class Coffee {
+       public static void main(String[] args) {
+           int minutes = 4;
+           System.out.println(minutes * 60 + " seconds");
+       }
+   }
+   ```
+
+   `class Coffee` groups the instructions. Java starts at `main`. `int` holds the minutes as a whole number. `println` displays the result and starts a new line.
+
+2. With the Java development kit installed (JDK 11 or newer), open PowerShell in that folder and run this command.
+
+   ```powershell
+   java Coffee.java
+   ```
+
+3. Check for `240 seconds`. Change `4` to `3`, save and run the same command again. The new result is `180 seconds`.
+
+[Compare with C](c.md) · [Full Java course](../courses/learning-java/index.html) · [Guide to the Java course](course-guides/learning-java.md)
+
+<!-- Earlier demonstration code is retained for comparison. The active steps use an everyday task and check its result.
 
 ```java
 public class Apples {
@@ -28,26 +51,7 @@ public class Apples {
 }
 ```
 
-1. `class Apples` names the group that holds our instructions. That's why the file name starts with `Apples` too.
-2. `main` tells Java where to start. Keep this starting line as written for now.
-3. `System.out.println(2 + 1);` adds the numbers and shows the answer. Each closing brace `}` closes a group of instructions.
-
-The program shows **3**. Change `2` to `4`. What do you expect to see?
-
-## Run it if you have the Java developer tools
-
-Use JDK 11 or newer. Save the code as `Apples.java` with a capital `A`. Open a terminal in that folder and run this command.
-
 ```text
 java Apples.java
 ```
-
-After you change a number, save the file and run the command again. The answer with `4 + 1` is **5**.
-
-## Copy to WhatsApp
-
-```text
-Look for 2 + 1 inside System.out.println in the Java example. It shows 3. Change 2 to 4. What will you see now?
-```
-
-[All simple steps](index.md) · [Go further with Java](../courses/learning-java/index.html)
+-->
