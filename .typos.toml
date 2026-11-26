@@ -6,7 +6,17 @@ extend-ignore-re = [
   "volumes/.*",
   "book/.*",
   "site/.*",
-  ".github/ISSUE_TEMPLATE/.*"
+  ".github/ISSUE_TEMPLATE/.*",
+  # Keep spelling checks enabled around each deliberately escaped text fixture.
+  '\bcaf\\(?:u00e9\b|u\{00e9\}|xc3\\xa9\b)',
+  '(?:"|&quot;)caf(?:"|&quot;)(?:[ \t]*(?:&amp;|&)[ \t]*Chr\b|,[ \t]*"this known boundary)',
+  '\b(?:gives caf|prints caf as the known safe prefix)\b',
+  # BA is matrix multiplication in the LoRA and matrix examples.
+  '\bweight update BA\b',
+  '\bBA=\[\[',
+  # Match only generated values in the JSON id field. Titles and prose
+  # keep their normal spelling checks.
+  '"id"[ \t]*:[ \t]*"(?:resource-[0-9a-f]{22,24}|native-[0-9a-f]{20})"'
 ]
 
 [files]
@@ -50,3 +60,9 @@ Sakk       = "Sakk"
 "ʿAbd"      = "ʿAbd"
 "al-Malik"  = "al-Malik"
 Umayyad     = "Umayyad"
+
+# Valid terms in recovery, simulator, ELF and cataloguing material.
+rto = "rto"
+udid = "udid"
+rela = "rela"
+uncatalogued = "uncatalogued"

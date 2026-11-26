@@ -106,8 +106,7 @@ python -m pip install --upgrade pip
 ### 2) Install dependencies
 ```powershell
 # If requirements.txt exists, use it. Otherwise install python-docx only.
-if (Test-Path .
-equirements.txt) { pip install -r requirements.txt } else { pip install python-docx }
+if (Test-Path -LiteralPath '.\requirements.txt' -PathType Leaf) { pip install -r requirements.txt } else { pip install python-docx }
 ```
 
 ### 3) Build using the helper script

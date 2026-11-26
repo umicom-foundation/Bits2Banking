@@ -216,6 +216,10 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Swift Payment Messages and ISO 20022 | `learning-packs/swift-payment-messages.json` | 3 |
 | Umicom C checked integer keywords and syntax | `learning-packs/umicom-c-keyword-reference.json` | 7 |
 | Practice by course (exercise collection) | `learning-packs/course-practice-catalogue.json` | 134 |
+| Follow daily cash movements with data tools | `learning-packs/daily-cash-practice.json` | 4 |
+| Shell practice with Bash and PowerShell | `learning-packs/shell-practice.json` | 3 |
+| Study Bits2Banking on any device (guide collection) | `learning-packs/study-on-any-device.json` | 8 |
+| Web graphics you can explain | `learning-packs/web-graphics.json` | 3 |
 | Learning AArch64 Assembly | `learning-packs/learning-aarch64-assembly.json` | 13 |
 
 ## Keep native packs stable during website publication

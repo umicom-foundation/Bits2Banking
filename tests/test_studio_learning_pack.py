@@ -291,6 +291,40 @@ def _course_lesson_count(manifest_name):
                     if entry["kind"] == "guide" and entry["path"] in expected]
         assert expected and len(practice) == len(expected) and set(practice) == expected
         return len(practice)
+    # Written collections have numbered manuscripts without an HTML course manifest.
+    # Check their chapter coverage independently of the offline pack and catalogue.
+    written_collections = {
+        "daily-cash-practice.json": "07-practical-domains/daily-cash-practice",
+        "shell-practice.json": "02-programming/shell-practice",
+        "web-graphics.json": "04-web/web-graphics",
+    }
+    if manifest_name in written_collections:
+        directory = ROOT / "content/lessons" / written_collections[manifest_name]
+        expected = {path.relative_to(ROOT).as_posix()
+                    for path in directory.glob("[0-9][0-9]-*.md")}
+        kind = "lesson"
+    elif manifest_name == "study-on-any-device.json":
+        # This collection opens complete guides. Its catalogue total counts
+        # those guides, including the landing pages that link between media.
+        expected = {
+            "content/start/study-on-any-device.md",
+            "content/practice/index.md",
+            "content/start/technology-topic-map.md",
+            "content/simple-steps/course-guides/index.md",
+            "content/simple-steps/index.md",
+            "content/wiki/index.md",
+            "content/wiki/course-maintenance.md",
+            "content/umicom/bits2banking-desktop-reader.md",
+        }
+        kind = "guide"
+    else:
+        expected = None
+    if expected is not None:
+        manifest = json.loads((ROOT / "learning-packs" / manifest_name).read_text(encoding="utf-8"))
+        paths = [entry["path"] for entry in manifest["resources"] if entry["kind"] == kind]
+        assert expected and len(paths) == len(expected) and set(paths) == expected
+        assert all((ROOT / path).is_file() for path in expected)
+        return len(paths)
     slug = manifest_name.removesuffix(".json").removesuffix("-manuscripts")
     course = ("framework-and-finance/" + slug.removeprefix("framework-and-finance-")
               if slug.startswith("framework-and-finance-") else slug)
