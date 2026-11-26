@@ -301,5 +301,82 @@ class CoursePublicationLinks(unittest.TestCase):
             LINKS.native_pack_resources(self.site)
 
 
+
+    def strict_site_config(self):
+        from mkdocs.config import load_config
+
+        hook = ROOT / 'hooks/course_source_links.py'
+        config_file = self.root / 'mkdocs.yml'
+        config_file.write_text(
+            'site_name: Publication Link Test\n'
+            'docs_dir: content\n'
+            'site_dir: site\n'
+            'theme: mkdocs\n'
+            'repo_url: https://github.com/umicom-foundation/Bits2Banking\n'
+            f'hooks: [{json.dumps(hook.as_posix())}]\n',
+            encoding='utf-8')
+        return load_config(config_file=str(config_file), strict=True)
+
+    @unittest.skipUnless(importlib.util.find_spec('mkdocs'), 'MkDocs documentation dependencies')
+    def test_strict_build_resolves_reviewed_markdown_source_links(self):
+        from mkdocs.commands.build import build
+
+        # These files are public repository sources beyond MkDocs' docs_dir.
+        for name in ('labs/native/two words.c', 'learning-packs/course.json',
+                     'knowledge/registries/lesson-media.json'):
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('resource', encoding='utf-8')
+        source = self.docs / 'review/index.md'
+        source.parent.mkdir()
+        original = (
+            '# Review\n\n'
+            '[A local page](../lessons/learning-c/index.md)\n\n'
+            '[A lab](../../labs/native/two%20words.c?x=1&y=2#L3)\n\n'
+            '[A pack][pack]\n\n'
+            '[The registry](../../knowledge/registries/lesson-media.json)\n\n'
+            '[External](https://example.com/main.c)\n\n'
+            '<a href="../../labs/native/two%20words.c">An HTML link</a>\n\n'
+            '` [An example](../../labs/native/two%20words.c)`\n\n'
+            '[pack]: ../../learning-packs/course.json\n'
+        )
+        source.write_text(original, encoding='utf-8')
+        build(self.strict_site_config())
+        output = (self.site / 'review/index.html').read_text(encoding='utf-8')
+        repo = 'https://github.com/umicom-foundation/Bits2Banking/blob/main/'
+        self.assertIn('href="../lessons/learning-c/"', output)
+        self.assertIn(f'href="{repo}labs/native/two%20words.c?x=1&amp;y=2#L3"', output)
+        self.assertIn(f'href="{repo}learning-packs/course.json"', output)
+        self.assertIn(f'href="{repo}knowledge/registries/lesson-media.json"', output)
+        self.assertIn(f'href="{repo}labs/native/two%20words.c"', output)
+        self.assertIn('href="https://example.com/main.c"', output)
+        self.assertIn('<code>[An example](../../labs/native/two%20words.c)</code>', output)
+        self.assertEqual(source.read_text(encoding='utf-8'), original)
+
+    @unittest.skipUnless(importlib.util.find_spec('mkdocs'), 'MkDocs documentation dependencies')
+    def test_strict_build_still_rejects_unreviewed_and_missing_links(self):
+        from mkdocs.commands.build import build
+        from mkdocs.exceptions import Abort
+
+        target = self.root / 'knowledge/registries/unreviewed.json'
+        target.parent.mkdir(parents=True)
+        target.write_text('unreviewed', encoding='utf-8')
+        source = self.docs / 'review/index.md'
+        source.parent.mkdir()
+        source.write_text(
+            '# Review\n\n'
+            '[Unreviewed](../../knowledge/registries/unreviewed.json)\n\n'
+            '[Missing approved category](../../labs/native/not-present.c)\n\n'
+            '[Broken site route](missing.md)\n',
+            encoding='utf-8')
+        with self.assertLogs('mkdocs', level='WARNING') as found:
+            with self.assertRaises(Abort):
+                build(self.strict_site_config())
+        for link in ('../../knowledge/registries/unreviewed.json',
+                     '../../labs/native/not-present.c', 'missing.md'):
+            self.assertTrue(any(f"contains a link '{link}'" in msg for msg in found.output),
+                            found.output)
+
+
 if __name__ == '__main__':
     unittest.main()

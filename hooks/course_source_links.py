@@ -139,6 +139,59 @@ class CourseLinks(HTMLParser):
         return result
 
 
+
+# MkDocs renders one page at a time immediately after on_page_markdown.
+# Its Markdown extension gets the active source path before it sees any links.
+_markdown_scope = None
+
+
+def on_config(config):
+    """Register the website-only rewrite before MkDocs validates relative links."""
+    # Keep standalone HTML tests usable without importing the MkDocs toolchain.
+    from markdown.extensions import Extension
+    from markdown.treeprocessors import Treeprocessor
+
+    class PublicRepositoryLinks(Treeprocessor):
+        def run(self, root):
+            if _markdown_scope is None:
+                return root
+            source, repository = _markdown_scope
+            for anchor in root.iter('a'):
+                href = anchor.get('href')
+                if href is None:
+                    continue
+                # Use the same checked repository mapping as the HTML adapter.
+                # Empty document identities leave ordinary MkDocs routes alone.
+                replacement = publication_link(href, source, source, {}, repository)
+                if replacement != href:
+                    # The tree serializer escapes attribute values itself.
+                    anchor.set('href', unescape(replacement))
+            return root
+
+    class PublicRepositoryExtension(Extension):
+        umicom_repository_links = True
+
+        def extendMarkdown(self, md):
+            # Inline links already exist at priority 2. MkDocs validates
+            # relative paths at priority 0 and accepts recognised public URLs.
+            md.treeprocessors.register(PublicRepositoryLinks(md), 'umicom_repository_links', 2)
+
+    extensions = config['markdown_extensions']
+    if not any(getattr(extension, 'umicom_repository_links', False) for extension in extensions):
+        extensions.append(PublicRepositoryExtension())
+    return config
+
+
+def on_page_markdown(markdown, page, config, files):
+    global _markdown_scope
+    docs = Path(config['docs_dir']).resolve()
+    repository = repository_context(config, docs)
+    path = page.file.abs_src_path
+    _markdown_scope = (Path(path).resolve(), repository) if repository and path else None
+    # The checked-in Markdown stays useful when read directly in a clone.
+    return markdown
+
+
 def on_files(files, config):
     global _files
     _files = tuple(files)

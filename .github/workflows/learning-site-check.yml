@@ -40,7 +40,9 @@ jobs:
   build-site:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Use the Node.js 24 checkout action supported by hosted runners.
+      # - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
@@ -77,7 +79,9 @@ jobs:
       - name: Build the complete MkDocs website
         run: python -m mkdocs build --strict
       - name: Upload website preview
-        uses: actions/upload-artifact@v4
+        # Use the Node.js 24 artifact uploader with the existing artifact inputs.
+        # uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: umicom-learning-website-preview
           path: site/

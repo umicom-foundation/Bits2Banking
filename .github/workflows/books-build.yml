@@ -21,10 +21,18 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 provides the PDF renderer required by BookForge.
+    # Ubuntu 26.04 was selected by the former floating runner.
+    # runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        # Use the Node.js 24 checkout action supported by hosted runners.
+        # uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          # Changed-only builds compare the event base with the checked-out source.
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -52,12 +60,27 @@ jobs:
             echo "base_sha=" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build books (changed only if possible)
+      # The old command assumed the event base always existed in the checkout.
+      # Fall back to building every book for a new branch or an unavailable base.
+      # - name: Build books (changed only if possible)
+      #   run: |
+      #     python scripts/forge_all.py --changed-only "${{ steps.base.outputs.base_sha }}"
+      - name: Build books using the available Git history
+        env:
+          BASE_SHA: ${{ steps.base.outputs.base_sha }}
         run: |
-          python scripts/forge_all.py --changed-only "${{ steps.base.outputs.base_sha }}"
+          if [ -n "$BASE_SHA" ] && git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            python scripts/forge_all.py --changed-only "$BASE_SHA"
+          else
+            python scripts/forge_all.py
+          fi
 
       - name: Upload book artifacts
-        uses: actions/upload-artifact@v4
+        # Workflow-only changes can produce a catalogue without new books.
+        if: ${{ hashFiles('output/*/books/*.docx', 'output/*/books/*.pdf') != '' }}
+        # Use the Node.js 24 artifact uploader with the existing artifact inputs.
+        # uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: books-all
           path: |
@@ -67,7 +90,9 @@ jobs:
           retention-days: 14
 
       - name: Upload catalog site (for Pages)
-        uses: actions/upload-pages-artifact@v4
+        # Use the Pages uploader that delegates to the Node.js 24 artifact action.
+        # uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: output/site
 

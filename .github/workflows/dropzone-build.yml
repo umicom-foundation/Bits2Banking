@@ -5,6 +5,7 @@ on:
     paths:
       - "dropzone/**"
       - "scripts/bookforge.py"
+      - "scripts/forge_all.py"
       - ".github/workflows/dropzone-build.yml"
   workflow_dispatch:
 
@@ -19,9 +20,14 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 provides the PDF renderer required by BookForge.
+    # Ubuntu 26.04 was selected by the former floating runner.
+    # runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      # Use the Node.js 24 checkout action supported by hosted runners.
+      # - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -38,22 +44,36 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pandoc wkhtmltopdf
 
-      - name: Build with BookForge (to output/)
-        run: python scripts/bookforge.py
+      # The direct builder writes one book into its slug directory.
+      # The shared runner also assembles those sites under output/site.
+      # - name: Build with BookForge (to output/)
+      #   run: python scripts/bookforge.py
+      - name: Build the books and catalogue with BookForge
+        run: python scripts/forge_all.py
 
       - name: Upload book artifacts
-        uses: actions/upload-artifact@v4
+        # Use the Node.js 24 artifact uploader with the existing artifact inputs.
+        # uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bookforge-outputs
+          # Use the per-book directories produced by the catalogue builder.
+          # The previous flat paths could not find the generated files.
+          # path: |
+          #   output/manuscript/book.md
+          #   output/books/*.docx
+          #   output/books/*.pdf
           path: |
-            output/manuscript/book.md
-            output/books/*.docx
-            output/books/*.pdf
+            output/*/manuscript/book.md
+            output/*/books/*.docx
+            output/*/books/*.pdf
           if-no-files-found: warn
           retention-days: 14
 
       - name: Upload Pages artifact (output/site)
-        uses: actions/upload-pages-artifact@v4
+        # Use the Pages uploader that delegates to the Node.js 24 artifact action.
+        # uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: output/site
 

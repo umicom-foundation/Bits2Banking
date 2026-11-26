@@ -50,7 +50,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout educational repository
-        uses: actions/checkout@v4
+        # Use the Node.js 24 checkout action supported by hosted runners.
+        # uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # The runner could not read the separate Framework repository.
       # Site preparation uses the reviewed artwork from this checkout.
@@ -116,7 +118,9 @@ jobs:
           python scripts/publish_learning_portal.py verify
 
       - name: Upload site for review
-        uses: actions/upload-artifact@v4
+        # Use the Node.js 24 artifact uploader with the existing artifact inputs.
+        # uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: learning-website-preview
           path: site/
@@ -125,7 +129,9 @@ jobs:
 
       - name: Upload unified Pages artifact
         if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v4
+        # Use the Pages uploader that delegates to the Node.js 24 artifact action.
+        # uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site/
 
@@ -139,4 +145,6 @@ jobs:
     steps:
       - name: Publish the validated learning website and books
         id: deployment
-        uses: actions/deploy-pages@v4
+        # Use the Node.js 24 Pages deployer with the same site artifact.
+        # uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
