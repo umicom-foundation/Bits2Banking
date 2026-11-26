@@ -27,4 +27,13 @@ Use the shortest lesson that lets someone do the work and check the result. An e
 
 **Example.** If someone asks how to update PowerShell 7, separate their first install from an update. Show how they can open PowerShell 7 and check the result. Use [the PowerShell setup guide](../simple-steps/powershell-setup.md) for the current steps.
 
+## Keep the same lesson across devices
+
+1. Keep one reviewed Markdown lesson, one stable course title and one expected result. Link to it from the short guide and the wiki.
+2. Keep lesson links relative to the site so they work under the GitHub Pages project path and on another host. Set the published canonical address for the deployment that serves the release.
+3. Use the same release’s lesson files and native learning manifests in the desktop catalogue. When a source changes, regenerate its manifest and check the resulting resource digests before distributing the pack.
+4. Check reading and links in each client. Keep the written exercise available when an interactive browser control or local compiler is unavailable.
+
+Use [Study Bits2Banking on any device](../start/study-on-any-device.md) for the reader’s route and [the native education tools guide](../umicom/native-education-tools.md) to prepare or serve the reviewed site.
+
 [Student help](../community/student-help/index.md) · [Contributor wiki](index.md)

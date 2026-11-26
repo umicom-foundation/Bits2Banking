@@ -1,0 +1,95 @@
+<!--
+Umicom Bits2Banking
+File: content/labs/web/web-graphics/monthly-deposits.html
+
+PURPOSE:
+  Use SVG and Canvas to show the values in an accessible HTML deposits table.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Monthly deposits | Bits2Banking</title>
+  <link rel="icon" href="../../../assets/branding/umicom.ico">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <script src="monthly-deposits.js" defer></script>
+</head>
+<body>
+  <header>
+    <picture>
+      <source media="(prefers-color-scheme: dark)"
+              srcset="../../../assets/branding/umicom-wordmark-on-dark.svg">
+      <img class="umicom-wordmark" src="../../../assets/branding/umicom-wordmark.svg"
+           alt="Umicom Foundation" width="215">
+    </picture>
+  </header>
+  <main>
+    <h1>Monthly deposits</h1>
+    <p>Compare two drawings of the same three fictional deposits.</p>
+    <p>
+      <a href="#deposit-data">
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 18 18"
+             width="18" height="18" fill="currentColor">
+          <rect x="2" y="9" width="3" height="7" />
+          <rect x="7" y="2" width="3" height="14" />
+          <rect x="12" y="6" width="3" height="10" />
+        </svg>
+        Read the deposit table
+      </a>
+    </p>
+    <section aria-labelledby="svg-heading">
+      <h2 id="svg-heading">SVG drawing</h2>
+      <svg role="img" aria-labelledby="svg-title" aria-describedby="svg-description"
+           viewBox="0 0 252 140" width="252" height="140"
+           style="max-width: 100%; height: auto">
+        <title id="svg-title">Deposits by month</title>
+        <desc id="svg-description">February has the tallest bar. Read the table for all values.</desc>
+        <rect width="252" height="140" fill="#fff" />
+        <line x1="12" y1="112" x2="240" y2="112" stroke="#292f36" />
+        <g fill="#1f5e99">
+          <rect x="27" y="72" width="42" height="40" />
+          <rect x="105" y="52" width="42" height="60" />
+          <rect x="183" y="62" width="42" height="50" />
+        </g>
+        <g fill="#292f36" font-size="12" text-anchor="middle">
+          <text x="48" y="130">Jan</text>
+          <text x="126" y="130">Feb</text>
+          <text x="204" y="130">Mar</text>
+        </g>
+      </svg>
+    </section>
+    <section aria-labelledby="canvas-heading">
+      <h2 id="canvas-heading">Canvas drawing</h2>
+      <p>The values come from the table below.</p>
+      <button type="button" id="draw-canvas" hidden>Draw canvas</button>
+      <p><output id="canvas-result"></output></p>
+      <canvas id="deposits-canvas" width="252" height="140"
+              aria-hidden="true" hidden style="max-width: 100%; height: auto"></canvas>
+    </section>
+    <section aria-labelledby="deposit-data">
+      <h2 id="deposit-data">Deposit table</h2>
+      <table>
+        <caption>Example deposits in pounds</caption>
+        <thead>
+          <tr><th scope="col">Month</th><th scope="col">Deposit (£)</th></tr>
+        </thead>
+        <tbody id="deposit-values">
+          <tr><th scope="row">January</th><td>40</td></tr>
+          <tr><th scope="row">February</th><td>60</td></tr>
+          <tr><th scope="row">March</th><td>50</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

@@ -38,6 +38,8 @@ Use [the full sequence](start/learning-sequence.md) for the prerequisites and re
 
 The [practical source-code exercises](labs/index.md) include a notes application, a web task board, an example accounting journal, and other projects. Each exercise shows the instructions and files needed to try it yourself.
 
+[Practise a small example](practice/index.md) to run a command in the browser or find a lab that uses Umicom’s native tools. Follow [Study Bits2Banking on any device](start/study-on-any-device.md) when you move between a phone, a browser and the desktop reader.
+
 ## Learn from your first steps to an Umicom project
 
 Start with paper exercises, compare one program in several languages and follow it into a small Umicom project. Choose a path from arithmetic to bookkeeping and pricing, or find a practical lesson by technology.

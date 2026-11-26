@@ -17,6 +17,11 @@ The Bits2Banking desktop reader uses the same Umicom Framework Learning Catalogu
 | [SQL](../courses/sql-statement-reconciliation/index.html) | `learning-packs/sql-statement-reconciliation.json` |
 | [Accessible web development](../courses/accessible-statement-review/index.html) | `learning-packs/accessible-statement-review.json` |
 | [Go](../courses/go-statement-tools/index.html) | `learning-packs/go-statement-tools.json` |
+| [Bash and PowerShell practice](../lessons/02-programming/shell-practice/index.md) | `learning-packs/shell-practice.json` |
+| [Web graphics](../lessons/04-web/web-graphics/index.md) | `learning-packs/web-graphics.json` |
+| [Daily cash data practice](../lessons/07-practical-domains/daily-cash-practice/index.md) | `learning-packs/daily-cash-practice.json` |
+
+The short practice packs open the same Markdown pages used by the site. For interactive controls or examples that require other tools, follow [Study Bits2Banking on any device](../start/study-on-any-device.md).
 
 For one extra exercise from any course, load `learning-packs/course-practice-catalogue.json` from the same library folder. Open **Practice by course**, choose an exercise, and compare your work with its result check.
 

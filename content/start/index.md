@@ -11,6 +11,8 @@ Begin with [Your learning sequence](learning-sequence.md). It starts with comput
 - [Find a written lesson](../lessons/index.md)
 - [Read a book](../books/index.md)
 - [Try a practical example](../labs/index.md)
+- [Practise a small example in the browser](../practice/index.md)
+- [Study Bits2Banking on any device](study-on-any-device.md)
 
 <details>
 <summary>Earlier subject overview</summary>

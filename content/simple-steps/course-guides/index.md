@@ -22,6 +22,12 @@ Choose a course. Follow the short tasks in order and check your result. Open the
 
 If you are setting up your computer or writing your first program, begin with the [Windows and C steps](../index.md).
 
+## Short practice courses
+
+- [Bash and PowerShell practice](shell-practice.md)
+- [Web graphics](web-graphics.md)
+- [Daily cash data practice](daily-cash-practice.md)
+
 ## Developer tools and first programs
 
 - [Accessible Statement Review](accessible-statement-review.md)
