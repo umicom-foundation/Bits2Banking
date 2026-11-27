@@ -1,0 +1,86 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/15-group-deliveries-with-collections.html
+
+PURPOSE:
+  Provide the browser lesson “Group deliveries with collections”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Group deliveries with collections | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Group deliveries with collections</h1>
+<p>Once several deliveries share a site, a count for each site is easier to read than a list of every row. This exercise introduces lists, maps, generics and streams without changing the source delivery rows.</p>
+<p>Complete the previous lesson before trying this one. Use the same JDK and a writable practice folder.</p>
+<h2>Try it</h2>
+<ol>
+<li>Save <code>CountBySite.java</code> and read the three <code>Delivery</code> values in <code>List.of</code>.</li>
+<li>Use <code>List&lt;Delivery&gt;</code> to read the generic type aloud as ‘a list of deliveries’. <code>Map&lt;String, Integer&gt;</code> pairs site names with totals.</li>
+<li>Trace the calls to <code>merge</code>. The second North delivery adds to the existing North total.</li>
+<li>Compile and run. Compare the grouped results with the separate overall sum calculated by the stream.</li>
+</ol>
+<h2>Example files</h2>
+<h3>CountBySite.java</h3>
+<p><a href="../../../labs/java-path/CountBySite.java">Open CountBySite.java</a></p>
+<pre><code>import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+public class CountBySite {
+    record Delivery(String site, int boxes) {}
+
+    public static void main(String[] args) {
+        List&lt;Delivery&gt; rows = List.of(new Delivery(&quot;North&quot;, 4),
+            new Delivery(&quot;South&quot;, 3), new Delivery(&quot;North&quot;, 2));
+
+        // TreeMap orders the site names, so the displayed report is repeatable.
+        Map&lt;String, Integer&gt; totals = new TreeMap&lt;&gt;();
+        for (Delivery row : rows) {
+            totals.merge(row.site(), row.boxes(), Integer::sum);
+        }
+        totals.forEach((site, count) -&gt; System.out.println(site + &quot;: &quot; + count));
+        // Each delivery contributes once to this independent overall total.
+        int total = rows.stream().mapToInt(Delivery::boxes).sum();
+        System.out.println(&quot;Total: &quot; + total);
+    }
+}</code></pre>
+<h2>Run it</h2>
+<pre><code>javac CountBySite.java
+java -cp . CountBySite</code></pre>
+<p>The program output to check is shown below.</p>
+<pre><code>North: 6
+South: 3
+Total: 9</code></pre>
+<h2>Read the result</h2>
+<p>A <code>TreeMap</code> keeps the keys in sorted order. The stream visits the original list, takes each box count and adds them. <code>Delivery::boxes</code> means ‘call the boxes accessor for this delivery’. A stream pipeline has an output here when <code>sum()</code> runs.</p>
+<h2>Practise</h2>
+<p>Add a second South record with two boxes. Expect North 6, South 5 and total 11. Keep the result order the same.</p>
+<h2>Fix a problem</h2>
+<p>If the overall total and grouped rows disagree, list the three deliveries and inspect where the repeated site is combined. <code>put</code> would replace a total when the key repeats.</p>
+<h2>Reference</h2>
+<ul>
+<li><a href="https://dev.java/learn/api/collections-and-streams/">Collections and streams</a></li>
+</ul>
+<nav aria-label="Learning Java lesson navigation"><a href="14-separate-a-record-and-its-writer.html">Previous · Separate a record and its writer</a> · <a href="16-read-a-file-and-explain-errors.html">Next · Read a file and explain errors</a></nav>
+</article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body></html>

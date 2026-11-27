@@ -1,0 +1,113 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/21-verify-a-web-archive-upgrade-and-rollback.html
+
+PURPOSE:
+Rehearse a web archive upgrade and rollback using archive hashes and release markers.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify a web archive upgrade and rollback | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/21-verify-a-web-archive-upgrade-and-rollback.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Verify a web archive upgrade and rollback</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220">
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220">
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>An upgrade replaces the archive selected for an application. A rollback selects the previous archive again. Both copies can have the same name, so check the file’s identity as well as the release label stored inside it.</p>
+<p>This rehearsal works with files. It uses the static practice page from <a href="01-make-a-page-and-stylesheet.html">Make a web page and its stylesheet</a>, with the same archive name used by the <a href="04-deploy-a-war-on-tomcat.html">Tomcat exercise</a> and <a href="05-deploy-the-same-war-on-wildfly.html">WildFly exercise</a>.</p>
+<h2>1. Set up a rehearsal folder</h2>
+<p>Open PowerShell in <code>web-servers-lab</code>, the folder that contains <code>public</code> from the first lesson. Use the same PowerShell window for all three steps. The <code>jar</code> command from your JDK should be available.</p>
+<pre><code class="language-powershell">$practicePage = Join-Path $PWD.Path 'public'
+$rehearsal = Join-Path $PWD.Path ('war-rehearsal-' + [Guid]::NewGuid().ToString('N'))
+$stagedPage = Join-Path $rehearsal 'site'
+$previous = Join-Path $rehearsal 'previous'
+$candidate = Join-Path $rehearsal 'candidate'
+$selected = Join-Path $rehearsal 'selected'
+
+New-Item -ItemType Directory -Path $rehearsal -ErrorAction Stop | Out-Null
+New-Item -ItemType Directory -Path $stagedPage, $previous, $candidate, $selected -ErrorAction Stop | Out-Null
+$pageFiles = @('index.html', 'site.css', 'umicom-wordmark.svg', 'umicom.ico')
+$pagePaths = $pageFiles | ForEach-Object { Join-Path $practicePage $_ }
+Copy-Item -LiteralPath $pagePaths -Destination $stagedPage -ErrorAction Stop
+</code></pre>
+<p>The four copies go into <code>site</code> inside the new rehearsal folder. The original page stays available in <code>public</code>. If a copy fails, check that you opened PowerShell in <code>web-servers-lab</code> and completed the first lesson.</p>
+<h2>2. Create two archives with the same name</h2>
+<p>Give each release a different <code>release.txt</code>. Package the same page with each marker. A hash is a fingerprint of the file’s bytes. Record the SHA-256 hash of each archive so you can tell the two files apart.</p>
+<pre><code class="language-powershell">Set-Content -LiteralPath (Join-Path $previous 'release.txt') -Value 'practice-1' -Encoding ascii -ErrorAction Stop
+Set-Content -LiteralPath (Join-Path $candidate 'release.txt') -Value 'practice-2' -Encoding ascii -ErrorAction Stop
+$previousWar = Join-Path $previous 'btb-statement.war'
+$candidateWar = Join-Path $candidate 'btb-statement.war'
+
+jar --create --file $previousWar -C $stagedPage . -C $previous release.txt
+if ($LASTEXITCODE -ne 0) { throw 'Could not build the previous archive.' }
+jar --create --file $candidateWar -C $stagedPage . -C $candidate release.txt
+if ($LASTEXITCODE -ne 0) { throw 'Could not build the candidate archive.' }
+
+$previousHash = (Get-FileHash -LiteralPath $previousWar -Algorithm SHA256 -ErrorAction Stop).Hash
+$candidateHash = (Get-FileHash -LiteralPath $candidateWar -Algorithm SHA256 -ErrorAction Stop).Hash
+&quot;Package bytes differ $($previousHash -ne $candidateHash)&quot;
+</code></pre>
+<pre><code class="language-text">Package bytes differ True
+</code></pre>
+<p>The archives have different contents even though each is named <code>btb-statement.war</code>. The exact hash will depend on the archive you built. Use the two hashes you just calculated for the copy checks.</p>
+<h2>3. Verify the upgrade, then the rollback</h2>
+<p>Copy the candidate into <code>selected</code> and check the copy. Then put the previous archive in the same place and repeat the check. The helper extracts only <code>release.txt</code> into a fresh folder each time, so each result comes from the archive just selected.</p>
+<pre><code class="language-powershell">function Read-RehearsalRelease([string]$archivePath) {
+    $inspection = Join-Path $rehearsal ('inspect-' + [Guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $inspection -ErrorAction Stop | Out-Null
+    Push-Location -LiteralPath $inspection -ErrorAction Stop
+    try {
+        jar --extract --file $archivePath release.txt
+        if ($LASTEXITCODE -ne 0) { throw 'Could not read the release file.' }
+        Get-Content -LiteralPath 'release.txt' -ErrorAction Stop
+    } finally {
+        Pop-Location
+    }
+}
+
+$selectedWar = Join-Path $selected 'btb-statement.war'
+Copy-Item -LiteralPath $candidateWar -Destination $selectedWar -ErrorAction Stop
+$selectedHash = (Get-FileHash -LiteralPath $selectedWar -Algorithm SHA256 -ErrorAction Stop).Hash
+&quot;Upgrade copy matches candidate $($selectedHash -eq $candidateHash)&quot;
+&quot;Upgrade marker $(Read-RehearsalRelease $selectedWar)&quot;
+
+Copy-Item -LiteralPath $previousWar -Destination $selectedWar -Force -ErrorAction Stop
+$selectedHash = (Get-FileHash -LiteralPath $selectedWar -Algorithm SHA256 -ErrorAction Stop).Hash
+&quot;Rollback copy matches previous $($selectedHash -eq $previousHash)&quot;
+&quot;Rollback marker $(Read-RehearsalRelease $selectedWar)&quot;
+</code></pre>
+<pre><code class="language-text">Upgrade copy matches candidate True
+Upgrade marker practice-2
+Rollback copy matches previous True
+Rollback marker practice-1
+</code></pre>
+<p>If a hash check shows <code>False</code> or a marker differs, compare the source path in <code>Copy-Item</code> with the two folders you created. The previous and candidate archives remain available for another check.</p>
+<h2>4. Check a release on a practice server</h2>
+<p>For a later practice deployment, include a <code>release.txt</code> marker in the application files before you build each archive. Start the deployment check with the archive hash. After the server finishes the change, check the release marker served under the application’s context path. In the <code>/btb-statement</code> example, that would be <code>/btb-statement/release.txt</code>. Compare its response body with the marker you expected, then check the application routes for that release. Repeat both response checks after a rollback.</p>
+<p>The archives in this rehearsal contain the static page and its assets. Use the application archive from the deployment lessons when you need to check their Java servlet.</p>
+<p><a href="20-keep-links-inside-an-application-context.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="22-read-which-methods-a-web-route-allows.html">Next lesson</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

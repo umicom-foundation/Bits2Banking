@@ -1,0 +1,86 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/02-read-an-http-exchange.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Read an HTTP request and response | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/02-read-an-http-exchange.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Read an HTTP request and response</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" hidden /></p>
+<p>An address beginning with <code>http:</code> asks a server for something. Opening the website file from the previous lesson worked directly from disk. After Apache is running, use the same page to see what changes when the browser asks a server.</p>
+<h2>Read a request</h2>
+<p>Look at <code>http://127.0.0.1:8180/index.html</code>. The address <code>127.0.0.1</code> points back to your own computer. The server listens on port <code>8180</code>. The path <code>/index.html</code> identifies what to request.</p>
+<p>Here is a small HTTP/1.1 request. <code>GET</code> asks for the selected content. The <code>Host</code> line identifies the intended server, and the empty line ends the headers.</p>
+<div class="highlight"><pre><span></span><code><span class="nf">GET</span> <span class="nn">/index.html</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">127.0.0.1:8180</span>
+</code></pre></div>
+<p>The first line of a response gives the HTTP version and status. Headers follow it. The body, when present, comes after a blank line.</p>
+<div class="highlight"><pre><span></span><code><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">text/html</span>
+
+<span class="cp">&lt;!doctype html&gt;</span>
+...
+</code></pre></div>
+<p>The response is abbreviated. A real server can send additional headers. <code>Content-Type</code> tells the browser that these bytes represent HTML. The page asks for the stylesheet, wordmark and icon with their own requests.</p>
+<h2>Check three paths</h2>
+<p>First <a href="03-serve-files-with-apache-http-server.html">start the local Apache exercise</a>. Then run these commands in another PowerShell window.</p>
+<div class="highlight"><pre><span></span><code><span class="n">curl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-i</span> <span class="n">http</span><span class="p">://</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">8180</span><span class="p">/</span><span class="n">index</span><span class="p">.</span><span class="n">html</span>
+<span class="n">curl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-I</span> <span class="n">http</span><span class="p">://</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">8180</span><span class="p">/</span><span class="n">site</span><span class="p">.</span><span class="n">css</span>
+<span class="n">curl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-i</span> <span class="n">http</span><span class="p">://</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">8180</span><span class="p">/</span><span class="n">missing</span><span class="p">.</span><span class="n">html</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What to look for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-i</code> on <code>/index.html</code></td>
+<td>Status <code>200</code>, an HTML content type and the page body</td>
+</tr>
+<tr>
+<td><code>-I</code> on <code>/site.css</code></td>
+<td>Status <code>200</code> and content type <code>text/css</code>, followed by the end of the response</td>
+</tr>
+<tr>
+<td><code>-i</code> on <code>/missing.html</code></td>
+<td>Status <code>404</code>, typically with an HTML page describing the missing resource</td>
+</tr>
+</tbody>
+</table>
+<p>The lower-case <code>-i</code> includes response headers with a GET. Upper-case <code>-I</code> sends HEAD and displays the headers. A <code>404</code> response means a server answered. A connection error means you have no HTTP response to read, so first check the listener and the port.</p>
+<p>For the browser view, open the developer tools, choose <strong>Network</strong> and reload the page. Select one line for <code>index.html</code> and one for <code>site.css</code>. Identify the path, status and type on both lines. Cached files might be marked differently. Use the curl checks for a fresh observation.</p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc9110.html">HTTP methods and semantics</a> · <a href="https://www.rfc-editor.org/rfc/rfc9112.html">HTTP/1.1 message syntax</a></p>
+<p><a href="01-make-a-page-and-stylesheet.html">Previous, make a page</a> · <a href="../index.html">Course</a> · <a href="03-serve-files-with-apache-http-server.html">Next, serve files with Apache</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

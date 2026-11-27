@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/35-show-a-time-with-its-offset.html
+
+PURPOSE:
+  Provide the browser lesson “Show a time with its offset”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Show a time with its offset | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Show a time with its offset</h1>
+<p>Suppose an overnight report shows two readings at 01:30. When the clocks go back, the same local clock time can happen twice. Store the actual moment for each reading. Show its offset when you display it.</p>
+<p>Open PowerShell 7 in a new practice folder with JDK 21 or later. If needed, follow <a href="11-install-the-jdk-and-run-a-class.html">Install the JDK and run a class</a>.</p>
+<h2>1. Save the program</h2>
+<p>Save this code as <code>ShowReadingTimes.java</code>. You can also open the <a href="../../../labs/java-path/ShowReadingTimes.java">source file</a>.</p>
+<pre><code class="language-java">import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+public class ShowReadingTimes {
+    public static void main(String[] args) {
+        // Keep the recorded moments independently of the display zone.
+        Instant first = Instant.parse(&quot;2025-10-26T00:30:00Z&quot;);
+        Instant second = Instant.parse(&quot;2025-10-26T01:30:00Z&quot;);
+
+        // Include the offset so a repeated local hour stays distinguishable.
+        ZoneId displayZone = ZoneId.of(&quot;Europe/London&quot;);
+        DateTimeFormatter label = DateTimeFormatter.ofPattern(&quot;HH:mm xxx&quot;, Locale.ROOT)
+                .withZone(displayZone);
+        System.out.println(displayZone.getId() + &quot; &quot; + label.format(first));
+        System.out.println(displayZone.getId() + &quot; &quot; + label.format(second));
+        System.out.println(&quot;Elapsed minutes: &quot; + Duration.between(first, second).toMinutes());
+    }
+}
+</code></pre>
+<p>An <code>Instant</code> represents one moment on the timeline. The <code>Z</code> at the end of each input means the time is given in UTC. <code>ZoneId</code> selects whose clock rules to use for display. In the label pattern, <code>HH:mm</code> shows the clock time and <code>xxx</code> prints the difference from UTC, including <code>+00:00</code> when the values match.</p>
+<h2>2. Compile and compare the two labels</h2>
+<pre><code class="language-powershell">javac --release 21 ShowReadingTimes.java
+java ShowReadingTimes
+</code></pre>
+<p>You should see these lines.</p>
+<pre><code class="language-text">Europe/London 01:30 +01:00
+Europe/London 01:30 +00:00
+Elapsed minutes: 60
+</code></pre>
+<p>The first reading displays one hour ahead of UTC. The second aligns with UTC. Both displays show 01:30 on the local clock. <code>Duration.between</code> compares the actual moments and reports the hour that passed.</p>
+<h2>3. Change the display to UTC</h2>
+<p>Change <code>"Europe/London"</code> to <code>"UTC"</code>, then compile and run again. The two clock labels should now read 00:30 and 01:30. The elapsed time should still be 60 minutes.</p>
+<p>If the labels stay the same, check that you saved the edited file and ran <code>javac</code> in its directory. Put <code>"Europe/London"</code> back when you finish.</p>
+<p>Apply the same idea in an Umicom Trader history. Save a stable timestamp for each market event, then apply the chosen display timezone when you render the timeline. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Instant.html">Java Instant reference</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/format/DateTimeFormatter.html">Java format patterns</a></p>
+<p><a href="34-report-a-task-failure.html">Previous lesson</a> · <a href="36-keep-a-reading-in-a-record.html">Next lesson</a> · <a href="../index.html">Java course</a> · <a href="../../../simple-steps/course-guides/learning-java.md">Java in simple steps</a></p>
+</article></main>
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 Start with the first module and follow its lessons in order. Later project modules build on the earlier ideas. Each exercise identifies the source files, setup, expected result and recovery steps; keep your practice work in a separate folder.
 
+[Read Compiler lessons 73–78 in the offline companion](continuation.md).
+
 ## Source, tokens and execution
 
 Read text into tokens, define expression order and execute checked instructions.

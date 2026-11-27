@@ -18,6 +18,8 @@ MIT
 ![Umicom Foundation](../assets/branding/umicom-wordmark.svg){ .umicom-wordmark .umicom-wordmark-light width="215" }
 ![Umicom Foundation](../assets/branding/umicom-wordmark-on-dark.svg){ .umicom-wordmark .umicom-wordmark-dark width="215" }
 
+For setup and a shorter first run, start with [Install the JDK and run a class](../lessons/03-native-code/learning-java/11-install-the-jdk-and-run-a-class.md). Continue through [Java in simple steps](course-guides/learning-java.md) when you are ready.
+
 1. Save this code as `Coffee.java`. Use the capital `C` so the file name matches the class name.
 
    ```java

@@ -18,6 +18,7 @@ Python is used here because MkDocs calls Python publishing hooks. This is a
 publication adapter, not another course engine. Local HTML keeps its Markdown
 links; generated HTML points to the pages made from those same manuscripts.
 """
+from functools import lru_cache
 from html import escape, unescape
 from html.parser import HTMLParser
 import os
@@ -81,12 +82,27 @@ def repository_context(config, docs):
     return (docs.parent.resolve(), repository_path + '/blob/main/')
 
 
-def publication_link(value, source, destination, documents, repository=None):
+def publication_reference_target(directory, path):
+    """Resolve a publication link against its manuscript's source directory."""
+    return (directory / unquote(path)).resolve()
+
+
+def cached_publication_reference_targets():
+    """Reuse source identities for repeated navigation within one site render."""
+    return lru_cache(maxsize=16384)(publication_reference_target)
+
+
+def publication_link(value, source, destination, documents, repository=None,
+                     resolve_target=publication_reference_target):
     """Use known document identities, never guess a route from its extension."""
     url = urlsplit(unescape(value))
     if url.scheme or url.netloc or not url.path or url.path.startswith('/'):
         return value
-    target = (source.parent / unquote(url.path)).resolve()
+    # The earlier direct read is retained for review. The injected resolver
+    # applies the same normalization and can share its result within a build.
+    if False:
+        target = (source.parent / unquote(url.path)).resolve()
+    target = resolve_target(source.parent, url.path)
     published = documents.get(target)
     if published is None:
         # Standalone source HTML keeps repository-relative links for offline use.
@@ -102,13 +118,15 @@ def publication_link(value, source, destination, documents, repository=None):
 class CourseLinks(HTMLParser):
     """Replace only anchor href values; retain all other text of the page."""
 
-    def __init__(self, text, source, destination, documents, repository=None):
+    def __init__(self, text, source, destination, documents, repository=None,
+                 resolve_target=publication_reference_target):
         super().__init__(convert_charrefs=False)
         self.text = text
         self.source = source
         self.destination = destination
         self.documents = documents
         self.repository = repository
+        self.resolve_target = resolve_target
         self.offsets = [0]
         for match in re.finditer('\n', text):
             self.offsets.append(match.end())
@@ -124,7 +142,13 @@ class CourseLinks(HTMLParser):
         group = next((g for g in (2, 3, 4) if match[g] is not None), None)
         if group is None:
             return
-        replacement = publication_link(match[group], self.source, self.destination, self.documents, self.repository)
+        # Preserve the earlier invocation for review. A shared source target
+        # still goes through this page's destination and public link policy.
+        if False:
+            replacement = publication_link(match[group], self.source, self.destination, self.documents, self.repository)
+        replacement = publication_link(
+            match[group], self.source, self.destination, self.documents,
+            self.repository, resolve_target=self.resolve_target)
         if replacement != match[group]:
             line, column = self.getpos()
             start = self.offsets[line - 1] + column
@@ -208,6 +232,9 @@ def on_post_build(config):
     # a partially rewritten publication. Exact payload bytes remain native-owned.
     native_resources = native_pack_resources(site)
     repository = repository_context(config, docs)
+    # Each build observes its own source tree. A bounded cache shares target
+    # resolution between pages without carrying source identities into rebuilds.
+    resolve_target = cached_publication_reference_targets()
     documents = {}
     for entry in _files:
         if entry.is_documentation_page() and entry.abs_src_path:
@@ -232,6 +259,12 @@ def on_post_build(config):
             # Rendered Markdown already has MkDocs' internal document URLs.
             # Apply public source redirects there without rerouting those links.
             destinations = {} if manuscript else documents
-            new = CourseLinks(old, source, destination, destinations, repository).result()
+            # The earlier per-page call is retained for review. The active
+            # call shares only source resolution across the generated pages.
+            if False:
+                new = CourseLinks(old, source, destination, destinations, repository).result()
+            new = CourseLinks(
+                old, source, destination, destinations, repository,
+                resolve_target=resolve_target).result()
             if new != old:
                 destination.write_text(new, encoding='utf-8', newline='\n')

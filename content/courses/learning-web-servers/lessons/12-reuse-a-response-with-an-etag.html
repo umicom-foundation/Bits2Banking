@@ -1,0 +1,75 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/12-reuse-a-response-with-an-etag.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reuse a response with an ETag | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/12-reuse-a-response-with-an-etag.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Reuse a response with an ETag</h1>
+<p><img alt="Umicom Foundation" src="../../../assets/branding/umicom-wordmark.svg" /></p>
+<p>You requested a reading and kept a copy. Later, the client can ask whether it still has the right version. An ETag is a label for the selected version of the response. This exercise uses three short practice files in PowerShell. You can finish it without running a server.</p>
+<p>If HTTP requests and headers are new to you, start with <a href="02-read-an-http-exchange.html">Read an HTTP request and response</a>.</p>
+<h2>1. Save the response and its tag</h2>
+<pre><code class="language-powershell">@'
+HTTP/1.1 200 OK
+Content-Type: text/plain
+ETag: &quot;reading-42&quot;
+
+Reading: 42
+'@ | Set-Content -LiteralPath response-200.txt
+Select-String -LiteralPath response-200.txt -SimpleMatch 'ETag:'
+</code></pre>
+<p>You should see <code>ETag: "reading-42"</code>. The blank line separates the headers from the body. The body contains <code>Reading: 42</code>. Keep this file for the next steps.</p>
+<h2>2. Ask whether the reading has changed</h2>
+<pre><code class="language-powershell">@'
+GET /reading HTTP/1.1
+Host: localhost
+If-None-Match: &quot;reading-42&quot;
+
+'@ | Set-Content -LiteralPath request-with-tag.txt
+Get-Content -LiteralPath request-with-tag.txt
+</code></pre>
+<p><code>If-None-Match</code> sends the saved label with the new GET request. In this practice example the current reading still has the same tag.</p>
+<h2>3. Compare a 304 with the saved 200</h2>
+<pre><code class="language-powershell">@'
+HTTP/1.1 304 Not Modified
+ETag: &quot;reading-42&quot;
+
+'@ | Set-Content -LiteralPath response-304.txt
+Get-Content -LiteralPath response-304.txt -TotalCount 1
+Select-String -LiteralPath response-200.txt -SimpleMatch 'Reading:'
+</code></pre>
+<p>You should see <code>HTTP/1.1 304 Not Modified</code> and then the reading from the <strong>saved</strong> 200 response. A 304 has no response body. The client may use the stored response for the same resource. If the server sends a fresh 200 because the selected representation has changed, the client reads the new body and remembers the new tag.</p>
+<h2>4. Apply the check to a real workflow</h2>
+<p>When you later compare a native C23 route and a deployed Java route, record the first response status and tag, the conditional request, and the second response status. Check the response body separately. A response reporting 304 should have no body even if some headers describe the existing representation. The ETag applies to the selected representation of the requested resource.</p>
+<p>If your sample search shows nothing, first confirm the practice file names with <code>Get-ChildItem response-*.txt</code>. Then reopen the first file and check the line that starts with <code>ETag:</code>. Copy the same label including its quotation marks.</p>
+<p><a href="11-follow-a-request-in-an-access-log.html">Previous lesson</a> · <a href="06-compare-a-native-c-web-service.html">Native C23 route</a> · <a href="../index.html">Course index</a> · <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-15.4.5">HTTP 304 reference</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

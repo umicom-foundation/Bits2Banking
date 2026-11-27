@@ -1,0 +1,95 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/19-collect-results-from-virtual-threads.html
+
+PURPOSE:
+  Provide the browser lesson “Collect results from virtual threads”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Collect results from virtual threads | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Collect results from virtual threads</h1>
+<p>Two independent reports can wait at the same time. A virtual thread lets you write each small task in the familiar sequential style. This exercise models waiting with a short pause and uses no network.</p>
+<p>Complete the previous lesson before trying this one. Use the same JDK and a writable practice folder.</p>
+<h2>Try it</h2>
+<ol>
+<li>Save <code>ParallelReports.java</code>. The two tasks send requests for North and South.</li>
+<li>Read <code>submit</code>. It starts a task and gives you a future, an object that will eventually hold its result or failure.</li>
+<li>Compile and run with JDK 21 or newer. The program calls <code>get</code> on both futures before adding their counts.</li>
+<li>Run it with <code>East</code> as an argument and compare the error message with the successful output.</li>
+</ol>
+<h2>Example files</h2>
+<h3>ParallelReports.java</h3>
+<p><a href="../../../labs/java-path/ParallelReports.java">Open ParallelReports.java</a></p>
+<pre><code>import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+
+public class ParallelReports {
+    static int request(String site) throws InterruptedException {
+        // The pause stands in for a blocking read. This lab uses no network.
+        Thread.sleep(30);
+        return switch (site) {
+            case &quot;North&quot; -&gt; 4;
+            case &quot;South&quot; -&gt; 3;
+            default -&gt; throw new IllegalArgumentException(&quot;Unknown site&quot;);
+        };
+    }
+
+    public static void main(String[] args) {
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var north = executor.submit(() -&gt; request(&quot;North&quot;));
+            var south = executor.submit(() -&gt; request(args.length == 0 ? &quot;South&quot; : args[0]));
+            // Read results in a fixed order. Completion order can differ.
+            int total = north.get() + south.get();
+            System.out.println(&quot;Total: &quot; + total);
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            System.err.println(&quot;Interrupted while collecting reports.&quot;);
+            System.exit(1);
+        } catch (ExecutionException error) {
+            System.err.println(&quot;Report failed: &quot; + error.getCause().getMessage());
+            System.exit(1);
+        }
+    }
+}</code></pre>
+<h2>Run it</h2>
+<pre><code>javac --release 21 ParallelReports.java
+java -cp . ParallelReports
+java -cp . ParallelReports East</code></pre>
+<p>The program output to check is shown below.</p>
+<pre><code>Total: 7
+Report failed: Unknown site</code></pre>
+<h2>Read the result</h2>
+<p>The <code>try</code> block owns the executor. <code>get</code> waits for its task and reports a thrown task error through <code>ExecutionException</code>. The main program re-raises its interruption flag before reporting an interrupted wait. Virtual threads help when many independent tasks spend time waiting; the sample has no performance benchmark.</p>
+<h2>Practise</h2>
+<p>Pass <code>North</code> as the second site. The same calculation should now report <code>Total: 8</code>. Add one more known site and decide which tests would cover it.</p>
+<h2>Fix a problem</h2>
+<p>Confirm you are compiling against Java 21 or newer if the executor method is missing. Check the site spelling for the explicit failure example.</p>
+<h2>Reference</h2>
+<ul>
+<li><a href="https://dev.java/learn/api/virtual-threads/">Virtual threads and futures</a></li>
+</ul>
+<nav aria-label="Learning Java lesson navigation"><a href="18-handle-each-result-with-a-pattern.html">Previous · Handle each result with a pattern</a> · <a href="20-package-a-report-as-a-module.html">Next · Package a report as a module</a></nav>
+</article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body></html>

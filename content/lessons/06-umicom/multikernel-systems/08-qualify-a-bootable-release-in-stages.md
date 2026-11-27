@@ -38,6 +38,18 @@ Get-FileHash -Algorithm SHA256 -LiteralPath 'C:/Images/reviewed-release.iso'
 
 Explain what each observation establishes. An ELF executable loaded by the QEMU RISC-V virt model shows one virtual-board path. A disc-image structure check shows that an expected structure exists. A restart from a freshly installed virtual disk provides separate evidence that the disk can start independently. No install or media write is required to complete the worksheet.
 
+## Compare three RISC-V startup rows
+
+Use the [RISC-V console guide](../../../simple-steps/boot-media/kernel-riscv-console.md) to collect the system and recovery output. If you have an automated service-failure transcript, add the third row using that transcript.
+
+| Scenario | Readiness marker | Recovery reason |
+| --- | --- | --- |
+| Normal system image | `UMICOM_KERNEL_NORMAL_STARTUP_READY` | Leave the recovery reason blank. |
+| System image with a required service failure | `UMICOM_KERNEL_RECOVERY_READY` | `required-startup-service` |
+| Explicit recovery image | `UMICOM_KERNEL_RECOVERY_READY` | `forced-recovery` |
+
+Both recovery rows reach the same useful console. Keep their reasons separate so a successful recovery screen cannot be mistaken for successful normal startup. Record optical boot, installation and restart on their own worksheet rows.
+
 ## Apply it to Umicom
 
 Use this worksheet for Umicom Kernel and Umicom OS release tests. Keep the Linux Foundation and native Kernel rows separate so an observation from one does not become a release claim about the other. Use the same reporting distinctions when Umicom Automated Testing records a build, boot, service check, or recovery step.

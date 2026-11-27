@@ -59,4 +59,31 @@ Use the earlier registered observation to fill in the first part. Enter the 66.0
 
 Instruction fuel is a third number if the tool runs a virtual machine. It counts operations inside the interpreter. A host timeout describes elapsed seconds in the surrounding command or test. Changing one of the time limits leaves the interpreter’s fuel assertions in place.
 
+## 4. Read the original limit before trying again
+
+Build Umicom C with its tests enabled. Open PowerShell where CTest is available. Keep the original test report before running another check.
+
+```powershell
+$build = Read-Host 'Path to the Umicom C build folder'
+$only = '^umicom\.c\.cli-inspection$'
+$catalog = ctest --test-dir $build -R $only --show-only=json-v1 | ConvertFrom-Json
+foreach ($test in $catalog.tests) {
+    $limit = ($test.properties | Where-Object name -eq 'TIMEOUT').value
+    "$($test.name) has $limit seconds."
+}
+```
+
+The result shows the registered name and its current whole-test limit in seconds. If no row appears, run `ctest --test-dir $build -N` and check whether you chose the folder that contains the registered tests.
+
+Run the same selection by itself. Save a fresh report so the first failure and the later result remain available.
+
+```powershell
+$file = 'inspection-retry-{0}.xml' -f (Get-Date -Format 'yyyyMMdd-HHmmss-fff')
+$report = Join-Path $build $file
+ctest --test-dir $build -R $only --output-on-failure --output-junit $report -j 1
+$LASTEXITCODE
+```
+
+Exit code 0 means the selected check passed. Record any timeout or error shown in the output. Include the first result with the retry so a colleague can see both observations.
+
 [Course contents](index.md) · [Previous lesson · Measure the process temporary volume](31-measure-the-process-temporary-volume.md) · [Related lesson · Read a Ninja progress record](28-read-a-ninja-progress-record.md) · [Related lesson · Separate instruction fuel from wall-clock time](../building-a-compiler-in-c/59-separate-instruction-fuel-from-wall-clock-time.md) · [Related lesson · Read the instruction budget at a pause](../building-a-compiler-in-c/116-read-the-instruction-budget-at-a-pause.md) · [HTML edition](../../../courses/learning-build-systems/lessons/32-read-child-and-fixture-deadlines.html)

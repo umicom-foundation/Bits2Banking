@@ -1,0 +1,81 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/13-total-an-array-with-a-method.html
+
+PURPOSE:
+  Provide the browser lesson “Total an array with a method”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Total an array with a method | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Total an array with a method</h1>
+<p>A schedule has three blocks of 15, 25 and 20 minutes. An array holds these values together. A method gives the calculation a name so it can be reused and checked.</p>
+<p>Complete the previous lesson before trying this one. Use the same JDK and a writable practice folder.</p>
+<h2>Try it</h2>
+<ol>
+<li>Save <code>MinutesReport.java</code> and read the values between braces in <code>durations</code>.</li>
+<li>Read <code>totalMinutes(int[] durations)</code>. The method accepts an array of whole numbers and returns a <code>long</code>, a wider whole number.</li>
+<li>Trace the enhanced loop. <code>duration</code> receives the next item. When there are no items the total stays zero.</li>
+<li>Compile and run. The two checks compare the normal total and the empty case before printing.</li>
+</ol>
+<h2>Example files</h2>
+<h3>MinutesReport.java</h3>
+<p><a href="../../../labs/java-path/MinutesReport.java">Open MinutesReport.java</a></p>
+<pre><code>public class MinutesReport {
+    static long totalMinutes(int[] durations) {
+        long total = 0;
+        // Visit each supplied duration once, including when the array is empty.
+        for (int duration : durations) {
+            total += duration;
+        }
+        return total;
+    }
+
+    public static void main(String[] args) {
+        int[] durations = {15, 25, 20};
+        long actual = totalMinutes(durations);
+        if (actual != 60 || totalMinutes(new int[0]) != 0) {
+            throw new IllegalStateException(&quot;Unexpected duration total&quot;);
+        }
+        System.out.println(&quot;Minutes: &quot; + actual);
+    }
+}</code></pre>
+<h2>Run it</h2>
+<pre><code>javac MinutesReport.java
+java -cp . MinutesReport</code></pre>
+<p>The program output to check is shown below.</p>
+<pre><code>Minutes: 60</code></pre>
+<h2>Read the result</h2>
+<p><code>return total</code> gives the caller a value. The checks throw an exception and stop the program if either result differs. In a C function, an ordinary array parameter alone carries no length. Pass the element count as a separate argument. Java’s array object already knows its length.</p>
+<h2>Practise</h2>
+<p>Add a 10-minute block. Keep the expected value at 60 once and observe the failure. Change the expected value to 70, compile again and confirm the report displays <code>Minutes: 70</code>.</p>
+<h2>Fix a problem</h2>
+<p>If you get <code>Unexpected duration total</code>, add the original values by hand and check whether the expected total reflects a change to the array.</p>
+<h2>Reference</h2>
+<ul>
+<li><a href="https://dev.java/learn/language/constructs/">Java arrays and methods</a></li>
+</ul>
+<nav aria-label="Learning Java lesson navigation"><a href="12-add-values-in-a-loop.html">Previous · Add values in a loop</a> · <a href="14-separate-a-record-and-its-writer.html">Next · Separate a record and its writer</a></nav>
+</article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body></html>

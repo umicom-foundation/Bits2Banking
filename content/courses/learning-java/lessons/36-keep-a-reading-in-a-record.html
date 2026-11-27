@@ -1,0 +1,83 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/36-keep-a-reading-in-a-record.html
+
+PURPOSE:
+  Provide the browser lesson “Keep a reading in a record”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep a reading in a record | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Keep a reading in a record</h1>
+<p>A reading has two pieces of information. It has a meter name and a number. Keep the two values together, check them when you create the reading and compare two readings by their values.</p>
+<p>Use PowerShell 7 and JDK 21 or later. If you are new to classes, start with <a href="31-keep-a-valid-total-in-a-class.html">Keep a valid total in a class</a>.</p>
+<h2>1. Save the Java program</h2>
+<p>Save this example as <code>RecordReadings.java</code> in a new practice folder. You can also open the <a href="../../../labs/java-path/RecordReadings.java">source file</a>.</p>
+<pre><code class="language-java">public class RecordReadings {
+    record Reading(String meter, int units) {
+        Reading {
+            // Reject an invalid reading before Java assigns the record fields.
+            if (meter == null || meter.isBlank()) {
+                throw new IllegalArgumentException(&quot;Give the meter a name.&quot;);
+            }
+            if (units &lt; 0) {
+                throw new IllegalArgumentException(&quot;Units must be zero or more.&quot;);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        // Two separate records can represent the same observation.
+        Reading first = new Reading(&quot;Boiler room&quot;, 8);
+        Reading second = new Reading(&quot;Boiler room&quot;, 8);
+        System.out.println(first.meter() + &quot; read &quot; + first.units());
+        System.out.println(&quot;Same reading: &quot; + first.equals(second));
+
+        // Show the exact constructor feedback for a refused value.
+        try {
+            new Reading(&quot;Boiler room&quot;, -1);
+        } catch (IllegalArgumentException failure) {
+            System.out.println(failure.getMessage());
+        }
+    }
+}
+</code></pre>
+<p>The <code>record</code> line lists the values that belong together. The short <code>Reading { ... }</code> block checks the values supplied to the constructor before Java saves them. The methods <code>meter()</code> and <code>units()</code> read the saved values.</p>
+<h2>2. Compile and run</h2>
+<pre><code class="language-powershell">javac --release 21 RecordReadings.java
+java RecordReadings
+</code></pre>
+<p>You should see this output.</p>
+<pre><code class="language-text">Boiler room read 8
+Same reading: true
+Units must be zero or more.
+</code></pre>
+<p><code>equals</code> compares the record's components. The two records here have the same name and number. The third construction fails because this example admits zero and positive readings.</p>
+<h2>3. Compare two different readings</h2>
+<p>Change the second reading from 8 to 9. Save, compile and run again. The comparison line should change to <code>Same reading: false</code>. If it still says <code>true</code>, check that you edited the second <code>new Reading</code> call and recompiled that file.</p>
+<p>Both components here have immutable values. When a planned record would contain a mutable value, decide whether you need to save a copy first. The <a href="32-save-a-copy-of-a-growing-list.html">list snapshot exercise</a> shows how to save the current entries of a growing list.</p>
+<p>An Umicom Framework read model can use a C structure for the same purpose. Check the proposed data before publishing the structure so later consumers receive a consistent reading. <a href="https://docs.oracle.com/en/java/javase/21/language/records.html">Java record classes</a></p>
+<p><a href="35-show-a-time-with-its-offset.html">Previous lesson</a> · <a href="37-close-resources-and-keep-the-cause.html">Next lesson</a> · <a href="../index.html">Java course</a> · <a href="../../../simple-steps/course-guides/learning-java.md">Java in simple steps</a></p>
+</article></main>
+</body>
+</html>

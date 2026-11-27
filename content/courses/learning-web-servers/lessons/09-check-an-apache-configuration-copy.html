@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/09-check-an-apache-configuration-copy.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check an Apache configuration copy | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/09-check-an-apache-configuration-copy.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Check an Apache configuration copy</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" />
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>Check a working configuration, see what happens when one setting has no value, then check a repaired copy. Use the Windows practice download from <a href="03-serve-files-with-apache-http-server.html">Serve files with Apache HTTP Server</a>. Finish that lesson through <code>Syntax OK</code> and stop its practice server before starting here.</p>
+<h2>Check a copy of the working settings</h2>
+<ol>
+<li>Open PowerShell and set <code>$apache</code> to your extracted practice folder. Change the example path if yours is elsewhere.</li>
+<li>Enter these lines in order. If <code>syntax-practice</code> already exists, use a new folder name before copying.</li>
+</ol>
+<pre><code class="language-powershell">$apache = 'C:\learning\Apache24'
+$practice = Join-Path $apache 'syntax-practice'
+New-Item -ItemType Directory -Path $practice -ErrorAction Stop
+$good = Join-Path $practice 'working.conf'
+Copy-Item -LiteralPath &quot;$apache\conf\httpd.conf&quot; -Destination $good
+&amp; &quot;$apache\bin\httpd.exe&quot; -d $apache -f $good -t
+$LASTEXITCODE
+</code></pre>
+<p>You should see <code>Syntax OK</code> from Apache and <code>0</code> from PowerShell. <code>-d</code> sets the starting server root for relative paths. <code>-f</code> names the configuration copy. <code>-t</code> reads its settings and exits after checking them.</p>
+<h2>Find a missing value</h2>
+<ol>
+<li>Make another copy and add <code>ServerName</code> on its own line without a value.</li>
+<li>Run the same check with this filename. Read the filename, line and directive Apache reports.</li>
+</ol>
+<pre><code class="language-powershell">$faulty = Join-Path $practice 'missing-value.conf'
+Copy-Item -LiteralPath $good -Destination $faulty
+Add-Content -LiteralPath $faulty -Value '', 'ServerName'
+&amp; &quot;$apache\bin\httpd.exe&quot; -d $apache -f $faulty -t
+$LASTEXITCODE
+</code></pre>
+<p>A missing value gives a syntax error and a nonzero exit code. Keep this file so you can compare the reported line with the repaired copy.</p>
+<h2>Recheck the repaired settings</h2>
+<ol>
+<li>Copy the known working settings to <code>repaired.conf</code>.</li>
+<li>Check that copy and compare the result with the missing-value version.</li>
+</ol>
+<pre><code class="language-powershell">$repaired = Join-Path $practice 'repaired.conf'
+Copy-Item -LiteralPath $good -Destination $repaired
+&amp; &quot;$apache\bin\httpd.exe&quot; -d $apache -f $repaired -t
+$LASTEXITCODE
+</code></pre>
+<p>Expect <code>Syntax OK</code> and <code>0</code> again. A syntax check is one part of preparing a server configuration. After an actual start or reload, an HTTP check can confirm that the expected site responds on its configured port. The same difference matters in Umicom Webserver when a candidate configuration is checked before applying it.</p>
+<p><a href="../index.html">Return to the Web Servers course</a> · <a href="02-read-an-http-exchange.html">Read an HTTP exchange</a> · <a href="https://httpd.apache.org/docs/2.4/en/programs/httpd.html">Apache httpd command reference</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

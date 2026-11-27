@@ -28,6 +28,32 @@ int main(void) { return 0b101010; }</code></pre>
 <pre><code class="language-powershell">.\build\windows-ucrt64-debug\bin\umicom-c.exe compare-operations .\left.uc .\right.uc
 $LASTEXITCODE</code></pre>
 <p>Expected result: operations=same, two instructions on each side, source-locations=not-compared, execution=not-performed and exit zero. Both literals become the same signed PUSH operand followed by RETURN. The command creates no output file.</p>
+<h2>Include a typed print instruction</h2>
+<p>Create a fresh practice folder. Open a text editor and save the first example as <code>decimal-print.uc</code>.</p>
+<pre><code class="language-c">int main(void)
+{
+    /* Compare the print instruction and return instruction as separate operations. */
+    print(40);
+    return 7;
+}
+</code></pre>
+<p>Save the second example as <code>hex-print.uc</code> in the same folder.</p>
+<pre><code class="language-c">int main(void)
+{
+    /* Hexadecimal 28 is decimal 40, and binary 111 is decimal 7. */
+    print(0x28);
+    return 0b111;
+}
+</code></pre>
+<p>Set <code>$Uc</code> to the full path of a current Umicom C executable. In PowerShell, open the folder containing both files. Run the comparison and read the exit code.</p>
+<pre><code class="language-powershell">&amp; $Uc compare-operations .\decimal-print.uc .\hex-print.uc
+$LASTEXITCODE
+</code></pre>
+<p>Expect <code>operations=same</code> and exit <code>0</code>. The report compares the print and return instructions. Running either program is a separate step.</p>
+<ol>
+<li>Change <code>print(0x28);</code> to <code>print(0x29);</code> in <code>hex-print.uc</code> and leave its return statement in place. Repeat the command. Expect <code>operations=different</code> and exit <code>1</code>.</li>
+<li>Save a copy of <code>decimal-print.uc</code> as <code>decimal-print.c</code>. Compare that file with <code>hex-print.uc</code>. Expect exit <code>2</code>. Umicom C admits this print statement in <code>.uc</code> files. The comparison command selects the source grammar for each input.</li>
+</ol>
 <h2>Follow ownership through the implementation</h2>
 <p>Open tools/main.c and locate compare_operations. It reads each source into one bounded scratch buffer and compiles into a separate caller-owned instruction array. The scratch buffer may be reused after compilation because instructions retain values and source offsets, not pointers into the text.</p>
 <p>The command then calls umc_program_same_operations. Open src/comparison.c: that service validates both complete programs before comparing opcode and operand fields. Source offsets are excluded intentionally. The hosted command owns file I/O; the core service owns instruction identity.</p>

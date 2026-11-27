@@ -1,0 +1,87 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/26-read-a-method-in-bytecode.html
+
+PURPOSE:
+  Provide the browser lesson “Read a method in bytecode”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a method in bytecode | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Read a method in bytecode</h1>
+<p>Follow the method that adds 12 and 8. Compile it, see the number 20, then open the instructions in its class file. Read <a href="13-total-an-array-with-a-method.html">Total an array with a method</a> first if a Java method is new to you.</p>
+<h2>Run and inspect the class</h2>
+<ol>
+<li>Save <a href="../../../labs/java-path/AddReadings.java">AddReadings.java</a> in a practice folder.</li>
+<li>Open a terminal there. Enter the three commands in order.</li>
+<li>Check that the program prints <code>20</code>. Find <code>add(int, int)</code> in the listing from <code>javap</code>.</li>
+</ol>
+<pre><code class="language-powershell">javac --release 21 AddReadings.java
+java AddReadings
+javap -c AddReadings
+</code></pre>
+<p>The Java Virtual Machine, or JVM, reads instructions in the class file. These instructions are known as bytecode. <code>javap -c</code> lists them in a form you can read.</p>
+<h2>Read the four instructions in <code>add</code></h2>
+<pre><code class="language-text">0: iload_0
+1: iload_1
+2: iadd
+3: ireturn
+</code></pre>
+<p>The number before each instruction is its byte offset within the method. The operand stack is the JVM’s temporary storage for values during this calculation.</p>
+<table>
+<thead>
+<tr>
+<th>Instruction</th>
+<th>What it does for these inputs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iload_0</code></td>
+<td>Put the first argument, 12, on the stack.</td>
+</tr>
+<tr>
+<td><code>iload_1</code></td>
+<td>Put the second argument, 8, above it.</td>
+</tr>
+<tr>
+<td><code>iadd</code></td>
+<td>Take both integers and put their sum, 20, back on the stack.</td>
+</tr>
+<tr>
+<td><code>ireturn</code></td>
+<td>Return the integer result to the caller.</td>
+</tr>
+</tbody>
+</table>
+<h2>Change one instruction through the source</h2>
+<ol>
+<li>In <code>add</code>, change <code>return first + second;</code> to <code>return first - second;</code>.</li>
+<li>Run the three commands again. The program prints <code>4</code>, and <code>isub</code> now appears where <code>iadd</code> appeared before.</li>
+<li>Restore the plus sign and rerun. If an earlier result still appears, make sure <code>javac</code> succeeded before launching the class again.</li>
+</ol>
+<p>Use the same comparison when learning Umicom C. Keep one small calculation and its inputs, record the result, then inspect what the compiler produced. The JVM and Umicom C use their own instruction formats. <a href="21-verify-a-java-and-c23-file-contract.html">Compare a Java and C23 file contract</a></p>
+<p><a href="../index.html">Return to Learning Java</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/specs/man/javap.html">The javap command</a> · <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-6.html#jvms-6.5.iadd">JVM integer addition</a></p>
+</article></main>
+</body>
+</html>

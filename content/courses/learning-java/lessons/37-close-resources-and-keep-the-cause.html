@@ -1,0 +1,63 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/37-close-resources-and-keep-the-cause.html
+
+PURPOSE:
+  Provide the browser lesson “Close resources and keep the cause”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Close resources and keep the cause | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Close resources and keep the cause</h1>
+<p>A program opens an input and a report. The read fails, and closing the report also fails. Find out which error is reported first, then change the run so you can see the other case.</p>
+<p>Start with <a href="16-read-a-file-and-explain-errors.html">Read a file and explain errors</a>. Use a JDK with Java 21 support, a text editor and PowerShell.</p>
+<h2>1. Save and build the practice program</h2>
+<p>Save <a href="../../../labs/java-path/ReadAndClose.java">ReadAndClose.java</a> in your practice folder. Open PowerShell in that folder and run:</p>
+<pre><code class="language-powershell">javac --release 21 ReadAndClose.java
+java ReadAndClose
+</code></pre>
+<p>The example uses two practice resources that print when they open and close. A real file or database connection also has a close step. The example lets you see the order without opening files.</p>
+<h2>2. Follow the first run</h2>
+<pre><code class="language-text">Open input
+Open report
+Close report
+Close input
+Main cause: Read input failed
+Later cause: Close report failed
+</code></pre>
+<p>Find the two resource declarations between the parentheses after <code>try</code>. Java opens the input first and the report second. It calls <code>close()</code> on the report first, then on the input.</p>
+<p>The read error happened in the body of <code>try</code>. Java keeps it as the main exception. The report close error is stored with that exception. Java calls the later error a <em>suppressed exception</em>. <code>getSuppressed()</code> lets the report show it.</p>
+<h2>3. Let the read work and compare the output</h2>
+<pre><code class="language-powershell">java ReadAndClose close
+</code></pre>
+<p>You now see both read lines. Both closes still happen in reverse order, and <code>Main cause: Close report failed</code> is the last line. The close error becomes the main cause because the read finished.</p>
+<h2>4. Check the ordinary run</h2>
+<pre><code class="language-powershell">java ReadAndClose ok
+</code></pre>
+<p>Both reads and both closes complete. The final line is <code>Finished</code>. This gives you three cases to try when you write a small test for your own file reader.</p>
+<p>If the class cannot be loaded, run <code>Get-ChildItem ReadAndClose*</code> and check for <code>ReadAndClose.class</code>. Return to the folder where you compiled the source and rerun the command.</p>
+<p>The Java specification defines <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.20.3">try-with-resources</a>. The API describes <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html#getSuppressed()">getSuppressed</a>.</p>
+<p><a href="36-keep-a-reading-in-a-record.html">Previous lesson</a> · <a href="38-make-a-choice-with-if.html">Next lesson</a> · <a href="../index.html">Java course</a></p>
+</article></main>
+</body>
+</html>

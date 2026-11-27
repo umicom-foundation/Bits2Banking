@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/24-test-a-local-java-http-route.html
+
+PURPOSE:
+  Provide the browser lesson “Test a local Java HTTP route”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test a local Java HTTP route | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Test a local Java HTTP route</h1>
+<p>Write a short HTTP exchange on your own computer. One route returns a confirmed reading as JSON. Two other requests show how the answer changes when the method or path is wrong. Read <a href="../../learning-web-servers/lessons/02-read-an-http-exchange.html">Read an HTTP exchange</a> first if <code>GET</code> or a response status is new to you.</p>
+<h2>Run the example</h2>
+<ol>
+<li>Save <a href="../../../labs/java-path/LocalReadingServer.java">LocalReadingServer.java</a> in a practice folder.</li>
+<li>Open your terminal in that folder. Compile and start the exercise using the JDK from the course.</li>
+<li>Read the three output lines. The server stops automatically when the exercise finishes.</li>
+</ol>
+<pre><code class="language-powershell">javac --release 21 LocalReadingServer.java
+java LocalReadingServer
+</code></pre>
+<p>Expected output</p>
+<pre><code class="language-text">GET 200 {&quot;north&quot;:20}
+POST 405 (Allow: GET)
+GET /readings/extra 404
+</code></pre>
+<h2>Follow the request and the response</h2>
+<ol>
+<li><code>127.0.0.1</code> means the current computer. Port <code>0</code> lets the operating system choose an available port for this run.</li>
+<li>The server registers <code>/readings</code> and checks the exact path. A request for <code>/readings/extra</code> reaches the prefix context, then receives <code>404</code> because the extra path has no route in this exercise.</li>
+<li>The permitted method is <code>GET</code>. <code>POST</code> receives <code>405</code> and an <code>Allow</code> header that says <code>GET</code>.</li>
+<li>The successful response includes <code>application/json</code> and the byte length of the encoded text. The client reads those bytes and prints the status and body.</li>
+<li>Each request has a five-second wait limit. The <code>finally</code> block stops the practice server even if a request fails.</li>
+</ol>
+<h2>Practise and recover</h2>
+<ol>
+<li>Change the reading value in <code>body</code> from <code>20</code> to <code>25</code> and run the two commands again. Only the JSON body in the first line should change.</li>
+<li>Explain the difference between an unsupported method for a route and a path with no route.</li>
+<li>If the program reports a connection error, check that loopback connections are available in your practice environment and try again. The program uses a new port each time.</li>
+</ol>
+<p>The same three checks make a starting point for a native Umicom Webserver route test. Check the status, response headers and body before wiring in the code that produces the reading.</p>
+<p><a href="../index.html">Return to Learning Java</a> · <a href="23-read-a-local-database-with-jdbc.html">Read a local database with JDBC</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html">JDK HTTP server API</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.net.http/java/net/http/HttpClient.html">Java HTTP client API</a></p>
+</article></main>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/16-send-a-read-only-choice-with-a-form.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Send a read-only choice with a form | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/16-send-a-read-only-choice-with-a-form.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Send a read-only choice with a form</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" />
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>Choose a site and a report period. The browser puts both choices in the address, where you can read them or copy a link to the same selection.</p>
+<p>Start with <a href="02-read-an-http-exchange.html">Read an HTTP request and response</a>. You need a practice folder, a browser and the local C example used in <a href="15-serve-an-xhtml-document.html">Serve an XHTML document</a>.</p>
+<h2>1. Save the two pages</h2>
+<p>Open PowerShell in your practice folder and create the two folders the pages use.</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force labs/web-statement-site, assets/branding
+</code></pre>
+<p>Save the <a href="../../../labs/web-statement-site/query-form.html">choice form</a> as <code>labs/web-statement-site/query-form.html</code> and the <a href="../../../labs/web-statement-site/query-result.html">result page</a> as <code>labs/web-statement-site/query-result.html</code>. Put the approved <code>umicom-wordmark.svg</code> and <code>umicom.ico</code> in <code>assets/branding</code>. Use the same assets as <a href="01-make-a-page-and-stylesheet.html">the first website exercise</a>.</p>
+<p>Serve the practice folder on port 8093 with the local C example from the previous lesson. Open <code>http://127.0.0.1:8093/labs/web-statement-site/query-form.html</code> in your browser.</p>
+<h2>2. Read the form before submitting it</h2>
+<p>Open the form source in a text editor and find these attributes.</p>
+<ul>
+<li><code>action="query-result.html"</code> gives the browser the next file to request.</li>
+<li><code>method="get"</code> keeps this choice in the address.</li>
+<li>The two controls have <code>name</code> values <code>site</code> and <code>period</code>. Each name is paired with the selected value in the address.</li>
+<li>Each <code>label</code> names the matching control with its <code>for</code> attribute. Select the label or press Tab to find the control without guessing what it does.</li>
+</ul>
+<h2>3. Make two choices and compare the addresses</h2>
+<p>Choose <strong>North Office</strong>, leave <strong>This week</strong> selected and press <strong>Open review page</strong>. The address ends with:</p>
+<pre><code class="language-text">query-result.html?site=North+Office&amp;period=week
+</code></pre>
+<p>The question mark starts the query. The ampersand separates the two choices. In this form encoding, the plus sign stands for a space.</p>
+<p>Go back. Choose <strong>North + Annex</strong> and <strong>This month</strong>, then submit the form again. The address now ends with:</p>
+<pre><code class="language-text">query-result.html?site=North+%2B+Annex&amp;period=month
+</code></pre>
+<p>The browser writes a literal plus as <code>%2B</code>. See how it differs from the plus signs for spaces.</p>
+<h2>4. Check what the result actually proves</h2>
+<p>Both choices open the same result document. The static page shows how to read the address. It has no report selection logic. In an application, code would read the <code>site</code> and <code>period</code> parameters and choose the matching report.</p>
+<p>If you serve the two pages with the local C example, you can compare the responses directly.</p>
+<pre><code class="language-powershell">$first = curl.exe --fail --silent --show-error 'http://127.0.0.1:8093/labs/web-statement-site/query-result.html?site=North+Office&amp;period=week'
+if ($LASTEXITCODE -ne 0) { throw 'The first request failed.' }
+$second = curl.exe --fail --silent --show-error 'http://127.0.0.1:8093/labs/web-statement-site/query-result.html?site=North+%2B+Annex&amp;period=month'
+if ($LASTEXITCODE -ne 0) { throw 'The second request failed.' }
+($first -join &quot;`n&quot;) -ceq ($second -join &quot;`n&quot;)
+</code></pre>
+<p>Expect <code>True</code>. If a request returns 404, check that the server root contains <code>labs/web-statement-site/query-result.html</code> and that the port and file name match. URLs can be retained in history or logs. Use public filter choices in this exercise and keep passwords and private values out of the query.</p>
+<p>The HTML standard describes <a href="https://html.spec.whatwg.org/multipage/forms.html#forms">form controls and their names</a>. The URL standard describes <a href="https://url.spec.whatwg.org/#application/x-www-form-urlencoded">form encoding</a>.</p>
+<p><a href="15-serve-an-xhtml-document.html">Previous lesson</a> · <a href="17-read-form-choices-in-native-c.html">Next lesson</a> · <a href="../index.html">Web server course</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

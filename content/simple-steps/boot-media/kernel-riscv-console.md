@@ -58,6 +58,15 @@ Get-FileHash -Algorithm SHA256 -LiteralPath "$Images/umicom-system.elf", "$Image
 
 The arguments attach no disk, network card or host folder. `-bios` loads this build as RISC-V machine-mode firmware and `-serial stdio` connects the guest to the current terminal. If a PowerShell pipeline prevents keyboard input reaching QEMU, run it directly and record the terminal output separately. If it stalls before the prompt, keep the last lines and recheck the ELF, QEMU executable and machine model.
 
+## Read the startup result
+
+1. In the system image output, look for `UMICOM_KERNEL_NORMAL_STARTUP_READY`. Record the full marker next to the system image hash.
+2. In the recovery image output, look for `UMICOM_KERNEL_RECOVERY_READY`. Also copy its `recovery.reason=` line so you can tell why the guest chose recovery.
+3. When reading an automated test report, compare both lines. `recovery.reason=forced-recovery` identifies an intentionally selected recovery image. `recovery.reason=required-startup-service` identifies a system image that entered recovery because a required service could not start.
+4. If neither readiness marker appears, record the boot as incomplete and keep the lines before the guest stopped. Retry with the same reviewed image hash so the two results are comparable.
+
+Carry the marker, the reason and the image hash into the [boot release worksheet](../../lessons/06-umicom/multikernel-systems/08-qualify-a-bootable-release-in-stages.md).
+
 **Check yourself.** Your results identify two distinct image hashes and the startup path for each guest. Use the Kernel course for further console and hosted test exercises.
 
 [Choose a target](choose-a-target.md) · [Build a Kernel x64 UEFI preflight](kernel-uefi-preflight.md) · [Kernel course](../../courses/umicom-kernel-from-scratch/index.html) · [QEMU RISC-V firmware options](https://www.qemu.org/docs/master/system/target-riscv.html#risc-v-cpu-firmware)

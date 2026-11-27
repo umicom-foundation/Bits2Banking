@@ -20,7 +20,7 @@ MIT for original learning material. Linked references retain their own terms.
 
 # Contextual words in module contracts
 
-[Course contents](index.md) · [Previous · Contextual words in records and patterns](06-records-and-patterns.md) · [Browser edition](../../../courses/java-keyword-reference/lessons/07-module-contracts.html)
+[Course contents](index.md) · [Previous · Contextual words in records and patterns](06-records-and-patterns.md) · [Next · Save a draft and publish a preview](08-save-a-draft-and-publish-a-preview.md) · [Browser edition](../../../courses/java-keyword-reference/lessons/07-module-contracts.html)
 
 A module groups packages. A module descriptor is a file named module-info.java. These fragments introduce descriptor syntax, with fictional modules and packages that would need to exist for a real build.
 
@@ -154,4 +154,4 @@ Start a Studio dependency review by listing the build dependency, exposed API an
 - [C23 keyword reference](../../../courses/c23-keyword-reference/index.html)
 - [Java SE 25 lexical structure, section 3.9](https://docs.oracle.com/javase/specs/jls/se25/html/jls-3.html#jls-3.9)
 
-[Course contents](index.md) · [Previous · Contextual words in records and patterns](06-records-and-patterns.md) · [Browser edition](../../../courses/java-keyword-reference/lessons/07-module-contracts.html)
+[Course contents](index.md) · [Previous · Contextual words in records and patterns](06-records-and-patterns.md) · [Next · Save a draft and publish a preview](08-save-a-draft-and-publish-a-preview.md) · [Browser edition](../../../courses/java-keyword-reference/lessons/07-module-contracts.html)

@@ -1,0 +1,87 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/10-choose-the-servlet-api-for-your-server.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choose the Servlet API for your server | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/10-choose-the-servlet-api-for-your-server.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Choose the Servlet API for your server</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" />
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>Compile the same <code>SummaryServlet.java</code> that you used in <a href="04-deploy-a-war-on-tomcat.html">Deploy a web archive on Apache Tomcat</a>. Make two class directories so you can inspect the result for each server without replacing an earlier build.</p>
+<h2>Choose a target and download its API</h2>
+<table>
+<thead>
+<tr>
+<th>Practice server</th>
+<th>Servlet API</th>
+<th>File to place beside <code>SummaryServlet.java</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Red Hat JBoss EAP 8.1</td>
+<td>6.0</td>
+<td><code>jakarta.servlet-api-6.0.0.jar</code></td>
+</tr>
+<tr>
+<td>Apache Tomcat 11</td>
+<td>6.1</td>
+<td><code>jakarta.servlet-api-6.1.0.jar</code></td>
+</tr>
+</tbody>
+</table>
+<p>The API JAR gives the compiler the class and method names it can use. Choose the version supplied by your target server. For this comparison, download both listed files and put them in a new practice folder with the Java file you saved from the Tomcat lesson. <a href="https://central.sonatype.com/artifact/jakarta.servlet/jakarta.servlet-api/6.0.0">Servlet API 6.0.0</a> · <a href="https://central.sonatype.com/artifact/jakarta.servlet/jakarta.servlet-api/6.1.0">Servlet API 6.1.0</a></p>
+<h2>Compile and inspect the EAP version</h2>
+<ol>
+<li>Open PowerShell in that practice folder.</li>
+<li>Enter these commands. After the compile, expect the number <code>0</code>. Then inspect the class and look for <code>major version: 61</code> and the mapping <code>/summary</code>.</li>
+</ol>
+<pre><code class="language-powershell">$apiVersion = '6.0.0'
+$classes = &quot;classes-$apiVersion&quot;
+New-Item -ItemType Directory -Path $classes -ErrorAction Stop
+javac --release 17 -proc:none -cp &quot;.\jakarta.servlet-api-$apiVersion.jar&quot; -d $classes .\SummaryServlet.java
+$LASTEXITCODE
+javap -classpath $classes -verbose btb.web.SummaryServlet |
+    Select-String 'major version: 61|/summary|jakarta.servlet.http.HttpServlet'
+</code></pre>
+<p><code>--release 17</code> targets the Java 17 class format. <code>-cp</code> points at the Servlet API for this compile. <code>-proc:none</code> turns off compiler annotation processors while retaining the servlet annotation in the class file. The route <code>/summary</code> still appears when you inspect the class.</p>
+<h2>Repeat for Tomcat and compare</h2>
+<ol>
+<li>In the same command block, change <code>6.0.0</code> to <code>6.1.0</code> and run it again. The new directory is <code>classes-6.1.0</code>. The original EAP directory stays available.</li>
+<li>Compare the class version and route. This example uses parts of the API shared by both versions. A larger servlet can depend on methods introduced in one version, so compile the application against its actual target before packaging it.</li>
+<li>When building the practice WAR, include the chosen compiled classes and the branded page files from the Tomcat lesson. Keep the compile-time Servlet API JAR outside the WAR so the target server supplies the Servlet classes.</li>
+<li>Check the server’s supported Java version and deploy and test the archive on that target before treating it as ready.</li>
+</ol>
+<p>When building a native Umicom service, use the equivalent check for the target Framework interfaces. Record the headers and library versions you compiled against, then verify the running service’s response separately.</p>
+<p><a href="../index.html">Return to the Web Servers course</a> · <a href="08-inspect-a-jboss-eap-deployment.html">Inspect a JBoss EAP deployment</a> · <a href="https://tomcat.apache.org/whichversion.html">Tomcat supported specifications</a> · <a href="https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/8.1/html/migration_guide/preparing-for-migration-to-jboss-eap-8_default">JBoss EAP component versions</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

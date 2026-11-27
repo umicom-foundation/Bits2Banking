@@ -1,0 +1,120 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/04-deploy-a-war-on-tomcat.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deploy a web archive on Apache Tomcat | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/04-deploy-a-war-on-tomcat.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Deploy a web archive on Apache Tomcat</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" hidden /></p>
+<p>A servlet is a Java class the server can call for an HTTP request. In this exercise Tomcat serves the practice page from a file and calls a servlet to make the response for <code>/summary</code>.</p>
+<p>You need a JDK version 17 or later and a fresh <a href="https://tomcat.apache.org/download-11.cgi">Apache Tomcat 11 Core ZIP</a>. Verify the archive using the instructions on that page and extract it into a practice folder. The JDK supplies <code>javac</code> and <code>jar</code>. Tomcat supplies the Jakarta Servlet interfaces and the HTTP listener. If Java is new to you, start with <a href="../../learning-java/index.html">Learning Java</a>.</p>
+<h2>Prepare the application</h2>
+<ol>
+<li>
+<p>In PowerShell, set <code>$tomcat</code> to the folder containing your extracted <code>bin</code>, <code>conf</code> and <code>lib</code> directories. Check your Java tools first. Make sure <code>JAVA_HOME</code> points at this JDK folder if Tomcat needs help locating it.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$lab</span> <span class="p">=</span> <span class="nb">Join-Path</span> <span class="nv">$env:USERPROFILE</span> <span class="s2">"web-servers-lab"</span>
+<span class="nv">$tomcat</span> <span class="p">=</span> <span class="s2">"C:\learning\apache-tomcat-11"</span>
+<span class="n">java</span> <span class="n">-version</span>
+<span class="n">javac</span> <span class="n">-version</span>
+<span class="n">jar</span> <span class="p">-</span><span class="n">-version</span>
+<span class="nb">Test-Path</span> <span class="s2">"$tomcat\lib\servlet-api.jar"</span>
+<span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="n">-Path</span> <span class="s2">"$lab\war-root\WEB-INF\classes"</span> <span class="n">-Force</span>
+</code></pre></div>
+</li>
+<li>
+<p>Save this Java source as <code>SummaryServlet.java</code> in <code>$lab</code>. The source belongs next to the packaging folder so only its compiled class goes in the archive.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">btb.web</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.IOException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.annotation.WebServlet</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServlet</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServletRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServletResponse</span><span class="p">;</span>
+
+<span class="c1">// The container adds this route beneath the deployed application's path.</span>
+<span class="nd">@WebServlet</span><span class="p">(</span><span class="s">"/summary"</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SummaryServlet</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">HttpServlet</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doGet</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">)</span>
+<span class="w">            </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Describe the body before obtaining its writer.</span>
+<span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setContentType</span><span class="p">(</span><span class="s">"text/plain"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setCharacterEncoding</span><span class="p">(</span><span class="s">"UTF-8"</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">reviewedCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">getWriter</span><span class="p">().</span><span class="na">println</span><span class="p">(</span><span class="n">reviewedCount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" entries reviewed."</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>@WebServlet</code> gives the path inside the application. <code>doGet</code> handles GET requests. The first two response calls tell the browser how to interpret the body. The last call writes the fictional result.</p>
+</li>
+<li>
+<p>Copy your static page and its assets in, then compile the servlet and create a WAR. A WAR is an archive of a Java web application's files. Run one line at a time and stop on an error.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Copy-Item</span> <span class="s2">"$lab\public\*"</span> <span class="s2">"$lab\war-root"</span>
+<span class="n">javac</span> <span class="p">-</span><span class="n">-release</span> <span class="n">17</span> <span class="n">-cp</span> <span class="s2">"$tomcat\lib\servlet-api.jar"</span> <span class="n">-d</span> <span class="s2">"$lab\war-root\WEB-INF\classes"</span> <span class="s2">"$lab\SummaryServlet.java"</span>
+<span class="n">jar</span> <span class="p">-</span><span class="n">-create</span> <span class="p">-</span><span class="o">-file</span> <span class="s2">"$lab\btb-statement.war"</span> <span class="n">-C</span> <span class="s2">"$lab\war-root"</span> <span class="p">.</span>
+<span class="n">jar</span> <span class="p">-</span><span class="n">-list</span> <span class="p">-</span><span class="o">-file</span> <span class="s2">"$lab\btb-statement.war"</span>
+<span class="nb">Get-FileHash</span> <span class="s2">"$lab\btb-statement.war"</span>
+</code></pre></div>
+<p>Expect to see <code>index.html</code>, <code>site.css</code>, the two brand files and <code>WEB-INF/classes/btb/web/SummaryServlet.class</code> in the archive. The server supplies the Servlet API at runtime, so keep <code>servlet-api.jar</code> out of your WAR. Save the hash so you can verify you use the same archive in the next lesson.</p>
+</li>
+</ol>
+<h2>Start Tomcat and check two routes</h2>
+<ol>
+<li>
+<p>In your practice copy of <code>conf\server.xml</code>, find the active HTTP connector, usually the one with <code>port="8080"</code>. Change to <code>port="8181"</code> and add <code>address="127.0.0.1"</code> to that connector. Keep its other attributes. Use the standard archive and leave other example connectors commented.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;Connector</span><span class="w"> </span><span class="na">port=</span><span class="s">"8181"</span><span class="w"> </span><span class="na">address=</span><span class="s">"127.0.0.1"</span><span class="w"> </span><span class="na">protocol=</span><span class="s">"HTTP/1.1"</span>
+<span class="w">           </span><span class="na">connectionTimeout=</span><span class="s">"20000"</span><span class="w"> </span><span class="na">redirectPort=</span><span class="s">"8443"</span><span class="w"> </span><span class="nt">/&gt;</span>
+</code></pre></div>
+<p>A connector takes incoming connections and hands their requests to Tomcat. The address setting makes this connector listen only on this computer. The excerpt shows where the two edited attributes go.</p>
+</li>
+<li>
+<p>Leave the practice archive intact in <code>$lab</code>. Copy it to <code>webapps</code> and start Tomcat in your existing PowerShell window.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Copy-Item</span> <span class="s2">"$lab\btb-statement.war"</span> <span class="s2">"$tomcat\webapps"</span>
+<span class="p">&amp;</span> <span class="s2">"$tomcat\bin\catalina.bat"</span> <span class="n">run</span>
+</code></pre></div>
+</li>
+<li>
+<p>Once the terminal says the server has started, run these in a second PowerShell window.</p>
+<div class="highlight"><pre><span></span><code><span class="n">curl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-i</span> <span class="n">http</span><span class="p">://</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">8181</span><span class="p">/</span><span class="n">btb-statement</span><span class="p">/</span><span class="n">index</span><span class="p">.</span><span class="n">html</span>
+<span class="n">curl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-i</span> <span class="n">http</span><span class="p">://</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">8181</span><span class="p">/</span><span class="n">btb-statement</span><span class="p">/</span><span class="n">summary</span>
+</code></pre></div>
+<p>Expect <code>200</code> for each URL. The first response contains HTML. The second response has a <code>text/plain</code> content type and the body <code>2 entries reviewed.</code> The prefix <code>/btb-statement</code> is the application context path, normally derived from the WAR filename in this exercise.</p>
+</li>
+<li>
+<p>In the Tomcat terminal, press <strong>Ctrl+C</strong> and confirm termination if the command prompts you. Verify the practice URL stops responding.</p>
+</li>
+</ol>
+<p>If Tomcat answers with <code>404</code>, check its deployment log and make sure the URL includes <code>/btb-statement</code>. If Java reports a missing <code>jakarta.servlet</code> package, check the compile command's classpath. Older examples may use <code>javax.servlet</code> under a different Servlet generation. Follow Tomcat 11's Jakarta documentation for this exercise.</p>
+<p><a href="https://tomcat.apache.org/tomcat-11.0-doc/setup.html">Tomcat 11 setup</a> · <a href="https://tomcat.apache.org/tomcat-11.0-doc/config/http.html">HTTP connectors</a> · <a href="https://tomcat.apache.org/tomcat-11.0-doc/deployer-howto.html">Web application deployment</a></p>
+<p><a href="03-serve-files-with-apache-http-server.html">Previous, serve files with Apache</a> · <a href="../index.html">Course</a> · <a href="05-deploy-the-same-war-on-wildfly.html">Next, deploy the same WAR on WildFly</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

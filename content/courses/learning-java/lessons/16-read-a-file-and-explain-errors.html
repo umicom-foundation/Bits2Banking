@@ -1,0 +1,102 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/16-read-a-file-and-explain-errors.html
+
+PURPOSE:
+  Provide the browser lesson “Read a file and explain errors”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a file and explain errors | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Read a file and explain errors</h1>
+<p>Read three numbers stored in a text file. A useful program distinguishes the result from two common failures, a missing file and a line that cannot be read as an integer.</p>
+<p>Complete the previous lesson before trying this one. Use the same JDK and a writable practice folder.</p>
+<h2>Try it</h2>
+<ol>
+<li>Save <code>ReadShiftLog.java</code> and <code>shift-numbers.txt</code> in the same folder. The data file contains 4, 3 and 2, on separate lines.</li>
+<li>Compile and run with the data file’s name after the class name. That final word becomes the first command argument.</li>
+<li>Try a missing file name. The program should write a short error and return exit status 1.</li>
+<li>Make a practice copy of the data file, replace the middle line with <code>three</code> and run again. The program should explain the input requirement.</li>
+</ol>
+<h2>Example files</h2>
+<h3>ReadShiftLog.java</h3>
+<p><a href="../../../labs/java-path/ReadShiftLog.java">Open ReadShiftLog.java</a></p>
+<pre><code>import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class ReadShiftLog {
+    static void report(Path file) throws IOException {
+        long total = 0;
+        // The language closes the reader even when parsing or reading fails.
+        try (var input = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            for (String line; (line = input.readLine()) != null;) {
+                total += Integer.parseInt(line.strip());
+            }
+        }
+        System.out.println(&quot;Total: &quot; + total);
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err.println(&quot;Usage: java ReadShiftLog FILE&quot;);
+            System.exit(2);
+        }
+        try {
+            report(Path.of(args[0]));
+        } catch (NumberFormatException error) {
+            System.err.println(&quot;Input must contain one integer on each line.&quot;);
+            System.exit(1);
+        } catch (IOException error) {
+            System.err.println(&quot;Could not read the input file.&quot;);
+            System.exit(1);
+        }
+    }
+}</code></pre>
+<h3>shift-numbers.txt</h3>
+<p><a href="../../../labs/java-path/shift-numbers.txt">Open shift-numbers.txt</a></p>
+<pre><code>4
+3
+2</code></pre>
+<h2>Run it</h2>
+<pre><code>javac ReadShiftLog.java
+java -cp . ReadShiftLog shift-numbers.txt
+java -cp . ReadShiftLog missing-input.txt</code></pre>
+<p>The program output to check is shown below.</p>
+<pre><code>Total: 9
+Could not read the input file.</code></pre>
+<h2>Read the result</h2>
+<p>The try-with-resources block closes the reader. <code>readLine()</code> returns <code>null</code> at the end. A <code>NumberFormatException</code> means the text did not represent an integer. An <code>IOException</code> concerns opening or reading the file. Use <code>$LASTEXITCODE</code> in PowerShell or <code>echo $?</code> in a POSIX shell immediately after a run to see its exit status.</p>
+<h2>Practise</h2>
+<p>With a valid file, add a fourth line containing 6. Expect <code>Total: 15</code>. Leave a blank line in a separate copy and observe the invalid-input response.</p>
+<h2>Fix a problem</h2>
+<p>Check the current folder and file name first. Save the data as UTF-8. A line containing only whitespace becomes empty after <code>strip</code> and does not meet this example’s format.</p>
+<h2>Reference</h2>
+<ul>
+<li><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/file/Files.html">Java file API and UTF-8 reader</a></li>
+</ul>
+<nav aria-label="Learning Java lesson navigation"><a href="15-group-deliveries-with-collections.html">Previous · Group deliveries with collections</a> · <a href="17-test-and-debug-a-boundary.html">Next · Test and debug a boundary</a></nav>
+</article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body></html>

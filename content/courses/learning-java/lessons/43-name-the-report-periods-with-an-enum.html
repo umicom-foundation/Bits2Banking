@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/43-name-the-report-periods-with-an-enum.html
+
+PURPOSE:
+Show the same Java report-period enum exercise in a browser.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Name the report periods with an enum | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Name the report periods with an enum</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="215">
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="215">
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>This practice report supports two periods, daily and weekly. Give those choices a type named <code>Period</code>. The command still receives text, so it checks the word and turns it into a known period before using it.</p>
+<p>Use a JDK that supports Java 21 and your PowerShell practice folder. <a href="41-choose-a-report-period-with-switch.html">Choose a report period with switch</a> explains how the program selects a result from one word.</p>
+<h2>1. Run the two supported choices</h2>
+<p>Save <a href="../../../labs/java-path/ReportPeriodChoice.java">ReportPeriodChoice.java</a> in the practice folder. Open PowerShell there and compile it.</p>
+<pre><code class="language-powershell">javac --release 21 -Xlint:all -Werror ReportPeriodChoice.java
+</code></pre>
+<p>After compilation succeeds, run both choices.</p>
+<pre><code class="language-powershell">java -cp . ReportPeriodChoice daily
+java -cp . ReportPeriodChoice weekly
+</code></pre>
+<pre><code class="language-text">DAILY
+WEEKLY
+</code></pre>
+<p>Each run prints one line and exits with code 0. The lower-case words are the accepted input. The upper-case words are the names declared in the enum.</p>
+<h2>2. Read the enum and the conversion</h2>
+<pre><code class="language-java">private enum Period {
+    DAILY,
+    WEEKLY
+}
+</code></pre>
+<p>An enum declares a fixed set of named values. <code>Period.DAILY</code> and <code>Period.WEEKLY</code> are the two values of this type. In <code>main</code>, the declaration <code>Period period</code> gives the result a type that Java can check. The report can use that value after the command-line text has been checked.</p>
+<p><code>parsePeriod</code> checks that you supplied exactly one word. The <code>switch</code> maps <code>daily</code> to <code>Period.DAILY</code> and <code>weekly</code> to <code>Period.WEEKLY</code>. <code>period.name()</code> prints the chosen enum constant’s name exactly as it was declared.</p>
+<h2>3. Check how the command refuses other input</h2>
+<pre><code class="language-powershell">java -cp . ReportPeriodChoice monthly
+$LASTEXITCODE
+</code></pre>
+<pre><code class="language-text">Enter exactly one report period, daily or weekly.
+2
+</code></pre>
+<p>The parser returns <code>null</code> when it cannot select a <code>Period</code>. The program checks for that result before calling <code>name()</code>. It writes the usage message to the error stream and exits with code 2. Try the command again with no period or with <code>daily weekly</code>. Both runs should give the same message and exit code.</p>
+<p>If PowerShell stops when Java exits with code 2, enter <code>$LASTEXITCODE</code> at the next prompt. If Java cannot find the class, check that you are in the folder where <code>javac</code> completed successfully.</p>
+<h2>4. Express the same choices in C23</h2>
+<p>C23 also lets you name a set of choices. In this declaration, <code>REPORT_DAILY</code> and <code>REPORT_WEEKLY</code> are integer constants with the values 1 and 2.</p>
+<pre><code class="language-c">enum report_period {
+    REPORT_DAILY = 1,
+    REPORT_WEEKLY = 2
+};
+</code></pre>
+<p>A C program can map the same two input words to those constants and supply its own display text. Java’s enum values are objects of type <code>Period</code>, so the Java example can ask the selected value for its declared name. Both programs check text at the command line and then use a named value inside the report.</p>
+<p><a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.9">Java enum classes</a> · <a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf#page=126">C23 working draft, enumeration specifiers</a></p>
+<p><a href="42-sort-readings-with-comparator.html">Previous lesson</a> · <a href="44-keep-related-counts-in-one-snapshot.html">Next lesson</a> · <a href="../index.html">Java course</a></p>
+</article></main>
+</body>
+</html>

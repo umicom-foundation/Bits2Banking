@@ -1,0 +1,71 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/17-read-form-choices-in-native-c.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Read form choices in native C | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/17-read-form-choices-in-native-c.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Read form choices in native C</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" />
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>Send the same two choices from the form exercise to a C route. This time the response names the site and period you chose.</p>
+<p>Start with <a href="16-send-a-read-only-choice-with-a-form.html">Send a read-only choice with a form</a>. Build the local C example as shown in <a href="06-compare-a-native-c-web-service.html">Follow a request into native C23</a>.</p>
+<h2>1. Check the example in memory</h2>
+<p>In PowerShell, set the path to your built Framework example. Replace the sample path with yours.</p>
+<pre><code class="language-powershell">$webExample = 'C:/tools/umicom-web-local-service-example.exe'
+&amp; $webExample --port 8093 --check-routes
+</code></pre>
+<p>The expected message is <code>Local route and browser admission checks passed in memory.</code> These checks call the request and response code directly. Open the actual local service for the next step.</p>
+<h2>2. Start the demo and read the first response</h2>
+<pre><code class="language-powershell">&amp; $webExample --port 8093
+</code></pre>
+<p>Keep this window running. In a second PowerShell window, make the following request.</p>
+<pre><code class="language-powershell">curl.exe --fail --silent --show-error 'http://127.0.0.1:8093/api/review?site=North+Office&amp;period=week'
+</code></pre>
+<p>The output is <code>North Office, week report</code>.</p>
+<h2>3. Check a literal plus and a missing choice</h2>
+<pre><code class="language-powershell">curl.exe --fail --silent --show-error 'http://127.0.0.1:8093/api/review?site=North+%2B+Annex&amp;period=month'
+curl.exe -i 'http://127.0.0.1:8093/api/review?site=North+Office'
+</code></pre>
+<p>The first line returns <code>North + Annex, month report</code>. The second request leaves out the period. Its HTTP status is 400 and its message asks you to choose both values.</p>
+<h2>4. Follow the values into C</h2>
+<p>Open <code>framework/examples/web/local_service.c</code> in your checkout and find <code>ReviewSelection</code>.</p>
+<ol>
+<li>The Framework parser supplies <code>request-&gt;path</code> and <code>request-&gt;query</code> separately. The path selects the callback.</li>
+<li><code>umi_web_query_parse</code> reads the name and value pairs. A plain plus is decoded to a space, and <code>%2B</code> becomes the literal plus.</li>
+<li><code>umi_web_query_get</code> looks up <code>site</code> and <code>period</code>. The callback compares both with the choices shown in the exercise.</li>
+<li><code>umi_web_response_set_text</code> carries the chosen label or the message asking for both values.</li>
+</ol>
+<p>The route uses two fixed practice sites. Try changing just <code>week</code> to <code>month</code> in the first command. Predict the response before sending it.</p>
+<p>If the in-memory check still passes but the request returns 404, see which command started the listening process. The default demo serves this route. The <code>--root</code> option selects a separate static export. If you already have a practice server on port 8093, stop it before starting the demo, or choose another unused port and update the URLs.</p>
+<p>Press Ctrl+C in the server window when you are finished. <a href="16-send-a-read-only-choice-with-a-form.html">Previous lesson</a> · <a href="18-serve-two-apache-sites-on-one-port.html">Next lesson</a> · <a href="../index.html">Web server course</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

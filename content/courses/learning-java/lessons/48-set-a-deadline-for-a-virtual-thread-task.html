@@ -1,0 +1,63 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/48-set-a-deadline-for-a-virtual-thread-task.html
+
+PURPOSE:
+Set a deadline for a virtual-thread task
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Set a deadline for a virtual-thread task | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Set a deadline for a virtual-thread task</h1>
+<p>A report window may need to stop waiting before an unfinished task produces a result. This exercise gives a Java task a short time to return its report, requests cancellation when that time expires, and verifies the worker received the request.</p>
+<h2>1. Compile and run the example</h2>
+<ol>
+<li>Save <a href="../../../labs/java-path/ReportTaskDeadline.java">ReportTaskDeadline.java</a> in your practice folder.</li>
+<li>Open PowerShell in that folder. Check that <code>javac -version</code> reports a JDK with Java 21 support.</li>
+<li>Run the two commands in order.</li>
+</ol>
+<pre><code class="language-powershell">javac --release 21 .\ReportTaskDeadline.java
+java -cp . ReportTaskDeadline
+</code></pre>
+<p>Expect these three lines.</p>
+<pre><code class="language-text">Timed out waiting for report
+Worker acknowledged interruption
+Normal work returned report ready
+</code></pre>
+<h2>2. Follow the three events</h2>
+<ol>
+<li>The first task runs on a virtual thread. It tells the program it has started, then waits at a gate. A <code>CountDownLatch</code> is a gate that opens when its count reaches zero. The exercise keeps the report gate closed during the wait.</li>
+<li><code>waiting.get(200, TimeUnit.MILLISECONDS)</code> gives the caller a 200-millisecond limit. A <code>TimeoutException</code> means the caller reached that limit while waiting.</li>
+<li><code>waiting.cancel(true)</code> asks Java to interrupt the worker. The worker receives <code>InterruptedException</code> at the gate and signals that it saw the interruption. The program waits for that signal before printing the second line.</li>
+<li>The second task supplies a result immediately. Its result shows the ordinary completion path using the same executor.</li>
+</ol>
+<p>The <code>finally</code> block opens the report gate even if an earlier check fails. The executor can finish closing after its blocking task leaves.</p>
+<h2>3. Try another deadline</h2>
+<ol>
+<li>Change <code>200</code> to <code>400</code> in the call to <code>waiting.get</code>. Keep the units as <code>MILLISECONDS</code>.</li>
+<li>Save the file and run the compile and launch commands again.</li>
+<li>Confirm you still see all three lines. The first task still waits at the closed gate, so either wait limit expires.</li>
+</ol>
+<p>If the Java launcher cannot find the class, run the compile command again from the folder containing <code>ReportTaskDeadline.java</code>. Check that <code>ReportTaskDeadline.class</code> appears before launching it.</p>
+<h2>Apply it to Umicom</h2>
+<p>For a build or report action, keep the waiting deadline, cancellation request and worker completion as separate observations. A progress view can then tell an operator whether the work reached its deadline or whether the worker has acknowledged the request.</p>
+<p>Read <a href="../../../courses/learning-java/lessons/34-report-a-task-failure.html">Report a task failure</a> to see how a worker’s own error reaches the caller.</p>
+<ul>
+<li><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/Future.html">Java 21 Future API for waits and cancellation</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/Executors.html">Java 21 Executors API for virtual threads</a></li>
+</ul>
+<nav aria-label="Lesson navigation"><a href="47-load-defaults-from-a-jar.html">Previous lesson</a> · <a href="../index.html">Java course</a> · <a href="../../../lessons/03-native-code/learning-java/48-set-a-deadline-for-a-virtual-thread-task.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/17-test-and-debug-a-boundary.html
+
+PURPOSE:
+  Provide the browser lesson “Test and debug a boundary”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test and debug a boundary | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Test and debug a boundary</h1>
+<p>A recorded reading can be accepted at the exact limit. Test the value at the boundary, the value just beyond it and a value below zero. Then inspect one calculation in a debugger.</p>
+<p>Complete the previous lesson before trying this one. Use the same JDK and a writable practice folder.</p>
+<h2>Try it</h2>
+<ol>
+<li>Save <code>LimitChecks.java</code>. Run it once with the three original checks. <code>-g</code> includes information the debugger can use to show local variable names.</li>
+<li>As a deliberate mistake, change <code>value &lt;= limit</code> to <code>value &lt; limit</code>. Recompile and run. The test at the upper boundary should identify the failing case.</li>
+<li>Start <code>jdb -classpath . LimitChecks</code>. At its prompt, type <code>stop in LimitChecks.withinLimit</code>, then <code>run</code>. A breakpoint pauses the program at this method.</li>
+<li>At the pause, type <code>locals</code> to see <code>value</code> and <code>limit</code>. Use <code>next</code> to step through each comparison. Type <code>exit</code> when you finish. Restore the <code>&lt;=</code> comparison and rerun all three checks.</li>
+</ol>
+<h2>Example files</h2>
+<h3>LimitChecks.java</h3>
+<p><a href="../../../labs/java-path/LimitChecks.java">Open LimitChecks.java</a></p>
+<pre><code>public class LimitChecks {
+    static boolean withinLimit(int value, int limit) {
+        // Name the two comparisons so the debugger can show each decision.
+        boolean nonNegative = value &gt;= 0;
+        boolean atOrBelow = value &lt;= limit;
+        return nonNegative &amp;&amp; atOrBelow;
+    }
+
+    static void check(boolean actual, boolean expected, String name) {
+        if (actual != expected) {
+            throw new IllegalStateException(name + &quot;: expected &quot; + expected + &quot;, got &quot; + actual);
+        }
+    }
+
+    public static void main(String[] args) {
+        check(withinLimit(5, 5), true, &quot;upper boundary&quot;);
+        check(withinLimit(6, 5), false, &quot;above boundary&quot;);
+        check(withinLimit(-1, 5), false, &quot;negative value&quot;);
+        System.out.println(&quot;3 checks passed&quot;);
+    }
+}</code></pre>
+<h2>Run it</h2>
+<pre><code>javac -g LimitChecks.java
+java -cp . LimitChecks
+jdb -classpath . LimitChecks</code></pre>
+<p>The program output to check is shown below.</p>
+<pre><code>3 checks passed</code></pre>
+<h2>Read the result</h2>
+<p>The checks throw an exception with the name of the failed case. The method receives 5 and 5 for the first check, which makes <code>&lt;</code> false and <code>&lt;=</code> true. A debugger shows the inputs and state during execution; the checks can be run again after every edit.</p>
+<h2>Practise</h2>
+<p>Add a check for value 0 with a limit of 0. Expect it to pass. Choose a name that will still describe the case when you read a failure later.</p>
+<h2>Fix a problem</h2>
+<p>Run <code>javac -g</code> again if <code>locals</code> cannot show variable names. In the debugger call <code>run</code> after adding the breakpoint; typing that command before the breakpoint will let the short program finish.</p>
+<h2>Reference</h2>
+<ul>
+<li><a href="https://docs.oracle.com/en/java/javase/21/docs/specs/man/jdb.html">The JDK debugger commands</a></li>
+</ul>
+<nav aria-label="Learning Java lesson navigation"><a href="16-read-a-file-and-explain-errors.html">Previous · Read a file and explain errors</a> · <a href="18-handle-each-result-with-a-pattern.html">Next · Handle each result with a pattern</a></nav>
+</article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body></html>

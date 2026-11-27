@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/39-put-two-java-files-in-a-package.html
+
+PURPOSE:
+  Provide the browser lesson “Put two Java files in a package”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Put two Java files in a package | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Put two Java files in a package</h1>
+<p>A reading report has two Java files. Put them in a named package so both parts can be found when the program runs.</p>
+<p>Start with <a href="36-keep-a-reading-in-a-record.html">Keep a reading in a record</a>. Use a JDK with Java 21 support, a text editor and PowerShell.</p>
+<h2>1. Create the folders</h2>
+<p>Open PowerShell in a new practice folder. Run this command.</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force src/training/readings, classes
+</code></pre>
+<p>Save <a href="../../../labs/java-path/first-package/src/training/readings/Reading.java">Reading.java</a> and <a href="../../../labs/java-path/first-package/src/training/readings/ReadingReport.java">ReadingReport.java</a> in <code>src/training/readings</code>. Both source files declare <code>package training.readings;</code>.</p>
+<p>A package groups related types under a name. The dots in <code>training.readings</code> correspond to the two folder names <code>training/readings</code>.</p>
+<h2>2. Compile the two files</h2>
+<pre><code class="language-powershell">javac --release 21 -d classes src/training/readings/Reading.java src/training/readings/ReadingReport.java
+Get-ChildItem classes/training/readings
+</code></pre>
+<p>The <code>-d classes</code> option tells the compiler where to write its result. You should see <code>Reading.class</code> and <code>ReadingReport.class</code> under the package folders.</p>
+<h2>3. Run the report by its full name</h2>
+<pre><code class="language-powershell">java -cp classes training.readings.ReadingReport
+</code></pre>
+<p><code>-cp classes</code> makes <code>classes</code> the starting folder for the search. The full name combines the package and class. Java finds <code>training/readings/ReadingReport.class</code> inside that folder. The output is <code>North Office read 8</code>.</p>
+<p>If Java reports that it cannot find the main class, check that you are in the practice folder, that both class files exist, and that you typed <code>training.readings.ReadingReport</code> with matching capitals.</p>
+<h2>4. Change one value and rebuild</h2>
+<p>In <code>ReadingReport.java</code>, change <code>8</code> to <code>12</code> and save. Repeat the two-file compile and then run the report. Expect <code>North Office read 12</code>.</p>
+<p><a href="20-package-a-report-as-a-module.html">Compile a module</a> after you are comfortable finding and running a class in a named package.</p>
+<p><a href="38-make-a-choice-with-if.html">Previous lesson</a> · <a href="40-read-one-command-line-argument.html">Next lesson</a> · <a href="../index.html">Java course</a></p>
+</article></main>
+</body>
+</html>

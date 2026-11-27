@@ -1,0 +1,74 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/44-keep-related-counts-in-one-snapshot.html
+
+PURPOSE:
+Teach locking and snapshots with two related report counts.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep related counts in one snapshot | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Keep related counts in one snapshot</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="215">
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="215">
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>Two workers can record reports at the same time. In this exercise every report has two pages. Keep the report count and the page count together so that a reader always sees a pair that obeys that rule.</p>
+<p>Use a JDK that supports Java 21 and your PowerShell practice folder. <a href="36-keep-a-reading-in-a-record.html">Keep a reading in a record</a> introduces records. <a href="33-run-independent-checks-with-virtual-threads.html">Run independent checks with virtual threads</a> introduces a different exercise where each task can work on its own.</p>
+<h2>1. Run the two workers</h2>
+<p>Save <a href="../../../labs/java-path/ReportCounts.java">ReportCounts.java</a> in the practice folder. Open PowerShell there and run the compiler. After compilation succeeds, run the program.</p>
+<pre><code class="language-powershell">javac --release 21 -Xlint:all -Werror ReportCounts.java
+java -cp . ReportCounts
+</code></pre>
+<pre><code class="language-text">Sample consistent = true
+Final reports = 5, pages = 10
+Opening snapshot still shows 0 reports and 0 pages.
+</code></pre>
+<p>The first worker records two reports and the second records three. Both call the same <code>ReportCounts</code> object. That object owns both <code>private</code> counts.</p>
+<h2>2. Use the same lock for updates and snapshots</h2>
+<pre><code class="language-java">synchronized void recordReport() {
+    // The same object lock protects both changes in one operation.
+    reports++;
+    pages += PAGES_PER_REPORT;
+}
+
+synchronized Snapshot snapshot() {
+    // Copy both values while the owner holds the lock used by writers.
+    return new Snapshot(reports, pages);
+}
+</code></pre>
+<p>A <code>synchronized</code> instance method uses the lock on the object you call it on. When one worker updates the counts, other threads calling either method on that object wait. The snapshot holds the same lock while copying both counts. The two values therefore describe the same completed updates.</p>
+<p>A snapshot is a copy of the two numbers at one moment. Its record holds two <code>int</code> components, which keep the same values for the life of that snapshot. The opening copy still shows zero after both workers finish.</p>
+<h2>3. Wait for both workers before reading the final total</h2>
+<p>The first sample can capture different totals depending on how much work has finished. The program prints whether its two values agree. <code>join()</code> waits for a worker to finish. After both joins, the final snapshot always shows five reports and ten pages.</p>
+<p>Change the first worker’s count from <code>2</code> to <code>0</code> and the second worker’s count from <code>3</code> to <code>1</code>. Compile and run again. The sample still shows <code>true</code> and the opening snapshot still shows zero. The line for completed work now reads as follows.</p>
+<pre><code class="language-text">Final reports = 1, pages = 2
+</code></pre>
+<p>If the sample is inconsistent after an edit, check that the update and snapshot still use <code>synchronized</code> on the same object and that one call to <code>recordReport()</code> still adds both values. If Java cannot find <code>ReportCounts</code>, check that you are in the folder where the compiler wrote the class.</p>
+<h2>4. Carry the design over to C</h2>
+<p>A C implementation with a thread library can keep both counters in a <code>struct</code> and protect them with one mutex. A mutex lets one thread at a time enter the code that uses the shared fields. Acquire it before changing both counts or copying both into a snapshot struct. Release it before printing the copy. The copy can be read without locking the original as long as the copy itself has no concurrent writers.</p>
+<p><a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-17.1">Java locks and synchronization</a> · <a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf#page=411">C23 working draft, mutex functions</a></p>
+<p><a href="43-name-the-report-periods-with-an-enum.html">Previous lesson</a> · <a href="45-build-a-plain-text-reading-report.html">Next lesson</a> · <a href="../index.html">Java course</a></p>
+</article></main>
+</body>
+</html>

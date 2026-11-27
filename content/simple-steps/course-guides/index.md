@@ -83,6 +83,7 @@ If you are setting up your computer or writing your first program, begin with th
 
 ## Web, desktop and mobile development
 
+- [Web development and web servers](web-development-and-servers.md)
 - [AngularJS and Legacy Statement Screens](angularjs-legacy-statements.md)
 - [Bootstrap and Native Statement Reports](bootstrap-native-statements.md)
 - [Building a Web Server in C](building-a-web-server-in-c.md)

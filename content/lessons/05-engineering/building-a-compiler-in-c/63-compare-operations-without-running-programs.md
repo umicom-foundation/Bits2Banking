@@ -14,6 +14,7 @@ MIT
 -->
 
 ![Umicom](../../../assets/branding/umicom-wordmark.svg)
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a>
 
 # Compare operations without running programs
 
@@ -45,6 +46,42 @@ $LASTEXITCODE
 ~~~
 
 Expected result: operations=same, two instructions on each side, source-locations=not-compared, execution=not-performed and exit zero. Both literals become the same signed PUSH operand followed by RETURN. The command creates no output file.
+
+## Include a typed print instruction
+
+Create a fresh practice folder. Open a text editor and save the first example as `decimal-print.uc`.
+
+```c
+int main(void)
+{
+    /* Compare the print instruction and return instruction as separate operations. */
+    print(40);
+    return 7;
+}
+```
+
+Save the second example as `hex-print.uc` in the same folder.
+
+```c
+int main(void)
+{
+    /* Hexadecimal 28 is decimal 40, and binary 111 is decimal 7. */
+    print(0x28);
+    return 0b111;
+}
+```
+
+Set `$Uc` to the full path of a current Umicom C executable. In PowerShell, open the folder containing both files. Run the comparison and read the exit code.
+
+```powershell
+& $Uc compare-operations .\decimal-print.uc .\hex-print.uc
+$LASTEXITCODE
+```
+
+Expect `operations=same` and exit `0`. The report compares the print and return instructions. Running either program is a separate step.
+
+1. Change `print(0x28);` to `print(0x29);` in `hex-print.uc` and leave its return statement in place. Repeat the command. Expect `operations=different` and exit `1`.
+2. Save a copy of `decimal-print.uc` as `decimal-print.c`. Compare that file with `hex-print.uc`. Expect exit `2`. Umicom C admits this print statement in `.uc` files. The comparison command selects the source grammar for each input.
 
 ## Follow ownership through the implementation
 

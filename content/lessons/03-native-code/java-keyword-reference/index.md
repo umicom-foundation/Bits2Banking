@@ -35,6 +35,7 @@ Start on paper, then use a Java SE 25 JDK to compile a practice file. The short 
 - [Errors, package names, and reserved spellings](05-errors-and-reserved-spellings.md)
 - [Contextual words in records and patterns](06-records-and-patterns.md)
 - [Contextual words in module contracts](07-module-contracts.md)
+- [Save a draft and publish a preview](08-save-a-draft-and-publish-a-preview.md)
 
 ## Continue in another course
 

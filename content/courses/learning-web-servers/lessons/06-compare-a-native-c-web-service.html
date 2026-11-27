@@ -1,0 +1,81 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/06-compare-a-native-c-web-service.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Follow a request into native C23 | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/06-compare-a-native-c-web-service.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Follow a request into native C23</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" hidden /></p>
+<p>The Java servlet and a native C handler both answer an HTTP request. Tomcat supplies the listener, reads the request and calls the servlet. In Umicom Framework a C23 program composes the listener, route table and handler directly.</p>
+<h2>Read the route</h2>
+<ol>
+<li>Open <a href="../../building-a-web-server-in-c/lessons/01-follow-a-request.html">Follow a browser request into C</a> and find the source link.</li>
+<li>Locate <code>/api/health</code> in the registered routes. Trace it to the C <code>Health</code> handler.</li>
+<li>Find the body and content type chosen by the handler. Then find the route declaration, where the method and path are registered separately from the response code.</li>
+</ol>
+<p>Write down the two paths from the course in your own words.</p>
+<div class="highlight"><pre><span></span><code>Tomcat:  GET /btb-statement/summary -&gt; servlet mapping -&gt; doGet -&gt; text
+Umicom:  GET /api/health            -&gt; Framework route -&gt; Health -&gt; JSON
+</code></pre></div>
+<h2>Check the native result</h2>
+<p>If you have the Framework build tools ready, follow the configure and build steps in <a href="../../building-a-web-server-in-c/lessons/07-run-and-explain-a-framework-service.html">Run and explain a Framework service</a>. Use your local checkout and stop on build errors. Start the resulting example with <code>--port 8280</code> so it can be distinguished from the earlier servers.</p>
+<p>In another PowerShell window, run this read-only request.</p>
+<div class="highlight"><pre><span></span><code><span class="n">curl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-i</span> <span class="n">http</span><span class="p">://</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">8280</span><span class="p">/</span><span class="n">api</span><span class="p">/</span><span class="n">health</span>
+</code></pre></div>
+<p>Look for <code>200</code>, a JSON content type and the values <code>umicom-local-example</code> and <code>ready</code>. After recording the result, press <strong>Ctrl+C</strong> in the Framework terminal to stop your practice listener.</p>
+<h2>Compare the evidence</h2>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>What it establishes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A C compiler built the target</td>
+<td>The example code compiled and linked in that build environment</td>
+</tr>
+<tr>
+<td>The local GET returned expected JSON</td>
+<td>Your client reached the selected route and received the response</td>
+</tr>
+<tr>
+<td>The Java servlet returned the expected text</td>
+<td>The WAR deployed and answered that route on the chosen server</td>
+</tr>
+</tbody>
+</table>
+<p>When you read source without running it, label the result <strong>expected</strong>. One local response checks one request path. Further checks cover lifecycle, repeated requests and the intended deployment environment.</p>
+<p><a href="05-deploy-the-same-war-on-wildfly.html">Previous, deploy on WildFly</a> · <a href="../index.html">Course</a> · <a href="07-map-the-jobs-in-a-deployed-website.html">Next, map the jobs in a deployed website</a> · <a href="../../building-a-web-server-in-c/lessons/24-qualify-a-local-c-web-workflow.html">Umicom native web workflow</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

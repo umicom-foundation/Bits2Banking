@@ -1,0 +1,81 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/47-load-defaults-from-a-jar.html
+
+PURPOSE:
+Package and verify defaults loaded from the same Java archive as the report class.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Load defaults from a JAR | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Load defaults from a JAR</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="215">
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="215">
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>An application can ship a set of defaults inside the same JAR as its code. The report can use those settings from any launch folder. In this exercise you build the archive, inspect its entries, and verify which copy of the settings the program reads.</p>
+<p>Use PowerShell and a JDK that supports Java 21. <a href="09-test-the-runnable-jar.html">Test the runnable JAR</a> checks an entry point. Here you check the data that travels with the class. <a href="30-read-report-settings.html">Read report settings without rebuilding</a> uses settings supplied as a separate file.</p>
+<h2>1. Put the resource under the class’s package</h2>
+<p>Make a new practice folder and open PowerShell there. Save <a href="../../../labs/java-path/packaged-defaults/PackagedReportDefaults.java" download>PackagedReportDefaults.java</a> in that folder. Create the output and resource folders.</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Path .\classes, .\resources\training\report -Force | Out-Null
+</code></pre>
+<p>Save <a href="../../../labs/java-path/packaged-defaults/defaults.properties" download>defaults.properties</a> as <code>resources/training/report/defaults.properties</code>. Its settings are <code>title=Harbour readings</code> and <code>period=weekly</code>. Keep the file in UTF-8 and check that the editor keeps its <code>.properties</code> extension.</p>
+<h2>2. Build and inspect the JAR</h2>
+<p>Run each line in order. Continue after each command succeeds.</p>
+<pre><code class="language-powershell">javac --release 21 -Xlint:all -Werror -d classes PackagedReportDefaults.java
+jar --create --file report-defaults.jar -C classes . -C resources .
+jar --list --file report-defaults.jar
+</code></pre>
+<p>Find these two entries in the listing. The archive may also list directories and a manifest.</p>
+<pre><code class="language-text">training/report/PackagedReportDefaults.class
+training/report/defaults.properties
+</code></pre>
+<p>The class belongs to the <code>training.report</code> package. It calls <code>getResourceAsStream(&quot;defaults.properties&quot;)</code> with a name relative to that package, so the resource name inside the JAR is <code>training/report/defaults.properties</code>. The reader decodes its bytes as UTF-8. Closing the reader also closes the underlying stream.</p>
+<h2>3. Run from another folder</h2>
+<p>Use the full path to the JAR and put a different settings file in a separate launch folder. The disk copy uses the same relative path and gives different settings so you can tell the two sources apart.</p>
+<pre><code class="language-powershell">$reportJar = (Resolve-Path -LiteralPath .\report-defaults.jar).Path
+New-Item -ItemType Directory -Path .\run-check\training\report -Force | Out-Null
+Set-Content -LiteralPath .\run-check\training\report\defaults.properties -Encoding ascii -Value 'title=Unpacked copy', 'period=daily'
+
+Push-Location -LiteralPath .\run-check
+try {
+    java -cp $reportJar training.report.PackagedReportDefaults
+} finally {
+    Pop-Location
+}
+</code></pre>
+<pre><code class="language-text">Title Harbour readings
+Period weekly
+</code></pre>
+<p>The classpath given by <code>-cp</code> contains the JAR. The program reads the settings packaged beside the class, so the disk copy in the launch folder does not change the report.</p>
+<h2>4. Check the failure when packaging omits the resource</h2>
+<p>Create a separate JAR with just the compiled class. Keep the complete JAR from the earlier step.</p>
+<pre><code class="language-powershell">jar --create --file report-without-defaults.jar -C classes .
+$incompleteJar = (Resolve-Path -LiteralPath .\report-without-defaults.jar).Path
+Push-Location -LiteralPath .\run-check
+try {
+    java -cp $incompleteJar training.report.PackagedReportDefaults
+    $LASTEXITCODE
+} finally {
+    Pop-Location
+}
+</code></pre>
+<pre><code class="language-text">Missing packaged resource training/report/defaults.properties.
+2
+</code></pre>
+<p>The loose file is still in the launch folder. The program reports the missing JAR entry and exits with code 2. If PowerShell stops the command block when Java exits with code 2, check <code>$LASTEXITCODE</code> at the next prompt.</p>
+<p>If the complete JAR gives the same message, repeat <code>jar --list --file report-defaults.jar</code> and check the exact entry name. It should start at <code>training/</code>. When you build with <code>-C resources .</code>, <code>jar</code> adds the contents of <code>resources</code> at the archive root.</p>
+<p><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html#getResourceAsStream%28java.lang.String%29">Java resource name resolution</a> · <a href="46-read-record-components-at-run-time.html">Previous lesson</a> · <a href="../index.html">Java course</a> · <a href="48-set-a-deadline-for-a-virtual-thread-task.html">Next lesson</a></p>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

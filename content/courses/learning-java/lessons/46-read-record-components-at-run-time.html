@@ -1,0 +1,73 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/46-read-record-components-at-run-time.html
+
+PURPOSE:
+Read a record’s components at run time
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a record’s components at run time | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read a record’s components at run time</h1>
+<p>A reading holds two values, the minute it was taken and the measurement. A report needs both names and values so readers can tell what each number means. In Java, <strong>reflection</strong> lets a running program ask a known class what information it exposes. In C23, you can write a small table containing the information the report needs.</p>
+<h2>1. Run the Java report</h2>
+<ol>
+<li>Open the folder where you save your practice files.</li>
+<li>Save <a href="../../../labs/java-path/ReadingComponentReport.java">ReadingComponentReport.java</a> in that folder. The file name must match the public class name.</li>
+<li>In PowerShell, check that <code>javac -version</code> reports a JDK that can target Java 21.</li>
+<li>Compile the source, then run the class.</li>
+</ol>
+<pre><code class="language-powershell">javac --release 21 .\ReadingComponentReport.java
+java -cp . ReadingComponentReport
+</code></pre>
+<p>You should see these two lines.</p>
+<pre><code class="language-text">minute = 15
+value = 42
+</code></pre>
+<p>A <strong>component</strong> is one of the names and types listed in a record declaration. This record declares <code>minute</code> and <code>value</code>.</p>
+<ol>
+<li><code>Reading.class.getRecordComponents()</code> gives the loop both components in declaration order.</li>
+<li><code>component.getName()</code> gives the label to print.</li>
+<li><code>component.getAccessor()</code> gives the public method that reads it, such as <code>minute()</code>.</li>
+<li><code>invoke(reading)</code> runs that method on the particular reading with values <code>15</code> and <code>42</code>.</li>
+</ol>
+<h2>2. Read the same information in C23</h2>
+<ol>
+<li>Save <a href="../../../labs/java-path/reading_component_report.c">reading_component_report.c</a> beside the Java file.</li>
+<li>Check that <code>gcc --version</code> works in your PowerShell session. Use a GCC release that accepts <code>-std=c23</code>.</li>
+<li>Compile and run the C program.</li>
+</ol>
+<pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Wpedantic -Werror .\reading_component_report.c -o .\reading-component-report.exe
+.\reading-component-report.exe
+</code></pre>
+<p>Expect the same two lines. The C program supplies its own list of member names. For each entry, <code>offsetof</code> asks the C compiler where that member begins inside a <code>Reading</code>. The loop copies the bytes into an <code>int</code> before printing. The table is for these two <code>int</code> members. A table for other member types would also need to describe how to read each type.</p>
+<h2>3. Change a value, then compare the two outputs</h2>
+<ol>
+<li>Change the sample measurement from <code>42</code> to <code>43</code> in both source files.</li>
+<li>Run the same compile and run commands.</li>
+<li>Check that <code>minute = 15</code> remains and that <code>value = 43</code> appears in both reports.</li>
+</ol>
+<p>If Java reports that it cannot find the main class, check the location of <code>ReadingComponentReport.class</code> and run the command from that folder. If the second program still prints <code>42</code>, check that the edit was saved and the compile command succeeded before rerunning it.</p>
+<h2>How this applies to Umicom</h2>
+<p>An IDE can describe the fields it can display when a project provides this information. A network message needs a separate written format for field names and sizes. Native structure offsets apply to the current build and may differ on another architecture.</p>
+<p>Read <a href="../../../courses/learning-java/lessons/36-keep-a-reading-in-a-record.html">Keep a reading in a record</a> for the record basics and <a href="../../../courses/learning-java/lessons/21-verify-a-java-and-c23-file-contract.html">Verify a Java and C23 file contract</a> for an example of a shared file format.</p>
+<ul>
+<li><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html#getRecordComponents()">Java 21 Class.getRecordComponents documentation</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/RecordComponent.html">Java 21 RecordComponent documentation</a></li>
+<li><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf">C23 working draft, section 7.21 for offsetof</a></li>
+</ul>
+<nav aria-label="Lesson navigation"><a href="45-build-a-plain-text-reading-report.html">Previous lesson</a> · <a href="47-load-defaults-from-a-jar.html">Next lesson</a> · <a href="../index.html">Java course</a> · <a href="../../../lessons/03-native-code/learning-java/46-read-record-components-at-run-time.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

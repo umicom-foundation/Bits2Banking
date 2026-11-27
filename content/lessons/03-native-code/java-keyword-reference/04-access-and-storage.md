@@ -153,4 +153,6 @@ Describe who owns a temporary report preview and when it can be discarded. Keep 
 - [C23 keyword reference](../../../courses/c23-keyword-reference/index.html)
 - [Java SE 25 lexical structure, section 3.9](https://docs.oracle.com/javase/specs/jls/se25/html/jls-3.html#jls-3.9)
 
+Practise the four storage and sharing keywords in [Save a draft and publish a preview](08-save-a-draft-and-publish-a-preview.md).
+
 [Course contents](index.md) · [Previous · Classes, objects, and contracts](03-classes-and-interfaces.md) · [Next · Errors, package names, and reserved spellings](05-errors-and-reserved-spellings.md) · [Browser edition](../../../courses/java-keyword-reference/lessons/04-access-and-storage.html)

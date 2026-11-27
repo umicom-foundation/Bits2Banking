@@ -1,0 +1,73 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/32-save-a-copy-of-a-growing-list.html
+
+PURPOSE:
+  Provide the browser lesson “Save a copy of a growing list”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Save a copy of a growing list | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Save a copy of a growing list</h1>
+<p>Suppose you record two meter readings in the morning and add another at noon. You want the morning report to keep its original readings while the current list continues to grow.</p>
+<p>Open PowerShell 7 in a practice folder with JDK 21 or later. If you are setting up Java for the first time, follow <a href="11-install-the-jdk-and-run-a-class.html">Install the JDK and run a class</a>.</p>
+<h2>1. Save the program</h2>
+<p>Save this code as <code>ReadingHistory.java</code>. You can also open the <a href="../../../labs/java-path/ReadingHistory.java">source file</a>.</p>
+<pre><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class ReadingHistory {
+    public static void main(String[] args) {
+        // Keep routine additions in arrival order.
+        List&lt;Integer&gt; readings = new ArrayList&lt;&gt;();
+        readings.add(12);
+        readings.add(8);
+
+        // A report holds the readings available when it was taken.
+        List&lt;Integer&gt; morningReport = List.copyOf(readings);
+        readings.add(15);
+
+        System.out.println(&quot;Morning report: &quot; + morningReport);
+        System.out.println(&quot;Current readings: &quot; + readings);
+    }
+}
+</code></pre>
+<p><code>List&lt;Integer&gt;</code> describes an ordered list of whole numbers. <code>new ArrayList&lt;&gt;()</code> creates an empty list you can grow. Each call to <code>add</code> appends one reading. <code>List.copyOf</code> saves the current sequence in a list whose entries cannot be added, removed or replaced.</p>
+<h2>2. Compile and check both lists</h2>
+<pre><code class="language-powershell">javac --release 21 ReadingHistory.java
+java ReadingHistory
+</code></pre>
+<p>You should see these two lines.</p>
+<pre><code class="language-text">Morning report: [12, 8]
+Current readings: [12, 8, 15]
+</code></pre>
+<p>The brackets show the contents of each list. Both lists started with the same readings. Changing the current list later leaves the morning sequence intact.</p>
+<h2>3. Take the copy one line later</h2>
+<p>Move <code>readings.add(15);</code> above the line that creates <code>morningReport</code>. Compile and run again. Both lines should now contain <code>[12, 8, 15]</code>. The time you take the copy determines which readings it includes.</p>
+<p>If Java reports that it cannot find <code>ReadingHistory</code>, run <code>Get-ChildItem -Name ReadingHistory*</code> and check that the source filename is exactly <code>ReadingHistory.java</code>. Keep the class name in the run command and compile again after each source edit.</p>
+<p><code>Integer</code> values cannot change in place. If you later store objects with fields that can change, a list copy keeps the same objects. If the report needs stable field values too, store immutable values or make a separate copy of those fields. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html#copyOf(java.util.Collection)">Java 21 List reference</a></p>
+<p>A Umicom Trader chart can use the same idea when a user exports a historical report. Capture the readings at the chosen cutoff so a live update cannot change the exported sequence.</p>
+<p><a href="31-keep-a-valid-total-in-a-class.html">Previous lesson</a> · <a href="33-run-independent-checks-with-virtual-threads.html">Next lesson</a> · <a href="../index.html">Java course</a> · <a href="../../../simple-steps/course-guides/learning-java.md">Java in simple steps</a></p>
+</article></main>
+</body>
+</html>

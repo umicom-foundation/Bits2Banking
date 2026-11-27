@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/java-keyword-reference/lessons/08-save-a-draft-and-publish-a-preview.html
+
+PURPOSE:
+Practise static, final, transient and volatile fields in two complete Java 21 examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Practise static, final, transient and volatile fields in two complete Java 21 examples.">
+  <title>Save a draft and publish a preview | Bits2Banking</title>
+  <link rel="stylesheet" href="../../assets/umicom-learning.css">
+  <link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+  <link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="topbar">
+      <a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="176" alt="Umicom"> <span>Bits2Banking</span></a>
+      <nav aria-label="Learning navigation"><a href="../../index.html">Courses</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <h1>Save a draft and publish a preview</h1>
+<nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="07-module-contracts.html">Previous · Contextual words in module contracts</a> · <a href="../../../lessons/03-native-code/java-keyword-reference/08-save-a-draft-and-publish-a-preview.md">Markdown edition</a></nav>
+<p>A report draft has data worth keeping and display text that can be rebuilt. A report preview also needs a way to reach another thread. These two small programs give the field modifiers from <a href="04-access-and-storage.html">Access, storage, and shared state</a> a job in runnable code.</p>
+<p>Use a JDK that supports Java 21. Save both examples in one practice folder and open PowerShell there.</p>
+<h2>1. Save and restore a draft in memory</h2>
+<p>Save <a href="../../../labs/java-keywords/ReportDraftStorage.java" download>ReportDraftStorage.java</a>. Run the second command after the first succeeds.</p>
+<pre><code class="language-powershell">javac --release 21 -Xlint:all -Werror ReportDraftStorage.java
+java -cp . ReportDraftStorage
+</code></pre>
+<pre><code class="language-text">Original preview wide preview of 3 rows
+Restored row count 3
+Current class style compact
+Restored cached preview null
+Rebuilt preview compact preview of 3 rows
+</code></pre>
+<p>Java object serialisation writes an object’s saved data as bytes. This example writes its own byte array and reads that same array back in memory. The restored draft is a separate object.</p>
+<p><code>final</code> makes <code>rows</code> a fixed value for each draft. The original constructor sets it to 3, and default serialisation preserves that field. <code>static</code> gives the preview style one value on the class. The program changes it to <code>compact</code> before restoring the draft, and the running class keeps that current value.</p>
+<p>The <code>transient</code> field <code>cachedPreview</code> holds display text that the class can reconstruct. Default serialisation skips that field. It starts at <code>null</code> in the restored draft, so calling <code>preview()</code> rebuilds it with the saved row count and the current class style.</p>
+<p>Try changing <code>new ReportDraft(3)</code> to <code>new ReportDraft(5)</code> and recompile. The count and both preview lines should now report five rows. The restored cache still starts at <code>null</code>.</p>
+<h2>2. Publish a preview to another thread</h2>
+<p>Save <a href="../../../labs/java-keywords/ReportPreviewHandoff.java" download>ReportPreviewHandoff.java</a> in the same folder. Compile and run it.</p>
+<pre><code class="language-powershell">javac --release 21 -Xlint:all -Werror ReportPreviewHandoff.java
+java -cp . ReportPreviewHandoff
+</code></pre>
+<pre><code class="language-text">Before publication null
+Published heading Daily readings
+Published row count 3
+</code></pre>
+<p>The worker creates one <code>Preview</code> record and writes its reference to <code>latest</code>, a <code>volatile</code> field. A reader that sees that write can use the fully constructed preview. With a string and an integer in one record, the heading and count come from the same preview.</p>
+<p>The reader first checks <code>latest</code> before joining the worker. It tries again after a short pause if the value is still <code>null</code>. <code>volatile</code> provides visibility between the threads. The pauses limit how often the reader checks. The final <code>join()</code> waits for the worker to finish.</p>
+<p>A counter increment has multiple steps. When workers update a pair of mutable counts, use the same lock for writing and reading both values, as in <a href="../../../courses/learning-java/lessons/44-keep-related-counts-in-one-snapshot.html">Keep related counts in one snapshot</a>.</p>
+<h2>3. Recover from a failed run</h2>
+<p>If Java cannot find either class, check that you are in the folder where its compilation succeeded. If the preview worker takes too long, the reader reports a timeout after the worker has joined. Check that <code>worker.start()</code> still runs and that <code>publishPreview()</code> still assigns <code>latest</code>.</p>
+<p><a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.3.1">Java field modifiers</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/specs/serialization/serial-arch.html#defining-serializable-fields-for-a-class">Java default serialisable fields</a> · <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-17.4.5">Java visibility between threads</a></p>
+</main>
+</body>
+</html>

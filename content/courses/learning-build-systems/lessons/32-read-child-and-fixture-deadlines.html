@@ -83,5 +83,23 @@ LATER CONTROL OR RERUN:
 </code></pre>
 <p>Use the earlier registered observation to fill in the first part. Enter the 66.01-second control and 54.34-second selected result as separate rows. A direct control tells you whether the script and its checks can finish in that setting. The registered run supplies the result that includes the test runner’s own limit. Keep both with their source, executable and environment so a colleague can review the sequence.</p>
 <p>Instruction fuel is a third number if the tool runs a virtual machine. It counts operations inside the interpreter. A host timeout describes elapsed seconds in the surrounding command or test. Changing one of the time limits leaves the interpreter’s fuel assertions in place.</p>
+<h2>4. Read the original limit before trying again</h2>
+<p>Build Umicom C with its tests enabled. Open PowerShell where CTest is available. Keep the original test report before running another check.</p>
+<pre><code class="language-powershell">$build = Read-Host 'Path to the Umicom C build folder'
+$only = '^umicom\.c\.cli-inspection$'
+$catalog = ctest --test-dir $build -R $only --show-only=json-v1 | ConvertFrom-Json
+foreach ($test in $catalog.tests) {
+    $limit = ($test.properties | Where-Object name -eq 'TIMEOUT').value
+    "$($test.name) has $limit seconds."
+}
+</code></pre>
+<p>The result shows the registered name and its current whole-test limit in seconds. If no row appears, run <code>ctest --test-dir $build -N</code> and check whether you chose the folder that contains the registered tests.</p>
+<p>Run the same selection by itself. Save a fresh report so the first failure and the later result remain available.</p>
+<pre><code class="language-powershell">$file = 'inspection-retry-{0}.xml' -f (Get-Date -Format 'yyyyMMdd-HHmmss-fff')
+$report = Join-Path $build $file
+ctest --test-dir $build -R $only --output-on-failure --output-junit $report -j 1
+$LASTEXITCODE
+</code></pre>
+<p>Exit code 0 means the selected check passed. Record any timeout or error shown in the output. Include the first result with the retry so a colleague can see both observations.</p>
 <nav aria-label="Lesson navigation"><a href="../index.html">Course contents</a> · <a href="31-measure-the-process-temporary-volume.html">Previous lesson · Measure the process temporary volume</a> · <a href="28-read-a-ninja-progress-record.html">Related lesson · Read a Ninja progress record</a> · <a href="../../building-a-compiler-in-c/lessons/59-separate-instruction-fuel-from-wall-clock-time.html">Related lesson · Separate instruction fuel from wall-clock time</a> · <a href="../../building-a-compiler-in-c/lessons/116-read-the-instruction-budget-at-a-pause.html">Related lesson · Read the instruction budget at a pause</a> · <a href="../../../lessons/05-engineering/learning-build-systems/32-read-child-and-fixture-deadlines.md">Markdown edition</a></nav>
 </article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

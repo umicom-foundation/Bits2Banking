@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/11-follow-a-request-in-an-access-log.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Follow a request in an access log | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/11-follow-a-request-in-an-access-log.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Follow a request in an access log</h1>
+<p><img alt="Umicom Foundation" src="../../../assets/branding/umicom-wordmark.svg" /></p>
+<p>An access log records the request a web server received and the result it returned. Find a single request in a practice log and compare it with the request you meant to make. This works in PowerShell without starting a web server.</p>
+<h2>1. Write three practice records</h2>
+<p>Open PowerShell in the practice folder you created for this course. Copy the entire block, including the first and last lines. It creates a practice file with three fictional requests.</p>
+<pre><code class="language-powershell">$accessSample = @'
+127.0.0.1 - - [20/Nov/2026:14:00:01 +0000] &quot;GET /statement/summary HTTP/1.1&quot; 200 32
+127.0.0.1 - - [20/Nov/2026:14:00:03 +0000] &quot;GET /statements/summary HTTP/1.1&quot; 404 16
+127.0.0.1 - - [20/Nov/2026:14:00:05 +0000] &quot;GET /statement/summary HTTP/1.1&quot; 200 32
+'@
+Set-Content -LiteralPath practice-access.log -Value $accessSample
+</code></pre>
+<p>Type <code>Get-Content -LiteralPath practice-access.log</code>. You should see three lines. The request appears inside quotes. The first number after the closing quote is the HTTP status. The second number is the size of the response body in bytes.</p>
+<h2>2. Find the request that returned 404</h2>
+<pre><code class="language-powershell">Select-String -LiteralPath practice-access.log -SimpleMatch '&quot; 404 '
+</code></pre>
+<p>The result shows line 2. Its path is <code>/statements/summary</code>, with an extra <strong>s</strong>. The successful requests use <code>/statement/summary</code> and return 200. In a real application, compare the requested path with the route the application serves. The access log gives you the exact request to check.</p>
+<h2>3. Check the successful route</h2>
+<pre><code class="language-powershell">Select-String -LiteralPath practice-access.log -SimpleMatch '&quot;GET /statement/summary HTTP/1.1&quot; 200 '
+</code></pre>
+<p>The result shows lines 1 and 3. Add one similar successful line to your practice file and repeat the command. It should now find three successful requests.</p>
+<h2>4. Find where your own server records requests</h2>
+<ul>
+<li>Apache HTTP Server uses <code>CustomLog</code> to select an access log and its format. If the configured path is relative, look under Apache’s <code>ServerRoot</code>. <a href="https://httpd.apache.org/docs/2.4/logs.html#accesslog">Apache access log</a></li>
+<li>Tomcat uses an Access Log Valve. Its configured <code>directory</code> is relative to <code>CATALINA_BASE</code> unless it is written as an absolute path. The log can be buffered, so the newest record may take time to appear. <a href="https://tomcat.apache.org/tomcat-11.0-doc/config/valve.html#Access_Log_Valve">Tomcat Access Log Valve</a></li>
+<li>In JBoss EAP 8.1, the Undertow host controls access logging. Start by checking the host’s access-log directory and pattern in your approved local configuration. <a href="https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/8.1/html/configuration_guide/reference_material">JBoss EAP host access logging</a></li>
+</ul>
+<p>If a search finds nothing in a real log, first confirm that the selected log is for the server that answered your request. Check that access logging is enabled and that the current format records the path and status. Use your practice file when sharing an example. Live logs can include addresses and details of requests.</p>
+<p><a href="02-read-an-http-exchange.html">HTTP request and response</a> · <a href="10-choose-the-servlet-api-for-your-server.html">Previous lesson</a> · <a href="../index.html">Course index</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

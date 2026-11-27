@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/20-keep-links-inside-an-application-context.html
+
+PURPOSE:
+Show how stylesheet and summary links resolve under an application context.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keep links inside an application context | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/20-keep-links-inside-an-application-context.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Keep links inside an application context</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220">
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220">
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>A page can load its stylesheet on a site at <code>/</code> and lose it when the same page moves into an application. Check the address the link produces before looking for a missing file.</p>
+<p>In <a href="01-make-a-page-and-stylesheet.html">Make a web page and its stylesheet</a>, <code>index.html</code> and <code>site.css</code> sit in the same folder. The <a href="04-deploy-a-war-on-tomcat.html">Tomcat deployment</a> and <a href="05-deploy-the-same-war-on-wildfly.html">WildFly deployment</a> put that page and stylesheet in <code>btb-statement.war</code>. In both examples <code>/btb-statement</code> is the context path, the part of the URL that identifies which application should handle the request.</p>
+<h2>1. Read the link on the page</h2>
+<pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;site.css&quot;&gt;
+&lt;a href=&quot;summary&quot;&gt;Read the summary&lt;/a&gt;
+</code></pre>
+<p>Both <code>href</code> values start in the directory of the page. The stylesheet sits beside <code>index.html</code>. The <code>summary</code> address asks the deployed application for the servlet response introduced in the Tomcat lesson.</p>
+<p>A leading slash changes where the path starts. <code>href=&quot;/site.css&quot;</code> starts at the host’s root, the first slash after the host name.</p>
+<h2>2. Calculate the addresses in PowerShell</h2>
+<p>Copy the whole block into PowerShell. <code>[Uri]::new</code> combines a base address and a link. <code>.AbsoluteUri</code> shows the resulting full address. These practice names end in <code>.test</code> and the commands only calculate text.</p>
+<pre><code class="language-powershell">$rootPage = [Uri]'http://reports.example.test/index.html'
+$tomcatPage = [Uri]'http://tomcat.example.test/btb-statement/index.html'
+$wildflyPage = [Uri]'http://wildfly.example.test/btb-statement/'
+
+[Uri]::new($rootPage, 'site.css').AbsoluteUri
+[Uri]::new($rootPage, '/site.css').AbsoluteUri
+[Uri]::new($tomcatPage, 'site.css').AbsoluteUri
+[Uri]::new($tomcatPage, '/site.css').AbsoluteUri
+[Uri]::new($wildflyPage, 'site.css').AbsoluteUri
+[Uri]::new($wildflyPage, 'summary').AbsoluteUri
+</code></pre>
+<pre><code class="language-text">http://reports.example.test/site.css
+http://reports.example.test/site.css
+http://tomcat.example.test/btb-statement/site.css
+http://tomcat.example.test/site.css
+http://wildfly.example.test/btb-statement/site.css
+http://wildfly.example.test/btb-statement/summary
+</code></pre>
+<h2>3. Check the context path</h2>
+<p>The first two addresses agree because the page is at the root. Compare the third and fourth addresses. The link with no leading slash keeps <code>/btb-statement/</code>. The link starting with <code>/</code> asks for a stylesheet at the host root. The final two links start in the WildFly page’s directory. The final slash makes <code>btb-statement</code> part of that directory.</p>
+<p>If your result drops <code>/btb-statement/</code>, check the leading slash in <code>href</code> and the page address you used as the base. When the page address ends with the application name, keep the final slash for a directory base or include the actual page name. A base ending in <code>/btb-statement</code> treats that last segment like a filename and replaces it with <code>site.css</code>.</p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc3986#section-5.4.1">URI reference resolution examples</a> · <a href="19-tell-which-apache-site-answered.html">Previous lesson</a> · <a href="21-verify-a-web-archive-upgrade-and-rollback.html">Next lesson</a> · <a href="../index.html">Course index</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/22-read-which-methods-a-web-route-allows.html
+
+PURPOSE:
+Read which methods a web route allows
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read which methods a web route allows | Umicom Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="160" alt="Umicom"><span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content"><h1>Read which methods a web route allows</h1>
+<p>A request names the action and the path. <code>GET /handout.txt</code> asks to read your practice handout. <code>POST /handout.txt</code> asks that same path to handle a submission. You will run a small C23 program that calls the existing Umicom Framework file handler and prints what it returns for each request.</p>
+<h2>1. Prepare the exercise</h2>
+<ol>
+<li>Start PowerShell in your C development environment. Check that your C23 compiler, CMake and Ninja are available. You also need an installed Umicom Framework SDK with its web target.</li>
+<li>Save <a href="../../../labs/web-method-response/read_route_methods.c">read_route_methods.c</a> and <a href="../../../labs/web-method-response/CMakeLists.txt">CMakeLists.txt</a> together in a fresh practice folder. Open that folder in PowerShell.</li>
+<li>Create a site folder with one text file. Keep <code>missing.txt</code> absent for the final comparison.</li>
+</ol>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Name site
+Set-Content -LiteralPath .\site\handout.txt -Value 'Practice handout.'
+$siteRoot = (Resolve-Path -LiteralPath .\site).Path
+</code></pre>
+<p>The first two commands create one file for the handler to find. The final command records the full folder path.</p>
+<h2>2. Build and run the C23 example</h2>
+<p>Run each command after the previous one succeeds. Supply the installation folder you normally use for the Framework SDK when prompted.</p>
+<pre><code class="language-powershell">$sdkRoot = Read-Host 'Full path of the installed Umicom Framework SDK'
+cmake -S . -B build -G Ninja &quot;-DCMAKE_PREFIX_PATH=$sdkRoot&quot;
+cmake --build .\build
+.\build\read-route-methods.exe $siteRoot
+</code></pre>
+<p>The program calls the handler directly in the same process for each practice request.</p>
+<p>Expect these rows.</p>
+<pre><code class="language-text">GET /handout.txt 200 -
+HEAD /handout.txt 200 -
+POST /handout.txt 405 GET, HEAD
+GET /missing.txt 404 -
+</code></pre>
+<p>Each row lists the method, path, status and optional <code>Allow</code> header in order. A dash marks a response where this header is absent. <code>HEAD</code> asks for the metadata a normal read would return. An HTTP server sends only the response headers for HEAD.</p>
+<h2>3. Explain the refusal</h2>
+<ol>
+<li>Find the row with status <code>405</code>. The handler knows <code>POST</code> and refuses it for this file route. The <code>Allow</code> field lists the two methods the route handles.</li>
+<li>Find the <code>404</code> row. <code>GET</code> is accepted on the file route, and this specific file is absent.</li>
+<li>Create <code>missing.txt</code> and run the program again to check your explanation.</li>
+</ol>
+<pre><code class="language-powershell">Set-Content -LiteralPath .\site\missing.txt -Value 'Another practice handout.'
+.\build\read-route-methods.exe $siteRoot
+</code></pre>
+<p>The last row now shows <code>GET /missing.txt 200 -</code>. The <code>POST</code> row still reports <code>405</code> with <code>GET, HEAD</code>.</p>
+<p>If CMake cannot find the SDK, check that the installation folder contains the Framework package. If the first <code>GET</code> returns <code>404</code>, check that the file is inside the folder printed by <code>$siteRoot</code>, and that it is named <code>handout.txt</code>.</p>
+<h2>Use the result in Umicom</h2>
+<p>Keep the allowed actions in the route that owns them. The handler can then answer with its chosen status and allowed methods. A client can show a specific explanation based on both fields. Use the <a href="../../../courses/learning-web-servers/lessons/13-set-a-message-for-a-missing-page.html">missing page lesson</a> to practise the distinct file-not-found response.</p>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-allow">HTTP semantics for Allow</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-405-method-not-allowed">HTTP semantics for 405</a></li>
+</ul>
+<nav aria-label="Lesson navigation"><a href="21-verify-a-web-archive-upgrade-and-rollback.html">Previous lesson</a> · <a href="../index.html">Course index</a> · <a href="../../../lessons/04-web/learning-web-servers/22-read-which-methods-a-web-route-allows.md">Markdown edition</a></nav>
+</article></main><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></body></html>

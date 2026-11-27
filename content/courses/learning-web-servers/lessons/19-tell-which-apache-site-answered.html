@@ -1,0 +1,82 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/19-tell-which-apache-site-answered.html
+
+PURPOSE:
+Teach how to read the Apache virtual host name in a shared access log.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tell which Apache site answered | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/19-tell-which-apache-site-answered.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Tell which Apache site answered</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220">
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220">
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>In <a href="18-serve-two-apache-sites-on-one-port.html">lesson 18</a>, North and Annex each have their own document root, the folder where Apache looks for pages. Both sites use <code>/index.html</code>. When the sites share an access log, read the site name before deciding which folder to check. You can do the exercise entirely in PowerShell.</p>
+<h2>1. Find the field that identifies the site</h2>
+<p>If you still have the file from <a href="11-follow-a-request-in-an-access-log.html">lesson 11</a>, open PowerShell in that practice folder and read its first line.</p>
+<pre><code class="language-powershell">Get-Content -LiteralPath practice-access.log -TotalCount 1
+</code></pre>
+<p>The first row of the original exercise looks like this.</p>
+<pre><code class="language-text">127.0.0.1 - - [20/Nov/2026:14:00:01 +0000] &quot;GET /statement/summary HTTP/1.1&quot; 200 32
+</code></pre>
+<p>The line starts with the client's address. Apache's Common Log Format has no site-name field. If the practice logs for multiple sites use this format, look for separate log files or check whether a shared log adds a field for the site name.</p>
+<p>An Apache <code>LogFormat</code> can put <code>%v</code> at the start of each line. <code>%v</code> prints the configured <code>ServerName</code> of the site that handled the request. Lesson 18 set <code>ServerName</code> to <code>north.example.test</code> and <code>annex.example.test</code>. This example format puts that name first and keeps the familiar fields from lesson 11. <code>%&gt;s</code> records the final HTTP status.</p>
+<pre><code class="language-apache">LogFormat &quot;%v %h %l %u %t \&quot;%r\&quot; %&gt;s %b&quot; site_access
+</code></pre>
+<h2>2. Read three practice rows</h2>
+<p>Copy the whole block into one PowerShell session. Keep the closing <code>'@</code> at the start of its own line. These fictional rows use the format above. PowerShell keeps them in memory.</p>
+<pre><code class="language-powershell">$sample = @'
+north.example.test 127.0.0.1 - - [27/Nov/2026:09:20:01 +0000] &quot;GET /index.html HTTP/1.1&quot; 200 412
+annex.example.test 127.0.0.1 - - [27/Nov/2026:09:20:03 +0000] &quot;GET /index.html HTTP/1.1&quot; 404 196
+annex.example.test 127.0.0.1 - - [27/Nov/2026:09:21:03 +0000] &quot;GET /index.html HTTP/1.1&quot; 200 419
+'@
+$rows = $sample -split '\r?\n'
+</code></pre>
+<p>Find the first space in each row. Everything before it is the site name. The commands below take that first field, group the names and print the number of rows in each group.</p>
+<pre><code class="language-powershell">$rows |
+    ForEach-Object { ($_ -split ' ', 2)[0] } |
+    Group-Object |
+    Sort-Object Name |
+    ForEach-Object { '{0}: {1}' -f $_.Name, $_.Count }
+</code></pre>
+<pre><code class="language-text">annex.example.test: 2
+north.example.test: 1
+</code></pre>
+<h2>3. Follow the request on the site that answered</h2>
+<p>Print the Annex rows. The space after <code>annex.example.test</code> marks the end of the site name.</p>
+<pre><code class="language-powershell">$rows | Where-Object { $_.StartsWith('annex.example.test ') }
+</code></pre>
+<pre><code class="language-text">annex.example.test 127.0.0.1 - - [27/Nov/2026:09:20:03 +0000] &quot;GET /index.html HTTP/1.1&quot; 404 196
+annex.example.test 127.0.0.1 - - [27/Nov/2026:09:21:03 +0000] &quot;GET /index.html HTTP/1.1&quot; 200 419
+</code></pre>
+<p>At <code>09:20:03</code>, Annex returned 404 for <code>/index.html</code>. In the layout from lesson 18, check <code>annex-site/index.html</code> and Annex's <code>DocumentRoot</code>. The same path returned 200 on North, so looking only at North's page would miss the Annex result. At <code>09:21:03</code> the Annex request succeeded. These rows show when each result occurred. To find out what changed, check the site's files or configuration history.</p>
+<p>If the filter gives no output for this sample, re-run the block that creates <code>$rows</code> in the same PowerShell session and compare the spelling of the site name. Before using the filter on a classroom log, follow Apache's <code>CustomLog</code> setting to the file and check which format it uses. The filter assumes the configured site name is at the start of the row, followed by a space.</p>
+<p><a href="https://github.com/apache/httpd/blob/2.4.x/docs/manual/logs.xml">Apache manual on logging for virtual hosts</a> · <a href="https://github.com/apache/httpd/blob/2.4.x/docs/manual/mod/mod_log_config.xml">Apache <code>LogFormat</code> reference</a></p>
+<p><a href="18-serve-two-apache-sites-on-one-port.html">Previous lesson</a> · <a href="20-keep-links-inside-an-application-context.html">Next lesson</a> · <a href="../index.html">Course index</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

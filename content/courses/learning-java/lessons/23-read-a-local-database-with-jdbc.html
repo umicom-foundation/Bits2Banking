@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/23-read-a-local-database-with-jdbc.html
+
+PURPOSE:
+  Provide the browser lesson “Read a local database with JDBC”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read a local database with JDBC | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Read a local database with JDBC</h1>
+<p>Read two confirmed measurements and one trial measurement from a small database. You will see how a Java program sends SQL values and decides which changes to keep. Read <a href="16-read-a-file-and-explain-errors.html">Read a file and explain errors</a> first if <code>try</code> with resources is unfamiliar.</p>
+<h2>Run the example</h2>
+<ol>
+<li>Save <a href="../../../labs/java-path/LocalReadingDatabase.java">LocalReadingDatabase.java</a> in a practice folder.</li>
+<li>Download the H2 2.4.240 JAR from the linked Maven Central release and save <code>h2-2.4.240.jar</code> beside the Java source. This is the driver that connects Java to the embedded database. <a href="https://central.sonatype.com/artifact/com.h2database/h2/2.4.240">H2 2.4.240 release</a></li>
+<li>In PowerShell, open that folder and enter these commands. The semicolon separates the compiled class folder from the JAR on the Windows classpath.</li>
+</ol>
+<pre><code class="language-powershell">javac --release 21 LocalReadingDatabase.java
+java -cp &quot;.;h2-2.4.240.jar&quot; LocalReadingDatabase
+</code></pre>
+<p>Expected output</p>
+<pre><code class="language-text">Confirmed north units: 20
+During the trial: 23
+After rollback: 20
+Unlisted site: 0
+</code></pre>
+<h2>Follow the data</h2>
+<ol>
+<li>JDBC is Java's interface for talking to a database. The connection URL starts an in-memory H2 database. The whole practice database disappears when its last connection closes.</li>
+<li>The <code>CREATE TABLE</code> command defines a short site name and an integer number of units for each row.</li>
+<li>A prepared statement keeps SQL instructions and values separate. <code>setString(1, site)</code> fills the first <code>?</code> with text. <code>setInt(2, units)</code> fills the second with a whole number.</li>
+<li>The first <code>commit()</code> keeps the three confirmed rows. The next insert adds three units and shows 23 in the same connection. <code>rollback()</code> undoes that trial, so the total returns to 20.</li>
+<li><code>COALESCE(SUM(units), 0)</code> gives a zero when a site has no readings. The <code>try</code> blocks close the query, its rows and the connection when each is finished.</li>
+</ol>
+<h2>Practise and recover</h2>
+<ol>
+<li>Change the trial reading from <code>3</code> to <code>7</code>. Compile and run again. Only the <code>During the trial</code> result should change, to 27.</li>
+<li>Try running without the JAR on the classpath. Java should report that it cannot find a suitable driver. Restore the quoted classpath and rerun.</li>
+<li>Explain why a report can show a trial total inside a transaction before that trial has been confirmed.</li>
+</ol>
+<p>In an Umicom application, separate the database connection and transaction ownership from the code that displays the report. You can then use the same report rules from a command-line test and an interface.</p>
+<p><a href="../index.html">Return to Learning Java</a> · <a href="22-copy-between-typed-lists.html">Copy between typed lists</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/PreparedStatement.html">JDBC prepared statement reference</a> · <a href="https://www.h2database.com/html/features.html#in_memory_databases">H2 in-memory databases</a></p>
+</article></main>
+</body>
+</html>

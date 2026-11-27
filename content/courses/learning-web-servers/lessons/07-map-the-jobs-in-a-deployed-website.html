@@ -1,0 +1,88 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/07-map-the-jobs-in-a-deployed-website.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map the jobs in a deployed website | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/07-map-the-jobs-in-a-deployed-website.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Map the jobs in a deployed website</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" hidden /></p>
+<p>You have used a browser to look at a file, ask a static server for a page and call an application route. Before deploying a more complex site, decide which component owns each part of the work.</p>
+<h2>Match each tool to its job</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Example responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Browser</td>
+<td>Display the HTML and CSS, and run the page's JavaScript when present</td>
+</tr>
+<tr>
+<td>Apache HTTP Server</td>
+<td>Serve public files, or forward selected HTTP requests to another service</td>
+</tr>
+<tr>
+<td>Apache Tomcat</td>
+<td>Run the Java web archive using the Jakarta Servlet API</td>
+</tr>
+<tr>
+<td>WildFly or Red Hat JBoss EAP</td>
+<td>Run Jakarta EE applications that need the wider services provided by their chosen profile</td>
+</tr>
+<tr>
+<td>Native Umicom Framework application</td>
+<td>Compile domain rules to a C23 executable and make a defined route available through the Framework HTTP service</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>Store application records and answer queries from the application service</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>reverse proxy</strong> receives a browser's HTTP request and passes it to an upstream server. The browser can use one address while the application runs on its own local port. Path routing is one example. Requests for <code>/lessons/</code> can stay at the static server, while <code>/api/</code> can go to an application. Decide who owns the original prefix and test the path as received by the upstream.</p>
+<p>LAMP commonly names a Linux, Apache, MySQL and PHP stack. WAMP uses Windows for the same example stack. A stack is the group of components you choose to run the site. One option for PHP is to let the web server send requests to a PHP-FPM worker through FastCGI. A Java web archive uses a compatible Java container or application server. A native C or D application can run behind the web server when it exposes a defined protocol, such as HTTP. Pick the connection contract before choosing how to start each process.</p>
+<p><a href="https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html">Apache reverse proxy guide</a> · <a href="https://www.php.net/manual/en/install.fpm.php">PHP-FPM manual</a></p>
+<h2>Plan a small deployment on paper</h2>
+<ol>
+<li>Sketch one route for a lesson page and one for a native status service.</li>
+<li>Write the expected content type and one expected result for each route. For example, use <code>text/html</code> with a known heading and <code>application/json</code> with a <code>status</code> field.</li>
+<li>Decide what to inspect if the HTML works but the status service is unreachable. Start at the upstream address and its startup log, then check the proxy path mapping.</li>
+<li>Test the upstream directly and the public-facing route separately in a local rehearsal. If the direct result works and the forwarded result fails, investigate the forwarding layer with both outputs to hand.</li>
+<li>Write where the compiled process runs. In this course the native process runs on the server machine and the browser receives its response. A program executed inside the browser would need a separate browser-supported runtime or execution model.</li>
+</ol>
+<p><strong>Check your answer.</strong> A web page returning <code>200</code> establishes that the static route worked for that request. An application route needs its own response check. Separate the two so a learner or operator can see exactly which component needs attention.</p>
+<p><a href="06-compare-a-native-c-web-service.html">Previous, follow native C23</a> · <a href="../index.html">Course</a> · <a href="../../building-a-web-server-in-c/lessons/24-qualify-a-local-c-web-workflow.html">Further practice with native routes and workers</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

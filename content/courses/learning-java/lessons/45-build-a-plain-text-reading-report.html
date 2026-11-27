@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/45-build-a-plain-text-reading-report.html
+
+PURPOSE:
+Show the reading report capstone in a browser.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build a plain-text reading report | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Build a plain-text reading report</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="215">
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="215">
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>Build a plain-text report with a period heading and one line for each reading. This exercise combines <a href="43-name-the-report-periods-with-an-enum.html">a named period</a> with <a href="42-sort-readings-with-comparator.html">a rule for sorting readings</a>. The daily sample has three readings. The weekly sample adds two earlier readings.</p>
+<h2>1. Compile and run the daily report</h2>
+<p>Save <a href="../../../labs/java-path/ReadingPeriodReport.java">ReadingPeriodReport.java</a> in your practice folder. Open PowerShell there with a JDK that supports Java 21. Run the second command after the first succeeds.</p>
+<pre><code class="language-powershell">javac --release 21 -Xlint:all -Werror ReadingPeriodReport.java
+java -cp . ReadingPeriodReport daily
+</code></pre>
+<pre><code class="language-text">DAILY readings
+Value Sequence
+3 4
+7 2
+7 11
+</code></pre>
+<p>The first line comes from the selected <code>Period</code> value. Below the column names, each line contains the value followed by the sequence number. The reading with value 3 comes first. The two readings with value 7 are ordered by sequence, so 2 comes before 11.</p>
+<h2>2. Follow the reading from the list to the report</h2>
+<p><code>parsePeriod</code> maps the command-line word to a <code>Period</code>. <code>buildReport</code> takes that value, starts with the daily sample, and adds two more rows for <code>WEEKLY</code>. All selected rows are sorted together.</p>
+<pre><code class="language-java">readings.sort(Comparator.comparingInt(Reading::value)
+        .thenComparingInt(Reading::sequence));
+</code></pre>
+<p><code>StringBuilder</code> holds the text as the method appends the heading, the column names and the sorted rows. Each <code>\n</code> starts a new line. <code>toString()</code> hands the completed report to the caller, which prints it.</p>
+<h2>3. Check the weekly rows and a usage error</h2>
+<pre><code class="language-powershell">java -cp . ReadingPeriodReport weekly
+</code></pre>
+<pre><code class="language-text">WEEKLY readings
+Value Sequence
+1 18
+3 4
+7 2
+7 11
+7 21
+</code></pre>
+<p>The new reading with value 1 now comes first. The new reading with value 7 has sequence 21, so it follows the other two readings with that value.</p>
+<pre><code class="language-powershell">java -cp . ReadingPeriodReport monthly
+$LASTEXITCODE
+</code></pre>
+<pre><code class="language-text">Enter exactly one report period, daily or weekly.
+2
+</code></pre>
+<p>An unknown period produces the usage message on the error stream and exit code 2. The program builds a report only after it has a known period. If PowerShell stops after the usage error, enter <code>$LASTEXITCODE</code> at the next prompt.</p>
+<p>If Java cannot find the class, return to the folder where you compiled <code>ReadingPeriodReport.java</code>. If the rows are out of order after an edit, check that the comparator reads <code>value</code> before <code>sequence</code> and that the loop reads the list after sorting.</p>
+<p><a href="44-keep-related-counts-in-one-snapshot.html">Previous lesson</a> · <a href="46-read-record-components-at-run-time.html">Next lesson</a> · <a href="../index.html">Java course</a></p>
+</article></main>
+</body>
+</html>

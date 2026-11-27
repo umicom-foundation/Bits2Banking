@@ -1,0 +1,101 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/18-serve-two-apache-sites-on-one-port.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Serve two Apache sites on one port | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/18-serve-two-apache-sites-on-one-port.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Serve two Apache sites on one port</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" />
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>Two practice sites can share the same server and port. Give each site a name and a folder. Then check that Apache sends a different page when the request names the other site.</p>
+<p>Start with <a href="03-serve-files-with-apache-http-server.html">Serve files with Apache HTTP Server</a>. Use its separate practice installation on port 8180. Stop that console instance before editing its configuration.</p>
+<h2>1. Make two practice folders</h2>
+<p>Open PowerShell and copy the earlier page with its stylesheet and brand assets into two folders.</p>
+<pre><code class="language-powershell">$lab = Join-Path $env:USERPROFILE 'web-servers-lab'
+$north = Join-Path $lab 'north-site'
+$annex = Join-Path $lab 'annex-site'
+New-Item -ItemType Directory -Force -Path $north, $annex
+$original = @(Get-ChildItem -LiteralPath &quot;$lab/public&quot; -File |
+    Where-Object Name -in @('index.html', 'site.css', 'umicom-wordmark.svg', 'umicom.ico'))
+if ($original.Count -ne 4) { throw 'Complete the page and stylesheet exercise first.' }
+$original | Copy-Item -Destination $north
+$original | Copy-Item -Destination $annex
+$north.Replace('\','/')
+$annex.Replace('\','/')
+</code></pre>
+<p>Open the two new <code>index.html</code> files in the editor. Set the visible heading in one to <strong>North branch notice</strong> and in the other to <strong>Annex branch notice</strong>. Save both, then copy the printed paths for the configuration.</p>
+<h2>2. Name both sites</h2>
+<p>In your practice Apache folder, add <code>conf/extra/umicom-sites.conf</code> with the following text. Replace each sample folder path with the printed path for that site.</p>
+<pre><code class="language-apache">&lt;VirtualHost 127.0.0.1:8180&gt;
+    ServerName north.example.test
+    DocumentRoot &quot;C:/Users/YourName/web-servers-lab/north-site&quot;
+    &lt;Directory &quot;C:/Users/YourName/web-servers-lab/north-site&quot;&gt;
+        Options -Indexes
+        AllowOverride None
+        Require local
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+
+&lt;VirtualHost 127.0.0.1:8180&gt;
+    ServerName annex.example.test
+    DocumentRoot &quot;C:/Users/YourName/web-servers-lab/annex-site&quot;
+    &lt;Directory &quot;C:/Users/YourName/web-servers-lab/annex-site&quot;&gt;
+        Options -Indexes
+        AllowOverride None
+        Require local
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+</code></pre>
+<p>Open the practice <code>conf/httpd.conf</code>. Keep its single active <code>Listen 127.0.0.1:8180</code> line and add this include at the end.</p>
+<pre><code class="language-apache">Include conf/extra/umicom-sites.conf
+</code></pre>
+<p>Each <code>VirtualHost</code> block describes one site. <code>ServerName</code> is the name used in the request. <code>DocumentRoot</code> is the directory where Apache starts looking for its pages.</p>
+<h2>3. Check the syntax and the site list</h2>
+<p>Set <code>$apache</code> to the same extracted practice installation you used earlier.</p>
+<pre><code class="language-powershell">$apache = 'C:/learning/Apache24'
+&amp; &quot;$apache/bin/httpd.exe&quot; -d $apache -f 'conf/httpd.conf' -t
+&amp; &quot;$apache/bin/httpd.exe&quot; -d $apache -f 'conf/httpd.conf' -S
+</code></pre>
+<p>The first command should show <code>Syntax OK</code>. In the second output, find both names under the same address and port. If either is missing, confirm the include line points to the file you saved.</p>
+<h2>4. Request each site</h2>
+<p>Start the practice instance in its window.</p>
+<pre><code class="language-powershell">&amp; &quot;$apache/bin/httpd.exe&quot; -d $apache -f 'conf/httpd.conf'
+</code></pre>
+<p>In another PowerShell window, send both requests to the same local address. The Host header carries the name that Apache should look up.</p>
+<pre><code class="language-powershell">curl.exe --noproxy 127.0.0.1 --fail --silent --show-error -H 'Host: north.example.test:8180' http://127.0.0.1:8180/index.html
+curl.exe --noproxy 127.0.0.1 --fail --silent --show-error -H 'Host: annex.example.test:8180' http://127.0.0.1:8180/index.html
+</code></pre>
+<p>Confirm that each response contains its own heading. On this address and port, a name that matches neither site uses the first listed site. If both results show the first heading, compare the name you typed with the spelling printed by <code>-S</code>. A 403 means you should check the matching directory block, and a 404 means you should check that site's folder for <code>index.html</code>.</p>
+<p>Press Ctrl+C in the Apache window when finished. <a href="https://httpd.apache.org/docs/2.4/vhosts/name-based.html">Apache name-based hosts</a> · <a href="https://github.com/apache/httpd/blob/2.4.x/docs/manual/programs/httpd.xml">Apache command options</a></p>
+<p><a href="17-read-form-choices-in-native-c.html">Previous lesson</a> · <a href="19-tell-which-apache-site-answered.html">Next lesson</a> · <a href="../index.html">Web server course</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

@@ -53,6 +53,15 @@ Existing checkpoints remain recorded against their original pack, revision and r
 
 After integration, verify the selected course and its companion manifest with the existing learning-pack verify command, substituting its path. Then qualify catalogue load, lesson navigation, Back/Forward and checkpoint history. Manifest restructuring and source checks alone do not establish these runtime results.
 
+## Compiler continuation
+
+[Open the Compiler continuation guide](../content/lessons/05-engineering/building-a-compiler-in-c/continuation.md). The main Compiler row counts the 128 lessons in the whole course. The main offline manifest holds 122 lesson pairs. The continuation adds lessons 73 through 78 in both editions. Open the complete checkout as the library root and enter the continuation manifest separately.
+
+`learning-packs/building-a-compiler-in-c-continuation.json`
+
+Each loaded pack uses one of the 32 shelf places. The combined set exceeds the desktop full-text search budget of 256 documents. For body search, unload the other pack and search one set at a time. Removing a pack from the shelf leaves its files in place.
+On a phone or tablet, use the course’s browser presentation. Native offline reading on mobile has not been qualified.
+
 ## Verify files from a terminal
 
 After the native umicom command has been built, this command checks every file in one pack without running the lesson examples:
@@ -87,9 +96,17 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 
 ## Course manifest paths
 
+
+
+<!-- Earlier Java course rows retained for navigation history.
+| Learning Java | `learning-packs/learning-java.json` | 10 |
+| Java SE 25 keyword reference | `learning-packs/java-keyword-reference.json` | 7 |
+-->
+
 | Course or collection | Manifest path | Lessons or exercises |
 | --- | --- | --- |
 | Building a Compiler in C | `learning-packs/building-a-compiler-in-c.json` | 128 |
+| Building a Compiler in C — continuation | `learning-packs/building-a-compiler-in-c-continuation.json` | 6 |
 | Building a Text Editor in C | `learning-packs/building-a-text-editor.json` | 14 |
 | Building a Web Server in C | `learning-packs/building-a-web-server-in-c.json` | 59 |
 | Building Bitcoin from Scratch Using Assembly and C | `learning-packs/building-bitcoin-in-c.json` | 3 |
@@ -138,7 +155,8 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | Learning HDL and VHDL | `learning-packs/learning-hdl-vhdl.json` | 50 |
 | Learning HTML | `learning-packs/learning-html.json` | 16 |
 | Learning iPhone Development | `learning-packs/learning-iphone-development.json` | 18 |
-| Learning Java | `learning-packs/learning-java.json` | 10 |
+| Learning Java | `learning-packs/learning-java.json` | 48 |
+| Web development and web servers | `learning-packs/learning-web-servers.json` | 22 |
 | Learning JavaScript | `learning-packs/learning-javascript.json` | 10 |
 | Learning Kotlin | `learning-packs/learning-kotlin.json` | 12 |
 | Learning Laravel | `learning-packs/learning-laravel.json` | 2 |
@@ -194,7 +212,7 @@ The destination must not already exist. Keep the old manifest for comparison. Ve
 | FpML for Treasury and Trade Confirmation | `learning-packs/fpml-for-treasury.json` | 3 |
 | Go Keywords for Beginners | `learning-packs/go-keyword-reference.json` | 4 |
 | Go Statement Tools | `learning-packs/go-statement-tools.json` | 2 |
-| Java SE 25 keyword reference | `learning-packs/java-keyword-reference.json` | 7 |
+| Java SE 25 keyword reference | `learning-packs/java-keyword-reference.json` | 8 |
 | Mathematics for Application Builders | `learning-packs/mathematics-for-application-builders.json` | 7 |
 | MongoDB Receipt Documents in C23 | `learning-packs/mongodb-c23-documents.json` | 3 |
 | MySQL Ledger Practice in C23 | `learning-packs/mysql-c23-ledger.json` | 3 |

@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/22-copy-between-typed-lists.html
+
+PURPOSE:
+  Provide the browser lesson “Copy between typed lists”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Copy between typed lists | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Copy between typed lists</h1>
+<p>Copy two whole-number readings into a report that already contains a decimal reading. This exercise uses one reusable method and asks the compiler to check that the destination accepts the items. Start with <a href="15-group-deliveries-with-collections.html">Group deliveries with collections</a> if <code>List</code> is new to you.</p>
+<h2>Run the example</h2>
+<ol>
+<li>Save <a href="../../../labs/java-path/CopyReadings.java">CopyReadings.java</a> in a practice folder.</li>
+<li>Open your terminal in that folder. Use the same JDK from the course and enter the two commands below.</li>
+<li>Compare the two output lines. The first shows the report after copying. The second shows the original source list.</li>
+</ol>
+<pre><code class="language-powershell">javac --release 21 CopyReadings.java
+java CopyReadings
+</code></pre>
+<p>Expected output</p>
+<pre><code class="language-text">[2.5, 12, 8]
+[12, 8]
+</code></pre>
+<h2>Read the method one part at a time</h2>
+<pre><code class="language-java">static &lt;T&gt; void appendAll(List&lt;? extends T&gt; source, List&lt;? super T&gt; destination) {
+    for (T reading : source) {
+        destination.add(reading);
+    }
+}
+</code></pre>
+<ol>
+<li><code>&lt;T&gt;</code> introduces a type chosen for this call. When you read from the source, each item can be treated as <code>T</code>.</li>
+<li><code>? extends T</code> allows a source whose items are <code>T</code> or a more specific type. <code>Integer</code> is one kind of <code>Number</code>.</li>
+<li><code>? super T</code> allows a destination whose element type can hold a <code>T</code>. A list of <code>Number</code> can accept each <code>Integer</code> reading.</li>
+<li>The loop adds each reading in source order. The destination must support addition, and the two lists should be separate. Type checking and those runtime conditions are separate checks.</li>
+</ol>
+<h2>Ask the compiler to catch a mistake</h2>
+<ol>
+<li>Add <code>List&lt;String&gt; labels = new ArrayList&lt;&gt;();</code> just below <code>report.add(2.5);</code>.</li>
+<li>Change the call to <code>appendAll(newReadings, labels);</code> and compile again. The compiler reports incompatible bounds because this copy would put numbers into a list of text. Read the diagnostic near <code>appendAll</code>.</li>
+<li>Restore the original call, remove the added <code>labels</code> line and compile before running again. A failed compile can leave the earlier class file in place.</li>
+</ol>
+<p>In Umicom Studio IDE, the same <code>javac</code> check belongs to the Java build task. Confirm the build succeeded before using the previous output to judge a source edit.</p>
+<p><a href="../index.html">Return to Learning Java</a> · <a href="21-verify-a-java-and-c23-file-contract.html">Verify a Java and C23 file contract</a> · <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.5.1">Java Language Specification on type arguments</a></p>
+</article></main>
+</body>
+</html>

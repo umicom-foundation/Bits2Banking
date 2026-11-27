@@ -8,3 +8,8 @@ Create useful webpages and a task board with HTML, CSS, JavaScript and PHP.
 - [15. PHP: process a web form on a server](15-php.md)
 
 [Explore the practical source files](../../labs/index.md)
+
+## Web servers and application deployment
+
+- [Web development and web servers](learning-web-servers/index.md) follows a page from its first HTML file through HTTP, Apache HTTP Server, Tomcat, WildFly and a native C23 service.
+- [Start with simple steps](../../simple-steps/course-guides/web-development-and-servers.md) gives the short practice route and a result to check at each step.

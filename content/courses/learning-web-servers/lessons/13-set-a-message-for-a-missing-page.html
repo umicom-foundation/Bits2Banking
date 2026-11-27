@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/13-set-a-message-for-a-missing-page.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set a message for a missing page | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/13-set-a-message-for-a-missing-page.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Set a message for a missing page</h1>
+<p><img alt="Umicom Foundation" src="../../../assets/branding/umicom-wordmark.svg" /></p>
+<p>A missing page should tell the reader what happened and where to go next. The server can send that message with HTTP 404. Start with the approved logo, icon and stylesheet from your <a href="01-make-a-page-and-stylesheet.html">first website</a>, then reuse those files for the missing-page message.</p>
+<h2>1. Make a page from your existing layout</h2>
+<p>Open PowerShell 7 in the practice website folder. Type <code>Get-ChildItem index.html</code> to confirm that you are in the right place. If you already have <code>missing.html</code>, open it and check its content before making changes. Otherwise, make a copy.</p>
+<pre><code class="language-powershell">Copy-Item -LiteralPath index.html -Destination missing.html
+</code></pre>
+<p>Open <code>missing.html</code> in your editor. Change its title and main heading to <code>Page not found</code>. Put a short explanation and a link to the start page under the heading. Keep the existing logo, icon and stylesheet references. The original <code>index.html</code> still supplies your home page.</p>
+<h2>2. Check your root with the Umicom Framework example</h2>
+<p>If you have built the local C example, set <code>$webExample</code> to its full path. Keep this terminal in your practice website folder.</p>
+<pre><code class="language-powershell">$siteRoot = (Get-Location).Path
+$webExample = 'C:\tools\umicom-web-local-service-example.exe'
+&amp; $webExample --port 8080 --root $siteRoot --not-found-page /missing.html --check-routes
+</code></pre>
+<p>The command should report that the rooted route and browser admission checks passed in memory. This checks the selected root before listening. Run the last line again with <code>--check-routes</code> omitted to start the example on your own computer.</p>
+<h2>3. Check the missing request</h2>
+<p>Open a second PowerShell window. Use a name you know is absent from the practice folder.</p>
+<pre><code class="language-powershell">$reply = Invoke-WebRequest -SkipHttpErrorCheck 'http://127.0.0.1:8080/not-here.html'
+$reply.StatusCode
+$reply.Content
+</code></pre>
+<p>Look for <code>404</code> and the message you wrote. Next, open <code>http://127.0.0.1:8080/</code> in your browser. It should still display the original home page. Press Ctrl+C in the first window when you finish.</p>
+<h2>4. Find the equivalent Apache setting</h2>
+<p>Apache HTTP Server can use <code>ErrorDocument 404 /missing.html</code> in a practice site configuration. The path starts at that site's document root. Keep the chosen file in the site you are testing. Use the <a href="09-check-an-apache-configuration-copy.html">Apache configuration check</a> to validate the practice copy, then compare the two results as separate questions. Which status did the server return, and which page did it show?</p>
+<p>If the Umicom example shows its standard text, check the option and the filename in the selected root. If the option is missing from <code>--help</code>, check that the example was built from source that provides the error-page option.</p>
+<p><a href="12-reuse-a-response-with-an-etag.html">Previous lesson</a> · <a href="14-run-a-separate-local-tomcat-instance.html">Next lesson</a> · <a href="../index.html">Course index</a> · <a href="https://github.com/apache/httpd/blob/2.4.x/docs/manual/custom-error.xml">Apache ErrorDocument reference</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

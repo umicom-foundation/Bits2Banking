@@ -280,6 +280,26 @@ def test_checked_in_pack_identities_are_unique():
 
 
 def _course_lesson_count(manifest_name):
+    if manifest_name == "building-a-compiler-in-c-continuation.json":
+        # Count only the registered lesson pairs that the main pack leaves for
+        # its companion. Keep the main pack’s authenticated rows in place.
+        course_root = ROOT / "content/courses/building-a-compiler-in-c"
+        course = json.loads((course_root / "course.json").read_text(encoding="utf-8"))
+        manifests = ROOT / "learning-packs"
+        primary = json.loads((manifests / "building-a-compiler-in-c.json").read_text(encoding="utf-8"))
+        companion = json.loads((manifests / manifest_name).read_text(encoding="utf-8"))
+        assert primary["id"] != companion["id"]
+        primary_paths = {row["path"] for row in primary["resources"]}
+        expected = set()
+        for lesson in course["lessons"]:
+            html = (course_root / lesson["path"]).resolve().relative_to(ROOT).as_posix()
+            manuscript = (course_root / lesson["manuscript"]).resolve().relative_to(ROOT).as_posix()
+            assert (html in primary_paths) == (manuscript in primary_paths), html
+            if html not in primary_paths:
+                expected.update((html, manuscript))
+        declared = [row["path"] for row in companion["resources"] if row["kind"] == "lesson"]
+        assert expected and len(declared) == len(expected) and set(declared) == expected
+        return len(declared) // 2
     # The cross-course pack collects checked activity guides from the practice
     # directory. Ordinary packs use the ordered lesson list in their course manifest.
     if manifest_name == "course-practice-catalogue.json":

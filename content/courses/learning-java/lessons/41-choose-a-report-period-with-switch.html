@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/41-choose-a-report-period-with-switch.html
+
+PURPOSE:
+Provide the browser and offline lesson on choosing a report period.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Choose a report period with switch | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Choose a report period with switch</h1>
+<p>A report tool may ask you to choose daily or weekly output. In this exercise, one word selects the report heading.</p>
+<p>Start with <a href="40-read-one-command-line-argument.html">Read one command-line argument</a> and use the same JDK and practice folder.</p>
+<h2>1. Save and compile the class</h2>
+<p>Save <a href="../../../labs/java-path/ReportPeriod.java">ReportPeriod.java</a> in your practice folder. Open PowerShell in that folder.</p>
+<pre><code class="language-powershell">javac --release 21 ReportPeriod.java
+</code></pre>
+<p>You should see a new <code>ReportPeriod.class</code> file.</p>
+<h2>2. Choose the report period</h2>
+<pre><code class="language-powershell">java ReportPeriod daily
+java ReportPeriod weekly
+$LASTEXITCODE
+</code></pre>
+<p>The first run prints <code>Daily report.</code> The second prints <code>Weekly report.</code> The exit code is 0.</p>
+<p><code>switch</code> reads the first argument. Each <code>case</code> names a word and the arrow points to the value that word selects. The program stores the chosen value in <code>heading</code> and prints it once.</p>
+<h2>3. Check the default choice</h2>
+<pre><code class="language-powershell">java ReportPeriod monthly
+$LASTEXITCODE
+</code></pre>
+<p>You should see <code>Choose daily or weekly.</code> and exit code 2. <code>default</code> supplies an empty heading when no case matches. The following <code>if</code> detects it and reports the problem. Try the command without a period and check that it also returns 2.</p>
+<p>If Java cannot find <code>ReportPeriod</code>, return to the folder that contains <code>ReportPeriod.class</code>. The choices are written in lower case. Use <code>weekly</code> when you want that match.</p>
+<h2>4. Read the choice as pseudocode</h2>
+<pre><code class="language-text">If exactly one word was given:
+    Select a heading using daily or weekly.
+    Use an empty heading for an unknown word.
+Otherwise, use an empty heading.
+If the heading is empty, show the choices and return exit code 2.
+Print the heading.
+</code></pre>
+<p>In C23, a <code>switch</code> can select on a whole-number code. When the input is text, you can compare it first and assign the corresponding code. The same input and expected output can be used to check both implementations.</p>
+<p><a href="40-read-one-command-line-argument.html">Previous lesson</a> · <a href="42-sort-readings-with-comparator.html">Next lesson</a> · <a href="../index.html">Java course</a> · <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.28">Java language reference for switch expressions</a></p>
+</article></main>
+</body>
+</html>

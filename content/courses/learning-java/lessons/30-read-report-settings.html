@@ -1,0 +1,115 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/30-read-report-settings.html
+
+PURPOSE:
+  Provide the browser lesson “Read report settings without rebuilding”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read report settings without rebuilding | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Read report settings without rebuilding</h1>
+<p>Suppose you run the same readings report each week. The report can read its title and row limit from a small text file. Change both settings and run the same compiled class again.</p>
+<p>Use JDK 21 or later and open PowerShell 7 in a new practice folder. Follow <a href="11-install-the-jdk-and-run-a-class.html">Install the JDK and run a class</a> if <code>javac -version</code> fails.</p>
+<h2>1. Write the settings file</h2>
+<p>Copy these lines into PowerShell. They create <code>report.properties</code> in your practice folder.</p>
+<pre><code class="language-powershell">@'
+title=Daily readings
+rows=3
+'@ | Set-Content -LiteralPath report.properties -Encoding utf8NoBOM
+</code></pre>
+<p>On each line, the part before <code>=</code> is the setting name. The part after it is the value. This report accepts up to 20 rows so it fits its chosen display size.</p>
+<h2>2. Write the program</h2>
+<p>Save this code as <code>ReportSettings.java</code> in the same folder. You can also open the <a href="../../../labs/java-path/ReportSettings.java">source file</a>.</p>
+<pre><code class="language-java">import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+public class ReportSettings {
+    public static void main(String[] args) {
+        System.exit(run(args));
+    }
+
+    private static int run(String[] args) {
+        if (args.length != 1) {
+            return fail(&quot;Give the path to one settings file.&quot;);
+        }
+
+        // Read with an explicit encoding and close the file on every exit path.
+        Properties settings = new Properties();
+        try (BufferedReader reader = Files.newBufferedReader(
+                Path.of(args[0]), StandardCharsets.UTF_8)) {
+            settings.load(reader);
+        } catch (IOException | IllegalArgumentException problem) {
+            return fail(&quot;Cannot read the settings file.&quot;);
+        }
+
+        // Check that both values are usable before printing the report heading.
+        String title = settings.getProperty(&quot;title&quot;, &quot;&quot;).strip();
+        if (title.isEmpty()) {
+            return fail(&quot;Give the report a title.&quot;);
+        }
+
+        int rows;
+        try {
+            rows = Integer.parseInt(settings.getProperty(&quot;rows&quot;, &quot;&quot;).strip());
+        } catch (NumberFormatException problem) {
+            return fail(&quot;Set rows to a whole number from 1 to 20.&quot;);
+        }
+        if (rows &lt; 1 || rows &gt; 20) {
+            return fail(&quot;Set rows to a whole number from 1 to 20.&quot;);
+        }
+
+        System.out.println(title);
+        System.out.println(&quot;Rows to show: &quot; + rows);
+        return 0;
+    }
+
+    private static int fail(String message) {
+        // A separate error stream keeps failed runs out of report output.
+        System.err.println(message);
+        return 1;
+    }
+}
+</code></pre>
+<p><code>args[0]</code> is the filename you give when you run the program. The <code>try</code> statement opens it and closes the reader when the block ends. <code>settings.load(reader)</code> reads the named values. Those values start as text, so <code>Integer.parseInt</code> turns <code>rows</code> into a number before the program checks its range.</p>
+<h2>3. Compile once and run twice</h2>
+<pre><code class="language-powershell">javac --release 21 ReportSettings.java
+java ReportSettings report.properties
+</code></pre>
+<p>You should see this output.</p>
+<pre><code class="language-text">Daily readings
+Rows to show: 3
+</code></pre>
+<p>Open <code>report.properties</code>. Change the title to <code>Café readings</code> and <code>rows</code> to <code>5</code>. Save it as UTF-8, then repeat only the <code>java</code> command. The title and row count should both change. Your <code>.class</code> file stays the same because the values are read each time the program starts.</p>
+<h2>4. Check a mistake you can recognise</h2>
+<p>Change <code>rows</code> to <code>many</code>, save the file and run the program again. It prints <code>Set rows to a whole number from 1 to 20.</code> Check <code>$LASTEXITCODE</code> in PowerShell immediately afterward. It returns <code>1</code>, which a script can use to detect the failed run. Put <code>5</code> back and run again. It returns <code>0</code> and prints the heading.</p>
+<p>If you see <code>Cannot read the settings file.</code>, use <code>Get-ChildItem -Name</code> to check that <code>report.properties</code> is in your current folder. If you see <code>Give the report a title.</code>, check that the <code>title</code> line has a value after <code>=</code>.</p>
+<p>The <a href="29-connect-an-implementation-with-serviceloader.html">provider lesson</a> changes which class writes a report. This exercise changes values that a report uses. An Umicom Framework application can use the same idea to let a user change a report preference while the application keeps calling the same renderer.</p>
+<p><a href="29-connect-an-implementation-with-serviceloader.html">Previous lesson</a> · <a href="../index.html">Java course</a> · <a href="../../../simple-steps/course-guides/learning-java.md">Java in simple steps</a></p>
+</article></main>
+</body>
+</html>

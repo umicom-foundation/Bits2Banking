@@ -1,0 +1,75 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/14-run-a-separate-local-tomcat-instance.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run a separate local Tomcat instance | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/14-run-a-separate-local-tomcat-instance.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Run a separate local Tomcat instance</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" />
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>Suppose you want a place to try a deployment without changing the Tomcat files you normally use. Start a new local instance with its own configuration, applications and logs. Both instances can use the same Tomcat program files.</p>
+<p>Use PowerShell 7, a JDK and the unpacked <a href="https://tomcat.apache.org/download-11.cgi">Tomcat 11 Core ZIP</a>. Build <code>btb-statement.war</code> using <a href="04-deploy-a-war-on-tomcat.html">the first Tomcat exercise</a>. Keep its full path handy.</p>
+<h2>1. Create the practice instance</h2>
+<p>Open PowerShell in the unpacked Tomcat directory. <code>Get-ChildItem -Name</code> should show <code>bin</code>, <code>conf</code> and <code>lib</code>. Run these commands using a new sibling directory called <code>tomcat-practice</code>.</p>
+<pre><code class="language-powershell">$env:CATALINA_HOME = (Get-Location).Path
+$env:CATALINA_BASE = Join-Path (Split-Path -Parent $env:CATALINA_HOME) 'tomcat-practice'
+New-Item -ItemType Directory -Path $env:CATALINA_BASE
+Copy-Item -LiteralPath &quot;$env:CATALINA_HOME/conf&quot; -Destination &quot;$env:CATALINA_BASE/conf&quot; -Recurse
+New-Item -ItemType Directory -Path &quot;$env:CATALINA_BASE/logs&quot;, &quot;$env:CATALINA_BASE/temp&quot;, &quot;$env:CATALINA_BASE/webapps&quot;, &quot;$env:CATALINA_BASE/work&quot;
+</code></pre>
+<p>If the first <code>New-Item</code> says the folder already exists, choose a different unused name on the preceding line and try again. <code>CATALINA_HOME</code> supplies the program. <code>CATALINA_BASE</code> identifies this instance's working files. Keep these variables in this PowerShell window for the rest of the exercise.</p>
+<h2>2. Give the practice instance its own local address</h2>
+<p>Open the copy at <code>$env:CATALINA_BASE/conf/server.xml</code> in an editor. Find the active <code>Connector</code> that uses <code>protocol="HTTP/1.1"</code>. Change its port to <code>18080</code>, add <code>address="127.0.0.1"</code> and leave its other attributes in place. Your file should have an active opening element similar to this one.</p>
+<pre><code class="language-xml">&lt;Connector port=&quot;18080&quot; protocol=&quot;HTTP/1.1&quot;
+           address=&quot;127.0.0.1&quot;
+           connectionTimeout=&quot;20000&quot; redirectPort=&quot;8443&quot; /&gt;
+</code></pre>
+<p>Change the outer <code>Server</code> element's port from <code>8005</code> to <code>-1</code> and save the copy. This exercise runs Tomcat in the foreground so you can stop it from the same console. Leave the host's <code>appBase="webapps"</code> in place. A connector accepts connections for the named address and port. The address <code>127.0.0.1</code> keeps this exercise on your own computer. <a href="https://tomcat.apache.org/tomcat-11.0-doc/config/http.html">Tomcat HTTP connector</a> · <a href="https://tomcat.apache.org/tomcat-11.0-doc/config/server.html">Tomcat server configuration</a></p>
+<h2>3. Add the web archive and check the configuration</h2>
+<p>Replace <code>C:/path/to/btb-statement.war</code> with the full path to your archive and run these commands.</p>
+<pre><code class="language-powershell">Copy-Item -LiteralPath 'C:/path/to/btb-statement.war' -Destination &quot;$env:CATALINA_BASE/webapps/btb-statement.war&quot;
+&amp; &quot;$env:CATALINA_HOME/bin/catalina.bat&quot; configtest
+</code></pre>
+<p>Check <code>$LASTEXITCODE</code> immediately after <code>configtest</code>. A zero means Tomcat finished its configuration check. It still needs to run and serve the application before you can confirm the deployment.</p>
+<h2>4. Start the classroom instance and look for two results</h2>
+<pre><code class="language-powershell">&amp; &quot;$env:CATALINA_HOME/bin/catalina.bat&quot; run
+</code></pre>
+<p>Leave that window running. In a second PowerShell window, request the application's page and its servlet.</p>
+<pre><code class="language-powershell">curl.exe -i http://127.0.0.1:18080/btb-statement/index.html
+curl.exe -i http://127.0.0.1:18080/btb-statement/summary
+</code></pre>
+<p>Both requests should return HTTP 200. The first shows your statement page. The second shows <code>2 entries reviewed.</code> Return to the first window and press Ctrl+C to stop the practice instance. If the terminal asks you to confirm, follow the displayed prompt.</p>
+<p>If the server reports that the address is in use, stop the practice command, choose another unused port in its own configuration file and update both URLs. If the application returns 404, check the copied archive filename and look for a deployment message in the first console or inside the practice <code>logs</code> folder.</p>
+<p>An Umicom Webserver instance can follow the same design by keeping the executable separate from the selected configuration, content and logs. Two instances can then use different directories and addresses while sharing the same executable. <a href="https://tomcat.apache.org/tomcat-11.0-doc/RUNNING.txt">Tomcat running guide</a></p>
+<p><a href="13-set-a-message-for-a-missing-page.html">Previous lesson</a> · <a href="15-serve-an-xhtml-document.html">Next lesson</a> · <a href="../index.html">Web server course</a> · <a href="../../../simple-steps/course-guides/web-development-and-servers.md">Web development in simple steps</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

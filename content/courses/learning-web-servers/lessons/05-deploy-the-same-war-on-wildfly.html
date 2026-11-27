@@ -1,0 +1,88 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/05-deploy-the-same-war-on-wildfly.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deploy the same web archive on WildFly | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/05-deploy-the-same-war-on-wildfly.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Deploy the same web archive on WildFly</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" hidden /></p>
+<p>WildFly is a community Jakarta EE application server. It can run web applications and also provides facilities used by larger applications, such as managed transactions and data sources. Red Hat JBoss Enterprise Application Platform, called JBoss EAP, is a supported Red Hat product derived from WildFly. Its release, supported JDKs and product lifecycle have their own documentation.</p>
+<p>In this exercise you will use standard WildFly 42 and the same Tomcat WAR. The example uses a small set of Jakarta Servlet interfaces common to both servers. An application using vendor extensions or another Jakarta EE version needs its own compatibility check.</p>
+<h2>Start one local server</h2>
+<ol>
+<li>Finish <a href="04-deploy-a-war-on-tomcat.html">the Tomcat lesson</a> and retain <code>btb-statement.war</code> in the practice folder. Choose the standard ZIP from <a href="https://www.wildfly.org/downloads/">WildFly downloads</a>. Follow the download verification instructions and extract it into a new folder. WildFly 42 requires Java 17 or later and recommends a current Java 25 update. Check the requirements for the version you use.</li>
+<li>
+<p>In PowerShell, correct the example folder and start the practice copy. The two address settings keep application and management access on the loopback address in the standard configuration.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$wildfly</span> <span class="p">=</span> <span class="s2">"C:\learning\wildfly-42.0.0.Final"</span>
+<span class="nb">Test-Path</span> <span class="s2">"$wildfly\bin\standalone.bat"</span>
+<span class="p">&amp;</span> <span class="s2">"$wildfly\bin\standalone.bat"</span> <span class="s2">"-b=127.0.0.1"</span> <span class="s2">"-bmanagement=127.0.0.1"</span>
+</code></pre></div>
+<p>Expect a <code>True</code> result and then the server's startup messages. This standard standalone setup uses port <code>8080</code> for the application and <code>9990</code> for management. If a port is occupied, stop and read the startup error. Close the application using the port only if it is your own practice process.</p>
+</li>
+</ol>
+<h2>Deploy and compare</h2>
+<ol>
+<li>
+<p>In another PowerShell window, enter the practice folder and check the saved archive's hash. Then open the management CLI in the same window. Use the same corrected WildFly folder.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$lab</span> <span class="p">=</span> <span class="nb">Join-Path</span> <span class="nv">$env:USERPROFILE</span> <span class="s2">"web-servers-lab"</span>
+<span class="nv">$wildfly</span> <span class="p">=</span> <span class="s2">"C:\learning\wildfly-42.0.0.Final"</span>
+<span class="nb">Set-Location</span> <span class="nv">$lab</span>
+<span class="nb">Get-FileHash</span> <span class="p">.\</span><span class="n">btb-statement</span><span class="p">.</span><span class="n">war</span>
+<span class="p">&amp;</span> <span class="s2">"$wildfly\bin\jboss-cli.bat"</span> <span class="p">-</span><span class="n">-connect</span> <span class="s2">"--controller=127.0.0.1:9990"</span>
+</code></pre></div>
+<p>The hash should match the Tomcat lesson. Run the CLI under the same local account as the practice server. WildFly's local CLI can authenticate using the server's local file token. Keep that management connection on your machine.</p>
+</li>
+<li>
+<p>At the management prompt, type these commands on separate lines.</p>
+<div class="highlight"><pre><span></span><code>deployment deploy-file btb-statement.war
+deployment list
+quit
+</code></pre></div>
+<p>The list should include <code>btb-statement.war</code>. If deployment fails, read the first cause in the server terminal. Confirm that the WAR contains the class from the previous lesson and that your server release and Java version meet its requirements.</p>
+</li>
+<li>
+<p>Back in PowerShell, request the page and servlet.</p>
+<div class="highlight"><pre><span></span><code><span class="n">curl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-i</span> <span class="n">http</span><span class="p">://</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">8080</span><span class="p">/</span><span class="n">btb-statement</span><span class="p">/</span><span class="n">index</span><span class="p">.</span><span class="n">html</span>
+<span class="n">curl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-i</span> <span class="n">http</span><span class="p">://</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">8080</span><span class="p">/</span><span class="n">btb-statement</span><span class="p">/</span><span class="n">summary</span>
+</code></pre></div>
+<p>Expect <code>200</code> and the same result from the servlet. Write down the URL, status, content type and body for Tomcat and WildFly. The port and server-specific headers may differ. The body remains <code>2 entries reviewed.</code></p>
+</li>
+<li>
+<p>Reopen the management CLI and enter <code>deployment undeploy btb-statement.war</code>, followed by <code>deployment list</code>. The WAR name should disappear from the list. Enter <code>shutdown</code> to stop the practice server, then check that its practice URL no longer responds. If the Windows terminal shows <code>Press any key to continue</code>, press a key after the server reports that it stopped.</p>
+</li>
+</ol>
+<h2>Choose the reference for the server you use</h2>
+<p>If your organisation runs JBoss EAP, ask which EAP release and Java version it supports. Follow that release's installation, management and deployment guide. Write down which Jakarta EE profile and APIs the application needs. A WildFly lab result is one way to learn the workflow. A support decision requires checking the exact EAP environment.</p>
+<p><a href="https://docs.wildfly.org/42/Getting_Started_Guide.html">WildFly getting started</a> · <a href="https://docs.wildfly.org/42/Admin_Guide.html">WildFly deployment and management</a> · <a href="https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/8.1">Red Hat JBoss EAP 8.1 documentation</a></p>
+<p><a href="04-deploy-a-war-on-tomcat.html">Previous, deploy on Tomcat</a> · <a href="../index.html">Course</a> · <a href="06-compare-a-native-c-web-service.html">Next, follow a request into native C23</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

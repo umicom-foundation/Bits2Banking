@@ -1,0 +1,61 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/27-read-the-modules-a-java-app-needs.html
+
+PURPOSE:
+  Provide the browser lesson “Read the modules a Java app needs”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read the modules a Java app needs | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Read the modules a Java app needs</h1>
+<p>Compare the modules used by three small programs. A module is a named group of Java packages. The JDK includes a tool called <code>jdeps</code> that reads compiled classes and reports which modules those classes refer to.</p>
+<p>Use JDK 21 or later and PowerShell. Open the Bits2Banking checkout, where you can see the <code>content</code> folder. If you are new to compiling Java, start with <a href="20-package-a-report-as-a-module.html">Package a report as a module</a>.</p>
+<h2>1. Check your tools</h2>
+<p>Type <code>javac --version</code>, then <code>jdeps --version</code>. Each command should print a version. If a command is missing, open the terminal where you configured the JDK and try again.</p>
+<h2>2. Inspect a small addition program</h2>
+<p>Compile the addition example into its own folder. Run <code>jdeps</code> on that folder.</p>
+<pre><code class="language-powershell">javac --release 21 -d build/java-deps-arithmetic content/labs/java-path/AddReadings.java
+jdeps --print-module-deps build/java-deps-arithmetic
+</code></pre>
+<p>The output is <code>java.base</code>. It contains core classes such as <code>String</code> and <code>System</code>. This method uses a whole-number addition and writes the result with <code>System.out</code>.</p>
+<h2>3. Inspect the HTTP example</h2>
+<p>Repeat for the <a href="24-test-a-local-java-http-route.html">local HTTP example</a>.</p>
+<pre><code class="language-powershell">javac --release 21 -d build/java-deps-http content/labs/java-path/LocalReadingServer.java
+jdeps --print-module-deps build/java-deps-http
+</code></pre>
+<p>The output is <code>java.base,java.net.http,jdk.httpserver</code>. Find the client import <code>java.net.http.HttpClient</code> and the server import <code>com.sun.net.httpserver.HttpServer</code> in the source. These commands inspect the classes without starting the server.</p>
+<h2>4. Inspect the JDBC example</h2>
+<p>Repeat for the <a href="23-read-a-local-database-with-jdbc.html">database example</a>.</p>
+<pre><code class="language-powershell">javac --release 21 -d build/java-deps-jdbc content/labs/java-path/LocalReadingDatabase.java
+jdeps --print-module-deps build/java-deps-jdbc
+</code></pre>
+<p>The output is <code>java.base,java.sql</code>. The source uses the standard JDBC interfaces. When you run the database program, you still supply the H2 driver JAR described in the JDBC lesson. A dependency loaded at runtime can be absent from this static report.</p>
+<h2>5. Record what you need to run the program</h2>
+<p>Keep each output with its source file when handing the program to someone else. Record runtime files and configuration separately. The same distinction helps when you package an application with the Umicom Framework SDK. Record the libraries the linker sees and the resources the installed application needs at runtime.</p>
+<p>If <code>jdeps</code> reports extra modules, check that each folder contains only the class files from that example. Use a new output folder and rerun the two commands if you previously compiled another program there.</p>
+<p>You can now use a module report to answer a concrete question before packaging. Which JDK modules does this program refer to, and what else must be supplied to run it?</p>
+<p><a href="26-read-a-method-in-bytecode.html">Previous lesson</a> · <a href="../index.html">Java course</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/specs/man/jdeps.html">JDK jdeps reference</a></p>
+</article></main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/40-read-one-command-line-argument.html
+
+PURPOSE:
+  Provide the browser lesson “Read one command-line argument”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read one command-line argument | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Read one command-line argument</h1>
+<p>You can check a different reading each time you run a program. Pass the value after the class name and let Java check it before making the decision.</p>
+<p>Start with <a href="38-make-a-choice-with-if.html">Make a choice with if</a>. Use a JDK with Java 21 support, your practice folder and PowerShell.</p>
+<h2>1. Save and compile the example</h2>
+<p>Save <a href="../../../labs/java-path/ReadingArgument.java">ReadingArgument.java</a> in your practice folder and run the compiler there.</p>
+<pre><code class="language-powershell">javac --release 21 ReadingArgument.java
+</code></pre>
+<p>The compiler writes <code>ReadingArgument.class</code>. Keep it in the same folder for the next steps.</p>
+<h2>2. Run with two different readings</h2>
+<pre><code class="language-powershell">java ReadingArgument 8
+java ReadingArgument 10
+$LASTEXITCODE
+</code></pre>
+<p>The first run prints <code>Review the reading.</code> The second prints <code>Minimum reached.</code> PowerShell shows exit code 0 for the last successful run.</p>
+<p><code>args</code> contains the words supplied after the class name. <code>args.length</code> counts them. After checking you supplied exactly one, the program reads <code>args[0]</code> and converts it from text to an integer. The last <code>if</code> uses the same less-than test from the earlier lesson to choose a message.</p>
+<h2>3. Give the program text it cannot convert</h2>
+<pre><code class="language-powershell">java ReadingArgument ten
+$LASTEXITCODE
+</code></pre>
+<p>The program prints <code>Enter a whole number that fits in an int.</code> and PowerShell shows 2. An exception tells the program that conversion failed. The <code>catch</code> block turns it into a message the person running the program can act on.</p>
+<p>Try <code>java ReadingArgument</code> without a reading. This time the message asks for one value. Both refusals return 2, which a script can use to detect that a choice needs correction.</p>
+<p>If PowerShell stops as soon as Java returns 2, check <code>$LASTEXITCODE</code> at the next prompt. If it cannot find <code>ReadingArgument</code>, return to the directory where you compiled the file.</p>
+<p><a href="39-put-two-java-files-in-a-package.html">Previous lesson</a> · <a href="41-choose-a-report-period-with-switch.html">Next lesson</a> · <a href="../index.html">Java course</a></p>
+</article></main>
+</body>
+</html>

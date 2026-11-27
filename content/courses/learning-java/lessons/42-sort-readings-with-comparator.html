@@ -1,0 +1,75 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/42-sort-readings-with-comparator.html
+
+PURPOSE:
+Show the Comparator reading exercise in the browser.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sort readings with Comparator | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Sort readings with Comparator</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="215">
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="215">
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>A report can show the smallest reading first and still give a predictable order when values match. Each practice reading has a value and a unique sequence number. Sort by value from smallest to largest. For equal values, put the smaller sequence number first.</p>
+<p>In the <a href="41-choose-a-report-period-with-switch.html">previous lesson</a>, you chose a period for a report. Here you decide how readings in a report appear. If records are new to you, start with <a href="36-keep-a-reading-in-a-record.html">Keep a reading in a record</a>. Use a JDK that supports Java 21 and a PowerShell practice folder.</p>
+<h2>1. Save and compile the example</h2>
+<p>Save <a href="../../../labs/java-path/SortReadings.java">SortReadings.java</a> in the practice folder and open PowerShell there. Run these commands one at a time. Continue to <code>java</code> after <code>javac</code> succeeds.</p>
+<pre><code class="language-powershell">javac --release 21 -Xlint:all -Werror SortReadings.java
+java -cp . SortReadings
+</code></pre>
+<p><code>--release 21</code> checks the example against Java 21. <code>-Xlint:all</code> enables the compiler’s lint warnings, and <code>-Werror</code> makes any warning fail the build. <code>-cp .</code> tells Java to load the compiled class from the current folder.</p>
+<pre><code class="language-text">Value Sequence
+3 4
+7 2
+7 11
+</code></pre>
+<h2>2. Read the two comparisons</h2>
+<p>A <code>Comparator&lt;Reading&gt;</code> tells Java which of two readings should come first. <code>Reading::value</code> is a method reference. It tells <code>comparingInt</code> to take the number from each reading’s <code>value()</code> method.</p>
+<pre><code class="language-java">Comparator&lt;Reading&gt; byValueThenSequence = Comparator.comparingInt(Reading::value)
+        .thenComparingInt(Reading::sequence);
+</code></pre>
+<p><code>thenComparingInt</code> uses <code>sequence()</code> only when the values tie. Sequence 2 goes before 11 because they are numbers. The record constructor takes sequence first, so <code>new Reading(11, 7)</code> has sequence 11 and value 7.</p>
+<p><code>List.of</code> creates an unmodifiable list. <code>sortedCopy</code> copies its entries into an <code>ArrayList</code> before calling <code>sort</code>. The report uses the new order and the original list keeps its input order.</p>
+<h2>3. Check the tie and the primary rule</h2>
+<p>Change the input order to <code>new Reading(2, 7)</code>, <code>new Reading(4, 3)</code>, then <code>new Reading(11, 7)</code>. Compile and run again. The four output lines should stay the same because the sequence numbers decide the tie.</p>
+<p>Now change the value for sequence 11 from <code>7</code> to <code>-2</code>. Compile and run again. The changed value now puts sequence 11 first.</p>
+<pre><code class="language-text">Value Sequence
+-2 11
+3 4
+7 2
+</code></pre>
+<p>If the order differs, check which number each constructor argument sets, then confirm that the comparator names <code>value</code> before <code>sequence</code>. If <code>java</code> cannot find <code>SortReadings</code>, check that you are in the folder where compilation succeeded.</p>
+<p>A C23 comparison function can use the same rule. Compare the values with <code>&lt;</code> and <code>&gt;</code>. If they are equal, compare the sequence numbers with those operators. Direct comparisons work across the integer range, where subtracting two values can overflow.</p>
+<h2>4. Check the same order in C23</h2>
+<p>Save <a href="../../../labs/java-path/reading_order.c">reading_order.c</a> beside the Java example. Open the PowerShell terminal you use for C23 development and run these commands one at a time.</p>
+<pre><code class="language-powershell">gcc -std=c23 -Wall -Wextra -Wpedantic -Werror reading_order.c -o reading_order.exe
+.\reading_order.exe
+</code></pre>
+<p>The first command builds a local executable. The second runs it. Check the same four lines shown in step 1. The C function returns a negative number when the first reading belongs earlier, a positive number when it belongs later, and zero when both keys match. C copies its input array because <code>qsort</code> rearranges the array it receives.</p>
+<p><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Comparator.html">Java 21 Comparator API</a> · <a href="41-choose-a-report-period-with-switch.html">Previous lesson</a> · <a href="43-name-the-report-periods-with-an-enum.html">Next lesson</a> · <a href="../index.html">Java course</a></p>
+</article></main>
+</body>
+</html>

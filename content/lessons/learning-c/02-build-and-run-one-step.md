@@ -2,6 +2,10 @@
 
 Understand what each tool does and stop at the stage that reports an error.
 
+![Umicom](../../assets/branding/umicom-wordmark.svg)
+
+If this is your first build, [build one C file with GCC](build-one-c-file.md) and then return here to see what CMake and Ninja add.
+
 **Before you begin:** Read [Read a C program before running it](01-read-your-first-program.md), or return to it for a refresher.
 
 ## Use a reading route or a practical route

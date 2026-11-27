@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/15-serve-an-xhtml-document.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Serve an XHTML document | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/15-serve-an-xhtml-document.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Serve an XHTML document</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" />
+<a href="../../../assets/branding/umicom.ico"><img src="../../../assets/branding/umicom-icon.svg" width="28" alt="Umicom icon"></a></p>
+<p>An XHTML page uses XML syntax to describe a web document. The server sends a media type in its HTTP headers so the browser knows how to read the file. Save a small document and check the headers yourself.</p>
+<p>Start with the practice site from <a href="01-make-a-page-and-stylesheet.html">Make a web page and its stylesheet</a>. That folder has an <code>index.html</code>, the approved SVG logo and the Umicom icon. Use PowerShell 7 and a built Umicom Framework local service example.</p>
+<h2>1. Save one well-formed page</h2>
+<p>Save this file as <code>review.xhtml</code> next to <code>index.html</code>. Choose UTF-8 in your editor.</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;title&gt;Statement review&lt;/title&gt;
+    &lt;link rel=&quot;icon&quot; href=&quot;umicom.ico&quot; /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;img src=&quot;umicom-wordmark.svg&quot; width=&quot;220&quot; alt=&quot;Umicom Foundation&quot; /&gt;
+    &lt;h1&gt;Statement review&lt;/h1&gt;
+    &lt;p&gt;Two entries are ready for review.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>The <code>xmlns</code> value identifies the HTML vocabulary. The final <code>/</code> on <code>link</code> and <code>img</code> closes those elements. Each other opening tag has a matching closing tag. The browser can reject XML when a tag is left unclosed.</p>
+<h2>2. Check the root before starting the local example</h2>
+<p>Replace the executable path with the path to your build. Keep this window in your practice site folder.</p>
+<pre><code class="language-powershell">$siteRoot = (Get-Location).Path
+$webExample = 'C:/tools/umicom-web-local-service-example.exe'
+&amp; $webExample --port 8093 --root $siteRoot --check-routes
+</code></pre>
+<p>Once the rooted route check succeeds, use the same command without <code>--check-routes</code> to start the server on your own computer.</p>
+<pre><code class="language-powershell">&amp; $webExample --port 8093 --root $siteRoot
+</code></pre>
+<h2>3. Read the response headers</h2>
+<p>Open a second PowerShell window and make one HEAD request and one GET request.</p>
+<pre><code class="language-powershell">curl.exe -I http://127.0.0.1:8093/review.xhtml
+curl.exe -i http://127.0.0.1:8093/review.xhtml
+</code></pre>
+<p>Look for HTTP 200 and <code>Content-Type: application/xhtml+xml</code> in both responses. HEAD shows headers without the document body. GET includes the XML you saved. Open the GET address in a browser to see the page. The logo is in the page and the icon is for the browser tab. Press Ctrl+C in the first window when you finish.</p>
+<p>If you see 404, check the file's name and the site folder. If you see <code>application/octet-stream</code>, check the suffix and verify that your local example was built from the source that supports XHTML.</p>
+<h2>4. Find the equivalent setting in Apache</h2>
+<p>In a practice Apache configuration using <code>mod_mime</code>, this rule associates both recognised filename endings with the same HTTP media type.</p>
+<pre><code class="language-apache">AddType application/xhtml+xml .xhtml .xht
+</code></pre>
+<p>Follow <a href="09-check-an-apache-configuration-copy.html">Check an Apache configuration copy</a> to check the new setting. After starting that practice site, compare its <code>Content-Type</code> with the Umicom example. The file chosen and the header returned are two observations you can check independently. <a href="https://www.iana.org/assignments/media-types/application/xhtml+xml">IANA XHTML registration</a> · <a href="https://github.com/apache/httpd/blob/2.4.x/docs/manual/mod/mod_mime.xml">Apache AddType reference</a></p>
+<p><a href="14-run-a-separate-local-tomcat-instance.html">Previous lesson</a> · <a href="16-send-a-read-only-choice-with-a-form.html">Next lesson</a> · <a href="../index.html">Course index</a> · <a href="../../../simple-steps/course-guides/web-development-and-servers.md">Web development in simple steps</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

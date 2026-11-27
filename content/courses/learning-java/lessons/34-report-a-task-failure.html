@@ -1,0 +1,89 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/34-report-a-task-failure.html
+
+PURPOSE:
+  Provide the browser lesson “Report a task failure”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Report a task failure | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Report a task failure</h1>
+<p>Suppose an operator types a reading as <code>many</code> instead of a number. The task that reads the entry fails. The program should explain how to correct the entry and return a status a script can check.</p>
+<p>Use PowerShell 7 and JDK 21 or later. If executors and futures are unfamiliar, start with <a href="33-run-independent-checks-with-virtual-threads.html">Run independent checks with virtual threads</a>.</p>
+<h2>1. Save the program</h2>
+<p>Save the code as <code>ReadCheckedValue.java</code> in a new practice folder. You can also open the <a href="../../../labs/java-path/ReadCheckedValue.java">source file</a>.</p>
+<pre><code class="language-java">import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+
+public class ReadCheckedValue {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        System.exit(run(args));
+    }
+
+    private static int run(String[] args) throws InterruptedException, ExecutionException {
+        if (args.length != 1) {
+            System.err.println(&quot;Give one reading.&quot;);
+            return 2;
+        }
+
+        // Finish and close the executor before publishing the command's exit code.
+        try (var worker = Executors.newVirtualThreadPerTaskExecutor()) {
+            var reading = worker.submit(() -&gt; Integer.parseInt(args[0]));
+            try {
+                System.out.println(&quot;Reading: &quot; + reading.get());
+                return 0;
+            } catch (ExecutionException failure) {
+                // Give an actionable message for the input error this task expects.
+                if (failure.getCause() instanceof NumberFormatException) {
+                    System.err.println(&quot;Enter a whole number that fits in a Java int.&quot;);
+                    return 1;
+                }
+                throw failure;
+            }
+        }
+    }
+}
+</code></pre>
+<p><code>Integer.parseInt</code> converts text to an integer. That conversion happens in the task. If the conversion throws an exception, <code>reading.get()</code> reports an <code>ExecutionException</code> in the calling code. <code>getCause()</code> retrieves the problem that the task originally reported.</p>
+<p><code>System.out</code> carries a successful reading. <code>System.err</code> carries the correction. The expected input mistake returns 1. An unexpected task problem still reaches Java's exception reporting so a developer can identify it.</p>
+<h2>2. Compile and run a successful check</h2>
+<pre><code class="language-powershell">javac --release 21 ReadCheckedValue.java
+java ReadCheckedValue 42
+$LASTEXITCODE
+</code></pre>
+<p>You should see <code>Reading: 42</code> followed by <code>0</code>. Read <code>$LASTEXITCODE</code> immediately after Java so you can see that command's result.</p>
+<h2>3. Compare two failures</h2>
+<pre><code class="language-powershell">java ReadCheckedValue many
+$LASTEXITCODE
+java ReadCheckedValue
+$LASTEXITCODE
+</code></pre>
+<p>The first command prints <code>Enter a whole number that fits in a Java int.</code> and returns 1. The second prints <code>Give one reading.</code> and returns 2. It refuses to create the task because there is no input to pass to it.</p>
+<p>Try <code>-5</code> next. It is a whole number too. The program prints <code>Reading: -5</code> and returns 0.</p>
+<p>If the console reports that it cannot load <code>ReadCheckedValue</code>, check that the file has exactly the same spelling as the class and that you ran <code>javac</code> in this practice folder. If the task reports a different kind of error, read the final <code>Caused by</code> section before changing how the caller handles the result.</p>
+<p>This is a good boundary for a command in Umicom Framework too. Return one result to the caller after the worker finishes, keep expected input feedback clear, and preserve unexpected task errors for diagnosis. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/Future.html">Java 21 Future reference</a></p>
+<p><a href="33-run-independent-checks-with-virtual-threads.html">Previous lesson</a> · <a href="35-show-a-time-with-its-offset.html">Next lesson</a> · <a href="../index.html">Java course</a> · <a href="../../../simple-steps/course-guides/learning-java.md">Java in simple steps</a></p>
+</article></main>
+</body>
+</html>

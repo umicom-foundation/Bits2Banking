@@ -1,0 +1,100 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-web-servers/lessons/08-inspect-a-jboss-eap-deployment.html
+
+PURPOSE:
+Present the matched Web Servers lesson in a browser without running its examples.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT for original learning material. Linked references retain their own terms.
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inspect a Red Hat JBoss EAP deployment | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="stylesheet" href="../../../assets/branding/umicom-brand.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../../index.html"><img src="../../../assets/branding/umicom-wordmark-on-dark.svg" alt="Umicom Foundation course library" width="159" height="40"></a></div></header>
+<main id="main" class="simple-page">
+<nav aria-label="Course navigation"><a href="../index.html">Web development and web servers</a> · <a href="../../../lessons/04-web/learning-web-servers/08-inspect-a-jboss-eap-deployment.md">Markdown manuscript</a></nav>
+<article id="lesson-content" class="article-content">
+<h1>Inspect a Red Hat JBoss EAP deployment</h1>
+<p><img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-light" src="../../../assets/branding/umicom-wordmark.svg" width="220" />
+<img alt="Umicom Foundation" class="umicom-wordmark umicom-wordmark-dark" src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="220" hidden /></p>
+<p>A browser asks an application to do work. A management console or command line tells an operator which applications the server knows about. This exercise reads a deployment record first, then asks how you would verify the application itself.</p>
+<p>Start with a local standalone Red Hat JBoss Enterprise Application Platform 8.1 training instance that you are authorised to inspect. The exercise also works on paper with the practice row below. Read how the <a href="05-deploy-the-same-war-on-wildfly.html">WildFly lab used its deployment CLI</a> before comparing the two environments.</p>
+<h2>1. Identify the application and its server</h2>
+<p>Write down the product release, the Java version supported for that installation, and the application archive name. EAP 8.1 uses Jakarta EE 10 and Servlet 6.0. The Tomcat 11 practice compile used Servlet 6.1. Use the API version supported by your target and verify that specific build before moving an application. <a href="https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/8.1/html/migration_guide/preparing-for-migration-to-jboss-eap-8_default">EAP 8.1 migration and component versions</a> · <a href="https://tomcat.apache.org/whichversion.html">Tomcat supported specifications</a></p>
+<p>A standalone server has one local server configuration. A managed domain lets operators manage servers in groups. The same deployment name can have different rollout results across the groups. This exercise uses one standalone instance. <a href="https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/8.1/html/configuration_guide/eap-mgmt-overview_default">JBoss EAP management guide</a></p>
+<h2>2. Read the deployment list</h2>
+<p>Set the path to the approved local EAP installation. Use the management port configured for your training server. The example uses the default port on the same machine.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$eapHome</span> <span class="p">=</span> <span class="s1">'C:/btb-lab/jboss-eap-8.1'</span>
+<span class="nv">$cli</span> <span class="p">=</span> <span class="nb">Join-Path</span> <span class="nv">$eapHome</span> <span class="s1">'bin/jboss-cli.bat'</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">-not</span> <span class="p">(</span><span class="nb">Test-Path</span> <span class="n">-LiteralPath</span> <span class="nv">$cli</span> <span class="n">-PathType</span> <span class="n">Leaf</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="s1">'Set the path to the EAP training installation.'</span>
+<span class="p">}</span>
+<span class="p">&amp;</span> <span class="nv">$cli</span> <span class="p">-</span><span class="n">-connect</span> <span class="p">-</span><span class="n">-controller</span><span class="p">=</span><span class="n">127</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">1</span><span class="p">:</span><span class="n">9990</span>
+</code></pre></div>
+<p>At the management prompt, enter these two commands in order.</p>
+<div class="highlight"><pre><span></span><code>deployment info
+quit
+</code></pre></div>
+<p>Look for the archive name, runtime name, enabled flag and recorded status. This sample row represents one possible training deployment.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Runtime name</th>
+<th>Enabled</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>btb-statement.war</code></td>
+<td><code>btb-statement.war</code></td>
+<td><code>true</code></td>
+<td><code>OK</code></td>
+</tr>
+</tbody>
+</table>
+<p>If the connection is refused, check whether the training server is running and whether you used its management port. If authentication is requested, follow the administrator’s local access procedure. If the named archive is absent, record it as missing. Keep the command output free of credentials. <a href="https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/8.1/html/configuration_guide/managing-application-deployments_default">EAP deployment listing</a></p>
+<h2>3. Check one application response</h2>
+<p>Ask the instructor for the intended HTTP address and application context. For the fictional statement app, this might be the already deployed <code>/btb-statement/summary</code> route on the training server. Use the approach from the <a href="02-read-an-http-exchange.html">HTTP lesson</a> to write down the observed status and body. Keep the result beside the deployment record.</p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>What to record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Management</td>
+<td>Target instance, archive identity, enabled flag, runtime name and status</td>
+</tr>
+<tr>
+<td>HTTP</td>
+<td>Host and port, requested path, status and the response you expected</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Check yourself.</strong> If the management view shows <code>OK</code> and the request returns <code>404</code>, check the context and route before deciding whether the application is ready. In a managed domain, record the target server group before interpreting a result.</p>
+<p>The same distinction applies to Umicom Framework. A reviewed application identity is one record. The result from a bounded HTTP request is another. Keep both when describing whether a service started and serves the intended route.</p>
+<p><a href="../index.html">Web server course</a> · <a href="06-compare-a-native-c-web-service.html">Native C23 service</a></p>
+</article>
+</main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body>
+</html>

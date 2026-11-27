@@ -1,0 +1,60 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/31-keep-a-valid-total-in-a-class.html
+
+PURPOSE:
+  Provide the browser lesson “Keep a valid total in a class”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keep a valid total in a class | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Keep a valid total in a class</h1>
+<p>Add two readings to a report, then try one that the report must refuse. A Java class can keep the data and the rules for changing it together. This class owns a single total and accepts only readings that keep it valid.</p>
+<p>Use JDK 21 or later and PowerShell. Open the Bits2Banking checkout so you can see the <code>content</code> directory. If you have just started with methods, read <a href="13-total-an-array-with-a-method.html">Total an array with a method</a> first.</p>
+<h2>1. Open the example</h2>
+<p>Find <code>content/labs/java-path/ReadingTotal.java</code>. Look for <code>private int total = 0</code>. Each new <code>ReadingTotal</code> object starts at zero. The word <code>private</code> keeps callers from assigning to the field directly.</p>
+<p>Next, find <code>add</code>. It checks the new reading before it changes the field. <code>value</code> returns the current total. You can follow this idea in plain words.</p>
+<pre><code class="language-text">Start the total at zero.
+For each reading, check that it is a valid number to add.
+Add a valid reading to the total.
+Keep the old total when a reading is refused.
+Show the total when asked.
+</code></pre>
+<h2>2. Build and run</h2>
+<pre><code class="language-powershell">javac --release 21 -d build/java-reading-class content/labs/java-path/ReadingTotal.java
+java -cp build/java-reading-class ReadingTotal
+</code></pre>
+<p>You should see these three lines.</p>
+<pre><code class="language-text">Total: 20
+Accepted negative reading: false
+Total after refusal: 20
+</code></pre>
+<p><code>new ReadingTotal()</code> created the report. The next two calls added 12 and 8. The negative reading returned <code>false</code>, and the last line shows that the saved total stayed at 20.</p>
+<h2>3. Change one reading</h2>
+<p>Copy <code>ReadingTotal.java</code> into your own practice folder and change <code>report.add(8)</code> to <code>report.add(3)</code>. Recompile the copy using its path in the first command. Run the second command again. The first and third lines should now show 15.</p>
+<p>The method also checks whether the next sum will fit in an <code>int</code>. A C23 module can follow the same policy by owning its data in a structure and checking proposed changes before it assigns a new value. Use the <a href="21-verify-a-java-and-c23-file-contract.html">Java and C23 file exercise</a> for a comparison between the two languages.</p>
+<p>If Java still prints 20 after your edit, check the path passed to <code>javac</code> and make sure it compiled your edited copy. The <code>-cp</code> option should point to that same output directory.</p>
+<p><a href="30-read-report-settings.html">Previous lesson</a> · <a href="32-save-a-copy-of-a-growing-list.html">Next lesson</a> · <a href="../index.html">Java course</a></p>
+</article></main>
+</body>
+</html>

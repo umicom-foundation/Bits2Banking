@@ -1,0 +1,176 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/21-verify-a-java-and-c23-file-contract.html
+
+PURPOSE:
+  Provide the browser lesson “Verify a Java and C23 file contract”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verify a Java and C23 file contract | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Verify a Java and C23 file contract</h1>
+<p>A Java report and a native C23 tool can agree on the same small file. The agreement is a contract that each program can check. It specifies the bytes accepted, the output and the result of invalid input.</p>
+<p>Complete the previous lesson before trying this one. Use the same JDK and a writable practice folder.</p>
+<h2>Try it</h2>
+<ol>
+<li>Save the two programs and the <code>usage-rows.txt</code> fixture together. The fixture uses the ASCII digits 12, 8 and 3, each followed by an LF line break.</li>
+<li>Compile Java and C23 separately. Run both on the same file and compare the entire output line.</li>
+<li>Make another fixture with a letter on one line. Both programs should report <code>Invalid usage data</code> on their error stream and return failure.</li>
+<li>Try a copy missing its final LF. Then try a file with more than 64 bytes. Verify both programs reject those cases. Keep the original test fixture unchanged for your next run.</li>
+</ol>
+<h2>Example files</h2>
+<h3>UsageSummary.java</h3>
+<p><a href="../../../labs/java-path/UsageSummary.java">Open UsageSummary.java</a></p>
+<pre><code>import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class UsageSummary {
+    static int summarize(Path file) throws IOException {
+        byte[] bytes;
+        // Read one byte past the teaching limit so a full prefix cannot pass.
+        try (var input = Files.newInputStream(file)) {
+            bytes = input.readNBytes(65);
+        }
+        if (bytes.length == 0 || bytes.length &gt; 64) {
+            throw new IllegalArgumentException(&quot;Invalid usage data&quot;);
+        }
+        int total = 0;
+        int value = 0;
+        int digits = 0;
+        // Define the portable file format with ASCII bytes and LF line breaks.
+        for (byte current : bytes) {
+            if (current &gt;= '0' &amp;&amp; current &lt;= '9' &amp;&amp; digits &lt; 2) {
+                value = value * 10 + current - '0';
+                digits++;
+            } else if (current == '\n' &amp;&amp; digits != 0) {
+                total += value;
+                value = 0;
+                digits = 0;
+            } else {
+                throw new IllegalArgumentException(&quot;Invalid usage data&quot;);
+            }
+        }
+        if (digits != 0) {
+            throw new IllegalArgumentException(&quot;Invalid usage data&quot;);
+        }
+        return total;
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err.println(&quot;Usage: provide one input file&quot;);
+            System.exit(2);
+        }
+        try {
+            System.out.println(&quot;Total: &quot; + summarize(Path.of(args[0])));
+        } catch (IllegalArgumentException error) {
+            System.err.println(&quot;Invalid usage data&quot;);
+            System.exit(1);
+        } catch (IOException error) {
+            System.err.println(&quot;Could not read usage data&quot;);
+            System.exit(1);
+        }
+    }
+}</code></pre>
+<h3>usage_summary.c</h3>
+<p><a href="../../../labs/java-path/usage_summary.c">Open usage_summary.c</a></p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char **argv)
+{
+    if (argc != 2) {
+        fputs(&quot;Usage: provide one input file\n&quot;, stderr);
+        return 2;
+    }
+    FILE *input = fopen(argv[1], &quot;rb&quot;);
+    if (!input) {
+        fputs(&quot;Could not read usage data\n&quot;, stderr);
+        return EXIT_FAILURE;
+    }
+
+    /* Read one byte past the format limit and close before parsing. */
+    unsigned char bytes[65];
+    size_t length = fread(bytes, 1, sizeof bytes, input);
+    int failed = ferror(input);
+    if (fclose(input) == EOF || failed) {
+        fputs(&quot;Could not read usage data\n&quot;, stderr);
+        return EXIT_FAILURE;
+    }
+    if (!length || length &gt; 64) {
+        fputs(&quot;Invalid usage data\n&quot;, stderr);
+        return EXIT_FAILURE;
+    }
+
+    /* Each LF commits one integer. A final partial line is invalid. */
+    int total = 0, value = 0, digits = 0;
+    for (size_t index = 0; index &lt; length; ++index) {
+        unsigned char current = bytes[index];
+        if (current &gt;= '0' &amp;&amp; current &lt;= '9' &amp;&amp; digits &lt; 2) {
+            value = value * 10 + current - '0';
+            ++digits;
+        } else if (current == '\n' &amp;&amp; digits != 0) {
+            total += value;
+            value = 0;
+            digits = 0;
+        } else {
+            fputs(&quot;Invalid usage data\n&quot;, stderr);
+            return EXIT_FAILURE;
+        }
+    }
+    if (digits != 0) {
+        fputs(&quot;Invalid usage data\n&quot;, stderr);
+        return EXIT_FAILURE;
+    }
+    printf(&quot;Total: %d\n&quot;, total);
+    return EXIT_SUCCESS;
+}</code></pre>
+<h3>usage-rows.txt</h3>
+<p><a href="../../../labs/java-path/usage-rows.txt">Open usage-rows.txt</a></p>
+<pre><code>12
+8
+3</code></pre>
+<h2>Run it</h2>
+<pre><code>javac --release 21 UsageSummary.java
+gcc -std=c23 -Wall -Wextra -Wpedantic usage_summary.c -o usage-summary
+java -cp . UsageSummary usage-rows.txt
+./usage-summary usage-rows.txt</code></pre>
+<p>The program output to check is shown below.</p>
+<pre><code>Total: 23
+Total: 23</code></pre>
+<h2>Read the result</h2>
+<p>The programs accept 1–64 bytes with one or two decimal digits per line and an LF after every line. They read one extra byte to detect excess data, then add a number only after its LF arrives. Pseudocode is <code>read at most 65 bytes → verify size → for each line verify digits and LF → add the verified value → print total</code>. On Windows you can compile the C output with <code>-o usage-summary.exe</code> and run <code>.\usage-summary.exe usage-rows.txt</code> in PowerShell. Bytes, status and output are the shared interface. A native Umicom client could implement this kind of adapter at an explicitly documented file boundary.</p>
+<h2>Practise</h2>
+<p>Create a valid fixture that totals 20 in three lines. Check Java and C against the same expected output. Save the invalid cases separately and include both the expected error text and exit status in your checks.</p>
+<h2>Fix a problem</h2>
+<p>Save or download the supplied LF fixture unchanged. If copied text has CRLF line endings, use the editor’s LF line-ending setting for this specific format. Check <code>gcc --version</code> if the compiler does not recognise <code>-std=c23</code>.</p>
+<h2>Reference</h2>
+<ul>
+<li><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/InputStream.html">Java byte stream API</a></li>
+<li><a href="10-check-a-c-java-translation.html">Earlier checked translation exercise</a></li>
+</ul>
+<nav aria-label="Learning Java lesson navigation"><a href="20-package-a-report-as-a-module.html">Previous · Package a report as a module</a> · <a href="01-records-and-a-journal.html">Next · Records and a journal</a></nav>
+</article></main>
+<footer><div class="container">Sammy Hegab · Umicom Foundation · MIT.</div></footer>
+</body></html>

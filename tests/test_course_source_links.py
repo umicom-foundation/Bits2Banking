@@ -18,6 +18,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location('course_source_links', ROOT / 'hooks/course_source_links.py')
@@ -106,6 +107,41 @@ class CoursePublicationLinks(unittest.TestCase):
         LINKS.on_files([entry, course], {})
         LINKS.on_post_build({'site_dir': str(self.site), 'docs_dir': str(self.docs)})
         self.assertEqual(text, self.output.read_text())
+
+    def test_post_build_shares_source_resolution_only_during_one_build(self):
+        # Adjacent sources share the source target even when their output
+        # pages have different navigation depth.
+        second_source = self.source.with_name('detail.html')
+        second_output = self.output.parent / 'detail/index.html'
+        second_output.parent.mkdir()
+        text = '<a href="../../lessons/learning-c/index.md?x=5#check">Read</a>'
+        self.source.write_text(text, encoding='utf-8')
+        second_source.write_text(text, encoding='utf-8')
+        entries = [
+            SimpleNamespace(src_uri='courses/learning-c/index.html',
+                abs_src_path=str(self.source), abs_dest_path=str(self.output),
+                is_documentation_page=lambda: False),
+            SimpleNamespace(src_uri='courses/learning-c/detail.html',
+                abs_src_path=str(second_source), abs_dest_path=str(second_output),
+                is_documentation_page=lambda: False),
+            SimpleNamespace(src_uri='lessons/learning-c/index.md',
+                abs_src_path=str(self.manuscript), abs_dest_path=str(self.page),
+                is_documentation_page=lambda: True),
+        ]
+        config = {'site_dir': str(self.site), 'docs_dir': str(self.docs)}
+        LINKS.on_files(entries, config)
+        with patch.object(LINKS, 'publication_reference_target',
+                          wraps=LINKS.publication_reference_target) as resolve:
+            for builds in (1, 2):
+                self.output.write_text(text, encoding='utf-8')
+                second_output.write_text(text, encoding='utf-8')
+                LINKS.on_post_build(config)
+                self.assertEqual(builds, resolve.call_count)
+                self.assertEqual(text.replace('index.md?', 'index.html?'),
+                                 self.output.read_text(encoding='utf-8'))
+                self.assertEqual(text.replace('index.md?', 'index.html?').replace(
+                    '../../lessons', '../../../lessons'), second_output.read_text(encoding='utf-8'))
+        self.assertEqual(text, second_source.read_text(encoding='utf-8'))
 
 
     def test_repository_source_uses_public_url_with_encoded_name(self):

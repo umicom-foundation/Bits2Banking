@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/29-connect-an-implementation-with-serviceloader.html
+
+PURPOSE:
+  Provide the browser lesson “Connect an implementation with ServiceLoader”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect an implementation with ServiceLoader | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Connect an implementation with ServiceLoader</h1>
+<p>Give a program one task and supply a class that performs it. The application in this exercise knows that a total is 20. A separate class decides how to write that total. An interface is the agreement between them. Java's <code>ServiceLoader</code> finds a provider for that agreement at runtime.</p>
+<p>Use JDK 21 or later and PowerShell 7. Open the Bits2Banking checkout, where you can see <code>content</code>. The earlier lesson <a href="27-read-the-modules-a-java-app-needs.html">Read the modules a Java app needs</a> introduces the difference between building and running an application.</p>
+<h2>1. Build the agreement and the application</h2>
+<pre><code class="language-powershell">$readingLab = 'content/labs/java-path/service-loader'
+javac --release 21 -d build/java-reading-app &quot;$readingLab/ReadingReporter.java&quot; &quot;$readingLab/ReportSample.java&quot;
+java -cp build/java-reading-app learning.readings.ReportSample
+</code></pre>
+<p>The result is <code>No reading reporter is installed.</code> The application compiled using the interface. It checks what is available when it runs and explains the missing provider.</p>
+<h2>2. Build one provider</h2>
+<pre><code class="language-powershell">javac --release 21 -cp build/java-reading-app -d build/java-reading-provider &quot;$readingLab/PlainReadingReporter.java&quot;
+java -cp &quot;build/java-reading-app;build/java-reading-provider&quot; learning.readings.ReportSample
+</code></pre>
+<p>The message stays the same. The provider class now exists on the class path. Java still needs a record that ties the class to the service. The semicolon inside the quoted class path separates the two folders on Windows.</p>
+<h2>3. Register the provider and run again</h2>
+<pre><code class="language-powershell">$serviceFiles = 'build/java-reading-provider/META-INF/services'
+New-Item -ItemType Directory -Path $serviceFiles -Force | Out-Null
+Set-Content -LiteralPath &quot;$serviceFiles/learning.readings.ReadingReporter&quot; -Value 'learning.readings.PlainReadingReporter' -Encoding utf8
+java -cp &quot;build/java-reading-app;build/java-reading-provider&quot; learning.readings.ReportSample
+</code></pre>
+<p>The result is <code>Total readings: 20</code>. The name of the file identifies the interface. The line inside the file gives the qualified name of its provider. Edit the text returned by <code>PlainReadingReporter.java</code>, recompile only that class with Step 2’s first command and run Step 3’s last command. The application now prints the new wording.</p>
+<p>If the provider is missing or an error reports that it cannot be found, check both class-path entries and the spelling of the service filename and contents. Use a fresh output folder if you have an older registration left over from a previous attempt.</p>
+<p>The same separation helps when building Umicom Framework applications. An application can call an agreed interface while it keeps the implementation in a selected adapter. This lab uses Java's class path and an implementation you built yourself.</p>
+<p><a href="28-record-a-java-program-run.html">Previous lesson</a> · <a href="../index.html">Java course</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ServiceLoader.html">JDK ServiceLoader reference</a></p>
+</article></main>
+</body>
+</html>

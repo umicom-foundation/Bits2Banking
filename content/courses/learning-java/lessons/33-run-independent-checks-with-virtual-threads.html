@@ -1,0 +1,70 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/33-run-independent-checks-with-virtual-threads.html
+
+PURPOSE:
+  Provide the browser lesson “Run independent checks with virtual threads”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Run independent checks with virtual threads | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Run independent checks with virtual threads</h1>
+<p>A report needs a heading and a total. The two checks can work independently. The report still needs the heading to appear first. Run the checks as separate tasks and choose the display order when you collect their results.</p>
+<p>Open PowerShell 7 in a new practice folder. Use JDK 21 or later. If you need to set up your tools, follow <a href="11-install-the-jdk-and-run-a-class.html">Install the JDK and run a class</a>.</p>
+<h2>1. Save the program</h2>
+<p>Save the sample as <code>ReportChecks.java</code>, or open the <a href="../../../labs/java-path/ReportChecks.java">source file</a>.</p>
+<pre><code class="language-java">import java.util.concurrent.Executors;
+
+public class ReportChecks {
+    public static void main(String[] args) throws Exception {
+        // Each submitted check is independent and returns its own result.
+        try (var workers = Executors.newVirtualThreadPerTaskExecutor()) {
+            var readings = workers.submit(() -&gt; &quot;Readings: &quot; + (12 + 8));
+            var heading = workers.submit(() -&gt; &quot;Heading: Daily report&quot;);
+
+            // The report's order belongs to the caller, even if tasks finish out of order.
+            System.out.println(heading.get());
+            System.out.println(readings.get());
+        }
+    }
+}
+</code></pre>
+<p>An executor starts work on your behalf. Each <code>submit</code> hands it one task. The <code>() -&gt;</code> syntax is a short way to give the executor a piece of code to call later. These tasks take no arguments and return text. The two values returned by <code>submit</code> are futures. A future is a handle you can use to wait for a task's result.</p>
+<p><code>var</code> tells Java to infer the types from the values on the right. The <code>try</code> block owns the executor and closes it when the block ends. If a check fails, this small console example lets the exception report the failure.</p>
+<h2>2. Compile and run</h2>
+<pre><code class="language-powershell">javac --release 21 ReportChecks.java
+java ReportChecks
+</code></pre>
+<p>The program prints these two lines.</p>
+<pre><code class="language-text">Heading: Daily report
+Readings: 20
+</code></pre>
+<p>The program submits the readings first. It waits for the heading result before printing anything. The <code>get</code> calls determine display order even when the tasks finish in a different order.</p>
+<h2>3. Change only the order of display</h2>
+<p>Swap the two <code>System.out.println</code> lines. Compile and run again. The readings should appear before the heading. Put the lines back when you finish.</p>
+<p>If <code>javac</code> cannot find <code>newVirtualThreadPerTaskExecutor</code>, run <code>javac -version</code> in the same shell and check that it reports 21 or later.</p>
+<p>This tiny example demonstrates result ordering. Adding two numbers needs very little work. Virtual threads are most useful when many tasks spend time waiting, for example when reading independent data sources. Keep related output ordering in the report and give each task its own inputs. Umicom Framework workers can follow the same division of responsibilities. <a href="https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html">Java virtual thread guide</a></p>
+<p><a href="32-save-a-copy-of-a-growing-list.html">Previous lesson</a> · <a href="34-report-a-task-failure.html">Next lesson</a> · <a href="../index.html">Java course</a> · <a href="../../../simple-steps/course-guides/learning-java.md">Java in simple steps</a></p>
+</article></main>
+</body>
+</html>

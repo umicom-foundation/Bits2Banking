@@ -1,0 +1,71 @@
+<!doctype html>
+<!--
+Umicom Bits2Banking
+File: content/courses/learning-java/lessons/25-filter-and-total-readings-with-a-stream.html
+
+PURPOSE:
+  Provide the browser lesson “Filter and total readings with a stream”.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Filter and total readings with a stream | Bits2Banking</title>
+<link rel="stylesheet" href="../../assets/umicom-learning.css">
+<link rel="icon" type="image/svg+xml" href="../../../assets/branding/umicom-icon.svg">
+<link rel="alternate icon" type="image/x-icon" href="../../../assets/branding/umicom.ico">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="topbar"><a class="logo" href="../index.html">
+<img src="../../../assets/branding/umicom-wordmark-on-dark.svg" width="159" height="40" alt="Umicom">
+<span class="brand-course">Bits2Banking</span></a></div></header>
+<main id="main" class="simple-page"><article class="article-content">
+<h1>Filter and total readings with a stream</h1>
+<p>Choose the readings from one site that meet a minimum. Add their units with a loop, then check that a Java stream gives the same answer. Read <a href="15-group-deliveries-with-collections.html">Group deliveries with collections</a> first if working with a list is unfamiliar.</p>
+<h2>Run the example</h2>
+<ol>
+<li>Save <a href="../../../labs/java-path/FilteredReadingTotal.java">FilteredReadingTotal.java</a> in a practice folder.</li>
+<li>Open your terminal in that folder. Compile and run it with the JDK from the course.</li>
+<li>Compare both totals with the expected output.</li>
+</ol>
+<pre><code class="language-powershell">javac --release 21 FilteredReadingTotal.java
+java FilteredReadingTotal
+</code></pre>
+<p>Expected output</p>
+<pre><code class="language-text">North total: 32
+West total: 0
+</code></pre>
+<h2>First read the loop</h2>
+<pre><code class="language-text">Set total to zero
+For each reading
+    If the site matches and the units meet the minimum
+        Add the units to total
+Return total
+</code></pre>
+<p>The north readings are 12, 7 and 20. At a minimum of 10, the loop keeps 12 and 20. The list has no west readings, so the west total starts and ends at zero.</p>
+<h2>Then read the stream</h2>
+<ol>
+<li><code>stream()</code> starts a series of operations on the list.</li>
+<li>Each <code>filter</code> keeps the items for which its rule returns <code>true</code>. Read <code>reading -&gt; ...</code> as “for this reading, check the rule after the arrow”.</li>
+<li><code>mapToInt(Reading::units)</code> takes the units from each remaining reading. The method reference <code>Reading::units</code> means “call the <code>units</code> accessor”.</li>
+<li><code>sum()</code> adds those values. It uses zero when no reading matched. It finishes this stream, and the original list stays available for another calculation.</li>
+</ol>
+<h2>Practise and recover</h2>
+<ol>
+<li>Change <code>minimum</code> from <code>10</code> to <code>7</code>. Compile and run again. The north total becomes 39 and the west total stays zero.</li>
+<li>Change only the stream cutoff to <code>&gt;</code> for this trial. Compile and run. The existing comparison reports a difference because the two methods now disagree about the reading at exactly 7. Restore <code>&gt;=</code> and rerun.</li>
+<li>Use the loop as a second check when changing a report rule. Small examples near the cutoff make it easier to see what each implementation is doing.</li>
+</ol>
+<p>A native Umicom report can keep the same two rules in C23 or Umicom C. The loop and the stream printout give you values to compare when verifying the new implementation.</p>
+<p><a href="../index.html">Return to Learning Java</a> · <a href="24-test-a-local-java-http-route.html">Test a local Java HTTP route</a> · <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Stream.html">Java Stream API</a></p>
+</article></main>
+</body>
+</html>
